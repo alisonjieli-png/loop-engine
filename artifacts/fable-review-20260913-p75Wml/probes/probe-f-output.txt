@@ -1,0 +1,12 @@
+OBSERVED v1_carrying_input_cardinalities: 'refused LoopDefinitionError: contract has an invalid shape'
+OBSERVED unsupported_v3: 'refused LoopDefinitionError: unsupported LoopDefinition record type'
+OBSERVED v2_cardinality_on_undeclared_role: 'refused LoopContractError (not LoopDefinitionError): input cardinalities must name distinct declared input roles'
+OBSERVED v2_boolean_max_items: 'refused LoopContractError (not LoopDefinitionError): multiple input cardinality needs an explicit positive bound'
+OBSERVED v2_extra_cardinality_key: 'refused LoopDefinitionError: input cardinalities have an invalid encoded shape'
+OBSERVED v2_unsorted_cardinalities_valid_digest: 'refused LoopDefinitionError: LoopDefinition content digest does not match its content'
+OBSERVED v2_sorted_two_multiple_ports: 'LOADED'
+OBSERVED checkpoint_v2_with_multiple_output_eleven_fields: 'refused SpawnedTaskCheckpointError: version 2 cannot encode output or input cardinality extensions'
+OBSERVED checkpoint_v2_legacy_eight_field_contract: 'LOADED'
+OBSERVED checkpoint_v1: "refused: unsupported checkpoint schema 'spawned_task_checkpoint/v1'"
+OBSERVED float_update_count_with_blank_digest: 'LOADED update_count=2'
+probe_f finished

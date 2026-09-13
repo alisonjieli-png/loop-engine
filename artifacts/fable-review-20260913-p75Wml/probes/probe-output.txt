@@ -1,0 +1,79 @@
+
+=== A. SpawnedTaskCheckpoint reader accepts a tampered record when the digest is blank ===
+OBSERVED tampered_record_with_blank_digest_loaded: True
+OBSERVED loaded_goal: 'tampered goal written after the fact'
+OBSERVED reader_assigned_fresh_digest: 'da42f706ace20302...'
+OBSERVED control_tampered_record_with_original_digest_loaded: False
+OBSERVED record_without_digest_key_loaded: False
+
+=== B. Duplicate Run History references satisfy minimum_records in harness selection ===
+OBSERVED copy_shares_history_ref: True
+OBSERVED copy_shares_history_digest: True
+OBSERVED honest_reason: 'insufficient_matched_reviewed_evidence'
+OBSERVED honest_order: ('first', 'second')
+OBSERVED inflated_reason: 'ranked_matched_reviewed_evidence'
+OBSERVED inflated_order: ('first', 'second')
+OBSERVED inflated_first_matching_records: 2
+OBSERVED inflated_evidence_refs: ('fixture-history:first', 'fixture-history:first', 'fixture-history:second-a', 'fixture-history:second-b')
+OBSERVED selector_source_mentions_subject_digest: False
+
+=== C. Response evaluator sees only text; its Run History record omits the subject contract ===
+OBSERVED verdict_for_prompt_A: 'passed'
+OBSERVED verdict_for_prompt_B_same_text: 'passed'
+OBSERVED evaluation_record_keys: ['contract_ref', 'external_effect_authorized', 'finding_codes', 'implementation_digest', 'input_digest', 'qualification_digest', 'record_type', 'response_digest', 'semantic_call_id', 'status', 'task_accepted', 'verifier_loop_id']
+OBSERVED record_carries_subject_contract_ref: False
+OBSERVED record_carries_subject_contract_digest: False
+OBSERVED evaluate_callback_parameters: ['text']
+
+=== D. verifier_execute: timeout kills bash only; descendants survive; capture is unbounded ===
+OBSERVED MAX_OUTPUT_BYTES_constant: 8192
+OBSERVED MAX_OUTPUT_BYTES_used_in_operation: False
+OBSERVED start_new_session_or_killpg_used: False
+OBSERVED timeout_raised: True
+OBSERVED timeout_message: 'verifier exceeded 1s; partial output retained'
+OBSERVED partial_output_attached_to_error: False
+OBSERVED elapsed_seconds_for_1s_timeout: 1.0
+OBSERVED descendant_survived_and_wrote_marker: True
+OBSERVED sleep_30_processes_still_alive: 2
+
+=== E. Direct gateway path: a semantic rejection triggers cross-route failover without SEMANTIC_REJECTED permission ===
+OBSERVED ModelGatewayConfig_default_allow_failover: True
+OBSERVED invoke_returned_text: '{"answer":42}'
+OBSERVED physical_attempts_providers: ['alpha', 'beta']
+OBSERVED attempt_error_codes: ['output_validation_failed', '']
+OBSERVED evaluation_statuses: ['rejected', 'passed']
+OBSERVED result_ok: True
+OBSERVED calls_used: 2
+OBSERVED harness_attempt_assessed_events: 0
+OBSERVED actions_recorded: ['harness_response_evaluated', 'model_response_expectation_assessed', 'model_response_expectation_bound']
+
+=== F. Historical encodings: strict refusals (controls for question 4) ===
+OBSERVED v1_carrying_input_cardinalities: 'refused: contract has an invalid shape'
+OBSERVED unsupported_v3: 'refused: unsupported LoopDefinition record type'
+Traceback (most recent call last):
+  File "/home/username/loop-engine/.loop-engine-dev/fable-review-probe-20260913/probe_review.py", line 263, in <module>
+    LoopDefinition.from_dict(value)
+  File "/home/username/loop-engine/src/loop_engine/loop/loop_definition.py", line 371, in from_dict
+    contract=LoopContract(
+  File "<string>", line 14, in __init__
+  File "/home/username/loop-engine/src/loop_engine/loop/loop_contract.py", line 197, in __post_init__
+    raise LoopContractError('input cardinalities must name distinct declared input roles')
+loop_engine.loop.loop_contract.LoopContractError: input cardinalities must name distinct declared input roles
+
+=== G. Harness selection scope is derived only when a response expectation is bound ===
+OBSERVED harness_selection_unavailable_recorded: True
+OBSERVED harness_selection_assessed_recorded: False
+OBSERVED harness_used: 'first'
+
+=== H. Harness path: gateway failover inside one harness attempt bypasses a policy that forbids semantic recovery ===
+OBSERVED invoke_returned_text: '{"answer":42}'
+OBSERVED policy_switch_on: ()
+OBSERVED physical_attempts_providers: ['alpha', 'beta']
+OBSERVED evaluation_statuses: ['rejected', 'passed']
+OBSERVED harness_attempt_decisions: ['response_admitted']
+OBSERVED second_harness_requests: 0
+OBSERVED first_harness_requests: 1
+OBSERVED result_ok: True
+OBSERVED calls_used: 2
+
+probe finished
