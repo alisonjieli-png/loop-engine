@@ -75,6 +75,47 @@ def load_harness_binding(path: str, *, work_root: str, socket_directory: str,
                                    socket_directory=socket_directory,selection_policy=selection_policy)
 
 
+def load_layered_binding(path: str, *, assignment_ref: str, fallback_policy=None):
+    """Read one host-authored layering declaration for one assignment.
+
+    The file holds the initial composition, the ordered fallbacks, and the
+    control policy as their own records (core.harness_layering); the outer
+    fallback policy is the one this run already holds, so the file cannot
+    smuggle a different one, and the assignment reference comes from the
+    caller for the same reason. Reading is passive: nothing is launched and
+    no native control is enabled. The returned binding is the same validated
+    record a caller could have built in code, and `HarnessSemanticBinding`
+    applies its own refusals when the binding is supplied as `layering`.
+    """
+    from .harness_layering import (
+        CompositionFallback, LayeredHarnessBinding, NativeControlPolicy, WrapperComposition)
+    source = Path(path)
+    if (not source.is_absolute() or not source.is_file() or source.is_symlink()
+            or source.stat().st_size > 1024 * 1024):
+        raise ValueError('layering declaration must be one bounded absolute regular file')
+
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError('duplicate layering declaration key')
+            value[key] = item
+        return value
+
+    value = json.loads(source.read_text(encoding='utf-8'), object_pairs_hook=unique)
+    required = {'schema_version', 'initial', 'fallbacks', 'control_policy'}
+    if (type(value) is not dict or set(value) != required
+            or type(value['schema_version']) is not int or value['schema_version'] != 1):
+        raise ValueError('unsupported layering declaration fields/version')
+    if type(value['fallbacks']) is not list:
+        raise ValueError('layering fallbacks must be a list of records')
+    return LayeredHarnessBinding(
+        assignment_ref, WrapperComposition.from_dict(value['initial']),
+        NativeControlPolicy.from_dict(value['control_policy']),
+        tuple(CompositionFallback.from_dict(item) for item in value['fallbacks']),
+        fallback_policy)
+
+
 def load_harness_selection_policy(path: str) -> HarnessSelectionPolicy:
     """Read one explicit host-reviewed policy; loading never dispatches a model."""
     source=Path(path)

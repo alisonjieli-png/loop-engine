@@ -303,6 +303,33 @@ def run_self_test_checks():
                 lambda: layered_setup(LayeredHarnessBinding('assignment:layering-check',
                     WrapperComposition('direct', 'second'), everything, (),
                     HarnessFallbackPolicy(('second', 'first'), ()))))
+        # A host can declare the same binding in a file; the loader reads it
+        # under the run's own outer policy and assignment reference.
+        import json as _json
+        from .harness_configuration import load_layered_binding
+        declaration = Path(directory) / 'layering.json'
+        declaration.write_text(_json.dumps({
+            'schema_version': 1, 'initial': direct.initial.to_dict(),
+            'fallbacks': [item.to_dict() for item in direct.fallbacks],
+            'control_policy': direct.control_policy.to_dict()}), encoding='utf-8')
+        loaded = load_layered_binding(str(declaration),
+                                      assignment_ref='assignment:layering-check',
+                                      fallback_policy=policy)
+        check('a_layering_declaration_file_loads_to_the_same_binding',
+              loaded.content_digest == direct.content_digest)
+        session, owner = layered_setup(loaded)
+        check('a_loaded_declaration_runs_and_is_recorded_like_the_typed_one',
+              session.invoke(ModelInvocationRequest('declared in a file'), owner) == '{"answer":1}'
+              and [e for e in owner.ledger.events if e.get('action') == 'harness_layering_bound'][0]
+              ['layering_digest'] == direct.content_digest)
+        declaration.write_text(_json.dumps({
+            'schema_version': 1, 'initial': direct.initial.to_dict(),
+            'fallbacks': [], 'control_policy': direct.control_policy.to_dict(),
+            'fallback_policy': policy.to_dict()}), encoding='utf-8')
+        refuses('a_declaration_cannot_carry_its_own_outer_policy',
+                lambda: load_layered_binding(str(declaration),
+                                             assignment_ref='assignment:layering-check',
+                                             fallback_policy=policy))
 
         result = HarnessRunResult('check', 'first', 'failed', error_code='adapter_reported_failure')
         from .external_harness import HarnessToolEvent

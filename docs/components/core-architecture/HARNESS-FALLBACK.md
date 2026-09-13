@@ -358,6 +358,16 @@ executor is always `direct_adapter` today. A binding without a layering
 record reports an empty digest and the same executor, so an undeclared
 attempt is distinguishable from a declared direct one.
 
+A host can also declare the binding in a file and load it with
+`load_layered_binding(path, assignment_ref=..., fallback_policy=...)` from
+`core.harness_configuration`. The file holds `schema_version` 1, the
+`initial` composition record, the `fallbacks` list, and the `control_policy`
+record; the outer fallback policy and the assignment reference come from the
+run, so a file cannot smuggle a different policy, and the same strict reading
+rules as harness manifests apply (one bounded absolute regular file, no
+duplicate keys, no unknown fields). The loaded binding is the validated
+record itself and runs, records, and refuses exactly as a typed one.
+
 Both dimensions are enumerable and indexable for a configuration search
 through `core.harness_layering_space`. A `ControlPolicySpace` for one
 adapter holds every complete control policy the adapter can honor (a
