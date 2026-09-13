@@ -15,7 +15,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import signal
 import socket
 import sys
@@ -38,9 +37,10 @@ from loop_engine.core.harness_fallback import HarnessFallbackPolicy, HarnessFail
 from loop_engine.core.harness_semantic import HarnessSemanticBinding
 from loop_engine.core.model_capabilities import ModelOutputAllocation
 from loop_engine.core.model_gateway import ModelGateway, ModelGatewayConfig
+from loop_engine.core.model_routes import ModelRoute
 from loop_engine.core.parameter_resolution import ParameterDefinition, ParameterInput, ParameterSourceKind
 from loop_engine.core.provider_failure_classes import (
-    CONFIGURATION, CONTRACT, FAIL_CELL, STOP_ROUTE, UNCLASSIFIED, WAIT_FOR_ALLOWANCE, WAIT_FOR_RECOVERY,
+    ALLOWANCE, CONFIGURATION, CONTRACT, FAIL_CELL, OUTAGE, STOP_ROUTE, UNCLASSIFIED, WAIT_FOR_ALLOWANCE, WAIT_FOR_RECOVERY,
     decide, failure_class)
 from loop_engine.core.run_history import load_saved_run_bundle
 from loop_engine.core.settings_loader import load_runtime_settings
@@ -49,6 +49,7 @@ from loop_engine.templates.intake import TaskIntake
 
 from .systematic_records import CampaignProjection, canonical, digest
 from .systematic_runtime import NativeGatewayAdapter, configure_environment
+from .campaign_activation import activation_due, probe_gateway, utc_time
 
 
 # The trial's own lifecycle states, named once.
@@ -127,7 +128,10 @@ def fair_order(tasks):
     return output
 
 
-def campaign_space(harnesses):
+def campaign_space(harnesses, *, route=None):
+    route = route or ModelRoute('custom.tactical', 'tactical', 'gemma-4-coding-abliterated', 'cloud')
+    if not isinstance(route, ModelRoute):
+        raise TypeError('a campaign route must use the existing ModelRoute contract')
     def axis(name, values):
         return ConfigurationAxis(name, 'categorical', tuple(canonical(value) for value in values))
     return ConfigurationSpace('task-database-executable-grid', '1.0.0', (
@@ -135,12 +139,12 @@ def campaign_space(harnesses):
         axis('output_allocation_tokens', (16384, 65536)),
         axis('context_delivery', ('bounded_inline', 'selected_references')),
         axis('harness_fallback', ('none', 'registered_alternatives'))),
-        canonical({'mode': 'non_deterministic', 'provider': 'tactical',
-            'model': 'gemma-4-coding-abliterated', 'route': 'custom.tactical',
+        canonical({'mode': 'non_deterministic', 'provider': route.provider,
+            'model': route.model, 'route': route.name,
             'provider_failover': False, 'max_model_calls': None, 'max_passes': None}))
 
 
-def prepare(root, task_root, provider_file, repository):
+def prepare(root, task_root, provider_file, repository, *, route_name='', not_before=''):
     os.umask(0o077)
     root, task_root, repository = Path(root).resolve(), Path(task_root).resolve(), Path(repository).resolve()
     root.mkdir(parents=True, exist_ok=True)
@@ -152,7 +156,19 @@ def prepare(root, task_root, provider_file, repository):
         raise ValueError('the frozen catalog contains duplicate task identities')
     harness_files = sorted((repository / 'embodiments').glob('*/harness.json'))
     harnesses = ['native_gateway'] + [json.loads(path.read_text())['harness_id'] for path in harness_files]
-    space = campaign_space(harnesses)
+    settings = load_runtime_settings(str(provider_file)).settings
+    gateway = settings.build_gateway()
+    if not route_name:
+        custom = [provider.route_name for provider in settings.models.providers if provider.kind == 'custom']
+        if len(custom) != 1:
+            raise ValueError('prepare requires an explicit route name when no single custom route is declared')
+        route_name = custom[0]
+    route = gateway.registry.get(route_name)
+    if route.provider not in gateway.providers:
+        raise ValueError('the selected route has no configured provider')
+    if not_before:
+        not_before = utc_time(not_before).isoformat()
+    space = campaign_space(harnesses, route=route)
     records = CampaignProjection(root / 'campaign.duckdb')
     rows = []
     try:
@@ -178,6 +194,8 @@ def prepare(root, task_root, provider_file, repository):
             'engine_digest': identity['engine_digest'],
             'selection_rule': 'family_round_robin_then_declared_criteria_then_identity',
             'provider_file': str(Path(provider_file).resolve()), 'provider_file_digest': file_digest(provider_file),
+            'selected_route_name': route.name, 'not_before_utc': not_before,
+            'readiness_method': 'gateway_generation_probe',
             'repository': str(repository), 'harnesses': harnesses,
             'harness_file_digests': {str(path): file_digest(path) for path in harness_files},
             'configuration_space': space.to_dict(), 'configuration_space_digest': space.digest,
@@ -244,14 +262,11 @@ def task_intake(row, delivery):
 class RecordedSettingSession:
     """Record each applied setting while retaining one existing budget owner."""
 
-    def __init__(self, authority, artifacts, configuration, records, *, checkpoint_retention=2):
+    def __init__(self, authority, artifacts, configuration, records, *, checkpoint_retention=None):
         self._session = ModelExecutionSession(replace(authority, session_factory=None), artifact_store=artifacts)
         self.configuration, self.records = configuration, records
-        if type(checkpoint_retention) is not int or checkpoint_retention < 1:
-            raise ValueError('checkpoint retention must keep at least the latest revision')
-        # The ledger is append-only, so every earlier checkpoint is a prefix of
-        # the latest one; keeping all of them grows the cell quadratically.
-        self.checkpoint_retention = checkpoint_retention
+        if checkpoint_retention is not None:
+            raise ValueError('automatic deletion of referenced Run History is not a checkpoint retention policy')
 
     def __getattr__(self, name):
         return getattr(self._session, name)
@@ -283,9 +298,29 @@ class RecordedSettingSession:
             'input_digest': request.exact_input_digest})
         if result.report['status'] not in ('applied_in_memory', 'unchanged'):
             raise ValueError('requested experiment setting was refused')
+        result_start = len(self._session.results)
+        event_start = len(parent_loop.ledger.events)
+        selected_allocation = result.configuration.output_allocation or self.authority.config.output_allocation
         try:
             return self._session.invoke(result.configuration, parent_loop)
         finally:
+            provider_attempts = []
+            for gateway_result in self._session.results[result_start:]:
+                for attempt in gateway_result.to_dict().get('attempts', ()):
+                    provider_attempts.append({key: attempt.get(key) for key in (
+                        'provider', 'model', 'route', 'maximum_output_tokens', 'maximum_output_source',
+                        'output_capacity_digest', 'provider_ok', 'error_code', 'input_tokens', 'output_tokens',
+                        'loop_id', 'semantic_call_id')})
+            harness_attempts = [{key: event.get(key) for key in ('harness_id', 'adapter_version', 'status', 'attempt_index')}
+                for event in parent_loop.ledger.events[event_start:]
+                if event.get('action') == 'external_harness_result']
+            self.records.record('effective_configuration', operation, {
+                'semantic_call_id': request.semantic_call_id, 'owner_loop_id': parent_loop.loop_id,
+                'temperature': result.configuration.temperature,
+                'requested_output_allocation': selected_allocation.summary() if selected_allocation is not None else None,
+                'provider_attempts': provider_attempts, 'harness_attempts': harness_attempts,
+                'in_process_gateway': self.authority.harness is None,
+                'call_accounting_complete': not self.accounting_uncertain})
             # Persist a current checkpoint after every completed or failed
             # semantic invocation, not just at the task's terminal state.
             from loop_engine.core.run_history import RunHistory
@@ -297,12 +332,10 @@ class RecordedSettingSession:
                 if root.exists() else []
             revision = (revisions[0] + 1) if revisions else 0
             location = history.save(str(root / str(revision)))
-            for stale in revisions[self.checkpoint_retention - 1:]:
-                shutil.rmtree(root / str(stale), ignore_errors=True)
             self.records.record('step_history', operation, {'history': location,
                 'integrity': history.verify_chain(), 'known_calls': self.calls_used,
                 'call_accounting_complete': not self.accounting_uncertain,
-                'revision': revision, 'retained_revisions': self.checkpoint_retention,
+                'revision': revision, 'retention': 'immutable_history_preserved',
                 'events': len(parent_loop.ledger.events)})
 
 
@@ -323,8 +356,8 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
     confined_name(str(ordinal))
     cell = root / 'trials' / (row['id'] + '-' + digest(row['task_directory'])[:8]) / str(ordinal)
     if cell.exists():
-        # An interrupted occurrence keeps its evidence; the worker reconciles
-        # it and advances the attempt number instead of writing over it.
+        # An interrupted occurrence keeps its evidence. A new directory name
+        # does not authorize replay of unresolved effects.
         return {'record_type': 'task_database_trial/v1', 'task_id': row['id'], 'configuration': configuration,
                 'status': TRIAL_FAILED, 'error_type': 'FileExistsError',
                 'error_message': 'trial cell already exists; reconcile the interrupted occurrence',
@@ -392,13 +425,15 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
         integrity = load_saved_run_bundle(str(cell / 'runs'), value['run_id']).history.verify_chain()
         state.update(status=TRIAL_FINISHED, engine_terminal=value['terminal_code'], engine_solved=value['solved'],
             failure_code=value.get('failure_code', ''),
+            provider_failure_codes=terminal_provider_codes(value),
             model_calls=value['model_calls'], model_call_accounting_complete=value['model_call_accounting_complete'],
             model_calls_known_subtotal=value['model_calls_known_subtotal'], history_integrity=integrity,
             delivered_artifacts=len(value['artifacts']),
             campaign_acceptance='independent_task_specific_review_required')
     except Exception as exc:
         state.update(status=TRIAL_FAILED, error_type=type(exc).__name__,
-                     error_message=str(exc)[:300], model_call_accounting_complete=False)
+                     error_message='trial boundary failed; private exception text is not exported',
+                     model_call_accounting_complete=False)
     finally:
         state['elapsed_seconds'] = time.monotonic() - started
         records.record('trial', 'state', state)
@@ -470,36 +505,51 @@ def provider_available(endpoint):
         return {'reachable': False, 'kind': 'model_listing', 'error_type': type(exc).__name__, 'model_calls': 0}
 
 
+def terminal_provider_codes(outcome):
+    """Use the final gateway result, not a folded public solve terminal.
+
+    Earlier recovered failures are not the cause of a later terminal. No
+    private provider diagnostic or exception body enters this projection.
+    """
+    usage = outcome.get('model_usage') or []
+    if not usage or not isinstance(usage[-1], dict) or usage[-1].get('ok') is not False:
+        return []
+    final = usage[-1]
+    codes = [attempt.get('error_code') for attempt in final.get('attempts', ()) if isinstance(attempt, dict)]
+    codes = [code for code in codes if type(code) is str and code and len(code) <= 128
+             and all(c.isalnum() or c == '_' for c in code)]
+    if not codes:
+        code = final.get('error_code')
+        if type(code) is str and code and len(code) <= 128 and all(c.isalnum() or c == '_' for c in code):
+            codes.append(code)
+    return list(dict.fromkeys(codes))
+
+
 def outage_decision(result, attempts_so_far, attempt_ceiling):
-    """The worker's one decision after a trial the engine ended as provider
-    unavailable, from the failure code the run reported. A configuration or
-    contract fault stops the route; an allowance waits for its reset; an
-    outage waits for recovery; both waits are bounded by the ceiling, after
-    which the cell fails and the campaign advances. A code the vocabulary
-    does not know is read as an outage, the conservative reading under this
-    terminal, still bounded. Any other terminal needs no decision."""
+    """Classify actual terminal errors without inventing an outage."""
     if result.get('engine_terminal') != SolveTerminalCode.PROVIDER_UNAVAILABLE.value:
         return None
-    code = result.get('failure_code') or ''
-    codes = [code] if failure_class(code) != UNCLASSIFIED else ['provider_unavailable']
+    codes = result.get('provider_failure_codes')
+    if codes is None:
+        code = result.get('failure_code') or ''
+        codes = [code] if code else []
     return decide(codes, attempts_so_far=attempts_so_far, attempt_ceiling=attempt_ceiling)
 
 
 def reconcile_interrupted(records, cursor):
-    """Record an interrupted trial as interrupted, keep its evidence where it
-    is, and move the attempt number on so the next occurrence never writes
-    over it. Returns the reconciled row, or None when nothing was active."""
+    """Record the interruption without asserting that its effects are resolved.
+
+    Restart requires separate effect reconciliation. Clearing the active
+    marker or changing occurrence identity is not proof that replay is safe.
+    """
     active = records.latest('controller', 'active_trial')
     if not active:
         return None
     occurrence = str(cursor['round']) + '-attempt-' + str(cursor.get('trial_attempt', 0))
-    row = {**active, 'status': 'interrupted', 'occurrence': occurrence,
-           'reconciled_at': datetime.now(timezone.utc).isoformat()}
+    row = {**active, 'status': 'interrupted_requires_reconciliation', 'occurrence': occurrence,
+           'observed_at': datetime.now(timezone.utc).isoformat(),
+           'effects_reconciled': False, 'replay_authorized': False}
     records.record('trial_projection', str(active.get('task_id')) + ':' + occurrence, row)
-    cursor['trial_attempt'] = cursor.get('trial_attempt', 0) + 1
-    cursor['interrupted_trials'] = cursor.get('interrupted_trials', 0) + 1
-    records.record('controller', 'active_trial', {})
-    records.record('controller', 'cursor', cursor)
     return row
 
 
@@ -527,7 +577,10 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
             rows = json.loads((root / 'task-population.json').read_text())['tasks']
             if digest(rows) != manifest['population_digest'] or file_digest(manifest['provider_file']) != manifest['provider_file_digest']:
                 raise ValueError('frozen campaign inputs changed')
-            space = campaign_space(manifest['harnesses'])
+            gateway = load_runtime_settings(manifest['provider_file']).settings.build_gateway()
+            route_name = manifest.get('selected_route_name') or manifest['configuration_space']['fixed_context']['route']
+            route = gateway.registry.get(route_name)
+            space = campaign_space(manifest['harnesses'], route=route)
             if space.digest != manifest['configuration_space_digest']:
                 raise ValueError('configuration space changed')
             cursor = records.latest('controller', 'cursor')
@@ -535,10 +588,17 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                 raise ValueError('an interrupted trial requires explicit reconciliation before resume')
             reconciled = reconcile_interrupted(records, cursor)
             if reconciled:
-                print(canonical({'status': 'reconciled_interrupted_trial', **reconciled}), flush=True)
-            configure_environment()
+                records.refresh_export(root / 'status.json', reconciled)
+                print(canonical(reconciled), flush=True)
+                return
+            # This exact legacy reader preserves the original Tactical
+            # preparation contract. New campaigns receive credentials through
+            # their configured gateway or its existing adapter.
+            if 'selected_route_name' not in manifest:
+                configure_environment()
+                gateway = load_runtime_settings(manifest['provider_file']).settings.build_gateway()
             os.environ['LOOP_ENGINE_SANDBOX_IMAGE'] = 'loop-engine-ds1000-runtime@sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d'
-            endpoint = load_runtime_settings(manifest['provider_file']).settings.build_gateway().providers['tactical'].adapter.endpoint
+            endpoint = getattr(gateway.providers[route.provider].adapter, 'endpoint', None)
             identity = engine_identity(manifest['repository'])
             frozen = manifest.get('engine_digest')
             engine_status, refuse = engine_check(frozen, identity['engine_digest'], allow_engine_change)
@@ -553,6 +613,11 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                 row = rows[cursor['task_position']]
                 base = {'worker_pid': os.getpid(), 'task_count': len(rows), 'cursor': cursor,
                         'updated_at': datetime.now(timezone.utc).isoformat()}
+                if not activation_due(manifest.get('not_before_utc', ''), datetime.now(timezone.utc)):
+                    records.refresh_export(root / 'status.json', {**base, 'status': 'waiting_for_activation_window',
+                        'not_before_utc': manifest['not_before_utc'], 'provider': route.provider})
+                    time.sleep(probe_interval)
+                    continue
                 if row['admission'] != 'queued_for_execution_and_evaluation':
                     # A source-admission gap is recorded once; repeating it
                     # every round would write tens of thousands of no-op rows.
@@ -566,7 +631,18 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                     records.record('controller', 'cursor', cursor)
                     continue
                 else:
-                    probe = provider_available(endpoint)
+                    if manifest.get('readiness_method') == 'gateway_generation_probe':
+                        probe = probe_gateway(gateway, route, records)
+                        if not probe['reachable']:
+                            # A catalog entry or elapsed reset estimate cannot
+                            # authorize an endless sequence of failed calls.
+                            records.refresh_export(root / 'status.json', {**base,
+                                'status': 'provider_access_not_verified', 'provider_observation': probe})
+                            return
+                    elif endpoint is not None:
+                        probe = provider_available(endpoint)
+                    else:
+                        raise ValueError('this legacy campaign has no compatible metadata probe')
                     records.record('provider_availability', 'latest', probe)
                     if failure_class(probe.get('failure_code', '')) in (CONFIGURATION, CONTRACT):
                         cursor['stopped_routes'] = cursor.get('stopped_routes', 0) + 1
@@ -590,7 +666,8 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                     records.record('controller', 'active_trial', active)
                     records.refresh_export(root / 'status.json', active)
                     occurrence = str(cursor['round']) + '-attempt-' + str(cursor.get('trial_attempt', 0))
-                    result = run_trial(root, row, space.configuration_at(index), manifest, occurrence)
+                    result = run_trial(root, row, space.configuration_at(index), manifest, occurrence,
+                                       services=CampaignTrialServices(gateway))
                     records.record('controller', 'active_trial', {})
                     decision = outage_decision(result, cursor.get('trial_attempt', 0), wait_attempt_ceiling)
                     if decision is not None:
@@ -598,7 +675,8 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                         records.record('trial_projection', row['id'] + ':' + occurrence, result)
                         if decision['decision'] in (WAIT_FOR_RECOVERY, WAIT_FOR_ALLOWANCE):
                             cursor['trial_attempt'] = cursor.get('trial_attempt', 0) + 1
-                            cursor['outage_attempts'] = cursor.get('outage_attempts', 0) + 1
+                            counter = 'allowance_attempts' if ALLOWANCE in decision['classes'] else 'outage_attempts'
+                            cursor[counter] = cursor.get(counter, 0) + 1
                             records.record('controller', 'cursor', cursor)
                             records.refresh_export(root / 'status.json', {**base, 'cursor': cursor,
                                 'status': 'waiting_for_provider', 'latest_trial': result,
@@ -615,7 +693,15 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                                 'status': 'route_stopped', 'latest_trial': result})
                             print(canonical({'status': 'route_stopped', 'task': row['id'], 'decision': decision}), flush=True)
                             return
-                        result['status'] = 'failed_after_bounded_wait'
+                        if decision['classes'] and set(decision['classes']) <= {OUTAGE, ALLOWANCE}:
+                            # A shared provider wait does not make this task
+                            # fail and must not drain the rest of the queue.
+                            cursor['trial_attempt'] = cursor.get('trial_attempt', 0) + 1
+                            records.record('controller', 'cursor', cursor)
+                            records.refresh_export(root / 'status.json', {**base, 'cursor': cursor,
+                                'status': 'provider_wait_suspended', 'latest_trial': result})
+                            return
+                        result['status'] = 'failed_with_classified_provider_result'
                     if result.get('status') == TRIAL_FINISHED:
                         cursor['completed_trials'] += 1
                     else:
@@ -640,12 +726,14 @@ def main():
     parser.add_argument('--root', required=True)
     parser.add_argument('--task-root', default='/home/username/task_database')
     parser.add_argument('--provider-file')
+    parser.add_argument('--route-name', default='')
+    parser.add_argument('--not-before', default='')
     parser.add_argument('--repository', default=str(Path(__file__).resolve().parents[2]))
     parser.add_argument('--probe-interval', type=int, default=60)
     parser.add_argument('--wait-attempt-ceiling', type=int, default=3,
                         help='bounded waits per cell after a provider-unavailable trial')
     parser.add_argument('--refuse-interrupted', action='store_true',
-                        help='refuse to start over an interrupted trial instead of reconciling it')
+                        help='raise immediately instead of recording the unresolved interruption')
     parser.add_argument('--allow-engine-change', action='store_true',
                         help='continue a campaign on a changed engine, recording the change')
     parser.add_argument('--wait-for-launch-signal', action='store_true')
@@ -653,7 +741,8 @@ def main():
     if args.operation == 'prepare':
         if not args.provider_file:
             parser.error('prepare requires an explicit provider file')
-        print(canonical(prepare(args.root, args.task_root, args.provider_file, args.repository)), flush=True)
+        print(canonical(prepare(args.root, args.task_root, args.provider_file, args.repository,
+                               route_name=args.route_name, not_before=args.not_before)), flush=True)
     elif args.operation == 'reconcile':
         records = CampaignProjection(Path(args.root).resolve() / 'campaign.duckdb')
         try:

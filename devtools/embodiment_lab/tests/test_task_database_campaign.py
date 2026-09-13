@@ -10,7 +10,7 @@ from unittest.mock import patch
 from embodiment_lab.task_database_campaign import (
     RecordedSettingSession, campaign_space, confined_name, endpoint_reachable,
     engine_check, engine_identity, fair_order, outage_decision, provider_available, public_population_rows,
-    reconcile_interrupted, run_trial)
+    reconcile_interrupted, run_trial, terminal_provider_codes)
 from embodiment_lab.systematic_records import CampaignProjection
 from loop_engine.code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, ModelInvocationRequest, fixture_model_execution)
@@ -135,12 +135,20 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
         self.assertEqual(outage_decision(result('rate_limited'), 1, 3)['decision'], 'wait_for_allowance')
         self.assertEqual(outage_decision(result('network_unreachable'), 3, 3)['decision'], 'fail_cell')
         self.assertEqual(outage_decision(result('rate_limited'), 3, 3)['decision'], 'fail_cell')
-        # A code the vocabulary does not know is read as an outage under this
-        # terminal, and that reading is still bounded.
-        self.assertEqual(outage_decision(result('SolutionModelError'), 0, 3)['decision'], 'wait_for_recovery')
+        self.assertEqual(outage_decision(result('SolutionModelError'), 0, 3)['decision'], 'fail_cell')
         self.assertEqual(outage_decision(result(''), 3, 3)['decision'], 'fail_cell')
+        folded = {**result('PROVIDER_UNAVAILABLE'), 'provider_failure_codes': ['authentication_failed']}
+        self.assertEqual(outage_decision(folded, 0, 3)['decision'], 'stop_route')
 
-    def test_an_interrupted_trial_is_reconciled_on_restart(self):
+    def test_only_terminal_provider_results_determine_the_failure(self):
+        outcome = {'model_usage': [
+            {'ok': False, 'error_code': 'authentication_failed'},
+            {'ok': False, 'error_code': 'rate_limited', 'attempts': [{'error_code': 'rate_limited'}]}]}
+        self.assertEqual(terminal_provider_codes(outcome), ['rate_limited'])
+        self.assertEqual(terminal_provider_codes({'model_usage': [*outcome['model_usage'], {'ok': True}]}), [])
+        self.assertEqual(terminal_provider_codes({'model_usage': [{'ok': False, 'error_code': 'private body\nvalue'}]}), [])
+
+    def test_an_interrupted_trial_cannot_authorize_its_own_replay(self):
         with tempfile.TemporaryDirectory(prefix='task-campaign-reconcile-') as directory:
             records = CampaignProjection(Path(directory) / 'campaign.duckdb')
             try:
@@ -149,13 +157,14 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                 records.record('controller', 'active_trial', {'status': 'running', 'task_id': 'T-003',
                                                               'configuration_index': 9})
                 row = reconcile_interrupted(records, cursor)
-                self.assertEqual(row['status'], 'interrupted')
+                self.assertEqual(row['status'], 'interrupted_requires_reconciliation')
                 self.assertEqual(row['occurrence'], '2-attempt-1')
-                self.assertEqual(records.latest('trial_projection', 'T-003:2-attempt-1')['status'], 'interrupted')
-                self.assertEqual(records.latest('controller', 'active_trial'), {})
-                self.assertEqual(cursor['trial_attempt'], 2)
-                self.assertEqual(cursor['interrupted_trials'], 1)
-                self.assertEqual(records.latest('controller', 'cursor')['trial_attempt'], 2)
+                self.assertEqual(records.latest('trial_projection', 'T-003:2-attempt-1')['status'],
+                                 'interrupted_requires_reconciliation')
+                self.assertTrue(records.latest('controller', 'active_trial'))
+                self.assertEqual(cursor['trial_attempt'], 1)
+                self.assertFalse(row['effects_reconciled'])
+                self.assertFalse(row['replay_authorized'])
             finally:
                 records.close()
 
@@ -218,13 +227,13 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                     self.assertEqual(probe['model_calls'], 0)
                     self.assertTrue(transport.urls[-1].endswith('/api/tags' if target.wire == 'ollama' else '/models'))
 
-    def test_checkpoint_retention_bounds_step_history_growth(self):
+    def test_checkpoints_do_not_delete_referenced_run_history(self):
         with tempfile.TemporaryDirectory(prefix='task-campaign-retention-') as directory:
             records = CampaignProjection(Path(directory) / 'projection.duckdb')
             authority = fixture_model_execution(FixtureModelExecutionRequest(
                 answers=('first', 'second', 'third'), max_model_calls=3))
             configuration = campaign_space(('native_gateway',)).configuration_at(0)
-            session = RecordedSettingSession(authority, None, configuration, records, checkpoint_retention=1)
+            session = RecordedSettingSession(authority, None, configuration, records)
             owner = Loop('checkpoint retention fixture owner')
             try:
                 for number in range(3):
@@ -232,12 +241,12 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                                                           semantic_call_id='retention-step'), owner)
                 history = records.latest('step_history', 'retention-step')
                 self.assertEqual(history['revision'], 2)
-                self.assertEqual(history['retained_revisions'], 1)
+                self.assertEqual(history['retention'], 'immutable_history_preserved')
                 root = Path(history['history']).parents[1]
-                self.assertEqual(sorted(p.name for p in root.iterdir()), ['2'])
+                self.assertEqual(sorted(p.name for p in root.iterdir()), ['0', '1', '2'])
                 self.assertTrue(history['integrity']['intact'])
                 with self.assertRaises(ValueError):
-                    RecordedSettingSession(authority, None, configuration, records, checkpoint_retention=0)
+                    RecordedSettingSession(authority, None, configuration, records, checkpoint_retention=1)
             finally:
                 records.close()
 

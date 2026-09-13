@@ -195,26 +195,27 @@ class HousekeepingReport:
 
 
 def trace_from_loop_ledger(events: "Sequence[dict]") -> dict:
-    """Bridge a LOOP LEDGER (recursive_loop events) into the miner's trace
-    vocabulary, so the improvement lane can mine real loop runs:
+    """Read explicit provider outcomes and fallback observations.
 
-      * a ``run_step`` in hybrid / non_deterministic mode is BOTH a recurring
-        model decision (distill it) and an LLM fallback for that step (no code
-        node served it → build one);
-      * ``fallback``, ``model_boundary_deferred``, and ``budget_stop`` events
-        are failure signatures (the loop hit a wall worth remembering).
+    A model-capable step or accepted invocation envelope does not prove a
+    response, a correct answer, or fallback from a deterministic method.
+    The returned strings are coarse review signals, not learned rules.
     """
     model_decisions, llm_fallbacks, failures = [], [], []
+    steps = {}
     for e in events:
         ev = e.get("event", "")
-        if ev == "run_step" and e.get("mode") in ("hybrid",
-                                                  "non_deterministic"):
-            step = e.get("step", "?")
-            model_decisions.append(f"model resolved step '{step}'")
-            llm_fallbacks.append(f"no code node served step '{step}'")
-        elif ev in ("fallback", "model_boundary_deferred"):
-            failures.append(f"step '{e.get('step', '?')}' failed in "
-                            f"{e.get('from_mode', '?')} mode")
+        if ev == 'run_step' and e.get('step'):
+            steps[e.get('loop_id')] = e['step']
+        step = e.get('step') or steps.get(e.get('loop_id')) or 'unspecified'
+        if ev == 'model_led':
+            model_decisions.append(f"model response observed for step '{step}'")
+        elif ev == 'model_invocation_failed':
+            failures.append(f"model invocation failed for step '{step}'")
+        elif ev == 'fallback':
+            failures.append(f"fallback observed for step '{step}'")
+            if e.get('from_mode') == 'deterministic' and e.get('to_mode') in ('hybrid', 'non_deterministic'):
+                llm_fallbacks.append(f"model fallback observed for step '{step}'")
         elif ev == "budget_stop":
             failures.append("model-call budget exhausted before completion")
     return {"failures": failures, "model_decisions": model_decisions,
@@ -230,37 +231,47 @@ def mine_runtime(runs: "Sequence[dict]", *,
     that fell back to the LLM because no code node served them → build one).  A
     pattern must recur at least ``min_frequency`` times to be proposed."""
     from collections import Counter
+    if type(min_frequency) is not int or min_frequency < 1:
+        raise ValueError('minimum frequency must be a positive integer')
     fails, decisions, fallbacks = Counter(), Counter(), Counter()
+    seen_runs, seen_histories = set(), set()
     for r in runs:
-        for f in r.get("failures", ()):
-            fails[_sig(f)] += 1
-        for dcn in r.get("model_decisions", ()):
-            decisions[_sig(dcn)] += 1
-        for nb in r.get("llm_fallbacks", ()):
-            fallbacks[_sig(nb)] += 1
+        identity, history_identity = r.get('run_id'), r.get('history_digest')
+        if (identity and identity in seen_runs) or (history_identity and history_identity in seen_histories):
+            continue
+        if identity:
+            seen_runs.add(identity)
+        if history_identity:
+            seen_histories.add(history_identity)
+        # Frequency is the number of supplied run traces containing the
+        # pattern, not the number of repeated events within one run.
+        fails.update({_sig(value) for value in r.get('failures', ())})
+        decisions.update({_sig(value) for value in r.get('model_decisions', ())})
+        fallbacks.update({_sig(value) for value in r.get('llm_fallbacks', ())})
 
     out: list = []
     for sig, n in fails.items():
         if n >= min_frequency:
             out.append(ImprovementCandidate(
-                "failure_pattern", f"recurring failure: {sig}",
-                evidence=(f"seen {n} runs",), frequency=n,
+                "failure_pattern", f"review failure pattern: {sig}",
+                evidence=(f"observed in {n} supplied run traces; independence is not established",), frequency=n,
                 confidence=min(0.9, 0.4 + 0.1 * n)))
             out.append(ImprovementCandidate(
-                "bias", f"bias to avoid the method that causes: {sig}",
-                evidence=(f"seen {n} runs",), frequency=n, confidence=0.5))
+                "bias", f"investigate causes and recovery choices for: {sig}",
+                evidence=(f"observed in {n} supplied run traces; independence is not established",), frequency=n, confidence=0.5))
     for sig, n in decisions.items():
         if n >= min_frequency:
             out.append(ImprovementCandidate(
-                "logic_rule", f"distill the recurring decision '{sig}' into a "
-                "deterministic rule (zero-token)", evidence=(f"seen {n} runs",),
+                "logic_rule", f"investigate whether recurring model work '{sig}' can be "
+                "distilled into a verified deterministic rule",
+                evidence=(f"observed in {n} supplied run traces; correctness is not established",),
                 frequency=n, confidence=min(0.85, 0.4 + 0.12 * n)))
     for sig, n in fallbacks.items():
         if n >= min_frequency:
             out.append(ImprovementCandidate(
-                "code_node", f"build a code node for '{sig}' — it repeatedly fell "
-                "back to the LLM (tokens spent on a solved problem)",
-                evidence=(f"{n} LLM fallbacks",), frequency=n,
+                "code_node", f"investigate a reusable implementation for '{sig}'; work fell back to the language model, "
+                "but successful resolution is not established",
+                evidence=(f"fallback observed in {n} supplied run traces",), frequency=n,
                 confidence=min(0.85, 0.4 + 0.12 * n)))
     return out
 
@@ -493,13 +504,13 @@ def self_test() -> dict:
     # 2. a recurring MODEL DECISION proposes a logic rule (distill to zero-token).
     check("recurring_decision_proposes_a_logic_rule_to_distill",
           any(c.kind == "logic_rule" and "distill" in c.proposal for c in mined),
-          "a decision the model kept making becomes a deterministic rule")
+          "recurring model work becomes a candidate for independent investigation")
 
     # 3. a recurring LLM FALLBACK proposes building a CODE NODE (save tokens).
     check("recurring_llm_fallback_proposes_a_code_node",
-          any(c.kind == "code_node" and "fell back to the LLM" in c.proposal
+          any(c.kind == "code_node" and "fell back to the language model" in c.proposal
               for c in mined),
-          "a solved problem repeatedly re-asked the LLM → build the node")
+          "observed fallback motivates a candidate; successful resolution is not assumed")
 
     # 4. classification splits STRING intelligence vs CODE intelligence.
     cls = classify_intelligence(mined)
@@ -612,10 +623,14 @@ def self_test() -> dict:
     # yields a code-node build proposal (the distillation flywheel's intake).
     ledger_a = [{"event": "run_step", "step": "research", "mode": "hybrid",
                  "loop_id": "loop1"},
+                {"event": "model_led", "loop_id": "loop1"},
+                {"event": "fallback", "step": "research", "from_mode": "deterministic", "to_mode": "hybrid"},
                 {"event": "run_step", "step": "act", "mode": "deterministic",
                  "loop_id": "loop1"}]
     ledger_b = [{"event": "run_step", "step": "research",
                  "mode": "non_deterministic", "loop_id": "loop2"},
+                {"event": "model_led", "loop_id": "loop2"},
+                {"event": "fallback", "step": "research", "from_mode": "deterministic", "to_mode": "non_deterministic"},
                 {"event": "model_boundary_deferred", "step": "act",
                  "from_mode": "hybrid", "to_mode": "non_deterministic"}]
     mined13 = mine_runtime([trace_from_loop_ledger(ledger_a),
@@ -627,6 +642,22 @@ def self_test() -> dict:
               for c in mined13)
           and any(c.kind == "logic_rule" for c in mined13),
           f"{len(mined13)} candidates from 2 real-shaped ledgers: {kinds13}")
+    failed_trace = trace_from_loop_ledger([
+        {'event': 'run_step', 'step': 'invoke', 'mode': 'non_deterministic',
+         'accepted': True, 'loop_id': 'failed-call'},
+        {'event': 'model_invocation_failed', 'loop_id': 'failed-call'},
+        {'event': 'model_boundary_deferred', 'loop_id': 'failed-call'}])
+    check('failed_model_invocations_are_not_successes_or_inferred_fallbacks',
+          len(failed_trace['failures']) == 1 and not failed_trace['model_decisions']
+          and not failed_trace['llm_fallbacks'])
+    one = {'run_id': 'one', 'history_digest': 'same-history', 'failures': ['same failure'] * 20}
+    duplicate = {**one, 'run_id': 'renamed-copy'}
+    check('events_and_copied_histories_do_not_become_independent_runs',
+          not mine_runtime([one, duplicate], min_frequency=2))
+    independent = {**one, 'run_id': 'two', 'history_digest': 'different-history'}
+    repeated = mine_runtime([one, independent], min_frequency=2)
+    check('frequency_counts_traces_not_repeated_events', repeated
+          and all(candidate.frequency == 2 for candidate in repeated))
 
     # ARTICLE 11 BOUND TO THE GATE: a loop declaring itself
     # search_improvement is refused a consequential action on the strength of

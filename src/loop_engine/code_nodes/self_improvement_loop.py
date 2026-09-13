@@ -1,6 +1,6 @@
-"""The canonical Self-Improvement Loop over history and intelligence.
+"""A canonical Practitioner self-improvement task over history and intelligence.
 
-Architectural role: Code Node system for the third public Loop role.
+Self-improvement is a Practitioner responsibility, not another runtime role.
 
 Owns: verified saved-run intake, Intelligence Search and Retrieval, coverage
 audit, runtime mining, opportunity ranking, and in-memory candidate staging.
@@ -64,6 +64,8 @@ def audit_intelligence_summary(summary: dict) -> list:
 def load_run_history(runs_dir: str, *, limit: "int | None" = None,
                            ledger=None, parent=None) -> dict:
     """Load an exact verified run population for improvement review."""
+    if limit is not None and (type(limit) is not int or limit < 0):
+        raise ValueError('history limit must be a nonnegative integer or None')
     from ..core.run_history import (RunHistory, default_runs_dir,
                                                   as_ledger_events)
     from ..loop.intelligence_loops import serve_historical_intelligence
@@ -73,8 +75,7 @@ def load_run_history(runs_dir: str, *, limit: "int | None" = None,
     if os.path.isdir(root):
         present = [name for name in sorted(os.listdir(root))
                    if os.path.isdir(os.path.join(root, name))]
-    selected = (present if limit is None
-                else present[-max(0, int(limit)):])
+    selected = present if limit is None else (present[-limit:] if limit else [])
     runs, excluded = [], []
     for run_id in selected:
         path = os.path.join(root, run_id)
@@ -97,17 +98,18 @@ def load_run_history(runs_dir: str, *, limit: "int | None" = None,
             trace = trace_from_loop_ledger(as_ledger_events(run_history.event_log))
             trace["run_id"] = run_id
             trace["events"] = len(run_history.event_log)
+            trace["history_digest"] = run_history.event_log[-1].event_digest if run_history.event_log else ''
             runs.append(trace)
         except (OSError, KeyError, TypeError, ValueError) as exc:
             excluded.append({"run_id": run_id,
                              "reason": f"unreadable: {type(exc).__name__}"})
     return {"root": root, "population": len(present),
             "selected": len(selected), "runs": runs,
-            "excluded": excluded, "limit": int(limit)}
+            "excluded": excluded, "limit": limit}
 
 
 def run_self_improvement(*, runs_dir: str = "", layer_records=None,
-                         run_limit: int = 100,
+                         run_limit: "int | None" = 100,
                          trigger_class: str = "manual",
                          min_frequency: int = 2,
                          include_candidates: bool = False,
@@ -126,6 +128,7 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
     from ..loop.loop_templates import TEMPLATE_LIBRARY, config_from_template
     from ..loop.recursive_loop import (Loop, LoopConfig, LoopLedger,
                                        StepOutcome)
+    from ..loop.loop_role import LoopRole, LoopRoleIdentity
 
     catalog = layer_records if layer_records is not None else (
         build_intelligence_catalog(runs_dir=runs_dir,
@@ -142,7 +145,8 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
         custom_steps=base.custom_steps, max_depth=base.max_depth)
     log = ledger or LoopLedger()
     loop = Loop("review run history and intelligence for improvements",
-                config, ledger=log)
+                config, ledger=log,
+                identity=LoopRoleIdentity(LoopRole.PRACTITIONER, 'practitioner.self_improvement'))
     history = load_run_history(runs_dir, limit=run_limit,
                                      ledger=log, parent=loop)
     state = {"candidates": [], "retrieval_hits": []}
@@ -250,12 +254,32 @@ def self_test() -> dict:
         and report.retrieval_hits and report.loop_result.stopped == "done"
         and any(candidate.source == "intelligence_audit"
                 for candidate in report.candidates)
-        and any(candidate.kind == "code_node" for candidate in report.candidates)
+        and not any(candidate.kind in ('code_node', 'logic_rule') for candidate in report.candidates)
         and any(event.get("loop_id") == report.loop_result.loop_id
                 and event.get("logical_kind") == "search_improvement"
                 for event in report.ledger.events
                 if event.get("event") == "init"))
     }]
+    with tempfile.TemporaryDirectory() as history_root:
+        loop = Loop('history-limit fixture', LoopConfig(framework='custom', custom_steps=('act',)))
+        loop.run(handler=lambda *args: StepOutcome('done', 'deterministic', 1.0), max_steps=1)
+        history = RunHistory.from_ledger(loop.ledger.events, run_id='limit-fixture')
+        history.commit(); history.save(history_root)
+        unlimited = load_run_history(history_root, limit=None)
+        empty = load_run_history(history_root, limit=0)
+        tests.append({'test': 'history_limits_preserve_none_and_zero', 'passed':
+            unlimited['limit'] is None and len(unlimited['runs']) == 1
+            and empty['selected'] == 0 and not empty['runs']})
+        invalid = 0
+        for value in (-1, True, '1', 1.5):
+            try:
+                load_run_history(history_root, limit=value)
+            except ValueError:
+                invalid += 1
+        tests.append({'test': 'invalid_history_limits_are_refused', 'passed': invalid == 4})
+    tests.append({'test': 'self_improvement_uses_its_exact_practitioner_profile', 'passed': any(
+        event.get('event') == 'init' and event.get('loop_id') == report.loop_result.loop_id
+        and event.get('profile_id') == 'practitioner.self_improvement' for event in report.ledger.events)})
     passed = sum(1 for test in tests if test["passed"])
     return {"tests": tests, "passed": passed, "total": len(tests),
             "all_passed": passed == len(tests)}

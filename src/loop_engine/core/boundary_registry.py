@@ -119,6 +119,10 @@ BOUNDARIES = (
      "crosses":"a recovery observation becomes a run-local unvalidated learning bundle",
      "binding":"native_loop", "envelope":"core.recovery_learning.capture_recovery_learning",
      "test":"recovery_learning.self_test"},
+    {"boundary": "self-improvement history review",
+     "crosses": "verified histories and intelligence become candidate improvement proposals",
+     "binding": "native_loop", "envelope": "code_nodes.self_improvement_loop.run_self_improvement",
+     "test": "self_improvement_loop:self_improvement_uses_its_exact_practitioner_profile"},
     {"boundary": "repository component inventory",
      "crosses": "first-party files and symbols become an audit projection",
      "binding": "practitioner_loop",
@@ -424,6 +428,7 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
     "assignment harness selection": _exact("practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
     "harness response evaluation": _exact("practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
     "recovery learning capture": _exact("practitioner", "practitioner.self_improvement@1.0.0", "spawned_by"),
+    "self-improvement history review": _exact("practitioner", "practitioner.self_improvement@1.0.0", "starting"),
     "task similarity resolution": _exact("intelligence", "intelligence.search@1.0.0", "starting", "queried_by"),
     "orientation intelligence search": _exact("practitioner", "practitioner.solver@1.0.0", "starting", "spawned_by"),
     "runtime settings resolution": _exact(

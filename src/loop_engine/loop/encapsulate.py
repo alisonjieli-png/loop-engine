@@ -245,6 +245,10 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     _prompt_tokens = _reported_token_attr(value, "prompt_tokens")
     _eval_tokens = _reported_token_attr(value, "eval_tokens")
     _total_tokens = _reported_token_attr(value, "total_tokens")
+    if not ok and getattr(value, 'response_received', None) is False:
+        # Legacy response objects default their counters to zero even when
+        # no provider response arrived. Those defaults are not usage evidence.
+        _prompt_tokens = _eval_tokens = _total_tokens = None
     _known_usage = sum(item is not None for item in (
         _prompt_tokens, _eval_tokens, _total_tokens))
     _usage = {"model": str(getattr(value, "model_used", "")
@@ -611,6 +615,15 @@ def self_test() -> dict:
           and bool(failed9.get("semantic_call_id"))
           and failed9.get("owner_loop_id") == failed9.get("loop_id"),
           "request+completion recorded; a raising call records failure first")
+    from ..core.ollama_client import ChatResult
+    unanswered = _LL2()
+    as_model_loop('unanswered offline request', lambda: ChatResult('', 'fixture', ok=False,
+        error='offline unavailable', response_received=False), ledger=unanswered)
+    unanswered_event = next(event for event in unanswered.events if event.get('event') == 'model_invocation_failed')
+    check('unanswered_provider_requests_keep_usage_unknown',
+          unanswered_event['prompt_tokens'] is None and unanswered_event['eval_tokens'] is None
+          and unanswered_event['total_tokens'] is None and unanswered_event['usage_state'] == 'unknown'
+          and unanswered_event['accounting_complete'] is False)
 
     class _MissingUsage:
         ok, model_used = True, "missing"

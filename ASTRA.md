@@ -69,6 +69,29 @@ Engine runtime.
 
 ## Meta-selectors and configuration setters
 
+The current provider direction is Ollama Cloud after the owner's estimated
+quota-reset window, through the existing shared gateway. Restoring Tactical
+is not required. The stopped Tactical monitor, its task queue, and its failed
+run evidence are retained. Do not infer readiness from a model listing.
+
+The [experiment-driven self-improvement guide](docs/guides/experiment-driven-self-improvement.md)
+records the owner's request to use this machinery for broader solution
+experiments and recursive self-improvement. Keep candidate generation,
+controlled execution, independent evaluation, acceptance, and promotion
+separate. A producer may stage a change, not approve it.
+
+Before expansion, check actual terminal provider codes and effective settings.
+Do not learn successful work from a failed model invocation, count repeated
+events as independent runs, delete referenced history, or treat a crash marker
+as proof that external effects are reconciled. The current evidence-summary
+helper is a gap inventory, not an independent acceptance authority.
+
+The [Ollama and self-improvement preparation report](docs/verification/OLLAMA-AND-SELF-IMPROVEMENT-PREPARATION-2026-09-13.md)
+records the corrected history interpretation, provider-failure handling,
+activation controls, and isolated verification. A primary Ollama worker is
+time-gated; the other prepared model routes are not launched. This is not a
+claim that the full task population or the complete improvement cycle works.
+
 The owner asked whether different meta-selectors or agents could choose the
 best configurations and grid parameters. Treat model preference engines,
 harness preference engines, selector portfolios, and the method that selects
