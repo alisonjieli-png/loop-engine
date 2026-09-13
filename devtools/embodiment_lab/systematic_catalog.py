@@ -76,6 +76,24 @@ def levels():
         level('temperature', 'exploratory', {'temperature': 0.7}, 'code_nodes.solution_model_port.ModelInvocationRequest'),
         level('expectations', 'contracts_only', {'semantic_reviews': False, 'structural_checks': True}, 'core.observation_expectations'),
         level('expectations', 'before_after_actions', {'semantic_reviews': True, 'structural_checks': True}, 'systematic_runtime.review_expectation'),
+        # The two layering dimensions from the 2026-09-13 proposal. The direct
+        # adapter and the owning-Loop policy are what every current recipe runs
+        # and are recorded as installed configuration; the other levels are
+        # declarations the binding refuses to execute until an executor exists,
+        # so they stay planned. Records: core.harness_layering.
+        level('wrapper_composition', 'direct', {'layers': [], 'record_type': 'harness_wrapper_composition/v1'},
+              'core.harness_layering.WrapperComposition', 'installed_configuration_not_qualification'),
+        level('wrapper_composition', 'instruction_preparation_then_direct',
+              {'layers': [{'wrapper_id': 'instruction-preparation', 'responsibilities': ['instruction_preparation']}],
+               'record_type': 'harness_wrapper_composition/v1'},
+              'core.harness_layering.WrapperComposition', 'planned'),
+        level('native_control', 'owning_loop', {'ownership': 'owning_loop_for_every_control',
+                                                'record_type': 'harness_native_control_policy/v1'},
+              'core.harness_layering.NativeControlPolicy', 'installed_configuration_not_qualification'),
+        level('native_control', 'supervised_planning',
+              {'ownership': 'owning_loop_except_planning_supervised', 'requires_adapter_native_controls': ['planning_and_continuation'],
+               'record_type': 'harness_native_control_policy/v1'},
+              'core.harness_layering.NativeControlPolicy', 'planned'),
     ]
     return result
 
