@@ -1012,6 +1012,72 @@ def _cluster_findings(
         item.path, item.start_line or 0, item.finding_id)))
 
 
+#: Why a whole file may be left out of the scan with a written reason: a
+#: record copied from an upstream project for provenance (a release listing,
+#: a package manifest) or a generated evidence record. Neither is source this
+#: project authored, so a literal inside it is not a hardcoding decision here.
+EXCLUDED_PATH_CLASSIFICATIONS = ("UPSTREAM_RECORD_COPY", "GENERATED_EVIDENCE_RECORD")
+
+
+def _load_excluded_paths(path: "Path | None") \
+        -> tuple[dict[str, dict[str, str]], list[dict[str, str]]]:
+    """Exact repository-relative paths the allowlist excludes from the scan.
+
+    Every entry is owned and reasoned like a finding entry, expires the same
+    way, and names one exact path: no globs, no directories, so an exclusion
+    can never widen silently. Excluded files are reported as skipped with
+    their classification, never dropped without a trace.
+    """
+    if path is None or not path.is_file():
+        return {}, []
+    try:
+        value = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return {}, []  # The finding loader reports the parse problem once.
+    if not isinstance(value, dict):
+        return {}, []
+    entries: dict[str, dict[str, str]] = {}
+    problems = []
+    today = date.today()
+    for index, raw in enumerate(value.get("excluded_paths", ()) or ()):
+        if not isinstance(raw, dict):
+            problems.append({"rule": "excluded_path_entry",
+                             "detail": f"excluded path {index} must be a mapping"})
+            continue
+        required = {"path", "owner", "rationale", "classification", "created_on"}
+        if not required <= set(raw) or any(
+                not str(raw.get(name, "")).strip() for name in required):
+            problems.append({"rule": "excluded_path_entry",
+                             "detail": f"excluded path {index} lacks owned rationale"})
+            continue
+        relative = str(raw["path"]).strip()
+        if (any(char in relative for char in "*?[") or relative.startswith("/")
+                or relative.endswith("/") or ".." in relative.split("/")):
+            problems.append({"rule": "excluded_path_scope",
+                             "detail": f"{relative} is not one exact relative file path"})
+            continue
+        classification = str(raw["classification"])
+        if classification not in EXCLUDED_PATH_CLASSIFICATIONS:
+            problems.append({"rule": "excluded_path_classification",
+                             "detail": f"{relative}: {classification} is not an "
+                                       f"exclusion classification"})
+            continue
+        expiration = raw.get("expires_on")
+        if expiration:
+            try:
+                expired = date.fromisoformat(str(expiration)) < today
+            except ValueError:
+                expired = True
+            if expired:
+                problems.append({"rule": "excluded_path_expired",
+                                 "detail": f"{relative} exclusion expired on {expiration}"})
+                continue
+        entries[relative] = {"classification": classification,
+                             "owner": str(raw["owner"]),
+                             "rationale": str(raw["rationale"])}
+    return entries, problems
+
+
 def _load_allowlist(
         path: "Path | None", findings: Mapping[str, HardcodingFinding], *,
         require_present: bool) \
@@ -1135,6 +1201,19 @@ def scan_hardcoding(request: AuditRequest) -> dict[str, Any]:
                   and (not request.source_prefixes or any(
                       path.relative_to(root).as_posix().startswith(prefix)
                       for prefix in request.source_prefixes)))
+    excluded_paths, excluded_path_problems = _load_excluded_paths(request.allowlist_path)
+    skipped: list[Mapping[str, str]] = []
+    if excluded_paths:
+        kept = []
+        for path in files:
+            relative = path.relative_to(root).as_posix()
+            entry = excluded_paths.get(relative)
+            if entry is None:
+                kept.append(path)
+            else:
+                skipped.append({"path": relative,
+                                "reason": f"excluded_by_allowlist:{entry['classification']}"})
+        files = tuple(kept)
     tree_digest = _digest([
         (path.relative_to(root).as_posix(), hashlib.sha256(
             path.read_bytes()).hexdigest()) for path in files
@@ -1143,7 +1222,6 @@ def scan_hardcoding(request: AuditRequest) -> dict[str, Any]:
     trees, callers, parse_problems = _python_units(files, root)
     findings: list[HardcodingFinding] = []
     literal_count = 0
-    skipped: list[Mapping[str, str]] = []
     python_strings = set()
     for tree in trees.values():
         python_strings.update(
@@ -1204,7 +1282,7 @@ def scan_hardcoding(request: AuditRequest) -> dict[str, Any]:
             for item in clustered)
     summary = _summary(
         root, files, clustered, literal_count, tuple(skipped),
-        allowlist_problems)
+        list(allowlist_problems) + excluded_path_problems)
     report_identity = _digest({
         "snapshot_id": snapshot_id,
         "finding_ids": [item.finding_id for item in clustered],
@@ -1430,6 +1508,52 @@ def self_test() -> dict[str, Any]:
         check("exact_owned_allowlist_retains_and_marks_finding", any(
             item["finding_id"] == local["finding_id"] and item["suppressed"]
             for item in allowed["findings"]))
+        copied = root / "copied" / "latest-release.json"
+        copied.parent.mkdir(parents=True, exist_ok=True)
+        copied.write_text(json.dumps({
+            "tag_name": "v1.2.3", "html_url": "https://example.invalid/releases/v1.2.3",
+            "assets": [{"browser_download_url": "https://example.invalid/a.tar.zst",
+                        "state": "uploaded"}]}), encoding="utf-8")
+        before_exclusion = scan_hardcoding(AuditRequest(root, include_low_risk=True))
+        copied_findings = [item for item in before_exclusion["findings"]
+                           if item["path"] == "copied/latest-release.json"]
+        exclusion = {
+            "path": "copied/latest-release.json", "owner": "test-owner",
+            "rationale": "A release listing copied from the upstream project for provenance.",
+            "classification": "UPSTREAM_RECORD_COPY", "created_on": "2026-09-13",
+        }
+        allowlist_path.write_text(yaml.safe_dump({
+            "schema": ALLOWLIST_SCHEMA_VERSION, "entries": [],
+            "excluded_paths": [exclusion]}), encoding="utf-8")
+        excluded = scan_hardcoding(AuditRequest(
+            root, include_low_risk=True, allowlist_path=allowlist_path))
+        check("excluded_upstream_record_copy_is_skipped_with_its_reason",
+              bool(copied_findings)
+              and not any(item["path"] == "copied/latest-release.json"
+                          for item in excluded["findings"])
+              and any(item["path"] == "copied/latest-release.json"
+                      and item["reason"] == "excluded_by_allowlist:UPSTREAM_RECORD_COPY"
+                      for item in excluded["summary"]["skipped_files"]))
+        allowlist_path.write_text(yaml.safe_dump({
+            "schema": ALLOWLIST_SCHEMA_VERSION, "entries": [],
+            "excluded_paths": [{**exclusion, "expires_on": "2026-01-01"},
+                               {**exclusion, "path": "copied/*.json"}]}), encoding="utf-8")
+        not_applied = scan_hardcoding(AuditRequest(
+            root, include_low_risk=True, allowlist_path=allowlist_path))
+        check("an_expired_or_glob_exclusion_is_reported_and_not_applied",
+              any(item["path"] == "copied/latest-release.json"
+                  for item in not_applied["findings"])
+              and {item["rule"] for item in not_applied["summary"]["allowlist_problems"]}
+              >= {"excluded_path_expired", "excluded_path_scope"})
+        allowlist_path.write_text(yaml.safe_dump({
+            "schema": ALLOWLIST_SCHEMA_VERSION,
+            "entries": [{
+                "finding_id": local["finding_id"], "owner": "test-owner",
+                "rationale": "The one-use value is clearer beside its owner.",
+                "classification": local["classification"],
+                "created_on": "2026-08-31",
+            }]}), encoding="utf-8")
+        copied.unlink()
         baseline = {item["finding_id"]: item["severity"] for item in findings}
         source.write_text(source.read_text(encoding="utf-8")
                           + "\nMODE='unsafe'\nif MODE == 'override':\n    pass\n",

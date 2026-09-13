@@ -91,6 +91,17 @@ every parsed literal candidate. Use `--include-low-risk` for intentional-local
 sampling and exact allowlist review. A finding is grouped by text only for
 review. Matching text does not prove matching semantics.
 
+The allowlist can also exclude whole files that are not this project's
+source: an `excluded_paths` entry names one exact repository-relative file
+(no globs, no directories), its owner, a written rationale, a classification
+of `UPSTREAM_RECORD_COPY` or `GENERATED_EVIDENCE_RECORD`, a creation date,
+and an optional expiry. An excluded file is reported in the audit summary's
+`skipped_files` with `excluded_by_allowlist:<classification>`, so the
+exclusion stays visible; an expired, glob, or misclassified entry is
+reported as an allowlist problem and not applied. Excluding a file removes
+only that file's findings and moves no other finding id, so the delta gate
+keeps its meaning.
+
 Run planted canaries without writing repository evidence:
 
 ```bash
