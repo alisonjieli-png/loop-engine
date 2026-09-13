@@ -1,8 +1,11 @@
 """Offline controller checks; no provider or task-quality evidence is implied."""
 from dataclasses import replace
 from pathlib import Path
+import io
+import json
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from embodiment_lab.task_database_campaign import RecordedSettingSession, campaign_space, confined_name, fair_order
 from embodiment_lab.systematic_records import CampaignProjection
@@ -78,6 +81,46 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                 self.assertEqual(session.calls_used, 0)
             finally:
                 records.close()
+
+    def test_hosted_and_loopback_urls_use_the_same_endpoint_contract(self):
+        from loop_engine.core.custom_endpoint import CustomEndpoint
+        from loop_engine.core.model_capabilities import ModelOutputCapability
+        from loop_engine.core.model_gateway import ModelGateway, ModelGatewayConfig, provider_spec_from_endpoint
+        from loop_engine.core.model_routes import ModelRoute, RoutePolicy
+        from loop_engine.code_nodes.solution_model_port import ModelExecution
+        # Explicit offline transports. This proves shared dispatch and URL
+        # construction, not access to these hosts or real model quality.
+        observed = []
+        class Transport:
+            def open(self, request, timeout):
+                observed.append(request.full_url)
+                if request.full_url.endswith('/api/chat'):
+                    body = {'model': 'fixture-model', 'message': {'content': 'fixture response'},
+                            'prompt_eval_count': 2, 'eval_count': 3, 'done': True}
+                else:
+                    body = {'model': 'fixture-model', 'choices': [{'message': {'content': 'fixture response'},
+                            'finish_reason': 'stop'}], 'usage': {'prompt_tokens': 2, 'completion_tokens': 3}}
+                return io.BytesIO(json.dumps(body).encode())
+        for base, locality, wire in (
+                ('https://fixture.invalid/v1', 'cloud', 'openai'),
+                ('http://127.0.0.1:12345/v1', 'local', 'openai'),
+                ('http://127.0.0.1:12345/v1', 'cloud', 'openai'),
+                ('https://fixture.invalid', 'cloud', 'ollama'),
+                ('http://127.0.0.1:12345', 'local', 'ollama')):
+            with self.subTest(base=base, locality=locality, wire=wire):
+                endpoint = CustomEndpoint('endpoint_fixture', base, 'fixture-model', locality=locality,
+                    wire=wire, stream='buffer', auth_scheme='none', counts_as_evidence=True,
+                    output_capability=ModelOutputCapability(64, 'offline endpoint contract'))
+                gateway = ModelGateway(providers=(provider_spec_from_endpoint(endpoint),),
+                    routes=(ModelRoute('fixture.route', 'endpoint_fixture', 'fixture-model', locality),),
+                    policy=RoutePolicy(allow_local_counted_generation=True))
+                execution = ModelExecution(gateway, ModelGatewayConfig(route_names=('fixture.route',),
+                    allowed_models=('fixture-model',), allow_failover=False), max_model_calls=1)
+                with patch('loop_engine.core.custom_endpoint._endpoint_opener', return_value=Transport()):
+                    result = execution.start_session().invoke(ModelInvocationRequest('Fixture input'),
+                                                               Loop('shared endpoint contract fixture'))
+                self.assertEqual(result, 'fixture response')
+                self.assertEqual(observed[-1], endpoint.chat_url)
 
 
 if __name__ == '__main__':

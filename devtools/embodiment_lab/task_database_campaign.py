@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict, deque
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import fcntl
 import hashlib
@@ -34,7 +34,7 @@ from loop_engine.core.harness_configuration import load_harness_binding
 from loop_engine.core.harness_fallback import HarnessFallbackPolicy, HarnessFailureKind
 from loop_engine.core.harness_semantic import HarnessSemanticBinding
 from loop_engine.core.model_capabilities import ModelOutputAllocation
-from loop_engine.core.model_gateway import ModelGatewayConfig
+from loop_engine.core.model_gateway import ModelGateway, ModelGatewayConfig
 from loop_engine.core.parameter_resolution import ParameterDefinition, ParameterInput, ParameterSourceKind
 from loop_engine.core.run_history import load_saved_run_bundle
 from loop_engine.core.settings_loader import load_runtime_settings
@@ -236,7 +236,18 @@ class RecordedSettingSession:
                 'call_accounting_complete': not self.accounting_uncertain})
 
 
-def run_trial(root, row, configuration, manifest, ordinal):
+@dataclass(frozen=True)
+class CampaignTrialServices:
+    """Optional exact gateway; route and model authority still come from the trial."""
+
+    gateway: ModelGateway | None = None
+
+    def __post_init__(self):
+        if self.gateway is not None and not isinstance(self.gateway, ModelGateway):
+            raise TypeError('campaign gateway must use the existing typed boundary')
+
+
+def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignTrialServices()):
     root = Path(root)
     confined_name(row['id'])
     confined_name(str(ordinal))
@@ -254,7 +265,10 @@ def run_trial(root, row, configuration, manifest, ordinal):
                        'input_digest': intake.content_digest, 'source_refs': list(intake.source_refs)})
         artifacts = ContextArtifactManager(ContextArtifactServices(ContextArtifactStore(
             ContextArtifactStoreSpec(str(cell / 'artifacts')))))
-        gateway = load_runtime_settings(manifest['provider_file']).settings.build_gateway()
+        if not isinstance(services, CampaignTrialServices):
+            raise TypeError('trial services must be typed')
+        gateway = services.gateway or load_runtime_settings(manifest['provider_file']).settings.build_gateway()
+        provider = gateway.providers[configuration['provider']]
         names = ([configuration['harness']] if configuration['harness_fallback'] == 'none' else
                  [configuration['harness']] + [n for n in manifest['harnesses'] if n != configuration['harness']])
         adapters = []
@@ -273,14 +287,14 @@ def run_trial(root, row, configuration, manifest, ordinal):
         binding = HarnessSemanticBinding(names[0], HarnessRegistry(tuple(adapters)), str(cell / 'processes'),
             artifact_store=artifacts, fallback_policy=policy,
             socket_directory=str(Path(manifest['repository']) / '.loop-engine-dev/hs'))
-        capability = gateway.providers['tactical'].output_capability_for(configuration['model'])
-        allocation = ModelOutputAllocation(capability=capability, provider_id='tactical',
+        capability = provider.output_capability_for(configuration['model'])
+        allocation = ModelOutputAllocation(capability=capability, provider_id=configuration['provider'],
             model_id=configuration['model'], route_name=configuration['route'],
             requested_tokens=configuration['output_allocation_tokens'],
             decision_ref='campaign-configuration:' + digest(configuration),
             reason='Explicit experimental response allocation; total task calls and passes remain uncapped.')
         authority = ModelExecution(gateway, ModelGatewayConfig(route_names=(configuration['route'],),
-            allowed_models=(configuration['model'],), allowed_localities=('cloud',), allow_failover=False,
+            allowed_models=(configuration['model'],), allow_failover=False,
             max_route_attempts=None, timeout_seconds=1200, max_total_tokens=None, output_allocation=allocation),
             max_model_calls=None, harness=binding,
             session_factory=lambda authority: RecordedSettingSession(authority, artifacts, configuration, records))
