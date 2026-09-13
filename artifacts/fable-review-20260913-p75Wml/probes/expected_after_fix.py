@@ -1,8 +1,10 @@
 """Acceptance probe for the 2026-09-13 review findings D1 to D6.
 
 Each scenario asserts the behavior the review expects AFTER a fix. Against the
-reviewed working tree every scenario prints FAIL; a candidate fix is verified
-when its scenario prints PASS without any other scenario regressing.
+reviewed working tree every defect scenario prints FAIL and the process exits
+with status 1; a candidate fix is verified when its scenario prints PASS
+without any other scenario regressing, and the gate is green only when every
+scenario passes.
 
 Run from the repository root:
   PYTHONPATH=src:devtools TMPDIR=$PWD/.loop-engine-dev/fable-review-probe-20260913/tmp \
@@ -272,21 +274,36 @@ def _d3_control():
     return ok, "reason=%r order=%r" % (decision.reason, decision.ordered_harness_ids)
 
 
-@scenario("D4 checkpoint reader refuses a blank digest and non-integer counters")
+@scenario("D4 checkpoint reader refuses a tampered record whose digest field is blank")
 def _d4():
     from loop_engine.loop.delegation_checkpoint_checks import _terminal_checkpoint_case
     from loop_engine.loop.spawned_task_checkpoint import SpawnedTaskCheckpoint, SpawnedTaskCheckpointError
     good = _terminal_checkpoint_case()["checkpoint"].to_dict()
     blank = json.loads(json.dumps(good)); blank["spec"]["goal"] = "tampered"; blank["checkpoint_digest"] = ""
-    coerced = json.loads(json.dumps(good)); coerced["update_count"] = 2.9; coerced["checkpoint_digest"] = ""
-    outcomes = []
-    for label, value in (("blank", blank), ("float_counter", coerced)):
-        try:
-            SpawnedTaskCheckpoint.from_dict(value); outcomes.append(label + "=loaded")
-        except (SpawnedTaskCheckpointError, ValueError, TypeError):
-            outcomes.append(label + "=refused")
-    ok = outcomes == ["blank=refused", "float_counter=refused"]
-    return ok, " ".join(outcomes)
+    try:
+        loaded = SpawnedTaskCheckpoint.from_dict(blank)
+        return False, "loaded with goal %r and a reader-assigned digest" % loaded.spec.goal
+    except (SpawnedTaskCheckpointError, ValueError, TypeError) as exc:
+        return True, "refused: " + str(exc)[:100]
+
+
+@scenario("D4b checkpoint reader refuses a non-integer counter even when the digest matches the coerced body")
+def _d4b():
+    from loop_engine.loop.delegation_checkpoint_checks import _terminal_checkpoint_case
+    from loop_engine.loop.spawned_task_checkpoint import SpawnedTaskCheckpoint, SpawnedTaskCheckpointError
+    good = _terminal_checkpoint_case()["checkpoint"].to_dict()
+    record = json.loads(json.dumps(good))
+    record["update_count"] = 2.9
+    # The digest is computed over the body the reader produces AFTER int() coercion,
+    # so only a raw-type check before coercion can refuse this record.
+    body = {k: v for k, v in record.items() if k != "checkpoint_digest"}
+    body["update_count"] = 2
+    record["checkpoint_digest"] = hashlib.sha256(json.dumps(body, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    try:
+        loaded = SpawnedTaskCheckpoint.from_dict(record)
+        return False, "loaded with update_count=%r although the stored record says 2.9" % loaded.update_count
+    except (SpawnedTaskCheckpointError, ValueError, TypeError) as exc:
+        return True, "refused: " + str(exc)[:100]
 
 
 @scenario("D9 information binding reader refuses a blank binding digest")
@@ -315,14 +332,17 @@ def _d9():
 @scenario("D5 verifier timeout terminates descendants and carries the output tail")
 def _d5():
     from loop_engine.core.verifier_execute import verifier_execute_operation, VerifierError
+    import signal
     folder = tempfile.mkdtemp(prefix="accept-d5-")
     marker = os.path.join(folder, "descendant-wrote-this")
+    pidfile = os.path.join(folder, "sleeper.pid")
     script = os.path.join(folder, "gate.sh")
-    # A unique sleep duration identifies this probe's own descendants; nothing
-    # else on a shared machine is matched or killed.
-    token = "31.7331"
+    # The script records the PID of the descendant it starts. The probe then
+    # checks and, if needed, kills only that PID after confirming its command
+    # line, which demonstrates ownership instead of matching by name.
     with open(script, "w") as handle:
-        handle.write("#!/bin/bash\necho before-timeout\n(sleep 3; touch '%s') &\nsleep %s\n" % (marker, token))
+        handle.write("#!/bin/bash\necho before-timeout\nsleep 300 &\necho $! > '%s'\n"
+                     "(sleep 3; touch '%s') &\nwait\n" % (pidfile, marker))
 
     class _Services:
         class request:
@@ -334,22 +354,35 @@ def _d5():
     except VerifierError as exc:
         tail = getattr(exc, "output_tail", None)
     time.sleep(4)
-    survivors = subprocess.run(["pgrep", "-f", "^sleep " + token + "$"], capture_output=True, text=True).stdout.split()
-    for pid in survivors:
-        subprocess.run(["kill", pid])
-    ok = not os.path.exists(marker) and not survivors and tail is not None
-    return ok, "marker_written=%s survivors=%d tail=%r" % (os.path.exists(marker), len(survivors), tail)
+    owned_alive = False
+    try:
+        pid = int(open(pidfile).read().strip())
+        with open("/proc/%d/cmdline" % pid, "rb") as handle:
+            owned_alive = handle.read().startswith(b"sleep\x00300")
+        if owned_alive:
+            os.kill(pid, signal.SIGKILL)
+    except (OSError, ValueError):
+        owned_alive = False
+    ok = not os.path.exists(marker) and not owned_alive and tail is not None
+    return ok, "marker_written=%s owned_descendant_alive=%s tail=%r" % (os.path.exists(marker), owned_alive, tail)
 
 
 @scenario("D6 evaluation record binds the subject contract")
 def _d6():
     from loop_engine.core.harness_response_evaluation import evaluate_response_as_loop
     from loop_engine.loop.recursive_loop import Loop
+    from loop_engine.core.harness_selection_records import response_contract_digest
     _, expected = bound_request("accept-d6")
     record = evaluate_response_as_loop(arithmetic_evaluator(expected), '{"answer":42}', semantic_call_id="accept-d6",
                                        input_digest="d" * 64, parent=Loop("acceptance d6")).to_dict()
-    ok = record.get("subject_contract_ref") == "fixture.answer/v1" and len(record.get("subject_contract_digest") or "") == 64
-    return ok, "keys=%r" % sorted(record)
+    exact = response_contract_digest(expected, None)
+    ok = (record.get("subject_contract_ref") == "fixture.answer/v1"
+          and record.get("subject_contract_digest") == exact)
+    return ok, "subject_contract_ref=%r digest_matches=%s keys=%r" % (
+        record.get("subject_contract_ref"), record.get("subject_contract_digest") == exact, sorted(record))
 
 
-print("\n%d/%d scenarios pass" % (sum(1 for _, ok, _ in RESULTS if ok), len(RESULTS)), flush=True)
+passed = sum(1 for _, ok, _ in RESULTS if ok)
+print("\n%d/%d scenarios pass" % (passed, len(RESULTS)), flush=True)
+# An acceptance gate must fail when any scenario fails.
+raise SystemExit(0 if passed == len(RESULTS) else 1)

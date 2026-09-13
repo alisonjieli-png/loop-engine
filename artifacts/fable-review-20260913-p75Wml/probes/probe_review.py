@@ -132,12 +132,13 @@ try:
     observed("start_new_session_or_killpg_used", ("start_new_session" in src) or ("killpg" in src))
     folder = tempfile.mkdtemp(prefix="verifier-descendant-probe-")
     marker = os.path.join(folder, "descendant-wrote-this")
+    pidfile = os.path.join(folder, "sleeper.pid")
     script = os.path.join(folder, "gate.sh")
-    # A unique sleep duration identifies this probe's own descendants; nothing
-    # else on a shared machine is matched or killed (corrected after review).
-    token = "31.7331"
+    # The script records the PID of the descendant it starts; the probe checks
+    # and kills only that PID after confirming its command line (ownership,
+    # not a name match; corrected twice after review).
     with open(script, "w") as handle:
-        handle.write("#!/bin/bash\n(sleep 3; touch '%s') &\nsleep %s\n" % (marker, token))
+        handle.write("#!/bin/bash\nsleep 300 &\necho $! > '%s'\n(sleep 3; touch '%s') &\nwait\n" % (pidfile, marker))
 
     class _Services:
         class request:
@@ -154,10 +155,17 @@ try:
     observed("elapsed_seconds_for_1s_timeout", round(time.monotonic() - started, 2))
     time.sleep(4)
     observed("descendant_survived_and_wrote_marker", os.path.exists(marker))
-    survivors = subprocess.run(["pgrep", "-f", "^sleep " + token + "$"], capture_output=True, text=True).stdout.split()
-    observed("probe_sleep_processes_still_alive", len(survivors))
-    for pid in survivors:
-        subprocess.run(["kill", pid])
+    import signal
+    owned_alive = False
+    try:
+        pid = int(open(pidfile).read().strip())
+        with open("/proc/%d/cmdline" % pid, "rb") as handle:
+            owned_alive = handle.read().startswith(b"sleep\x00300")
+        if owned_alive:
+            os.kill(pid, signal.SIGKILL)
+    except (OSError, ValueError):
+        owned_alive = False
+    observed("owned_descendant_still_alive_after_timeout", owned_alive)
 except Exception:
     traceback.print_exc()
 

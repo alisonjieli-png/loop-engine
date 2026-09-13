@@ -352,7 +352,7 @@ found by reading, not by running the helper, as the handoff requested.
 | 7. `verifier_execute.py` | Not a sandbox: descendants survive the timeout, output capture is unbounded, partial output is dropped (D5). It sits on the product solve path. |
 | 8. Old campaign evidence | The withdrawn claims stay withdrawn. Attempt retention is adequate; a small-input echo channel and a dead invalid-input branch remain in the version 1 tooling (R5). |
 | 9. `tools/make_checkpoint.py` | Confirmed defects plus one more: it can never parse the current self-test output (D8). Not run. |
-| 10. Mechanism tests versus live quality | Every count in the handoff is an offline mechanism count. No live call qualified selection or semantic recovery. Continued alternative-output production, portable Solution graph replay, and cross-task learning remain unestablished; the last live diagnostic runs on 2026-09-12 solved zero of six tasks. |
+| 10. Mechanism tests versus live quality | Every count in the handoff is an offline mechanism count. No live call qualified selection or semantic recovery. Continued alternative-output production, portable Solution graph replay, and cross-task learning remain unestablished; the six live diagnostic runs on one task on 2026-09-12 solved none of them. |
 
 ## Status of the 25 baseline dimensions
 
@@ -598,15 +598,44 @@ confirmed by acceptance scenarios D1b and D3b:
   construction. The pattern `if self.<digest> and ...` should be searched
   for across every reader that accepts stored records.
 
+### Third correction round
+
+Codex's written assessment (12:17 UTC) confirmed D1, D3, D4, and D5 by
+independent reproduction and raised four defects in this review's own
+artifacts, all accepted:
+
+1. The acceptance script printed failures and exited successfully. It now
+   exits with status 1 whenever any scenario fails.
+2. The checkpoint scenario combined two defects. It is split: D4 covers the
+   blank digest, and a new D4b shows that a counter of `2.9` loads as `2`
+   even when the digest is correct for the coerced body, because
+   `from_dict` coerces before `__post_init__` verifies. `LoopDefinition.from_dict`
+   does the opposite, hashing the raw body first, which is the right order.
+3. The evaluator scenario compared a digest length. It now compares the
+   exact `response_contract_digest` value.
+4. Matching a descendant by a fixed sleep duration is not ownership, and
+   concurrent probes could share the value. Both probes now record the
+   descendant's PID from the script, confirm its command line under `/proc`,
+   and kill only that PID.
+
+Codex also corrected a fact in this report: the 2026-09-12 diagnostic
+evidence is six runs on one task, not six tasks. The ten-questions table is
+corrected. Its design guidance is also adopted here: fixes should add an
+explicit permission for evaluator-triggered route changes rather than remove
+route failover, keep legitimate repeated trials counting, and extend the
+existing typed variation dimensions and conditional enumeration rather than
+rebuild them.
+
 ### Acceptance probe
 
 `artifacts/fable-review-20260913-p75Wml/probes/expected_after_fix.py` encodes
 the expected post-fix behavior for D1 to D6 and D9 plus two controls and the
-two stronger cases. Against the reviewed tree it reports 1 of 10 scenarios
-passing (the control); the recorded output is `acceptance-baseline.txt`
-beside it. A candidate fix for one defect is verified when its scenario
-passes and no other scenario regresses. Run it with the same environment as
-the other probes.
+stronger cases. Against the reviewed tree it reports 1 of 11 scenarios
+passing (the control) and exits with status 1; the recorded output is
+`acceptance-baseline.txt` beside it. A candidate fix for one defect is
+verified when its scenario passes and no other scenario regresses; the gate
+is green only when every scenario passes. Run it with the same environment
+as the other probes.
 
 ### Further findings in the legacy campaign tool
 
