@@ -767,6 +767,13 @@ batch was verified on a clean export of the staged index (self-test, all
 27 conformance gates, repo conformance, devtools self-test) because the
 shared working tree held the Codex session's uncommitted work.
 
+### The campaign runner
+
+The task-database campaign runner the Codex session landed in `d806759`
+was reviewed read-only with executed probes; the twelve findings, two of
+them high, are in the
+[campaign runner review](TASK-DATABASE-CAMPAIGN-REVIEW-2026-09-13.md).
+
 ## Addendum written while Codex evaluated the findings
 
 Added on 2026-09-13 after 12:00 local time, while the live Codex session

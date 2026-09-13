@@ -68,6 +68,14 @@ It maps the uncommitted implementation, legacy compatibility, current versus
 historical context, verification failures and corrections, and priority
 review questions. It does not claim that Claude has reviewed the work.
 
+Claude's same-day findings are in the
+[Claude Fable 5.1 review](../verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md)
+and, for the task-database campaign runner, the
+[campaign runner review](../verification/TASK-DATABASE-CAMPAIGN-REVIEW-2026-09-13.md).
+The campaign review's two high findings matter before any provider answers
+again: a non-outage provider failure re-runs the same cell without bound,
+and a crash mid-trial leaves the campaign unresumable.
+
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).
 It records 70 real Tactical calls, a forty-cell repair matrix with 159/160
