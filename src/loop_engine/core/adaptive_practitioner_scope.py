@@ -11,6 +11,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from ..loop.loop_control import NON_DETERMINISTIC
+from ..loop.recursive_loop import ACCEPTED
 from .solve_control_manifest import SHADOW_MODE
 
 
@@ -146,7 +148,7 @@ def spawned_summary(spawned, spawned_service, *, spec, calls_before: int) -> dic
             and spawned.run.get("solved") is True
             and spawned.run.get("deterministic_attempt") == trace.to_dict()
             and spawned.run.get("result") == dict(trace.outputs).get("result")
-            and spawned.terminal_code == "ACCEPTED"):
+            and spawned.terminal_code == ACCEPTED):
         verified = True
         accepted = {"objective": spec.objective,
                     "result": deepcopy(spawned.run["result"])}
@@ -189,7 +191,7 @@ def prepare_exact_result(services, owner):
     from .adaptive_practitioner_result import finish_deterministic_attempt
 
     begin_scope(services, owner)
-    if services.request.mode == "non_deterministic":
+    if services.request.mode == NON_DETERMINISTIC:
         return None
     services.deterministic_attempt = run_deterministic_attempt(
         services.request.task, services, owner)

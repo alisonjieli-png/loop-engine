@@ -21,7 +21,7 @@ from .loop_contract import LoopContract, execution_mode_for_runtime_mode
 from .loop_definition import LoopDefinition, LoopStartRequest
 from .loop_role import (LoopRelationship, LoopRelationshipKind, LoopRole,
                         LoopRoleIdentity)
-from .recursive_loop import MODES, Loop, LoopConfig, LoopLedger, StepOutcome
+from .recursive_loop import ACCEPTED, MODES, Loop, LoopConfig, LoopLedger, StepOutcome
 from .runtime_context import (InternalRuntimeBinding, InternalRuntimeMechanics,
                               LoopRuntimeContext)
 
@@ -299,7 +299,7 @@ def _prepare_spawned_kernel(
         terminals = [event for event in ledger.events
                      if event.get("event") == "terminal"
                      and event.get("loop_id") == owner.loop_id]
-        if (actual.terminal_code != "ACCEPTED" or len(terminals) != 1
+        if (actual.terminal_code != ACCEPTED or len(terminals) != 1
                 or terminals[0].get("reason") != actual.stopped
                 or any(terminals[0].get(name) != metadata[name] for name in (
                     "loop_definition_id", "loop_definition_version",

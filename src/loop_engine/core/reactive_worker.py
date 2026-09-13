@@ -26,7 +26,7 @@ from ..loop.reactive_activation import (
     ActivationTerminalRequest, LeaseHeartbeatRequest, ReactiveSeriesDefinition,
     TriggerEnvelope)
 from ..loop.reactive_contracts import PersistenceMode, ReactiveLoopProfile
-from ..loop.recursive_loop import Loop, LoopLedger, StepOutcome, terminal_code
+from ..loop.recursive_loop import ACCEPTED, CANCELED, Loop, LoopLedger, StepOutcome, terminal_code
 from .reactive_scheduler import (
     ActivationClaimResult, ReactiveSchedulerError, SQLiteReactiveScheduler,
     _instant, _iso)
@@ -291,7 +291,7 @@ class CanonicalReactiveExecutor:
             # The canonical runtime records handler exceptions before propagating
             # them. Preserve that failed terminal history instead of losing it at
             # the worker boundary. A nonterminal error still remains unknown.
-            if not loop.is_terminal or loop.result().terminal_code == "ACCEPTED":
+            if not loop.is_terminal or loop.result().terminal_code == ACCEPTED:
                 raise
             result = loop.result()
         if not loop.is_terminal or result.loop_id != loop.loop_id:
@@ -575,9 +575,9 @@ class AsyncReactiveWorker:
                     heartbeats = counter["sent"]
             if result.history_disposition is ActivationHistoryDisposition.PERSISTENCE_FAILED:
                 status, error_code = ActivationStatus.FAILED, "HISTORY_PERSISTENCE_FAILED"
-            elif result.terminal_code == "ACCEPTED":
+            elif result.terminal_code == ACCEPTED:
                 status, error_code = ActivationStatus.COMPLETED, ""
-            elif result.terminal_code == "CANCELED":
+            elif result.terminal_code == CANCELED:
                 status, error_code = ActivationStatus.CANCELED, ""
             else:
                 status, error_code = ActivationStatus.FAILED, result.terminal_code

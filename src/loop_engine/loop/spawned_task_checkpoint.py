@@ -13,7 +13,7 @@ import re
 from dataclasses import dataclass
 from typing import Any, TYPE_CHECKING
 
-from .loop_contract import LoopContract, LoopInputCardinality
+from .loop_contract import SINGLE_OUTPUT, LoopContract, LoopInputCardinality
 from .loop_profile_catalog import LoopProfileRef
 from .loop_role import LoopRelationship, LoopRoleIdentity
 
@@ -334,7 +334,7 @@ class SpawnedTaskCheckpoint:
         if not isinstance(self.spec, DelegationSpec):
             raise SpawnedTaskCheckpointError("checkpoint spec is not typed")
         if self.schema_version=='spawned_task_checkpoint/v2' and (
-                self.spec.contract.output_type!='single' or self.spec.contract.input_cardinalities):
+                self.spec.contract.output_type!=SINGLE_OUTPUT or self.spec.contract.input_cardinalities):
             raise SpawnedTaskCheckpointError('version 2 cannot encode output or input cardinality extensions')
         if not isinstance(self.identity, LoopRoleIdentity):
             raise SpawnedTaskCheckpointError(

@@ -14,7 +14,7 @@ import weakref
 from dataclasses import dataclass, field
 
 from ..loop.kernel import KERNEL_NODES
-from .loop_contract import (OUTPUT_TYPES, LoopContract,
+from .loop_contract import (MULTIPLE_OUTPUT, OUTPUT_TYPES, SINGLE_OUTPUT, LoopContract,
                             normalize_output_type, validate_max_outputs)
 from .loop_control import (
     EXIT_CONDITIONS,  # noqa: F401 - backward-compatible public vocabulary export
@@ -75,6 +75,9 @@ TERMINAL_CODES = ("ACCEPTED", "INVALID_SPEC", "POLICY_DENIED", "BLOCKED",
                   "EXHAUSTED", "BUDGET_EXHAUSTED", "DEADLINE_EXCEEDED",
                   "CANCELED", "VERIFICATION_REJECTED", "EFFECT_FAILED",
                   "COMPENSATION_FAILED", "INTERNAL_PROTOCOL_ERROR")
+(ACCEPTED, INVALID_SPEC, POLICY_DENIED, BLOCKED, EXHAUSTED, BUDGET_EXHAUSTED,
+ DEADLINE_EXCEEDED, CANCELED, VERIFICATION_REJECTED, EFFECT_FAILED,
+ COMPENSATION_FAILED, INTERNAL_PROTOCOL_ERROR) = TERMINAL_CODES
 
 #: the runtime's own stop reasons -> their typed code.  Kept as a closed map
 #: so a new reason cannot appear without a code.
@@ -440,7 +443,7 @@ class LoopResult:
         """Did the loop REACH ITS OBJECTIVE?  Not "did it return" — the
         distinction Article 5 insists on. A sequence whose final step
         failed stops as ``done_failed`` and is not accepted."""
-        return self.terminal_code == "ACCEPTED"
+        return self.terminal_code == ACCEPTED
 
 
 def default_handler(loop: "Loop", step: str, context: dict) -> StepOutcome:
@@ -1087,8 +1090,8 @@ class Loop(metaclass=_LoopMeta):
         return, never a fabricated completion)."""
         it = self._ensure_execution(None)
         outputs = tuple(it["emissions"])
-        if (self.config.output_type == "single" and it["stopped"]
-                and terminal_code(it["stopped"]) == "ACCEPTED"
+        if (self.config.output_type == SINGLE_OUTPUT and it["stopped"]
+                and terminal_code(it["stopped"]) == ACCEPTED
                 and not outputs and isinstance(it["last"], str)):
             outputs = (EmittedOutput(
                 index=0, step=it["last_step"] or "(unknown)",
@@ -1549,7 +1552,7 @@ class Loop(metaclass=_LoopMeta):
         # accepted (non-failed, above-bar) outputs join. A single-output
         # Loop ignores the flag; its one admitted output is the final
         # output, recorded at completion in result().
-        if (self.config.output_type == "multiple" and outcome.emit_output
+        if (self.config.output_type == MULTIPLE_OUTPUT and outcome.emit_output
                 and accepted):
             emission = EmittedOutput(
                 index=len(it["emissions"]), step=step,

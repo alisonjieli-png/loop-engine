@@ -12,6 +12,7 @@ FRAMEWORKS = ("nine_step", "five_step", "custom", "open")
 LOOP_CONDITIONS = ("steps_remain", "chooser_selects_work")
 EXIT_CONDITIONS = ("steps_complete", "accepted_success")
 MODES = ("deterministic", "hybrid", "non_deterministic")
+DETERMINISTIC, HYBRID, NON_DETERMINISTIC = MODES
 
 
 class LoopModeUnavailableError(ValueError):
@@ -73,7 +74,7 @@ class LoopModePolicy:
                                          if self.allowable_modes is not None else None),
                 "executor_installed": (mode in self.installed_executor_modes
                                        if self.installed_executor_modes is not None else None),
-                "model_authority_required": mode != "deterministic",
+                "model_authority_required": mode != DETERMINISTIC,
                 "model_authority_checked": False,
                 "effect_authority_checked": False,
             } for mode in MODES],
@@ -98,7 +99,7 @@ class LoopModePolicy:
         for mode in self.preferred_modes:
             if not self._permitted(mode):
                 continue
-            if mode == "deterministic" and (
+            if mode == DETERMINISTIC and (
                     not deterministic_available or needs_judgement):
                 continue
             return self._require_executor(mode)

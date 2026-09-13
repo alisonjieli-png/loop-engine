@@ -87,6 +87,7 @@ _MODE_WATERFALL = {"code_only": ("code_only",),
 #: quota is met or the loop otherwise exits. This is a setting, not a
 #: runtime type: a multiple-output Loop is still one Loop.
 OUTPUT_TYPES = ("single", "multiple")
+SINGLE_OUTPUT, MULTIPLE_OUTPUT = OUTPUT_TYPES
 
 
 def normalize_output_type(output_type: str = "") -> str:
@@ -102,7 +103,7 @@ def validate_max_outputs(output_type: str, max_outputs) -> None:
     """Fail closed on the portfolio bound: a multiple-output contract must
     name a positive quota (unbounded emission is unbounded memory); a
     single-output contract must not carry one."""
-    if output_type == "multiple":
+    if output_type == MULTIPLE_OUTPUT:
         if (not isinstance(max_outputs, int)
                 or isinstance(max_outputs, bool) or max_outputs < 1):
             raise LoopContractError(
@@ -351,7 +352,7 @@ def validate_loop_connection(spec: LoopConnectionSpec) -> LoopConnectionResult:
 
     # Each input declares what it can receive. Consumer output cardinality
     # does not authorize multiple incoming emissions or change another port.
-    if producer.output_type == 'multiple':
+    if producer.output_type == MULTIPLE_OUTPUT:
         for binding in bindings:
             if binding.target_input not in consumer.input_roles or binding.adapter_loop_ref:
                 continue

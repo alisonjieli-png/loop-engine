@@ -38,6 +38,10 @@ EVENT_TYPES = ("run_started", "loop_init", "loop_spawn", "iteration",
                "model_invocation", "fallback", "model_boundary_deferred",
                "budget_stop", "evaluation", "terminal", "cancel",
                "solution_built", "solution_run", "learning", "custom")
+(RUN_STARTED_EVENT, LOOP_INIT_EVENT, LOOP_SPAWN_EVENT, ITERATION_EVENT, CAPABILITY_SEARCH_EVENT,
+ CONTEXT_RETRIEVAL_EVENT, CODE_EXECUTION_EVENT, MODEL_INVOCATION_EVENT, FALLBACK_EVENT,
+ MODEL_BOUNDARY_DEFERRED_EVENT, BUDGET_STOP_EVENT, EVALUATION_EVENT, TERMINAL_EVENT, CANCEL_EVENT,
+ SOLUTION_BUILT_EVENT, SOLUTION_RUN_EVENT, LEARNING_EVENT, CUSTOM_EVENT) = EVENT_TYPES
 
 _RUN_HISTORY_TO_LEDGER = {
     "run_started": "run_started",
@@ -85,7 +89,7 @@ def as_ledger_event(event) -> dict:
                row.get("spawning_loop_id", "") or "")})
     for key in ("model", "prompt_tokens", "eval_tokens", "status"):
         value = row.get(key)
-        if (key not in out and event_type == "model_invocation"
+        if (key not in out and event_type == MODEL_INVOCATION_EVENT
                 and key in ("prompt_tokens", "eval_tokens")):
             out[key] = value
         elif key not in out and value not in (None, "", 0):
@@ -179,7 +183,7 @@ class RunHistory:
         """What a facade's fields look like once the ledger has stored them."""
         fields = dict(body)
         event_type = fields.pop("event_type")
-        if event_type == "model_invocation":
+        if event_type == MODEL_INVOCATION_EVENT:
             prepare_model_event(fields)
         fields.pop("ts", None)
         return RunHistoryEvent(event_type=event_type, run_id=self.run_id,
@@ -205,7 +209,7 @@ class RunHistory:
                              "start a NEW run (fork) instead")
         if event_type not in EVENT_TYPES:
             raise ValueError(f"unknown event_type {event_type!r}")
-        if event_type == "model_invocation":
+        if event_type == MODEL_INVOCATION_EVENT:
             prepare_model_event(kw)
         from .run_history_authorship import AUTHORSHIP_TAG_FIELD, RunAuthorshipError
         tag = kw.pop(AUTHORSHIP_TAG_FIELD, None)

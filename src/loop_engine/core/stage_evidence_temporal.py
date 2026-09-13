@@ -6,6 +6,7 @@ authority; this module only compares immutable event positions.
 """
 from __future__ import annotations
 
+from .run_history import MODEL_INVOCATION_EVENT
 from .stage_evidence_records import (
     StageOccurrenceIdentity,
     StageRetrievalCandidate,
@@ -29,7 +30,7 @@ def occurrence_source_error(record, event, events) -> str:
     if record.activation_id != activation_id:
         return "occurrence activation does not match its Loop init"
     model_event = next((item for item in events
-                        if item.event_type == "model_invocation"
+                        if item.event_type == MODEL_INVOCATION_EVENT
                         and str((item.detail if isinstance(item.detail, dict)
                                  else {}).get("semantic_call_id") or "")
                         == record.semantic_call_id), None)

@@ -11,6 +11,7 @@ import hashlib
 import json
 import uuid
 
+from ..loop.loop_control import HYBRID, NON_DETERMINISTIC
 from .model_response_admission import (
     ModelResponseContract, ModelResponseAdmissionRequest, admit_model_response_as_loop)
 from .observation_expectations import ObservationExpectation
@@ -50,7 +51,7 @@ def capture_recovery_learning(directive, services, *, parent):
         raise ValueError('a recorded recovery directive is required')
     if not getattr(services.request, 'capture_recovery_learning', False):
         raise ValueError('recovery candidate capture is not enabled')
-    if services.request.mode not in ('hybrid','non_deterministic'):
+    if services.request.mode not in (HYBRID, NON_DETERMINISTIC):
         raise ValueError('this capture profile requires authorized model-led semantic work')
     source = {key:directive[key] for key in (
         'record_type','recovery_round','stall_signal','diagnosis','selected_proposal_id',

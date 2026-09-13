@@ -18,6 +18,7 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
+from .run_history import CUSTOM_EVENT, EVALUATION_EVENT, LOOP_INIT_EVENT
 from .stage_assistance_experiment import (
     STAGE_EXPERIMENT_ASSIGNMENT_SCHEMA_VERSION,
     STAGE_PACKET_EVENT_KIND,
@@ -246,7 +247,7 @@ class SQLiteStageEvidenceProjection:
                 raise StageEvidenceProjectionError(
                     "stage evidence event run does not match its history")
             if not event.loop_id or not any(
-                    candidate.event_type == "loop_init"
+                    candidate.event_type == LOOP_INIT_EVENT
                     and candidate.loop_id == event.loop_id
                     for candidate in events):
                 raise StageEvidenceProjectionError(
@@ -518,7 +519,7 @@ class SQLiteStageEvidenceProjection:
             "context_block_ids": list(manifest.packet_context_block_ids),
             "fresh_policy_id": FRESH_CONTEXT_POLICY,
         }
-        if (packet_event is None or packet_event.event_type != "custom"
+        if (packet_event is None or packet_event.event_type != CUSTOM_EVENT
                 or packet_event.loop_id != occurrence.loop_id
                 or any(detail.get(key) != value
                        for key, value in expected.items())
@@ -578,7 +579,7 @@ class SQLiteStageEvidenceProjection:
             "input_tokens": outcome.input_tokens,
             "output_tokens": outcome.output_tokens,
         }
-        if (verification is None or verification.event_type != "evaluation"
+        if (verification is None or verification.event_type != EVALUATION_EVENT
                 or verification.loop_id != outcome.evaluator_id
                 or any(detail.get(key) != value
                        for key, value in expected.items())

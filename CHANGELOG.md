@@ -28,6 +28,16 @@ First public release.
   OpenAI client's two documented endpoints it refuses to deviate from, the
   laboratory probe's local Ollama address, the campaign tool's health-probe
   default, Python's `mode` keyword name, and two record field names.
+- Hardcoding gate, fourth batch: the Loop's own vocabularies compared by
+  name. Run modes (`DETERMINISTIC`, `HYBRID`, `NON_DETERMINISTIC` from
+  `MODES`), terminal codes (`ACCEPTED`, `CANCELED`, and the rest from
+  `TERMINAL_CODES`), output types (`SINGLE_OUTPUT`, `MULTIPLE_OUTPUT`),
+  and Run History event types (`MODEL_INVOCATION_EVENT`, `LOOP_INIT_EVENT`,
+  `EVALUATION_EVENT`, `CUSTOM_EVENT`, and the rest from `EVENT_TYPES`) are
+  unpacked once from their existing authorities and compared by name in the
+  Loop runtime, the kernel, the reactive worker, the checkpoint, the
+  Practitioner scope, recovery learning, and the stage evidence projection.
+  The committed tree's new-high count fell from 140 to 118.
 - Hardcoding gate, second batch. A `None` compared under a role named
   `environment` was reported as a deployment value read at a boundary; the
   environment-read class now needs a value. Seventy-nine deployment
