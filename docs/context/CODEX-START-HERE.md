@@ -113,7 +113,14 @@ editing `task_database_campaign.py`, `campaign_activation.py`, the runner
 tests, the Studio server, or the report renderers further tonight; the
 launch snapshot is the Codex session's to choose. Its next work is in the
 product's adapters and the evidence tooling, and it reads this file and
-`ASTRA.md` for anything addressed to it.
+`ASTRA.md` for anything addressed to it. Two notes for the relaunch: the
+prepared provider files declare `stream: buffer`, and a hosted service
+behind a proxy read wall cuts a long generation with 504 or 524, which
+`buffer` cannot answer; `stream: auto` retries once with streaming, which
+the Ollama wire now speaks, and records which mode delivered. And
+`think: 'off'` on a model that cannot run without thinking is refused with
+HTTP 400 (`invalid_request`, a route stop); `think: model` leaves that
+model's default.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).
