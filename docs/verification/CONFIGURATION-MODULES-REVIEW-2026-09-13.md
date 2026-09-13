@@ -67,8 +67,10 @@ Every self-test count in the Codex session's verification report matched
    classified as an engine crash.** **Fixed:** `invalid_proposal`, so a
    policy that falls back on crashes does not mistake it for one.
 
-9. **Low. The boundary registry never resolves a row's `test` reference.**
-   Registry-wide; left open.
+9. **Low. The boundary registry never resolved a row's `test` reference.**
+   **Fixed the same evening,** registry-wide: the self-test resolves both
+   reference forms statically, and eleven rows that named tests which did
+   not exist now cite the checks that cover them.
 
 10. **Low. Records were not JSON-plain and had no typed readers.**
     **Partly fixed:** setting records now emit lists for phases and modes.

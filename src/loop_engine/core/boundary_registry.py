@@ -109,12 +109,12 @@ BOUNDARIES = (
      "crosses": "selected passive context components become provider input",
      "binding": "native_loop",
      "envelope": "core.adaptive_practitioner_prompting.assemble_work_packet",
-     "test": "adaptive_practitioner:work_packet_selection_and_assembly_are_governed_loops"},
+     "test": "adaptive_practitioner_acceptance_checks:governed_semantic_prompt_assembly_uses_one_loop"},
     {"boundary": "adaptive capability pre-execution validation",
      "crosses": "a generated capability proposal is checked before effects",
      "binding": "practitioner_loop",
      "envelope": "core.adaptive_practitioner_capabilities.execute_adaptive_capability",
-     "test": "generated_project:generated_project_refuses_offline_network_import"},
+     "test": "generated_project:read_only_network_policy_is_revalidated_before_effects"},
     {"boundary":"recovery learning capture",
      "crosses":"a recovery observation becomes a run-local unvalidated learning bundle",
      "binding":"native_loop", "envelope":"core.recovery_learning.capture_recovery_learning",
@@ -141,8 +141,7 @@ BOUNDARIES = (
      "crosses": "a Solution Canvas box executes",
      "binding": "native_loop",
      "envelope": "code_nodes.solution_canvas._run_atomic_operation",
-     "test": "solution_canvas_checks:"
-             "every_registry_callable_runs_inside_one_atomic_solution_loop"},
+     "test": "solution_canvas.self_test"},
     {"boundary": "api endpoint",
      "crosses": "a browser, harness, or tenant reads Loop Engine",
      "binding": "api_dispatch", "envelope": "core.saas_routes"
@@ -329,15 +328,15 @@ BOUNDARIES = (
      "crosses": "host policy and a JSON request enter the record tool",
      "binding": "native_loop", "envelope": "record_cli.record_command",
      "test": "record_cli.self_test"},
-    {"boundary": "spawned checkpoint restore", "crosses": "saved task metadata rejoins its owning manager", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.restore_checkpoint", "test": "delegation_checkpoint_checks.self_test"},
-    {"boundary": "spawned task join", "crosses": "an owner waits within a bound for spawned results", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.join", "test": "delegation_checkpoint_checks.self_test"},
+    {"boundary": "spawned checkpoint restore", "crosses": "saved task metadata rejoins its owning manager", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.restore_checkpoint", "test": "delegation_checkpoint_checks.run_checkpoint_checks"},
+    {"boundary": "spawned task join", "crosses": "an owner waits within a bound for spawned results", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.join", "test": "delegation_checkpoint_checks.run_checkpoint_checks"},
     {"boundary": "spawned task state persistence", "crosses": "task lifecycle metadata enters durable state", "binding": "native_loop", "envelope": "loop.spawned_task_state_store.LocalJsonSpawnedTaskStateStore", "test": "spawned_task_state_store.self_test"},
     {"boundary": "spawned saved-state load", "crosses": "all saved tasks for one owner rejoin a manager", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.load_saved_checkpoints", "test": "spawned_task_state_store.self_test"},
     {"boundary": "spawned new-attempt restart", "crosses": "interrupted work starts under a new task identity", "binding": "native_loop", "envelope": "loop.spawned_task_checkpoint.SpawnedTaskLifecycleMixin.restart_as_new_attempt", "test": "spawned_task_state_store.self_test"},
-    {"boundary": "solution pipeline execution", "crosses": "an ordered Solution composition runs", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_solution_runtime", "test": "solution_canvas_checks.self_test"},
-    {"boundary": "solution member execution", "crosses": "one nested member of a Solution composition runs", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._execute_spec", "test": "solution_canvas_checks.self_test"},
-    {"boundary": "solution router execution", "crosses": "a Solution route or fallback order is selected and run", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_solution_node", "test": "solution_canvas_checks.self_test"},
-    {"boundary": "solution validator execution", "crosses": "a Solution output is checked by a validator Loop", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_members", "test": "solution_canvas_checks.self_test"},
+    {"boundary": "solution pipeline execution", "crosses": "an ordered Solution composition runs", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_solution_runtime", "test": "solution_canvas.self_test"},
+    {"boundary": "solution member execution", "crosses": "one nested member of a Solution composition runs", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._execute_spec", "test": "solution_canvas.self_test"},
+    {"boundary": "solution router execution", "crosses": "a Solution route or fallback order is selected and run", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_solution_node", "test": "solution_canvas.self_test"},
+    {"boundary": "solution validator execution", "crosses": "a Solution output is checked by a validator Loop", "binding": "native_loop", "envelope": "code_nodes.solution_canvas._run_members", "test": "solution_canvas.self_test"},
     {"boundary": "development dependency-wave execution", "crosses": "an accepted task plan enters a bounded Solution Loop wave", "binding": "native_loop", "envelope": "core.development_execution.execute_development_plan", "test": "development_execution_checks.self_test"},
     {"boundary": "development task attempt", "crosses": "one task attempt executes and returns typed verification evidence", "binding": "native_loop", "envelope": "core.development_execution.execute_development_plan", "test": "development_execution_checks.self_test"},
     {"boundary": "reusable capability observation", "crosses": "accepted verified work becomes a reference-only reuse opportunity", "binding": "practitioner_loop", "envelope": "core.reusable_capability_harvest.observe_reuse_opportunity_as_loop", "test": "reusable_capability_checks.self_test"},
@@ -587,6 +586,45 @@ def _mapped_symbol_exists(reference: str) -> bool:
         current = nested.get(name)
     return current is not None
 
+def _test_reference_resolves(reference: str) -> bool:
+    """Whether a row's test names something that exists: ``module.function``
+    resolves through the architecture map like an envelope, and
+    ``module:check_name`` names a check spelled out in that module or in a
+    check module of the same package. Neither form imports or runs code."""
+    import re
+    from ..architecture_map import MODULE_MAP, ROOT_MODULES
+    if type(reference) is not str or not reference:
+        return False
+    package_root = os.path.dirname(os.path.dirname(__file__))
+
+    def qualified(basename):
+        hits = [module for module in ROOT_MODULES if module == basename]
+        for package, modules in MODULE_MAP.items():
+            for module in modules:
+                if module == basename or module.endswith("." + basename):
+                    hits.append(f"{package}.{module}")
+        return hits
+    if ":" in reference:
+        module_name, check_name = reference.split(":", 1)
+        pattern = re.compile(r"['\"]" + re.escape(check_name) + r"['\"]")
+        for module in qualified(module_name):
+            path = os.path.join(package_root, *module.split(".")) + ".py"
+            folder = os.path.dirname(path)
+            candidates = [path] + [os.path.join(folder, name) for name in sorted(os.listdir(folder))
+                                   if name.endswith("_checks.py")]
+            for candidate in candidates:
+                try:
+                    if pattern.search(open(candidate, encoding="utf-8").read()):
+                        return True
+                except OSError:
+                    continue
+        return False
+    if "." not in reference:
+        return False
+    module_name, symbol = reference.rsplit(".", 1)
+    return any(_mapped_symbol_exists(f"{module}.{symbol}") for module in qualified(module_name))
+
+
 def _validate(row: dict,
               ontology: "BoundaryOntologyBinding | None" = None) -> None:
     if row.get("binding") not in BINDING_KINDS:
@@ -794,6 +832,16 @@ def self_test() -> dict:
     check("every_claimed_envelope_resolves_to_real_code", not unresolved,
           f"unresolved: {unresolved}" if unresolved
           else "all dotted envelopes resolve through the architecture map")
+    unresolved_tests = sorted({r["test"] for r in BOUNDARIES
+                               if r.get("test") and not _test_reference_resolves(r["test"])})
+    check("every_claimed_test_resolves_to_a_self_test_or_a_named_check", not unresolved_tests,
+          f"unresolved: {unresolved_tests}" if unresolved_tests
+          else "every test reference names a mapped function or a spelled-out check")
+    check("a_test_reference_to_nothing_is_refused",
+          not _test_reference_resolves("recursive_loop:no_such_check")
+          and not _test_reference_resolves("no_such_module.self_test")
+          and not _test_reference_resolves("") and _test_reference_resolves("recursive_loop.self_test")
+          and _test_reference_resolves("search:configuration_search_uses_canonical_loop"))
     check("registered_root_and_nested_module_envelopes_resolve_without_import",
           _mapped_symbol_exists("record_cli.record_command")
           and _mapped_symbol_exists("catalog.stores.sqlite_store.SQLiteRecordStore.put")

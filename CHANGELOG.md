@@ -261,6 +261,13 @@ First public release.
   beside the private population, without this machine's directories; and
   a task awaiting source admission is recorded once instead of on every
   round. Two new tests.
+- Boundary registry: every row's `test` reference is now resolved by the
+  registry's own self-test, without importing or running code: a
+  `module.function` form resolves through the architecture map like an
+  envelope, and a `module:check_name` form must name a check spelled out
+  in that module or a check module of its package. Eleven rows named
+  tests that did not exist (two check modules without a `self_test`, three
+  check names found nowhere) and now cite the checks that cover them.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
