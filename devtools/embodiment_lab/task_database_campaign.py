@@ -63,6 +63,48 @@ def file_digest(path):
     return hasher.hexdigest()
 
 
+def engine_identity(repository):
+    """The digests of every Python source in the installed package and of
+    every executable a harness manifest launches (the files its
+    command_prefix names that exist on this host), folded into one digest,
+    so a campaign can refuse to continue on a changed engine. Vendored
+    runtime trees are not walked: the launched executable is what the
+    manifest binds, and the manifest itself is digested separately."""
+    import loop_engine
+    package = Path(loop_engine.__file__).resolve().parent
+    sources = {str(path.relative_to(package)): file_digest(path) for path in sorted(package.rglob('*.py'))}
+    entry_points = {}
+    for manifest_path in sorted((Path(repository) / 'embodiments').glob('*/harness.json')):
+        for element in json.loads(manifest_path.read_text()).get('command_prefix', ()):
+            candidate = Path(str(element))
+            if candidate.is_absolute() and candidate.is_file():
+                entry_points[str(candidate)] = file_digest(candidate)
+    return {'package_root': str(package), 'python_sources': sources, 'harness_entry_points': entry_points,
+            'engine_digest': digest({'python_sources': sources, 'harness_entry_points': entry_points})}
+
+
+def engine_check(frozen_digest, current_digest, allow_engine_change):
+    """What a worker does with the engine it finds against the engine the
+    campaign was prepared on: continue on a match, record an unfrozen
+    prepare, continue on an explicitly allowed change, or refuse."""
+    if frozen_digest is None:
+        return 'engine_identity_not_frozen_at_prepare', False
+    if frozen_digest == current_digest:
+        return 'engine_identity_matches_prepare', False
+    if allow_engine_change:
+        return 'engine_identity_changed_and_explicitly_allowed', False
+    return 'engine_identity_changed', True
+
+
+def public_population_rows(rows):
+    """The part of the frozen population a published index can reproduce:
+    identities, relative paths, and the instruction digests, never absolute
+    directories of this machine."""
+    return [{key: row[key] for key in ('id', 'path', 'job_family', 'status', 'admission',
+                                        'descriptor_digest', 'brief_digest') if key in row}
+            for row in rows]
+
+
 def confined_name(value):
     if (type(value) is not str or not value or value in ('.', '..')
             or '/' in value or '\\' in value or any(ord(c) < 32 for c in value)):
@@ -127,11 +169,14 @@ def prepare(root, task_root, provider_file, repository):
                 'evaluator_qualification': 'task_specific_campaign_qualification_pending'}
             rows.append(row)
             records.record('task_population', item['id'], row)
+        identity = engine_identity(repository)
         manifest = {'record_type': 'task_database_campaign/v1', 'campaign_id': root.name,
             'task_root': str(task_root), 'catalog_digest': file_digest(catalog_path),
             'task_count': len(rows), 'ready_source_count': sum(r['status'] == 'ready' for r in rows),
             'job_families': sorted({r['job_family'] for r in rows}),
-            'population_digest': digest(rows), 'selection_rule': 'family_round_robin_then_declared_criteria_then_identity',
+            'population_digest': digest(rows), 'public_population_digest': digest(public_population_rows(rows)),
+            'engine_digest': identity['engine_digest'],
+            'selection_rule': 'family_round_robin_then_declared_criteria_then_identity',
             'provider_file': str(Path(provider_file).resolve()), 'provider_file_digest': file_digest(provider_file),
             'repository': str(repository), 'harnesses': harnesses,
             'harness_file_digests': {str(path): file_digest(path) for path in harness_files},
@@ -146,8 +191,12 @@ def prepare(root, task_root, provider_file, repository):
             'task_acceptance_requires_independent_campaign_review': True,
             'status': 'prepared', 'created_at': datetime.now(timezone.utc).isoformat()}
         records.record('campaign', 'manifest', manifest)
+        records.record('controller', 'engine_identity_at_prepare', identity)
         records.export_object(root / 'campaign.json', manifest)
         records.export_object(root / 'task-population.json', {'tasks': rows})
+        records.export_object(root / 'population-index.json', {'record_type': 'task_population_index/v1',
+            'public_population_digest': manifest['public_population_digest'],
+            'tasks': public_population_rows(rows)})
         records.record('controller', 'cursor', {'round': 0, 'task_position': 0, 'completed_trials': 0})
         records.refresh_export(root / 'status.json', {'status': 'prepared', 'task_count': len(rows),
             'ready_source_count': manifest['ready_source_count'], 'raw_configurations_per_task': space.cardinality})
@@ -461,7 +510,8 @@ def _terminate(signum, frame):
     raise SystemExit(128 + signum)
 
 
-def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupted=False):
+def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupted=False,
+           allow_engine_change=False):
     if type(probe_interval) is not int or probe_interval < 1:
         raise ValueError('probe interval must be positive')
     if type(wait_attempt_ceiling) is not int or wait_attempt_ceiling < 1:
@@ -489,18 +539,32 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
             configure_environment()
             os.environ['LOOP_ENGINE_SANDBOX_IMAGE'] = 'loop-engine-ds1000-runtime@sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d'
             endpoint = load_runtime_settings(manifest['provider_file']).settings.build_gateway().providers['tactical'].adapter.endpoint
-            import loop_engine
-            package = Path(loop_engine.__file__).resolve().parent
-            records.record('controller', 'runtime_identity', {'package_root': str(package),
-                'python_sources': {str(path.relative_to(package)): file_digest(path) for path in package.rglob('*.py')},
-                'controller_file': str(Path(__file__).resolve()), 'controller_digest': file_digest(__file__),
-                'worker_pid': os.getpid(), 'started_at': datetime.now(timezone.utc).isoformat()})
+            identity = engine_identity(manifest['repository'])
+            frozen = manifest.get('engine_digest')
+            engine_status, refuse = engine_check(frozen, identity['engine_digest'], allow_engine_change)
+            if refuse:
+                raise ValueError('the engine changed since this campaign was prepared; '
+                                 'pass --allow-engine-change to record and continue')
+            records.record('controller', 'runtime_identity', {**identity, 'engine_status': engine_status,
+                'frozen_engine_digest': frozen, 'controller_file': str(Path(__file__).resolve()),
+                'controller_digest': file_digest(__file__), 'worker_pid': os.getpid(),
+                'started_at': datetime.now(timezone.utc).isoformat()})
             while cursor['round'] < space.cardinality:
                 row = rows[cursor['task_position']]
                 base = {'worker_pid': os.getpid(), 'task_count': len(rows), 'cursor': cursor,
                         'updated_at': datetime.now(timezone.utc).isoformat()}
                 if row['admission'] != 'queued_for_execution_and_evaluation':
-                    result = {'status': 'requires_source_admission', 'task_id': row['id'], 'attempted': False}
+                    # A source-admission gap is recorded once; repeating it
+                    # every round would write tens of thousands of no-op rows.
+                    if cursor['round'] == 0:
+                        records.record('trial_projection', row['id'] + ':' + str(cursor['round']),
+                                       {'status': 'requires_source_admission', 'task_id': row['id'], 'attempted': False})
+                    cursor['task_position'] += 1
+                    if cursor['task_position'] == len(rows):
+                        cursor['task_position'] = 0
+                        cursor['round'] += 1
+                    records.record('controller', 'cursor', cursor)
+                    continue
                 else:
                     probe = provider_available(endpoint)
                     records.record('provider_availability', 'latest', probe)
@@ -582,6 +646,8 @@ def main():
                         help='bounded waits per cell after a provider-unavailable trial')
     parser.add_argument('--refuse-interrupted', action='store_true',
                         help='refuse to start over an interrupted trial instead of reconciling it')
+    parser.add_argument('--allow-engine-change', action='store_true',
+                        help='continue a campaign on a changed engine, recording the change')
     parser.add_argument('--wait-for-launch-signal', action='store_true')
     args = parser.parse_args()
     if args.operation == 'prepare':
@@ -599,7 +665,7 @@ def main():
         if args.wait_for_launch_signal and sys.stdin.readline().strip() != 'start':
             raise ValueError('detached worker did not receive its launch signal')
         worker(args.root, probe_interval=args.probe_interval, wait_attempt_ceiling=args.wait_attempt_ceiling,
-               refuse_interrupted=args.refuse_interrupted)
+               refuse_interrupted=args.refuse_interrupted, allow_engine_change=args.allow_engine_change)
 
 
 if __name__ == '__main__':

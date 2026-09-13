@@ -8,8 +8,9 @@ import unittest
 from unittest.mock import patch
 
 from embodiment_lab.task_database_campaign import (
-    RecordedSettingSession, campaign_space, confined_name, endpoint_reachable, fair_order,
-    outage_decision, provider_available, reconcile_interrupted, run_trial)
+    RecordedSettingSession, campaign_space, confined_name, endpoint_reachable,
+    engine_check, engine_identity, fair_order, outage_decision, provider_available, public_population_rows,
+    reconcile_interrupted, run_trial)
 from embodiment_lab.systematic_records import CampaignProjection
 from loop_engine.code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, ModelInvocationRequest, fixture_model_execution)
@@ -239,6 +240,29 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                     RecordedSettingSession(authority, None, configuration, records, checkpoint_retention=0)
             finally:
                 records.close()
+
+    def test_engine_identity_is_frozen_and_checked(self):
+        repository = Path(__file__).resolve().parents[3]
+        identity = engine_identity(repository)
+        self.assertEqual(len(identity['engine_digest']), 64)
+        self.assertGreater(len(identity['python_sources']), 100)
+        self.assertEqual(identity['engine_digest'], engine_identity(repository)['engine_digest'])
+        self.assertEqual(engine_check(None, 'a' * 64, False), ('engine_identity_not_frozen_at_prepare', False))
+        self.assertEqual(engine_check('a' * 64, 'a' * 64, False), ('engine_identity_matches_prepare', False))
+        self.assertEqual(engine_check('a' * 64, 'b' * 64, False), ('engine_identity_changed', True))
+        self.assertEqual(engine_check('a' * 64, 'b' * 64, True),
+                         ('engine_identity_changed_and_explicitly_allowed', False))
+
+    def test_the_public_population_index_reproduces_its_digest_without_host_paths(self):
+        from embodiment_lab.systematic_records import digest
+        rows = [{'id': 'T-1', 'path': 'kaggle/T-1', 'job_family': 'ml', 'status': 'ready',
+                 'admission': 'queued_for_execution_and_evaluation', 'descriptor_digest': 'd' * 64,
+                 'brief_digest': 'b' * 64, 'task_directory': '/home/someone/task_database/kaggle/T-1',
+                 'evaluator_qualification': 'pending'}]
+        public = public_population_rows(rows)
+        self.assertNotIn('task_directory', public[0])
+        self.assertEqual(digest(public), digest(json.loads(json.dumps(public))))
+        self.assertNotEqual(digest(public), digest(rows))
 
 
 if __name__ == '__main__':

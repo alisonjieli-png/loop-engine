@@ -127,6 +127,10 @@ completed trials, waiting for the provider (errno 113, no route to host).
    harness `runtime/` scripts named by `command_prefix` are not digested.
    Fix: put the package and harness-runtime digests in the manifest and
    refuse a mismatch unless a typed override is recorded.
+   **Fixed the same evening:** `engine_identity` digests every package
+   source and every executable a harness manifest launches; prepare stores
+   the digest and the worker refuses a mismatch unless
+   `--allow-engine-change` records it.
 
 8. **Medium. `output_allocation_tokens` is applied only as the initial
    gateway allocation.** A Practitioner recovery can replace it per request
@@ -148,10 +152,15 @@ completed trials, waiting for the provider (errno 113, no route to host).
 11. **Low. The published `population-index.json` cannot reproduce
     `population_digest`** (`probe7_population_digest.out`): the digest
     covers private rows including absolute task directories.
+    **Fixed the same evening:** a `public_population_digest` over the
+    identities, relative paths, and instruction digests is stored in the
+    manifest and exported with `population-index.json`.
 
 12. **Low. Not-ready tasks are iterated every round**: 165 tasks awaiting
     source admission times 320 rounds is 52,800 no-op iterations, each
     writing a projection row and a status export.
+    **Fixed the same evening:** recorded once, in round 0, and skipped
+    silently afterwards.
 
 ## Test honesty
 

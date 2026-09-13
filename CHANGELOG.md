@@ -253,6 +253,14 @@ First public release.
   affect it; setting records are JSON-plain; and a proposal the record
   contract refuses inside `rank` is an invalid proposal, not an engine
   crash. Sixteen new setter checks and one preference check.
+- Task-database campaign runner, third batch: the engine identity (every
+  package source and every executable a harness manifest launches) is
+  digested at prepare and checked at worker start, refusing a changed
+  engine unless `--allow-engine-change` records the change; a
+  `population-index.json` whose digest a reader can reproduce is exported
+  beside the private population, without this machine's directories; and
+  a task awaiting source admission is recorded once instead of on every
+  round. Two new tests.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
