@@ -275,6 +275,12 @@ First public release.
   digest, and a redacted (sensitive) setting record, which cannot honestly
   be rebuilt into a definition; the preference decision record is now
   plain JSON. Six new setter checks and one preference check.
+- Task-database campaign runner: one trial now runs end to end offline in
+  a laboratory test, through a fixture gateway whose only endpoint answers
+  from a canned transport, with a fabricated task directory. It proves the
+  trial path records its sources, applied configuration, step history, and
+  terminal state and ends in a recorded state rather than an exception,
+  before a real provider is spent on it; it claims nothing about solving.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
