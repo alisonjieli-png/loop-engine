@@ -108,6 +108,33 @@ def _d1():
     return ok, "providers=%r error_code=%r calls=%d" % (providers, code, session.calls_used)
 
 
+@scenario("D1b direct path: an inconclusive evaluation does not fail over to another route")
+def _d1b():
+    from loop_engine.code_nodes.solution_model_port import ModelExecution, SolutionModelError
+    from loop_engine.core.harness_response_evaluation import HarnessResponseEvaluator, ResponseEvaluationVerdict
+    from loop_engine.core.harness_selection_records import response_contract_digest
+    from loop_engine.loop.recursive_loop import Loop
+    gateway, config = two_route_gateway()
+    request, expected = bound_request("accept-d1b")
+    evaluator = HarnessResponseEvaluator(contract_ref="fixture.arithmetic/v1", implementation_digest="a" * 64,
+        qualification_ref="fixture-controls", qualification_digest="b" * 64,
+        subject_contract_ref="fixture.answer/v1", subject_contract_digest=response_contract_digest(expected, None),
+        evaluate=lambda text: ResponseEvaluationVerdict("passed") if json.loads(text)["answer"] == 42
+        else ResponseEvaluationVerdict("inconclusive", ("missing_evidence",)))
+    session = ModelExecution(gateway, config, max_model_calls=4, response_evaluators=(evaluator,)).start_session()
+    owner = Loop("acceptance d1b")
+    code = ""
+    try:
+        session.invoke(request, owner)
+    except SolutionModelError as exc:
+        code = exc.error_code
+    result = session.results[-1]
+    providers = [x.provider for x in result.physical_provider_attempts]
+    ok = providers == ["alpha"] and code == "response_evaluation_inconclusive" and session.calls_used == 1
+    return ok, "providers=%r error_code=%r calls=%d statuses=%r" % (
+        providers, code, session.calls_used, [e.status for e in result.response_evaluations])
+
+
 @scenario("D2 harness path: an attempt cannot change provider when the policy forbids recovery")
 def _d2():
     from loop_engine.code_nodes.solution_model_port import ModelExecution, SolutionModelError
@@ -186,6 +213,38 @@ def _d3():
     decision = select_harness(inflated, scope, infos, provider_id="fixture", model_id="fixture-model")
     ok = decision.reason == "insufficient_matched_reviewed_evidence"
     return ok, "reason=%r refs=%r" % (decision.reason, decision.evidence_refs)
+
+
+@scenario("D3b selection: duplicating one successful trial cannot change which harness ranks first")
+def _d3b():
+    from loop_engine.core.harness_selection_checks import _scope, _reviewed
+    from loop_engine.core.harness_selection_records import (
+        HarnessSelectionPolicy, HarnessEvidenceReview, ReviewedHarnessEvidence, content_digest)
+    from loop_engine.core.harness_selection import select_harness
+    from loop_engine.core.external_harness import HarnessAdapterInfo
+    from loop_engine.core.harness_execution_contracts import HarnessExecutionCapabilities
+    scope = _scope()
+    infos = tuple(HarnessAdapterInfo(n, "1.0.0", "fx", available=True,
+        execution_capabilities=HarnessExecutionCapabilities(supported_features=("model_routes",)))
+        for n in ("first", "second"))
+    # first: 4/4 then 0/4 (pooled 0.5); second: 3/4 then 2/4 (pooled 0.625). Honest order: second, first.
+    first_good = _reviewed("first", scope, 4, 5, suffix="-good")
+    first_bad = _reviewed("first", scope, 0, 5, suffix="-bad")
+    second_a = _reviewed("second", scope, 3, 5, suffix="-a")
+    second_b = _reviewed("second", scope, 2, 5, suffix="-b")
+    honest = HarnessSelectionPolicy(scope.resource_profile_digest, (first_good, first_bad, second_a, second_b), 2)
+    honest_order = select_harness(honest, scope, infos, provider_id="fixture", model_id="fixture-model").ordered_harness_ids
+    copy_trial = replace(first_good.trial, trial_id="fixture-trial-first-good-copy")
+    first_copy = ReviewedHarnessEvidence(copy_trial, HarnessEvidenceReview(copy_trial.digest, "independent-fixture-reviewer",
+        "fixture-review:first-good-copy", content_digest(copy_trial.to_dict())))
+    try:
+        inflated = HarnessSelectionPolicy(scope.resource_profile_digest,
+                                          (first_good, first_copy, first_bad, second_a, second_b), 2)
+    except ValueError as exc:
+        return honest_order[0] == "second", "refused at construction: " + str(exc)[:120]
+    inflated_order = select_harness(inflated, scope, infos, provider_id="fixture", model_id="fixture-model").ordered_harness_ids
+    ok = honest_order[0] == "second" and inflated_order == honest_order
+    return ok, "honest=%r inflated=%r" % (honest_order, inflated_order)
 
 
 @scenario("D3 control: distinct repeated trials on the same subject still count")

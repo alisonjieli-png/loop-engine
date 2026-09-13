@@ -1,9 +1,11 @@
 FAIL D1 direct path: a semantic rejection does not fail over to another route :: providers=['alpha', 'beta'] error_code='' calls=2
+FAIL D1b direct path: an inconclusive evaluation does not fail over to another route :: providers=['alpha', 'beta'] error_code='' calls=2 statuses=['inconclusive', 'passed']
 FAIL D2 harness path: an attempt cannot change provider when the policy forbids recovery :: providers=['alpha', 'beta'] decisions=['response_admitted'] error_code='' calls=2
 FAIL D3 selection: duplicate Run History references cannot satisfy minimum_records :: reason='ranked_matched_reviewed_evidence' refs=('fixture-history:first', 'fixture-history:first', 'fixture-history:second-a', 'fixture-history:second-b')
+FAIL D3b selection: duplicating one successful trial cannot change which harness ranks first :: honest=('second', 'first') inflated=('first', 'second')
 PASS D3 control: distinct repeated trials on the same subject still count :: reason='ranked_matched_reviewed_evidence' order=('first', 'second')
 FAIL D4 checkpoint reader refuses a blank digest and non-integer counters :: blank=loaded float_counter=loaded
 FAIL D5 verifier timeout terminates descendants and carries the output tail :: marker_written=True survivors=1 tail=None
 FAIL D6 evaluation record binds the subject contract :: keys=['contract_ref', 'external_effect_authorized', 'finding_codes', 'implementation_digest', 'input_digest', 'qualification_digest', 'record_type', 'response_digest', 'semantic_call_id', 'status', 'task_accepted', 'verifier_loop_id']
 
-1/7 scenarios pass
+1/9 scenarios pass

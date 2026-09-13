@@ -50,8 +50,9 @@ work, and no change to any tracked file other than adding this report.
    recovery. The semantic-rejection permission gate can therefore be
    bypassed without any harness switch (defects D1 and D2).
 3. Selection evidence can be inflated by copying one Run History reference
-   under a second trial identity; the policy deduplicates only `trial_id`
-   (D3).
+   under a second trial identity; the policy deduplicates only `trial_id`.
+   A copied successful record can change which harness ranks first, not
+   only satisfy the minimum-evidence gate (D3).
 4. The spawned task checkpoint reader accepts any record whose digest field
    is an empty string, and silently truncates non-integer counters in that
    case. This is a pre-existing weakness that the compatibility work did not
@@ -154,7 +155,7 @@ statement that a harness change never changes the model or provider is true
 only for the harness switch itself. Regression check:
 `harness_attempt_uses_exactly_the_primary_route_unless_route_failover_is_granted`.
 
-### D3. Duplicate Run History references inflate matched selection evidence
+### D3. Duplicate Run History references inflate matched selection evidence and can change the winner
 
 - Location: `src/loop_engine/core/harness_selection_records.py`
   `HarnessSelectionPolicy.__post_init__` line 176 refuses duplicate
@@ -170,8 +171,13 @@ only for the harness switch itself. Regression check:
   order, while the policy with the copied record returned
   `ranked_matched_reviewed_evidence`, reported two matching records for the
   first harness, and listed the same history reference twice in
-  `evidence_refs`. Because quality is a ratio, duplicates do not change the
-  ranking score, but they do satisfy the minimum-evidence gate.
+  `evidence_refs`. The first version of this report said duplicates could
+  not change the ranking score because quality is a ratio. That is wrong
+  when a harness has trials with different outcomes: duplicating only a
+  successful trial raises the pooled ratio. Codex reproduced this, and
+  acceptance scenario D3b confirms it: with `first` at 4 of 4 then 0 of 4
+  and `second` at 3 of 4 then 2 of 4, the honest order is `second` then
+  `first`; one copied successful record makes it `first` then `second`.
 - Regression check: `duplicate_history_references_cannot_satisfy_minimum_records`.
 - Candidate fix: refuse duplicate `(history_ref, history_digest)` and
   duplicate `subject_digest` per harness at policy construction, or count
@@ -551,14 +557,30 @@ acceptance probe, and further findings from the legacy campaign tool.
    connected to a workflow, and qualified in real use, is the right vocabulary
    for the next revision of the dimension table.
 
+### Second correction round
+
+Codex reproduced two stronger cases after the first addendum, and both are
+confirmed by acceptance scenarios D1b and D3b:
+
+1. An inconclusive evaluator verdict triggers the same gateway route
+   failover as a rejection. In the direct path the second provider was
+   called after an `inconclusive` verdict and the result was admitted with
+   statuses `inconclusive` then `passed`. The recovery guide says an
+   inconclusive evaluation stops recovery; inside the gateway it does not.
+   D1 now covers rejection and inconclusive verdicts alike.
+2. A duplicated successful trial changes the selected harness, not only the
+   minimum-evidence gate. D3's severity is raised to high, and its body above
+   is corrected.
+
 ### Acceptance probe
 
 `artifacts/fable-review-20260913-p75Wml/probes/expected_after_fix.py` encodes
-the expected post-fix behavior for D1 to D6 plus one control. Against the
-reviewed tree it reports 1 of 7 scenarios passing (the control); the recorded
-output is `acceptance-baseline.txt` beside it. A candidate fix for one defect
-is verified when its scenario passes and no other scenario regresses. Run it
-with the same environment as the other probes.
+the expected post-fix behavior for D1 to D6 plus two controls and the two
+stronger cases. Against the reviewed tree it reports 1 of 9 scenarios passing
+(the control); the recorded output is `acceptance-baseline.txt` beside it. A
+candidate fix for one defect is verified when its scenario passes and no
+other scenario regresses. Run it with the same environment as the other
+probes.
 
 ### Further findings in the legacy campaign tool
 
