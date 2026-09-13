@@ -34,9 +34,10 @@ First public release.
 
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
-  compositions with single-owner transport and accounting, one fallback per
-  failure kind (another wrapper, another order, a native session restart, or
-  another registered harness), a complete native control ownership matrix
+  compositions with single-owner transport and accounting, ordered fallback
+  alternatives per failure kind (another wrapper, another order, a native
+  session restart, or another registered harness) under one decider, read-only
+  validated settings and ownership, a complete native control ownership matrix
   in which completion is never delegated, and a binding checked against the
   outer fallback policy before execution. `HarnessFallbackPolicy` gained the
   explicit `allow_native_retry` permission (off by default, recorded as

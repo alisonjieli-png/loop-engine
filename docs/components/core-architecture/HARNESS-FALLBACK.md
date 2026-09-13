@@ -302,8 +302,9 @@ print(binding.content_digest)
 ```
 
 A `WrapperLayer` names its identity, version, responsibilities from a closed
-vocabulary, what it may inspect or transform, its settings as plain data, and
-the wrappers it depends on. A `WrapperComposition` orders the layers around
+vocabulary, what it may inspect or transform, its settings as plain finite
+JSON data (held read-only after validation, so a digest cannot be changed
+underneath), and the wrappers it depends on. A `WrapperComposition` orders the layers around
 one registered harness; order is part of the digest, a dependency must sit
 earlier, and transport and accounting each have at most one owner because
 physical calls and effects are counted once. An empty composition is the
@@ -320,11 +321,13 @@ native completion claim is a candidate the owning Loop checks, never its
 result.
 
 A `LayeredHarnessBinding` checks the coordination rules against the outer
-`HarnessFallbackPolicy`: exactly one fallback decides each failure kind; a
-fallback to another harness must name an alternative the outer policy lists,
-for a failure the outer policy permits; a wrapper or order fallback must
-differ from the initial composition; and a native retry owner needs the
-outer policy's new `allow_native_retry` permission, which is off by default
+`HarnessFallbackPolicy`: several fallbacks may name one failure kind and are
+its ordered alternatives, tried in the declared order by the binding as the
+single decider (the same alternative at two ranks is refused); a fallback to
+another harness must name an alternative the outer policy lists, for a
+failure the outer policy permits; a wrapper or order fallback must differ
+from the initial composition; and a native retry owner needs the outer
+policy's new `allow_native_retry` permission, which is off by default
 and enters the policy record only when set (`harness_fallback_policy/v3`),
 so every existing policy digest is unchanged. That rule is the proposal's
 requirement that a native transport retry cannot bypass an outer

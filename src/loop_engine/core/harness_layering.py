@@ -23,6 +23,7 @@ from enum import Enum
 import hashlib
 import json
 import re
+from types import MappingProxyType
 
 from .harness_execution_contracts import valid_harness_id
 from .harness_fallback import HarnessFailureKind, HarnessFallbackPolicy
@@ -92,26 +93,51 @@ def _names(values, name, *, vocabulary=None):
 
 
 def _canonical(value):
-    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    """Canonical JSON text. NaN and infinities are refused: a digest over a
+    value JSON cannot carry is not reproducible by another reader."""
+    return json.dumps(value, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=False, allow_nan=False)
 
 
 def _digest(value) -> str:
     return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest()
 
 
+def _frozen(value):
+    """A read-only view of plain JSON data, so a validated record cannot be
+    changed underneath its digest: mappings become read-only proxies and
+    arrays become tuples, recursively."""
+    if isinstance(value, dict):
+        return MappingProxyType({key: _frozen(item) for key, item in value.items()})
+    if isinstance(value, (list, tuple)):
+        return tuple(_frozen(item) for item in value)
+    return value
+
+
+def _thawed(value):
+    """Plain JSON data again, for records and readers."""
+    if isinstance(value, MappingProxyType):
+        return {key: _thawed(item) for key, item in value.items()}
+    if isinstance(value, tuple):
+        return [_thawed(item) for item in value]
+    return value
+
+
 def _settings(value, name):
-    """Settings are passive data: finite JSON with text keys, bounded size."""
-    if type(value) is not dict:
+    """Settings are passive data: finite JSON with text keys, bounded size,
+    returned as a read-only structure."""
+    if not isinstance(value, (dict, MappingProxyType)):
         raise HarnessLayeringError(f"{name} must be a mapping")
+    plain = _thawed(value) if isinstance(value, MappingProxyType) else value
     try:
-        text = _canonical(value)
+        text = _canonical(plain)
     except (TypeError, ValueError) as exc:
-        raise HarnessLayeringError(f"{name} must be plain JSON data") from exc
+        raise HarnessLayeringError(f"{name} must be plain finite JSON data") from exc
     if len(text) > 16384:
         raise HarnessLayeringError(f"{name} is larger than the 16 KB bound")
-    if any(type(key) is not str for key in value):
+    if any(type(key) is not str for key in plain):
         raise HarnessLayeringError(f"{name} keys must be text")
-    return json.loads(text)
+    return _frozen(json.loads(text))
 
 
 @dataclass(frozen=True)
@@ -130,7 +156,7 @@ class WrapperLayer:
     responsibilities: tuple[str, ...]
     inspects: tuple[str, ...] = ()
     transforms: tuple[str, ...] = ()
-    settings: dict = field(default_factory=dict)
+    settings: object = field(default_factory=dict)
     depends_on: tuple[str, ...] = ()
     initialization: str = ""
     teardown: str = ""
@@ -157,7 +183,7 @@ class WrapperLayer:
         return {"record_type": LAYER_RECORD_TYPE, "wrapper_id": self.wrapper_id,
                 "version": self.version, "responsibilities": list(self.responsibilities),
                 "inspects": list(self.inspects), "transforms": list(self.transforms),
-                "settings": self.settings, "depends_on": list(self.depends_on),
+                "settings": _thawed(self.settings), "depends_on": list(self.depends_on),
                 "initialization": self.initialization, "teardown": self.teardown}
 
     @classmethod
@@ -348,14 +374,15 @@ class NativeControlPolicy:
     authority, which stay with the owning Loop's existing grants.
     """
 
-    ownership: dict = field(default_factory=dict)
-    reasons: dict = field(default_factory=dict)
+    ownership: object = field(default_factory=dict)
+    reasons: object = field(default_factory=dict)
     version: str = "1.0.0"
 
     def __post_init__(self):
         if self.version != "1.0.0":
             raise HarnessLayeringError("unsupported native control policy version")
-        if type(self.ownership) is not dict or type(self.reasons) is not dict:
+        if not isinstance(self.ownership, (dict, MappingProxyType)) or not isinstance(
+                self.reasons, (dict, MappingProxyType)):
             raise HarnessLayeringError("control ownership and reasons must be mappings")
         resolved = {}
         for control, owner in self.ownership.items():
@@ -378,8 +405,10 @@ class NativeControlPolicy:
             if owner in REASON_REQUIRED and control not in reasons:
                 raise HarnessLayeringError(
                     f"{control.value} marked {owner.value} needs a written reason")
-        object.__setattr__(self, "ownership", resolved)
-        object.__setattr__(self, "reasons", reasons)
+        # Read-only views: a validated policy cannot be edited underneath
+        # its digest.
+        object.__setattr__(self, "ownership", MappingProxyType(resolved))
+        object.__setattr__(self, "reasons", MappingProxyType(reasons))
 
     @classmethod
     def owning_loop_for_everything(cls) -> "NativeControlPolicy":
@@ -446,13 +475,22 @@ class LayeredHarnessBinding:
                 self.fallback_policy, HarnessFallbackPolicy):
             raise HarnessLayeringError("the outer fallback policy must be typed")
         fallbacks = tuple(self.fallbacks)
-        seen_kinds: set[HarnessFailureKind] = set()
+        # Several fallbacks may name one failure kind: they are the ordered
+        # alternatives the proposal asks for, tried in the declared order by
+        # this binding, which is the single decider. Only the same
+        # alternative listed twice for one failure is refused, because a
+        # priority order cannot contain the same choice at two ranks.
+        alternatives_seen: dict = {}
         for item in fallbacks:
-            repeated = [kind.value for kind in item.on if kind in seen_kinds]
-            if repeated:
-                raise HarnessLayeringError(
-                    f"exactly one fallback must decide each failure kind; {repeated} repeat")
-            seen_kinds.update(item.on)
+            identity = (item.action, item.composition.content_digest if item.composition
+                        else "", item.harness_id)
+            for kind in item.on:
+                earlier = alternatives_seen.setdefault(kind, [])
+                if identity in earlier:
+                    raise HarnessLayeringError(
+                        f"the same alternative is listed twice for {kind.value}; "
+                        "a priority order names each alternative once")
+                earlier.append(identity)
             if item.composition is not None:
                 if item.composition.harness_id != self.initial.harness_id:
                     raise HarnessLayeringError(
@@ -498,12 +536,15 @@ class LayeredHarnessBinding:
     def content_digest(self) -> str:
         return _digest(self.to_dict())
 
+    def fallbacks_for(self, failure: HarnessFailureKind) -> tuple:
+        """The ordered alternatives declared for this failure kind, highest
+        priority first; empty when the failure permits no fallback."""
+        return tuple(item for item in self.fallbacks if failure in item.on)
+
     def fallback_for(self, failure: HarnessFailureKind) -> "CompositionFallback | None":
-        """The one fallback that decides this failure kind, if any."""
-        for item in self.fallbacks:
-            if failure in item.on:
-                return item
-        return None
+        """The highest-priority fallback for this failure kind, if any."""
+        ordered = self.fallbacks_for(failure)
+        return ordered[0] if ordered else None
 
 
 def self_test() -> dict:
@@ -591,12 +632,47 @@ def self_test() -> dict:
             lambda: LayeredHarnessBinding("a", layered, everything, (
                 CompositionFallback((HarnessFailureKind.SEMANTIC_REJECTED,), "different_harness",
                                     "x", harness_id="opencode"),), outer))
-    refused("two_fallbacks_for_one_failure_kind_are_refused",
+    ranked = LayeredHarnessBinding("a", layered, everything, (
+        CompositionFallback((HarnessFailureKind.EXECUTION_FAILED,), "reordered_composition",
+                            "first try the other order", reordered),
+        CompositionFallback((HarnessFailureKind.EXECUTION_FAILED,), "native_session_restart",
+                            "then restart the native session")), outer)
+    check("ordered_alternatives_for_one_failure_kind_keep_their_priority",
+          [item.action for item in ranked.fallbacks_for(HarnessFailureKind.EXECUTION_FAILED)]
+          == ["reordered_composition", "native_session_restart"]
+          and ranked.fallback_for(HarnessFailureKind.EXECUTION_FAILED).action
+          == "reordered_composition")
+    refused("the_same_alternative_twice_for_one_failure_kind_is_refused",
             lambda: LayeredHarnessBinding("a", layered, everything, (
-                CompositionFallback((HarnessFailureKind.EXECUTION_FAILED,), "reordered_composition",
-                                    "x", reordered),
+                CompositionFallback((HarnessFailureKind.EXECUTION_FAILED,), "native_session_restart",
+                                    "x"),
                 CompositionFallback((HarnessFailureKind.EXECUTION_FAILED,), "native_session_restart",
                                     "y")), outer))
+    refused("settings_with_nan_are_refused_as_not_finite_json",
+            lambda: WrapperLayer("a", "1", ("transport",), settings={"ratio": float("nan")}))
+    frozen_layer = WrapperLayer("a", "1", ("transport",), settings={"nested": {"list": [1, 2]}})
+    before = frozen_layer.to_dict()
+
+    def mutate():
+        frozen_layer.settings["nested"]["list"] = (9,)
+
+    try:
+        mutate()
+    except TypeError:
+        check("validated_settings_are_read_only", frozen_layer.to_dict() == before)
+    else:
+        check("validated_settings_are_read_only", False, "settings were mutated")
+
+    def mutate_policy():
+        everything.ownership[NativeControl.RETRY] = ControlOwnership.DELEGATED
+
+    try:
+        mutate_policy()
+    except TypeError:
+        check("validated_control_ownership_is_read_only",
+              everything.owner_of(NativeControl.RETRY) is ControlOwnership.OWNING_LOOP)
+    else:
+        check("validated_control_ownership_is_read_only", False, "ownership was mutated")
     refused("a_fallback_identical_to_the_initial_composition_is_refused",
             lambda: LayeredHarnessBinding("a", layered, everything, (
                 CompositionFallback((HarnessFailureKind.EXECUTION_FAILED,), "different_wrapper",
