@@ -39,7 +39,12 @@ turn either list into a fixed maximum or permit unknown runtime fields.
 The subsequent [layered harness wrapper and native control proposal](../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md)
 records the owner's request to consider one or more wrapper layers and native
 controls as dimensions. Wrapper composition and control ownership can vary
-per assignment. This documentation does not enable native goal controllers
+per assignment. Both are now typed records in
+[`core.harness_layering`](../../src/loop_engine/core/harness_layering.py)
+that a harness binding accepts, digests, and records on every attempt; see
+[the fallback guide](../components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership).
+No executor runs a wrapped composition or hands a native control to a
+harness yet, and the documentation does not enable native goal controllers
 or change the runtime adapters.
 
 For the owner's request to promote broader cognitive steps, actions, prompts,
