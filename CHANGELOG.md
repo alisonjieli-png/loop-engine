@@ -203,6 +203,11 @@ First public release.
   or a spent allowance. Eleven checks, including that the codes the
   gateway emits for representative provider messages all have a class and
   that its failover-forbidden codes stop the route here too.
+- Laboratory guard: a layering level in the systematic catalog may be
+  marked installed only if the address it implies executes today under
+  the runtime's availability projection, with and without the adapter
+  declaring the control; a level whose address no executor runs stays
+  planned whatever its label says.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
