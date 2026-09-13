@@ -102,7 +102,18 @@ the queue (fixed at the ledger's usage rule), and three items are left for
 this session: acknowledging an interrupted occurrence, engine identity over
 the controller and package resources, and route-stop on a single generic
 400. `python -m embodiment_lab.campaign_report ROOT --html page.html`
-renders a campaign root as one page from its exported records.
+renders a campaign root as one page from its exported records, counting
+the worker's access-probe calls apart from task calls.
+
+Coordination, 23:52 UTC September 13: the Claude session's changes to
+campaign activation, the campaign page, provider accounting, and the
+runner's step-history checkpoints are committed and pushed (`d753ed9` and
+the commit that adds probe accounting to the page). That session is not
+editing `task_database_campaign.py`, `campaign_activation.py`, the runner
+tests, the Studio server, or the report renderers further tonight; the
+launch snapshot is the Codex session's to choose. Its next work is in the
+product's adapters and the evidence tooling, and it reads this file and
+`ASTRA.md` for anything addressed to it.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

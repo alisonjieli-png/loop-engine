@@ -188,9 +188,20 @@ class RefusalPageTrialChecks(unittest.TestCase):
             from loop_engine.core.provider_failure_classes import WAIT_FOR_RECOVERY
             self.assertEqual(outage_decision(state, 0, 3)['decision'], WAIT_FOR_RECOVERY)
             from embodiment_lab.campaign_report import campaign_report, render_campaign_html
+            # An access probe's history under the root is counted apart from
+            # the task cells, from its own events.
+            from loop_engine.core.run_history import RunHistory
+            probe = RunHistory('campaign-access-fixture')
+            probe.append('run_started', detail={'source': 'fixture'})
+            probe.append('model_invocation', loop_id='probe', model='fixture-model', prompt_tokens=1, eval_tokens=1)
+            probe.commit()
+            probe.save(str(root / 'campaign' / 'provider-access'))
             report = campaign_report(root / 'campaign')
             self.assertEqual(report['coverage']['cells'], 1)
             self.assertEqual(report['accounting']['model_calls'], transport.calls)
+            self.assertEqual(report['accounting']['probe_calls'], 1)
+            self.assertEqual(report['accounting']['probes'], 1)
+            self.assertEqual(report['access_probes'][0]['run_id'], 'campaign-access-fixture')
             page = render_campaign_html(report)
             self.assertIn('T-PAGE', page)
             self.assertIn('PROVIDER_UNAVAILABLE', page)

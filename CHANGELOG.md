@@ -24,8 +24,10 @@ First public release.
   instead of opening for a null. A self-contained campaign page
   (`devtools/embodiment_lab/campaign_report.py`) renders a campaign root's
   coverage, evidence links, accounting from each cell's own outcome, and
-  population by job family, from exported records only, and shows a cell
-  whose projection the running worker holds locked as in progress. Left
+  population by job family, from exported records only, counts the
+  worker's access-probe calls from their own saved histories apart from
+  task calls, and shows a cell whose projection the running worker holds
+  locked as in progress. Left
   open for the Codex session: acknowledging an interrupted occurrence,
   engine identity over the controller and package resources, and
   route-stop on a single generic 400.

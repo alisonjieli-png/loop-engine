@@ -17,6 +17,9 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from loop_engine.core.run_history import MODEL_INVOCATION_EVENT, RunHistory
+from loop_engine.core.run_history_paths import saved_run_ids
+
 from .trial_evidence import REQUIRED_LINKS, campaign_evidence_summary
 
 REPORT_RECORD_TYPE = "campaign_report/v1"
@@ -49,6 +52,31 @@ def _tokens(outcome) -> dict:
             unknown += 1
     return {"prompt_tokens": prompt, "completion_tokens": completion,
             "total_tokens": prompt + completion, "entries_without_counts": unknown}
+
+
+def access_probes(root) -> list:
+    """Every saved access-probe history under the campaign root, with its
+    physical model calls counted from its own events. Probe calls are the
+    worker's readiness checks, kept apart from task executions so neither
+    denominator absorbs the other."""
+    store = Path(root) / "provider-access"
+    probes = []
+    if not store.is_dir():
+        return probes
+    try:
+        run_ids = saved_run_ids(str(store))
+    except Exception:
+        run_ids = sorted(p.name for p in store.iterdir() if p.is_dir())
+    for run_id in run_ids:
+        try:
+            history = RunHistory.load(str(store), run_id)
+            calls = sum(1 for event in history.event_log if event.event_type == MODEL_INVOCATION_EVENT)
+            probes.append({"run_id": run_id, "model_calls": calls,
+                           "intact": bool(history.verify_chain().get("intact")), "readable": True})
+        except Exception as exc:  # a broken probe history is reported, never guessed
+            probes.append({"run_id": run_id, "model_calls": None, "intact": False,
+                           "readable": False, "error_type": type(exc).__name__})
+    return probes
 
 
 def campaign_report(root) -> dict:
@@ -107,6 +135,10 @@ def campaign_report(root) -> dict:
             "complete": report.get("complete"), "gaps": report.get("gaps", []),
             "disagreements": report.get("disagreements", {}),
         })
+    probes = access_probes(root)
+    totals["probe_calls"] = sum(p["model_calls"] for p in probes if isinstance(p["model_calls"], int))
+    totals["probes"] = len(probes)
+    totals["probes_unreadable"] = sum(1 for p in probes if not p["readable"])
     by_gap = {name: evidence["gaps"].get(name, 0) for name in REQUIRED_LINKS}
     return {
         "record_type": REPORT_RECORD_TYPE, "root": str(root),
@@ -131,6 +163,7 @@ def campaign_report(root) -> dict:
                      "with_disagreements": evidence.get("with_disagreements", 0),
                      "gaps": by_gap, "required_links": list(REQUIRED_LINKS)},
         "accounting": totals,
+        "access_probes": probes,
         "cells": cells,
     }
 
@@ -218,8 +251,9 @@ th {{ background:var(--code); font-size:.8rem; position:sticky; top:0 }} td.num 
 <section><h2>Accounting</h2><dl class="facts">
 <div><dt>model calls</dt><dd>{acc['model_calls']}{' (+' + str(unknown) + ' cells unknown)' if unknown else ''}</dd></div>
 <div><dt>prompt tokens</dt><dd>{acc['prompt_tokens']}</dd></div><div><dt>completion tokens</dt><dd>{acc['completion_tokens']}</dd></div>
-<div><dt>total tokens</dt><dd>{acc['total_tokens']}</dd></div><div><dt>elapsed seconds</dt><dd>{round(acc['elapsed_seconds'], 1)}</dd></div></dl>
-<p class="muted">Model calls are the cell's physical count from its Run History where the history could be read, else the outcome's claim; tokens are the provider-reported usage the outcome carries.</p></section>
+<div><dt>total tokens</dt><dd>{acc['total_tokens']}</dd></div><div><dt>elapsed seconds</dt><dd>{round(acc['elapsed_seconds'], 1)}</dd></div>
+<div><dt>access probe calls</dt><dd>{acc['probe_calls']} in {acc['probes']} probes{' (' + str(acc['probes_unreadable']) + ' unreadable)' if acc['probes_unreadable'] else ''}</dd></div></dl>
+<p class="muted">Task model calls are each cell's physical count from its Run History where the history could be read, else the outcome's claim; tokens are the provider-reported usage the outcome carries. Access probe calls are the worker's readiness checks, counted from their own saved histories and kept apart from task calls.</p></section>
 <section><h2>Provider observation</h2>{observation_html}</section>
 <section><h2>Evidence gaps by link</h2><div class="wrap"><table><thead><tr><th>link</th><th class="num">cells missing it</th></tr></thead><tbody>{gap_rows}</tbody></table></div></section>
 <section><h2>Population by job family</h2><div class="wrap"><table><thead><tr><th>family</th><th class="num">tasks</th><th class="num">visited</th><th class="num">finished</th><th class="num">failed</th></tr></thead><tbody>{family_rows}</tbody></table></div></section>
