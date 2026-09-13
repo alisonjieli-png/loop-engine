@@ -1044,13 +1044,20 @@ def _load_excluded_paths(path: "Path | None") \
             problems.append({"rule": "excluded_path_entry",
                              "detail": f"excluded path {index} must be a mapping"})
             continue
-        required = {"path", "owner", "rationale", "classification", "created_on"}
+        required = {"path", "owner", "rationale", "classification", "created_on",
+                    "sha256"}
         if not required <= set(raw) or any(
                 not str(raw.get(name, "")).strip() for name in required):
             problems.append({"rule": "excluded_path_entry",
-                             "detail": f"excluded path {index} lacks owned rationale"})
+                             "detail": f"excluded path {index} lacks owned rationale "
+                                       "or content digest"})
             continue
         relative = str(raw["path"]).strip()
+        digest = str(raw["sha256"]).strip().lower()
+        if len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest):
+            problems.append({"rule": "excluded_path_digest",
+                             "detail": f"{relative}: sha256 must be the file's content digest"})
+            continue
         if (any(char in relative for char in "*?[") or relative.startswith("/")
                 or relative.endswith("/") or ".." in relative.split("/")):
             problems.append({"rule": "excluded_path_scope",
@@ -1074,7 +1081,8 @@ def _load_excluded_paths(path: "Path | None") \
                 continue
         entries[relative] = {"classification": classification,
                              "owner": str(raw["owner"]),
-                             "rationale": str(raw["rationale"])}
+                             "rationale": str(raw["rationale"]),
+                             "sha256": digest}
     return entries, problems
 
 
@@ -1204,15 +1212,26 @@ def scan_hardcoding(request: AuditRequest) -> dict[str, Any]:
     excluded_paths, excluded_path_problems = _load_excluded_paths(request.allowlist_path)
     skipped: list[Mapping[str, str]] = []
     if excluded_paths:
+        # An exclusion binds to exact contents: the same path with other
+        # bytes is not the record that was reviewed, so it is scanned like
+        # any other file and the stale entry is reported.
         kept = []
         for path in files:
             relative = path.relative_to(root).as_posix()
             entry = excluded_paths.get(relative)
             if entry is None:
                 kept.append(path)
-            else:
-                skipped.append({"path": relative,
-                                "reason": f"excluded_by_allowlist:{entry['classification']}"})
+                continue
+            actual = hashlib.sha256(path.read_bytes()).hexdigest()
+            if actual != entry["sha256"]:
+                excluded_path_problems.append({
+                    "rule": "excluded_path_content_changed",
+                    "detail": f"{relative}: contents differ from the reviewed digest "
+                              f"{entry['sha256'][:12]}; the file was scanned"})
+                kept.append(path)
+                continue
+            skipped.append({"path": relative,
+                            "reason": f"excluded_by_allowlist:{entry['classification']}"})
         files = tuple(kept)
     tree_digest = _digest([
         (path.relative_to(root).as_posix(), hashlib.sha256(
@@ -1521,6 +1540,7 @@ def self_test() -> dict[str, Any]:
             "path": "copied/latest-release.json", "owner": "test-owner",
             "rationale": "A release listing copied from the upstream project for provenance.",
             "classification": "UPSTREAM_RECORD_COPY", "created_on": "2026-09-13",
+            "sha256": hashlib.sha256(copied.read_bytes()).hexdigest(),
         }
         allowlist_path.write_text(yaml.safe_dump({
             "schema": ALLOWLIST_SCHEMA_VERSION, "entries": [],
@@ -1545,6 +1565,20 @@ def self_test() -> dict[str, Any]:
                   for item in not_applied["findings"])
               and {item["rule"] for item in not_applied["summary"]["allowlist_problems"]}
               >= {"excluded_path_expired", "excluded_path_scope"})
+        allowlist_path.write_text(yaml.safe_dump({
+            "schema": ALLOWLIST_SCHEMA_VERSION, "entries": [],
+            "excluded_paths": [exclusion]}), encoding="utf-8")
+        copied.write_text(copied.read_text(encoding="utf-8").replace(
+            "v1.2.3", "v9.9.9"), encoding="utf-8")
+        changed_copy = scan_hardcoding(AuditRequest(
+            root, include_low_risk=True, allowlist_path=allowlist_path))
+        check("changed_contents_at_an_excluded_path_are_scanned_and_reported",
+              any(item["path"] == "copied/latest-release.json"
+                  for item in changed_copy["findings"])
+              and any(item["rule"] == "excluded_path_content_changed"
+                      for item in changed_copy["summary"]["allowlist_problems"])
+              and not any(item["path"] == "copied/latest-release.json"
+                          for item in changed_copy["summary"]["skipped_files"]))
         allowlist_path.write_text(yaml.safe_dump({
             "schema": ALLOWLIST_SCHEMA_VERSION,
             "entries": [{

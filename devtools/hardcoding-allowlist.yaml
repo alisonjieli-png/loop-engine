@@ -570,4 +570,5 @@ excluded_paths:
       The GitHub release listing copied from the upstream project for qualification provenance. Every literal in it (asset names, download addresses, upload states) is the upstream project's own data, not a decision made in this repository, so the 229 findings it produced were noise. Measured on 2026-09-13: excluding it removes exactly those findings and moves no other finding id. The file stays in the scan's skipped list with this classification, so the exclusion remains visible.
     classification: UPSTREAM_RECORD_COPY
     created_on: 2026-09-13
+    sha256: 74771629648321ad370023977243266617ff6c6428fdb6e78036f2ec4719ea11
     expires_on: 2027-09-13
