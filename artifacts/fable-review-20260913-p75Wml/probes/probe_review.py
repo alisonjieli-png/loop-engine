@@ -130,11 +130,14 @@ try:
     observed("MAX_OUTPUT_BYTES_constant", MAX_OUTPUT_BYTES)
     observed("MAX_OUTPUT_BYTES_used_in_operation", "MAX_OUTPUT_BYTES" in src)
     observed("start_new_session_or_killpg_used", ("start_new_session" in src) or ("killpg" in src))
-    folder = tempfile.mkdtemp(prefix="verifier-descendant-probe-", dir=os.path.dirname(os.path.abspath(__file__)))
+    folder = tempfile.mkdtemp(prefix="verifier-descendant-probe-")
     marker = os.path.join(folder, "descendant-wrote-this")
     script = os.path.join(folder, "gate.sh")
+    # A unique sleep duration identifies this probe's own descendants; nothing
+    # else on a shared machine is matched or killed (corrected after review).
+    token = "31.7331"
     with open(script, "w") as handle:
-        handle.write("#!/bin/bash\n(sleep 3; touch '%s') &\nsleep 30\n" % marker)
+        handle.write("#!/bin/bash\n(sleep 3; touch '%s') &\nsleep %s\n" % (marker, token))
 
     class _Services:
         class request:
@@ -151,8 +154,8 @@ try:
     observed("elapsed_seconds_for_1s_timeout", round(time.monotonic() - started, 2))
     time.sleep(4)
     observed("descendant_survived_and_wrote_marker", os.path.exists(marker))
-    survivors = subprocess.run(["pgrep", "-f", "sleep 30"], capture_output=True, text=True).stdout.split()
-    observed("sleep_30_processes_still_alive", len(survivors))
+    survivors = subprocess.run(["pgrep", "-f", "^sleep " + token + "$"], capture_output=True, text=True).stdout.split()
+    observed("probe_sleep_processes_still_alive", len(survivors))
     for pid in survivors:
         subprocess.run(["kill", pid])
 except Exception:
@@ -290,7 +293,7 @@ try:
     from loop_engine.core.harness_selection_records import HarnessSelectionPolicy
     from loop_engine.core.harness_fallback import HarnessFailureKind
     from loop_engine.code_nodes.solution_model_port import ModelInvocationRequest
-    with tempfile.TemporaryDirectory(prefix="selection-scope-probe-", dir=os.path.dirname(os.path.abspath(__file__))) as directory:
+    with tempfile.TemporaryDirectory(prefix="selection-scope-probe-") as directory:
         scope = _scope()
         adapters, authority, manager, owner = _fixture_runtime(directory, ('{"answer":42}',),
             switch_on=tuple(HarnessFailureKind))
@@ -378,7 +381,7 @@ try:
         subject_contract_ref="fixture.answer/v1", subject_contract_digest=response_contract_digest(expected, None),
         evaluate=lambda text: ResponseEvaluationVerdict("passed") if json.loads(text)["answer"] == 42
         else ResponseEvaluationVerdict("rejected", ("answer_incorrect",)))
-    with tempfile.TemporaryDirectory(prefix="harness-path-probe-", dir=os.path.dirname(os.path.abspath(__file__))) as directory:
+    with tempfile.TemporaryDirectory(prefix="harness-path-probe-") as directory:
         manager = ContextArtifactManager(ContextArtifactServices(ContextArtifactStore(ContextArtifactStoreSpec(directory))))
         adapters = (FixtureHarness("first"), FixtureHarness("second"))
         # The policy permits NO recovery of any kind: switch_on is empty.

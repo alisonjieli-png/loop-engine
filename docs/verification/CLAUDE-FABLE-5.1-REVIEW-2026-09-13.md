@@ -515,3 +515,88 @@ dimension test ran 10 tests and passed, and the 21 proposals in
 `architecture.yaml` all name an existing boundary file and appear in the
 dimension document; the packaged copies of `architecture.yaml` and
 `terminology.yaml` are byte-identical to the root files.
+
+## Addendum written while Codex evaluated the findings
+
+Added on 2026-09-13 after 12:00 local time, while the live Codex session
+was reading this report. It records corrections to the report, one
+acceptance probe, and further findings from the legacy campaign tool.
+
+### Corrections to this report
+
+1. Probe safety. The first version of probe section D and of the verifier
+   acceptance scenario matched and killed every `sleep 30` process on the
+   machine. Codex pointed this out. Both probes now use a unique sleep
+   duration and match it exactly, so only the probe's own descendants are
+   touched. With that matching one descendant still survives the timeout, so
+   D5 stands.
+2. D3 fix refinement. Refusing repeated `subject_digest` values would also
+   refuse legitimate repeated trials of the same subject, as Codex noted. The
+   refined candidate fix deduplicates only `(history_ref, history_digest)`
+   per harness. The acceptance probe carries a control that keeps two
+   distinct trials on one subject counting.
+3. Existing structures this report understated. Freshness:
+   `ModelRouteAvailabilitySnapshot.is_fresh` and `usable` bind an observation
+   time and an expiry time for route availability, and context classification
+   carries freshness facets; what is missing is a source-age and contradiction
+   policy for retrieved intelligence bodies. Pricing: `AstraPricingSpec` and
+   `AstraCostExposure` bind a price source and a conservative maximum cost for
+   the quarantined Astra route prototype, and the OpenRouter catalog carries
+   prices; what is missing is a run-level cost authority for the providers
+   the campaigns actually use, whose cost state remains unknown. Enumeration:
+   `devtools/embodiment_lab/configuration_matrix.py` enumerates configuration
+   cells for experiments; the product runtime has no equivalent. The proposal
+   section should read "partly represented" for freshness and for cost, not
+   "not represented". The three-way distinction Codex suggested, represented,
+   connected to a workflow, and qualified in real use, is the right vocabulary
+   for the next revision of the dimension table.
+
+### Acceptance probe
+
+`artifacts/fable-review-20260913-p75Wml/probes/expected_after_fix.py` encodes
+the expected post-fix behavior for D1 to D6 plus one control. Against the
+reviewed tree it reports 1 of 7 scenarios passing (the control); the recorded
+output is `acceptance-baseline.txt` beside it. A candidate fix for one defect
+is verified when its scenario passes and no other scenario regresses. Run it
+with the same environment as the other probes.
+
+### Further findings in the legacy campaign tool
+
+The handoff asked for an attempt-retention and evaluator-leakage review of
+the legacy task campaign tooling. These findings about
+`tools/task_campaign.py` come from inspection; the tool was not run.
+
+- Attempt retention. `stage_cell` removes the whole cell directory before
+  staging, so rerunning a cell destroys the previous attempt's workspace,
+  solver output, and cell record on disk, while `write_report` still merges
+  the previous cell record from `report.json`. A report can therefore cite an
+  attempt whose artifacts no longer exist. `bridge_artifacts` copies the
+  newest `attempt-*/solution.py` by modification time rather than the attempt
+  the engine accepted, so a later failed attempt can be the one the gate
+  scores.
+- Evaluator leakage. Each task's `gate.sh` is both the campaign's final
+  evaluator and the solver's mid-run verifier (`--verifier gate.sh`), so the
+  model receives the holdout metric and floor in the verifier's output tail on
+  every check. A gate pass reported by this tool is a result tuned against
+  its own evaluator, not an independent held-out result. The evaluation
+  contract appended to `task.txt` also tells the model how the gate calls
+  `predict(row)`.
+- Credential exposure. `endpoint_healthy` sends the campaign API key as a
+  bearer token with TLS verification disabled (`check_hostname` off and
+  `CERT_NONE`), which the engine's own per-endpoint TLS policy does not
+  permit.
+- Accounting. `_scan_outcome` counts physical calls only from
+  `model_gateway_result/v1` records, so results that carry evaluations
+  (`model_gateway_result/v2`) are missed by the crash-path fallback, and
+  deferred cells count as attempted in the report.
+
+### Latent branch gap in the adaptive Practitioner
+
+`core/adaptive_practitioner_records.py` (lines 2517 to 2535) handles
+`output_validation_failed` as a response repair and every other code as a
+transport failure. Since `solution_model_port.py` now relabels evaluator
+outcomes as `semantic_response_rejected` and
+`response_evaluation_inconclusive`, a registered evaluator's rejection would
+be published as `model.step.transport_failed`. No product path registers an
+evaluator today, so this is latent; it becomes live the moment one is wired
+in.
