@@ -105,6 +105,17 @@ reviewed digest is scanned like any other file with an
 the exception. Excluding a file removes only that file's findings and moves
 no other finding id, so the delta gate keeps its meaning.
 
+Add `--triage PATH.yaml` to the gate command to write the new findings at or
+above the `--fail-on-new` severity as a worklist grouped by owner and
+classification. Each entry carries the audit's classification, literal
+preview, proposed abstraction, suggested action, and rationale beside an
+`undecided` decision and an empty reason. Fill a decision (`allowlist`,
+`abstract`, `fix`, or `exclude_file`) and its reason, then carry an
+`allowlist` decision into the allowlist as an `entries` item and an
+`exclude_file` decision into `excluded_paths` with the file's digest. The
+worklist is a form, not an allowlist: writing it changes no gate and no
+baseline.
+
 Run planted canaries without writing repository evidence:
 
 ```bash

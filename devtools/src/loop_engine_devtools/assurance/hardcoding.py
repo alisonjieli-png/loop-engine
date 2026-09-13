@@ -1434,6 +1434,65 @@ def new_findings_at_or_above(
                  if order.get(current[item]["severity"], 0) >= threshold)
 
 
+TRIAGE_SCHEMA_VERSION = "hardcoding_triage_worklist/v1"
+TRIAGE_DECISIONS = ("allowlist", "abstract", "fix", "exclude_file", "undecided")
+
+
+def write_triage_worklist(report: Mapping[str, Any], delta: Mapping[str, Any],
+                          target: Path, *, severity: str = "high") -> dict[str, Any]:
+    """Write the new findings at or above a severity as an owned worklist.
+
+    The gate reports a count; a reviewer needs the findings one owner at a
+    time, with the audit's own classification, proposed abstraction, and
+    suggested action beside each, and a place to record the decision and its
+    reason. Every entry starts ``undecided`` and every reason empty: the
+    worklist is a form to fill, never an allowlist, and writing it changes no
+    gate. A decided ``allowlist`` entry can be copied into the allowlist as
+    an ``entries`` item (finding_id, owner, rationale, classification,
+    created_on); a decided ``exclude_file`` entry into ``excluded_paths``
+    with the file's digest; ``abstract`` and ``fix`` name source work.
+    """
+    blocking = new_findings_at_or_above(delta, report, severity)
+    current = {item["finding_id"]: item for item in report["findings"]}
+    owners: dict[str, list[dict[str, Any]]] = {}
+    for finding_id in blocking:
+        item = current[finding_id]
+        owners.setdefault(str(item.get("owner") or "unknown"), []).append({
+            "finding_id": finding_id,
+            "path": item["path"], "line": item.get("start_line"),
+            "symbol_ref": item.get("symbol_ref"),
+            "severity": item["severity"],
+            "classification": item["classification"],
+            "literal_kind": item.get("literal_kind"),
+            "literal_preview": item.get("literal_preview"),
+            "proposed_abstraction_kind": item.get("proposed_abstraction_kind"),
+            "suggested_next_action": item.get("suggested_next_action"),
+            "audit_rationale": item.get("rationale"),
+            "decision": "undecided",
+            "reason": "",
+        })
+    by_classification = Counter(current[f]["classification"] for f in blocking)
+    by_path = Counter(current[f]["path"] for f in blocking)
+    worklist = {
+        "schema": TRIAGE_SCHEMA_VERSION,
+        "audit_id": report.get("audit_id"),
+        "severity_threshold": severity,
+        "decisions": list(TRIAGE_DECISIONS),
+        "summary": {
+            "findings": len(blocking), "owners": len(owners),
+            "by_classification": dict(sorted(by_classification.items())),
+            "top_paths": [{"path": path, "findings": count}
+                          for path, count in by_path.most_common(25)],
+        },
+        "owners": [{"owner": owner, "findings": entries}
+                   for owner, entries in sorted(owners.items())],
+    }
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(yaml.safe_dump(worklist, sort_keys=False, allow_unicode=True,
+                                     width=100), encoding="utf-8")
+    return worklist
+
+
 def self_test() -> dict[str, Any]:
     """Canary-prove context, redaction, distinction, delta, and allowlisting."""
     tests = []
@@ -1605,6 +1664,18 @@ def self_test() -> dict[str, Any]:
               bool(delta["new_finding_ids"]))
         check("representative_new_high_violation_blocks_ci_gate",
               bool(new_findings_at_or_above(delta, changed, "high")))
+        worklist = write_triage_worklist(changed, delta, root / "triage" / "worklist.yaml",
+                                         severity="high")
+        reloaded = yaml.safe_load((root / "triage" / "worklist.yaml").read_text(
+            encoding="utf-8"))
+        entries = [entry for owner in reloaded["owners"] for entry in owner["findings"]]
+        check("triage_worklist_lists_every_blocking_finding_undecided",
+              reloaded["schema"] == TRIAGE_SCHEMA_VERSION
+              and worklist["summary"]["findings"] == len(new_findings_at_or_above(
+                  delta, changed, "high")) == len(entries) > 0
+              and all(entry["decision"] == "undecided" and entry["reason"] == ""
+                      and entry["classification"] and entry["path"] for entry in entries)
+              and "changed" not in json.dumps(reloaded).lower().replace("unchanged", ""))
         loop_report, run_record = run_hardcoding_audit_as_loop(
             AuditRequest(root, include_low_risk=False))
         check("audit_operation_runs_through_canonical_loop",

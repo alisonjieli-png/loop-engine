@@ -44,6 +44,9 @@ def main(argv=None) -> int:
     parser.add_argument("--fail-on-new", default="none",
                         choices=("none", "medium", "high", "critical"),
                         help="block on new findings at or above this severity")
+    parser.add_argument("--triage", metavar="PATH",
+                        help="write the new findings at or above --fail-on-new as an "
+                             "owned YAML worklist grouped by owner and classification")
     args = parser.parse_args(argv)
 
     if args.self_test:
@@ -137,6 +140,14 @@ def main(argv=None) -> int:
         if delta is not None:
             value["delta"] = delta
         value["blocking_new_finding_ids"] = list(blocking)
+        if args.triage:
+            from loop_engine_devtools.assurance.hardcoding import write_triage_worklist
+            if delta is None:
+                parser.error("--triage needs --baseline to know which findings are new")
+            worklist = write_triage_worklist(
+                report, delta, Path(args.triage),
+                severity=args.fail_on_new if args.fail_on_new != "none" else "high")
+            value["triage"] = worklist["summary"]
         if args.json:
             print(json.dumps(value, indent=1))
         else:
@@ -152,6 +163,10 @@ def main(argv=None) -> int:
                 print(f"  resolved: {len(delta['resolved_finding_ids'])}")
             if args.output:
                 print(f"  evidence: {Path(args.output).resolve()}")
+            if args.triage:
+                triage = value["triage"]
+                print(f"  triage: {triage['findings']} findings for "
+                      f"{triage['owners']} owners in {Path(args.triage).resolve()}")
         invalid_allowlist = bool(report["summary"]["allowlist_problems"])
         return 1 if blocking or invalid_allowlist else 0
 
