@@ -96,13 +96,22 @@ def _step_session_factory(args):
             "for example ollama-cloud/gemma4:31b")
     from pathlib import Path
     from .core.opencode_step_session import (
-        OpenCodeStepProfile, OpenCodeStepSession)
-
-    profile = OpenCodeStepProfile(
-        model=model, workspace=Path.cwd(),
-        additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"))
+        DEFAULT_TIMEOUT_SECONDS, OpenCodeStepProfile, OpenCodeStepSession)
 
     def factory(authority):
+        # The authority's gateway config is the caller's own bound: its
+        # timeout applies to an OpenCode step as it does to a gateway call,
+        # and the session reads config.max_total_tokens itself. A bare
+        # authority with no config keeps the profile's default.
+        timeout = getattr(getattr(authority, "config", None),
+                          "timeout_seconds", None)
+        usable = (isinstance(timeout, (int, float))
+                  and not isinstance(timeout, bool) and timeout > 0)
+        profile = OpenCodeStepProfile(
+            model=model, workspace=Path.cwd(),
+            additional_environment=("OLLAMA_API_KEY", "XDG_DATA_HOME"),
+            timeout_seconds=(float(timeout) if usable
+                             else DEFAULT_TIMEOUT_SECONDS))
         return OpenCodeStepSession(authority=authority, profile=profile)
 
     return factory

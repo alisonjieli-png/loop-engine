@@ -14,8 +14,12 @@ Design notes worth stating, because each is a decision rather than an oversight:
 
 * **Per-task wall clock.** The engine has no deadline of its own
   (``DEADLINE_EXHAUSTED`` exists in solve_terminal.py and nothing raises it),
-  so a task that hangs would otherwise hold the night.  Here a timeout kills
-  the task and the queue moves on.
+  so a task that hangs would otherwise hold the night.  Here a timeout ends
+  the task and the queue moves on: SIGTERM first, so the engine's interrupt
+  checkpoint (installed for SIGTERM, SIGINT and SIGHUP) can be written, then
+  SIGKILL after ``--grace-seconds``.  ``subprocess.run(timeout=...)`` sent
+  SIGKILL at once, which no handler can catch, so an abandoned task left no
+  checkpoint at all.  ``--grace-seconds 0`` restores the immediate kill.
 * **A queue-wide call ceiling.** ``--max-total-tokens`` is unusable on the
   Ollama route (model_token_preflight.py:196 raises token_bound_unavailable
   when no resolver exists), so model CALLS are the honest spend bound.
@@ -33,6 +37,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -71,13 +76,33 @@ def save_state(state_path: Path, state: dict) -> None:
     os.replace(temporary, state_path)
 
 
+def checkpoint_candidates(runs_dir: Path) -> list:
+    """Every checkpoint a task could have left, oldest first.
+
+    The engine nests history under a per-run directory, so a completed run's
+    checkpoint is at runs_dir/<run_id>/checkpoint.json.  An interrupted run
+    writes its checkpoint where the handler was armed, which is
+    runs_dir/checkpoint.json when the interruption came before the run id
+    was known.  Both are read; the newest wins.
+    """
+    found = [path for path in runs_dir.glob("*/checkpoint.json")
+             if path.is_file()]
+    direct = runs_dir / "checkpoint.json"
+    if direct.is_file():
+        found.append(direct)
+
+    def modified(path: Path) -> float:
+        try:
+            return path.stat().st_mtime
+        except OSError:
+            return 0.0
+
+    return sorted(found, key=modified)
+
+
 def summarise(workspace: Path, runs_dir: Path) -> dict:
     """Report what a finished task left behind, ranked if it can be."""
-    # The engine nests history under a per-run directory, so the checkpoint is
-    # at runs_dir/<run_id>/checkpoint.json rather than directly in runs_dir.
-    # Take the newest, since a runs_dir may accumulate several.
-    candidates = sorted(runs_dir.glob("*/checkpoint.json"),
-                        key=lambda p: p.stat().st_mtime if p.exists() else 0)
+    candidates = checkpoint_candidates(runs_dir)
     data = {}
     if candidates:
         try:
@@ -89,7 +114,50 @@ def summarise(workspace: Path, runs_dir: Path) -> dict:
         "retained": data.get("retained", ""),
         "ranked": bool(data.get("retained_is_ranked")),
         "files": len(list(workspace.rglob("*.py"))) if workspace.is_dir() else 0,
+        # Which file the numbers above came from, and why the run ended,
+        # so a morning reader can tell an interrupted task from a finished one.
+        "checkpoint": str(candidates[-1]) if candidates else "",
+        "reason": str(data.get("reason") or ""),
     }
+
+
+def run_task(command: list, *, timeout: float, grace_seconds: float = 30.0):
+    """Run one task; a hung one is asked to stop before it is killed.
+
+    Returns ``(exit_code, stdout_tail, how_it_ended)``.  ``how_it_ended`` is
+    ``finished`` for a task that exited on its own; otherwise it says whether
+    SIGTERM was honoured within the grace period or SIGKILL had to follow.
+    The exit code for an abandoned task stays 124, as before.
+    """
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        text=True, shell=False, start_new_session=True)
+
+    def signal_owned_group(number):
+        try:
+            os.killpg(process.pid, number)
+        except ProcessLookupError:
+            pass
+
+    try:
+        stdout, _ = process.communicate(timeout=timeout)
+        signal_owned_group(signal.SIGKILL)
+        return process.returncode, (stdout or "")[-400:], "finished"
+    except subprocess.TimeoutExpired:
+        pass
+    ended = "killed (SIGKILL sent at once; --grace-seconds is 0)"
+    if grace_seconds > 0:
+        signal_owned_group(signal.SIGTERM)
+        try:
+            stdout, _ = process.communicate(timeout=grace_seconds)
+            signal_owned_group(signal.SIGKILL)
+            return 124, (stdout or "")[-400:], (
+                f"terminated (SIGTERM honoured within {grace_seconds:g}s)")
+        except subprocess.TimeoutExpired:
+            ended = f"killed (SIGTERM ignored for {grace_seconds:g}s)"
+    signal_owned_group(signal.SIGKILL)
+    stdout, _ = process.communicate()
+    return 124, (stdout or "")[-400:], ended
 
 
 def main() -> int:
@@ -100,6 +168,11 @@ def main() -> int:
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--task-timeout", type=int, default=1800,
                         help="seconds before a hung task is abandoned")
+    parser.add_argument("--grace-seconds", type=float, default=30.0,
+                        help="after --task-timeout, seconds between SIGTERM "
+                             "(which lets the engine write its checkpoint) "
+                             "and SIGKILL; 0 kills at once as earlier "
+                             "versions did")
     parser.add_argument("--max-calls-per-task", type=int, default=120)
     parser.add_argument("--queue-call-budget", type=int, default=1200,
                         help="ceiling across the whole night")
@@ -145,13 +218,11 @@ def main() -> int:
             "--quiet-model-io",
         ]
         began = time.time()
-        try:
-            finished = subprocess.run(
-                command, capture_output=True, text=True,
-                timeout=args.task_timeout, shell=False)
-            code, tail = finished.returncode, (finished.stdout or "")[-400:]
-        except subprocess.TimeoutExpired:
-            code, tail = 124, f"abandoned after {args.task_timeout}s"
+        code, tail, ended = run_task(
+            command, timeout=args.task_timeout,
+            grace_seconds=args.grace_seconds)
+        if ended != "finished":
+            tail = f"abandoned after {args.task_timeout}s: {ended}"
         elapsed = round(time.time() - began, 1)
 
         result = summarise(workspace, task_runs)
@@ -160,7 +231,7 @@ def main() -> int:
             # Record where this ran. Downstream tooling should never have to
             # infer the mapping from a naming convention.
             "workspace": str(workspace), "runs_dir": str(task_runs),
-            "task_file": key, "index": index,
+            "task_file": key, "index": index, "ended": ended,
             **result,
         }
         # A task's call count is not reported back, so charge the ceiling: the

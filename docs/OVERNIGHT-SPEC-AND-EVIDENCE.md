@@ -1,5 +1,21 @@
 # The overnight solver: specification, and everything tried
 
+## Current qualification boundary
+
+This document preserves an earlier experiment and its design rationale.
+The [September 13 integration review](verification/ASTRA-INTEGRATION-REVIEW-2026-09-13.md)
+and [native session limits](opencode-step-instances.md) qualify its current
+use. In particular, a matching session interface does not imply support for
+every request field. A passing project command establishes only what that
+command checks. Agreement between generated attempts cannot override failed
+checks or remove unresolved requirements. A worktree is not a sandbox.
+
+The fixed steps, prompts, skill triggers, and ranking rules below are
+experimental choices. They do not close the product's configuration space
+or require the same core instructions for every assignment.
+
+## Historical specification and experiments
+
 One document, two jobs. The first half says what the system is meant to do
 and why each decision is the way it is. The second half is the experimental
 record: what was measured to work, what was measured **not** to work, and
@@ -74,7 +90,9 @@ services.model_session.invoke(ModelInvocationRequest(...), owner)
 `orient`, `plan`, `implement`, `verify` all funnel through it. Supplying a
 different object for `model_session` redirects every step at once with no
 change to the practitioner, the prompt builder, or verification. The
-interface is four members: `invoke`, `results`, `calls_used`, `authority`.
+interface is five members: `invoke`, `results`, `calls_used`,
+`accounting_uncertain`, `authority`. `ModelExecution.start_session` refuses
+a factory-made session that lacks any of the first four, by name.
 
 That is the whole integration story. Two implementations exist:
 
@@ -144,8 +162,8 @@ feature.
 
 ### Budget the night, not the call
 
-There are no fixed step timeouts. The night is stated once in hours (default
-12) and each step is granted a share of what **remains**:
+Model steps have no fixed timeouts. The night is stated once in hours
+(default 12) and each step is granted a share of what **remains**:
 
 ```text
 orient may take 90 min: 12.0h of a 12h night remains, 8 step(s) expected
@@ -155,6 +173,11 @@ verify may take 15 min: 2.0h of a 12h night remains, 8 step(s) expected
 Grants shrink as the night runs down, so a slow tail cannot overrun morning,
 and every grant is a sentence someone can disagree with. `timeout=900` is
 not.
+
+One fixed number remains, and it is a flag rather than a literal in a call:
+`tools/opencode_loop.py` bounds its `--verify` command with `--step-timeout`
+(default 600 seconds), because that command is the project's own gate, not a
+model step. `tools/overnight.py` grants its gate a share of the night instead.
 
 ---
 
@@ -212,9 +235,13 @@ Each round I believed the previous one was safe, and said so.
 layer, handing back every tool the layer removed. The step's own prompt had
 been asserting *"you cannot edit or write files"* while holding a shell.
 
-Backstop: `WorkspaceGuard` hashes the workspace and rolls back anything a
-read-only step moved. Detection is engine-side; it does not ask the model
-whether it behaved.
+Available backstop: `WorkspaceGuard` in `core/opencode_step_guard.py` hashes
+the workspace and can roll back anything a read-only step moved. Detection
+is engine-side; it does not ask the model whether it behaved. As of
+2026-09-13 no caller wires the guard around a step: `tools/overnight.py`,
+`tools/opencode_loop.py` and the Practitioner do not call `WorkspaceGuard`,
+so a read-only step is held to its composed permissions alone. When a caller
+takes the guard up, it is to be named here.
 
 ### Bugs found by running it, not reading it
 
@@ -231,7 +258,7 @@ whether it behaved.
 | **833-line diff** | `json.dump(sort_keys=True)` on a 3-line policy change | `tools/policy_edit.py`: typed CRUD, byte-identical round trip |
 | **thinking budget** | 9,853 chars of thinking vs 8,018 of content | `think: false` on structured calls |
 | **62 MB per step, and the real cause of the "timeout"** | a task ran **18+ minutes unfinished**; the observation step was composed with bash enabled, so OpenCode npm-installed `@opencode-ai/plugin` into the instance directory | wire the engine-observed variant, which needs no shell. Same task: **39 seconds, verified** (`orient` 17.7s, `implement` 20.6s, gate 1.0s) |
-| **orphaned worktrees** | a killed run left a 62 MB worktree; nothing removed it. 22 GB/year at one a night, on a disk with 66 GB free | prune worktrees older than 3 days, and their branches |
+| **orphaned worktrees** | a killed run left a 62 MB worktree; nothing removed it. 22 GB/year at one a night, on a disk with 66 GB free | opt-in `--prune-worktrees` removes worktrees that `git worktree list` registers, older than `--keep-days` (default 3), and their branches; `git worktree remove` and `git branch -d` refuse unfinished work unless `--prune-force`, and refusals are listed in the report |
 | **the cron runner was 8 commits stale** | its venv lacked 5 modules; a 5pm fire would have run code from before worktrees, the budget, state, or the ladder | launcher does `git fetch` + `reset --hard` and reinstalls before every run; a mirror, not a workspace |
 | **result projection missing stage identity** | every OpenCode step logged `stage_evidence_degraded` ×2 (48 in 24 steps); the recorder compares `semantic_call_id`/`owner_loop_id` on result and attempts, and the session set neither | stamp both, derived as the gateway does |
 | **CPU-time oracle fooled by swap** | passed at load 31.7, failed "21.5×" at load 48 with swap at 37/39 GB: page-fault handling is charged as system CPU | user CPU only via `getrusage`; 13/13 ×3 while swapping |
@@ -416,15 +443,20 @@ The minimum viable version, in dependency order:
 
 ### Integrating loop-engine
 
-The integration point is one object. Implement four members:
+The integration point is one object. Implement five members:
 
 ```python
 class YourSession:
-    authority: Any        # .max_model_calls
-    results: list         # append one ModelGatewayResult per call
-    calls_used: int       # physical calls charged
+    authority: Any              # .max_model_calls
+    results: list               # append one ModelGatewayResult per call
+    calls_used: int             # physical calls charged
+    accounting_uncertain: bool  # True once a call's outcome is unknown
     def invoke(self, request, parent_loop) -> str: ...
 ```
+
+`accounting_uncertain` is read when the run reports: a session that sets it
+makes `model_calls` unknown rather than under-counted. `start_session`
+refuses a session missing any of the four members it reads, by name.
 
 Assign it to `AdaptiveRunServices.model_session`. Every cognitive step is
 redirected; nothing else changes. `core/opencode_step_session.py` is a

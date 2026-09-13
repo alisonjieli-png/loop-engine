@@ -26,17 +26,59 @@ score each attempt by how often it sits with the majority, and never let a
 later attempt displace an earlier one that scored higher.  A run that solves
 the task on attempt 1 keeps that solution even if it spends the rest of the
 night breaking it.
+
+THE MAJORITY IS A VOTE, NOT A NEIGHBOUR (2026-09-13).  The first version
+compared each attempt with whichever peer happened to sort first, so the same
+three attempts scored differently depending on directory order.  Now every
+attempt is compared with every peer on every input, and an input's majority
+outcome is the one held by a STRICT majority of the attempts voting on it.  An
+attempt agrees when it holds that outcome, dissents when it does not, and is
+undecided when no strict majority exists at all -- an even split is an absence
+of evidence, not a room full of dissenters.  Attempt names sort naturally, so
+attempt-10 follows attempt-9, and the module a test imports is preferred over
+the first ``.py`` by name.
 """
 from __future__ import annotations
 
 import ast
+import re
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
-from .differential_verification import verify_differential
+from .differential_verification import collect_outcomes, verify_differential
 
 #: Test files are the input source; they are never read for expected values.
 _TEST_PREFIXES = ("test_", "tests_")
+
+#: How the majority is taken.  ``all``: the attempt's own outcome votes with
+#: its peers', so at 3 attempts a 2-1 split has a majority.  ``peers``: only
+#: the OTHER attempts vote, which is stricter (at 3 attempts each good one
+#: sees a 1-1 split and stays undecided) and, at an even split, labels every
+#: attempt a dissenter.  ``all`` is the default; ``peers`` remains available.
+MAJORITY_SCOPES = ("all", "peers")
+
+_NUMBER_RUNS = re.compile(r"(\d+)")
+
+
+def natural_key(text: str) -> tuple:
+    """Sort key that puts attempt-10 after attempt-9, not after attempt-1.
+
+    Digit runs compare as integers, everything else as text; each piece is
+    tagged so a number and a word at the same position never raise.
+    """
+    return tuple((1, int(part)) if part.isdigit() else (0, part)
+                 for part in _NUMBER_RUNS.split(str(text)) if part != "")
+
+
+def attempt_sort_key(path: "str | Path") -> tuple:
+    """Natural order on the attempt's name, then its full path as tiebreak."""
+    return (natural_key(Path(path).name), str(path))
+
+
+def sort_attempts(paths) -> list:
+    """Attempt directories in natural order, as strings."""
+    return sorted((str(p) for p in paths), key=attempt_sort_key)
 
 
 @dataclass(frozen=True)
@@ -57,6 +99,11 @@ class AttemptScore:
     #: dissents=0 is_best_available=True, promoting under cross_attempt_weight
     #: with the detail "3 attempts agree on 5 harvested inputs").
     undecided: int = 0
+    #: Agreements whose majority outcome was a returned value or written
+    #: artifact rather than an exception.  Three attempts that all raise
+    #: NotImplementedError agree on every input and have done no work; a
+    #: caller that promotes on agreement must ask for THIS number.
+    value_agreements: int = 0
 
     @property
     def is_best_available(self) -> bool:
@@ -73,6 +120,7 @@ class AttemptScore:
             "attempt": self.attempt,
             "module": self.module,
             "majority_agreements": self.majority_agreements,
+            "value_agreements": self.value_agreements,
             "dissents": self.dissents,
             "undecided": self.undecided,
             "total": self.total,
@@ -88,6 +136,7 @@ class RatchetReport:
     scores: tuple[AttemptScore, ...] = ()
     retained: str = ""
     notes: tuple[str, ...] = ()
+    majority_scope: str = "all"
 
     def to_dict(self) -> dict:
         return {
@@ -97,6 +146,7 @@ class RatchetReport:
             "scores": [s.to_dict() for s in self.scores],
             "retained": self.retained,
             "notes": list(self.notes),
+            "majority_scope": self.majority_scope,
         }
 
 
@@ -248,24 +298,109 @@ def harvest_inputs(test_path: str | Path, entry_point: str) -> tuple:
     return tuple(harvested)
 
 
+def imported_module_names(test_path: str | Path) -> tuple:
+    """Top-level names a test file imports, in order, without importing them."""
+    try:
+        tree = ast.parse(Path(test_path).read_text(encoding="utf-8"))
+    except (OSError, SyntaxError):
+        return ()
+    names: list = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names.extend(alias.name.split(".")[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            names.append(node.module.split(".")[0])
+    ordered: list = []
+    for name in names:
+        if name not in ordered:
+            ordered.append(name)
+    return tuple(ordered)
+
+
 def _attempt_files(attempt_dir: str | Path) -> tuple[str, str]:
-    """Return (module, test) paths for one attempt directory."""
+    """Return (module, test) paths for one attempt directory.
+
+    The module is the one the test imports when the attempt holds several --
+    measured 2026-09-13, an attempt with ``helpers.py`` and ``mod.py`` was
+    ranked on ``helpers.helper`` because it sorted first, harvested nothing,
+    and retained nothing.  The first ``.py`` by name remains the fallback.
+    """
     directory = Path(attempt_dir)
     modules, tests = [], []
     for path in sorted(directory.glob("*.py")):
         (tests if path.name.startswith(_TEST_PREFIXES) else modules).append(path)
     # A generator script that writes the project is not the project.
     modules = [m for m in modules if not m.name.startswith("generate")]
-    return (str(modules[0]) if modules else "",
-            str(tests[0]) if tests else "")
+    test = tests[0] if tests else None
+    module = None
+    if test is not None and len(modules) > 1:
+        by_stem = {m.stem: m for m in modules}
+        for name in imported_module_names(test):
+            if name in by_stem:
+                module = by_stem[name]
+                break
+    if module is None and modules:
+        module = modules[0]
+    return (str(module) if module else "", str(test) if test else "")
 
 
-def rank_attempts(attempt_dirs: "list[str] | tuple[str, ...]") -> RatchetReport:
+def _outcome_table(live, entry_point: str, harvested, *, timeout: float,
+                   host_execution_permitted: bool) -> dict:
+    """Every attempt's outcome on every input, one contained process each.
+
+    A module that times out over the whole set is retried one input at a
+    time so a single hanging input does not erase its evidence elsewhere; a
+    module that cannot load is not retried, because it cannot produce
+    anything.  ``None`` marks an input with no outcome.
+    """
+    table: dict = {}
+    for directory, module in live:
+        outcomes, error = collect_outcomes(
+            module, entry_point, harvested, timeout=timeout,
+            host_execution_permitted=host_execution_permitted)
+        if error is None and len(outcomes) == len(harvested):
+            table[directory] = list(outcomes)
+            continue
+        row: list = [None] * len(harvested)
+        salvageable = error is None or "exceeded" in error or (
+            "no readable result" in error)
+        if salvageable:
+            for index, value in enumerate(harvested):
+                single, single_error = collect_outcomes(
+                    module, entry_point, [value], timeout=timeout,
+                    host_execution_permitted=host_execution_permitted)
+                if single_error is None and single:
+                    row[index] = single[0]
+        table[directory] = row
+    return table
+
+
+def majority_outcome(outcomes, voters: int) -> "str | None":
+    """The outcome a STRICT majority of ``voters`` holds, or None.
+
+    An attempt with no outcome still counts as a voter -- it voted for
+    nothing -- so a majority is always measured against everyone who was
+    asked, never only against those who answered.
+    """
+    counts = Counter(o for o in outcomes if o is not None)
+    if not counts:
+        return None
+    outcome, count = counts.most_common(1)[0]
+    return outcome if count * 2 > voters else None
+
+
+def rank_attempts(attempt_dirs: "list[str] | tuple[str, ...]", *,
+                  majority_scope: str = "all",
+                  host_execution_permitted: bool = False,
+                  timeout: float = 30.0) -> RatchetReport:
     """Score every attempt by agreement with the majority on harvested inputs."""
+    if majority_scope not in MAJORITY_SCOPES:
+        raise ValueError(f"majority_scope must be one of {MAJORITY_SCOPES}")
     pairs = [(_attempt_files(d)) for d in attempt_dirs]
     modules = [m for m, _ in pairs]
     if len([m for m in modules if m]) < 2:
         return RatchetReport(
+            majority_scope=majority_scope,
             notes=("fewer than two attempts carry a module; "
                    "cross-attempt agreement cannot be computed",))
     entry_point = ""
@@ -275,7 +410,8 @@ def rank_attempts(attempt_dirs: "list[str] | tuple[str, ...]") -> RatchetReport:
             if entry_point:
                 break
     if not entry_point:
-        return RatchetReport(notes=("no public entry point found",))
+        return RatchetReport(majority_scope=majority_scope,
+                             notes=("no public entry point found",))
 
     harvested: list = []
     seen: set = set()
@@ -288,52 +424,68 @@ def rank_attempts(attempt_dirs: "list[str] | tuple[str, ...]") -> RatchetReport:
                 harvested.append(value)
     if not harvested:
         return RatchetReport(
-            entry_point=entry_point,
+            entry_point=entry_point, majority_scope=majority_scope,
             notes=("no literal inputs could be harvested from the tests",))
+    if host_execution_permitted is not True:
+        return RatchetReport(
+            entry_point=entry_point, inputs_harvested=len(harvested),
+            majority_scope=majority_scope,
+            notes=("host execution not permitted: the attempts were not "
+                   "executed, so no agreement was measured",))
 
-    live = [(d, m) for d, m in zip(attempt_dirs, modules) if m]
+    live = [(str(d), m) for d, m in zip(attempt_dirs, modules) if m]
+    table = _outcome_table(live, entry_point, harvested, timeout=timeout,
+                           host_execution_permitted=host_execution_permitted)
     scores: list[AttemptScore] = []
     for directory, module in live:
-        agreements = dissents = undecided = total = 0
-        for value in harvested:
-            others = [m for d, m in live if d != directory]
-            if not others:
-                continue
+        agreements = value_agreements = dissents = undecided = total = 0
+        voters = [d for d, _ in live
+                  if majority_scope == "all" or d != directory]
+        if not [d for d in voters if d != directory]:
+            continue
+        for index in range(len(harvested)):
             total += 1
-            majority = (verify_differential(others, entry_point, [value])
-                        if len(others) > 1 else None)
-            against = verify_differential([module, others[0]], entry_point,
-                                          [value])
-            if against.verdict == "PASS":
+            mine = table[directory][index]
+            majority = majority_outcome(
+                [table[d][index] for d in voters], len(voters))
+            if mine is None or majority is None:
+                # No outcome, or no strict majority to agree or dissent
+                # with: an absence of evidence that must never read as
+                # agreement.
+                undecided += 1
+            elif mine == majority:
                 agreements += 1
-            elif majority is not None and majority.verdict != "PASS":
-                # The peers do not agree with each other either, so there is
-                # no majority to dissent FROM. This is an absence of evidence
-                # and must never read as agreement.
-                undecided += 1
-            elif against.verdict == "UNVERIFIED":
-                undecided += 1
+                if not majority.startswith("raises:"):
+                    value_agreements += 1
             else:
                 dissents += 1
         scores.append(AttemptScore(
-            attempt=str(directory), module=module,
+            attempt=directory, module=module,
             majority_agreements=agreements, dissents=dissents,
-            undecided=undecided, total=total))
+            undecided=undecided, total=total,
+            value_agreements=value_agreements))
 
     ranked = sorted(scores, key=lambda s: (-s.majority_agreements, s.dissents,
-                                           s.undecided, str(s.attempt)))
+                                           s.undecided,
+                                           attempt_sort_key(s.attempt)))
     retained = ranked[0].attempt if ranked else ""
+    scope_note = ("all attempts vote on each input" if majority_scope == "all"
+                  else "only the other attempts vote on each input")
     return RatchetReport(
         entry_point=entry_point, inputs_harvested=len(harvested),
-        scores=tuple(scores), retained=retained,
+        scores=tuple(scores), retained=retained, majority_scope=majority_scope,
         notes=("inputs harvested from generated tests; expected values ignored",
                "retention prefers the earliest attempt at the best score, so a "
-               "later regression cannot displace an earlier solution"))
+               "later regression cannot displace an earlier solution",
+               f"majority is a strict majority per input ({scope_note}), so "
+               "the verdict does not depend on directory order"))
 
 
 def self_test() -> dict:
     """Offline proof that the ratchet keeps the correct attempt."""
     import tempfile
+    from functools import partial
+    rank_attempts = partial(globals()["rank_attempts"], host_execution_permitted=True)
 
     results: list[dict] = []
 
@@ -359,14 +511,20 @@ def self_test() -> dict:
              "        self.assertEqual(parse('PT1M'), 88888)\n"
              "        self.assertEqual(parse('P1D'), 77777)\n")
 
-    with tempfile.TemporaryDirectory() as root:
+    def workspace(root, bodies, extra=None):
         base = Path(root)
-        for name, source in (("attempt-1", good), ("attempt-2", good),
-                             ("attempt-3", broken)):
+        for name, source in bodies.items():
             directory = base / name
-            directory.mkdir()
+            directory.mkdir(parents=True)
             (directory / "mod.py").write_text(source, encoding="utf-8")
             (directory / "test_mod.py").write_text(tests, encoding="utf-8")
+            for extra_name, extra_body in (extra or {}).items():
+                (directory / extra_name).write_text(extra_body, encoding="utf-8")
+        return base
+
+    with tempfile.TemporaryDirectory() as root:
+        base = workspace(root, {"attempt-1": good, "attempt-2": good,
+                                "attempt-3": broken})
 
         entry = discover_entry_point(str(base / "attempt-1" / "mod.py"))
         check("entry_point_discovered_without_importing", entry == "parse", entry)
@@ -380,9 +538,9 @@ def self_test() -> dict:
         check("wrong_expected_values_are_never_read",
               "99999" in source and 99999 not in harvested)
 
-        report = rank_attempts([str(base / "attempt-1"),
-                                str(base / "attempt-2"),
-                                str(base / "attempt-3")])
+        dirs = [str(base / "attempt-1"), str(base / "attempt-2"),
+                str(base / "attempt-3")]
+        report = rank_attempts(dirs)
         by_attempt = {Path(s.attempt).name: s for s in report.scores}
         check("all_three_attempts_scored", len(report.scores) == 3,
               str(len(report.scores)))
@@ -398,9 +556,93 @@ def self_test() -> dict:
         check("report_serializes",
               report.to_dict()["record_type"] == "solution_ratchet/v1")
 
+        # H4: the same attempts in any order give the same scores.
+        def signature(rep):
+            return {Path(s.attempt).name: (s.majority_agreements, s.dissents,
+                                           s.undecided, s.is_best_available)
+                    for s in rep.scores}
+        reversed_report = rank_attempts([dirs[2], dirs[0], dirs[1]])
+        rotated_report = rank_attempts([dirs[1], dirs[2], dirs[0]])
+        check("verdict_does_not_depend_on_directory_order",
+              signature(report) == signature(reversed_report)
+              == signature(rotated_report)
+              and Path(reversed_report.retained).name == "attempt-1"
+              and Path(rotated_report.retained).name == "attempt-1",
+              f"{signature(report)} vs {signature(reversed_report)}")
+        check("two_agreeing_attempts_are_a_majority_of_three",
+              by_attempt["attempt-1"].is_best_available
+              and by_attempt["attempt-2"].is_best_available
+              and not by_attempt["attempt-3"].is_best_available)
+
         single = rank_attempts([str(base / "attempt-1")])
         check("one_attempt_cannot_be_ranked", single.retained == "",
               single.retained)
+
+        # H5: unanimous exceptions agree, but not on values.
+        raising = "def parse(text):\n    raise NotImplementedError('todo')\n"
+        stubs = workspace(Path(root) / "stubs",
+                          {f"attempt-{i}": raising for i in (1, 2, 3)})
+        stub_report = rank_attempts(sort_attempts(stubs.glob("attempt-*")))
+        check("unanimous_exceptions_agree_but_not_on_values",
+              stub_report.scores
+              and all(s.majority_agreements == s.total and s.total == 3
+                      and s.value_agreements == 0 for s in stub_report.scores)
+              and all(s.value_agreements == 3 for s in report.scores
+                      if Path(s.attempt).name != "attempt-3"),
+              str([s.to_dict() for s in stub_report.scores]))
+
+        # An even split is an absence of evidence, not a dissent.
+        pair = workspace(Path(root) / "pair",
+                         {"attempt-1": good, "attempt-2": broken})
+        even = rank_attempts(sort_attempts(pair.glob("attempt-*")))
+        check("an_even_split_is_undecided_not_dissent",
+              all(s.undecided == 2 and s.dissents == 0 for s in even.scores)
+              and Path(even.retained).name == "attempt-1",
+              str([s.to_dict() for s in even.scores]))
+        peers = rank_attempts(sort_attempts(pair.glob("attempt-*")),
+                              majority_scope="peers")
+        check("peers_only_majority_scope_is_available",
+              peers.majority_scope == "peers"
+              and all(s.dissents == 2 for s in peers.scores),
+              str([s.to_dict() for s in peers.scores]))
+
+        # L5: ten or more attempts sort by number, not by string.
+        check("attempt_ten_sorts_after_attempt_nine",
+              sort_attempts(["attempt-10", "attempt-9", "attempt-11"])
+              == ["attempt-9", "attempt-10", "attempt-11"])
+        many = workspace(Path(root) / "many",
+                         {"attempt-9": good, "attempt-10": good,
+                          "attempt-11": broken})
+        many_report = rank_attempts(sorted(str(p) for p in many.glob("attempt-*")))
+        check("retention_ties_break_on_natural_order",
+              Path(many_report.retained).name == "attempt-9",
+              many_report.retained)
+
+        # L6: the module the test imports wins over the first .py by name.
+        multi = workspace(Path(root) / "multi",
+                          {"attempt-1": good, "attempt-2": good},
+                          extra={"helpers.py": "def helper(x):\n    return x\n"})
+        module, test = _attempt_files(multi / "attempt-1")
+        check("the_module_the_test_imports_is_preferred",
+              Path(module).name == "mod.py" and Path(test).name == "test_mod.py",
+              module)
+        multi_report = rank_attempts(sort_attempts(multi.glob("attempt-*")))
+        check("a_multi_file_attempt_is_still_ranked",
+              multi_report.entry_point == "parse"
+              and Path(multi_report.retained).name == "attempt-1",
+              f"{multi_report.entry_point} {list(multi_report.notes)}")
+        (multi / "attempt-1" / "test_mod.py").write_text(
+            "import unittest\n", encoding="utf-8")
+        fallback, _ = _attempt_files(multi / "attempt-1")
+        check("first_module_by_name_remains_the_fallback",
+              Path(fallback).name == "helpers.py", fallback)
+
+        # Permission travels through: nothing runs without it.
+        closed = rank_attempts(dirs, host_execution_permitted=False)
+        check("host_execution_can_be_refused",
+              closed.retained == "" and closed.scores == ()
+              and any("not permitted" in note for note in closed.notes),
+              str(closed.notes))
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

@@ -167,7 +167,8 @@ class ModelExecution:
     #: example onto one OpenCode process per step, with that step's own
     #: tools, skills and permissions) with no change to the Practitioner.
     #: Receives this authority; must return an object exposing invoke(),
-    #: results and calls_used. Absent, the default session runs.
+    #: results, calls_used and accounting_uncertain. Absent, the default
+    #: session runs.
     session_factory: "Callable | None" = field(
         default=None, repr=False, compare=False)
 
@@ -214,13 +215,20 @@ class ModelExecution:
         if self.session_factory is None:
             return ModelExecutionSession(self, artifact_store=artifact_store)
         session = self.session_factory(self)
-        missing = [name for name in ("invoke", "results", "calls_used")
+        # Every name the Practitioner reads on model_session, so a session
+        # missing one is refused here rather than on a step at 3am.
+        # accounting_uncertain is read by adaptive_practitioner.py,
+        # adaptive_practitioner_result.py and adaptive_practitioner_scope.py
+        # and was not validated: a documented four-member session passed
+        # this check and failed with AttributeError when the run reported.
+        missing = [name for name in (
+            "invoke", "results", "calls_used", "accounting_uncertain")
                    if not hasattr(session, name)]
         if missing:
             raise SolutionModelError(
                 "session_factory returned an object missing "
-                f"{missing}; the Practitioner reads invoke(), results and "
-                "calls_used on every step")
+                f"{missing}; the Practitioner reads invoke(), results, "
+                "calls_used and accounting_uncertain on every step")
         return session
 
 
@@ -789,6 +797,7 @@ def self_test() -> dict:
     class _StandIn:
         def __init__(self, authority):
             self.authority, self.results, self.calls_used = authority, [], 0
+            self.accounting_uncertain = False
 
         def invoke(self, request, owner):
             return "{}"

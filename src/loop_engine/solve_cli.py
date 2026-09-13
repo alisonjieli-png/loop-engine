@@ -163,6 +163,54 @@ def _context_budget_from_args(args):
     from .core.context_budget import ContextBudgetPolicy
     return ContextBudgetPolicy(packet_estimated_tokens_max=int(tokens))
 
+def _arm_interrupt_checkpoint(checkpoint) -> tuple:
+    """Install the interrupt handler once both of its paths are known.
+
+    Idempotent: a checkpoint whose handlers are already installed is left
+    alone, so the caller can arm early with --runs-dir and again after the
+    settings loader resolved a default runs directory.
+    """
+    from .core.run_checkpoint import install_signal_checkpoint
+
+    if (not checkpoint.workspace_base or not checkpoint.checkpoint_dir
+            or checkpoint.installed_signals):
+        return tuple(checkpoint.installed_signals)
+    return install_signal_checkpoint(checkpoint)
+
+
+def _follow_run_id(checkpoint, runs_dir: str, progress):
+    """Wrap progress so the interrupt checkpoint learns which run it is.
+
+    The handler is armed before the run starts, when no run id exists, so
+    an interrupted run wrote checkpoint.json at the top of the runs
+    directory with an empty id, where nothing that reads run history
+    looks. Every progress event carries the run id. The first one moves
+    the checkpoint next to the run's other records, runs_dir/<run_id>/,
+    which is where the completion checkpoint goes too; later events keep
+    its model-call count current. A progress event must never break the
+    run, so nothing here raises.
+    """
+    def follow(event):
+        if isinstance(event, dict):
+            try:
+                run_id = str(event.get("run_id") or "")
+                if (run_id and run_id != checkpoint.run_id
+                        and run_id not in (".", "..")
+                        and os.path.basename(run_id) == run_id):
+                    checkpoint.run_id = run_id
+                    if runs_dir:
+                        checkpoint.checkpoint_dir = os.path.join(
+                            runs_dir, run_id)
+                calls = event.get("model_calls_completed")
+                if isinstance(calls, int) and not isinstance(calls, bool):
+                    checkpoint.model_calls = max(checkpoint.model_calls, calls)
+            except (AttributeError, TypeError, ValueError):
+                pass
+        if progress is not None:
+            progress(event)
+    return follow
+
+
 def _write_run_checkpoint(args, value: dict, *, reason: str) -> str:
     """Record which attempts exist and which one the others agree with."""
     from .core.run_checkpoint import RunCheckpoint
@@ -187,17 +235,18 @@ def run_solve(args) -> int:
     from pathlib import Path
 
     from .code_nodes.solve_runtime import SolveRequest, solve_task
-    from .core.run_checkpoint import RunCheckpoint, install_signal_checkpoint
+    from .core.run_checkpoint import RunCheckpoint
 
     # An unattended run is the one most likely to be killed and the least
     # likely to be noticed: install the handler before any model call, so a
     # SIGTERM at 3am still leaves the artifacts and their ranking on disk.
+    # The run id is not known yet; _follow_run_id fills it in from the first
+    # progress event and moves the checkpoint next to the run's records.
     _interrupt_checkpoint = RunCheckpoint(
         run_id="", workspace_base=str(getattr(args, "workspace", "") or ""),
         checkpoint_dir=str(getattr(args, "runs_dir", "") or ""),
         task=str(getattr(args, "text", "") or ""))
-    if _interrupt_checkpoint.workspace_base and _interrupt_checkpoint.checkpoint_dir:
-        install_signal_checkpoint(_interrupt_checkpoint)
+    _arm_interrupt_checkpoint(_interrupt_checkpoint)
     from .code_nodes.solution_model_port import ModelExecution
     from .core.runtime_settings import ModelPolicyRequest, ModelTask
     from .core.settings_loader import load_runtime_settings
@@ -227,6 +276,13 @@ def run_solve(args) -> int:
                     "--workspace must be empty or not yet created")
             workspace = str(selected)
         runs_dir = args.runs_dir or settings.history.resolved_runs_dir()
+        if runs_dir and not _interrupt_checkpoint.checkpoint_dir:
+            # --runs-dir was not given, so the handler could not be armed
+            # before the settings loader resolved the default; arm it now.
+            _interrupt_checkpoint.checkpoint_dir = str(runs_dir)
+            _arm_interrupt_checkpoint(_interrupt_checkpoint)
+        progress = _follow_run_id(_interrupt_checkpoint, str(runs_dir or ""),
+                                  _solve_progress)
         maximum_model_calls = (
             args.max_model_calls if args.max_model_calls is not None
             else settings.loop.max_model_calls)
@@ -305,7 +361,7 @@ def run_solve(args) -> int:
                 allow_local_execution=bool(
                     getattr(args, "allow_local_execution", False)),
                 context_budget=_context_budget_from_args(args),
-                progress=_solve_progress))
+                progress=progress))
 
         if args.compile_provider:
             if not args.authorize_model_calls:

@@ -79,16 +79,30 @@ class NightBudget:
         return self.remaining() <= MINIMUM_GRANT_SECONDS
 
     def grant(self, label: str = "step", *, steps_left: int = 0) -> float:
-        """Seconds this step may take, derived from what the night has left."""
+        """Seconds this step may take, derived from what the night has left.
+
+        Refuses when ``exhausted()`` says the night is spent, and never grants
+        past the end of the night.  Measured 2026-09-13: with 40 seconds left
+        this granted the 90-second floor, so the last step overran the night
+        by 50 seconds while ``exhausted()`` already said it could not start.
+        The floor keeps a grant usable; the remaining time keeps it honest;
+        ``exhausted()`` is the one place that decides which applies.
+        """
         remaining = self.remaining()
         if remaining <= 0:
             raise NightBudgetError(
                 f"the night is spent; {label} cannot start. "
                 f"{self.hours:.1f}h budget, {self.elapsed() / 3600:.1f}h used")
+        if self.exhausted():
+            raise NightBudgetError(
+                f"the night is spent; {label} cannot start: {remaining:.0f}s "
+                f"remain, below the {MINIMUM_GRANT_SECONDS:.0f}s floor a step "
+                f"needs. {self.hours:.1f}h budget, "
+                f"{self.elapsed() / 3600:.1f}h used")
         divisor = max(1, steps_left or self.expected_steps)
         share = remaining / divisor
         capped = min(share, remaining * MAXIMUM_REMAINING_SHARE)
-        return max(MINIMUM_GRANT_SECONDS, capped)
+        return min(remaining, max(MINIMUM_GRANT_SECONDS, capped))
 
     def explain(self, label: str = "step", *, steps_left: int = 0) -> str:
         """The grant as a sentence someone can disagree with."""
@@ -165,6 +179,40 @@ def self_test() -> dict:
             check(f"refuses_{why.replace(' ', '_')}", False)
         except NightBudgetError:
             check(f"refuses_{why.replace(' ', '_')}", True)
+
+    # L1: a nearly spent night refuses a step rather than granting one that
+    # ends after the night does, and grant() agrees with exhausted().
+    nearly = NightBudget(hours=1.0, expected_steps=4)
+    nearly.started = time.monotonic() - 3600 + 40      # 40 seconds remain
+    try:
+        overrun = nearly.grant("late-step")
+        check("a_nearly_spent_night_refuses_rather_than_overrunning", False,
+              f"granted {overrun:.0f}s with {nearly.remaining():.0f}s left")
+    except NightBudgetError as exc:
+        check("a_nearly_spent_night_refuses_rather_than_overrunning",
+              nearly.exhausted() and "night is spent" in str(exc),
+              str(exc)[:120])
+    agree = True
+    detail = []
+    for seconds_left in (1, 40, 89, 90, 91, 100, 200, 3600):
+        probe = NightBudget(hours=1.0, expected_steps=4)
+        probe.started = time.monotonic() - 3600 + seconds_left
+        try:
+            granted = probe.grant("probe")
+            consistent = (not probe.exhausted()
+                          and granted <= probe.remaining() + 0.5)
+        except NightBudgetError:
+            granted = None
+            consistent = probe.exhausted()
+        detail.append(f"{seconds_left}s->{granted}")
+        agree = agree and consistent
+    check("grant_and_exhausted_agree", agree, ", ".join(detail))
+    tight = NightBudget(hours=1.0, expected_steps=4)
+    tight.started = time.monotonic() - 3600 + 100      # 100 seconds remain
+    grant = tight.grant("last")
+    check("no_grant_exceeds_the_remaining_night",
+          MINIMUM_GRANT_SECONDS <= grant <= tight.remaining() + 0.5,
+          f"{grant:.1f}s of {tight.remaining():.1f}s")
 
     return {"module": "core.night_budget", "tests": tests,
             "passed": all(item["passed"] for item in tests)}

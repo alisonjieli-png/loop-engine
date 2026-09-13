@@ -1,16 +1,12 @@
 """Choose among independent overnight attempts without trusting any of them.
 
 WHY MORE THAN ONE PATH
-A small model solves a gate-failure task some fraction of the time. Running
-it once accepts that fraction as the product's reliability. Running K
-independent attempts -- different models, different skill sets, each in its
-own worktree -- and keeping any that pass turns a 60% model into a
-1-(0.4^K) system: 84% at K=2, 94% at K=3. Worktrees make the isolation free
-and the gate makes the selection honest, so the only cost is model calls,
-and the night has hours of them.
-
-Diversity matters more than count. Three runs of one model share its blind
-spots; three models do not. Twenty-two are reachable here.
+Multiple attempts can expose different solutions or failure modes. Their
+errors may remain correlated even across models, skills, and worktrees.
+Model diversity is not proof of statistical independence, and a passing
+project gate is evidence only for the checks that gate actually performs.
+The selection below is a campaign-specific recommendation, not a general
+configuration optimizer or a measured reliability guarantee.
 
 WHY SELECTION IS ENGINE-OWNED
 Every path will report that it succeeded. Selection reads two things only:
@@ -75,7 +71,14 @@ class Selection:
 
     chosen: "PathResult | None"
     ranked: tuple
+    #: label -> how many OTHER MODELS produced an identical diff.  Counted
+    #: per (model, diff): one model re-emitting the same change is one
+    #: opinion, not two (measured 2026-09-13: three worktrees of one model
+    #: with one diff read as "2 other path(s) made an identical change").
     agreement: dict = field(default_factory=dict)
+    #: label -> how many paths of the SAME model produced this same diff.
+    #: Reported so a reviewer can see the duplication; never agreement.
+    identical_copies: dict = field(default_factory=dict)
 
     @property
     def rung(self) -> str:
@@ -105,8 +108,13 @@ class Selection:
             parts.append(f"{len(passing)} of {len(self.ranked)} paths passed "
                          "the gate")
         if same:
-            parts.append(f"{same} other path(s) made an identical change, "
-                         "which is stronger evidence than any one of them")
+            parts.append(f"{same} other model(s) made an identical change, "
+                         "which records agreement, not independent correctness")
+        copies = self.identical_copies.get(self.chosen.label, 0)
+        if copies:
+            parts.append(f"{copies} same-model cop"
+                         f"{'y' if copies == 1 else 'ies'} of this change "
+                         "not counted as agreement")
         if len(self.chosen.files_changed) == 1:
             parts.append("one file changed")
         return "; ".join(parts)
@@ -123,6 +131,7 @@ class Selection:
                        "seconds": round(p.seconds, 1),
                        "error": p.error[:200]} for p in self.ranked],
             "agreement": dict(self.agreement),
+            "identical_copies": dict(self.identical_copies),
         }
 
 
@@ -143,20 +152,27 @@ def select(paths, *, diffs: "dict | None" = None) -> Selection:
     ranked = tuple(sorted(paths, key=PathResult.sort_key))
 
     agreement = {}
+    identical_copies = {}
     if diffs:
         for path in ranked:
             mine = diffs.get(path.label, "").strip()
             if not mine:
                 continue
-            agreement[path.label] = sum(
-                1 for other in ranked
-                if other.label != path.label
-                and diffs.get(other.label, "").strip() == mine)
+            same = [other for other in ranked
+                    if other.label != path.label
+                    and diffs.get(other.label, "").strip() == mine]
+            # Agreement is deduplicated by (model, diff): the same model
+            # emitting the same diff again shares its blind spots, so it is
+            # one opinion however many worktrees it was run in.
+            agreement[path.label] = len(
+                {other.model for other in same if other.model != path.model})
+            identical_copies[path.label] = sum(
+                1 for other in same if other.model == path.model)
 
     best = ranked[0]
     usable = best.outcome.actionable
     return Selection(chosen=best if usable else None, ranked=ranked,
-                     agreement=agreement)
+                     agreement=agreement, identical_copies=identical_copies)
 
 
 def self_test() -> dict:
@@ -212,6 +228,29 @@ def self_test() -> dict:
           and agreed.agreement.get("c") == 0, str(agreed.agreement))
     check("agreement_appears_in_the_explanation",
           "identical change" in agreed.why(), agreed.why())
+
+    # L8: one model re-emitting one diff is one opinion, however many
+    # worktrees it ran in.
+    trio = [path("p1", "m", "verified", ("src/x.py",), 3),
+            path("p2", "m", "verified", ("src/x.py",), 3),
+            path("p3", "m", "verified", ("src/x.py",), 3)]
+    same_model = select(trio, diffs={"p1": "+same", "p2": "+same",
+                                     "p3": "+same"})
+    check("same_model_duplicates_are_not_independent_agreement",
+          same_model.agreement == {"p1": 0, "p2": 0, "p3": 0}
+          and same_model.identical_copies == {"p1": 2, "p2": 2, "p3": 2}
+          and "identical change" not in same_model.why()
+          and "not counted as agreement" in same_model.why(),
+          same_model.why())
+    mixed = select([path("a1", "model-a", "verified", ("src/x.py",), 3),
+                    path("a2", "model-a", "verified", ("src/x.py",), 3),
+                    path("b1", "model-b", "verified", ("src/x.py",), 3)],
+                   diffs={"a1": "+fix", "a2": "+fix", "b1": "+fix"})
+    check("copies_and_independent_agreement_are_kept_apart",
+          mixed.agreement == {"a1": 1, "a2": 1, "b1": 1}
+          and mixed.identical_copies == {"a1": 1, "a2": 1, "b1": 0}
+          and mixed.to_dict()["identical_copies"]["b1"] == 0,
+          f"{mixed.agreement} {mixed.identical_copies}")
 
     check("empty_input_is_a_clean_no_progress",
           select([]).chosen is None and select([]).rung == "no_progress")

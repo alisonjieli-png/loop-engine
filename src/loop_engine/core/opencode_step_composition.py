@@ -35,10 +35,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
+from collections.abc import Mapping
+from types import MappingProxyType
 
 #: Tool names OpenCode understands in an agent's ``tools`` mapping. Naming
 #: an unknown tool is refused at composition rather than discovered as a
@@ -78,7 +81,11 @@ def read_only_tools(**allow) -> dict:
             raise OpenCodeCompositionError(
                 f"unknown tool {name!r}; known tools are "
                 f"{', '.join(KNOWN_TOOLS)}")
-        tools[name] = bool(value)
+        if not isinstance(value, bool):
+            raise OpenCodeCompositionError(
+                f"tool {name!r} must be True or False, not {value!r}; the "
+                "string 'false' is true in a truth test and would enable it")
+        tools[name] = value
     return tools
 
 
@@ -98,9 +105,9 @@ TEST_PATH_GLOBS = ("**/test_*", "**/*_test.*", "**/tests/**", "**/test/**",
 
 def source_only_edit_permission() -> dict:
     """An edit rule that allows source and denies tests."""
-    rule = {glob: "deny" for glob in TEST_PATH_GLOBS}
-    rule["*"] = "allow"
-    return rule
+    # OpenCode evaluates the last matching rule. Preserve that order all
+    # the way into the native configuration, including custom patterns.
+    return {"*": "allow", **{glob: "deny" for glob in TEST_PATH_GLOBS}}
 
 
 #: Permission verbs OpenCode accepts. "ask" is refused for unattended steps
@@ -111,6 +118,70 @@ PERMISSION_VERBS = ("allow", "deny", "ask")
 
 class OpenCodeCompositionError(ValueError):
     """A layer, catalogue entry, or composed instance violated its contract."""
+
+
+class ForeignOpenCodeTreeError(OpenCodeCompositionError):
+    """A ``.opencode`` tree this composer did not build is in the way."""
+
+
+#: The manifest record type that marks a ``.opencode`` tree as one of ours,
+#: and therefore disposable. Anything else under that name is somebody's
+#: own configuration.
+INSTANCE_RECORD_TYPE = "opencode_step_instance/v1"
+
+
+def _composed_by_this_engine(config_root: Path) -> bool:
+    """True only for a tree carrying this composer's own manifest."""
+    manifest = config_root / "instance-manifest.json"
+    if not manifest.is_file():
+        return False
+    try:
+        record = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return (isinstance(record, dict)
+            and record.get("record_type") == INSTANCE_RECORD_TYPE)
+
+
+def _confined_path(root: Path, relative, *, purpose: str) -> Path:
+    """Resolve a materialization target strictly inside ``root``.
+
+    Absolute paths, ``..`` components, empty names and any path that
+    resolves (through an existing symlink) outside the root are refused
+    before a byte is written. A context file that could land outside the
+    workspace, or inside the instance directory, would let a layer rewrite
+    what the manifest claims about it.
+    """
+    text = str(relative)
+    parts = Path(text).parts
+    if (not text.strip() or not parts or Path(text).is_absolute()
+            or ".." in parts):
+        raise OpenCodeCompositionError(
+            f"{purpose} path {text!r} must be a relative path with no '..'")
+    resolved_root = root.resolve()
+    target = root / text
+    for component in (target, *target.parents):
+        if component == root:
+            break
+        if component.is_symlink():
+            raise OpenCodeCompositionError(
+                f"{purpose} path {text!r} contains a symlink")
+    target = target.resolve()
+    try:
+        target.relative_to(resolved_root)
+    except ValueError:
+        raise OpenCodeCompositionError(
+            f"{purpose} path {text!r} resolves to {target}, outside "
+            f"{resolved_root}") from None
+    return target
+
+
+def _write_bytes(target: Path, payload: bytes) -> None:
+    """Write through a real path only; a symlink at the name is an error."""
+    target.parent.mkdir(parents=True, exist_ok=True)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_NOFOLLOW", 0)
+    with os.fdopen(os.open(str(target), flags, 0o644), "wb") as stream:
+        stream.write(payload)
 
 
 def _digest_tree(files: dict) -> str:
@@ -145,6 +216,9 @@ class CoreLayer:
 
     files: dict = field(default_factory=dict)
     digest: str = ""
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "files", MappingProxyType(dict(self.files)))
 
     @classmethod
     def from_directory(cls, root) -> "CoreLayer":
@@ -190,18 +264,30 @@ class StepLayer:
             raise OpenCodeCompositionError(
                 f"step {self.step_id!r} must carry a system prompt; an agent "
                 "file with an empty body silently inherits the default agent")
-        for name in self.tools:
+        for name, value in self.tools.items():
             if name not in KNOWN_TOOLS:
                 raise OpenCodeCompositionError(
                     f"step {self.step_id!r} names unknown tool {name!r}; "
                     f"known tools are {', '.join(KNOWN_TOOLS)}")
+            # Real Booleans only. Observed: the string "false" enabled a
+            # tool, because a truth test on text reads it as true.
+            if not isinstance(value, bool):
+                raise OpenCodeCompositionError(
+                    f"step {self.step_id!r} sets tool {name!r} to {value!r}; "
+                    "a tool flag must be True or False, since text, numbers "
+                    "and None are read as truth values and 'false' would "
+                    "enable the tool")
+        if not isinstance(self.unattended, bool):
+            raise OpenCodeCompositionError(
+                f"step {self.step_id!r} unattended must be True or False, "
+                f"not {self.unattended!r}")
         for klass, rule in self.permission.items():
             # A rule is one verb, or a {glob: verb} object. The object form
             # is what lets a step edit source but not tests: OpenCode
             # resolves patterns per path, so "tests/**": "deny" holds at
             # the tool layer, which is the layer observed to hold.
-            verbs = (rule.values() if isinstance(rule, dict) else (rule,))
-            if isinstance(rule, dict) and not rule:
+            verbs = (rule.values() if isinstance(rule, Mapping) else (rule,))
+            if isinstance(rule, Mapping) and not rule:
                 raise OpenCodeCompositionError(
                     f"step {self.step_id!r} permission {klass!r} is an empty "
                     "object; name at least one pattern")
@@ -215,26 +301,34 @@ class StepLayer:
                         f"step {self.step_id!r} sets {klass!r} to 'ask' while "
                         "unattended; nobody is awake to answer, so this hangs "
                         "the run -- use 'allow' or 'deny'")
+        for name in ("tools", "skills", "context_files"):
+            object.__setattr__(self, name, MappingProxyType(dict(getattr(self, name))))
+        object.__setattr__(self, "permission", MappingProxyType({
+            key: MappingProxyType(dict(rule)) if isinstance(rule, Mapping) else rule
+            for key, rule in self.permission.items()}))
 
     def agent_markdown(self) -> str:
         """Render the agent file OpenCode reads for this step."""
-        lines = ["---", f"description: {self.description}", "mode: primary"]
+        # JSON strings are valid YAML scalars. Quoting prevents descriptive
+        # text or a permission pattern from injecting another native field.
+        quote = json.dumps
+        lines = ["---", f"description: {quote(self.description)}", "mode: primary"]
         if self.model:
-            lines.append(f"model: {self.model}")
+            lines.append(f"model: {quote(self.model)}")
         if self.tools:
             lines.append("tools:")
             for name in sorted(self.tools):
-                lines.append(f"  {name}: {str(bool(self.tools[name])).lower()}")
+                lines.append(f"  {name}: {str(self.tools[name]).lower()}")
         if self.permission:
             lines.append("permission:")
-            for klass in sorted(self.permission):
+            for klass in self.permission:
                 rule = self.permission[klass]
-                if isinstance(rule, dict):
-                    lines.append(f"  {klass}:")
-                    for pattern in sorted(rule):
-                        lines.append(f'    "{pattern}": {rule[pattern]}')
+                if isinstance(rule, Mapping):
+                    lines.append(f"  {quote(klass)}:")
+                    for pattern in rule:
+                        lines.append(f"    {quote(pattern)}: {rule[pattern]}")
                 else:
-                    lines.append(f"  {klass}: {rule}")
+                    lines.append(f"  {quote(klass)}: {rule}")
         lines += ["---", "", self.system_prompt.strip(), ""]
         return "\n".join(lines)
 
@@ -374,17 +468,23 @@ class SkillLibrary:
         run. ``limit`` exists because every carried skill costs prompt
         budget on every call the instance makes.
         """
+        # An integer, honored exactly: zero means none. Observed: a limit
+        # of zero selected one skill, because the cut was checked after
+        # the first admission rather than before it.
+        if isinstance(limit, bool) or not isinstance(limit, int):
+            raise OpenCodeCompositionError(
+                f"limit must be an integer, not {limit!r}")
         if limit < 0:
             raise OpenCodeCompositionError("limit cannot be negative")
         chosen = {}
         for name in sorted(self._candidates):
+            if len(chosen) >= limit:
+                break
             candidate = self._candidates[name]
             matched = candidate.matched_term(step_id, task)
             if matched is None:
                 continue
             chosen[name] = (candidate.body, matched)
-            if len(chosen) >= limit:
-                break
         return chosen
 
 
@@ -418,29 +518,40 @@ def dynamic_step_layer(base: StepLayer, task: str, library: SkillLibrary,
 
 
 
-def compose_instance(core: CoreLayer, step: StepLayer, workspace) -> ComposedInstance:
+def compose_instance(core: CoreLayer, step: StepLayer, workspace, *,
+                     replace_existing: bool = False) -> ComposedInstance:
     """Materialize ``.opencode`` for one step and return its manifest.
 
     The core is written first and the step second, and a step file that
     would overwrite a core file is refused rather than silently winning.
     Layering that lets the variable half quietly replace the fixed half
     gives an invariant that holds only until something needs it not to.
+
+    An existing ``.opencode`` tree is replaced only when it carries this
+    composer's own manifest: a per-step instance is disposable, a project's
+    own configuration is not. Anything else raises
+    ``ForeignOpenCodeTreeError`` unless ``replace_existing`` says the
+    caller has decided to lose it.
+
+    Every path is confined to the workspace before anything is written, a
+    context file may not touch the instance directory, and the manifest
+    records the digest of each file as written, so it describes the tree
+    that exists rather than the settings that were requested.
     """
     if not core.verify_core_unchanged():
         raise OpenCodeCompositionError(
             "core layer bytes no longer match the digest recorded for them")
     root = Path(workspace)
-    root.mkdir(parents=True, exist_ok=True)
     config_root = root / ".opencode"
-    if config_root.exists():
-        shutil.rmtree(config_root)
-    written = {}
-
-    for relative, payload in core.files.items():
-        target = config_root / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(payload)
-        written[relative] = "core"
+    if type(replace_existing) is not bool:
+        raise OpenCodeCompositionError("replace_existing must be a Boolean")
+    # Refuse before resolving any target or reading a foreign manifest.
+    # Resolving through this link and unlinking it later leaves a write
+    # plan pointing outside the workspace, even with explicit replacement.
+    if config_root.is_symlink():
+        raise OpenCodeCompositionError(".opencode must not be a symlink")
+    if config_root.exists() and not config_root.is_dir():
+        raise ForeignOpenCodeTreeError(".opencode exists and is not a directory")
 
     agent_name = f"step-{step.step_id}"
     step_files = {f"agent/{agent_name}.md": step.agent_markdown().encode("utf-8")}
@@ -453,21 +564,59 @@ def compose_instance(core: CoreLayer, step: StepLayer, workspace) -> ComposedIns
         raise OpenCodeCompositionError(
             f"step {step.step_id!r} would overwrite core files {collisions}; "
             "rename the step's file -- the core layer is not overridable")
-    for relative, payload in step_files.items():
-        target = config_root / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes(payload)
-        written[relative] = "step"
 
+    # Every target is confined before the first write, so a refused path
+    # leaves no half-built instance behind.
+    plan = {}
+    reserved = config_root.resolve() / "instance-manifest.json"
+    for relative in list(core.files) + list(step_files):
+        target = _confined_path(
+            config_root, relative, purpose="instance file")
+        if target == reserved or target in plan.values():
+            raise OpenCodeCompositionError(
+                f"instance file {relative!r} aliases another or reserved file")
+        plan[f".opencode/{relative}"] = target
+    instance_root = config_root.resolve()
+    for relative in step.context_files:
+        target = _confined_path(root, relative, purpose="context file")
+        key = str(Path(str(relative)))
+        inside_instance = target == instance_root or instance_root in target.parents
+        if key in plan or target in plan.values() or inside_instance:
+            raise OpenCodeCompositionError(
+                f"context file {relative!r} would land on a file the composer "
+                "writes itself, or inside the instance directory; the "
+                "composer alone writes .opencode, and a context file there "
+                "would change what the manifest claims")
+        plan[key] = target
+
+    if config_root.exists() or config_root.is_symlink():
+        if not (_composed_by_this_engine(config_root) or replace_existing):
+            raise ForeignOpenCodeTreeError(
+                f"{config_root} exists and carries no instance-manifest.json "
+                f"of record_type {INSTANCE_RECORD_TYPE!r}; it looks like the "
+                "project's own configuration. Pass replace_existing=True to "
+                "replace it deliberately, or compose into another workspace")
+        if config_root.is_symlink():
+            config_root.unlink()
+        else:
+            shutil.rmtree(config_root)
+    root.mkdir(parents=True, exist_ok=True)
+    written = {}
+
+    for relative, payload in core.files.items():
+        _write_bytes(plan[f".opencode/{relative}"], payload)
+        written[relative] = "core"
+    for relative, payload in step_files.items():
+        _write_bytes(plan[f".opencode/{relative}"], payload)
+        written[relative] = "step"
     for relative, text in step.context_files.items():
-        target = root / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(
-            text if isinstance(text, str) else text.decode("utf-8"),
-            encoding="utf-8")
+        _write_bytes(plan[str(Path(str(relative)))],
+                     text if isinstance(text, bytes) else str(text).encode("utf-8"))
+    materialized = {key: hashlib.sha256(path.read_bytes()).hexdigest()
+                    for key, path in sorted(plan.items())}
 
     manifest = {
-        "record_type": "opencode_step_instance/v1",
+        "record_type": INSTANCE_RECORD_TYPE,
         "step_id": step.step_id,
         "agent_name": agent_name,
         "core_digest": core.digest,
@@ -475,11 +624,16 @@ def compose_instance(core: CoreLayer, step: StepLayer, workspace) -> ComposedIns
         "step_file_count": len(step_files),
         "composed_digest": _digest_tree({**core.files, **step_files}),
         "tools": dict(sorted(step.tools.items())),
-        "permission": dict(sorted(step.permission.items())),
+        "permission": {key: dict(rule) if isinstance(rule, Mapping) else rule
+                       for key, rule in step.permission.items()},
         "skills": sorted(step.skills),
         "skill_count": len(step.skills),
         "context_files": sorted(step.context_files),
         "provenance": dict(sorted(written.items())),
+        #: What is on disk, path -> sha256 of the bytes as written, read
+        #: back after writing. The settings above are what was requested;
+        #: this is what exists.
+        "materialized": materialized,
     }
     (config_root / "instance-manifest.json").write_text(
         json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")

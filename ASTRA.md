@@ -10,6 +10,24 @@ typed contracts. When a suggestion below conflicts with current behavior,
 identify the gap and test a candidate change. Do not turn advice into
 undeclared runtime permissions or silently remove a supported option.
 
+## September 13 integration review
+
+The owner asked Codex to take over after Claude exhausted its usage allowance,
+review the pending changes, and publish the verified work on `main`.
+The [integration report](docs/verification/ASTRA-INTEGRATION-REVIEW-2026-09-13.md)
+records the resulting checks and remaining limits.
+
+Three review rules need particular care. A requested dimension must reach
+the actual invocation or receive an explicit refusal. Agreement among
+generated attempts cannot override failed checks or erase unresolved
+requirements. A host process, working directory, or checkpoint does not
+provide sandboxing or grant execution authority.
+
+Keep the broader design open. These refusals identify bindings that still
+need implementation and qualification; they do not prohibit additional
+steps, native harness controls, wrapper compositions, or configuration
+dimensions.
+
 ## Direction to preserve
 
 The system should remain open to additional cognitive steps, action methods,

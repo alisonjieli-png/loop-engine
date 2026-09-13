@@ -28,18 +28,49 @@ Two oracles here avoid constants entirely:
 
 Both report ``UNVERIFIED`` rather than ``PASS`` when they cannot decide.  An
 oracle that cannot run is not a passing oracle.
+
+CONTAINMENT (2026-09-13).  Every oracle runs model-authored code, so the
+process it runs in is built from nothing: the working directory is the
+implementation's own directory (or an explicit ``workspace``), the environment
+is an allowlist of the same names the OpenCode step session inherits, the
+interpreter runs ``-I`` (no user site, no ``PYTHON*`` variables), arguments
+travel over stdin rather than argv (so a 200 KB fixture cannot fail the exec
+with E2BIG), output files are capped, and a driver that cannot start is an
+``UNVERIFIED`` report with the reason rather than an exception.  The
+model-reachable capability additionally needs an explicit permission
+(``allow_host_verification`` on the run's services); without it the operation
+executes nothing and says so.
 """
 from __future__ import annotations
 
 import json
+import os
 import subprocess
+import signal
 import sys
 import tempfile
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
+
+from .differential_drivers import (
+    COMPLEXITY_DRIVER,
+    DIFFERENTIAL_DRIVER,
+    DRIVER_FILE_SIZE_LIMIT,
+    HOST_EXECUTION_REFUSED,
+    OUTPUT_CAPTURE_BYTES,
+    TIMING_RESOLUTION_FLOOR_SECONDS,
+    DriverRun,
+    allowlisted_environment,
+    inheritable_environment_names,
+)
 
 #: An oracle that cannot decide must not report success.
 VERDICTS = ("PASS", "FAIL", "UNVERIFIED")
+
+#: The programs the driver process runs live in differential_drivers; these names keep
+#: the oracle module's own vocabulary.
+_DRIVER = DIFFERENTIAL_DRIVER
+_COMPLEXITY_DRIVER = COMPLEXITY_DRIVER
 
 
 @dataclass(frozen=True)
@@ -79,6 +110,11 @@ class VerificationReport:
     divergences: tuple[Divergence, ...] = ()
     errors: tuple[str, ...] = ()
     notes: tuple[str, ...] = ()
+    #: Agreements on a returned value or written artifact.  Implementations
+    #: that all raise the same exception on an input agree -- and that is
+    #: counted in ``agreed`` -- but they have not shown they can do the work,
+    #: so unanimous ``raises:`` outcomes must not read as evidence of it.
+    agreed_on_values: int = 0
 
     def to_dict(self) -> dict:
         return {
@@ -88,87 +124,81 @@ class VerificationReport:
             "entry_point": self.entry_point,
             "checked": self.checked,
             "agreed": self.agreed,
+            "agreed_on_values": self.agreed_on_values,
             "divergences": [d.to_dict() for d in self.divergences],
             "errors": list(self.errors),
             "notes": list(self.notes),
         }
 
 
-#: Generated code is executed in a separate process, never imported into the
-#: engine.  Importing a model-authored module would run it with the engine's
-#: own privileges, which contradicts the sandbox posture the rest of this
-#: package maintains.  A separate process also contains a hang behind a timeout
-#: and a crash behind a return code.
-_DRIVER = """
-import json, sys, importlib.util
-path, entry = sys.argv[1], sys.argv[2]
-arguments = json.loads(sys.argv[3])
-spec = importlib.util.spec_from_file_location("_candidate", path)
-module = importlib.util.module_from_spec(spec)
-sys.path.insert(0, __import__("os").path.dirname(path))
-try:
-    spec.loader.exec_module(module)
-except Exception as exc:
-    print(json.dumps({"load_error": type(exc).__name__ + ": " + str(exc)[:200]}))
-    raise SystemExit(0)
-function = getattr(module, entry, None)
-if not callable(function):
-    print(json.dumps({"load_error": "no callable " + entry}))
-    raise SystemExit(0)
-import tempfile as _tempfile
-outcomes = []
-for argument in arguments:
-    scratch = None
-    try:
-        # A harvested fixture is file CONTENT for an API that takes a PATH.
-        # Materialise it here so both implementations read byte-identical
-        # input; comparing a parser that reads files is otherwise impossible.
-        if isinstance(argument, dict) and "__fixture_content__" in argument:
-            handle, scratch = _tempfile.mkstemp(suffix=".fixture")
-            with __import__("os").fdopen(handle, "w", encoding="utf-8") as fh:
-                fh.write(argument["__fixture_content__"])
-            argument = scratch
-        if isinstance(argument, dict) and "__argv__" in argument:
-            argv = list(argument["__argv__"])
-            sink = argument.get("__sink__", -1)
-            if sink >= 0:
-                # Compare the ARTIFACT, not the return value: a renderer
-                # returns None and expresses everything through the file it
-                # writes. Two implementations agree when their output bytes
-                # agree.
-                handle, destination = _tempfile.mkstemp(suffix=".sink")
-                __import__("os").close(handle)
-                argv[sink] = destination
-                function(*argv)
+def _spawn_driver(source: str, request: dict, *, cwd: Path,
+                  timeout: float) -> DriverRun:
+    """Run one driver in a contained process and collect its result file.
+
+    Containment: ``cwd`` is the implementation's directory (or the caller's
+    workspace), the environment is an allowlist built from nothing, the
+    interpreter runs isolated (``-I``), the request travels over stdin, stdout
+    and stderr go to scratch files of which at most OUTPUT_CAPTURE_BYTES are
+    read back, and the driver process caps its own file sizes.  Failing to start is a
+    result, not an exception.
+    """
+    with tempfile.TemporaryDirectory() as scratch:
+        base = Path(scratch)
+        driver = base / "_driver.py"
+        driver.write_text(source, encoding="utf-8")
+        result_path = base / "_result.json"
+        out_path, err_path = base / "_stdout.bin", base / "_stderr.bin"
+        body = dict(request, result_path=str(result_path),
+                    file_size_limit=DRIVER_FILE_SIZE_LIMIT)
+        try:
+            with open(out_path, "wb") as out, open(err_path, "wb") as err:
+                process = subprocess.Popen(
+                    [sys.executable, "-I", str(driver)],
+                    stdin=subprocess.PIPE,
+                    stdout=out, stderr=err, cwd=str(cwd),
+                    env=allowlisted_environment(),
+                    shell=False, start_new_session=True)
                 try:
-                    with open(destination, "rb") as fh:
-                        body = fh.read()
+                    process.communicate(json.dumps(body).encode("utf-8"),
+                                        timeout=timeout)
                 finally:
+                    # Only the process group we created is ours to stop.
+                    # Descendants cannot outlive a timed-out driver or hold
+                    # its output files open after a successful return.
                     try:
-                        __import__("os").unlink(destination)
-                    except OSError:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
                         pass
-                outcomes.append("wrote:" + __import__("hashlib").sha256(
-                    body).hexdigest())
-            else:
-                outcomes.append("value:" + json.dumps(
-                    function(*argv), sort_keys=True, default=repr))
-        else:
-            outcomes.append("value:" + json.dumps(function(argument),
-                                                  sort_keys=True, default=repr))
-    except Exception as exc:
-        outcomes.append("raises:" + type(exc).__name__)
-    finally:
-        if scratch:
-            try:
-                __import__("os").unlink(scratch)
-            except OSError:
-                pass
-print(json.dumps({"outcomes": outcomes}))
-"""
+                    process.wait()
+                finished = process
+        except subprocess.TimeoutExpired:
+            return DriverRun(None, f"implementation exceeded {timeout}s",
+                             timed_out=True)
+        except (OSError, ValueError) as exc:
+            # E2BIG, a missing interpreter, an unusable cwd: the oracle could
+            # not run, and that is a reason to report, never a crash.
+            return DriverRun(None, f"could not start the driver: {exc}")
+        try:
+            stdout_bytes = out_path.stat().st_size
+            with err_path.open("rb") as stream:
+                stderr_head = stream.read(OUTPUT_CAPTURE_BYTES).decode(
+                    "utf-8", errors="replace")
+        except OSError:
+            stdout_bytes, stderr_head = 0, ""
+        if finished.returncode != 0:
+            return DriverRun(None, (f"driver failed (exit {finished.returncode}): "
+                                    f"{stderr_head.strip()[:200]}"))
+        try:
+            payload = json.loads(result_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return DriverRun(None, "driver produced no readable result")
+        if not isinstance(payload, dict):
+            return DriverRun(None, "driver produced no readable result")
+        return DriverRun(payload, None, stdout_bytes=stdout_bytes)
 
 
-def _run_implementation(path, entry_point, arguments, timeout=30.0):
+def _run_implementation(path, entry_point, arguments, timeout=30.0, *,
+                        workspace=None, host_execution_permitted=False):
     """Evaluate one implementation over every argument in a separate process.
 
     Returns ``(outcomes, error)``.  An exception raised by the implementation
@@ -177,39 +207,56 @@ def _run_implementation(path, entry_point, arguments, timeout=30.0):
     error means the oracle could not run at all.
     """
     resolved = Path(path).resolve()
+    if host_execution_permitted is not True:
+        return None, f"{HOST_EXECUTION_REFUSED}: {resolved.name} was not executed"
     if not resolved.is_file():
         return None, f"not a file: {resolved}"
-    with tempfile.TemporaryDirectory() as scratch:
-        driver = Path(scratch) / "_driver.py"
-        driver.write_text(_DRIVER, encoding="utf-8")
-        try:
-            finished = subprocess.run(
-                [sys.executable, str(driver), str(resolved), entry_point,
-                 json.dumps(list(arguments))],
-                capture_output=True, text=True, timeout=timeout, shell=False)
-        except subprocess.TimeoutExpired:
-            return None, f"implementation exceeded {timeout}s: {resolved.name}"
-    if finished.returncode != 0:
-        return None, (f"driver failed for {resolved.name}: "
-                      f"{(finished.stderr or '').strip()[:200]}")
-    try:
-        payload = json.loads(finished.stdout.strip() or "{}")
-    except ValueError:
-        return None, f"driver produced no readable result for {resolved.name}"
-    if "load_error" in payload:
-        return None, f"{resolved.name}: {payload['load_error']}"
-    return tuple(payload.get("outcomes") or ()), None
+    cwd = Path(workspace) if workspace else resolved.parent
+    run = _spawn_driver(
+        _DRIVER, {"path": str(resolved), "entry": entry_point,
+                  "arguments": list(arguments)}, cwd=cwd, timeout=timeout)
+    if run.error is not None:
+        return None, f"{run.error}: {resolved.name}"
+    if "load_error" in run.payload:
+        return None, f"{resolved.name}: {run.payload['load_error']}"
+    return tuple(run.payload.get("outcomes") or ()), None
+
+
+def collect_outcomes(implementation, entry_point, arguments, *, timeout=30.0,
+                     workspace=None, host_execution_permitted=False) -> tuple:
+    """Public form of the per-implementation run, for callers that compare
+    outcome vectors themselves (the solution ratchet's majority vote)."""
+    return _run_implementation(
+        implementation, entry_point, list(arguments), timeout,
+        workspace=workspace, host_execution_permitted=host_execution_permitted)
+
+
+def _containment_note(count: int) -> str:
+    return (f"{count} independent implementations compared; no expected "
+            "values consulted, each in its own isolated process (cwd = its "
+            "own directory, allowlisted environment, python -I)")
+
+
+def _refused(oracle: str, entry_point: str) -> VerificationReport:
+    return VerificationReport(
+        verdict="UNVERIFIED", oracle=oracle, entry_point=entry_point,
+        errors=(f"{HOST_EXECUTION_REFUSED}; nothing was executed",))
 
 
 def verify_differential(
         implementations: "list[str] | tuple[str, ...]",
         entry_point: str,
-        arguments: "list | tuple") -> VerificationReport:
+        arguments: "list | tuple", *,
+        host_execution_permitted: bool = False,
+        workspace: "str | None" = None,
+        timeout: float = 30.0) -> VerificationReport:
     """Compare two or more implementations over the same arguments.
 
     No expected value is supplied by anyone.  Agreement across independently
     produced implementations is the evidence.
     """
+    if host_execution_permitted is not True:
+        return _refused("differential", entry_point)
     if len(tuple(implementations)) < 2:
         return VerificationReport(
             verdict="UNVERIFIED", oracle="differential",
@@ -225,14 +272,15 @@ def verify_differential(
     collected = []
     for implementation in implementations:
         outcomes, error = _run_implementation(
-            implementation, entry_point, list(arguments))
+            implementation, entry_point, list(arguments), timeout,
+            workspace=workspace, host_execution_permitted=True)
         if error is not None:
             return VerificationReport(
                 verdict="UNVERIFIED", oracle="differential",
                 entry_point=entry_point, errors=(error,))
         collected.append(outcomes)
     divergences: list[Divergence] = []
-    agreed = 0
+    agreed = agreed_on_values = 0
     # A driver whose output was truncated returns fewer outcomes than it was
     # given arguments, and indexing past it raised IndexError -- which the
     # caller reported as "ranking unavailable", silently discarding real
@@ -249,71 +297,17 @@ def verify_differential(
         row = tuple(o[index] for o in collected)
         if len(set(row)) == 1:
             agreed += 1
+            if not row[0].startswith("raises:"):
+                agreed_on_values += 1
         else:
             divergences.append(Divergence(repr(argument), row))
     return VerificationReport(
         verdict="PASS" if not divergences else "FAIL",
         oracle="differential", entry_point=entry_point,
         checked=len(tuple(arguments)), agreed=agreed,
+        agreed_on_values=agreed_on_values,
         divergences=tuple(divergences),
-        notes=(f"{len(collected)} independent implementations compared; "
-               "no expected values consulted, each in its own process",))
-
-
-#: Scaling is measured on an ENGINE-CHOSEN input distribution, because a model
-#: that picks its own benchmark picks a benign one.  Measured 2026-09-06 on a
-#: real refactor ticket ("this is O(n^2) and times out on our 200k-row export;
-#: make it linear"): the model shipped `if item in seen_twice` over a LIST,
-#: which is linear in items but quadratic in the number of distinct duplicates,
-#: then wrote its own timing test over randint(0, 1000) -- capping distinct
-#: duplicates at a thousand, where the list scan is bounded and the ratio is
-#: 9.3x. Its assertion was honest and passed. On randint(0, n/2) the same code
-#: measures 1522x. The implementation was not dishonest and neither was the
-#: test; the model simply chose the regime that flattered its fix, which is the
-#: performance analogue of choosing a wrong expected constant.
-_COMPLEXITY_DRIVER = """
-import json, sys, time, random, importlib.util, os
-path, entry = sys.argv[1], sys.argv[2]
-sizes = json.loads(sys.argv[3]); distinct_ratio = float(sys.argv[4])
-spec = importlib.util.spec_from_file_location("_candidate", path)
-module = importlib.util.module_from_spec(spec)
-sys.path.insert(0, os.path.dirname(path))
-try:
-    spec.loader.exec_module(module)
-except Exception as exc:
-    print(json.dumps({"load_error": type(exc).__name__ + ": " + str(exc)[:150]}))
-    raise SystemExit(0)
-function = getattr(module, entry, None)
-if not callable(function):
-    print(json.dumps({"load_error": "no callable " + entry}))
-    raise SystemExit(0)
-timings = []
-for size in sizes:
-    random.seed(12345)
-    span = max(1, int(size * distinct_ratio))
-    data = [random.randint(0, span) for _ in range(size)]
-    best = None
-    # USER CPU time of this process -- not wall clock, and not process_time.
-    # Wall clock measured the machine's load: "10x input cost 30.6x time" on
-    # a correct linear implementation at load average 18. process_time fixed
-    # that and held 13/13 at load 31.7 -- then failed again, "21.5x", at load
-    # 48 with swap at 37 of 39 GB. process_time includes SYSTEM time, and
-    # page-fault handling for a swapped process is charged there. User time
-    # is the algorithm's own instructions and nothing else. An overnight
-    # verdict that changes with what else is running is not a verdict.
-    import resource
-    for _ in range(5):
-        began = resource.getrusage(resource.RUSAGE_SELF).ru_utime
-        try:
-            function(list(data))
-        except Exception as exc:
-            print(json.dumps({"call_error": type(exc).__name__ + ": " + str(exc)[:120]}))
-            raise SystemExit(0)
-        elapsed = resource.getrusage(resource.RUSAGE_SELF).ru_utime - began
-        best = elapsed if best is None else min(best, elapsed)
-    timings.append({"size": size, "seconds": best})
-print(json.dumps({"timings": timings}))
-"""
+        notes=(_containment_note(len(collected)),))
 
 
 def verify_complexity(
@@ -321,7 +315,11 @@ def verify_complexity(
         sizes: "tuple[int, ...]" = (4000, 40000),
         distinct_ratio: float = 0.5,
         maximum_ratio: float = 20.0,
-        timeout: float = 180.0) -> ConstraintLikeResult:
+        timeout: float = 180.0,
+        host_execution_permitted: bool = False,
+        workspace: "str | None" = None,
+        resolution_floor: float = TIMING_RESOLUTION_FLOOR_SECONDS,
+        ) -> ConstraintLikeResult:
     """Measure scaling on inputs the ENGINE chooses, not the model.
 
     ``distinct_ratio`` is the share of the input that is distinct, and it is
@@ -329,28 +327,29 @@ def verify_complexity(
     is adversarial on purpose: it is the regime a "times out on our 200k-row
     export" ticket actually describes.
     """
+    if host_execution_permitted is not True:
+        return ConstraintLikeResult(
+            "complexity", "UNVERIFIED",
+            (f"{HOST_EXECUTION_REFUSED}; nothing was executed",))
     resolved = Path(implementation).resolve()
     if not resolved.is_file():
         return ConstraintLikeResult(
             "complexity", "UNVERIFIED", (f"not a file: {resolved}",))
-    with tempfile.TemporaryDirectory() as scratch:
-        driver = Path(scratch) / "_complexity.py"
-        driver.write_text(_COMPLEXITY_DRIVER, encoding="utf-8")
-        try:
-            finished = subprocess.run(
-                [sys.executable, str(driver), str(resolved), entry_point,
-                 json.dumps(list(sizes)), str(distinct_ratio)],
-                capture_output=True, text=True, timeout=timeout, shell=False)
-        except subprocess.TimeoutExpired:
-            # Exceeding the clock at these sizes IS the finding.
-            return ConstraintLikeResult(
-                "complexity", "FAIL",
-                (f"did not finish {max(sizes)} items within {timeout}s",))
-    try:
-        payload = json.loads((finished.stdout or "{}").strip() or "{}")
-    except ValueError:
+    run = _spawn_driver(
+        _COMPLEXITY_DRIVER,
+        {"path": str(resolved), "entry": entry_point, "sizes": list(sizes),
+         "distinct_ratio": distinct_ratio,
+         "resolution_floor": float(resolution_floor)},
+        cwd=Path(workspace) if workspace else resolved.parent,
+        timeout=timeout)
+    if run.timed_out:
+        # Exceeding the clock at these sizes IS the finding.
         return ConstraintLikeResult(
-            "complexity", "UNVERIFIED", ("driver produced no readable result",))
+            "complexity", "FAIL",
+            (f"did not finish {max(sizes)} items within {timeout}s",))
+    if run.error is not None:
+        return ConstraintLikeResult("complexity", "UNVERIFIED", (run.error,))
+    payload = run.payload
     if "load_error" in payload or "call_error" in payload:
         return ConstraintLikeResult(
             "complexity", "UNVERIFIED",
@@ -363,6 +362,10 @@ def verify_complexity(
     ratio = timings[-1]["seconds"] / timings[0]["seconds"]
     detail = (f"{growth:.0f}x input cost {ratio:.1f}x time at "
               f"distinct_ratio={distinct_ratio}")
+    batched = max(int(t.get("repetitions") or 1) for t in timings)
+    if batched > 1:
+        detail += (f" (small sizes batched x{batched} to clear the clock's "
+                   "resolution)")
     if ratio <= maximum_ratio:
         return ConstraintLikeResult("complexity", "PASS", (), detail)
     return ConstraintLikeResult(
@@ -373,13 +376,18 @@ def verify_complexity(
 def verify_metamorphic(
         implementation: str,
         entry_point: str,
-        relations: "list[tuple[str, str]] | tuple") -> VerificationReport:
+        relations: "list[tuple[str, str]] | tuple", *,
+        host_execution_permitted: bool = False,
+        workspace: "str | None" = None,
+        timeout: float = 30.0) -> VerificationReport:
     """Assert relations between calls rather than absolute values.
 
     Each relation is a pair of argument tuples whose results must be equal:
     ``(("PT60S",), ("PT1M",))`` asserts one minute is sixty seconds without
     anyone knowing that it is 60.
     """
+    if host_execution_permitted is not True:
+        return _refused("metamorphic", entry_point)
     if not tuple(relations):
         return VerificationReport(
             verdict="UNVERIFIED", oracle="metamorphic",
@@ -387,17 +395,24 @@ def verify_metamorphic(
             errors=("no relations supplied",))
     flattened = [side for pair in relations for side in pair]
     outcomes, error = _run_implementation(
-        implementation, entry_point, flattened)
+        implementation, entry_point, flattened, timeout, workspace=workspace,
+        host_execution_permitted=True)
     if error is not None:
         return VerificationReport(
             verdict="UNVERIFIED", oracle="metamorphic",
             entry_point=entry_point, errors=(error,))
     divergences: list[Divergence] = []
-    agreed = 0
+    agreed = agreed_on_values = 0
     for index, (left, right) in enumerate(relations):
+        if 2 * index + 1 >= len(outcomes):
+            divergences.append(Divergence(
+                f"{left!r} vs {right!r}", ("no outcome produced",)))
+            continue
         left_out, right_out = outcomes[2 * index], outcomes[2 * index + 1]
         if left_out == right_out:
             agreed += 1
+            if not left_out.startswith("raises:"):
+                agreed_on_values += 1
         else:
             divergences.append(
                 Divergence(f"{left!r} vs {right!r}", (left_out, right_out)))
@@ -405,8 +420,10 @@ def verify_metamorphic(
         verdict="PASS" if not divergences else "FAIL",
         oracle="metamorphic", entry_point=entry_point,
         checked=len(tuple(relations)), agreed=agreed,
+        agreed_on_values=agreed_on_values,
         divergences=tuple(divergences),
-        notes=("relations checked without any expected value",))
+        notes=("relations checked without any expected value, in an "
+               "isolated process",))
 
 
 def differential_verification_operation(arguments, services) -> dict:
@@ -419,6 +436,11 @@ def differential_verification_operation(arguments, services) -> dict:
     generated-project path grades an artifact against tests the same model
     wrote, which was measured inverting on 2026-09-05: correct code condemned
     by wrong constants. Every path is confined to the run's own workspace.
+
+    This is the model-reachable path, so executing anything needs an explicit
+    permission: the run's services must expose a truthy
+    ``allow_host_verification``.  Without it the paths are still checked but
+    nothing runs, and the report says exactly that.
     """
     oracle = str(arguments.get("oracle") or "differential")
     entry_point = str(arguments.get("entry_point") or "")
@@ -428,6 +450,7 @@ def differential_verification_operation(arguments, services) -> dict:
                 "errors": ["entry_point is required"]}
     root = Path(services.workspace_base) if getattr(
         services, "workspace_base", None) else Path(".")
+    permitted = getattr(services, "allow_host_verification", False) is True
 
     def _confined(candidate: str) -> str:
         """Keep every path inside the run's own workspace."""
@@ -441,22 +464,53 @@ def differential_verification_operation(arguments, services) -> dict:
         if oracle == "metamorphic":
             relations = [tuple(r) for r in (arguments.get("relations") or [])
                          if isinstance(r, (list, tuple)) and len(r) == 2]
+            target = _confined(str(arguments.get("implementation") or ""))
+            if not permitted:
+                return _refused_operation(oracle, entry_point)
             report = verify_metamorphic(
-                _confined(str(arguments.get("implementation") or "")),
-                entry_point, relations)
+                target, entry_point, relations,
+                host_execution_permitted=permitted)
         else:
             paths = [_confined(str(item)) for item
                      in (arguments.get("implementations") or [])]
+            if not permitted:
+                return _refused_operation(oracle, entry_point)
             report = verify_differential(
-                paths, entry_point, list(arguments.get("arguments") or []))
+                paths, entry_point, list(arguments.get("arguments") or []),
+                host_execution_permitted=permitted)
     except (PermissionError, OSError) as exc:
         return {"record_type": "differential_verification/v1",
-                "verdict": "UNVERIFIED", "errors": [str(exc)]}
-    return report.to_dict()
+                "verdict": "UNVERIFIED", "errors": [str(exc)],
+                "host_execution_permitted": permitted}
+    payload = report.to_dict()
+    payload["host_execution_permitted"] = permitted
+    return payload
+
+
+def _refused_operation(oracle: str, entry_point: str) -> dict:
+    return {
+        "record_type": "differential_verification/v1",
+        "verdict": "UNVERIFIED", "oracle": oracle, "entry_point": entry_point,
+        "errors": [f"{HOST_EXECUTION_REFUSED}: the run's services do not "
+                   "grant allow_host_verification, so model-supplied code "
+                   "was not executed"],
+        "host_execution_permitted": False,
+    }
 
 
 def self_test() -> dict:
-    """Offline proof that both oracles decide correctly."""
+    """Offline proof that both oracles decide correctly and run contained."""
+    from types import SimpleNamespace
+    from functools import partial
+
+    # Host permission is explicit for these locally authored fixtures.
+    verify_differential = partial(globals()["verify_differential"],
+                                  host_execution_permitted=True)
+    verify_complexity = partial(globals()["verify_complexity"],
+                                host_execution_permitted=True)
+    verify_metamorphic = partial(globals()["verify_metamorphic"],
+                                 host_execution_permitted=True)
+
     results: list[dict] = []
 
     def check(name, ok, detail=""):
@@ -502,6 +556,11 @@ def self_test() -> dict:
         raising = verify_differential([str(a), str(b)], "parse", ["nope"])
         check("identical_exceptions_are_agreement",
               raising.verdict == "PASS", raising.verdict)
+        check("raises_agreements_are_not_value_agreements",
+              raising.agreed == 1 and raising.agreed_on_values == 0
+              and agree.agreed_on_values == 4
+              and agree.to_dict()["agreed_on_values"] == 4,
+              f"{raising.agreed_on_values} of {raising.agreed}")
 
         single = verify_differential([str(a)], "parse", args)
         check("one_implementation_cannot_decide",
@@ -528,6 +587,114 @@ def self_test() -> dict:
 
         check("report_serializes",
               agree.to_dict()["record_type"] == "differential_verification/v1")
+
+        # H3: the driver process is built from nothing.  Generated code sees
+        # its own directory as cwd, an allowlisted environment, and an
+        # isolated interpreter -- never the engine's cwd or secrets.
+        secret_name = "_DIFFERENTIAL_SELF_TEST_SECRET"
+        os.environ[secret_name] = "must-not-leak"
+        peek = base / "peek.py"
+        peek.write_text(
+            "import os, sys\n"
+            "def peek(_):\n"
+            "    return [os.getcwd(), os.environ.get("
+            f"{secret_name!r}, 'absent'), sys.flags.isolated,\n"
+            "            'PYTHONPATH' in os.environ]\n", encoding="utf-8")
+        try:
+            outcomes, error = _run_implementation(
+                str(peek), "peek", ["x"], host_execution_permitted=True)
+        finally:
+            os.environ.pop(secret_name, None)
+        seen = json.loads(outcomes[0][len("value:"):]) if outcomes else []
+        check("driver_runs_in_the_implementation_directory",
+              error is None and seen and Path(seen[0]).resolve()
+              == base.resolve(), str(seen))
+        check("driver_environment_is_allowlisted_from_nothing",
+              error is None and seen and seen[1] == "absent"
+              and seen[3] is False, str(seen))
+        check("driver_runs_python_isolated",
+              error is None and seen and seen[2] == 1, str(seen))
+        check("inheritable_names_match_the_step_session_allowlist",
+              set(inheritable_environment_names())
+              >= {"PATH", "HOME", "TMPDIR"},
+              str(inheritable_environment_names()))
+
+        # L4 / E2BIG: a fixture far larger than one argv element may carry.
+        sizer = base / "sz.py"
+        sizer.write_text("import os\ndef size(p):\n    return os.path.getsize(p)\n",
+                         encoding="utf-8")
+        sizer2 = base / "sz2.py"
+        sizer2.write_text("def size(p):\n    return len(open(p, 'rb').read())\n",
+                          encoding="utf-8")
+        big = [{"__fixture_content__": "r,v\n" * 80000}]      # ~320 KB
+        wide = verify_differential([str(sizer), str(sizer2)], "size", big)
+        check("large_arguments_travel_by_stdin_not_argv",
+              wide.verdict == "PASS" and wide.agreed_on_values == 1,
+              f"{wide.verdict} {list(wide.errors)}")
+
+        # A driver that cannot start is a report, never an exception.
+        nowhere = verify_differential([str(a), str(b)], "parse", args,
+                                      workspace=str(base / "missing"))
+        check("unstartable_driver_is_unverified_not_an_exception",
+              nowhere.verdict == "UNVERIFIED" and nowhere.errors
+              and "could not start the driver" in nowhere.errors[0],
+              str(nowhere.errors))
+
+        # Output is bounded and out of band: junk on stdout cannot corrupt
+        # the result, and an implementation that exits is an outcome.
+        noisy = base / "noisy.py"
+        noisy.write_text("import sys\nsys.stdout.write('x' * 300000)\n" + good,
+                         encoding="utf-8")
+        loud = verify_differential([str(noisy), str(b)], "parse", args)
+        check("noisy_stdout_does_not_corrupt_the_result",
+              loud.verdict == "PASS" and loud.agreed == 4,
+              f"{loud.verdict} {list(loud.errors)}")
+        exiting = base / "exiting.py"
+        exiting.write_text("def parse(t):\n    raise SystemExit(0)\n",
+                           encoding="utf-8")
+        exited = verify_differential([str(exiting), str(a)], "parse", ["P1D"])
+        check("system_exit_inside_the_implementation_is_an_outcome",
+              exited.verdict == "FAIL" and exited.divergences
+              and "raises:SystemExit" in exited.divergences[0].outcomes,
+              str([d.to_dict() for d in exited.divergences]))
+
+        # The explicit permission: tool callers default to permitted; the
+        # model-reachable operation needs the services to say so.
+        refused = verify_differential([str(a), str(b)], "parse", args,
+                                      host_execution_permitted=False)
+        refused_meta = verify_metamorphic(str(a), "parse", relations,
+                                          host_execution_permitted=False)
+        refused_cost = verify_complexity(str(a), "parse", sizes=(10, 100),
+                                         host_execution_permitted=False)
+        check("host_execution_refused_without_permission",
+              all(r.verdict == "UNVERIFIED" for r in (refused, refused_meta,
+                                                       refused_cost))
+              and HOST_EXECUTION_REFUSED in refused.errors[0]
+              and HOST_EXECUTION_REFUSED in refused_meta.errors[0]
+              and HOST_EXECUTION_REFUSED in refused_cost.violations[0])
+        request = {"entry_point": "parse", "implementations": ["a.py", "b.py"],
+                   "arguments": args}
+        closed = differential_verification_operation(
+            request, SimpleNamespace(workspace_base=str(base)))
+        check("operation_refuses_host_execution_without_services_permission",
+              closed["verdict"] == "UNVERIFIED"
+              and HOST_EXECUTION_REFUSED in closed["errors"][0]
+              and closed["host_execution_permitted"] is False, str(closed))
+        opened = differential_verification_operation(
+            request, SimpleNamespace(workspace_base=str(base),
+                                     allow_host_verification=True))
+        check("operation_runs_with_explicit_services_permission",
+              opened["verdict"] == "PASS"
+              and opened["host_execution_permitted"] is True, str(opened))
+        escaped = differential_verification_operation(
+            {"entry_point": "parse",
+             "implementations": ["a.py", str(Path(root).parent / "x.py")],
+             "arguments": args},
+            SimpleNamespace(workspace_base=str(base),
+                            allow_host_verification=True))
+        check("operation_still_confines_paths_when_permitted",
+              escaped["verdict"] == "UNVERIFIED"
+              and "outside workspace" in escaped["errors"][0], str(escaped))
 
         # Complexity is measured on engine-chosen inputs, so a quadratic
         # implementation cannot pass by being benchmarked on a benign one.
@@ -556,6 +723,8 @@ def self_test() -> dict:
         fast = verify_complexity(str(linear), "dup", sizes=(500, 5000))
         check("a_linear_implementation_passes",
               fast.verdict == "PASS", fast.detail)
+        check("timings_below_clock_resolution_are_batched",
+              "batched" in fast.detail, fast.detail)
         check("a_missing_entry_point_is_unverified_not_failed",
               verify_complexity(str(linear), "absent",
                                 sizes=(500, 5000)).verdict == "UNVERIFIED")

@@ -1,11 +1,47 @@
-# OpenCode instances as loop-node cognitive steps
+# OpenCode instance composition and native session limits
 
-An optional execution mode: each Practitioner cognitive step runs inside its
-own OpenCode instance, composed from a fixed core layer and a per-step layer
-chosen when the instance is created. Nothing in the default path changes. A
-run that does not ask for this is byte-for-byte the run it was before.
+This is an optional host execution adapter, not another Loop run mode.
+It composes a native OpenCode instance from a core layer and a selected
+step layer. The registered default catalogue is extensible; its four
+example steps do not limit the product's step profiles.
 
-## Why this was cheap to add
+The September 13 integration review found that the native session did not
+honor the complete gateway request. Read the current limits below before
+using the historical experiments later in this page. The
+[complete behavioral explanation](../ASTRA.md#complete-behavioral-explanation)
+defines the discrete cognitive or act step Loop node; this adapter implements
+only part of that design.
+
+```text
+Operational runtime type
+└── Loop
+    ├── Operational relationship
+    │   ├── Starting
+    │   ├── Spawned by
+    │   ├── Queried by
+    │   ├── Retrieved by
+    │   └── Connected from
+    ├── Role
+    │   ├── Practitioner
+    │   ├── Intelligence
+    │   └── Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Run mode
+    │   ├── deterministic
+    │   ├── hybrid
+    │   └── non-deterministic, with model-led semantic work
+    ├── Step profile
+    ├── Typed input and output contract
+    ├── Loop condition
+    ├── Exit condition
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when the selected mode permits a model
+    └── Run History records
+```
+
+## Shared interface and request compatibility
 
 Every adaptive step reaches the model through exactly one seam:
 
@@ -14,10 +50,11 @@ services.model_session.invoke(ModelInvocationRequest(...), owner)
 ```
 
 `orient`, `plan`, `implement` and `verify` all funnel through it. Supplying a
-different object for `model_session` therefore redirects every cognitive step
-at once, with no change to the practitioner, the prompt builder, or the
-verification path. The interface is four members: `invoke`, `results`,
-`calls_used`, `authority`.
+different object for `model_session` selects an alternative implementation.
+Matching method names does not establish request compatibility.
+The interface includes `invoke`, `results`,
+`calls_used`, `accounting_uncertain`, `authority`; `start_session` refuses a
+factory-made session that lacks any of the first four, by name.
 
 ## The two modules
 
@@ -28,11 +65,23 @@ verification path. The interface is four members: `invoke`, `results`,
 
 ### Session
 
-`OpenCodeStepSession` mirrors `ModelExecutionSession`. It enforces
-`authority.max_model_calls` *before* starting a process, reuses the existing
-`parse_opencode_events` to normalise `opencode run --format json`, and
-projects each turn into a `ModelGatewayResult` so accounting, stage grading
-and Run History see an OpenCode step exactly as they see a gateway step.
+`OpenCodeStepSession` accepts a prompt, a matching model identity, and a
+bound structural response expectation. It checks that expectation and an
+explicit validator before returning a successful result. It refuses system
+instructions, temperature, a different model, output allocation, response
+normalization policies, harness selection, and evaluator references before
+execution. Those fields need a reviewed native binding. In particular, the
+default temperature on `ModelInvocationRequest` is an explicit setting,
+so the current native session is not a complete replacement for
+`ModelExecutionSession`. Use the canonical gateway for that contract.
+
+The session checks available authority before starting and charges every
+reported model turn afterward. OpenCode controls the number of internal
+turns, so this path detects an overrun after execution; it cannot guarantee
+a strict pre-dispatch call or token ceiling. Missing usage remains unknown.
+Transport failure leaves an uncertain result and prevents another run
+under a finite ceiling. Native process failure cannot become success merely
+because partial output contains text.
 
 Token counts come from `step_finish`, with cache reads folded into input and
 reasoning into output: the numbers the provider actually bills, not the raw
@@ -56,11 +105,12 @@ also leaves an artifact a human can read after the run.
   instance-manifest.json      <- what this instance was, and where it came from
 ```
 
-**Core layer**: identical on every step of every run. `CoreLayer.digest`
-is computed over every core file's path and bytes and recorded into every
-instance manifest. A core that drifts between steps is *detectable*, not
-merely promised: if it can be edited per step without anyone noticing, it is
-not an invariant, it is a default.
+**Core layer**: the supplied `CoreLayer` pins its files by path and bytes.
+The example runner reuses one core layer across its steps. This is a
+campaign choice, not a requirement that every assignment or experiment
+use identical instructions. Another qualified core layer can be supplied
+explicitly. The manifest records the selected digest, and composition
+refuses bytes that no longer match it.
 
 **Step layer**: chosen at instantiation from an engine-owned catalogue keyed
 by step id. A step file that would overwrite a core file is refused rather
@@ -82,9 +132,11 @@ Permissions are the substance here, not decoration:
 | `implement` | read, write, edit, bash, grep, glob, list | allow | allow |
 | `verify` | read, bash, grep, glob, list | **deny** | allow |
 
-`verify` can run commands but cannot edit: a verifier that can edit can make
-a failing check pass. `orient` cannot write: a step that edits has a way to
-appear to make progress without producing the orientation it was asked for.
+The `verify` example denies the native edit tool but permits a shell.
+A shell can still change files. `WorkspaceGuard` detects selected workspace
+changes and can restore them; it does not contain effects outside that
+workspace. The read-only examples disable known write-capable tools,
+including shell execution and delegation.
 
 `permission: ask` is refused outright for unattended steps: a prompt nobody
 is awake to answer is a hang, not a safeguard.
@@ -101,20 +153,29 @@ What runs here is narrower, and is stated rather than left to be inferred:
 - the environment is an allowlist built from nothing: a credential the
   profile did not name cannot travel by having been present in this process;
 - `--pure` disables external plugins;
-- `--dir` confines the working directory.
+- `--dir` selects the working directory; it does not confine file access.
 
 That is **a host process with a scrubbed environment**, a weaker boundary
 than the engine's Docker profile (`--read-only --cap-drop ALL --network
-none`). It is appropriate for driving a cognitive step, whose product is text
-this engine then validates. It is **not** a substitute for the sandbox that
-executes generated code. `requires_trusted_workspace` defaults to True to
-keep that distinction legible at the call site.
+none`). Native tools may perform effects before any final text is checked.
+Use it only with explicitly trusted host execution. The environment allowlist
+still includes `HOME`, and is not credential-file isolation.
+`requires_trusted_workspace` is a declaration, not an operating-system
+sandbox. The quarantined adapter remains unavailable for untrusted work.
 
-## Status: working end to end, live
+Composition refuses path traversal, symlinked instance roots, file aliases,
+reserved manifest replacement, and context writes into `.opencode` before
+materialization. Validated native controls are read-only. YAML scalars are
+quoted, and permission patterns retain their declared order because OpenCode
+uses the last matching rule. See the official
+[agent configuration](https://opencode.ai/docs/agents/#permissions).
 
-Both modules are registered in the suite and pass offline (10 + 12 checks).
-Two live cognitive steps ran through composed instances against
-`ollama-cloud/gemma4:31b`:
+## Historical native session experiments
+
+The original record reported 10 and 12 offline checks and two live cognitive
+steps through composed instances against
+`ollama-cloud/gemma4:31b`. Those runs predate the current request refusals and
+do not qualify every gateway dimension, strict budgets, or native isolation:
 
 | step | wall time | input tokens | output tokens |
 |---|---|---|---|

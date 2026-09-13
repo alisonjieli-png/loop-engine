@@ -25,11 +25,19 @@ commands. It hashes the tracked files before and after, and reports exactly
 what changed. A guard that only warns would be theatre, so ``restore`` puts
 the bytes back. Detection is engine-side and does not ask the model whether
 it behaved.
+
+The rollback itself never follows a symlink. A step that swaps a tracked
+file, or a directory above it, for a link pointing outside the workspace
+is reported as its own change class (``replaced_by_symlink``), and restore
+unlinks the link, rebuilds real directories, opens the file O_NOFOLLOW and
+checks the final path against the resolved root before writing a byte.
 """
 
 from __future__ import annotations
 
 import hashlib
+import os
+import shutil
 import subprocess
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -62,38 +70,127 @@ def _relevant_files(root: Path) -> dict:
     return files
 
 
+def _relevant_links(root: Path) -> dict:
+    """Symlinks under root (to files or directories) -> what they point at."""
+    links = {}
+    for path in root.rglob("*"):
+        if any(part in IGNORED_DIRECTORY_NAMES for part in path.parts):
+            continue
+        if path.is_symlink():
+            try:
+                links[str(path.relative_to(root))] = os.readlink(path)
+            except OSError:
+                continue
+    return links
+
+
+def _symlink_in_path(root: Path, name: str) -> bool:
+    """True if the name, or any directory on the way to it, is now a symlink."""
+    current = Path(root)
+    for part in Path(name).parts:
+        current = current / part
+        if current.is_symlink():
+            return True
+    return False
+
+
+def _write_without_following(root: Path, name: str, data: bytes) -> None:
+    """Put bytes back at root/name without ever following a symlink.
+
+    A step that swapped a tracked file, or a directory above it, for a
+    symlink pointing outside the workspace must not turn the rollback into
+    a write to wherever the link points. Every symlink on the path is
+    unlinked (the link, never its target), directories are recreated as
+    real directories, the file is opened O_NOFOLLOW, and the final path is
+    checked against the resolved root before a byte is written.
+    """
+    real_root = os.path.realpath(root)
+    current = Path(root)
+    parts = Path(name).parts
+    for part in parts[:-1]:
+        current = current / part
+        if os.path.islink(current) or (
+                os.path.lexists(current) and not os.path.isdir(current)):
+            os.unlink(current)
+        if not os.path.lexists(current):
+            os.mkdir(current)
+    target = current / parts[-1]
+    if os.path.islink(target):
+        os.unlink(target)
+    elif os.path.isdir(target):
+        shutil.rmtree(target)
+    resolved = os.path.realpath(target)
+    if resolved == real_root or os.path.commonpath(
+            (real_root, resolved)) != real_root:
+        raise WorkspaceGuardError(
+            f"refusing to restore {name!r}: it resolves to {resolved}, "
+            f"outside the workspace {real_root}")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | getattr(os, "O_NOFOLLOW", 0)
+    handle = os.open(str(target), flags, 0o644)
+    with os.fdopen(handle, "wb") as stream:
+        stream.write(data)
+
+
 @dataclass
 class WorkspaceGuard:
     """Snapshot a workspace, then say exactly what a step did to it."""
 
     root: Path
     _before: dict = field(default_factory=dict, repr=False)
+    _before_links: dict = field(default_factory=dict, repr=False)
 
     def snapshot(self) -> "WorkspaceGuard":
         self._before = _relevant_files(Path(self.root))
+        self._before_links = _relevant_links(Path(self.root))
         return self
 
     def changes(self) -> dict:
-        """Return {"modified": [...], "created": [...], "deleted": [...]}."""
-        after = _relevant_files(Path(self.root))
+        """Return what a step did, by class.
+
+        ``modified``, ``created`` and ``deleted`` are what they say.
+        ``replaced_by_symlink`` is a tracked file whose name, or a directory
+        above it, is now a symlink: its own class, because a rollback that
+        read it as "deleted" would write the original bytes through the
+        link. ``symlinks_created`` are new links at untracked names.
+        """
+        root = Path(self.root)
+        after = _relevant_files(root)
+        links = _relevant_links(root)
         before = self._before
+        missing = before.keys() - after.keys()
+        replaced = sorted(name for name in missing
+                          if _symlink_in_path(root, name))
         modified = sorted(name for name in before.keys() & after.keys()
                           if before[name] != after[name])
         return {"modified": modified,
                 "created": sorted(after.keys() - before.keys()),
-                "deleted": sorted(before.keys() - after.keys())}
+                "deleted": sorted(missing - set(replaced)),
+                "replaced_by_symlink": replaced,
+                "symlinks_created": sorted(
+                    name for name in links.keys() - self._before_links.keys()
+                    if name not in before)}
 
     def clean(self) -> bool:
         return not any(self.changes().values())
 
     def restore(self) -> dict:
-        """Put the bytes back. A guard that only warned would be theatre."""
+        """Put the bytes back. A guard that only warned would be theatre.
+
+        Nothing here follows a symlink: links a step created are unlinked
+        (the link, never what it points at) and tracked files come back
+        through ``_write_without_following``, so a rollback cannot be turned
+        into a write outside the workspace.
+        """
         changed = self.changes()
         root = Path(self.root)
-        for name in changed["modified"] + changed["deleted"]:
-            target = root / name
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(self._before[name])
+        for name in changed["symlinks_created"]:
+            try:
+                os.unlink(root / name)
+            except OSError:
+                pass
+        for name in (changed["replaced_by_symlink"] + changed["modified"]
+                     + changed["deleted"]):
+            _write_without_following(root, name, self._before[name])
         for name in changed["created"]:
             try:
                 (root / name).unlink()
@@ -208,6 +305,48 @@ def self_test() -> dict:
         except WorkspaceGuardError as exc:
             check("an_empty_command_is_refused",
                   "needs a command" in str(exc), str(exc)[:80])
+
+        # --- symlink swaps: the rollback must never follow a link ---
+        ws, outside = root / "ws", root / "outside"
+        ws.mkdir()
+        outside.mkdir()
+        (ws / "keep.py").write_bytes(b"ORIGINAL\n")
+        (ws / "sub").mkdir()
+        (ws / "sub" / "a.txt").write_bytes(b"A\n")
+        victim = outside / "victim.cfg"
+        victim.write_bytes(b"outside, untouched\n")
+        (outside / "dir_target").mkdir()
+        swapped = WorkspaceGuard(root=ws).snapshot()
+        (ws / "keep.py").unlink()
+        (ws / "keep.py").symlink_to(victim)          # what `ln -sf` does
+        shutil.rmtree(ws / "sub")
+        (ws / "sub").symlink_to(outside / "dir_target")
+        (ws / "stray").symlink_to(victim)
+        seen = swapped.changes()
+        check("a_tracked_file_replaced_by_a_symlink_is_its_own_change_class",
+              seen["replaced_by_symlink"] == ["keep.py", "sub/a.txt"]
+              and seen["deleted"] == []
+              and seen["symlinks_created"] == ["stray", "sub"],
+              str(seen))
+        try:
+            swapped.enforce()
+            check("enforce_rolls_a_symlink_swap_back", False, "did not raise")
+        except WorkspaceGuardError:
+            check("enforce_rolls_a_symlink_swap_back",
+                  (ws / "keep.py").read_bytes() == b"ORIGINAL\n"
+                  and not (ws / "keep.py").is_symlink()
+                  and (ws / "sub" / "a.txt").read_bytes() == b"A\n"
+                  and not (ws / "sub").is_symlink())
+        check("restore_never_writes_through_a_file_symlink",
+              victim.read_bytes() == b"outside, untouched\n",
+              "the original bytes went to a real file, not the link target")
+        check("restore_never_writes_through_a_directory_symlink",
+              not (outside / "dir_target" / "a.txt").exists()
+              and list((outside / "dir_target").iterdir()) == [])
+        check("a_created_symlink_is_removed_without_touching_its_target",
+              not (ws / "stray").is_symlink() and not (ws / "stray").exists()
+              and victim.exists())
+        check("the_workspace_is_clean_after_a_symlink_rollback", swapped.clean())
 
     return {"module": "core.opencode_step_guard", "tests": tests,
             "passed": all(item["passed"] for item in tests)}

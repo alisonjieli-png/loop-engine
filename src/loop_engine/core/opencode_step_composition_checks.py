@@ -7,13 +7,16 @@ size cap, following the convention used by the other ``*_checks`` modules.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 from pathlib import Path
+from collections.abc import Mapping
+import yaml
 
 from .opencode_step_composition import (
-    OpenCodeCompositionError, SkillCandidate, StepLayer, admit_requests,
-    source_only_edit_permission,
+    CoreLayer, ForeignOpenCodeTreeError, OpenCodeCompositionError, SkillCandidate,
+    StepLayer, admit_requests, read_only_tools, source_only_edit_permission,
     compose_instance, default_catalogue, default_core, default_skill_library,
     dynamic_step_layer, inventory_step_layer, observation_step_layer,
     provisioned_step_layer, requirements_step_layer)
@@ -49,7 +52,7 @@ def run_checks() -> dict:
     rendered = orient.agent_markdown()
     check("agent_file_carries_tools_and_permissions",
           "edit: false" in rendered and "permission:" in rendered
-          and "bash: deny" in rendered and rendered.startswith("---"),
+          and '"bash": deny' in rendered and rendered.startswith("---"),
           rendered.split("\n", 6)[-1][:70])
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -202,12 +205,12 @@ def run_checks() -> dict:
                        permission={"edit": rule, "bash": "allow"})
     rendered = scoped.agent_markdown()
     check("pattern_permissions_render_as_nested_yaml",
-          '  edit:\n' in rendered and '    "**/tests/**": deny' in rendered
+          '  "edit":\n' in rendered and '    "**/tests/**": deny' in rendered
           and '    "*": allow' in rendered,
           rendered.split("permission:")[1][:80].replace("\n", " | "))
     imp = catalogue.select("implement")
     check("implement_ships_source_only_edits_by_default",
-          isinstance(imp.permission.get("edit"), dict)
+          isinstance(imp.permission.get("edit"), Mapping)
           and imp.permission["edit"].get("**/tests/**") == "deny",
           "found live: a step with unrestricted edit mocked urlopen so an "
           "integration test tested nothing, and the gate went green")
@@ -308,6 +311,165 @@ def run_checks() -> dict:
     except OpenCodeCompositionError as exc:
         check("empty_system_prompt_is_refused",
               "silently inherits" in str(exc), str(exc)[:90])
+
+    # --- an existing .opencode tree is replaced only when it is ours ---
+    with tempfile.TemporaryDirectory() as tmp:
+        project = Path(tmp) / "project"
+        (project / ".opencode").mkdir(parents=True)
+        own = project / ".opencode" / "opencode.json"
+        own.write_text('{"project": "own config"}')
+        try:
+            compose_instance(core, orient, project)
+            check("a_projects_own_opencode_tree_is_refused_not_deleted",
+                  False, "composed over it")
+        except ForeignOpenCodeTreeError as exc:
+            check("a_projects_own_opencode_tree_is_refused_not_deleted",
+                  own.read_text() == '{"project": "own config"}'
+                  and "replace_existing" in str(exc), str(exc)[:100])
+        replaced = compose_instance(core, orient, project, replace_existing=True)
+        check("replace_existing_is_the_explicit_override",
+              not own.exists()
+              and replaced.manifest["record_type"] == "opencode_step_instance/v1")
+        again = compose_instance(core, catalogue.select("verify"), project)
+        check("an_instance_this_composer_built_is_replaced_without_a_flag",
+              again.manifest["step_id"] == "verify"
+              and not (project / ".opencode" / "agent" / "step-orient.md").exists())
+
+        # --- every materialized path is confined to the workspace, and a
+        # context file may not touch the instance directory ---
+        ws = project / "ws-hostile"
+        ws.mkdir()
+        (ws / "link-out").symlink_to(Path(tmp))
+        escaped = []
+        for bad in (".opencode/agent/step-orient.md", "../escaped.md",
+                    "/tmp/escaped.md", "link-out/escaped.md",
+                    ".opencode/instance-manifest.json", ""):
+            hostile = StepLayer(step_id="orient", description="d",
+                                system_prompt="p", context_files={bad: "x"})
+            try:
+                compose_instance(core, hostile, ws)
+                escaped.append(bad)
+            except OpenCodeCompositionError:
+                pass
+        try:
+            compose_instance(core, StepLayer(
+                step_id="orient", description="d", system_prompt="p",
+                context_files={"AGENTS.md": "a", "./AGENTS.md": "b"}), ws)
+            escaped.append("duplicate")
+        except OpenCodeCompositionError:
+            pass
+        check("context_files_cannot_escape_the_workspace_or_touch_the_instance",
+              escaped == [] and not (ws / ".opencode").exists()
+              and not (Path(tmp) / "escaped.md").exists(),
+              f"refused before any write; escaped={escaped}")
+        real = compose_instance(core, StepLayer(
+            step_id="orient", description="d", system_prompt="p",
+            context_files={"AGENTS.md": "project agents"}), project / "ws-real")
+        mat = real.manifest["materialized"]
+        check("the_manifest_records_what_was_actually_written",
+              set(mat) == {".opencode/agent/step-orient.md",
+                           ".opencode/skill/response-contract/SKILL.md",
+                           "AGENTS.md"}
+              and all(hashlib.sha256((project / "ws-real" / p).read_bytes())
+                      .hexdigest() == d for p, d in mat.items()),
+              f"{len(mat)} files digested after writing")
+
+    # --- tool flags are real Booleans; "false" once enabled a tool ---
+    loose = []
+    for value in ("false", 0, None):
+        try:
+            StepLayer(step_id="s", description="d", system_prompt="p",
+                      tools={"bash": value})
+            loose.append(value)
+        except OpenCodeCompositionError:
+            pass
+    try:
+        read_only_tools(bash="false")
+        loose.append("read_only_tools")
+    except OpenCodeCompositionError:
+        pass
+    try:
+        StepLayer(step_id="s", description="d", system_prompt="p",
+                  unattended="no")
+        loose.append("unattended")
+    except OpenCodeCompositionError:
+        pass
+    check("tool_flags_must_be_real_booleans",
+          loose == [] and StepLayer(
+              step_id="s", description="d", system_prompt="p",
+              tools={"bash": False}).tools["bash"] is False,
+          f"accepted non-Booleans: {loose}")
+
+    # --- a skill limit is an integer honored exactly; zero means none ---
+    task = "fix the failing csv dataset bug; there is a traceback"
+    check("a_skill_limit_is_honored_exactly_and_zero_means_none",
+          library.select("plan", task, limit=0) == {}
+          and len(library.select("plan", task, limit=1)) == 1
+          and len(library.select("plan", task, limit=2)) == 2
+          and dynamic_step_layer(catalogue.select("plan"), task, library,
+                                 limit=0)[0].skills == {},
+          "a zero limit once selected one skill")
+    refused = []
+    for bad in (-1, "2", 2.0, True):
+        try:
+            library.select("plan", task, limit=bad)
+        except OpenCodeCompositionError:
+            refused.append(bad)
+    check("a_negative_or_non_integer_skill_limit_is_refused",
+          refused == [-1, "2", 2.0, True], str(refused))
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        workspace, outside = root / "workspace", root / "outside"
+        workspace.mkdir()
+        outside.mkdir()
+        (workspace / ".opencode").symlink_to(outside, target_is_directory=True)
+        for replace in (False, True):
+            try:
+                compose_instance(CoreLayer.from_mapping({"policy.md": "x"}),
+                                 orient, workspace, replace_existing=replace)
+                check(f"symlink_root_refused_before_effect_{replace}", False)
+            except OpenCodeCompositionError:
+                check(f"symlink_root_refused_before_effect_{replace}",
+                      not list(outside.iterdir())
+                      and (workspace / ".opencode").is_symlink())
+        for files in ({"instance-manifest.json": "x"},
+                      {"./agent/step-orient.md": "x"}):
+            try:
+                compose_instance(CoreLayer.from_mapping(files), orient,
+                                 root / "reserved")
+                check(f"reserved_or_alias_file_refused_{next(iter(files))}", False)
+            except OpenCodeCompositionError:
+                check(f"reserved_or_alias_file_refused_{next(iter(files))}",
+                      not (root / "reserved").exists())
+
+    hostile = StepLayer("quoted", "description\nmode: subagent", "body",
+                        permission={"bash": {"z*": "deny", '*"\n': "allow"}},
+                        model="provider/model\ntools: {bash: true}")
+    native = yaml.safe_load(hostile.agent_markdown().split("---", 2)[1])
+    check("native_scalars_cannot_inject_fields",
+          native["mode"] == "primary" and "tools" not in native
+          and native["description"] == hostile.description
+          and native["model"] == hostile.model)
+    check("native_permission_order_is_preserved",
+          list(native["permission"]["bash"]) == ["z*", '*"\n']
+          and list(source_only_edit_permission())[0] == "*")
+    original = {"bash": False}
+    rules = {"bash": {"*": "deny"}}
+    frozen = StepLayer("frozen", "d", "p", tools=original, permission=rules)
+    original["bash"] = True
+    rules["bash"]["*"] = "allow"
+    immutable = True
+    for mapping, key in ((frozen.tools, "bash"),
+                         (frozen.permission["bash"], "*")):
+        try:
+            mapping[key] = "allow"
+            immutable = False
+        except TypeError:
+            pass
+    check("validated_native_controls_cannot_mutate_through_aliases",
+          immutable and frozen.tools["bash"] is False
+          and frozen.permission["bash"]["*"] == "deny")
 
     return {"module": "core.opencode_step_composition", "tests": tests,
             "passed": all(item["passed"] for item in tests)}

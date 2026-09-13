@@ -21,7 +21,9 @@ from ..loop.kernel import (
 )
 from ..loop.kernel_runtime import current_kernel_owner
 from .adaptive_host_verification import require_host_checks, verify_host_results
-from .independent_evidence import independent_support, newest_attempt_dissents
+from .independent_evidence import (
+    apply_cross_attempt_evidence,
+)
 from .adaptive_practitioner_records import (
     AdaptivePractitionerError,
     AdaptiveRunServices,
@@ -481,41 +483,10 @@ def verify_adaptive_results(
                 f"admitted verdicts are {list(admitted_verdicts)}")
         if verdict == "accept" and not deterministic_pass:
             verdict = "repair"
-        # Independent cross-attempt evidence may only TIGHTEN this verdict.
-        # If the attempts this run produced disagree with each other and the
-        # newest one is the dissenter, accepting it would ship the regression
-        # measured on 2026-09-05: attempts 1 and 2 were correct, attempt 3 was
-        # broken, and the model's own verdict could not tell them apart.
-        # Deliberately one-directional -- agreement is NOT used to promote a
-        # repair into a success, because attempts drawn from one model share
-        # its misconceptions and can agree while all being wrong.
-        # Promotion runs AFTER the demotion above, because that line exists
-        # to stop the model accepting its own failing tests -- and the whole
-        # point here is that the failing tests may be the wrong artifact.  It
-        # fires only with an engine-owned anchor, and it is recorded as
-        # agreement-backed so downstream can weigh it differently from a run
-        # whose own tests passed.
-        support = ({} if deterministic_pass or verdict == "accept"
-                   else independent_support(services))
-        if support:
-            verdict = "accept"
-            services.diagnostic("verdict_supported_by_independent_evidence", {
-                "note": ("the model's own tests failed but independent "
-                         "cross-attempt agreement is unanimous AND an "
-                         "engine-owned constraint is satisfied"),
-                "agreement": support["agreement"],
-                "anchor": support.get("anchor"),
-                "constraints": support.get("constraints") or [],
-                "certification": "agreement_backed_not_test_backed",
-            })
-        dissent = newest_attempt_dissents(services)
-        if verdict == "accept" and dissent:
-            verdict = "repair"
-            services.diagnostic("independent_cross_attempt_dissent", {
-                "note": ("the newest attempt disagrees with its peers on "
-                         "inputs harvested from the generated tests"),
-                "detail": dissent,
-            })
+        # Agreement is advisory. Dissent may tighten the verdict, but a
+        # majority cannot override a failed check or a registered criterion.
+        verdict, _support, _dissent = apply_cross_attempt_evidence(
+            services, verdict, deterministic_pass)
         notes = _short_text(value.get("notes"), "verification notes")
         gap_values = value.get("remaining_gaps") or []
         if not isinstance(gap_values, list):

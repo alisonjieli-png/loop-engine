@@ -32,6 +32,17 @@ product is text this engine then validates, and it is NOT a substitute for
 the sandbox that executes generated code. ``requires_trusted_workspace`` is
 True to keep that distinction legible to callers rather than buried here.
 
+PROMPT FILE AND BUDGET, STATED ONCE
+The prompt travels in a file created exclusively (no existing path is
+followed, a leftover is unlinked first) at mode 0600, and the file is
+removed once the process returns unless the profile asks to keep it. A
+profile with no workspace writes into a private temporary directory;
+argv carries the prompt only when ``prompt_via_file`` is switched off by
+name. One ``opencode run`` decides its own number of model turns, so a
+ceiling can only be checked after it returns: what ran is charged in
+full, and a run that crossed ``max_model_calls`` (or the gateway config's
+``max_total_tokens``) is recorded with ``budget_overrun`` and refused.
+
 OFFLINE BY CONSTRUCTION
 ``transport`` is injectable, so ``self_test`` exercises the whole path --
 budget, parsing, result projection, refusal -- against the adapter's own
@@ -42,15 +53,20 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import shutil
+import signal
 import subprocess
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from threading import Lock
 
 from .model_gateway import GatewayAttempt, ModelGatewayResult
 from .opencode_harness_adapter import parse_opencode_events
+from .observation_expectations import (
+    ObservationBinding, ObservationExpectation, assess_observation)
 
 #: Environment names an OpenCode step may inherit. Everything absent from
 #: this tuple is dropped, so a credential the profile did not name cannot
@@ -65,6 +81,10 @@ PROMPT_POINTER_MESSAGE = (
 #: Where a step's prompt is written when file transport is used. Inside the
 #: composed instance directory, which is already per-step and disposable.
 PROMPT_FILE_NAME = ".step-prompt.md"
+
+#: Prefix of the private 0700 directory a step with no workspace writes its
+#: prompt into. Made per step by mkdtemp and removed together with the file.
+PRIVATE_PROMPT_DIRECTORY_PREFIX = "opencode-step-prompt-"
 
 #: The engine states the response contract in the prompt and validates the
 #: parsed object itself. OpenCode is asked for one JSON object and nothing
@@ -123,8 +143,14 @@ class OpenCodeStepProfile:
     #:     build host that exposes source, customer data, and anything a
     #:     failing command happened to print.
     #:
-    #: Default on. `False` restores argv for a caller that needs it.
+    #: Default on. `False` restores argv for a caller that needs it, and is
+    #: the only way the prompt reaches argv: a profile with no workspace
+    #: writes the file into a private temporary directory rather than
+    #: falling back to argv on its own.
     prompt_via_file: bool = True
+    #: The prompt file is removed once the process returns. A caller who
+    #: wants to read it afterwards says so here; nothing keeps it by accident.
+    keep_prompt_file: bool = False
 
     def __post_init__(self) -> None:
         if not str(self.model).strip():
@@ -137,9 +163,14 @@ class OpenCodeStepProfile:
                 "'ollama-cloud/gemma4:31b'")
         if not str(self.binary).strip():
             raise OpenCodeStepError("an OpenCode profile must name a binary")
-        if not isinstance(self.timeout_seconds, (int, float)) or (
-                self.timeout_seconds <= 0):
+        if (type(self.timeout_seconds) not in (int, float)
+                or not math.isfinite(self.timeout_seconds)
+                or self.timeout_seconds <= 0):
             raise OpenCodeStepError("timeout_seconds must be a positive number")
+        for name in ("pure", "requires_trusted_workspace", "prompt_via_file",
+                     "keep_prompt_file"):
+            if type(getattr(self, name)) is not bool:
+                raise OpenCodeStepError(f"{name} must be a Boolean")
 
     def environment(self) -> dict:
         """Build the separate process environment from nothing, by allowlist."""
@@ -150,14 +181,31 @@ class OpenCodeStepProfile:
             env["OPENCODE_CONFIG_DIR"] = str(self.config_directory)
         return env
 
+    def prompt_file_path(self, directory=None) -> "Path | None":
+        """Where this profile's prompt file goes, or None for argv transport.
+
+        Without a workspace the directory is chosen when the step runs (a
+        private temporary directory), so only the file's name is known here.
+        """
+        if not self.prompt_via_file:
+            return None
+        base = directory if directory is not None else self.workspace
+        if base is None:
+            return Path(PROMPT_FILE_NAME)
+        return Path(base) / PROMPT_FILE_NAME
+
     def command(self, message: str, prompt_file: "Path | None" = None
                 ) -> tuple:
         """The exact argument vector, so a caller can log or review it.
 
         With ``prompt_file`` the message is a constant pointer and the real
         text rides in the file, so argv is both unbounded and uninteresting
-        to anyone reading `ps`.
+        to anyone reading `ps`. With no ``prompt_file`` the profile's own
+        transport decides, so what a caller reviews is what runs: only
+        ``prompt_via_file=False`` puts the message itself in argv.
         """
+        if prompt_file is None:
+            prompt_file = self.prompt_file_path()
         argv = [self.binary, "run"]
         argv.append(PROMPT_POINTER_MESSAGE if prompt_file is not None
                     else message)
@@ -176,50 +224,133 @@ class OpenCodeStepProfile:
         return tuple(argv)
 
 
-def _write_prompt_file(profile: OpenCodeStepProfile, message: str) -> "Path | None":
-    """Write the prompt where only this user can read it."""
-    if not profile.prompt_via_file or profile.workspace is None:
+def _write_prompt_file(profile: OpenCodeStepProfile, message: str,
+                       directory=None) -> "Path | None":
+    """Write the prompt where only this user can read it.
+
+    Whatever already sits at the name is unlinked first: a stale file, or a
+    symlink someone planted, and unlinking removes a link rather than its
+    target. The file is then created O_EXCL|O_NOFOLLOW at 0600 and fchmod'd
+    to 0600, so neither a leftover mode nor the umask can widen it. A
+    profile with no workspace gets a private 0700 temporary directory (the
+    caller owns it); argv is used only when ``prompt_via_file`` is off.
+    """
+    if not profile.prompt_via_file:
         return None
-    target = Path(profile.workspace) / PROMPT_FILE_NAME
+    if directory is None and profile.workspace is None:
+        directory = tempfile.mkdtemp(prefix=PRIVATE_PROMPT_DIRECTORY_PREFIX)
+    target = profile.prompt_file_path(directory)
     target.parent.mkdir(parents=True, exist_ok=True)
-    # Created 0600 before any content is written, so the prompt is never
-    # briefly world-readable between creation and chmod.
-    handle = os.open(str(target), os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    if os.path.lexists(target):
+        if os.path.isdir(target) and not os.path.islink(target):
+            raise OpenCodeStepError(
+                f"{target} is a directory; refusing to write the prompt over it")
+        os.unlink(target)
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        handle = os.open(str(target), flags, 0o600)
+    except FileExistsError as exc:
+        raise OpenCodeStepError(
+            f"{target} reappeared between unlink and create; refusing to "
+            "write the prompt through whatever put it there") from exc
+    if hasattr(os, "fchmod"):
+        os.fchmod(handle, 0o600)
     with os.fdopen(handle, "w", encoding="utf-8") as stream:
         stream.write(message)
     return target
 
 
+def _discard_prompt_file(profile: OpenCodeStepProfile, prompt_file,
+                         private_directory=None) -> bool:
+    """Remove the prompt file once the process has returned.
+
+    ``keep_prompt_file`` leaves it in place for a caller who wants to read
+    it afterwards. A private directory made for a workspace-less step goes
+    with its file; a workspace is never touched beyond that one name.
+    """
+    if prompt_file is None or profile.keep_prompt_file:
+        return False
+    try:
+        os.unlink(prompt_file)
+    except OSError:
+        pass
+    if private_directory is not None:
+        shutil.rmtree(private_directory, ignore_errors=True)
+    return True
+
+
+class TransportResult(tuple):
+    """``(stdout lines, stderr tail)`` plus the argv that actually ran.
+
+    A two-tuple, so every caller that unpacks two names keeps working; the
+    executed vector rides as an attribute for the session's request digest.
+    """
+
+    def __new__(cls, lines, stderr_tail, argv=(), returncode=0):
+        made = super().__new__(cls, (tuple(lines), str(stderr_tail)))
+        made.argv = tuple(str(part) for part in argv)
+        made.returncode = returncode
+        return made
+
+
 def subprocess_transport(profile: OpenCodeStepProfile, message: str) -> tuple:
     """Run one headless OpenCode turn; return (stdout lines, stderr tail)."""
+    size = len(message.encode("utf-8"))
+    if not profile.prompt_via_file and size > MAX_ARGV_ELEMENT_BYTES:
+        # Decided before anything is resolved or launched: the refusal is
+        # about the prompt, so a machine with no harness installed (CI)
+        # reaches it too, rather than a missing-binary error first.
+        raise OpenCodeStepError(
+            f"the prompt is {size:,} bytes and argv caps a single "
+            f"element at {MAX_ARGV_ELEMENT_BYTES:,}; enable prompt_via_file "
+            "rather than letting the exec fail with E2BIG")
     binary = shutil.which(profile.binary)
     if binary is None:
         raise OpenCodeStepError(
             f"OpenCode binary {profile.binary!r} is not on PATH; install it "
             "or name an absolute path in the profile")
-    prompt_file = _write_prompt_file(profile, message)
-    if prompt_file is None and len(message) > MAX_ARGV_ELEMENT_BYTES:
-        raise OpenCodeStepError(
-            f"the prompt is {len(message):,} bytes and argv caps a single "
-            f"element at {MAX_ARGV_ELEMENT_BYTES:,}; enable prompt_via_file "
-            "rather than letting the exec fail with E2BIG")
-    argv = list(profile.command(message, prompt_file))
-    argv[0] = binary
+    private_directory = None
+    if profile.prompt_via_file:
+        # Each invocation owns a private directory, including when sessions
+        # share one workspace. Never unlink a user's workspace prompt file
+        # or let concurrent sessions replace each other's instructions.
+        private_directory = tempfile.mkdtemp(
+            prefix=PRIVATE_PROMPT_DIRECTORY_PREFIX,
+            dir=str(profile.workspace) if profile.workspace else None)
+    prompt_file = _write_prompt_file(profile, message, private_directory)
     try:
-        completed = subprocess.run(
-            argv, capture_output=True, text=True, check=False,
-            timeout=profile.timeout_seconds, env=profile.environment(),
-            cwd=str(profile.workspace) if profile.workspace else None)
-    except subprocess.TimeoutExpired as exc:
-        raise OpenCodeStepError(
-            f"OpenCode step exceeded {profile.timeout_seconds}s") from exc
-    except OSError as exc:
-        raise OpenCodeStepError(f"OpenCode step could not start: {exc}") from exc
-    if completed.returncode != 0 and not completed.stdout.strip():
-        tail = (completed.stderr or "").strip()[-400:]
-        raise OpenCodeStepError(
-            f"OpenCode exited {completed.returncode} with no events: {tail}")
-    return tuple(completed.stdout.splitlines()), (completed.stderr or "")[-400:]
+        argv = list(profile.command(message, prompt_file))
+        argv[0] = binary
+        try:
+            process = subprocess.Popen(
+                argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                env=profile.environment(), start_new_session=True,
+                cwd=str(profile.workspace) if profile.workspace else None)
+            try:
+                stdout, stderr = process.communicate(timeout=profile.timeout_seconds)
+                completed = subprocess.CompletedProcess(
+                    argv, process.returncode, stdout, stderr)
+            finally:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.communicate()
+        except subprocess.TimeoutExpired as exc:
+            raise OpenCodeStepError(
+                f"OpenCode step exceeded {profile.timeout_seconds}s") from exc
+        except OSError as exc:
+            raise OpenCodeStepError(
+                f"OpenCode step could not start: {exc}") from exc
+        if completed.returncode != 0 and not completed.stdout.strip():
+            tail = (completed.stderr or "").strip()[-400:]
+            raise OpenCodeStepError(
+                f"OpenCode exited {completed.returncode} with no events: {tail}")
+        return TransportResult(completed.stdout.splitlines(),
+                               (completed.stderr or "")[-400:], argv,
+                               completed.returncode)
+    finally:
+        _discard_prompt_file(profile, prompt_file, private_directory)
 
 
 def _unfenced_json(texts) -> "dict | None":
@@ -237,7 +368,8 @@ def _unfenced_json(texts) -> "dict | None":
     refusing it costs a whole step, and the repair attempt that follows is
     just as likely to come back fenced.
     """
-    for text in reversed(list(texts)):
+    # An earlier valid object must never replace an invalid final answer.
+    for text in list(texts)[-1:]:
         stripped = str(text).strip()
         if not stripped.startswith("```"):
             continue
@@ -251,6 +383,32 @@ def _unfenced_json(texts) -> "dict | None":
         if isinstance(value, dict):
             return value
     return None
+
+
+@dataclass
+class OpenCodeStepResult(ModelGatewayResult):
+    """A gateway result plus the ceiling one OpenCode run crossed, if any.
+
+    ``budget_overrun`` is None on a step within authority. Otherwise it
+    names the ceiling (model_calls or total_tokens), what was charged before
+    and after the run, and the refusal, so the run record shows where
+    authority was exceeded instead of a bare failed step.
+    """
+
+    budget_overrun: "dict | None" = None
+    model_call_accounting_complete: bool = True
+
+    @property
+    def physical_model_calls(self):
+        if not self.model_call_accounting_complete:
+            return None
+        return super().physical_model_calls
+
+    def to_dict(self) -> dict:
+        data = super().to_dict()
+        data["budget_overrun"] = self.budget_overrun
+        data["model_call_accounting_complete"] = self.model_call_accounting_complete
+        return data
 
 
 @dataclass
@@ -303,6 +461,47 @@ class OpenCodeStepSession:
     def _max_calls(self):
         return getattr(self.authority, "max_model_calls", None)
 
+    def _max_tokens(self):
+        """The gateway config's total-token ceiling, when the authority has one."""
+        ceiling = getattr(getattr(self.authority, "config", None),
+                          "max_total_tokens", None)
+        if isinstance(ceiling, int) and not isinstance(ceiling, bool) and ceiling > 0:
+            return ceiling
+        return None
+
+    def _budget_overrun(self, calls_before: int, tokens_before: int,
+                        calls_in_step: int) -> "dict | None":
+        """Name the ceiling one OpenCode run crossed, or None.
+
+        How many model turns a run makes is decided inside OpenCode, so a
+        ceiling can only be checked after the process returns. What ran is
+        charged in full and the step is refused: the honest reading of an
+        authority that was exceeded, neither a refund nor a quiet overshoot.
+        """
+        maximum = self._max_calls()
+        if maximum is not None and self._calls_charged > maximum:
+            return {"kind": "model_calls", "ceiling": maximum,
+                    "charged_before_step": calls_before,
+                    "calls_in_step": calls_in_step,
+                    "charged": self._calls_charged,
+                    "message": (
+                        f"one OpenCode run made {calls_in_step} model calls "
+                        "and pushed the whole-Solution count to "
+                        f"{self._calls_charged}/{maximum}; the calls are "
+                        "charged and the step is refused")}
+        ceiling = self._max_tokens()
+        if (ceiling is not None and not self._accounting_uncertain
+                and self._tokens_charged > ceiling):
+            return {"kind": "total_tokens", "ceiling": ceiling,
+                    "charged_before_step": tokens_before,
+                    "calls_in_step": calls_in_step,
+                    "charged": self._tokens_charged,
+                    "message": (
+                        "one OpenCode run pushed the whole-Solution token "
+                        f"total to {self._tokens_charged}/{ceiling}; the "
+                        "tokens are charged and the step is refused")}
+        return None
+
     def invoke(self, request, parent_loop) -> str:
         """Run one cognitive step inside an OpenCode session."""
         if not self._lock.acquire(blocking=False):
@@ -317,11 +516,27 @@ class OpenCodeStepSession:
         prompt = getattr(request, "prompt", None)
         if not isinstance(prompt, str) or not prompt.strip():
             raise OpenCodeStepError("invoke requires a request carrying a prompt")
+        expected = self._validate_request(request)
         maximum = self._max_calls()
+        if maximum is not None and self._accounting_uncertain:
+            raise OpenCodeStepError(
+                "model-call accounting is incomplete; a finite ceiling "
+                "cannot authorize another native run")
         if maximum is not None and self.calls_used >= maximum:
             raise OpenCodeStepError(
                 "whole-Solution model-call budget exhausted: "
                 f"{self.calls_used}/{maximum}")
+        token_ceiling = self._max_tokens()
+        if token_ceiling is not None:
+            if self._accounting_uncertain:
+                raise OpenCodeStepError(
+                    "token accounting is incomplete after a run that reported "
+                    "no step_finish; the declared total-token ceiling cannot "
+                    "be enforced, so no further step starts")
+            if self._tokens_charged >= token_ceiling:
+                raise OpenCodeStepError(
+                    "whole-Solution total-token budget exhausted: "
+                    f"{self._tokens_charged}/{token_ceiling}")
         message = f"{prompt}\n\n{JSON_ONLY_DIRECTIVE}"
         provider, _, model_id = self.profile.model.partition("/")
         # The two identities the Practitioner's stage recorder compares
@@ -342,8 +557,9 @@ class OpenCodeStepSession:
         # that happens to be 64 characters. prompt_digest is sha256 of the
         # prompt exactly as the gateway computes it, so it equals the
         # recorder's snapshot digest of the same rendered prompt.
-        # provider_request_digest covers the exact argv that reached
-        # OpenCode, which is this session's provider request.
+        # provider_request_digest is computed after the transport returns,
+        # over the argv that actually ran plus the prompt bytes it pointed
+        # at, which is this session's provider request.
         prompt_digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
         system_digest = hashlib.sha256(
             str(getattr(request, "system", "") or "").encode("utf-8")).hexdigest()
@@ -354,43 +570,140 @@ class OpenCodeStepSession:
             "provider": provider, "model": model_id,
             "pure": self.profile.pure, "agent": self.profile.agent,
         }, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+        try:
+            outcome = self.transport(self.profile, message)
+        except Exception as exc:
+            # A transport exception may occur after spending or a native
+            # effect. Preserve an unknown outcome, never a free retry.
+            self._accounting_uncertain = True
+            self._calls_charged += 1
+            self.results.append(OpenCodeStepResult(
+                ok=False, provider=provider, model=model_id,
+                error_code="opencode_transport_unknown",
+                error="native transport failed; outcome and usage unknown",
+                semantic_call_id=semantic_call_id, owner_loop_id=owner_loop_id,
+                prompt_digest=prompt_digest, system_digest=system_digest,
+                request_digest=request_digest, transport_succeeded=None,
+                model_call_accounting_complete=False))
+            raise OpenCodeStepError(
+                "native transport failed; outcome and usage unknown") from exc
+        lines, stderr_tail = outcome[0], outcome[1]
+        # A fixture transport reports no argv; then the profile's own
+        # rendering stands in, which is the vector the real transport builds.
+        ran = (tuple(getattr(outcome, "argv", ()) or ())
+               or self.profile.command(message))
         provider_request_digest = hashlib.sha256(
-            "\0".join(self.profile.command(message)).encode("utf-8")).hexdigest()
-        lines, stderr_tail = self.transport(self.profile, message)
+            b"\0".join(str(part).encode("utf-8") for part in ran)
+            + b"\0\0" + message.encode("utf-8")).hexdigest()
         parsed = parse_opencode_events(
             lines, provider_id=provider, model_id=model_id)
-        self._calls_charged += max(1, len(parsed.model_calls))
+        calls_before, tokens_before = self._calls_charged, self._tokens_charged
+        calls_in_step = len(parsed.model_calls)
+        # No step_finish means the call count is a floor and the token total
+        # is unknown; say so rather than report a smaller number as the truth.
+        if calls_in_step == 0:
+            self._accounting_uncertain = True
+        self._calls_charged += max(1, calls_in_step)
+        input_tokens = self._sum_tokens(parsed, "input_tokens")
+        output_tokens = self._sum_tokens(parsed, "output_tokens")
+        if input_tokens is None or output_tokens is None:
+            self._accounting_uncertain = True
+        else:
+            self._tokens_charged += input_tokens + output_tokens
+        overrun = self._budget_overrun(calls_before, tokens_before, calls_in_step)
         text = self._text_of(parsed)
-        ok = bool(text.strip())
-        result = ModelGatewayResult(
+        responded = bool(text.strip())
+        compatible = None
+        assessments = ()
+        if expected is not None:
+            try:
+                assessment = assess_observation(expected, ObservationBinding(
+                    semantic_call_id, request.exact_input_digest, text))
+                compatible = assessment.handoff_ready
+                assessments = (assessment,)
+            except (ValueError, TypeError):
+                compatible = False
+        validator = getattr(self.authority, "validator", None)
+        if validator is not None:
+            try:
+                valid = validator(text) is True
+            except Exception:
+                valid = False
+            compatible = valid and compatible is not False
+        process_ok = (getattr(outcome, "returncode", 0) == 0
+                      and "error" not in parsed.unmapped_types)
+        if not process_ok:
+            self._accounting_uncertain = True
+        ok = responded and process_ok and compatible is not False and overrun is None
+        error_code = ("budget_overrun" if overrun is not None else
+                      "opencode_process_failed" if not process_ok else
+                      "response_contract_mismatch" if compatible is False else
+                      "" if ok else "opencode_no_text")
+        attempts = [GatewayAttempt(
+            provider, model_id, f"opencode.{provider}",
+            parsed.session_id or "opencode", ok,
+            getattr(call, "input_tokens", None),
+            getattr(call, "output_tokens", None), compatible,
+            provider_ok=responded, response_received=responded,
+            semantic_call_id=semantic_call_id, owner_loop_id=owner_loop_id,
+            prompt_digest=prompt_digest, system_digest=system_digest,
+            provider_request_digest=provider_request_digest,
+            transport_succeeded=process_ok, error_code=error_code)
+            for call in parsed.model_calls]
+        result = OpenCodeStepResult(
             ok=ok, text=text, provider=provider, model=model_id,
             route=f"opencode.{provider}",
-            input_tokens=self._sum_tokens(parsed, "input_tokens"),
-            output_tokens=self._sum_tokens(parsed, "output_tokens"),
-            attempts=[GatewayAttempt(
-                provider, model_id, f"opencode.{provider}",
-                parsed.session_id or "opencode", ok,
-                self._sum_tokens(parsed, "input_tokens") or 0,
-                self._sum_tokens(parsed, "output_tokens") or 0,
-                True, provider_ok=ok,
-                semantic_call_id=semantic_call_id,
-                owner_loop_id=owner_loop_id,
-                prompt_digest=prompt_digest, system_digest=system_digest,
-                provider_request_digest=provider_request_digest)],
-            error_code="" if ok else "opencode_no_text",
-            error="" if ok else f"no assistant text in events; {stderr_tail}",
+            input_tokens=input_tokens, output_tokens=output_tokens,
+            attempts=attempts, error_code=error_code,
+            error=("" if ok else overrun["message"] if overrun is not None
+                   else error_code),
             prompt_digest=prompt_digest, system_digest=system_digest,
             request_digest=request_digest,
-            transport_succeeded=True,
+            transport_succeeded=process_ok,
             semantic_call_id=semantic_call_id,
             owner_loop_id=owner_loop_id,
-            gateway_loop_id=parsed.session_id or "opencode")
+            gateway_loop_id=parsed.session_id or "opencode",
+            budget_overrun=overrun, response_admissions=assessments,
+            model_call_accounting_complete=calls_in_step > 0 and process_ok)
         self.results.append(result)
+        if overrun is not None:
+            raise OpenCodeStepError(overrun["message"])
         if not ok:
-            raise OpenCodeStepError(
-                "OpenCode returned no assistant text for this step; "
-                f"{parsed.event_count} events, stderr: {stderr_tail}")
+            raise OpenCodeStepError(f"OpenCode step refused: {error_code}")
         return text
+
+    def _validate_request(self, request):
+        """Apply supported contract fields and refuse every unsupported one.
+
+        This native command path is not the complete gateway. In particular,
+        it has no reviewed per-request system-role or generation-setting
+        binding. Even a default-valued explicit setting must not disappear.
+        """
+        unsupported = [name for name in (
+            "system", "output_allocation", "response_admission_policy",
+            "harness_selection_scope", "response_evaluation_ref")
+            if getattr(request, name, None)]
+        if getattr(request, "temperature", None) is not None:
+            unsupported.append("temperature")
+        requested_model = getattr(request, "model", "")
+        if requested_model and requested_model not in (
+                self.profile.model, self.profile.model.partition("/")[2]):
+            unsupported.append("model override")
+        if unsupported:
+            raise OpenCodeStepError(
+                "OpenCode native session cannot bind these request fields: "
+                + ", ".join(unsupported) + "; use the canonical gateway")
+        expected = getattr(request, "response_expectation", None)
+        if expected is not None and (
+                not isinstance(expected, ObservationExpectation)
+                or expected.operation_id != getattr(request, "semantic_call_id", "")
+                or expected.input_digest != hashlib.sha256(json.dumps(
+                    {"prompt": request.prompt, "system": ""}, sort_keys=True,
+                    separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+                or expected.input_digest != getattr(request, "exact_input_digest", "")
+                or expected.semantic_questions):
+            raise OpenCodeStepError("response expectation must bind the exact request")
+        return expected
 
     @staticmethod
     def _text_of(parsed) -> str:
@@ -411,231 +724,18 @@ class OpenCodeStepSession:
     @staticmethod
     def _sum_tokens(parsed, attribute: str):
         total = 0
-        seen = False
+        if not parsed.model_calls:
+            return None
         for call in parsed.model_calls:
             value = getattr(call, attribute, None)
-            if isinstance(value, int) and not isinstance(value, bool):
-                total += value
-                seen = True
-        return total if seen else None
+            if type(value) is not int or value < 0:
+                return None
+            total += value
+        return total
 
 
 def self_test() -> dict:
-    """Exercise budget, parsing, projection and refusal with no process."""
-    from .opencode_harness_adapter import _FIXTURE_EVENTS
+    """Run the separately housed offline session checks."""
+    from .opencode_step_session_checks import run_checks
 
-    tests = []
-
-    def check(name, passed, detail=""):
-        tests.append({"test": name, "passed": bool(passed),
-                      "detail": str(detail)[:160]})
-
-    # A profile without provider/model is refused before anything can run.
-    try:
-        OpenCodeStepProfile(model="gemma4")
-        check("profile_requires_provider_qualified_model", False, "accepted")
-    except OpenCodeStepError as exc:
-        check("profile_requires_provider_qualified_model", True, str(exc)[:80])
-
-    profile = OpenCodeStepProfile(model="ollama-cloud/gemma4:31b")
-    argv = profile.command("hello")
-    # The message comes immediately after `run`, not last: `--file` is an
-    # array flag, so a trailing positional is consumed as another filename
-    # and OpenCode exits with "File not found: <the whole message>".
-    check("command_is_headless_json_and_pure",
-          "--format" in argv and "json" in argv and "--pure" in argv
-          and tuple(argv[:3]) == (profile.binary, "run", "hello")
-          and "-m" in argv,
-          " ".join(argv))
-
-    # The environment is built by allowlist: a secret present in this
-    # process does not reach the separate process unless the profile admits it.
-    os.environ["OPENCODE_SELFTEST_SECRET"] = "must-not-travel"
-    try:
-        env = profile.environment()
-        check("environment_is_allowlisted_not_inherited",
-              "OPENCODE_SELFTEST_SECRET" not in env,
-              f"{len(env)} names admitted")
-        admitting = OpenCodeStepProfile(
-            model="ollama-cloud/gemma4:31b",
-            additional_environment=("OPENCODE_SELFTEST_SECRET",))
-        check("profile_can_admit_one_named_credential",
-              admitting.environment().get("OPENCODE_SELFTEST_SECRET")
-              == "must-not-travel")
-    finally:
-        os.environ.pop("OPENCODE_SELFTEST_SECRET", None)
-
-    # --- prompt transport: off argv, and out of `ps` ---
-    import tempfile as _tf
-    with _tf.TemporaryDirectory() as _tmp:
-        workspace = Path(_tmp)
-        filed = OpenCodeStepProfile(
-            model="ollama-cloud/gemma4:31b", workspace=workspace)
-        secret = "PROPRIETARY_SOURCE_LINE " * 5000
-        written = _write_prompt_file(filed, secret)
-        check("the_prompt_is_written_where_only_this_user_can_read_it",
-              written is not None and written.read_text() == secret
-              and oct(written.stat().st_mode)[-3:] == "600",
-              f"{len(secret):,} bytes, mode "
-              f"{oct(written.stat().st_mode)[-3:]}")
-        filed_argv = filed.command(secret, written)
-        joined = " ".join(filed_argv)
-        check("no_prompt_content_reaches_argv",
-              "PROPRIETARY_SOURCE_LINE" not in joined
-              and PROMPT_POINTER_MESSAGE in joined,
-              f"largest argv element {max(len(a) for a in filed_argv)} bytes "
-              f"for a {len(secret):,} byte prompt")
-        check("the_pointer_message_is_constant_across_steps",
-              filed.command("a different prompt entirely", written)
-              == filed_argv,
-              "`ps` shows the same harmless sentence for every step")
-
-        # With file transport off, an oversized prompt is refused with a
-        # message naming the cause, rather than failing the exec with an
-        # opaque E2BIG from deep inside subprocess.
-        inline = OpenCodeStepProfile(
-            model="ollama-cloud/gemma4:31b", workspace=workspace,
-            prompt_via_file=False)
-        check("argv_transport_still_available_when_asked",
-              _write_prompt_file(inline, "x") is None
-              and "x" in inline.command("x"))
-        try:
-            subprocess_transport(inline, "z" * (MAX_ARGV_ELEMENT_BYTES + 10))
-            check("an_oversized_argv_prompt_is_refused_by_name", False)
-        except OpenCodeStepError as exc:
-            check("an_oversized_argv_prompt_is_refused_by_name",
-                  "prompt_via_file" in str(exc) and "E2BIG" in str(exc),
-                  str(exc)[:110])
-
-    class _Authority:
-        max_model_calls = 2
-
-    class _Request:
-        prompt = "Orient on the task."
-
-    # The adapter's fixture ends with a prose-wrapped object ("Done." and
-    # then the JSON on the next line). The event parser admits only a
-    # complete bare or JSON-fenced final object, so the session's own
-    # fixture states the object that JSON_ONLY_DIRECTIVE asks for; the
-    # prose-wrapped form is exercised below as the case the session must
-    # not mistake for an admitted object.
-    json_only_events = tuple(
-        json.dumps({
-            "type": "text", "timestamp": 3, "sessionID": "ses_fixture",
-            "part": {"id": "prt_3", "type": "text", "text": json.dumps({
-                "status": "ok", "summary": "implemented clamp",
-                "files": ["tiny_math.py"]})}})
-        if json.loads(line).get("type") == "text" else line
-        for line in _FIXTURE_EVENTS)
-
-    def fixture_transport(_profile, _message):
-        return json_only_events, ""
-
-    session = OpenCodeStepSession(
-        authority=_Authority(), profile=profile, transport=fixture_transport)
-    text = session.invoke(_Request(), None)
-    check("step_returns_the_final_json_object",
-          json.loads(text).get("summary") == "implemented clamp", text[:90])
-
-    def prose_transport(_profile, _message):
-        return _FIXTURE_EVENTS, ""
-
-    prose = OpenCodeStepSession(
-        authority=_Authority(), profile=profile, transport=prose_transport)
-    prose_text = prose.invoke(_Request(), None)
-    check("a_prose_wrapped_object_is_returned_as_transcript_not_as_the_object",
-          prose.results[-1].ok and not prose_text.startswith("{")
-          and "implemented clamp" in prose_text,
-          prose_text[:60])
-    check("one_step_charges_one_call_and_projects_one_result",
-          session.calls_used == 1 and session.semantic_calls_used == 1
-          and session.results[-1].ok,
-          f"calls={session.calls_used}")
-    # 160 and 35, not the fixture's bare 120 and 30: the adapter's parser
-    # folds cache reads into input and reasoning into output, which is what
-    # the provider actually billed. Asserting the raw fields here would
-    # have encoded a token count no invoice would match.
-    class _Owner:
-        loop_id = "loop:practitioner-42"
-
-    class _IdRequest:
-        prompt = "Orient on the task."
-        semantic_call_id = "semantic-call:abc123"
-
-    ident = OpenCodeStepSession(
-        authority=_Authority(), profile=profile, transport=fixture_transport)
-    ident.invoke(_IdRequest(), _Owner())
-    res = ident.results[-1]
-    check("stage_identity_is_stamped_on_the_result_and_every_attempt",
-          res.semantic_call_id == "semantic-call:abc123"
-          and res.owner_loop_id == "loop:practitioner-42"
-          and all(a.semantic_call_id == "semantic-call:abc123"
-                  and a.owner_loop_id == "loop:practitioner-42"
-                  for a in res.attempts),
-          "the Practitioner's stage recorder compares both against its "
-          "occurrence; missing either logs stage_evidence_degraded per step")
-    anon = OpenCodeStepSession(
-        authority=_Authority(), profile=profile, transport=fixture_transport)
-    anon.invoke(_Request(), None)
-    import re as _re
-    hex64 = _re.compile(r"^[0-9a-f]{64}$")
-    check("every_digest_the_stage_recorder_verifies_is_present_and_real",
-          res.prompt_digest == hashlib.sha256(
-              _IdRequest.prompt.encode("utf-8")).hexdigest()
-          and hex64.match(res.request_digest) is not None
-          and all(a.prompt_digest == res.prompt_digest
-                  and hex64.match(a.provider_request_digest) is not None
-                  for a in res.attempts),
-          "the recorder rejects a result whose digests do not match the "
-          "rendered prompt or are not 64 hex chars; each here digests real "
-          "bytes this session saw or sent")
-    check("a_request_without_an_id_gets_a_fresh_one_not_an_empty_string",
-          anon.results[-1].semantic_call_id.startswith("semantic-call:")
-          and anon.results[-1].owner_loop_id == "")
-
-    check("tokens_are_read_from_step_finish_not_guessed",
-          session.results[-1].input_tokens == 160
-          and session.results[-1].output_tokens == 35,
-          f"in={session.results[-1].input_tokens} "
-          f"out={session.results[-1].output_tokens}")
-
-    # The budget refuses the third step before a process would start.
-    session.invoke(_Request(), None)
-    try:
-        session.invoke(_Request(), None)
-        check("budget_refuses_before_spending_a_process", False, "ran anyway")
-    except OpenCodeStepError as exc:
-        check("budget_refuses_before_spending_a_process",
-              "budget exhausted" in str(exc), str(exc)[:80])
-
-    # A fenced object is recovered rather than read as prose. This is the
-    # exact shape the first live run returned.
-    fenced_events = (
-        '{"type":"text","sessionID":"s","part":{"type":"text","text":'
-        + json.dumps("```json\n{\"task_summary\": \"add clamp\"}\n```")
-        + '}}',
-        '{"type":"step_finish","sessionID":"s","part":{"type":"step-finish",'
-        '"reason":"stop","tokens":{"input":10,"output":2}}}')
-    fenced_session = OpenCodeStepSession(
-        authority=_Authority(), profile=profile,
-        transport=lambda _p, _m: (fenced_events, ""))
-    fenced_text = fenced_session.invoke(_Request(), None)
-    check("fenced_json_is_recovered_not_read_as_prose",
-          json.loads(fenced_text).get("task_summary") == "add clamp",
-          fenced_text[:80])
-
-    # A run that produces no assistant text fails loudly and still records
-    # a result, so a silent empty step cannot be mistaken for progress.
-    empty = OpenCodeStepSession(
-        authority=_Authority(), profile=profile,
-        transport=lambda _p, _m: ((), "provider refused"))
-    try:
-        empty.invoke(_Request(), None)
-        check("empty_event_stream_is_an_error_not_an_empty_success", False)
-    except OpenCodeStepError:
-        check("empty_event_stream_is_an_error_not_an_empty_success",
-              len(empty.results) == 1 and not empty.results[-1].ok
-              and empty.results[-1].error_code == "opencode_no_text")
-
-    return {"module": "core.opencode_step_session", "tests": tests,
-            "passed": all(item["passed"] for item in tests)}
+    return run_checks()

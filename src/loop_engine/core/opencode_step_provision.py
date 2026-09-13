@@ -140,20 +140,27 @@ def _parse_request(text: str) -> dict:
 
 
 def _safe_relative(raw: str, root: Path) -> "Path | None":
-    """Resolve a requested path inside root, or None if it escapes or is forbidden."""
+    """Resolve a requested path inside root, or None if it escapes or is forbidden.
+
+    The forbidden-name check reads the path RELATIVE to the workspace.
+    Matching the absolute path refused every file of a workspace whose own
+    directory name held a marker: a project called my-secrets-project
+    served nothing at all.
+    """
+    resolved_root = root.resolve()
     candidate = (root / str(raw)).resolve()
     try:
-        candidate.relative_to(root.resolve())
+        relative = candidate.relative_to(resolved_root)
     except ValueError:
         return None
-    lowered = str(candidate).lower()
+    lowered = str(relative).lower()
     if any(marker in lowered for marker in FORBIDDEN_CONTEXT_NAMES):
         return None
     # The instance directory is the step's own configuration; a step already
     # has its skills and agent file, so carrying them again as context costs
     # budget and adds nothing. Seen live: the provisioner asked for
     # .opencode/skill/response-contract/SKILL.md alongside the real sources.
-    if "/.opencode/" in f"/{candidate.relative_to(root.resolve())}":
+    if "/.opencode/" in f"/{relative}":
         return None
     return candidate if candidate.is_file() else None
 
@@ -315,6 +322,16 @@ def self_test() -> dict:
               composed.permission == catalogue.select("verify").permission
               and composed.tools == catalogue.select("verify").tools,
               "a provisioner that could widen permissions would be a hole")
+
+        named = root / "my-secrets-project"
+        named.mkdir()
+        (named / "main.py").write_text("x = 1\n")
+        (named / ".env").write_text("k=v\n")
+        check("a_workspace_whose_own_name_holds_a_marker_still_serves_its_files",
+              _safe_relative("main.py", named) is not None
+              and _safe_relative(".env", named) is None
+              and _safe_relative("../.env", named) is None,
+              "the marker check reads the path relative to the workspace")
 
     for bad, frag in (("not json", "JSON object"), ("[1,2]", "must return an object")):
         try:

@@ -253,7 +253,7 @@ def _contains_secret_value(value: Any) -> bool:
     if not isinstance(value, str):
         return False
     return bool(re.search(
-        r"(?i)(?:bearer\s+[a-z0-9._-]{12,}|sk-[a-z0-9_-]{12,}|"
+        r"(?i)(?:bearer\s+[a-z0-9._-]{12,}|(?<![a-z0-9_])sk-[a-z0-9_-]{12,}|"
         r"-----BEGIN [A-Z ]+PRIVATE KEY-----)", value))
 
 
@@ -1476,6 +1476,13 @@ def self_test() -> dict[str, Any]:
             item["sensitive_value_redacted"]
             and item["literal_preview"] == "<redacted>"
             for item in findings))
+        check("secret_token_boundary_preserves_detection_without_matching_task_paths",
+              not _contains_secret_value("task-campaign-runs")
+              and not _contains_secret_value("/workspace/task-campaign-runs/cells")
+              and all(_contains_secret_value(value) for value in (
+                  "sk-fixture0123456789abcdef",
+                  "api_key=sk-fixture0123456789abcdef",
+                  '{"key":"sk-fixture0123456789abcdef"}')))
         default_tags = {tag for item in findings
                         if item["classification"]
                         == "OPTIONAL_PARAMETER_WITH_DEFAULT"
