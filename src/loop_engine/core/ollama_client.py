@@ -24,6 +24,8 @@ from .model_capabilities import (
 )
 
 ENDPOINT = "https://ollama.com/api/chat"
+#: Structured-output calls default to no reasoning; see chat().
+THINK_DEFAULT = False
 # Sanctioned, live default (kimi-k3 is forbidden per the model policy).
 # deepseek-v4-flash is fast/cheap for the loop; deepseek-v4-pro for hard calls.
 DEFAULT_MODEL = "deepseek-v4-flash:0731"
@@ -56,6 +58,23 @@ MODEL_OUTPUT_CAPABILITIES = {
         1048576,
         "Ollama HTTP 400 response declared the exact model maximum",
         observed_at="2026-08-31"),
+    # Small models. Registering these is what makes a weak executor usable at
+    # all: output_capability_for fails closed on an unknown model, so a solve
+    # pinned to gpt-oss:20b died with token_bound_unavailable before any work,
+    # and "decompose with a large model, implement with a small one" was
+    # unreachable for want of three numbers.
+    "gpt-oss:20b": ModelOutputCapability(
+        131072,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-06"),
+    "nemotron-3-nano:30b": ModelOutputCapability(
+        131072,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-06"),
+    "gemma4:31b": ModelOutputCapability(
+        262144,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-06"),
 }
 # Compatibility projection for read-only catalog consumers.  It has no default.
 MODEL_MAX_OUTPUT = {
@@ -190,6 +209,7 @@ def chat_maxout(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
 def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
          num_predict: "int | None" = None, temperature: float = 0.7,
          timeout: float = 90.0, api_key: str | None = None,
+         think: "bool | None" = THINK_DEFAULT,
          output_capability: "ModelOutputCapability | None" = None) -> ChatResult:
     """Send one chat request to Ollama Cloud and return the text + provider token
     counts.  Never raises — a failure returns ``ok=False`` with the error, so a
@@ -209,10 +229,21 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     if system:
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
-    body = json.dumps({
+    payload = {
         "model": model, "messages": messages, "stream": False,
-        "options": {"num_predict": maximum, "temperature": temperature}
-    }).encode()
+        "options": {"num_predict": maximum, "temperature": temperature},
+    }
+    #: A reasoning model spends num_predict on its thinking before it emits a
+    #: single content byte, so an unbounded think budget truncates the answer
+    #: the caller actually asked for.  Measured on deepseek-v4-flash at
+    #: num_predict=4096: thinking consumed 9,853 characters and the JSON body
+    #: came back truncated (done_reason="length"); with think=False the same
+    #: request returned 8,018 characters of valid JSON and stopped naturally.
+    #: Every caller here wants a structured payload, not the reasoning, so the
+    #: default is off and a caller may re-enable it explicitly.
+    if think is not None:
+        payload["think"] = think
+    body = json.dumps(payload).encode()
     req = urllib.request.Request(
         ENDPOINT, data=body, method="POST",
         headers={"Authorization": f"Bearer {key}",

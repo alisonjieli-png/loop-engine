@@ -161,6 +161,15 @@ class ModelExecution:
         default=None, repr=False, compare=False)
     harness: "object | None" = field(default=None, repr=False, compare=False)
     response_evaluators: tuple[HarnessResponseEvaluator,...] = field(default=(),repr=False,compare=False)
+    #: Optional replacement for the in-process session. Every cognitive
+    #: step of the Practitioner reaches the model through the object this
+    #: returns, so supplying one here redirects the whole loop (for
+    #: example onto one OpenCode process per step, with that step's own
+    #: tools, skills and permissions) with no change to the Practitioner.
+    #: Receives this authority; must return an object exposing invoke(),
+    #: results and calls_used. Absent, the default session runs.
+    session_factory: "Callable | None" = field(
+        default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if not isinstance(self.gateway, ModelGateway):
@@ -193,12 +202,26 @@ class ModelExecution:
             from ..core.harness_semantic import HarnessSemanticBinding
             if not isinstance(self.harness, HarnessSemanticBinding):
                 raise SolutionModelError("harness realization must be a typed binding")
+        if self.session_factory is not None and not callable(self.session_factory):
+            raise SolutionModelError(
+                "ModelExecution.session_factory must be callable")
 
-    def start_session(self, *, artifact_store=None) -> "ModelExecutionSession":
+    def start_session(self, *, artifact_store=None):
+        """The one seam. Everything the Practitioner asks a model goes here."""
         if self.harness is not None and artifact_store is None and self.harness.artifact_store is None:
             raise SolutionModelError("harness execution needs a run-scoped artifact manager",
                                      error_code="harness_artifacts_required")
-        return ModelExecutionSession(self, artifact_store=artifact_store)
+        if self.session_factory is None:
+            return ModelExecutionSession(self, artifact_store=artifact_store)
+        session = self.session_factory(self)
+        missing = [name for name in ("invoke", "results", "calls_used")
+                   if not hasattr(session, name)]
+        if missing:
+            raise SolutionModelError(
+                "session_factory returned an object missing "
+                f"{missing}; the Practitioner reads invoke(), results and "
+                "calls_used on every step")
+        return session
 
 
 @dataclass
@@ -760,4 +783,37 @@ def self_test() -> dict:
     except SolutionModelError:
         arbitrary_refused = True
     check("arbitrary_callable_is_not_model_authority", arbitrary_refused)
+    # The session_factory seam. A stand-in is returned unchanged with its
+    # authority intact; an object missing what the Practitioner reads on
+    # every step is refused here, not on the first step at 3am.
+    class _StandIn:
+        def __init__(self, authority):
+            self.authority, self.results, self.calls_used = authority, [], 0
+
+        def invoke(self, request, owner):
+            return "{}"
+
+    seam_gateway = _Gateway() if "_Gateway" in dir() else ModelGateway()
+    seam_config = ModelGatewayConfig(
+        route_names=("seam",), allow_failover=False, max_route_attempts=1)
+    hooked = ModelExecution(seam_gateway, seam_config, max_model_calls=2,
+                            session_factory=_StandIn).start_session()
+    check("session_factory_redirects_start_session",
+          isinstance(hooked, _StandIn) and hooked.authority.max_model_calls == 2,
+          "every Practitioner step reaches the model through this object")
+    check("default_start_session_is_unchanged_without_a_factory",
+          isinstance(ModelExecution(seam_gateway, seam_config).start_session(),
+                     ModelExecutionSession))
+    try:
+        ModelExecution(seam_gateway, seam_config,
+                       session_factory=lambda authority: object()).start_session()
+        check("an_incomplete_session_is_refused_by_name", False, "accepted")
+    except SolutionModelError as exc:
+        check("an_incomplete_session_is_refused_by_name",
+              "invoke" in str(exc) and "calls_used" in str(exc), str(exc)[:80])
+    try:
+        ModelExecution(seam_gateway, seam_config, session_factory="opencode")
+        check("a_non_callable_factory_is_refused", False, "accepted")
+    except SolutionModelError:
+        check("a_non_callable_factory_is_refused", True)
     return {"tests": results}

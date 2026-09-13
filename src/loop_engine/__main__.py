@@ -106,7 +106,6 @@ def _read_task_file(path: str) -> str:
     with open(path, encoding="utf-8") as handle:
         return handle.read().strip()
 
-
 def main(argv=None) -> int:
     from .cli_help import ROOT_HELP, command_help
     raw_argv = list(sys.argv[1:] if argv is None else argv)
@@ -295,6 +294,15 @@ def main(argv=None) -> int:
         choices=("deterministic", "hybrid", "non_deterministic"),
         default="non_deterministic",
         help=argparse.SUPPRESS)
+    parser.add_argument(
+        "--step-executor", choices=("gateway", "opencode"), default="gateway",
+        help="how each Practitioner cognitive step reaches a model: the "
+             "in-process provider gateway (default), or one OpenCode process "
+             "per step carrying that step's own tools, skills and permissions")
+    parser.add_argument(
+        "--step-model", default="",
+        help="provider/model for --step-executor opencode, e.g. "
+             "ollama-cloud/gemma4:31b; required when opencode is selected")
     parser.add_argument(
         "--max-passes", type=int,
         help="optional ceiling for complete Practitioner passes; omitted "
@@ -492,6 +500,8 @@ def main(argv=None) -> int:
         parser.error("--allow-unbounded-total-tokens applies only to models probe")
     if args.unattended:
         args.interaction_mode = "autonomous"
+        from .solve_cli import apply_unattended_ceilings
+        apply_unattended_ceilings(args)
     if args.doctor:
         from .cli_operations import run_doctor
         return run_doctor(args)

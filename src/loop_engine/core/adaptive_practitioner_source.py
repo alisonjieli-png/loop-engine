@@ -32,6 +32,45 @@ _GENERATED_SOURCE_PARTS = frozenset({
 })
 _CODE_SOURCE_PARTS = frozenset({"app", "lib", "src", "test", "tests"})
 
+#: Every source language this runtime can READ.  One constant, consulted by
+#: both the classifier and the materialisation gate, because they disagreed:
+#: ``_source_surface`` recognised .ts/.tsx/.js/.jsx as source while
+#: ``inspectable_source_files`` refused them, so a TypeScript file was
+#: classified as code and then silently skipped, with no diagnostic.  A repo in
+#: any language below was effectively invisible while appearing supported.
+#:
+#: Reading a language is not executing it — execution stays governed by the
+#: sandbox's own allowlist.  Widening this list lets the engine ORIENT in a
+#: polyglot repository; it grants no new power to run anything.
+SOURCE_CODE_SUFFIXES = frozenset({
+    ".py", ".pyi", ".pyx",
+    ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts",
+    ".go", ".rs", ".java", ".kt", ".kts", ".scala", ".swift",
+    ".c", ".h", ".cc", ".cpp", ".hpp", ".hh", ".cs",
+    ".rb", ".php", ".pl", ".pm", ".lua", ".r", ".jl",
+    ".ex", ".exs", ".erl", ".clj", ".cljs", ".hs", ".ml", ".mli",
+    ".sh", ".bash", ".zsh", ".fish", ".ps1",
+    ".vue", ".svelte", ".astro",
+    ".proto", ".graphql", ".sql",
+})
+
+#: Data and prose the model may read alongside source.
+DATA_AND_PROSE_SUFFIXES = frozenset({
+    ".bib", ".cfg", ".csv", ".eml", ".fasta", ".fa", ".geojson",
+    ".ics", ".ini", ".json", ".jsonl", ".md", ".po",
+    ".rst", ".srt", ".toml", ".tsv", ".txt",
+    ".vcf", ".xml", ".yaml", ".yml",
+})
+
+#: Manifest-like filenames that carry a project's shape regardless of suffix.
+PROJECT_MANIFEST_NAMES = frozenset({
+    "pyproject.toml", "requirements.txt", "setup.cfg", "setup.py",
+    "package.json", "tsconfig.json", "go.mod", "go.sum", "Cargo.toml",
+    "Gemfile", "composer.json", "build.gradle", "pom.xml", "Makefile",
+    "CMakeLists.txt", "Dockerfile",
+})
+
+
 
 def _source_surface(relative: str) -> str:
     """Classify a repository path for retrieval, never for authority."""
@@ -43,8 +82,8 @@ def _source_surface(relative: str) -> str:
         return "test"
     if "docs" in parts or path.suffix.casefold() in {".md", ".rst"}:
         return "documentation"
-    if parts & _CODE_SOURCE_PARTS or path.suffix.casefold() in {
-            ".py", ".pyi", ".js", ".jsx", ".ts", ".tsx"}:
+    if (parts & _CODE_SOURCE_PARTS
+            or path.suffix.casefold() in SOURCE_CODE_SUFFIXES):
         return "source"
     if path.name in {"pyproject.toml", "setup.cfg", "requirements.txt"} \
             or path.suffix.casefold() in {".toml", ".yaml", ".yml"}:

@@ -12,6 +12,8 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from .differential_verification import differential_verification_operation
+
 from ..code_nodes.solution_canvas import SolutionLoopSpec, SolutionSpec
 from ..code_nodes.solution_compiler import (
     compile_solution, render_canvas, run_compiled)
@@ -234,6 +236,12 @@ def execute_adaptive_capability(
         input_value = arguments
         input_role = "next_action_decision/v1"
         output_role = "web_fetch_result/v1"
+    elif plan.handle == "core.verify.differential":
+        operation = lambda _value, _params: differential_verification_operation(
+            arguments, services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = "differential_verification/v1"
     elif plan.handle == "core.workspace.read":
         operation = lambda _value, _params: workspace_read_operation(
             arguments, services)
@@ -545,6 +553,30 @@ def execute_adaptive_capability(
             artifact_refs=(output["artifact_ref"]["object_key"],),
             confidence=1.0,
             lineage=(compiled["digest"],))
+    if plan.handle == "core.verify.differential":
+        # An oracle report is NOT a project attempt.  Falling through to the
+        # generated-project tail below would append it to services.
+        # project_attempts, whose last element is read as the run's product by
+        # core.finish, as deterministic_project_passed by route_adaptive_result,
+        # and fingerprinted by manifest_digest for progress — so a 16/16 PASS
+        # would be recorded as a failed build and poison routing for the rest
+        # of the run.
+        verdict = str(output.get("verdict") or "UNVERIFIED")
+        detail = "; ".join(
+            list(output.get("errors") or ())
+            or [d["argument"] for d in (output.get("divergences") or ())][:5])
+        return ResultPacket(
+            objective=(f"verify {arguments.get('entry_point') or 'artifact'} "
+                       f"by the {output.get('oracle') or 'differential'} oracle"),
+            result=output,
+            confidence=(1.0 if verdict == "PASS" else 0.0),
+            errors=(() if verdict == "PASS"
+                    else (f"{verdict}: {detail}" if detail else verdict,)),
+            lineage=(compiled["digest"],),
+            limitations=(() if verdict != "UNVERIFIED" else (
+                "UNVERIFIED is not success: the oracle could not decide. "
+                "Supply two implementations for the differential oracle, or "
+                "relations for the metamorphic one.",)))
     output["context_evidence_count"] = len(services.web_results)
     errors = (() if output.get("deterministic_checks_passed") else (
         "generated project deterministic checks failed",))
