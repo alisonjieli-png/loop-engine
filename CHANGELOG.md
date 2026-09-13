@@ -9,6 +9,14 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- The built-in Ollama adapter can learn a model's output ceiling from the
+  service's own refusal (`learn_output_capability`): one streamed request
+  for far more output than any model allows, on the OpenAI-compatible
+  path; a 400 that names exactly one maximum yields a source-backed
+  capability, an accepted request is closed on its first byte and recorded
+  as acceptance without a ceiling, and a refusal by allowance or credential
+  stops a batch. Thirteen of the nineteen models Ollama Cloud lists have no
+  declared maximum yet; the probe waits for the allowance to reset.
 - A provider's stated wait is honoured. A refusal that carries
   `Retry-After` is waited for before the same route is retried, up to a
   sixty-second ceiling, and the ledger records what was stated, what was

@@ -211,6 +211,131 @@ def _retry_after_seconds(headers) -> "float | None":
     return max(0.0, when.timestamp() - _time.time())
 
 
+#: The OpenAI-compatible chat path beside the native one, where the
+#: service validates the requested ceiling against the model's maximum
+#: before generating. Composed from the one declared endpoint above, so
+#: this module binds a single service origin.
+NATIVE_CHAT_PATH = "/api/chat"
+COMPATIBLE_CHAT_PATH = "/v1/chat/completions"
+COMPATIBLE_CHAT_ENDPOINT = ENDPOINT[:-len(NATIVE_CHAT_PATH)] + COMPATIBLE_CHAT_PATH
+#: A request far above any served ceiling, so the validation names the
+#: real one. Never sent as a generation budget: the stream is closed on
+#: its first byte if the service accepts instead of refusing.
+CEILING_PROBE_REQUEST_TOKENS = 100_000_000
+#: No served model's output ceiling is below this; a smaller integer in a
+#: refusal (a status, a count, a version) is not the ceiling.
+SMALLEST_PLAUSIBLE_CEILING = 256
+LEARNED_CAPABILITY_RECORD_TYPE = "learned_output_capability/v1"
+
+
+def _declared_maximum(message: str, requested: int) -> "int | None":
+    """The one integer a refusal names that is not the number we sent."""
+    import re
+    numbers = {int(n.replace(",", "")) for n in re.findall(r"\d[\d,]*", message)}
+    numbers.discard(requested)
+    candidates = sorted(n for n in numbers if n >= SMALLEST_PLAUSIBLE_CEILING)
+    return candidates[0] if len(candidates) == 1 else None
+
+
+def learn_output_capability(model: str, api_key: str | None = None,
+                            timeout: float = 30.0, *, observed_at: str = "") -> dict:
+    """Ask the service to name one model's output ceiling.
+
+    The request asks for far more output than any served model allows, on
+    the OpenAI-compatible path where the service validates the ceiling
+    before generating. A refusal that names the exact maximum (the source
+    the capability table already cites for every entry) yields a
+    ``ModelOutputCapability`` under ``capability``; anything else yields
+    none: an accepted request is closed on its first byte and recorded as
+    ``accepted_without_ceiling``, because acceptance is not proof (a server
+    may clamp silently), and a refusal by allowance or credential is
+    recorded by its status. Nothing here guesses a number.
+    """
+    from datetime import date
+    key = load_api_key() if api_key is None else api_key
+    observed = observed_at or date.today().isoformat()
+    record = {"record_type": LEARNED_CAPABILITY_RECORD_TYPE, "model": model,
+              "endpoint": COMPATIBLE_CHAT_ENDPOINT,
+              "requested_output_tokens": CEILING_PROBE_REQUEST_TOKENS,
+              "observed_at": observed, "ok": False, "maximum_output_tokens": None,
+              "source": "", "capability": None, "http_status": None,
+              "declaration_text": "", "error": "", "error_type": "",
+              "accepted_without_ceiling": False, "physical_requests": 0,
+              "retry_after_seconds": None}
+    if not key:
+        record.update(error="OLLAMA_API_KEY not found", error_type="MissingCredential")
+        return record
+    payload = {"model": model, "messages": [{"role": "user", "content": "Reply with one word: x"}],
+               "max_tokens": CEILING_PROBE_REQUEST_TOKENS, "temperature": 0.0, "stream": True}
+    req = urllib.request.Request(
+        COMPATIBLE_CHAT_ENDPOINT, data=json.dumps(payload).encode(), method="POST",
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+    record["physical_requests"] = 1
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            # Accepted: read one chunk so the record says what came, and
+            # leave; closing the response ends the stream.
+            first = resp.read(200)
+        record.update(http_status=200, accepted_without_ceiling=True,
+                      declaration_text=first.decode("utf-8", "replace")[:200],
+                      error="the service accepted the request instead of naming a "
+                            "ceiling; acceptance is not a declared maximum")
+        return record
+    except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = _redacted(exc.read()[:400].decode("utf-8", "replace"), key)
+        except OSError:
+            pass
+        record.update(http_status=exc.code, declaration_text=detail,
+                      retry_after_seconds=_retry_after_seconds(getattr(exc, "headers", None)))
+        if exc.code != 400:
+            record.update(error=f"HTTP {exc.code}: {detail}", error_type="HTTPError")
+            return record
+        message = detail
+        try:
+            body = json.loads(detail)
+            error = body.get("error") if isinstance(body, dict) else None
+            if isinstance(error, dict):
+                message = str(error.get("message") or detail)
+            elif isinstance(error, str):
+                message = error
+        except ValueError:
+            pass
+        maximum = _declared_maximum(message, CEILING_PROBE_REQUEST_TOKENS)
+        if maximum is None:
+            record.update(error="HTTP 400 did not name exactly one maximum: " + message[:200],
+                          error_type="UndeclaredMaximum")
+            return record
+        source = ("Ollama HTTP 400 response declared the exact model maximum: "
+                  + message[:160])
+        record.update(ok=True, maximum_output_tokens=maximum, source=source,
+                      capability=ModelOutputCapability(maximum, source, observed_at=observed))
+        return record
+    except (urllib.error.URLError, OSError) as exc:
+        record.update(error=f"{type(exc).__name__}: {str(exc)[:200]}", error_type=type(exc).__name__)
+        return record
+
+
+def learn_output_capabilities(models, api_key: str | None = None,
+                              timeout: float = 30.0) -> dict:
+    """One learned-capability record per model, stopping at the first
+    refusal by allowance or credential, since every later request would be
+    refused the same way."""
+    records = {}
+    stopped_by = ""
+    for model in models:
+        record = learn_output_capability(model, api_key, timeout)
+        records[model] = record
+        if record["http_status"] in (401, 402, 403, 429) or record["error_type"] == "MissingCredential":
+            stopped_by = record["error"]
+            break
+    return {"record_type": "learned_output_capabilities/v1", "records": records,
+            "learned": sorted(m for m, r in records.items() if r["ok"]),
+            "stopped_by": stopped_by,
+            "physical_requests": sum(r["physical_requests"] for r in records.values())}
+
+
 def load_api_key(env_path: str | Path | None = None) -> str | None:
     """Read OLLAMA_API_KEY from the environment or the repo .env."""
     key = os.environ.get("OLLAMA_API_KEY")
@@ -452,6 +577,78 @@ def self_test() -> dict:
           not res.ok and "not found" in res.error.lower(),
           "with no api key the client returns ok=False with an error, never "
           "raising into the loop")
+
+    # Learning a ceiling: only a 400 that names exactly one maximum yields a
+    # capability; acceptance, allowance refusals, and vague refusals do not.
+    import email.message
+    import io
+
+    def _refusal(code, body):
+        return urllib.error.HTTPError(COMPATIBLE_CHAT_ENDPOINT, code, f"status {code}",
+                                      email.message.Message(), io.BytesIO(body))
+
+    class _Accepted:
+        def __init__(self):
+            self.closed = False
+
+        def read(self, limit=None):
+            return b'data: {"choices": [{"delta": {"content": "x"}}]}\n'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            self.closed = True
+            return False
+
+    scripted = {}
+    sent = []
+
+    def _fake_urlopen(request, timeout=None):
+        sent.append(json.loads(request.data))
+        item = scripted[sent[-1]["model"]]()  # fresh each time: a body reads once
+        if isinstance(item, BaseException):
+            raise item
+        return item
+    saved = urllib.request.urlopen
+    urllib.request.urlopen = _fake_urlopen
+    try:
+        accepted = _Accepted()
+        scripted.update({
+            "named": lambda: _refusal(400, b'{"error":{"message":"max_tokens 100000000 exceeds the maximum of 65536 for this model"}}'),
+            "plain": lambda: _refusal(400, b'{"error":"num_predict must be at most 131,072"}'),
+            "vague": lambda: _refusal(400, b'{"error":"invalid request"}'),
+            "spent": lambda: _refusal(429, b'{"error":"you have reached your weekly usage limit"}'),
+            "open": lambda: accepted,
+        })
+        named = learn_output_capability("named", api_key="fixture-key", observed_at="2026-09-13")
+        plain = learn_output_capability("plain", api_key="fixture-key")
+        vague = learn_output_capability("vague", api_key="fixture-key")
+        spent = learn_output_capability("spent", api_key="fixture-key")
+        opened = learn_output_capability("open", api_key="fixture-key")
+        batch = learn_output_capabilities(["named", "spent", "plain"], api_key="fixture-key")
+    finally:
+        urllib.request.urlopen = saved
+    check("a_refusal_that_names_the_maximum_yields_a_source_backed_capability",
+          named["ok"] and named["maximum_output_tokens"] == 65536
+          and isinstance(named["capability"], ModelOutputCapability)
+          and named["capability"].maximum_output_tokens == 65536
+          and named["capability"].observed_at == "2026-09-13"
+          and "declared the exact model maximum" in named["source"]
+          and plain["ok"] and plain["maximum_output_tokens"] == 131072
+          and sent[0]["max_tokens"] == CEILING_PROBE_REQUEST_TOKENS and sent[0]["stream"] is True,
+          named["error"] or plain["error"])
+    check("a_vague_refusal_an_allowance_refusal_and_an_acceptance_yield_no_number",
+          not vague["ok"] and vague["error_type"] == "UndeclaredMaximum"
+          and not spent["ok"] and spent["http_status"] == 429 and spent["maximum_output_tokens"] is None
+          and not opened["ok"] and opened["accepted_without_ceiling"] and accepted.closed
+          and opened["maximum_output_tokens"] is None and opened["physical_requests"] == 1,
+          f"{vague['error'][:60]} / {spent['error'][:60]} / {opened['error'][:60]}")
+    check("a_batch_stops_at_the_first_allowance_refusal_and_counts_its_requests",
+          batch["learned"] == ["named"] and "plain" not in batch["records"]
+          and batch["stopped_by"].startswith("HTTP 429") and batch["physical_requests"] == 2)
+    check("a_missing_key_learns_nothing_and_sends_nothing",
+          learn_output_capability("any", api_key="")["physical_requests"] == 0)
 
     unknown = chat("hi", model="unlisted-model", api_key="unused")
     check("an_unknown_model_maximum_refuses_before_network_use",

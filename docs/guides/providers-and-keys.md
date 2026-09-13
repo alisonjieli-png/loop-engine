@@ -28,6 +28,19 @@ the output ceiling thinking before it answers. A custom provider whose
 `credential_env` variable is unset refuses before sending a request, as the
 built-in adapters do.
 
+A model enters the universe only with a source-backed output maximum
+(`MODEL_OUTPUT_CAPABILITIES` in the built-in adapter, or `max_output` with
+its source on a custom endpoint); generation on a model without one is
+refused as `unknown_model_output_limit`, never run at a guessed ceiling.
+`ollama_client.learn_output_capability(model)` asks the service to name a
+model's ceiling: one streamed request for far more output than any model
+allows, on the OpenAI-compatible path, where a refusal names the exact
+maximum (the source every table entry already cites). Only a refusal that
+names exactly one number yields a capability; an accepted request is closed
+on its first byte and recorded as acceptance without a ceiling, since a
+server may clamp silently. `learn_output_capabilities(models)` does this for
+a listing and stops at the first refusal by allowance or credential.
+
 The model listing (`/api/tags`) is not readiness: on the evening of
 September 13, 2026 the key listed twenty models while every generation was
 refused with HTTP 429 "weekly usage limit" and no `Retry-After`. The gateway
