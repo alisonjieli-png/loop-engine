@@ -230,6 +230,7 @@ def self_test() -> dict:
         "core.practitioner_context",
         "core.primitive_conformance",
         "core.provider_failover",
+        "core.provider_failure_classes",
         "core.reasoning_call",
         "core.saas_routes",
         "core.store_serve",

@@ -282,7 +282,7 @@ MODULE_MAP = {
         "openai_responses_client_checks", "astra_route_authority",
         "astra_route_authority_checks", "astra_route_planning",
         "astra_route_record_identity",
-        "provider_failover",
+        "provider_failover", "provider_failure_classes",
         "provider_pinned",
         "model_discovery", "autoconfigure", "custom_endpoint",
         "product_outcome_store",

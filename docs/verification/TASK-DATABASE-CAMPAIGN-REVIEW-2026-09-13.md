@@ -35,7 +35,11 @@ completed trials, waiting for the provider (errno 113, no route to host).
    trial cell. Fix: branch on the underlying failure code (only
    `network_unreachable`, `provider_unavailable`, and `gateway_timeout`
    are outages), add a per-cell attempt ceiling, and record the retry
-   reason.
+   reason. `core.provider_failure_classes.decide` now does exactly this
+   from the attempt's error codes: it returns wait for recovery, wait for
+   the allowance, stop the route, or fail the cell, with a stated attempt
+   ceiling bounding every wait, so the worker can call it instead of
+   keying on the folded terminal.
 
 2. **High. No durable resume: a crash mid-trial bricks the campaign, and
    manual reconciliation then crashes the worker on a directory

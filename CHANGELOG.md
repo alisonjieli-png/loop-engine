@@ -190,6 +190,19 @@ First public release.
   shard, and a request given one as `cursor_record` resumes exactly there
   and refuses a cursor from another space or shard or one disagreeing with
   an integer cursor beside it. Thirteen new search checks.
+- [Provider failure classes](src/loop_engine/core/provider_failure_classes.py).
+  Every code the gateway, the solve terminal, and the Practitioner can
+  report for a provider attempt now names its class: an outage a later
+  retry may pass, an allowance the provider resets on its own schedule, a
+  configuration fault no retry can change, a fault of the request itself,
+  a violated engine contract, or unclassified. `decide` turns the codes of
+  one failed attempt into the one decision a worker takes (wait for
+  recovery, wait for the allowance, stop the route, or fail the cell) with
+  precedence and an optional attempt ceiling that bounds every wait, so a
+  campaign cannot re-run a cell without bound against a wrong credential
+  or a spent allowance. Eleven checks, including that the codes the
+  gateway emits for representative provider messages all have a class and
+  that its failover-forbidden codes stop the route here too.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback
