@@ -15,12 +15,14 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import signal
 import socket
 import sys
 import time
 from urllib.parse import urlsplit
 
 from loop_engine import SolveRequest, solve_task
+from loop_engine.code_nodes.solve_terminal import SolveTerminalCode
 from loop_engine.code_nodes.solution_model_port import ModelExecution, ModelExecutionSession
 from loop_engine.core.configuration_capabilities import (
     ConfigurationFact, ConfigurationSettingSpec, ConfigurationTargetSpec, describe_configuration)
@@ -36,6 +38,8 @@ from loop_engine.core.harness_semantic import HarnessSemanticBinding
 from loop_engine.core.model_capabilities import ModelOutputAllocation
 from loop_engine.core.model_gateway import ModelGateway, ModelGatewayConfig
 from loop_engine.core.parameter_resolution import ParameterDefinition, ParameterInput, ParameterSourceKind
+from loop_engine.core.provider_failure_classes import (
+    FAIL_CELL, STOP_ROUTE, UNCLASSIFIED, WAIT_FOR_ALLOWANCE, WAIT_FOR_RECOVERY, decide, failure_class)
 from loop_engine.core.run_history import load_saved_run_bundle
 from loop_engine.core.settings_loader import load_runtime_settings
 from loop_engine.generation.space import ConfigurationAxis, ConfigurationSpace
@@ -43,6 +47,10 @@ from loop_engine.templates.intake import TaskIntake
 
 from .systematic_records import CampaignProjection, canonical, digest
 from .systematic_runtime import NativeGatewayAdapter, configure_environment
+
+
+# The trial's own lifecycle states, named once.
+TRIAL_STARTING, TRIAL_FINISHED, TRIAL_FAILED = 'starting', 'finished', 'failed'
 
 
 def file_digest(path):
@@ -252,10 +260,17 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
     confined_name(row['id'])
     confined_name(str(ordinal))
     cell = root / 'trials' / (row['id'] + '-' + digest(row['task_directory'])[:8]) / str(ordinal)
+    if cell.exists():
+        # An interrupted occurrence keeps its evidence; the worker reconciles
+        # it and advances the attempt number instead of writing over it.
+        return {'record_type': 'task_database_trial/v1', 'task_id': row['id'], 'configuration': configuration,
+                'status': TRIAL_FAILED, 'error_type': 'FileExistsError',
+                'error_message': 'trial cell already exists; reconcile the interrupted occurrence',
+                'task_accepted': False, 'model_calls': None, 'path': str(cell)}
     cell.mkdir(parents=True, exist_ok=False)
     records = CampaignProjection(cell / 'projection.duckdb')
     state = {'record_type': 'task_database_trial/v1', 'task_id': row['id'], 'configuration': configuration,
-             'status': 'starting', 'task_accepted': False, 'model_calls': None}
+             'status': TRIAL_STARTING, 'task_accepted': False, 'model_calls': None}
     records.record('trial', 'state', state)
     records.refresh_export(cell / 'status.json', state)
     started = time.monotonic()
@@ -313,13 +328,15 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
         records.record('outcome', 'terminal', value)
         records.export_object(cell / 'outcome.json', value)
         integrity = load_saved_run_bundle(str(cell / 'runs'), value['run_id']).history.verify_chain()
-        state.update(status='finished', engine_terminal=value['terminal_code'], engine_solved=value['solved'],
+        state.update(status=TRIAL_FINISHED, engine_terminal=value['terminal_code'], engine_solved=value['solved'],
+            failure_code=value.get('failure_code', ''),
             model_calls=value['model_calls'], model_call_accounting_complete=value['model_call_accounting_complete'],
             model_calls_known_subtotal=value['model_calls_known_subtotal'], history_integrity=integrity,
             delivered_artifacts=len(value['artifacts']),
             campaign_acceptance='independent_task_specific_review_required')
     except Exception as exc:
-        state.update(status='failed', error_type=type(exc).__name__, model_call_accounting_complete=False)
+        state.update(status=TRIAL_FAILED, error_type=type(exc).__name__,
+                     error_message=str(exc)[:300], model_call_accounting_complete=False)
     finally:
         state['elapsed_seconds'] = time.monotonic() - started
         records.record('trial', 'state', state)
@@ -364,9 +381,52 @@ def provider_available(endpoint):
         return {'reachable': False, 'kind': 'model_listing', 'error_type': type(exc).__name__, 'model_calls': 0}
 
 
-def worker(root, *, probe_interval=60):
+def outage_decision(result, attempts_so_far, attempt_ceiling):
+    """The worker's one decision after a trial the engine ended as provider
+    unavailable, from the failure code the run reported. A configuration or
+    contract fault stops the route; an allowance waits for its reset; an
+    outage waits for recovery; both waits are bounded by the ceiling, after
+    which the cell fails and the campaign advances. A code the vocabulary
+    does not know is read as an outage, the conservative reading under this
+    terminal, still bounded. Any other terminal needs no decision."""
+    if result.get('engine_terminal') != SolveTerminalCode.PROVIDER_UNAVAILABLE.value:
+        return None
+    code = result.get('failure_code') or ''
+    codes = [code] if failure_class(code) != UNCLASSIFIED else ['provider_unavailable']
+    return decide(codes, attempts_so_far=attempts_so_far, attempt_ceiling=attempt_ceiling)
+
+
+def reconcile_interrupted(records, cursor):
+    """Record an interrupted trial as interrupted, keep its evidence where it
+    is, and move the attempt number on so the next occurrence never writes
+    over it. Returns the reconciled row, or None when nothing was active."""
+    active = records.latest('controller', 'active_trial')
+    if not active:
+        return None
+    occurrence = str(cursor['round']) + '-attempt-' + str(cursor.get('trial_attempt', 0))
+    row = {**active, 'status': 'interrupted', 'occurrence': occurrence,
+           'reconciled_at': datetime.now(timezone.utc).isoformat()}
+    records.record('trial_projection', str(active.get('task_id')) + ':' + occurrence, row)
+    cursor['trial_attempt'] = cursor.get('trial_attempt', 0) + 1
+    cursor['interrupted_trials'] = cursor.get('interrupted_trials', 0) + 1
+    records.record('controller', 'active_trial', {})
+    records.record('controller', 'cursor', cursor)
+    return row
+
+
+def _terminate(signum, frame):
+    # A termination signal must unwind through every finally block so the
+    # trial's records close and the active-trial marker stays for
+    # reconciliation, instead of the default handler ending the process.
+    raise SystemExit(128 + signum)
+
+
+def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupted=False):
     if type(probe_interval) is not int or probe_interval < 1:
         raise ValueError('probe interval must be positive')
+    if type(wait_attempt_ceiling) is not int or wait_attempt_ceiling < 1:
+        raise ValueError('wait attempt ceiling must be positive')
+    signal.signal(signal.SIGTERM, _terminate)
     root = Path(root).resolve()
     os.umask(0o077)
     with (root / 'worker.lock').open('a') as lock:
@@ -381,8 +441,11 @@ def worker(root, *, probe_interval=60):
             if space.digest != manifest['configuration_space_digest']:
                 raise ValueError('configuration space changed')
             cursor = records.latest('controller', 'cursor')
-            if records.latest('controller', 'active_trial'):
+            if refuse_interrupted and records.latest('controller', 'active_trial'):
                 raise ValueError('an interrupted trial requires explicit reconciliation before resume')
+            reconciled = reconcile_interrupted(records, cursor)
+            if reconciled:
+                print(canonical({'status': 'reconciled_interrupted_trial', **reconciled}), flush=True)
             configure_environment()
             os.environ['LOOP_ENGINE_SANDBOX_IMAGE'] = 'loop-engine-ds1000-runtime@sha256:d29a0fedd17671510b759b15f276b73ee9ba813868653d8923c7365482ee328d'
             endpoint = load_runtime_settings(manifest['provider_file']).settings.build_gateway().providers['tactical'].adapter.endpoint
@@ -418,16 +481,34 @@ def worker(root, *, probe_interval=60):
                     occurrence = str(cursor['round']) + '-attempt-' + str(cursor.get('trial_attempt', 0))
                     result = run_trial(root, row, space.configuration_at(index), manifest, occurrence)
                     records.record('controller', 'active_trial', {})
-                    cursor['completed_trials'] += 1
-                    if result.get('engine_terminal') == 'PROVIDER_UNAVAILABLE':
+                    decision = outage_decision(result, cursor.get('trial_attempt', 0), wait_attempt_ceiling)
+                    if decision is not None:
+                        result = {**result, 'decision': decision}
                         records.record('trial_projection', row['id'] + ':' + occurrence, result)
-                        cursor['trial_attempt'] = cursor.get('trial_attempt', 0) + 1
-                        records.record('controller', 'cursor', cursor)
-                        records.refresh_export(root / 'status.json', {**base, 'cursor': cursor,
-                            'status': 'waiting_for_provider', 'latest_trial': result,
-                            'next_probe_seconds': probe_interval})
-                        time.sleep(probe_interval)
-                        continue
+                        if decision['decision'] in (WAIT_FOR_RECOVERY, WAIT_FOR_ALLOWANCE):
+                            cursor['trial_attempt'] = cursor.get('trial_attempt', 0) + 1
+                            cursor['outage_attempts'] = cursor.get('outage_attempts', 0) + 1
+                            records.record('controller', 'cursor', cursor)
+                            records.refresh_export(root / 'status.json', {**base, 'cursor': cursor,
+                                'status': 'waiting_for_provider', 'latest_trial': result,
+                                'next_probe_seconds': probe_interval})
+                            time.sleep(probe_interval)
+                            continue
+                        if decision['decision'] == STOP_ROUTE:
+                            # A wrong credential, a missing model, or a broken
+                            # contract cannot pass on retry; the worker stops
+                            # with a distinct status rather than spending calls.
+                            cursor['stopped_routes'] = cursor.get('stopped_routes', 0) + 1
+                            records.record('controller', 'cursor', cursor)
+                            records.refresh_export(root / 'status.json', {**base, 'cursor': cursor,
+                                'status': 'route_stopped', 'latest_trial': result})
+                            print(canonical({'status': 'route_stopped', 'task': row['id'], 'decision': decision}), flush=True)
+                            return
+                        result['status'] = 'failed_after_bounded_wait'
+                    if result.get('status') == TRIAL_FINISHED:
+                        cursor['completed_trials'] += 1
+                    else:
+                        cursor['failed_cells'] = cursor.get('failed_cells', 0) + 1
                 records.record('trial_projection', row['id'] + ':' + str(cursor['round']), result)
                 cursor['trial_attempt'] = 0
                 cursor['task_position'] += 1
@@ -444,22 +525,34 @@ def worker(root, *, probe_interval=60):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=('prepare', 'worker'))
+    parser.add_argument('operation', choices=('prepare', 'worker', 'reconcile'))
     parser.add_argument('--root', required=True)
     parser.add_argument('--task-root', default='/home/username/task_database')
     parser.add_argument('--provider-file')
     parser.add_argument('--repository', default=str(Path(__file__).resolve().parents[2]))
     parser.add_argument('--probe-interval', type=int, default=60)
+    parser.add_argument('--wait-attempt-ceiling', type=int, default=3,
+                        help='bounded waits per cell after a provider-unavailable trial')
+    parser.add_argument('--refuse-interrupted', action='store_true',
+                        help='refuse to start over an interrupted trial instead of reconciling it')
     parser.add_argument('--wait-for-launch-signal', action='store_true')
     args = parser.parse_args()
     if args.operation == 'prepare':
         if not args.provider_file:
             parser.error('prepare requires an explicit provider file')
         print(canonical(prepare(args.root, args.task_root, args.provider_file, args.repository)), flush=True)
+    elif args.operation == 'reconcile':
+        records = CampaignProjection(Path(args.root).resolve() / 'campaign.duckdb')
+        try:
+            cursor = records.latest('controller', 'cursor')
+            print(canonical(reconcile_interrupted(records, cursor) or {'status': 'nothing_to_reconcile'}), flush=True)
+        finally:
+            records.close()
     else:
         if args.wait_for_launch_signal and sys.stdin.readline().strip() != 'start':
             raise ValueError('detached worker did not receive its launch signal')
-        worker(args.root, probe_interval=args.probe_interval)
+        worker(args.root, probe_interval=args.probe_interval, wait_attempt_ceiling=args.wait_attempt_ceiling,
+               refuse_interrupted=args.refuse_interrupted)
 
 
 if __name__ == '__main__':

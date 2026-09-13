@@ -213,6 +213,19 @@ First public release.
   them), taking the module from the 800-line cap to 505 lines; the SQLite
   stage-evidence projection, which also sits at the cap, carries a
   declared size exception with a split plan for its validation methods.
+- Task-database campaign runner: the two high findings of its review are
+  fixed. After a trial the engine ended as provider unavailable, the
+  worker decides through the provider failure vocabulary: a configuration
+  or contract fault stops the worker with the status `route_stopped`, an
+  allowance or an outage waits at most `--wait-attempt-ceiling` times
+  (default 3) before the cell is recorded as failed and the campaign
+  advances, and outage attempts, failed cells, and stopped routes are
+  counted apart from completed trials. An interrupted trial is reconciled
+  on restart (recorded as interrupted, evidence kept, attempt moved on;
+  the refusal stays behind `--refuse-interrupted`, and a `reconcile`
+  operation exposes it), an existing trial cell is reported rather than
+  crashed into, a failed trial keeps its error message, and `SIGTERM`
+  unwinds through the trial's `finally` blocks. Three new tests.
 - [Layered harness wrappers and native control ownership](docs/components/core-architecture/HARNESS-FALLBACK.md#declare-wrapper-layers-and-native-control-ownership)
   as passive typed records (`core.harness_layering`): ordered wrapper
   compositions with single-owner transport and accounting, ordered fallback

@@ -7,7 +7,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from embodiment_lab.task_database_campaign import RecordedSettingSession, campaign_space, confined_name, fair_order
+from embodiment_lab.task_database_campaign import (
+    RecordedSettingSession, campaign_space, confined_name, fair_order, outage_decision,
+    reconcile_interrupted, run_trial)
 from embodiment_lab.systematic_records import CampaignProjection
 from loop_engine.code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, ModelInvocationRequest, fixture_model_execution)
@@ -121,6 +123,53 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                                                                Loop('shared endpoint contract fixture'))
                 self.assertEqual(result, 'fixture response')
                 self.assertEqual(observed[-1], endpoint.chat_url)
+
+    def test_outage_decisions_are_bounded_and_never_wait_on_configuration_faults(self):
+        def result(code, terminal='PROVIDER_UNAVAILABLE'):
+            return {'engine_terminal': terminal, 'failure_code': code}
+        self.assertIsNone(outage_decision(result('anything', terminal='VERIFICATION_FAILED'), 0, 3))
+        self.assertEqual(outage_decision(result('authentication_failed'), 0, 3)['decision'], 'stop_route')
+        self.assertEqual(outage_decision(result('model_not_found'), 0, 3)['decision'], 'stop_route')
+        self.assertEqual(outage_decision(result('network_unreachable'), 0, 3)['decision'], 'wait_for_recovery')
+        self.assertEqual(outage_decision(result('rate_limited'), 1, 3)['decision'], 'wait_for_allowance')
+        self.assertEqual(outage_decision(result('network_unreachable'), 3, 3)['decision'], 'fail_cell')
+        self.assertEqual(outage_decision(result('rate_limited'), 3, 3)['decision'], 'fail_cell')
+        # A code the vocabulary does not know is read as an outage under this
+        # terminal, and that reading is still bounded.
+        self.assertEqual(outage_decision(result('SolutionModelError'), 0, 3)['decision'], 'wait_for_recovery')
+        self.assertEqual(outage_decision(result(''), 3, 3)['decision'], 'fail_cell')
+
+    def test_an_interrupted_trial_is_reconciled_on_restart(self):
+        with tempfile.TemporaryDirectory(prefix='task-campaign-reconcile-') as directory:
+            records = CampaignProjection(Path(directory) / 'campaign.duckdb')
+            try:
+                cursor = {'round': 2, 'task_position': 5, 'completed_trials': 7, 'trial_attempt': 1}
+                self.assertIsNone(reconcile_interrupted(records, cursor))
+                records.record('controller', 'active_trial', {'status': 'running', 'task_id': 'T-003',
+                                                              'configuration_index': 9})
+                row = reconcile_interrupted(records, cursor)
+                self.assertEqual(row['status'], 'interrupted')
+                self.assertEqual(row['occurrence'], '2-attempt-1')
+                self.assertEqual(records.latest('trial_projection', 'T-003:2-attempt-1')['status'], 'interrupted')
+                self.assertEqual(records.latest('controller', 'active_trial'), {})
+                self.assertEqual(cursor['trial_attempt'], 2)
+                self.assertEqual(cursor['interrupted_trials'], 1)
+                self.assertEqual(records.latest('controller', 'cursor')['trial_attempt'], 2)
+            finally:
+                records.close()
+
+    def test_run_trial_reports_an_existing_cell_instead_of_crashing(self):
+        with tempfile.TemporaryDirectory(prefix='task-campaign-cell-') as directory:
+            row = {'id': 'T-001', 'task_directory': '/nonexistent/task-database/T-001'}
+            from embodiment_lab.systematic_records import digest
+            cell = Path(directory) / 'trials' / ('T-001-' + digest(row['task_directory'])[:8]) / '0-attempt-0'
+            cell.mkdir(parents=True)
+            (cell / 'evidence.txt').write_text('kept')
+            state = run_trial(directory, row, {'temperature': 0.0}, {}, '0-attempt-0')
+            self.assertEqual(state['status'], 'failed')
+            self.assertEqual(state['error_type'], 'FileExistsError')
+            self.assertEqual((cell / 'evidence.txt').read_text(), 'kept')
+            self.assertEqual(sorted(p.name for p in cell.iterdir()), ['evidence.txt'])
 
 
 if __name__ == '__main__':

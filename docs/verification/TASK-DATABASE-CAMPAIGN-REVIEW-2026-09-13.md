@@ -39,7 +39,15 @@ completed trials, waiting for the provider (errno 113, no route to host).
    from the attempt's error codes: it returns wait for recovery, wait for
    the allowance, stop the route, or fail the cell, with a stated attempt
    ceiling bounding every wait, so the worker can call it instead of
-   keying on the folded terminal.
+   keying on the folded terminal. **Fixed the same evening:** the worker's
+   post-trial branch now calls `outage_decision`, which reads the run's
+   failure code through that vocabulary; a configuration or contract fault
+   stops the worker with the distinct status `route_stopped`, an allowance
+   or an outage waits at most `--wait-attempt-ceiling` times (default 3)
+   before the cell is recorded as failed and the campaign advances, and a
+   code the vocabulary does not know is read as an outage, still bounded.
+   Outage attempts, failed cells, and stopped routes are counted apart from
+   completed trials.
 
 2. **High. No durable resume: a crash mid-trial bricks the campaign, and
    manual reconciliation then crashes the worker on a directory
@@ -54,7 +62,14 @@ completed trials, waiting for the provider (errno 113, no route to host).
    during any of the 566,720 cells produces this; the `finally` does not
    run on default `SIGTERM`. Fix: on resume, mark the interrupted
    occurrence in `trial_projection`, bump the attempt, move `mkdir` inside
-   the recorded try, and add a `reconcile` operation to `main()`.
+   the recorded try, and add a `reconcile` operation to `main()`. **Fixed
+   the same evening:** `reconcile_interrupted` records the interrupted
+   occurrence in `trial_projection`, keeps its evidence where it is, moves
+   the attempt number on, and clears the marker; the worker calls it on
+   start (the old refusal remains behind `--refuse-interrupted`), a
+   `reconcile` operation exposes it, `run_trial` reports an existing cell
+   as a failed trial without touching it, and `SIGTERM` now unwinds
+   through the trial's `finally` blocks so its records close.
 
 3. **Medium. Counts are not kept separate.** `completed_trials` increments
    before the outage check (`:407`), so outage-terminated attempts count as
