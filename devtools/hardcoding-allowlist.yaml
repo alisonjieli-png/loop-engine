@@ -654,6 +654,146 @@ entries:
     classification: SECRET_OR_CREDENTIAL_REFERENCE
     created_on: 2026-09-13
     expires_on: 2027-09-13
+  - finding_id: hardcoding.04ecf5d3db4a4575ac355e6c
+    owner: embodiments.codex.qualification.json:upstream
+    rationale: >-
+      The literal is the upstream repository address recorded as provenance in the harness qualification record; it names where the reviewed embodiment came from and selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (embodiments/codex/qualification.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.58c641cc251d3e53b4ef17ac
+    owner: embodiments.freebuff.qualification.json:release_archive_url
+    rationale: >-
+      The literal is the release archive address recorded as provenance in the harness qualification record; it documents the exact reviewed release and selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (embodiments/freebuff/qualification.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.2348605dcfcc154355c65d43
+    owner: embodiments.freebuff.qualification.json:upstream
+    rationale: >-
+      The literal is the upstream repository address recorded as provenance in the harness qualification record; it names where the reviewed embodiment came from and selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (embodiments/freebuff/qualification.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.0ff1793d53283cfe11ce1b39
+    owner: embodiments.nanocode.qualification.json:upstream
+    rationale: >-
+      The literal is the upstream repository address recorded as provenance in the harness qualification record; it names where the reviewed embodiment came from and selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (embodiments/nanocode/qualification.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.051d984aea6c819dbba68dc6
+    owner: embodiments.openinterpreter_rust.qualification.json:upstream
+    rationale: >-
+      The literal is the upstream repository address recorded as provenance in the harness qualification record; it names where the reviewed embodiment came from and selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (embodiments/openinterpreter_rust/qualification.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.60ceb79c2223c4a7e00d3ba7
+    owner: embodiments.trae_agent.qualification.json:upstream
+    rationale: >-
+      The literal is the upstream repository address recorded as provenance in the harness qualification record; it names where the reviewed embodiment came from and selects no runtime behavior. Reviewed on 2026-09-13 from the triage worklist (embodiments/trae_agent/qualification.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.eda3447773af03bf030140b3
+    owner: docs.contracts.session-handoff.schema.json:$id
+    rationale: >-
+      The literal is the JSON Schema $id of the session handoff contract, the identity the schema standard requires; it is not a runtime endpoint. Reviewed on 2026-09-13 from the triage worklist (docs/contracts/session-handoff.schema.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.3679583dbc396ae3d3fe7bbb
+    owner: docs.contracts.session-handoff.schema.json:$schema
+    rationale: >-
+      The literal is the JSON Schema $schema dialect identifier the standard requires; it is not a runtime endpoint. Reviewed on 2026-09-13 from the triage worklist (docs/contracts/session-handoff.schema.json:None).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.bea1f96efb329f80b7f997e4
+    owner: loop_engine.core.astra_route_authority
+    rationale: >-
+      The literal is a citation of the provider's published documentation in a comment or docstring; nothing reads it at runtime. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/astra_route_authority.py:95).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.def2e1714477824f0bd45872
+    owner: loop_engine.core.astra_route_authority
+    rationale: >-
+      The literal is a citation of the provider's published documentation in a comment or docstring; nothing reads it at runtime. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/astra_route_authority.py:97).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.001d541ea1eba367045b8dc1
+    owner: loop_engine.core.openai_responses_client
+    rationale: >-
+      The literal is a citation of the provider's published documentation in a comment or docstring; nothing reads it at runtime. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/openai_responses_client.py:63).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.6dc5f7a9a52c8689614d42b6
+    owner: loop_engine.core.openai_responses_client
+    rationale: >-
+      The literal is a citation of the provider's published documentation in a comment or docstring; nothing reads it at runtime. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/openai_responses_client.py:64).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.90732638f8705a4a05df2ba0
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      The literal is a citation of the harness's published documentation in a comment or docstring; nothing reads it at runtime. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/opencode_harness_adapter.py:48).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.c42a7249d9844b8a41b44b2e
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      The literal is a citation of the harness's published documentation in a comment or docstring; nothing reads it at runtime. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/opencode_harness_adapter.py:49).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.d041f41ff6d2c74d635e072b
+    owner: loop_engine.core.opencode_harness_adapter
+    rationale: >-
+      The literal is a citation of the harness's published documentation in a comment or docstring; nothing reads it at runtime. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/opencode_harness_adapter.py:50).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.22c25bd0119ae48354c25d08
+    owner: loop_engine.core.harness_goose_recipe:prepare_goose_recipe
+    rationale: >-
+      The literal is the loopback address prefix of the engine's own local relay; the port is chosen at runtime from the bound socket, and the relay is local by design, not a deployment setting. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/harness_goose_recipe.py:32).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.4d0de17cd3dc4637a585dcc1
+    owner: loop_engine.core.harness_process_relay:main
+    rationale: >-
+      The literal is the loopback address prefix of the engine's own local relay; the port is chosen at runtime from the bound socket, and the relay is local by design, not a deployment setting. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/harness_process_relay.py:246).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.8491fd7e89b6a0ba5bd6230e
+    owner: loop_engine.core.stage_assistance_runtime_records:source_ref_states
+    rationale: >-
+      The literal is a URL scheme prefix used to classify a source reference as a web address; it is part of the closed vocabulary of reference kinds, not a binding to any provider. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/stage_assistance_runtime_records.py:24).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.8688eee2259c966959bd295f
+    owner: loop_engine.core.stage_assistance_runtime_records:source_ref_states
+    rationale: >-
+      The literal is a URL scheme prefix used to classify a source reference as a web address; it is part of the closed vocabulary of reference kinds, not a binding to any provider. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/stage_assistance_runtime_records.py:24).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+  - finding_id: hardcoding.94a0d9e61b2bf675eaa87d11
+    owner: loop_engine.core.model_gateway:builtin_provider_specs
+    rationale: >-
+      The literal is the endpoint in the built-in provider specification table, which is the declared owner of provider endpoints; a custom endpoint replaces it through CustomEndpoint and provider_spec_from_endpoint rather than by editing this table. Reviewed on 2026-09-13 from the triage worklist (src/loop_engine/core/model_gateway.py:139).
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
@@ -663,3 +803,11 @@ excluded_paths:
     created_on: 2026-09-13
     sha256: 74771629648321ad370023977243266617ff6c6428fdb6e78036f2ec4719ea11
     expires_on: 2027-09-13
+  - path: embodiments/freebuff/npm-metadata.json
+    owner: embodiments.freebuff
+    rationale: >-
+      The package registry record copied from the upstream project for qualification provenance; every literal in it is the registry's own data (addresses, tarball locations), not a decision made in this repository. The file stays in the scan's skipped list with this classification.
+    classification: UPSTREAM_RECORD_COPY
+    created_on: 2026-09-13
+    expires_on: 2027-09-13
+    sha256: a8f0c0473452a7318f07497bf77dc776e026b4175ccba59a47bedf17a215bd08
