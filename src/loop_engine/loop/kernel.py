@@ -220,6 +220,11 @@ HOW_MODES = ("use", "configure", "compose", "modify", "mutate", "research",
 ACT_MODES = ("run_direct", "run_dag", "spawn_practitioners")
 
 # VERIFY's verdicts.
+#: The verdicts that count as an accepted pass for the supervision ladder.
+ACCEPTED_VERDICTS = ("accept", "accept_provisional")
+#: The observation record the ladder appends when the unaccepted-pass
+#: ceiling trips; not a rung of the ladder itself.
+UNACCEPTED_PASSES_OBSERVATION = "unaccepted_passes"
 VERIFY_VERDICTS = ("accept", "accept_provisional", "repair", "research_more",
                    "try_another", "expand_swarm", "tune", "reset", "stop")
 
@@ -658,6 +663,15 @@ def _non_progress_record(pass_number: int, escalation: str,
             f"{last_route!r}; soft reset and cold restart both failed to "
             "restore progress, so stopping honestly instead of repeating "
             "identical passes")
+    elif escalation == UNACCEPTED_PASSES_OBSERVATION:
+        # Not a rung: the observation that trips the ladder when every
+        # pass produces something new and nothing the verifier accepts.
+        reason = (
+            f"{consecutive} consecutive passes without an accepted "
+            f"verification while routing {last_route!r}; the declared "
+            "supervision policy names this the honest measure for a run "
+            "whose fresh candidates keep being refused, so the escalation "
+            "ladder is climbed as for no progress")
     else:
         reason = (
             f"no measurable progress while routing {last_route!r}; "
@@ -665,6 +679,7 @@ def _non_progress_record(pass_number: int, escalation: str,
             "documented failures")
     record.route = RouteDecision(
         "stop_unprofitable" if escalation == "stop_unprofitable"
+        else "continue" if escalation == UNACCEPTED_PASSES_OBSERVATION
         else escalation, reason)
     record.state_version_out = 0
     return record
@@ -704,6 +719,17 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
     non_progress_passes = 0
     previous_progress_key = None
     guard_escalations = 0
+    # Passes since the last accepted verification. A run that keeps
+    # producing fresh candidates the verifier keeps refusing makes
+    # "progress" by the key above on every pass and never trips the
+    # non-progress guard; the declared supervision policy's unaccepted-pass
+    # ceiling is the honest measure for that shape, and it climbs the same
+    # ladder (reset with failure memory, cold restart, then the honest
+    # stop) rather than stopping abruptly. It applies only when the caller
+    # declared no pass budget of its own, as the policy's iteration
+    # ceilings do.
+    unaccepted_passes = 0
+    unaccepted_escalations = 0
     supervision = request.supervision
     if not isinstance(supervision, SupervisionPolicy):
         raise ValueError(
@@ -722,20 +748,49 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
             non_progress_passes = 0
             previous_progress_key = progress_key
             guard_escalations = 0
+        verdict = rec.evaluation.verdict if rec.evaluation is not None else ""
+        if verdict in ACCEPTED_VERDICTS:
+            unaccepted_passes = 0
+            unaccepted_escalations = 0
+        else:
+            unaccepted_passes += 1
         route = rec.route.route if rec.route else "stop_unprofitable"
         if route in ("stop_success", "stop_unprofitable"):
             break
+        # Any route but a stop counts: a route implementation that answers
+        # a repeated repair with its own soft reset or cold restart is
+        # still a pass the verifier refused, and those resets are exactly
+        # the shape that ran without end.
+        unaccepted_ceiling_reached = (
+            limit is None
+            and unaccepted_passes >= supervision.unaccepted_passes_before_stop)
+        if unaccepted_ceiling_reached:
+            unaccepted_passes = 0
+            unaccepted_escalations += 1
+            records.append(_non_progress_record(
+                n, UNACCEPTED_PASSES_OBSERVATION, route,
+                consecutive=supervision.unaccepted_passes_before_stop))
+            if events_path:
+                _append_event(events_path, records[-1])
         if (non_progress_passes
                 >= supervision.non_progress_passes_before_escalation
-                and route in ("continue", "retry", "repair")):
+                and route in ("continue", "retry", "repair")
+                or unaccepted_ceiling_reached):
             # Escalation ladder before any honest stop, like a second set of
             # eyes: the declared supervision policy names the rungs (soft
             # reset with failure memory, cold restart keeping the documented
             # failures, then the honest stop). Genuine progress anywhere
             # resets the ladder; escalation alone does not.
-            guard_escalations += 1
+            # The two triggers climb one ladder, each with its own count:
+            # genuine progress resets the non-progress count, an accepted
+            # verification resets the unaccepted count, and a rung already
+            # climbed for either trigger is not climbed again.
+            if unaccepted_ceiling_reached:
+                rung = supervision.rung_for(max(unaccepted_escalations, guard_escalations + 1))
+            else:
+                guard_escalations += 1
+                rung = supervision.rung_for(guard_escalations)
             non_progress_passes = 0
-            rung = supervision.rung_for(guard_escalations)
             if rung == "soft_reset":
                 records.append(_non_progress_record(
                     n, "soft_reset", route))
@@ -1258,6 +1313,54 @@ def self_test() -> dict:
           "repair" in routes and "soft_reset" in routes
           and "cold_restart" in routes and out_b["failures"],
           f"routes: {routes}; failures documented: {len(out_b['failures'])}")
+
+    # 6b. A run that keeps producing fresh candidates the verifier refuses
+    # makes "progress" by the key on every pass and never trips the guard;
+    # without a declared pass budget, the supervision policy's
+    # unaccepted-pass ceiling climbs the same ladder and ends honestly,
+    # while a run with an accepted pass in time is left alone.
+    fresh = {"n": 0}
+
+    def fresh_act(state, plan):
+        fresh["n"] += 1
+        return [ResultPacket(objective="candidate", confidence=0.9,
+                             artifact_refs=(f"candidate-{fresh['n']}",),
+                             claims=(f"claim-{fresh['n']}",))]
+
+    def refusing_verify(state, plan, results):
+        return EvaluationPacket("repair", notes="verifier refused the candidate")
+
+    impls_r = default_impls()
+    impls_r["act"], impls_r["verify"] = fresh_act, refusing_verify
+    policy_r = SupervisionPolicy(unaccepted_passes_before_stop=3,
+                                 non_progress_passes_before_escalation=3)
+    out_refused = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="refused forever", success_criteria=("c",)),
+        impls_r, supervision=policy_r))
+    routes_r = [r.route.route for r in out_refused["records"]]
+    reasons_r = [r.route.reason for r in out_refused["records"]]
+    check("fresh_candidates_the_verifier_keeps_refusing_climb_the_ladder_and_stop_honestly",
+          routes_r[-1] == "stop_unprofitable"
+          and "soft_reset" in routes_r and "cold_restart" in routes_r
+          and sum(1 for r in reasons_r if "without an accepted verification" in r) == 3
+          and fresh["n"] == len(policy_r.escalation_ladder) * policy_r.unaccepted_passes_before_stop
+          and out_refused["failures"],
+          f"routes: {routes_r}; acts: {fresh['n']}")
+    budgeted = {"n": 0}
+
+    def budgeted_act(state, plan):
+        budgeted["n"] += 1
+        return fresh_act(state, plan)
+    impls_b = default_impls()
+    impls_b["act"], impls_b["verify"] = budgeted_act, refusing_verify
+    out_budgeted = run_kernel_passes(KernelRunRequest(
+        ProblemSpec(objective="refused, budgeted", success_criteria=("c",),
+                    budget_passes=5), impls_b, supervision=policy_r))
+    check("a_declared_pass_budget_keeps_its_own_meaning",
+          budgeted["n"] == 5
+          and not any("without an accepted verification" in r.route.reason
+                      for r in out_budgeted["records"]),
+          f"acts: {budgeted['n']}")
 
     # 7. the swarm is a portfolio of parameterized runs of the SAME kernel.
     sw = run_swarm([SwarmSpawnedSpec("full", ProblemSpec(

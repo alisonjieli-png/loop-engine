@@ -115,7 +115,12 @@ request), so one cell can spend the whole weekly allowance. A per-cell call
 ceiling and pass ceiling are configuration dimensions the grid should carry
 explicitly (the owner's rule is explicit ceilings, never implicit ones), and
 the worker should stop a cell that exceeds them with a recorded terminal.
-The flash worker's finished cells took 44 and 69 calls.
+The flash worker's finished cells took 44 and 69 calls. The product side is
+answered on main: the kernel now applies the supervision policy's
+`unaccepted_passes_before_stop` to its own passes when no pass budget is
+declared, climbing the reset ladder to `stop_unprofitable` after
+twenty-seven refused passes by default; the running worker's snapshot
+predates it.
 
 Coordination, 23:52 UTC September 13: the Claude session's changes to
 campaign activation, the campaign page, provider accounting, and the

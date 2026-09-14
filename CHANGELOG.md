@@ -9,6 +9,21 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- A Practitioner run whose fresh candidates the verifier keeps refusing
+  now reaches the honest stop. The live pro cell on CS-001 made more than
+  470 model calls and consumed over 14 million tokens with sixty
+  verification rounds and no end in sight: every pass produced a new
+  candidate, so the kernel's non-progress guard saw progress on every
+  pass, the Practitioner's own exit condition is `steps_complete` so the
+  iteration backstops for `accepted_success` Loops never applied, and the
+  route reasoner kept choosing repair. The kernel now applies the declared
+  supervision policy's `unaccepted_passes_before_stop` to its own passes
+  when the caller declared no pass budget: after that many passes without
+  an accepted verification it climbs the same ladder (soft reset with the
+  failure memory, cold restart, then `stop_unprofitable`), each trigger
+  with its own count, and an accepted pass resets it. A declared pass
+  budget keeps its own meaning. This bounds such a run to three times the
+  policy's count, twenty-seven passes by default.
 - `RunHistory.verified_checkpoints(root, run_id)` settles every revision
   of an append-only store from one reading of the shared log (a revision
   is intact when no link before its count is broken and the digest at its

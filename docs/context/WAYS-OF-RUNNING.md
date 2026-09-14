@@ -30,7 +30,11 @@ Set on `LoopConfig` and the Loop's identity when the Loop is created.
 `identical_failures_before_stop`, `non_progress_passes_before_escalation`,
 `unaccepted_passes_before_stop`, `escalation_ladder` and `spawn_depth_guard`,
 and it is versioned, so a new field is a minor version and the default keeps
-the previous behavior.
+the previous behavior. `unaccepted_passes_before_stop` also governs the
+Practitioner kernel's own passes when no pass budget is declared: after that
+many passes without an accepted verification the run climbs the escalation
+ladder and ends `stop_unprofitable`, whatever fresh candidates each pass
+produced.
 
 ## The settings on one solve
 
