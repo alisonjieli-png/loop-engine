@@ -273,9 +273,46 @@ def _content_admission_checks() -> list[dict]:
                 return refused.rejection.message
             return ""
 
-        by_basename = refusal(source_inspection_operation, ["binary.bin"])
+        # A binary file is now selectable for project inputs, so the
+        # unresolved example is a link, which stays excluded for every purpose.
+        by_basename = refusal(source_inspection_operation, ["linked.txt"])
         check("unresolved_basename_request_names_the_matching_exclusion_reason",
-              "repo/binary.bin (binary_or_unsupported_encoding)" in by_basename)
+              "repo/linked.txt (symlink)" in by_basename)
+        binary_selection = source_inspection_operation(
+            {"paths": ["binary.bin"], "include_contents": True}, services)
+        binary_row = next((row for row in binary_selection["selected"]
+                           if row["path"] == "repo/binary.bin"), {})
+        check("a_binary_supplied_file_is_selectable_for_projects_without_its_content",
+              binary_row.get("readable_by_model") is False
+              and "content" not in binary_row
+              and binary_row.get("digest")
+              == hashlib.sha256(b"\x00\xff\x01").hexdigest()
+              and any(item["path"] == "repo/binary.bin"
+                      for item in binary_selection["sandbox_input_files"])
+              and "repo/binary.bin" in source_inspection_model_view(
+                  [binary_selection])[0]["sandbox_input_paths"])
+        check("hidden_linked_and_protected_files_stay_unselectable",
+              "repo/.env (hidden_path)"
+              in refusal(source_inspection_operation, [".env"])
+              and "repo/linked.txt (symlink)" in by_basename
+              and "repo/secret-document.txt (protected_content)"
+              in refusal(source_inspection_operation, ["secret-document.txt"]))
+        from .adaptive_practitioner_project import _local_project_inputs
+        delivery_services = SimpleNamespace(
+            request=SimpleNamespace(
+                source_kind="repository",
+                source_refs=services.request.source_refs,
+                allow_source_materialization_to_model=True,
+                context_budget=services.request.context_budget),
+            source_inspections=[binary_selection])
+        delivered = {item.path: item
+                     for item in _local_project_inputs(delivery_services)}
+        binary_input = delivered.get("inputs/repo/binary.bin")
+        check("a_selected_binary_file_is_delivered_byte_exact_to_project_inputs",
+              binary_input is not None
+              and binary_input.content == b"\x00\xff\x01"
+              and getattr(binary_input, "media_type", "")
+              == "application/octet-stream")
         inside = refusal(source_inspection_operation, ["node_modules/private.txt"])
         protected = refusal(source_inspection_operation, [str(root / "secret-document.txt")])
         check("requests_inside_excluded_directories_or_by_absolute_path_name_reasons_not_content",

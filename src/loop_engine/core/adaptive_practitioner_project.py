@@ -36,7 +36,7 @@ from .runtime_capacity import (
 from .adaptive_practitioner_records import (
     AdaptiveRunServices, ModelStepRequest)
 from .adaptive_practitioner_source import (
-    _resolve_requested_paths, inspectable_source_files, project_input_path,
+    _resolve_requested_paths, inventory_source_files, project_input_path,
     source_inspection_model_view)
 from .context_artifacts import ContextArtifactRef
 from .generated_project import (
@@ -377,7 +377,11 @@ def _local_project_inputs(
     if not services.request.allow_source_materialization_to_model:
         raise PermissionError(
             "local task sources require explicit source-to-model authority")
-    available = dict(inspectable_source_files(services))
+    inventory = inventory_source_files(services)
+    # A binary file selected through core.source.inspect is delivered too:
+    # sandboxed code reads it, and no model ever received its bytes.
+    binary_paths = set(dict(inventory.materializable))
+    available = {**dict(inventory.files), **dict(inventory.materializable)}
     selected_records = {}
     missing = set()
     for inspection in services.source_inspections:
@@ -426,7 +430,9 @@ def _local_project_inputs(
                 "rather than materializing them whole")
     return tuple(GeneratedProjectInputArtifact(
         project_input_path(relative), available[relative].read_bytes(),
-        mimetypes.guess_type(available[relative].name)[0] or "text/plain",
+        mimetypes.guess_type(available[relative].name)[0]
+        or ("application/octet-stream" if relative in binary_paths
+            else "text/plain"),
         selected_records[relative])
         for relative in selected_paths)
 

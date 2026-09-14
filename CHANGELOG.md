@@ -94,6 +94,14 @@ First public release.
   folder, links, and devices, skips archives whose bytes were already
   unpacked, and records everything it unpacked or refused in the result's
   `task_materials` record.
+- A supplied binary file, such as a spreadsheet, an image, or a Parquet table,
+  can be selected for a project's inputs. `core.source.inspect` accepts its
+  path and returns its size, digest, and media type, marked not readable by the
+  model, and never its content; the project receives the exact bytes, and the
+  runtime facts list these files with their sandbox paths. Hidden, linked, and
+  protected files stay excluded for every purpose. The profile operation moved
+  to `core.source_profile` to make room in the source module and is
+  re-exported for existing callers.
 
 ### Fixed on 2026-09-14
 

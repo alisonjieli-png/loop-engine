@@ -27,7 +27,7 @@ import hashlib
 
 from ..templates.intake import CapturedInstructionProvenance
 from .adaptive_practitioner_records import AdaptivePractitionerError
-from .adaptive_practitioner_source import inspectable_source_files, project_input_path
+from .adaptive_practitioner_source import inventory_source_files, project_input_path
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 from .generated_project import selected_execution_backend
 from .independent_verification import IndependentVerificationPolicy
@@ -53,9 +53,10 @@ def _source_manifest(services) -> dict | None:
             and request.source_refs):
         return None
     try:
-        files = inspectable_source_files(services)
+        inventory = inventory_source_files(services)
     except (AdaptivePractitionerError, OSError, ValueError):
         return None
+    files = inventory.files
     paths = sorted(relative for relative, _path in files)
     digest = hashlib.sha256("\n".join(paths).encode("utf-8")).hexdigest()
     carried = paths[:paths_within_allowance(
@@ -67,10 +68,30 @@ def _source_manifest(services) -> dict | None:
             sizes[relative] = by_path[relative].stat().st_size
         except (KeyError, OSError):
             sizes[relative] = None
+    binary = dict(inventory.materializable)
+    binary_paths = sorted(binary)
+    carried_binary = binary_paths[:paths_within_allowance(
+        binary_paths, model_evidence_bytes(services))]
+    binary_files = {}
+    for relative in carried_binary:
+        try:
+            byte_count = binary[relative].stat().st_size
+        except OSError:
+            byte_count = None
+        binary_files[relative] = {
+            "sandbox_path": project_input_path(relative),
+            "byte_count": byte_count}
     return {
         "paths": carried,
         "sandbox_paths": {relative: project_input_path(relative)
                           for relative in carried},
+        "sandbox_input_files": binary_files,
+        "sandbox_input_total": len(binary_paths),
+        "sandbox_input_usage": (
+            "these supplied files are binary, so they are never readable as "
+            "text: select one with core.source.inspect paths to deliver it to "
+            "a project, then open it at its sandbox_path with code that reads "
+            "its format"),
         "byte_counts": sizes,
         "placement_capacity": supplied_input_ceiling(),
         "total": len(paths),
