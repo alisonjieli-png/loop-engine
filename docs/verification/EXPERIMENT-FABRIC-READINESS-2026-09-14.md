@@ -83,6 +83,19 @@ resource policy rather than inheriting the old expensive configuration.
 
 ## Verification and private artifacts
 
+Release `078fffc8da632a321e86d8660301ac633773bbb4` passed 4,710 of 4,710
+checks from its exact committed source. A fresh wheel installation with the
+optimization extra passed 4,664 of 4,664 checks. Neither source changed during
+verification, and both runs made zero provider calls. The installed wheel
+still excludes optional data and integration adapters listed in its command
+record.
+
+The final development laboratory passed 103 tests, including a later
+checkpoint-binding correction: a valid prefix must actually contain each
+claimed model-call occurrence. An earlier intact checkpoint cannot account
+for a later call, including repeated semantic call identifiers. The regenerated
+`flash-report-bound.html` applies this check to the real reference campaign.
+
 The frozen source snapshot is based on `1a18e105acf17647cb02c953612cfa9c59215e6e`
 plus this session's owned changes. Its full offline suite passed 4,709 of
 4,709 checks with no source changes during the run. A wheel built from that
@@ -133,6 +146,11 @@ Private artifacts are under
   selected history identities, exclusions, and the unpromoted hypothesis;
 - `flash-report.html` and `flash-report-data.json`: the regenerated campaign
   grid, evidence gaps, unknown totals, and known subtotals;
+- `flash-report-bound.html` and `flash-report-bound-data.json`: the same
+  campaign after exact checkpoint-occurrence binding;
+- `committed-source-self-test.json`, `committed-install-self-test.json`, and
+  `laboratory-checkpoint-binding.json`: the final committed-source,
+  installed-wheel, and development-laboratory checks;
 - `frozen-self-test.json`, `clean-install-self-test.json`,
   `laboratory-final-v2.json`, `conformance-final.json`, and
   `repo-conformance-final.json`: command records and their source identities.

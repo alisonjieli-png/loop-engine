@@ -19,6 +19,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from bisect import bisect_left
 from dataclasses import dataclass
 from collections import Counter
 from pathlib import Path
@@ -152,6 +153,40 @@ def _artifact_verified(entry) -> bool:
         return False
 
 
+def _checkpoint_contains_attempts(row, attempts, cache) -> bool:
+    """Bind invocation occurrences to events inside the exact verified prefix.
+
+    A valid earlier checkpoint cannot stand in for the checkpoint after a
+    later call. Load each store once and index event positions, not one full
+    history copy per invocation.
+    """
+    try:
+        saved = Path(row['history']).absolute()
+        key = ('invocation_positions', str(saved))
+        if key not in cache:
+            checkpointed = (saved / 'checkpoints.jsonl').is_file()
+            history = (RunHistory.load_checkpoint(str(saved.parent), saved.name)
+                       if checkpointed else RunHistory.load(str(saved.parent), saved.name))
+            positions = {}
+            for position, event in enumerate(history.event_log):
+                if event.event_type == MODEL_INVOCATION_EVENT:
+                    pair = (event.loop_id, event.detail.get('semantic_call_id', ''))
+                    positions.setdefault(pair, []).append(position)
+            lengths = ({record['revision']: record['events'] for record in
+                        RunHistory.checkpoints(str(saved.parent), saved.name)} if checkpointed else None)
+            cache[key] = (positions, lengths, len(history.event_log))
+        positions, lengths, count = cache[key]
+        if lengths is not None:
+            revision = row.get('revision')
+            if type(revision) is not int or revision not in lengths:
+                return False
+            count = lengths[revision]
+        return all(bisect_left(positions.get(pair, ()), count) >= occurrences
+                   for pair, occurrences in attempts.items())
+    except Exception:
+        return False
+
+
 def _configuration_applied(row, configuration) -> bool:
     """The setter reported the value applied (or already so) and the row's
     configuration is the trial's own, so no call ran under another."""
@@ -230,7 +265,8 @@ def trial_evidence_report(cell, *, services=TrialEvidenceServices()) -> dict:
                            for attempt in observed.get('provider_attempts', ()) if attempt.get('loop_id'))
         if operation in applied and _configuration_applied(applied[operation], configuration):
             configured_calls.update(attempts)
-        if verified_steps.get(operation):
+        if verified_steps.get(operation) and _checkpoint_contains_attempts(
+                steps[operation], attempts, checkpoint_cache):
             checkpointed_calls.update(attempts)
     source_checks = records.get('source_verification', {})
     before, after = source_checks.get('before', {}), source_checks.get('after', {})

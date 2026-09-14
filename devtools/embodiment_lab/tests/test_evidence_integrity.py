@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from embodiment_lab.campaign_report import _tokens, campaign_report, render_campaign_html
-from embodiment_lab.trial_evidence import _step_history_verified
+from embodiment_lab.trial_evidence import _checkpoint_contains_attempts, _step_history_verified
 from loop_engine.core.harness_configuration import load_harness_binding
 from loop_engine.core.harness_process import HarnessProcessError
 from loop_engine.core.product_outcome_store import (
@@ -17,6 +17,30 @@ from loop_engine.core.run_history import RunHistory
 
 
 class EvidenceIntegrityChecks(unittest.TestCase):
+    def test_an_intact_earlier_checkpoint_cannot_claim_a_later_call(self):
+        from collections import Counter
+        from loop_engine.core.run_history import MODEL_INVOCATION_EVENT
+        with tempfile.TemporaryDirectory(prefix='invocation-checkpoint-check-') as directory:
+            history = RunHistory('fixture-prefix')
+            history.append('loop_init', loop_id='fixture-owner')
+            first = history.append_checkpoint(directory)
+            history.append(MODEL_INVOCATION_EVENT, loop_id='provider-call',
+                           detail={'semantic_call_id': 'repeated'})
+            second = history.append_checkpoint(directory)
+            history.append(MODEL_INVOCATION_EVENT, loop_id='provider-call',
+                           detail={'semantic_call_id': 'repeated'})
+            third = history.append_checkpoint(directory)
+            row = lambda checkpoint: {'history': str(Path(directory) / 'fixture-prefix'),
+                                      'revision': checkpoint['revision']}
+            once = Counter({('provider-call', 'repeated'): 1})
+            twice = Counter({('provider-call', 'repeated'): 2})
+            cache = {}
+            self.assertTrue(_step_history_verified(row(first), cache))
+            self.assertFalse(_checkpoint_contains_attempts(row(first), once, cache))
+            self.assertTrue(_checkpoint_contains_attempts(row(second), once, cache))
+            self.assertFalse(_checkpoint_contains_attempts(row(second), twice, cache))
+            self.assertTrue(_checkpoint_contains_attempts(row(third), twice, cache))
+
     def test_trillion_level_range_is_projected_without_enumeration(self):
         from embodiment_lab.campaign_report import campaign_grid
         from loop_engine.generation.space import ConfigurationAxis, ConfigurationSpace
