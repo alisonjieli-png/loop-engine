@@ -32,10 +32,17 @@ from .model_gateway import (
 from .model_gateway_accounting import complete_attempt_sum
 from .model_prompt_envelope import ModelPromptEnvelopeBinding
 from .harness_selection_records import HarnessSelectionPolicy, HarnessSelectionScope
+from .outcome_vector import DEFAULT_OUTCOME_VECTOR_POLICY
 
 
 def _digest(value: str) -> str:
     return hashlib.sha256(value.encode('utf-8')).hexdigest()
+
+
+def _record_digest(value: object) -> str:
+    return hashlib.sha256(json.dumps(
+        value, sort_keys=True, separators=(',', ':'),
+        ensure_ascii=False).encode('utf-8')).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -260,6 +267,8 @@ class HarnessSemanticBinding:
                 decision=decision.reason, next_harness_id=decision.next_harness_id,
                 model_calls_known_subtotal=response.physical_model_calls,
                 model_call_accounting_complete=not decision.accounting_uncertain,
+                outcome_vector_policy_digest=_record_digest(
+                    DEFAULT_OUTCOME_VECTOR_POLICY.to_dict()),
                 task_accepted=False, **self._layering_fields())
             if not decision.next_harness_id:
                 break
@@ -313,6 +322,8 @@ class HarnessSemanticBinding:
         work = Path(self.work_root) / ('step-' + uuid.uuid4().hex)
         work.mkdir(parents=True, mode=0o700, exist_ok=False)
         context_capacity = int(getattr(primary.capabilities, 'max_context', 0) or 0)
+        vector_policy = DEFAULT_OUTCOME_VECTOR_POLICY.to_dict()
+        vector_policy_digest = _record_digest(vector_policy)
         harness_request = HarnessRunRequest(
             request_id='semantic-' + uuid.uuid4().hex,
             harness_id=harness_id,
@@ -333,6 +344,7 @@ class HarnessSemanticBinding:
                 'semantic_call_id': request.semantic_call_id,
                 'work_directory': str(work), 'context_capacity': context_capacity,
                 'socket_directory': self.socket_directory,
+                'outcome_vector_policy': vector_policy,
             },
             provider_id=primary.provider, model_id=primary.model,
             model_routes=tuple(dict.fromkeys(route.name for route, _ in routes)),
@@ -340,6 +352,14 @@ class HarnessSemanticBinding:
                 HarnessModelIdentity(route.provider, route.model, route.name)
                 for route, _ in routes)),
             authorize_model_calls=True,
+            outcome_vector_policy=DEFAULT_OUTCOME_VECTOR_POLICY,
+            metadata={
+                'owning_practitioner_control': {
+                    'outcome_vector_policy_id': vector_policy['policy_id'],
+                    'outcome_vector_policy_version': vector_policy['version'],
+                    'outcome_vector_policy_digest': vector_policy_digest,
+                    'adapter_may_self_accept': False,
+                }},
         )
         result = run_external_harness(
             adapter, harness_request, parent=parent,

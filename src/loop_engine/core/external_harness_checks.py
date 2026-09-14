@@ -48,7 +48,9 @@ def run_checks() -> dict:
         context_refs=("ctx:one",), provider_id="ollama_cloud",
         model_id="configured-model-ref")
     check("request_digest_is_stable_and_full_length",
-          request.digest == request.digest and len(request.digest) == 64)
+          request.digest == request.digest and len(request.digest) == 64
+          and request.outcome_vector_policy
+          .continue_while_safe_authorized_work_remains)
 
     limit = ModelOutputLimit(
         65536, "endpoint_observed",
@@ -249,6 +251,12 @@ def run_checks() -> dict:
           and failed_once.status == "failed"
           and failed_once.physical_model_calls == 1,
           "This is a local protocol fixture, not provider integration proof.")
+    check("every_external_harness_result_has_an_owning_loop_outcome_vector",
+          failed_once.outcome_vector.execution_succeeded is False
+          and small.outcome_vector.execution_succeeded is True
+          and small.outcome_vector.output_admitted is None
+          and small.outcome_vector.expected_output_satisfied is None
+          and small.safe_summary()["outcome_vector"]["task_outcome"] is None)
     check("available_adapter_requires_context_artifact_manager_before_execution",
           missing_manager.status == "refused"
           and missing_manager.error_code == "context_artifact_manager_required"
@@ -286,6 +294,16 @@ def run_checks() -> dict:
                 "host_supplied_solver", self.version, "not-imported", available=True,
                 execution_capabilities=HarnessExecutionCapabilities())
 
+    class NamedPractitionerAdapter(RegisteredAdapter):
+        def __init__(self, harness_id):
+            super().__init__()
+            self.harness_id = harness_id
+
+        def info(self):
+            return HarnessAdapterInfo(
+                self.harness_id, self.version, "not-imported", available=True,
+                execution_capabilities=HarnessExecutionCapabilities())
+
     custom = RegisteredAdapter()
     custom_request = replace(one_call_request, harness_id="host_supplied_solver")
     registry = HarnessRegistry((custom,))
@@ -309,7 +327,9 @@ def run_checks() -> dict:
         check("new_host_adapter_executes_through_the_same_loop_runtime",
               custom.calls == 1 and custom_result.completed
               and bool(custom_result.loop_id)
-              and custom_result.safe_summary()["acceptance"] == "not_evaluated")
+              and custom_result.safe_summary()["acceptance"] == "not_evaluated"
+              and custom_result.capability_evaluation[
+                  "outcome_vector_policy"]["adapter_may_self_accept"] is False)
         requirements = (
             {"tool_refs": ("tool:read",)}, {"skill_refs": ("skill:review",)},
             {"context_refs": ("context:source",)},
@@ -345,6 +365,19 @@ def run_checks() -> dict:
         research_result = run_external_harness(custom, research, services=services)
         check("requested_exact_practitioner_profile_is_resolved",
               identity.profile_id == research.profile_id and research_result.completed)
+        portable_vectors = []
+        for harness_id in ("custom_practitioner", "opencode", "codex", "pi"):
+            adapter = NamedPractitionerAdapter(harness_id)
+            portable = run_external_harness(
+                adapter, replace(custom_request, request_id="portable-" + harness_id,
+                                 harness_id=harness_id), services=services)
+            portable_vectors.append(
+                portable.completed
+                and portable.outcome_vector.execution_succeeded is True
+                and portable.outcome_vector.expected_output_satisfied is None
+                and portable.outcome_vector.task_outcome is None)
+        check("custom_opencode_codex_and_pi_share_the_outcome_vector_boundary",
+              all(portable_vectors))
 
         class WrongModelAdapter(RegisteredAdapter):
             def run(self, active_request, active_services):
@@ -362,10 +395,21 @@ def run_checks() -> dict:
             def run(self, active_request, active_services):
                 raise RuntimeError("SECRET_FIXTURE_NOT_FOR_HISTORY")
 
+        class SelfGradingAdapter(RegisteredAdapter):
+            def run(self, active_request, active_services):
+                from .outcome_vector import OutcomeVector
+                result = super().run(active_request, active_services)
+                result.outcome_vector = OutcomeVector(
+                    expected_output_satisfied=True, task_outcome=True)
+                return result
+
         for variant in (WrongModelAdapter, WrongVersionAdapter):
             check(f"{variant.__name__}_cannot_return_completion",
                   rejects(lambda variant=variant: run_external_harness(
                       variant(), custom_request, services=services)))
+        check("harness_adapter_cannot_self_grade_or_self_accept_its_vector",
+              rejects(lambda: run_external_harness(
+                  SelfGradingAdapter(), custom_request, services=services)))
         exception_result = run_external_harness(ExceptionAdapter(), custom_request,
                                               services=services)
         check("adapter_exception_text_not_published",
@@ -526,7 +570,9 @@ def run_checks() -> dict:
           rejects(lambda: replace(custom_request, metadata={"deep": [{"api_key": "fixture"}]})))
     check("authority_requires_boolean_true_and_refs_are_sequences",
           rejects(lambda: replace(custom_request, authorize_model_calls="false"))
-          and rejects(lambda: replace(custom_request, tool_refs="tool:one")))
+          and rejects(lambda: replace(custom_request, tool_refs="tool:one"))
+          and rejects(lambda: replace(
+              custom_request, outcome_vector_policy={})))
     from .external_harness_adapters import _prompt
     large_input = {"nested": {"body": "a" * 60_000 + "END_MARKER"}}
     prompt = _prompt(replace(custom_request, input_data=large_input))

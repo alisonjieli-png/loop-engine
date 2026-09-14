@@ -17,7 +17,6 @@ from ..loop.kernel import (
     ExecutionPlan,
     PractitionerState,
     ResultPacket,
-    RouteDecision,
 )
 from ..loop.kernel_runtime import current_kernel_owner
 from .adaptive_host_verification import require_host_checks, verify_host_results
@@ -30,15 +29,8 @@ from .adaptive_practitioner_records import (
     AdaptiveRunServices,
     ModelStepRequest,
 )
-from .adaptive_practitioner_recovery import (
-    RecoveryPanelRequest,
-    resolve_stall_with_panel,
-)
-from .adaptive_practitioner_result import latest_task_result, task_result_succeeded
 from .adaptive_practitioner_source import source_inspection_model_view
-from .adaptive_practitioner_supervision import detect_stall
 from .adaptive_practitioner_validation import (
-    MODEL_ROUTE_VALUES,
     _short_strings,
     _short_text,
 )
@@ -47,6 +39,14 @@ from .independent_verification import (
     IndependentVerificationRequest,
     run_independent_verification,
     validate_independent_verification,
+)
+from .model_response_admission import (
+    ModelResponseAdmissionPolicy,
+    ModelResponseContract,
+)
+from .action_vector_assessment import (
+    ActionVectorAssessment,
+    action_vector_schema,
 )
 
 
@@ -80,6 +80,44 @@ class AdaptiveVerificationSubject:
             "result_digests": list(self.result_digests),
             "execution_refs": list(self.execution_refs),
         }
+
+
+def _verification_response_contract(criteria: tuple[dict, ...]
+                                    ) -> ModelResponseContract:
+    """Bind semantic checking to every process and requested-output axis."""
+    text = {"type": "string", "minLength": 1}
+    action_vector = action_vector_schema(tuple(
+        item["criterion_ref"] for item in criteria))
+    schema = {
+        "type": "object",
+        "required": [
+            "verdict", "best_index", "scores", "notes", "remaining_gaps",
+            "advisory_findings", "new_requirement_proposals", "action_vector"],
+        "properties": {
+            "verdict": {"enum": [
+                "accept", "accept_provisional", "repair", "research_more",
+                "try_another", "expand_swarm", "tune", "reset", "stop"]},
+            "best_index": {"type": "integer", "minimum": 0},
+            "scores": {"type": "array", "items": {"type": "number"}},
+            "notes": text,
+            "remaining_gaps": {"type": "array", "items": {
+                "type": "object", "required": ["criterion_ref", "gap"],
+                "properties": {
+                    "criterion_ref": {
+                        "enum": [item["criterion_ref"] for item in criteria]},
+                    "gap": text},
+                "additionalProperties": False}},
+            "advisory_findings": {"type": "array", "items": text},
+            "new_requirement_proposals": {"type": "array", "items": text},
+            "action_vector": action_vector,
+        },
+    }
+    return ModelResponseContract(
+        "adaptive_verification_response/v3",
+        json.dumps(schema, sort_keys=True),
+        policy=ModelResponseAdmissionPolicy(
+            report_required_field_names=True,
+            report_constraint_paths=True))
 
 
 @dataclass(frozen=True)
@@ -311,15 +349,6 @@ def _require_independent_checks(record, results, services, owner_loop):
             services, owner_loop)
 
 
-@dataclass(frozen=True)
-class AdaptiveRouteRequest:
-    """Integrated state, pass record, and safe model projection."""
-
-    state: PractitionerState
-    record: object
-    model_state: dict
-
-
 def safe_result(result: ResultPacket) -> dict:
     """Project one result without embedding source manifests or write bodies."""
     value = result.result
@@ -431,6 +460,7 @@ def verify_adaptive_results(
         results and not any(item.errors for item in results)
         and all(item.result is not None for item in results))
     semantic_verification_observed = False
+    action_vector = None
     operational_failures = []
     subject = None
     try:
@@ -442,15 +472,37 @@ def verify_adaptive_results(
         subject = _verification_subject(
             services, plan_payload,
             tuple(_result_payload(item) for item in frozen_results))
+        action_id = str(plan_payload.get("experiment", {}).get("action_id") or "")
+        selected_action = getattr(services, "action_details", {}).get(action_id)
+        selected_action_value = (
+            selected_action.to_dict()
+            if callable(getattr(selected_action, "to_dict", None)) else None)
+        from .outcome_vector import ActionIntentVector
+        action_intent_vector = (
+            ActionIntentVector.from_decision(
+                action_id, selected_action).to_dict()
+            if selected_action_value is not None else None)
+        response_contract = _verification_response_contract(tuple(criteria))
         value = services.model(ModelStepRequest(
             "verify", "Evaluate actual results against the original task.",
             {**request.model_state, "plan": plan_payload,
+             "selected_action": selected_action_value,
+             "action_intent_vector": action_intent_vector,
              "results": model_results,
              "deterministic_checks_passed": deterministic_pass,
              "independent_verification_policy": policy.to_dict(),
              "independent_checks": independent_checks,
              "host_checks": host_checks,
              "registered_acceptance_criteria": criteria,
+             "action_vector_rule": (
+                 "Assess the successful response, observable work process, "
+                 "declared expected output, preserved requested-output "
+                 "criteria, material progress, and remaining continuation "
+                 "separately. Evaluate only typed decisions, plans, evidence, "
+                 "and results. Do not claim access to private reasoning. A "
+                 "schema-valid model response is not proof of process alignment "
+                 "or output satisfaction. List safe remaining work whenever "
+                 "continuation or adjustment is possible."),
              "verification_scope_rule": (
                  "Task gaps require observed evidence and a registered acceptance "
                  "criterion. Required independent verification is a mandatory "
@@ -471,7 +523,26 @@ def verify_adaptive_results(
                     "criterion_ref": "criterion:0", "gap": "string"}],
                 "advisory_findings": ["string"],
                 "new_requirement_proposals": ["string"],
-            }, separators=(",", ":"))))
+                "action_vector": {
+                    "process_checks": [{
+                        "check_id": "one registered process check",
+                        "status": "passed|failed|unknown|not_applicable",
+                        "finding": "observable finding"}],
+                    "expected_output_status": "satisfied|unsatisfied|unknown",
+                    "expected_output_findings": ["string"],
+                    "requested_output_checks": [{
+                        "criterion_ref": "criterion:0",
+                        "status": "satisfied|unsatisfied|unknown",
+                        "finding": "string"}],
+                    "progress_status": "advanced|neutral|regressed|unknown",
+                    "progress_evidence": ["string"],
+                    "continuation_status": (
+                        "continue|adjust|complete|await_authority|"
+                        "no_safe_action|unknown"),
+                    "remaining_work": ["string"],
+                },
+            }, separators=(",", ":")),
+            response_contract))
         verdict = str(value.get("verdict"))
         admitted_verdicts = ADMITTED_VERDICTS
         if verdict not in admitted_verdicts:
@@ -521,13 +592,48 @@ def verify_adaptive_results(
                 f"verification best_index {best_index!r} must be an integer "
                 f"from zero through {max(0, len(results) - 1)}")
         scores = tuple(float(item) for item in value.get("scores", ()))
+        action_vector = ActionVectorAssessment.from_mapping(
+            value.get("action_vector"),
+            tuple(item["criterion_ref"] for item in criteria))
+        output_by_ref = {
+            item.criterion_ref: item.status
+            for item in action_vector.requested_output_checks}
+        gap_refs = {item["criterion_ref"] for item in gap_assessments}
+        unresolved_refs = {
+            ref for ref, status in output_by_ref.items()
+            if status in ("unsatisfied", "unknown")}
+        if gap_refs != unresolved_refs:
+            raise AdaptivePractitionerError(
+                "remaining gaps and requested-output vector checks disagree")
+        if (verdict == ACCEPT
+                and (action_vector.observable_process_aligned is not True
+                     or action_vector.expected_output_satisfied is not True
+                     or action_vector.requested_output_satisfied is not True)):
+            raise AdaptivePractitionerError(
+                "accept requires aligned observable process, expected output, "
+                "and every requested-output criterion")
+        if (action_vector.continuation_status == "complete"
+                and action_vector.requested_output_satisfied is not True):
+            raise AdaptivePractitionerError(
+                "complete continuation status requires requested-output satisfaction")
         if subject != _verification_subject(
                 services, asdict(request.plan),
                 tuple(_result_payload(item) for item in results)):
             raise AdaptivePractitionerError("verification inputs changed during evaluation")
+        grade = getattr(services, "grade_current_stage", None)
+        if callable(grade):
+            grade(observable_process_aligned=True,
+                  expected_output_satisfied=True,
+                  material_progress=True,
+                  continuation_available=action_vector.continuation_available)
         semantic_verification_observed = True
     except (AdaptivePractitionerError, SolutionModelError,
             TypeError, ValueError) as exc:
+        grade = getattr(services, "grade_current_stage", None)
+        if callable(grade):
+            grade(observable_process_aligned=False,
+                  expected_output_satisfied=False,
+                  material_progress=False)
         services.diagnostic("verification_model_unavailable", {
             "error_type": type(exc).__name__,
             "deterministic_checks_passed": deterministic_pass})
@@ -569,6 +675,20 @@ def verify_adaptive_results(
     suffix = (" Remaining: " + "; ".join(gaps)) if gaps else ""
     evaluation = EvaluationPacket(
         verdict, best_index=best_index, scores=scores, notes=notes + suffix)
+    action_vector_record = (
+        {**action_vector.to_dict(),
+         "assessment_method": "same_practitioner_model_path",
+         "independently_verified": False}
+        if action_vector is not None else {
+            "record_type": "action_vector_assessment_unavailable/v1",
+            "private_reasoning_evaluated": False,
+            "assessment_method": "unavailable",
+            "independently_verified": False,
+            "reason": "semantic action-vector assessment was unavailable",
+            "outcome_signals": {},
+            "task_accepted": False,
+            "effect_authorized": False,
+        })
     record = {
         "record_type": "adaptive_verification/v2", "verdict": verdict,
         "subject": subject.to_dict() if subject is not None else None,
@@ -589,86 +709,11 @@ def verify_adaptive_results(
         "independent_verification_policy": policy.to_dict(),
         "independent_checks": independent_checks,
         "host_checks": host_checks,
+        "action_vector": action_vector_record,
     }
     _append_verification_record(services, record, current_kernel_owner())
     _record_attribution_boundary(services, verdict)
     return evaluation
-
-def route_adaptive_result(
-        request: AdaptiveRouteRequest,
-        services: AdaptiveRunServices) -> tuple:
-    """Choose continuation or success after verification, with safe fallback."""
-    evaluation = request.record.evaluation
-    final_result = latest_task_result(services)
-    deterministic_pass = task_result_succeeded(final_result)
-    try:
-        value = services.model(ModelStepRequest(
-            "route", "Choose the next pass or finish the verified task.",
-            {**request.model_state, "evaluation": asdict(evaluation),
-             "deterministic_project_passed": deterministic_pass,
-             "pass_number": request.record.pass_number},
-            json.dumps({"route": "|".join(MODEL_ROUTE_VALUES),
-                        "reason": "string"}, separators=(",", ":"))))
-        selected = str(value.get("route"))
-        if selected not in MODEL_ROUTE_VALUES:
-            raise AdaptivePractitionerError(
-                f"route {selected!r} is not admitted; the admitted routes "
-                f"are {list(MODEL_ROUTE_VALUES)}")
-        reason = _short_text(value.get("reason"), "route reason")
-    except (AdaptivePractitionerError, SolutionModelError,
-            TypeError, ValueError) as exc:
-        services.diagnostic("route_model_unavailable", {
-            "error_type": type(exc).__name__,
-            "verification_verdict": evaluation.verdict})
-        selected = ("stop_success" if evaluation.verdict == "accept"
-                    and deterministic_pass else "repair")
-        reason = (
-            "Deterministic route policy used after semantic route failure; "
-            "final success still requires accepted verification.")
-    if selected == "stop_success" and (
-            evaluation.verdict != "accept" or not deterministic_pass):
-        selected = "repair"
-    if selected == "stop_success":
-        try:
-            validate_adaptive_evaluation(AdaptiveEvaluationBindingRequest(
-                request.record.plan, tuple(request.record.results), evaluation),
-                services)
-            if not selected_project_matches(
-                    request.record, final_result):
-                raise ValueError("verified result is not the emitted task result")
-            require_host_checks(services.verification_records[-1], request.record.results,
-                                services, current_kernel_owner(), task_complete=True)
-        except (AttributeError, TypeError, ValueError) as exc:
-            selected = "repair"
-            reason = "Final success requires exact recorded verification of this result."
-            services.diagnostic("verification_binding_invalid", {
-                "error_type": type(exc).__name__, "reason": str(exc)[:300]})
-    stall = (None if selected in ("stop_success", "stop_unprofitable")
-             else detect_stall(services, request.state))
-    if stall is not None:
-        try:
-            directive = resolve_stall_with_panel(
-                RecoveryPanelRequest(
-                    stall, request.model_state, request.record.pass_number),
-                services)
-            selected = directive["route"]
-            reason = directive["reason"]
-        except (AdaptivePractitionerError, SolutionModelError,
-                TypeError, ValueError) as exc:
-            services.diagnostic("recovery_panel_unavailable", {
-                "error_type": type(exc).__name__,
-                "error": str(exc)[:500],
-                "recovery_round": services.recovery_rounds + 1})
-            selected = "reframe"
-            reason = (
-                "Recovery panel was unavailable. Reframe with the preserved "
-                "stall signal and attempt history; do not claim success.")
-    failures = request.state.failures
-    if selected in ("repair", "retry", "reframe"):
-        failures = failures + (reason,)
-    return RouteDecision(selected, reason), request.state.derive(
-        failures=failures, last_route=selected)
-
 
 def self_test() -> dict:
     """Prove hard success gates do not replace model route selection."""
@@ -733,39 +778,6 @@ def self_test() -> dict:
         "detail": "local contribution stays unknown without an exact join",
     })
 
-    def services_for(route, verdict):
-        return SimpleNamespace(
-            model=lambda _request: {
-                "route": route, "reason": "model-selected route"},
-            project_attempts=[{"manifest_digest": "m",
-                               "deterministic_checks_passed": True}],
-            progress_snapshots=[], unchanged_progress_snapshots=0,
-            source_inspections=[], web_results=[], action_history=[],
-            verification_records=[{"verdict": verdict}],
-            active_recovery_directive=None, recovery_rounds=0,
-            supervision_findings=[], diagnostic=lambda *_args, **_kw: None)
-
-    state = PractitionerState(ProblemSpec("route selection proof"))
-    accepted_record = SimpleNamespace(
-        evaluation=EvaluationPacket("accept"), pass_number=1)
-    continued, _state = route_adaptive_result(
-        AdaptiveRouteRequest(state, accepted_record, {}),
-        services_for("continue", "accept"))
-    tests.append({
-        "test": "accepted_result_can_follow_model_selected_continue_route",
-        "passed": continued.route == "continue",
-        "detail": "runtime validates success but does not force termination",
-    })
-    repair_record = SimpleNamespace(
-        evaluation=EvaluationPacket("repair"), pass_number=1)
-    reframed, _state = route_adaptive_result(
-        AdaptiveRouteRequest(state, repair_record, {}),
-        services_for("reframe", "repair"))
-    tests.append({
-        "test": "repair_verdict_preserves_model_selected_reframe_route",
-        "passed": reframed.route == "reframe",
-        "detail": "verification blocks false success but does not choose repair",
-    })
     from .adaptive_practitioner_feedback_checks import verification_operational_checks
     tests.extend(verification_operational_checks())
     passed = sum(item["passed"] for item in tests)

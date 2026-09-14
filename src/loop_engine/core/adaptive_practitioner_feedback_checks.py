@@ -15,7 +15,7 @@ from unittest.mock import patch
 from ..code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
 from .adaptive_practitioner_acceptance_checks import (
-    _decision, _orientation, _success_answers)
+    _action_vector, _decision, _orientation, _success_answers)
 
 
 def run_checks() -> list[dict]:
@@ -297,7 +297,9 @@ def verification_operational_checks() -> list[dict]:
     proposed = {"verdict": "accept", "best_index": 0, "scores": [1.0],
                 "notes": "The producer considers this finished.",
                 "remaining_gaps": [], "advisory_findings": [],
-                "new_requirement_proposals": []}
+                "new_requirement_proposals": [],
+                "action_vector": _action_vector(
+                    criterion_refs=("criterion:0",))}
     for status in ("failed", "unavailable"):
         seen = []
 

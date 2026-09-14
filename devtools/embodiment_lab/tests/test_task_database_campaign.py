@@ -8,9 +8,10 @@ import unittest
 from unittest.mock import patch
 
 from embodiment_lab.task_database_campaign import (
-    RecordedSettingSession, campaign_space, confined_name, endpoint_reachable,
-    engine_check, engine_identity, fair_order, outage_decision, provider_available, public_population_rows,
-    reconcile_interrupted, run_trial, terminal_provider_codes)
+    BEST_AVAILABLE_RESOLUTION, RecordedSettingSession, campaign_space,
+    confined_name, endpoint_reachable, engine_check, engine_identity, fair_order,
+    file_digest, outage_decision, provider_available, public_population_rows,
+    reconcile_interrupted, run_trial, task_intake, terminal_provider_codes)
 from embodiment_lab.systematic_records import CampaignProjection
 from loop_engine.code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, ModelInvocationRequest, fixture_model_execution)
@@ -305,6 +306,60 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
         self.assertNotIn('task_directory', public[0])
         self.assertEqual(digest(public), digest(json.loads(json.dumps(public))))
         self.assertNotEqual(digest(public), digest(rows))
+
+    def test_incomplete_task_sources_enter_best_available_resolution_intake(self):
+        from embodiment_lab.campaign_sources import snapshot_available_task_sources
+        with tempfile.TemporaryDirectory(prefix='task-resolution-intake-') as root_value:
+            root = Path(root_value)
+            task = root / 'tasks' / 'analysis' / 'T-MISSING'
+            task.mkdir(parents=True)
+            descriptor = task / 'task.json'
+            brief = task / 'task.md'
+            descriptor.write_text(json.dumps({
+                'attachments': ['available.txt', 'missing.txt'],
+                'data_path': None}))
+            brief.write_text('Analyze the supplied material and prepare a report.')
+            (task / 'available.txt').write_text('observed input')
+            availability = snapshot_available_task_sources(task, root)
+            row = {
+                'id': 'T-MISSING', 'task_directory': str(task),
+                'task_root': str(root), 'status': 'needs_metadata',
+                'admission': BEST_AVAILABLE_RESOLUTION,
+                'descriptor_digest': file_digest(descriptor),
+                'brief_digest': file_digest(brief),
+                'source_snapshot': availability.available.to_dict(),
+                'source_snapshot_digest': availability.available.content_digest,
+                'source_availability': availability.to_dict(),
+                'source_availability_digest': availability.content_digest,
+            }
+            intake, source_digests = task_intake(row, 'bounded_inline')
+            self.assertIn('observed input', intake.original_input)
+            self.assertIn('missing.txt', intake.original_input)
+            self.assertIn('best-available resolution', intake.original_input)
+            self.assertIn('original_task_evaluation_eligible":false',
+                          intake.original_input)
+            self.assertEqual(len(source_digests), 1)
+            self.assertEqual(intake.source_refs, ())
+            absent = root / 'tasks' / 'analysis' / 'T-ABSENT'
+            missing_row = {
+                'id': 'T-ABSENT', 'title': 'Absent task folder fixture',
+                'job_family': 'analysis', 'task_directory': str(absent),
+                'task_root': str(root), 'status': 'needs_metadata',
+                'admission': BEST_AVAILABLE_RESOLUTION,
+                'descriptor_digest': None, 'brief_digest': None,
+                'attachments': [], 'data_path': None,
+                'acceptance_criteria': None,
+                'source': {'kind': 'fixture'},
+            }
+            missing_intake, missing_digests = task_intake(
+                missing_row, 'bounded_inline')
+            self.assertIn('Absent task folder fixture',
+                          missing_intake.original_input)
+            self.assertIn('task descriptor file is missing',
+                          missing_intake.original_input)
+            self.assertIn('task brief file is missing',
+                          missing_intake.original_input)
+            self.assertEqual(missing_digests, {})
 
 
 if __name__ == '__main__':

@@ -433,6 +433,7 @@ def _projection_checks() -> list[dict]:
 
 def _answers(fixture, permissions=None):
     from .adaptive_practitioner_acceptance_checks import (
+        _action_vector,
         _decision,
         _decision_id,
         _orientation,
@@ -452,7 +453,10 @@ def _answers(fixture, permissions=None):
            "spawned_tasks": [], "rationale": "Use the bound host operation."}
     verification = {"verdict": "accept", "best_index": 0, "scores": [1.0],
                     "notes": "Host gates are authoritative for this observation.",
-                    "remaining_gaps": [], "advisory_findings": [], "new_requirement_proposals": []}
+                    "remaining_gaps": [], "advisory_findings": [],
+                    "new_requirement_proposals": [],
+                    "action_vector": _action_vector(
+                        criterion_refs=("criterion:0",))}
     return tuple(json.dumps(value) for value in (
         orientation, {"actions": [decision]}, how, verification,
         {"route": "stop_success", "reason": "The host confirms completion."}))

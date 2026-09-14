@@ -208,8 +208,19 @@ def _resolve_validated_step(
              "rejected_recovery_output": rejected}, schema,
             admission_contract=admission_contract))
         try:
-            return validator(value)
+            resolved = validator(value)
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=True,
+                      expected_output_satisfied=True,
+                      material_progress=True)
+            return resolved
         except (AdaptivePractitionerError, TypeError, ValueError) as exc:
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=False,
+                      expected_output_satisfied=False,
+                      material_progress=False)
             failure = str(exc)[:500]
             rejected = value
             services.diagnostic("recovery_step_invalid", {

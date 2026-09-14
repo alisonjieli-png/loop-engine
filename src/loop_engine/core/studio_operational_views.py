@@ -223,6 +223,12 @@ def _safe_harness_run(value: Mapping, loop_id: str,
     artifacts = value.get("artifacts", ())
     spawned_tasks = (value.get("spawned_task_ids", ())
                      or value.get("spawned_task_ids", ()))
+    from .outcome_vector import SIGNAL_SCOPES
+    raw_vector = value.get("outcome_vector")
+    outcome_vector = {}
+    for name in SIGNAL_SCOPES:
+        signal = raw_vector.get(name) if isinstance(raw_vector, Mapping) else None
+        outcome_vector[name] = signal if signal is None or type(signal) is bool else None
     return {
         "sequence": sequence,
         "loop_id": loop_id,
@@ -248,6 +254,7 @@ def _safe_harness_run(value: Mapping, loop_id: str,
         "elapsed_seconds": value.get("elapsed_seconds"),
         "adapter_version": str(value.get("adapter_version", "")),
         "error_code": str(value.get("error_code", "")),
+        "outcome_vector": outcome_vector,
     }
 
 
@@ -488,7 +495,7 @@ def _view_test_cases() -> list[dict]:
          "model_calls": 1, "error_code": "", "raw_output": "PRIVATE_OUTPUT"},
         {"event": "custom", "loop_id": "harness-loop",
          "external_harness_result": {
-             "record_type": "external_harness_result/v2",
+             "record_type": "external_harness_result/v3",
              "request_id": "request-1", "harness_id": "deep_agents",
              "status": "completed", "completed": True,
              "acceptance": "not_evaluated", "physical_model_calls": 1,
@@ -500,7 +507,11 @@ def _view_test_cases() -> list[dict]:
              "checkpoint_ref": "PRIVATE_CHECKPOINT_LOCATION",
              "trace_ref": "PRIVATE_TRACE_LOCATION",
              "raw_events_ref": "PRIVATE_RAW_EVENTS_LOCATION",
-             "adapter_version": "1.0.0", "error": "PRIVATE_ERROR"},
+             "adapter_version": "1.0.0", "error": "PRIVATE_ERROR",
+             "outcome_vector": {
+                 "execution_succeeded": True,
+                 "expected_output_satisfied": None,
+                 "private_detail": "PRIVATE_VECTOR_DETAIL"}},
          "raw_prompt": "PRIVATE_PROMPT"},
     ]
     run = project_run_runtime(events)
@@ -510,7 +521,11 @@ def _view_test_cases() -> list[dict]:
           and run["spawned_tasks"][0]["updates"] == 1
           and run["spawned_tasks"][0]["spawning_loop_id"] == "spawning"
           and run["spawned_tasks"][0]["spawned_loop_id"] == "spawned-1"
-          and run["external_harness_runs"][0]["harness_id"] == "deep_agents",
+          and run["external_harness_runs"][0]["harness_id"] == "deep_agents"
+          and run["external_harness_runs"][0]["outcome_vector"][
+              "execution_succeeded"] is True
+          and run["external_harness_runs"][0]["outcome_vector"][
+              "expected_output_satisfied"] is None,
           "spawned task and harness relationship shapes were projected")
     check("run_runtime_omits_private_context_prompts_outputs_and_locations",
           "PRIVATE" not in serialized

@@ -47,9 +47,10 @@ does not impose a numeric pass, model-call, or token ceiling unless the user or
 settings provide one. It does not authorize deployment, publication, or network
 access from generated code.
 
-The Practitioner reads the task, asks a material question when an answer would
-change the goal, selects the next concrete action, runs Solution Loops in a
-confined workspace, and verifies the real artifacts. Users do not choose
+The Practitioner reads the task, records a material question when an answer
+would improve the outcome, selects the next concrete action, runs Solution
+Loops in a confined workspace, and verifies the real artifacts. It still
+completes the best available resolution before returning. Users do not choose
 deterministic, hybrid, or model-led execution during the normal solve path.
 The runtime selects model-led reasoning when a model is available. Use
 `--unattended` only when a run must abstain instead of returning a material
@@ -63,8 +64,18 @@ meaning or solution.
 Task interpretation is not limited to a fixed list or template. The current
 effect capabilities can build small Python utilities, transform supplied local
 files, summarize documents, analyze repositories, and repair small Python
-packages. A task that needs another physical capability returns an honest
-`CAPABILITY_GAP`.
+packages. A task that needs another physical capability returns a complete
+best-available resolution with the exact `CAPABILITY_GAP`, useful preparatory
+work, and next actions preserved inside it.
+
+Every selected action has an intended direction and a separate observed
+outcome vector. Loop Engine distinguishes a successful model response from an
+aligned observable work process, successful capability execution, the
+declared action output, the requested task output, verification, material
+progress, and remaining safe work. A normal stop is rejected while safe
+authorized continuation remains. The same owning-Loop policy applies to the
+custom Practitioner and to registered OpenCode, Codex, Pi, and other harness
+realizations. Private model reasoning is not recorded.
 
 A successful result has this shape:
 
@@ -90,9 +101,11 @@ unless you pass `--allow-local-execution`, which runs generated code as a host
 process without an operating-system sandbox and records that weaker isolation
 in Run History.
 
-If an answer can materially change the goal, authority, inputs, or acceptance,
-the solve returns `BLOCKED_MATERIAL_INPUT` with a named answer slot instead of
-guessing. Supply the answer separately and rerun the unchanged task:
+If an answer can materially improve the goal, authority, inputs, or acceptance,
+the completed resolution includes a typed question with a named answer slot
+instead of guessing. The current work, assumptions, provisional outputs,
+missing pieces, and alternatives remain available. Supply the answer
+separately and rerun the unchanged task:
 
 ```bash
 loop-engine solve --file task.txt --quickstart \
@@ -371,7 +384,7 @@ common dependency and version-control folders, and records input digests.
 | Small Python package repair | The run can reproduce a nonzero exit, apply a changed source artifact, and rerun verification. |
 | Providers | Ollama Cloud, Mistral, OpenRouter, OpenCode Go, and typed custom endpoints. Availability must be probed. |
 | Effects | Workspace writes and commands require configured sandbox authority and exact per-effect approval. |
-| Unsupported work | Returns `CAPABILITY_GAP`, `AUTHORITY_REQUIRED`, `PROVIDER_UNAVAILABLE`, or another typed terminal result. |
+| Unsupported work | Returns a complete best-available resolution with the exact underlying constraint. Provider interruption and cancellation remain distinct operational results. |
 
 Loop Engine does not yet claim arbitrary-domain execution, automatic
 deployment, unrestricted shell access, broad repository repair, or guaranteed
@@ -447,3 +460,6 @@ quality. Live-provider claims require a separately saved authorized result.
 ## License
 
 MIT. See [LICENSE](LICENSE).
+## Companion workspaces
+
+`stub-test/` is the moved Capability-Reuse Harness/Taedri workspace. It remains a distinct project inside Loop Engine, with its benchmark evidence, datasets, model cache and dirty working tree preserved. The former `/home/username/stub-test` path is a compatibility symlink. Read `stub-test/MOVED_TO_LOOP_ENGINE.md` before running new work.

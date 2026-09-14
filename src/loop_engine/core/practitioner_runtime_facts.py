@@ -130,6 +130,12 @@ def _captured_instruction(services) -> dict | None:
 
 def runtime_facts(services) -> dict:
     """Exact, model-visible facts about this run. Never advisory."""
+    from ..code_nodes.solve_terminal import (
+        DEFAULT_RESOLUTION_COMPLETION_POLICY,
+        resolution_input_contract,
+    )
+    from .outcome_vector import DEFAULT_OUTCOME_VECTOR_POLICY
+
     request = services.request
     policy = DEFAULT_SUPERVISION_POLICY.action_fence
     captured_instruction = _captured_instruction(services)
@@ -150,12 +156,16 @@ def runtime_facts(services) -> dict:
             "Host descriptor permissions apply only to the selected host operations. "
             "They do not grant core capabilities or bypass exact host approval."),
         "execution_isolation_scope": "core.generated_project; registered hosts declare their own isolation",
+        "resolution_completion_policy":
+            DEFAULT_RESOLUTION_COMPLETION_POLICY.to_dict(),
+        "outcome_vector_policy": DEFAULT_OUTCOME_VECTOR_POLICY.to_dict(),
         **_verification_facts(services),
         **({"captured_instruction": captured_instruction}
            if captured_instruction is not None else {}),
         "source_manifest": _source_manifest(services),
         "source_roles": _source_roles(services),
         "action_fence": services.action_fence.model_view(policy),
+        "direct_resolution_input_contract": resolution_input_contract(),
     }
 
 
@@ -180,13 +190,24 @@ def _verification_facts(services) -> dict:
         },
         "control_actions": [{
             "action_kind": "RETURN_RESULT", "authority": "runtime",
-            "available": latest is not None, "required_capabilities": [],
-            "permissions": [], "result_source": "latest_task_result",
+            "available": True, "required_capabilities": [],
+            "permissions": [],
+            "result_source": (
+                "latest_task_result" if latest is not None
+                else "best_available_resolution_from_current_state"),
+            "direct_input_contract_ref":
+                "runtime_facts.direct_resolution_input_contract",
             "runs_verification": True, "regenerates_project": False,
             "interpretation": (
                 "Select RETURN_RESULT without capability requirements to submit "
-                "the existing task result for host or independent and semantic verification "
-                "again. This action cannot bypass required acceptance gates."),
+                "an existing task result for verification, or to publish a "
+                "best-available resolution when no further executable task work "
+                "is possible. A resolution must preserve useful analysis, explicit "
+                "assumptions, missing pieces, provisional or analogous work, and "
+                "next actions. Put those contributions in the exact resolution "
+                "object named by direct_input_contract_ref. It cannot bypass "
+                "required acceptance gates or claim that an external effect "
+                "occurred."),
         }],
     }
 
@@ -303,10 +324,44 @@ def self_test() -> dict:
     }, {
         "test": "return_result_describes_reverification_without_regeneration",
         "passed": (facts["control_actions"][0]["action_kind"] == "RETURN_RESULT"
+                   and closed_facts["control_actions"][0]["available"] is True
+                   and closed_facts["control_actions"][0]["result_source"]
+                   == "best_available_resolution_from_current_state"
                    and facts["control_actions"][0]["runs_verification"] is True
                    and facts["control_actions"][0]["regenerates_project"] is False
                    and facts["control_actions"][0]["required_capabilities"] == []),
         "detail": "the existing control action preserves mandatory verification",
+    }, {
+        "test": "runtime_requires_a_best_available_resolution_before_task_stop",
+        "passed": (facts["resolution_completion_policy"][
+                       "require_resolution_before_task_level_stop"] is True
+                   and "produce a pro forma analysis from the available values"
+                   in facts["resolution_completion_policy"]["methods"]
+                   and len(facts["resolution_completion_policy"][
+                       "truth_constraints"]) >= 3),
+        "detail": facts["resolution_completion_policy"]["policy_id"],
+    }, {
+        "test": "runtime_exposes_each_direct_resolution_contribution_field",
+        "passed": set(facts["direct_resolution_input_contract"]["resolution"])
+        == {
+            "what_can_be_completed", "what_cannot_be_completed",
+            "missing_inputs_or_components", "analysis", "assumptions",
+            "scenario_analysis", "pro_forma_analysis", "synthetic_material",
+            "estimates", "analogous_solutions", "first_principles_solutions",
+            "supplemental_items", "next_actions",
+            "constraint_code", "method_assessments",
+        },
+        "detail": "RETURN_RESULT can carry a structured direct resolution",
+    }, {
+        "test": "runtime_exposes_the_canonical_action_vector_stop_policy",
+        "passed": (
+            facts["outcome_vector_policy"][
+                "continue_while_safe_authorized_work_remains"] is True
+            and facts["outcome_vector_policy"][
+                "response_admission_is_not_process_or_output_success"] is True
+            and facts["outcome_vector_policy"][
+                "evaluate_private_reasoning"] is False),
+        "detail": facts["outcome_vector_policy"]["policy_id"],
     }, {
         "test": "no_source_authority_means_no_manifest_and_no_error",
         "passed": (closed_facts["source_manifest"] is None

@@ -13,8 +13,10 @@ from ..loop.kernel import (
     EvaluationPacket, ExecutionPlan, PractitionerState, ProblemSpec, ResultPacket)
 from .adaptive_practitioner_verification import (
     AdaptiveEvaluationBindingRequest, AdaptiveVerificationRequest,
-    AdaptiveRouteRequest, AdaptiveVerificationSubject, _append_verification_record,
-    route_adaptive_result, validate_adaptive_evaluation, verify_adaptive_results)
+    AdaptiveVerificationSubject, _append_verification_record,
+    validate_adaptive_evaluation, verify_adaptive_results)
+from .adaptive_practitioner_routing import (
+    AdaptiveRouteRequest, route_adaptive_result)
 from .stage_action_lineage import (
     ActionExecutionLineageRequest,
     ActionVerificationLineageRequest,
@@ -42,7 +44,14 @@ def _fixture():
         run_id="lineage-adversarial", occurrence_id="occurrence.decision.1",
         semantic_call_id="semantic.decision.1", owner_loop_id=owner.loop_id,
         pass_number=1, output_admitted=True)
-    payload = {"action_kind": "BUILD", "goal": "build"}
+    payload = {
+        "action_kind": "BUILD", "goal": "build the checked result",
+        "expected_output": "one checked result",
+        "verification": "compare the result with its declared contract",
+        "budget": {"estimated_cost": 1.0, "risk": 0.1,
+                   "reversibility": 1.0},
+        "dependencies": [], "fallback": {"action_kind": "REPAIR"},
+    }
     action_id = "action:" + _digest(payload)[:20]
     services = SimpleNamespace(
         run_id="lineage-adversarial", active_pass_number=1,
@@ -53,6 +62,12 @@ def _fixture():
             "cognitive_phase": "decide_next"}},
         stage_assistance_decisions=[],
         action_details={action_id: SimpleNamespace(
+            goal=payload["goal"],
+            expected_output=payload["expected_output"],
+            verification=payload["verification"],
+            budget=tuple(sorted(payload["budget"].items())),
+            dependencies=(),
+            fallback=tuple(sorted(payload["fallback"].items())),
             to_dict=lambda: dict(payload))},
         plan_details={action_id: {
             "capability_ref": "core.generated_project",
@@ -153,6 +168,7 @@ def _actual_evaluation(parts, plan, results, *, best_index=0, verdict="accept",
     from unittest.mock import patch
 
     from . import adaptive_practitioner_verification as verification
+    from .adaptive_practitioner_acceptance_checks import _action_vector
 
     services, owner = parts[:2]
     services.orientation_by_version = {}
@@ -169,6 +185,8 @@ def _actual_evaluation(parts, plan, results, *, best_index=0, verdict="accept",
             "notes": "Checked exactly the supplied plan and results.",
             "remaining_gaps": [], "advisory_findings": [],
             "new_requirement_proposals": [],
+            "action_vector": _action_vector(
+                criterion_refs=("criterion:0",)),
             **(response_changes or {}),
         }
 

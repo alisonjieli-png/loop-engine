@@ -17,11 +17,13 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from loop_engine.code_nodes.solve_terminal import SolveTerminalCode
 from loop_engine.core.run_history import MODEL_INVOCATION_EVENT, RunHistory
 from loop_engine.core.run_history_paths import saved_run_ids
 from loop_engine.core.run_history_usage import optional_token, total_model_usage
 from loop_engine.generation.space import INTEGER_RANGE, ConfigurationSpace, GenerationError, parse_json
 
+from .task_database_campaign import TRIAL_FAILED, TRIAL_FINISHED
 from .trial_evidence import REQUIRED_LINKS, campaign_evidence_summary
 from .systematic_records import CampaignProjection
 
@@ -162,6 +164,74 @@ def campaign_grid(space_record, cells) -> dict:
             "axes": axes, "placed": placed, "unindexed": unindexed, "by_level": by_level}
 
 
+def campaign_solutions(cells, tasks) -> dict:
+    """How many candidate solutions the campaign delivered, for how many of
+    its tasks, and how far each got.
+
+    A candidate is one cell's delivered outcome whose artifacts were
+    re-verified on disk; earlier attempts inside that cell's workspace are
+    revisions of it, not further candidates. Engine verification is the
+    solver's own terminal, which is not task acceptance; an independent
+    evaluation is the evidence report's host-resolved binding. Every count
+    keeps its denominator beside it: cells per task, tasks per population.
+    """
+    per_task: dict = {}
+    for cell in cells:
+        task_id = cell.get("task_id") or ""
+        if not task_id:
+            continue
+        row = per_task.setdefault(task_id, {
+            "task_id": task_id, "family": cell.get("family", ""), "attempts": 0,
+            "finished": 0, "failed": 0, "candidates_delivered": 0, "engine_verified": 0,
+            "independently_evaluated": 0, "best_available_resolutions": 0,
+            "complete_resolutions": 0, "model_calls_known_subtotal": 0,
+            "cells_with_unknown_calls": 0})
+        row["attempts"] += 1
+        if cell.get("status") == TRIAL_FINISHED:
+            row["finished"] += 1
+        elif cell.get("status") == TRIAL_FAILED:
+            row["failed"] += 1
+        task_eligible = cell.get("original_task_evaluation_eligible") is not False
+        if (task_eligible and type(cell.get("artifacts")) is int
+                and cell["artifacts"] > 0):
+            row["candidates_delivered"] += 1
+        if cell.get("resolution_package") is True:
+            row["best_available_resolutions"] += 1
+            if cell.get("resolution_status") == "COMPLETE":
+                row["complete_resolutions"] += 1
+        if (task_eligible and cell.get("engine_terminal")
+                == SolveTerminalCode.COMPLETED_VERIFIED.value):
+            row["engine_verified"] += 1
+        if task_eligible and cell.get("independent_evaluation") is True:
+            row["independently_evaluated"] += 1
+        if type(cell.get("model_calls")) is int:
+            row["model_calls_known_subtotal"] += cell["model_calls"]
+        else:
+            row["cells_with_unknown_calls"] += 1
+    rows = [per_task[task_id] for task_id in sorted(per_task)]
+    population = {row.get("id") for row in tasks if isinstance(row, dict)}
+    totals = {
+        "tasks_in_population": len(population),
+        "tasks_attempted": len(rows),
+        "tasks_attempted_outside_population": sum(1 for r in rows if r["task_id"] not in population),
+        "tasks_with_a_delivered_candidate": sum(1 for r in rows if r["candidates_delivered"]),
+        "tasks_engine_verified": sum(1 for r in rows if r["engine_verified"]),
+        "tasks_independently_evaluated": sum(1 for r in rows if r["independently_evaluated"]),
+        "tasks_with_a_best_available_resolution": sum(
+            1 for r in rows if r["best_available_resolutions"]),
+        "tasks_with_a_complete_resolution": sum(
+            1 for r in rows if r["complete_resolutions"]),
+        "attempts": sum(r["attempts"] for r in rows),
+        "candidates_delivered": sum(r["candidates_delivered"] for r in rows),
+        "engine_verified_cells": sum(r["engine_verified"] for r in rows),
+        "independently_evaluated_cells": sum(r["independently_evaluated"] for r in rows),
+        "best_available_resolution_cells": sum(
+            r["best_available_resolutions"] for r in rows),
+        "complete_resolution_cells": sum(r["complete_resolutions"] for r in rows),
+    }
+    return {"totals": totals, "tasks": rows}
+
+
 def campaign_report(root) -> dict:
     """The campaign's records, cells, accounting, and coverage as one plain
     record; every number names the file it came from by its section."""
@@ -171,6 +241,7 @@ def campaign_report(root) -> dict:
     population = _load(root / "population-index.json")
     tasks = [row for row in (population.get("tasks") or []) if isinstance(row, dict)]
     family_of = {row.get("id"): row.get("job_family", "") for row in tasks}
+    task_by_id = {row.get("id"): row for row in tasks}
     families = {}
     for row in tasks:
         family = row.get("job_family", "")
@@ -212,6 +283,8 @@ def campaign_report(root) -> dict:
                 elif report.get("status") == "failed":
                     families[family]["failed"] += 1
         exported = _load(cell / "status.json")
+        task_row = task_by_id.get(task_id, {})
+        result = outcome.get("result") if isinstance(outcome, dict) else None
         cells.append({
             "task_id": task_id, "family": family, "occurrence": cell.name,
             "configuration": exported.get("configuration"),
@@ -220,6 +293,19 @@ def campaign_report(root) -> dict:
             "model_calls": calls, "accounting_complete": report.get("accounting_complete"),
             "tokens": tokens, "elapsed_seconds": elapsed,
             "artifacts": report["links"].get("delivered_artifacts", 0),
+            "independent_evaluation": report["links"].get("independent_evaluation") is True,
+            "admission": task_row.get("admission"),
+            "original_task_evaluation_eligible": (
+                exported.get("original_task_evaluation_eligible")
+                if "original_task_evaluation_eligible" in exported
+                else task_row.get("admission")
+                != "queued_for_best_available_resolution"),
+            "resolution_package": (
+                isinstance(result, dict)
+                and result.get("record_type") == "task_resolution_package/v1"),
+            "resolution_status": (
+                result.get("resolution_status") if isinstance(result, dict)
+                else None),
             "step_checkpoints": report["links"].get("step_history", 0),
             "complete": report.get("complete"), "gaps": report.get("gaps", []),
             "disagreements": report.get("disagreements", {}),
@@ -259,6 +345,7 @@ def campaign_report(root) -> dict:
         "accounting": totals,
         "access_probes": probes,
         "grid": campaign_grid(campaign.get("configuration_space"), cells),
+        "solutions": campaign_solutions(cells, tasks),
         "cells": cells,
     }
 
@@ -345,6 +432,26 @@ def render_campaign_html(report: dict) -> str:
                             f"<div><dt>{_esc(k)}</dt><dd>{_esc(v)}</dd></div>"
                             for k, v in observation.items() if not isinstance(v, (dict, list))) + "</dl>")
     unknown = acc["cells_with_unknown_calls"]
+    solutions = report["solutions"]
+    sol = solutions["totals"]
+    solution_rows = "".join(
+        f"<tr><td>{_esc(r['task_id'])}</td><td>{_esc(r['family'])}</td><td class='num'>{r['attempts']}</td>"
+        f"<td class='num'>{r['finished']}</td><td class='num'>{r['failed']}</td>"
+        f"<td class='num'>{r['candidates_delivered']}</td><td class='num'>{r['engine_verified']}</td>"
+        f"<td class='num'>{r['independently_evaluated']}</td>"
+        f"<td class='num'>{r['best_available_resolutions']}</td>"
+        f"<td class='num'>{r['complete_resolutions']}</td>"
+        f"<td class='num'>{r['model_calls_known_subtotal']}"
+        + (f" (+{r['cells_with_unknown_calls']} unknown)" if r['cells_with_unknown_calls'] else "") + "</td></tr>"
+        for r in solutions["tasks"])
+    solution_summary = (
+        f"{sol['candidates_delivered']} candidate solutions delivered for {sol['tasks_with_a_delivered_candidate']} "
+        f"of the {sol['tasks_attempted']} tasks attempted, out of {sol['tasks_in_population']} in the population; "
+        f"{sol['engine_verified_cells']} passed the engine's own verification and "
+        f"{sol['independently_evaluated_cells']} carry an independent evaluation. "
+        f"Separate incomplete-source lanes returned {sol['best_available_resolution_cells']} "
+        f"best-available resolutions, of which {sol['complete_resolution_cells']} "
+        f"completed every method disposition.")
     grid = report["grid"]
     fabric = _fabric_svg(report)
     grid_summary = (f"{len(grid['placed'])} cells placed in a space of {grid['cardinality']} configurations "
@@ -383,6 +490,9 @@ th {{ background:var(--code); font-size:.8rem; position:sticky; top:0 }} td.num 
 <section><dl class="facts">{facts_html}</dl></section>
 <section><h2>Coverage and evidence</h2><div class="bars">{''.join(bars)}</div>
 <p class="muted">{cov['cells']} cells written, {cov['in_progress']} in progress, {cov['projection_locked']} with a locked projection, {ev['with_disagreements']} where the recorded counts and the re-verified counts disagree.</p></section>
+<section><h2>Solutions</h2><p>{_esc(solution_summary)}</p>
+<div class="wrap"><table><thead><tr><th>task</th><th>family</th><th class="num">attempts</th><th class="num">finished</th><th class="num">failed</th><th class="num">candidates delivered</th><th class="num">engine verified</th><th class="num">independently evaluated</th><th class="num">best-available resolutions</th><th class="num">complete resolutions</th><th class="num">known calls</th></tr></thead><tbody>{solution_rows or '<tr><td colspan="11" class="muted">No task has been attempted yet.</td></tr>'}</tbody></table></div>
+<p class="muted">A task candidate is one eligible cell's delivered outcome whose artifacts were re-verified on disk; revisions inside a cell's workspace are not further candidates. A best-available resolution from incomplete sources is counted separately and never enters the original-task success denominator. Engine verification is the solver's own check, not task acceptance; an independent evaluation is a host-resolved evaluator binding, which no cell has until one is supplied.</p></section>
 <section><h2>Accounting</h2><dl class="facts">
 <div><dt>model calls</dt><dd>{_esc(acc['model_calls'])}{' (' + str(unknown) + ' cells unknown)' if unknown else ''}</dd></div>
 <div><dt>prompt tokens</dt><dd>{_esc(acc['prompt_tokens'])}</dd></div><div><dt>completion tokens</dt><dd>{_esc(acc['completion_tokens'])}</dd></div>
@@ -420,7 +530,7 @@ def main(argv=None) -> int:
     if args.html:
         Path(args.html).write_text(render_campaign_html(report))
     if not args.html and not args.json:
-        print(json.dumps({key: report[key] for key in ("coverage", "evidence", "accounting", "worker")},
+        print(json.dumps({key: report[key] for key in ("coverage", "evidence", "accounting", "solutions", "worker")},
                          indent=1, sort_keys=True))
     return 0
 

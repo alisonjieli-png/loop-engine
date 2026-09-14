@@ -29,6 +29,7 @@ def run_checks():
     class FixtureHarness:
         def __init__(self):
             self.invocations = []
+            self.results = []
 
         def info(self):
             return HarnessAdapterInfo('semantic_fixture', '1.0.0', 'fixture', available=True,
@@ -44,9 +45,11 @@ def run_checks():
                 input_tokens=attempt.input_tokens, output_tokens=attempt.output_tokens,
                 gateway_loop_id=attempt.loop_id, route_id=attempt.route)
                 for result in client.results for attempt in result.physical_provider_attempts)
-            return HarnessRunResult(request.request_id, request.harness_id, 'completed',
+            result = HarnessRunResult(request.request_id, request.harness_id, 'completed',
                 output=response['choices'][0]['message']['content'], model_calls=calls,
                 adapter_version='1.0.0', provider_id=request.provider_id, model_id=request.model_id)
+            self.results.append(result)
+            return result
 
     with tempfile.TemporaryDirectory(prefix='semantic-harness-check-') as directory:
         manager = ContextArtifactManager(ContextArtifactServices(
@@ -72,6 +75,28 @@ def run_checks():
         check('harness_packet_preserves_original_system_and_prompt',
               adapter.invocations[0].input_data['system'] == 'first system'
               and adapter.invocations[0].input_data['prompt'] == 'first packet')
+        policies = [item.input_data.get('outcome_vector_policy')
+                    for item in adapter.invocations]
+        controls = [item.metadata.get('owning_practitioner_control')
+                    for item in adapter.invocations]
+        check('every_harness_realization_receives_the_owning_vector_policy',
+              all(policy.get('continue_while_safe_authorized_work_remains') is True
+                  and policy.get('evaluate_private_reasoning') is False
+                  for policy in policies)
+              and all(control.get('adapter_may_self_accept') is False
+                      and control.get('outcome_vector_policy_digest')
+                      for control in controls))
+        harness_summaries = [
+            item.get('external_harness_result')
+            for item in owner.ledger.events
+            if isinstance(item.get('external_harness_result'), dict)]
+        check('harness_completion_only_sets_the_mechanical_execution_axis',
+              len(harness_summaries) == 2
+              and all(item['outcome_vector']['execution_succeeded'] is True
+                      and item['outcome_vector'][
+                          'expected_output_satisfied'] is None
+                      and item['outcome_vector']['task_outcome'] is None
+                      for item in harness_summaries))
         check('shared_session_charges_actual_gateway_calls', session.calls_used == 2
               and all(result.physical_model_calls == 1 for result in session.results))
         def _self_test_history():

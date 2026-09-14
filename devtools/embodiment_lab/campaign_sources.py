@@ -77,6 +77,68 @@ class TaskSourceSnapshot:
         return cls(tuple(value["roots"]), tuple(value["entries"]), value["version"])
 
 
+@dataclass(frozen=True)
+class TaskSourceAvailability:
+    """Exact available source snapshot plus declared material that is absent."""
+
+    available: TaskSourceSnapshot
+    missing: tuple[tuple[str, str], ...] = ()
+    version: str = "1.0.0"
+
+    def __post_init__(self):
+        if not isinstance(self.available, TaskSourceSnapshot) or self.version != "1.0.0":
+            raise SourceIdentityError("invalid task source availability record")
+        missing = tuple(tuple(item) for item in self.missing)
+        if (tuple(sorted(missing)) != missing
+                or len({item[0] for item in missing}) != len(missing)
+                or any(len(item) != 2 or not item[0] or not item[1]
+                       or Path(item[0]).is_absolute() or ".." in Path(item[0]).parts
+                       for item in missing)):
+            raise SourceIdentityError(
+                "missing source entries must be unique sorted relative paths")
+        object.__setattr__(self, "missing", missing)
+
+    @property
+    def complete(self):
+        return not self.missing
+
+    def to_dict(self):
+        return {
+            "record_type": "task_source_availability/v1",
+            "version": self.version,
+            "complete": self.complete,
+            "available": self.available.to_dict(),
+            "missing": [
+                {"path": path, "reason": reason}
+                for path, reason in self.missing],
+        }
+
+    @property
+    def content_digest(self):
+        return digest(self.to_dict())
+
+    @classmethod
+    def from_dict(cls, value):
+        if (not isinstance(value, dict)
+                or set(value) != {
+                    "record_type", "version", "complete", "available", "missing"}
+                or value.get("record_type") != "task_source_availability/v1"
+                or not isinstance(value.get("missing"), list)
+                or any(not isinstance(item, dict)
+                       or set(item) != {"path", "reason"}
+                       for item in value.get("missing", ()) )):
+            raise SourceIdentityError("invalid task source availability record")
+        record = cls(
+            TaskSourceSnapshot.from_dict(value["available"]),
+            tuple((str(item.get("path") or ""),
+                   str(item.get("reason") or ""))
+                  for item in value["missing"] if isinstance(item, dict)),
+            str(value.get("version") or ""))
+        if value.get("complete") is not record.complete:
+            raise SourceIdentityError("source availability completeness differs")
+        return record
+
+
 def _stable_file_identity(path, cache):
     with os.fdopen(_open_source(path), "rb") as stream:
         before = os.fstat(stream.fileno())
@@ -101,8 +163,9 @@ def _stable_file_identity(path, cache):
         return before.st_size, value
 
 
-def snapshot_task_sources(task_directory, task_root, *, cache=None):
-    """Hash all declared inputs, including directory membership and hidden files.
+def _snapshot_task_sources(task_directory, task_root, *, cache=None,
+                           permit_missing=False):
+    """Hash declared inputs and optionally retain exact absent-path records.
 
     A declared root may resolve to another location inside the admitted task
     database. Nested symbolic links and special files refuse. The cache is
@@ -115,14 +178,39 @@ def snapshot_task_sources(task_directory, task_root, *, cache=None):
     descriptor = task_directory / "task.json"
     with os.fdopen(_open_source(descriptor), "r") as source:
         declaration = json.load(source)
-    paths = [descriptor, task_directory / "task.md"]
+    paths = [descriptor, (task_directory / "task.md").resolve(strict=True)]
+    missing = []
+
+    def declared_path(relative, *, attachment):
+        supplied = Path(str(relative))
+        if supplied.is_absolute():
+            raise SourceIdentityError("declared source path is not confined")
+        candidate = task_directory / supplied
+        boundary = task_directory if attachment else task_root
+        try:
+            resolved = candidate.resolve(strict=True)
+        except FileNotFoundError:
+            if not permit_missing:
+                raise
+            resolved = candidate.resolve(strict=False)
+            if not resolved.is_relative_to(boundary):
+                raise SourceIdentityError(
+                    "declared source escapes its admitted boundary")
+            relative_path = resolved.relative_to(task_root).as_posix()
+            missing.append((relative_path, "not_found"))
+            return None
+        if not resolved.is_relative_to(boundary):
+            raise SourceIdentityError("declared source escapes its admitted boundary")
+        return resolved
+
     for relative in declaration.get("attachments", ()):
-        candidate = (task_directory / relative).resolve(strict=True)
-        if not candidate.is_relative_to(task_directory):
-            raise SourceIdentityError("attachment escapes its task directory")
-        paths.append(candidate)
+        candidate = declared_path(relative, attachment=True)
+        if candidate is not None:
+            paths.append(candidate)
     if declaration.get("data_path"):
-        paths.append((task_directory / declaration["data_path"]).resolve(strict=True))
+        candidate = declared_path(declaration["data_path"], attachment=False)
+        if candidate is not None:
+            paths.append(candidate)
     records = {}
     roots = set()
 
@@ -155,7 +243,25 @@ def snapshot_task_sources(task_directory, task_root, *, cache=None):
             raise SourceIdentityError("source escapes the admitted task database")
         roots.add(path.relative_to(task_root).as_posix())
         visit(path)
-    return TaskSourceSnapshot(tuple(sorted(roots)), tuple(sorted(records.values())))
+    snapshot = TaskSourceSnapshot(
+        tuple(sorted(roots)), tuple(sorted(records.values())))
+    return snapshot, tuple(sorted(missing))
+
+
+def snapshot_task_sources(task_directory, task_root, *, cache=None):
+    """Hash every declared input and refuse when any declared source is absent."""
+    snapshot, missing = _snapshot_task_sources(
+        task_directory, task_root, cache=cache, permit_missing=False)
+    if missing:
+        raise SourceIdentityError("complete source snapshot retained missing entries")
+    return snapshot
+
+
+def snapshot_available_task_sources(task_directory, task_root, *, cache=None):
+    """Freeze all available inputs while retaining declared missing paths."""
+    snapshot, missing = _snapshot_task_sources(
+        task_directory, task_root, cache=cache, permit_missing=True)
+    return TaskSourceAvailability(snapshot, missing)
 
 
 def verify_task_sources(task_directory, task_root, expected):
@@ -164,4 +270,13 @@ def verify_task_sources(task_directory, task_root, expected):
     observed = snapshot_task_sources(task_directory, task_root)
     if observed != expected:
         raise SourceIdentityError("frozen task source contents changed")
+    return observed
+
+
+def verify_available_task_sources(task_directory, task_root, expected):
+    if not isinstance(expected, TaskSourceAvailability):
+        raise TypeError("source availability verification needs its typed record")
+    observed = snapshot_available_task_sources(task_directory, task_root)
+    if observed != expected:
+        raise SourceIdentityError("frozen available task sources changed")
     return observed

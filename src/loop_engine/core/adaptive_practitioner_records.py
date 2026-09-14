@@ -1927,6 +1927,10 @@ class AdaptiveRunServices:
         if self.dependencies.progress is not None:
             self.dependencies.progress(event)
 
+    def grade_current_stage(self, **signals):
+        """Attach exact consumer observations to the current semantic stage."""
+        return _grade_stage(self, self._graded_stage, **signals)
+
     def checkpoint_generated_file(
             self, checkpoint_key: str, path: str, content: str,
             contract_digest: str) -> dict:
@@ -2177,6 +2181,10 @@ class AdaptiveRunServices:
             request.step_id)
         question_candidates = self.portfolio.question_candidates(
             request.step_id)
+        from .work_function_catalog import load_work_function_catalog
+        work_function_catalog = load_work_function_catalog()
+        work_function_candidates = work_function_catalog.candidates(
+            request.step_id)
         from ..loop.intelligence_loops import serve_context_intelligence
         selected_context = serve_context_intelligence(
             f"adaptive-context-{request.step_id}", lambda: {
@@ -2184,6 +2192,7 @@ class AdaptiveRunServices:
                 "persona_candidates": list(persona_candidates),
                 "guidance_candidates": list(guidance_candidates),
                 "question_candidates": list(question_candidates),
+                "work_function_candidates": list(work_function_candidates),
                 "active_step_hint": step_context.to_dict(),
                 "selection_authority": "model",
             }, parent=owner, profile_id="intelligence.context.serve")
@@ -2259,7 +2268,15 @@ class AdaptiveRunServices:
                 "optional question sets with an active-step hint", 2,
                 {"selection_authority": "model",
                  "active_step_hint": context_value["active_step_hint"],
-                 "candidates": context_value["question_candidates"]}),
+                 "candidates": context_value["question_candidates"],
+                 "work_function_catalog": {
+                     "catalog_id": work_function_catalog.catalog_id,
+                     "version": work_function_catalog.version,
+                     "inventory_policy": work_function_catalog.inventory_policy,
+                     "proposal_channel": work_function_catalog.proposal_channel,
+                 },
+                 "work_function_candidates": context_value[
+                     "work_function_candidates"]}),
             LLMContextBlock.create(
                 "deterministic_attempt", "attempt_trace", "1.0.0",
                 "adaptive_practitioner",
@@ -2450,7 +2467,15 @@ class AdaptiveRunServices:
             question_portfolio={
                 "selection_authority": "model",
                 "active_step_hint": context_value["active_step_hint"],
-                "candidates": context_value["question_candidates"]},
+                "candidates": context_value["question_candidates"],
+                "work_function_catalog": {
+                    "catalog_id": work_function_catalog.catalog_id,
+                    "version": work_function_catalog.version,
+                    "inventory_policy": work_function_catalog.inventory_policy,
+                    "proposal_channel": work_function_catalog.proposal_channel,
+                },
+                "work_function_candidates": context_value[
+                    "work_function_candidates"]},
             capability_context={
                 "available_capabilities": list(capability_descriptors),
                 "added_file_candidates": extension_candidates,
@@ -2515,6 +2540,7 @@ class AdaptiveRunServices:
             "used_guidance_refs": [
                 str(item.get("record_id") or "")
                 for item in packet.context_intelligence],
+            "used_work_function_refs": list(work_function_catalog.refs),
         }
         self.selection_tally.note_offered(request.step_id)
         packet_artifact = self.artifacts.store.put(

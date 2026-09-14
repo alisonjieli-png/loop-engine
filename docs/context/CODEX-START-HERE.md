@@ -399,8 +399,10 @@ For the preceding new-task attempt and generalization boundary, read the
 [external-caller and code-only repair report](../verification/BRAIN-INTEGRATION-CODE-ONLY-2026-09-05.md).
 It traces the actual duration-parser failure, fixes source-only artifact
 delivery and captured instructions, and records real creation and repair
-runs with independent checks. Public results now use `solve_outcome/v5` to
-preserve unknown model-call totals and known subtotals. Failed-attempt tracking
+runs with independent checks. `solve_outcome/v5` introduced preservation of
+unknown model-call totals and known subtotals. Current `solve_outcome/v6`
+retains that accounting and adds stage and selected-action vector projections.
+Failed-attempt tracking
 and workspace visibility are repaired; broader ISO support, arbitrary harness
 integration, and the separate CI audit remain outside those claims.
 

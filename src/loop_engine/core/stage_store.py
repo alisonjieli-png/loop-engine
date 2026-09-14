@@ -14,7 +14,9 @@ from . import stage_store_records as _records
 from .outcome_vector import HELPED, SIGNAL_SCOPES, UNKNOWN, OutcomeVector
 from .outcome_vector import observe as observe_outcome
 
-STAGE_OBSERVATION_RECORD_TYPE, LEGACY_STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v2", "stage_observation/v1"
+STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v3"
+PREVIOUS_STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v2"
+LEGACY_STAGE_OBSERVATION_RECORD_TYPE = "stage_observation/v1"
 BY_SIGNATURE, BY_MOTIF, BY_SHAPE = "signature", "motif", "shape"
 
 
@@ -371,12 +373,17 @@ class StageStore:
                     if not isinstance(value, dict):
                         raise ValueError("stage record must be an object")
                     record_type = value.get("record_type")
-                    strict_v2 = record_type == STAGE_OBSERVATION_RECORD_TYPE
+                    strict_current = record_type == STAGE_OBSERVATION_RECORD_TYPE
+                    strict_previous = (
+                        record_type == PREVIOUS_STAGE_OBSERVATION_RECORD_TYPE)
                     if record_type not in (
                             None, LEGACY_STAGE_OBSERVATION_RECORD_TYPE,
+                            PREVIOUS_STAGE_OBSERVATION_RECORD_TYPE,
                             STAGE_OBSERVATION_RECORD_TYPE):
                         raise ValueError("unsupported stage record type")
-                    if strict_v2:
+                    if strict_current:
+                        _records.validate_v3_record(value)
+                    elif strict_previous:
                         _records.validate_v2_record(value)
                     else:
                         _records.validate_legacy_record(value)
@@ -403,13 +410,14 @@ class StageStore:
                             value.get("model_attempt_loop_ids") or ()),
                         pass_number=int(value.get("pass_number") or 0),
                         outcome=_records.outcome_from(
-                            value, strict=strict_v2),
+                            value, strict=(strict_current or strict_previous),
+                            stage_record_type=str(record_type or "")),
                         gateway_calls=int(value.get("gateway_calls") or 0),
                         model_calls=int(value.get("model_calls") or 0),
                         elapsed_seconds=value.get("elapsed_seconds"),
                         input_tokens=value.get("input_tokens"),
                         output_tokens=value.get("output_tokens"))
-                    if strict_v2:
+                    if strict_current or strict_previous:
                         if value.get("observation_ref") \
                                 != observation.observation_ref:
                             raise ValueError(

@@ -53,17 +53,61 @@ def _orientation(**changes) -> dict:
     return value
 
 
+def _resolution_payload(*, constraint_code="CAPABILITY_GAP", **changes) -> dict:
+    from ..code_nodes.solve_terminal import (
+        RESOLUTION_CONTRIBUTION_FIELDS,
+        RESOLUTION_METHOD_FIELDS,
+    )
+
+    values = {name: [] for name in RESOLUTION_CONTRIBUTION_FIELDS}
+    values.update({
+        "what_can_be_completed": ["A bounded analysis can be returned."],
+        "what_cannot_be_completed": ["The requested outcome is not verified."],
+        "missing_inputs_or_components": ["A verified task result is missing."],
+        "analysis": ["The available task record supports a constraint report."],
+        "first_principles_solutions": [
+            "Preserve the goal and satisfy each verified criterion."],
+        "supplemental_items": ["A verification checklist is available."],
+        "next_actions": ["Continue with the next safe authorized action."],
+    })
+    values.update(changes)
+    values["constraint_code"] = constraint_code
+    values["method_assessments"] = [{
+        "method_id": method_id,
+        "disposition": (
+            "completed" if any(values[name] for name in field_names)
+            else "not_applicable"),
+        "summary": (
+            "The fixture supplies mapped material."
+            if any(values[name] for name in field_names)
+            else "This method is not applicable to the fixture."),
+        "evidence_refs": [],
+    } for method_id, field_names in RESOLUTION_METHOD_FIELDS]
+    return {"resolution": values}
+
+
 def _decision(action_kind="BUILD_CAPABILITY", **changes) -> dict:
     capability = ([] if action_kind in (
         "ASK_USER", "REQUEST_AUTHORITY", "RETURN_RESULT", "ABSTAIN", "STOP")
         else ["core.generated_project"])
     permissions = ([] if not capability
                    else ["workspace_write", "sandbox_command"])
+    terminal = action_kind in (
+        "ASK_USER", "REQUEST_AUTHORITY", "RETURN_RESULT", "ABSTAIN", "STOP")
+    constraint_code = {
+        "ASK_USER": "BLOCKED_MATERIAL_INPUT",
+        "REQUEST_AUTHORITY": "AUTHORITY_REQUIRED",
+        "RETURN_RESULT": "VERIFICATION_FAILED",
+        "ABSTAIN": "CAPABILITY_GAP",
+        "STOP": "NO_PROGRESS",
+    }.get(action_kind, "CAPABILITY_GAP")
     value = {
         "action_kind": action_kind,
         "goal": "Produce the next verified result.",
         "reason": "The acceptance contract still requires an output.",
-        "inputs": {}, "expected_output": "A verified result.",
+        "inputs": (_resolution_payload(constraint_code=constraint_code)
+                   if terminal else {}),
+        "expected_output": "A verified result.",
         "required_capabilities": capability,
         "permissions": permissions,
         "budget": {"estimated_cost": 1.0, "risk": 0.1,
@@ -84,9 +128,46 @@ def _decision_id(value: dict) -> str:
         default=str).encode()).hexdigest()[:20]
 
 
+def _action_vector(
+        *, criterion_refs=("criterion:0", "criterion:1"),
+        unresolved_refs=(), expected_output_status="satisfied",
+        progress_status="advanced", continuation_status="complete",
+        remaining_work=(), process_status="passed") -> dict:
+    unresolved = set(unresolved_refs)
+    return {
+        "process_checks": [{
+            "check_id": check_id,
+            "status": process_status,
+            "finding": "The fixture exposes the required typed work record.",
+        } for check_id in (
+            "task_goal_preserved", "declared_method_followed",
+            "constraints_and_authority_respected",
+            "evidence_assumptions_and_synthetic_material_separated",
+            "expected_observation_checked",
+            "alternatives_or_fallback_considered")],
+        "expected_output_status": expected_output_status,
+        "expected_output_findings": [
+            "The selected action output was checked against its declaration."],
+        "requested_output_checks": [{
+            "criterion_ref": ref,
+            "status": "unsatisfied" if ref in unresolved else "satisfied",
+            "finding": ("The criterion remains open." if ref in unresolved
+                        else "The criterion is satisfied by the fixture."),
+        } for ref in criterion_refs],
+        "progress_status": progress_status,
+        "progress_evidence": [
+            "The fixture records the observed state change."],
+        "continuation_status": continuation_status,
+        "remaining_work": list(remaining_work),
+    }
+
+
 def _success_answers(orientation=None, decision=None) -> tuple[str, ...]:
     orientation = orientation or _orientation()
     decision = decision or _decision()
+    criterion_refs = tuple(
+        f"criterion:{index}" for index, _item in enumerate(
+            orientation.get("verification_obligations") or ())) or ("criterion:0",)
     action_id = _decision_id(decision)
     how = {
         "action_id": action_id, "how_mode": "generate",
@@ -113,6 +194,7 @@ def _success_answers(orientation=None, decision=None) -> tuple[str, ...]:
         "verdict": "accept", "best_index": 0, "scores": [1.0],
         "notes": "Deterministic checks passed.", "remaining_gaps": [],
         "advisory_findings": [], "new_requirement_proposals": [],
+        "action_vector": _action_vector(criterion_refs=criterion_refs),
     }
     route = {"route": "stop_success", "reason": "Result is verified."}
     return tuple(json.dumps(item) for item in (
@@ -138,6 +220,10 @@ def _gap_answers(task_kind="unknown") -> tuple[str, ...]:
             "criterion_ref": "criterion:0",
             "gap": "execution capability unavailable"}],
         "advisory_findings": [], "new_requirement_proposals": [],
+        "action_vector": _action_vector(
+            unresolved_refs=("criterion:0",),
+            expected_output_status="unsatisfied", progress_status="neutral",
+            continuation_status="no_safe_action"),
     }
     route = {"route": "stop_unprofitable",
              "reason": "No verified capability is available."}
@@ -197,6 +283,10 @@ def _permission_repair_acceptance_check() -> dict:
         "remaining_gaps": [{"criterion_ref": "criterion:0",
                             "gap": "No executable authorized proposal was admitted."}],
         "advisory_findings": [], "new_requirement_proposals": [],
+        "action_vector": _action_vector(
+            unresolved_refs=("criterion:0",),
+            expected_output_status="unsatisfied", progress_status="neutral",
+            continuation_status="no_safe_action"),
     }
     answers = tuple(json.dumps(value) for value in (
         _orientation(), {"actions": [proposed]}, {"actions": [proposed]},
@@ -464,7 +554,12 @@ def run_checks() -> dict:
          "notes": "The project candidate is invalid.",
          "remaining_gaps": [{"criterion_ref": "criterion:0",
                               "gap": "valid project candidate"}],
-         "advisory_findings": [], "new_requirement_proposals": []},
+         "advisory_findings": [], "new_requirement_proposals": [],
+         "action_vector": _action_vector(
+             unresolved_refs=("criterion:0",),
+             expected_output_status="unsatisfied", progress_status="neutral",
+             continuation_status="adjust",
+             remaining_work=("Repair the invalid project candidate.",))},
         {"route": "repair", "reason": "Repair the typed candidate."}))
     with tempfile.TemporaryDirectory() as root:
         invalid_candidate = _run(
@@ -486,6 +581,19 @@ def run_checks() -> dict:
               and len(led["orientations"]) == 1
               and bool(led["selected_solution_canvas"]),
               f"{led['passes']} pass, {led['model_calls']} model calls")
+        vectors = led.get("stage_outcome_vectors") or []
+        required_phases = {"orient", "decide_next", "how", "act", "verify", "route"}
+        checked = [item for item in vectors
+                   if item.get("cognitive_phase") in required_phases]
+        check("every_core_cognitive_and_action_phase_exports_its_own_vector",
+              {item.get("cognitive_phase") for item in checked}
+              == required_phases
+              and all(item["outcome_vector"]["record_type"]
+                      == "outcome_vector/v2" for item in checked)
+              and all(item["outcome_vector"][
+                          "observable_process_aligned"] is True
+                      for item in checked),
+              f"{len(checked)} checked stage vectors")
 
     low_confidence_build = _decision(confidence=0.1)
     high_confidence_stop = _decision(
@@ -569,12 +677,17 @@ def run_checks() -> dict:
             "remaining_gaps": [{"criterion_ref": "criterion:0",
                                  "gap": "the repair has not been built"}],
             "advisory_findings": [], "new_requirement_proposals": [],
+            "action_vector": _action_vector(
+                unresolved_refs=("criterion:0",),
+                progress_status="advanced", continuation_status="continue",
+                remaining_work=("Build the source-informed repair.",)),
         }
         accept_verification = {
             "verdict": "accept", "best_index": 0, "scores": [1.0],
             "notes": "The source-informed repair passed.",
             "remaining_gaps": [], "advisory_findings": [],
             "new_requirement_proposals": [],
+            "action_vector": _action_vector(),
         }
         # Inspecting a source is also the moment the run reads what that
         # source is. The reading is one model call, so it takes one scripted
@@ -657,14 +770,35 @@ def run_checks() -> dict:
     incomplete_decision = _decision(
         "RETURN_RESULT", goal="Return without building.",
         reason="Attempt premature completion.",
-        expected_output="A claim without an artifact.")
+        inputs=_resolution_payload(constraint_code="VERIFICATION_FAILED", **{
+            "what_can_be_completed": ["A requirements analysis can be returned."],
+            "what_cannot_be_completed": ["The requested artifact was not built."],
+            "missing_inputs_or_components": ["An executable artifact is missing."],
+            "analysis": ["The task requires a real artifact, not only a plan."],
+            "assumptions": [],
+            "scenario_analysis": [],
+            "pro_forma_analysis": [],
+            "synthetic_material": [],
+            "estimates": [],
+            "analogous_solutions": [],
+            "first_principles_solutions": [
+                "Build the smallest artifact that satisfies the contract."],
+            "supplemental_items": ["A verification checklist can be prepared."],
+            "next_actions": ["Build and independently verify the artifact."],
+        }),
+        expected_output="A useful resolution without a completion claim.")
     incomplete_answers = tuple(json.dumps(item) for item in (
         _orientation(), {"actions": [incomplete_decision]},
         {"verdict": "repair", "best_index": 0, "scores": [0.0],
          "notes": "The requested artifact is missing.",
          "remaining_gaps": [{"criterion_ref": "criterion:0",
                               "gap": "artifact not built"}],
-         "advisory_findings": [], "new_requirement_proposals": []},
+         "advisory_findings": [], "new_requirement_proposals": [],
+         "action_vector": _action_vector(
+             unresolved_refs=("criterion:0",),
+             expected_output_status="satisfied", progress_status="advanced",
+             continuation_status="adjust",
+             remaining_work=("Build and verify the requested artifact.",))},
         {"route": "repair", "reason": "Artifact remains missing."}))
     with tempfile.TemporaryDirectory() as root:
         incomplete = _run(
@@ -673,6 +807,17 @@ def run_checks() -> dict:
               not incomplete["solved"]
               and incomplete["status"] == "NOT_YET_PROVEN",
               incomplete["final_route"])
+        check("return_without_an_artifact_publishes_a_useful_resolution_candidate",
+              bool(incomplete["task_results"]
+                   and incomplete["task_results"][-1]["record_type"]
+                   == "task_resolution_package/v1"
+                   and incomplete["task_results"][-1]["response_complete"] is True
+                   and incomplete["task_results"][-1][
+                       "requested_outcome_verified"] is False
+                   and incomplete["task_results"][-1][
+                       "first_principles_solutions"]),
+              str(incomplete["task_results"][-1].get("fulfillment_status")
+                  if incomplete["task_results"] else "missing"))
 
     tests.append(_permission_repair_acceptance_check())
 
@@ -712,7 +857,12 @@ def run_checks() -> dict:
          "notes": "Input is still missing.",
          "remaining_gaps": [{"criterion_ref": "criterion:0",
                               "gap": "required destination"}],
-         "advisory_findings": [], "new_requirement_proposals": []},
+         "advisory_findings": [], "new_requirement_proposals": [],
+         "action_vector": _action_vector(
+             unresolved_refs=("criterion:0",),
+             expected_output_status="unsatisfied", progress_status="neutral",
+             continuation_status="await_authority",
+             remaining_work=("Obtain the required destination.",))},
         {"route": "stop_unprofitable", "reason": "Material input is missing."}))
     with tempfile.TemporaryDirectory() as root:
         asked = _run(

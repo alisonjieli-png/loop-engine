@@ -1,6 +1,6 @@
 record_type: practitioner_context_intelligence/v1
 portfolio_id: core.context.practitioner.general
-version: 1.0.0
+version: 1.2.0
 persona:
   persona_id: core.persona.task_interpreter
   version: 1.0.0
@@ -260,6 +260,55 @@ guidance:
     content: >-
       Read what earlier runs on similar tasks did and how they ended as
       evidence to weigh, never as a decision already made.
+  - record_id: core.guidance.complete_best_available_resolution
+    version: 1.0.0
+    intelligence_functions: [ask, deliberation, implementation, verification, routing]
+    step_affinities:
+      - orient
+      - assess_prepare
+      - decide_next
+      - how
+      - verify
+      - route
+      - diagnose_stall
+      - propose_recovery
+      - adjudicate_recovery
+    content: >-
+      Missing information, unavailable execution, or failed verification does
+      not justify an empty result. Complete every safe reversible part of the
+      task. Produce the best available resolution from observed material,
+      explicitly labeled assumptions, scenario or pro forma analysis,
+      synthetic examples when useful, estimates with uncertainty, analogous
+      solutions, first-principles reasoning, supplemental artifacts, missing
+      component maps, and concrete next steps. Keep each category distinct.
+      Never invent a fact, permission, independent verification, or completed
+      external effect. Ask the user only when a typed user decision can improve
+      the package or authorize a remaining effect, and publish the useful
+      package before stopping.
+  - record_id: core.guidance.align_every_action_vector
+    version: 1.0.0
+    intelligence_functions: [deliberation, implementation, verification, routing]
+    step_affinities:
+      - decide_next
+      - how
+      - act
+      - verify
+      - route
+      - diagnose_stall
+      - propose_recovery
+      - adjudicate_recovery
+    content: >-
+      Treat every selected action as a typed outcome vector. Keep successful
+      response admission separate from observable process alignment, actual
+      capability execution, the action's expected output, the requested task
+      output, local verification, material progress, and whether another safe
+      authorized action remains. Evaluate typed decisions, plans, evidence,
+      and results rather than private reasoning. A response that parses is not
+      proof that the process or output is correct. Continue, adjust, reframe,
+      retrieve, repair, or compare another permitted approach while useful
+      safe work remains. This policy belongs to the owning Practitioner Loop
+      and applies equally when a custom implementation, OpenCode, Codex, Pi,
+      or another registered harness realizes the semantic work.
 prompt_assembly_profiles:
   - profile_id: core.prompt.standard_balanced
     version: 1.0.0
@@ -486,6 +535,9 @@ steps:
         been inspected, and which are still assumed?
       - Where should the work happen, and what must the working directory
         contain and allow before acting?
+      - If the literal outcome cannot yet be completed, what useful report,
+        draft, model, scenario, simulation, estimate, analogy, or
+        first-principles result can still be completed from what is available?
   standardize_task:
     persona_refs:
       - core.persona.domain_expert
@@ -527,6 +579,9 @@ steps:
       - What appears genuinely new?
       - What does this machine and run actually offer (compute, data, tools,
         network), measured rather than declared, and what is still unknown?
+      - Which missing values can be handled through explicit assumptions,
+        scenario ranges, pro forma analysis, synthetic examples, analogous
+        cases, or first-principles derivation without presenting them as facts?
   decide_next:
     persona_refs:
       - core.persona.systems_builder
@@ -546,6 +601,10 @@ steps:
         forbid retrying?
       - What was learned from the last failure, stated plainly, before the
         next action is selected?
+      - Before asking, abstaining, or stopping, what best-available deliverable
+        can be produced safely from the current evidence and authority?
+      - What exact task-state delta should this action create, and which
+        observation would show that it moved in the intended direction?
   how:
     persona_refs:
       - core.persona.systems_builder
@@ -563,6 +622,10 @@ steps:
       - Which dependencies and joins constrain scheduling?
       - What working directory, input staging, and effect boundaries must be
         in place before the method runs?
+      - How will observed, derived, assumed, synthetic, estimated, analogous,
+        and unverified material be labeled separately in the result?
+      - Which observable process, expected-output, requested-output, progress,
+        and continuation checks must run after this action?
   act:
     persona_refs:
       - core.persona.software_engineer
@@ -597,6 +660,13 @@ steps:
         schema, file layout, interface signature), not just the right idea?
       - Does any existing artifact already satisfy the acceptance, so that
         verifying it and stopping beats acting again?
+      - If full acceptance is unavailable, does the result still preserve the
+        best candidate, completed analysis, missing pieces, limitations, and
+        useful next steps without claiming acceptance?
+      - Did the response merely satisfy its schema, or did the observable work
+        process align, the action execute, and the expected output arrive?
+      - Which requested-output criteria are satisfied, unsatisfied, or still
+        unknown, and what material progress did this exact action make?
   integrate_commit:
     persona_refs:
       - core.persona.future_maintainer
@@ -626,6 +696,11 @@ steps:
       - What reusable lesson may be proposed only after verification?
       - Since the last surprise, have verify and calibrate both fired? If
         not, route back for the missing reflection, not forward.
+      - Has a useful best-available resolution been published before any
+        non-safety stop, including provisional work and explicit limitations?
+      - Does another safe authorized action remain, including research,
+        simulation, estimation, analogy, first-principles work, verification,
+        repair, or a materially different approach? If so, why stop now?
   frame_alternatives:
     output_contract: task_framings/v1
     persona_refs:
@@ -682,6 +757,9 @@ steps:
       - How many times has this exact failure recurred across attempts,
         and what does that count forbid retrying?
       - What materially different change types could restore progress?
+      - What safe analytical, synthetic, estimated, analogous, or
+        first-principles work remains possible even if the original effect is
+        unavailable?
   propose_recovery:
     persona_refs:
       - core.persona.strategy_mutator
@@ -695,6 +773,8 @@ steps:
       - Which registered capabilities and existing evidence does it need?
       - What measurable state change should occur on the next pass?
       - What repeated action must be forbidden?
+      - Which proposal produces the strongest useful resolution package if no
+        proposal can complete the literal requested outcome?
   adjudicate_recovery:
     persona_refs:
       - core.persona.recovery_adjudicator
@@ -707,3 +787,5 @@ steps:
       - Does it name only available capabilities and permitted effects?
       - What progress must the next pass demonstrate?
       - When should another diagnostic panel be required?
+      - Does the selected directive complete all safe remaining work and
+        publish it before reporting the unresolved constraint?

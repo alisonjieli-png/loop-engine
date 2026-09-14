@@ -266,6 +266,9 @@ def build_execution_plan(
     """Select, validate, and if needed repair one execution method."""
     chosen = request.chosen
     action = services.action_details[chosen.action]
+    from .outcome_vector import ActionIntentVector
+    intent_vector = ActionIntentVector.from_decision(
+        chosen.action, action).to_dict()
     if action.action_kind == RUN_PARALLEL:
         services.plan_details[chosen.action] = {
             "arguments": {}, "spawned_tasks": [],
@@ -308,6 +311,7 @@ def build_execution_plan(
                     "failures": list(request.state.failures),
                     "selected_action_id": chosen.action,
                     "selected_action": action.to_dict(),
+                    "action_intent_vector": intent_vector,
                     "orientation": request.situation.knowns[
                         "orientation"].to_dict(),
                     "method_validation_failure": failure,
@@ -325,19 +329,36 @@ def build_execution_plan(
                 }, _planning_schema(
                     chosen.action, spawning=action.action_kind == "SPAWN_LOOP"),
                 admission_contract=_planning_response_contract(chosen.action,action)))
-            return _validate_plan_response(value, request, services)
+            plan = _validate_plan_response(value, request, services)
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=True,
+                      expected_output_satisfied=True,
+                      material_progress=True)
+            return plan
         except ModelResponseRepairStalled as exc:
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=False,
+                      expected_output_satisfied=False,
+                      material_progress=False)
             from .adaptive_practitioner_recovery import recover_step_contract_failure
             recover_step_contract_failure(exc,{
                 'state_version':request.state.version,'facts':request.state.facts,
                 'artifact_refs':request.state.artifacts,'failures':list(request.state.failures),
                 'selected_action_id':chosen.action,'selected_action':action.to_dict(),
+                'action_intent_vector':intent_vector,
                 'response_contract':_planning_response_contract(chosen.action,action).to_dict(),
             },services)
             failure = str(exc)[:500]
             break
         except (AdaptivePractitionerError, SolutionModelError,
                 TypeError, ValueError) as exc:
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=False,
+                      expected_output_satisfied=False,
+                      material_progress=False)
             failure = str(exc)[:500]
             services.diagnostic("execution_plan_invalid", {
                 "attempt": attempt, "error": failure,

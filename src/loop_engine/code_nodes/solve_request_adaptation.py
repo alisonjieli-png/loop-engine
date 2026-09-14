@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ..core.adaptive_practitioner_records import AdaptivePractitionerRequest
-from ..core.product_outcome_store import SOLVE_OUTCOME_V5, ProductModelCallAccounting
+from ..core.product_outcome_store import SOLVE_OUTCOME_V6, ProductModelCallAccounting
 
 
 @dataclass(frozen=True)
@@ -508,15 +508,17 @@ def _public_call_accounting_checks() -> list[dict]:
             outcome = solve_task(request)
         value = outcome.to_dict()
         saved = load_saved_run_bundle(directory, run_id)
-        check("public_solve_cancelled_v5_never_coerces_unknown_calls_to_zero",
-              value["record_type"] == "solve_outcome/v5"
+        check("public_solve_cancelled_v6_never_coerces_unknown_calls_to_zero",
+              value["record_type"] == "solve_outcome/v6"
               and value["terminal_code"] == "CANCELLED"
               and value["model_calls"] is None
               and value["model_call_accounting_complete"] is False
               and value["model_calls_known_subtotal"] == 44)
-        check("v5_unknown_accounting_round_trips_in_digest_bound_saved_outcome",
+        check("v6_unknown_accounting_and_vectors_round_trip_in_saved_outcome",
               saved.history.verify_chain()["intact"]
-              and saved.outcome_ref.record_type == SOLVE_OUTCOME_V5
+              and saved.outcome_ref.record_type == SOLVE_OUTCOME_V6
+              and saved.outcome["stage_vectors"] == []
+              and saved.outcome["action_vectors"] == []
               and all(saved.outcome[name] == expected
                       for name, expected in interrupted.items()))
         legacy = {**value, "model_calls": 0}
@@ -526,13 +528,16 @@ def _public_call_accounting_checks() -> list[dict]:
               all(_validate_product_outcome({**legacy, "record_type": version}, run_id)
                   == {**legacy, "record_type": version}
                   for version in ("solve_outcome/v3", "solve_outcome/v4")))
-        malformed_v5 = [
+        malformed_v6 = [
             {key: item for key, item in value.items() if key != missing}
             for missing in interrupted]
-        malformed_v5.extend({**value, **item} for item in invalid)
-        check("saved_v5_requires_complete_typed_accounting_fields",
+        malformed_v6.extend({**value, **item} for item in invalid)
+        malformed_v6.extend(
+            {key: item for key, item in value.items() if key != missing}
+            for missing in ("stage_vectors", "action_vectors"))
+        check("saved_v6_requires_accounting_and_vector_projection_fields",
               all(refused(lambda item=item: _validate_product_outcome(item, run_id))
-                  for item in malformed_v5))
+                  for item in malformed_v6))
         check("public_constructor_rejects_inconsistent_accounting_and_defaults_unknown",
               refused(lambda: replace(outcome, model_calls=0))
               and SolveOutcome("unknown", "CANCELLED", False).model_calls is None

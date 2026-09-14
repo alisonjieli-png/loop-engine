@@ -1,6 +1,6 @@
 record_type: practitioner_context_intelligence/v1
 portfolio_id: fallback.context.practitioner.minimum
-version: 1.0.0
+version: 1.2.0
 persona:
   persona_id: fallback.persona.task_interpreter
   version: 1.0.0
@@ -17,7 +17,18 @@ guidance:
       - act
       - verify
       - route
-    content: Preserve the request, authority limits, failures, and evidence.
+    content: >-
+      Preserve the request, authority limits, failures, and evidence. Missing
+      inputs do not justify an empty result. Complete a best-available report
+      using labeled assumptions, scenarios, estimates, synthetic examples,
+      analogies, first-principles reasoning, missing pieces, and next steps,
+      without inventing facts, permission, verification, or external effects.
+      Treat every selected action as a typed outcome vector. Keep response
+      admission, observable process alignment, execution, expected output,
+      requested output, verification, progress, and continuation separate.
+      Continue or adjust while another safe authorized action remains. This
+      owning-Loop policy also applies when a registered external harness
+      performs the semantic work.
 prompt_assembly_profiles:
   - profile_id: fallback.prompt.standard
     version: 1.0.0
@@ -33,6 +44,7 @@ steps:
     output_contract: task_orientation/v1
     questions:
       - What outcome, inputs, constraints, authority, and proof does this task require?
+      - What useful result can still be completed if a literal input or effect is unavailable?
   standardize_task:
     output_contract: work_item_ir/v1
     questions:
@@ -49,10 +61,13 @@ steps:
     output_contract: candidate_action_portfolio/v1
     questions:
       - What safe bounded action should run next, and why?
+      - What best-available deliverable must be published before asking or stopping?
+      - What state delta and observable check make this action point toward the task?
   how:
     output_contract: execution_plan/v1
     questions:
       - What method, inputs, checks, permissions, and stop conditions are required?
+      - How will process, output, progress, and continuation be checked separately?
   act:
     output_contract: result_packet_portfolio/v1
     questions:
@@ -61,6 +76,7 @@ steps:
     output_contract: evaluation_packet/v1
     questions:
       - What independent evidence accepts or rejects the result?
+      - Did the response merely parse, or did its observable process and expected output align?
   integrate_commit:
     output_contract: accepted_state_delta/v1
     questions:
@@ -69,6 +85,8 @@ steps:
     output_contract: route_decision/v1
     questions:
       - Should the task continue, repair, ask, abstain, or finish?
+      - Has the run published its useful analysis, assumptions, missing pieces, alternatives, and next steps?
+      - Does another safe authorized action remain? If so, continue or adjust.
   frame_alternatives:
     output_contract: task_framings/v1
     questions:

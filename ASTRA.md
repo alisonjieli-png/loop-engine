@@ -28,6 +28,87 @@ need implementation and qualification; they do not prohibit additional
 steps, native harness controls, wrapper compositions, or configuration
 dimensions.
 
+## September 14 best-available resolution requirement
+
+Owner requirement: a missing task file, unavailable component, unanswered
+question, or other task-level constraint must not produce an empty blocked
+result. The Practitioner should do what a capable person can still do. It
+should analyze available material, state what can and cannot be completed,
+map missing pieces, make labeled assumptions, prepare scenario or pro forma
+analysis, use clearly labeled synthetic examples where useful, give estimates
+with uncertainty, examine similar or analogous solutions, derive a
+first-principles approach, and prepare supplemental artifacts and next steps.
+
+Current implementation after this requirement:
+
+```text
+Public solve projection
+├── Verified requested outcome
+│   └── COMPLETED_VERIFIED
+├── Unverified task-level outcome
+│   └── COMPLETED_PARTIAL plus task_resolution_package/v1
+└── Operational interruption
+    ├── provider terminal with accumulated work preserved
+    └── cancellation terminal with no invented continuation
+```
+
+The resolution package is a completed response, not acceptance of the
+original requested outcome. It preserves observed evidence, model analysis,
+assumptions, provisional file bodies, missing or unverified material,
+alternatives, questions, and next actions. The model-facing runtime policy and
+question portfolio require the broader methods above before a non-safety
+stop. Current checks establish the contract and local projection. They do not
+prove that every model will use every method well on every task.
+
+An absent permission or approval still cannot be invented. The Practitioner
+must complete preparatory work that does not require the effect, then state
+the exact remaining authority. Only a question bound to a typed user
+clarification may be presented to the owner. The runtime must answer its own
+capability and workspace questions.
+
+## September 14 action-vector continuation requirement
+
+Owner requirement: the system must distinguish a successful language model
+response from the quality of the observable work process and from satisfaction
+of the requested output. Every cognitive step and action needs its own vector
+of intended and observed direction. The Practitioner should use those vectors
+to continue, improve, adjust, reframe, retrieve, repair, or compare another
+approach instead of treating response completion as a reason to stop.
+
+This requirement applies to the custom Practitioner and to Practitioner work
+realized through registered harnesses such as OpenCode, Codex, and Pi. The
+owning Loop retains the task, vector policy, continuation decision, effects,
+accounting, and acceptance. A native harness completion event remains an
+observation and cannot accept the task or grade its own result.
+
+Current implementation after this requirement:
+
+```text
+One selected action
+├── action_intent_vector/v1
+│   └── direction, expected delta, check, fallback, and decision coordinates
+├── action_vector_assessment/v1
+│   └── observable process, output, progress, and continuation checks
+├── outcome_vector/v2
+│   └── tri-valued signals with unknown kept distinct from false
+└── route guard
+    ├── continue or adjust while safe authorized work remains
+    └── stop only after continuation is resolved or a hard boundary applies
+```
+
+The process check observes typed decisions, plans, selected evidence,
+assumption labels, capability execution, artifacts, and verification. It does
+not request or persist private model reasoning. The custom and external
+harness paths receive the same policy through the canonical semantic packet.
+The external harness result records only mechanical execution before the
+owning Loop performs semantic and task checks.
+
+Current offline checks exercise the vector contract, exact selected-action
+lineage, stop-route guard, core cognitive-stage projections, custom and named
+harness boundaries, and source-incomplete task intake. They do not establish
+that every live model will make a good process assessment or that OpenCode,
+Codex, and Pi native-control profiles are all installed and qualified.
+
 ## Direction to preserve
 
 The owner clarified the scale requirement after asking about Hyperlambda:

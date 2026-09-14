@@ -47,9 +47,58 @@ preserve the original task
 → route to continue, repair, ask, abstain, or return
 ```
 
-A run repeats this cycle until the requested output passes verification or a
-typed blocker stops the work. `READY`, `PLANNED`, and `CANDIDATE_CREATED` are
-not successful terminal states for a task that asks for a working artifact.
+A run repeats this cycle until the requested output passes verification or no
+further authorized action can improve it. Before a task-level stop, the run
+publishes a complete best-available resolution. `READY`, `PLANNED`, and
+`CANDIDATE_CREATED` are not successful terminal states for a task that asks
+for a working artifact.
+
+## Action direction and outcome vectors
+
+Every selected action now has an `action_intent_vector/v1`. The intended
+vector binds the action identity, goal direction, expected state delta,
+verification condition, dependencies, fallback, information gain, estimated
+cost, risk, and reversibility. The same intended vector enters the candidate
+Solution graph and the exact selected-action lineage.
+
+Every semantic stage has its own `outcome_vector/v2`. Each axis is tri-valued.
+An unchecked axis remains unknown and never becomes a failure or success by
+default.
+
+```text
+One selected action
+├── Intended vector
+│   ├── goal direction and expected state delta
+│   ├── verification condition and fallback
+│   └── information gain, cost, risk, and reversibility
+├── Observed outcome vector
+│   ├── response contract admitted
+│   ├── observable work process aligned
+│   ├── selected capability executed
+│   ├── declared action output satisfied
+│   ├── requested task output satisfied
+│   ├── local verification passed
+│   ├── material progress occurred
+│   ├── safe authorized continuation remains
+│   ├── downstream use and branch contribution
+│   └── later invalidation and whole-task outcome
+└── Route check
+    ├── continue or adjust while safe authorized work remains
+    ├── accept only through the existing task checks
+    └── publish a complete best-available resolution when no safe action remains
+```
+
+Observable process alignment evaluates typed decisions, selected methods,
+plans, evidence labels, authority, results, and checks. It does not request or
+store private model reasoning. A valid model response proves only response
+admission. It does not prove process alignment, action execution, output
+satisfaction, or task acceptance.
+
+The owning Practitioner Loop applies this policy. A custom Practitioner and a
+registered OpenCode, Codex, Pi, or other harness realization receive the same
+policy and original semantic packet. A harness adapter cannot grade or accept
+its own outcome vector. Native completion remains an observation for the
+owning Loop.
 
 ## Mode behavior
 
@@ -152,6 +201,32 @@ Hard authority, cancellation, safety, and declared budget limits remain
 deterministic. Repeated wording alone is not progress, but repeated state does
 not cause an immediate deterministic stop.
 
+Before a task-level stop, the Practitioner must publish the best available
+resolution. Missing material does not erase useful work. The resolution
+separates observed evidence, model analysis, assumptions, provisional outputs,
+missing or unverified items, scenario choices, alternative approaches,
+questions that can improve a later revision, and concrete next actions. The
+Practitioner considers pro forma, synthetic, estimated, analogous, and
+first-principles work when those methods can produce something useful from the
+available material.
+
+This requirement does not authorize fabricated facts or effects. A task that
+requires an unavailable approval can still produce drafts, simulations,
+templates, validation plans, and a ready-to-run procedure. The result reports
+the missing authority separately from the completed preparatory work.
+
+Every best-available resolution assesses each registered safe method exactly
+once. A method is completed, not applicable, unavailable, authority-required,
+or resource-exhausted. A completed method must contain its mapped material.
+At least one useful method must complete before the response can report
+`resolution_status: COMPLETE`.
+
+The task-database campaign has two admission lanes. Complete frozen sources
+enter execution and task evaluation. Missing files, data, metadata, or task
+instructions enter best-available resolution. The second lane freezes every
+available source and records each missing source. Its reports never enter the
+original-task success or independent-evaluation denominator.
+
 ## Verification scope
 
 Every blocking gap must reference one registered acceptance criterion from the
@@ -165,7 +240,11 @@ task state.
 
 ## Completion evidence
 
-Every run returns a typed result and saves Run History. The result includes
+Every run returns a typed result and saves Run History. An unverified
+task-level outcome returns `COMPLETED_PARTIAL` with a complete
+`task_resolution_package/v1`; the underlying constraint remains explicit.
+Provider interruption and operator cancellation retain their operational
+terminal codes. The result includes
 the preserved task, feedback slots, deterministic attempt, orientations,
 action decisions, candidate Solution Canvases, selected graph, research
 records, project attempts, verification records, Loop details, and the saved

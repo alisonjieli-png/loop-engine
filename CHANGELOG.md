@@ -7,6 +7,43 @@ All notable changes to this project are documented here. This project follows
 
 First public release.
 
+### Changed on 2026-09-14
+
+- An unverified task-level outcome now returns a complete
+  `task_resolution_package/v1` instead of an empty blocked product. The
+  package preserves completed work, observed evidence, model analysis,
+  assumptions, missing or unverified material, scenario choices,
+  provisional file bodies, alternative approaches, questions, and next
+  actions. `COMPLETED_PARTIAL` means the useful response is complete while
+  the original requested outcome remains unverified. Provider interruption
+  and operator cancellation keep their operational terminal codes.
+- The Practitioner receives a versioned best-available-resolution policy.
+  Before a task-level stop it considers safe pro forma analysis, synthetic
+  examples, estimates, analogous solutions, first-principles approaches,
+  supplemental artifacts, and missing component maps. None of these may
+  invent facts, authority, independent verification, or external effects.
+- A user-facing material question now requires a matching typed
+  `USER_CLARIFICATION_REQUIRED` ambiguity. Questions about runtime
+  capabilities or workspaces remain internal. An inline task pack with no
+  external source references no longer enters the impossible state where
+  project generation requires the unavailable `core.source.inspect`
+  capability.
+- Every selected action now binds an `action_intent_vector/v1`, and every
+  semantic stage exports `outcome_vector/v2`. Response admission, observable
+  process alignment, harness or capability execution, expected action output,
+  requested task output, local verification, material progress, continuation,
+  downstream use, branch contribution, invalidation, and whole-task outcome
+  remain separate tri-valued signals. A normal stop is rejected while safe
+  authorized continuation remains. The policy is bound by the owning
+  Practitioner Loop for the custom, OpenCode, Codex, Pi, and other registered
+  harness paths. An adapter cannot grade or accept its own vector.
+- A best-available resolution now assesses every registered safe method
+  exactly once and requires mapped content for every completed method. The
+  task-database campaign retains complete-source execution and evaluation as
+  one lane and sends missing-source or missing-instruction tasks through a
+  separate best-available-resolution lane that cannot enter original-task
+  success denominators.
+
 ### Fixed on 2026-09-13
 
 - The hardcoding delta gate is green again on `main`. The experiment

@@ -197,6 +197,9 @@ def record_selected_action(request: SelectedActionLineageRequest) -> dict:
            or item.get("stage_occurrence_id") == observation.occurrence_id
            for item in request.services.stage_action_links):
         raise ValueError("selected action occurrence is already recorded")
+    from .outcome_vector import ActionIntentVector
+    intent_vector = ActionIntentVector.from_decision(
+        request.action_id, admitted).to_dict()
     record = {
         "record_type": "stage_selected_action_lineage/v1",
         "stage_occurrence_id": observation.occurrence_id,
@@ -207,6 +210,8 @@ def record_selected_action(request: SelectedActionLineageRequest) -> dict:
         "action_id": request.action_id,
         "action_occurrence_ref": action_occurrence_ref,
         "action_payload_digest": payload_digest,
+        "intent_vector": intent_vector,
+        "intent_vector_digest": _digest(intent_vector),
         "experiment_ref": stage_facts.get("experiment_ref", ""),
         "trial_ref": stage_facts.get("trial_ref", ""),
         "control_manifest_ref": stage_facts.get("control_manifest_ref", ""),
@@ -294,6 +299,9 @@ def record_action_execution(request: ActionExecutionLineageRequest) -> dict:
         "plan_digest": plan_digest,
         "result_digest": result_digest,
     })
+    execution_succeeded = (
+        result_payload["result"] is not None
+        and not bool(result_payload["errors"]))
     record = {
         "record_type": "stage_action_execution_lineage/v1",
         "stage_occurrence_id": selected["stage_occurrence_id"],
@@ -303,9 +311,7 @@ def record_action_execution(request: ActionExecutionLineageRequest) -> dict:
         "capability_ref": request.capability_ref,
         "plan_digest": plan_digest,
         "result_digest": result_digest,
-        "execution_succeeded": (
-            result_payload["result"] is not None
-            and not bool(result_payload["errors"])),
+        "execution_succeeded": execution_succeeded,
         "downstream_use": True,
         "attribution_method": "DIRECT_DOWNSTREAM_CONSUMPTION",
     }
@@ -317,7 +323,9 @@ def record_action_execution(request: ActionExecutionLineageRequest) -> dict:
     )
     source = next(item for item in request.services.stage_store.observations
                   if item.occurrence_id == selected["stage_occurrence_id"])
-    request.services.stage_store.observe(source, downstream_use=True)
+    request.services.stage_store.observe(
+        source, downstream_use=True,
+        execution_succeeded=execution_succeeded)
     request.services.stage_execution_links.append(record)
     return record
 
@@ -403,9 +411,32 @@ def record_action_verification(
             local_verification = True
         elif request.verdict == REPAIR_VERDICT:
             local_verification = False
-    predicted = observe_outcome(
-        source.outcome, **({"local_verification": local_verification}
-                           if local_verification is not None else {}))
+    action_vector = request.evaluation_record.get("action_vector")
+    vector_signals = {}
+    if (isinstance(action_vector, dict)
+            and action_vector.get("record_type")
+            == "action_vector_assessment/v1"):
+        raw_signals = action_vector.get("outcome_signals")
+        if not isinstance(raw_signals, dict):
+            raise ValueError("action vector assessment has no outcome signals")
+        admitted_names = {
+            "observable_process_aligned", "expected_output_satisfied",
+            "requested_output_satisfied", "material_progress",
+            "continuation_available"}
+        if set(raw_signals) != admitted_names or any(
+                value is not None and not isinstance(value, bool)
+                for value in raw_signals.values()):
+            raise ValueError("action vector outcome signals are malformed")
+        vector_signals = {
+            name: value for name, value in raw_signals.items()
+            if value is not None}
+    outcome_signals = {
+        "execution_succeeded": execution["execution_succeeded"],
+        **vector_signals,
+        **({"local_verification": local_verification}
+           if local_verification is not None else {}),
+    }
+    predicted = observe_outcome(source.outcome, **outcome_signals)
     evaluation_digest = _digest(request.evaluation_record)
     verification_ref = "action-verification:sha256:" + _digest({
         "execution_ref": request.execution_ref,
@@ -429,6 +460,9 @@ def record_action_verification(
             request.semantic_verification_observed),
         "evaluation_record_digest": evaluation_digest,
         "local_verification": local_verification,
+        "action_vector_assessment_digest": (
+            _digest(action_vector) if vector_signals else ""),
+        "observed_outcome_signals": outcome_signals,
         "outcome_after_verification": predicted.to_dict(),
         "attribution_method": (
             "DIRECT_LOCAL_VERIFIER"
@@ -437,9 +471,8 @@ def record_action_verification(
         "verifier_independence": "same_practitioner_model_path",
     }
     _event(request.services, request.owner_loop, "stage_action_outcome_linked", record)
-    if local_verification is not None:
-        request.services.stage_store.observe(
-            source, local_verification=local_verification)
+    if outcome_signals:
+        request.services.stage_store.observe(source, **outcome_signals)
     request.services.stage_outcome_links.append(record)
     return record
 
@@ -480,6 +513,17 @@ def _try_verification(services, plan, results, evaluation) -> None:
 
 def stage_lineage_summary(services: object) -> dict:
     """Project passive stage and action-lineage records for a product result."""
+    vectors = []
+    for item in services.stage_store.observations:
+        facts = services.stage_arms.get(item.occurrence_id, {})
+        vectors.append({
+            "record_type": "stage_outcome_vector_projection/v1",
+            "stage_occurrence_id": item.occurrence_id,
+            "semantic_call_id": item.semantic_call_id,
+            "pass_number": item.pass_number,
+            "cognitive_phase": str(facts.get("cognitive_phase") or ""),
+            "outcome_vector": item.outcome.to_dict(),
+        })
     return {
         "stages": services.stage_store.to_dict(),
         "stage_arms": dict(services.stage_arms),
@@ -489,6 +533,7 @@ def stage_lineage_summary(services: object) -> dict:
         "stage_outcome_links": list(services.stage_outcome_links),
         "stage_attribution_events": list(services.stage_attribution_events),
         "stage_evidence_degradations": list(services.stage_evidence_degradations),
+        "stage_outcome_vectors": vectors,
     }
 
 
@@ -543,9 +588,22 @@ def self_test() -> dict[str, object]:
             **exposure,
             "disposition": "USE",
         }
-        payload = {"action_kind": "BUILD", "goal": "build"}
+        payload = {
+            "action_kind": "BUILD", "goal": "build the checked result",
+            "expected_output": "one checked result",
+            "verification": "compare the result with its declared contract",
+            "budget": {"estimated_cost": 1.0, "risk": 0.1,
+                       "reversibility": 1.0},
+            "dependencies": [], "fallback": {"action_kind": "REPAIR"},
+        }
         action_id = "action:" + _digest(payload)[:20]
-        admitted = SimpleNamespace(to_dict=lambda: dict(payload))
+        admitted = SimpleNamespace(
+            goal=payload["goal"],
+            expected_output=payload["expected_output"],
+            verification=payload["verification"],
+            budget=tuple(sorted(payload["budget"].items())),
+            dependencies=(), fallback=tuple(sorted(payload["fallback"].items())),
+            to_dict=lambda: dict(payload))
         services = SimpleNamespace(
             run_id="lineage-fixture", active_pass_number=1,
             request=SimpleNamespace(
@@ -609,6 +667,16 @@ def self_test() -> dict[str, object]:
             "verifier_semantic_call_id": verifier.semantic_call_id,
             "semantic_verification_observed": observed,
             "deterministic_checks_passed": deterministic,
+            "action_vector": {
+                "record_type": "action_vector_assessment/v1",
+                "outcome_signals": {
+                    "observable_process_aligned": True,
+                    "expected_output_satisfied": True,
+                    "requested_output_satisfied": True,
+                    "material_progress": True,
+                    "continuation_available": False,
+                },
+            },
         }
         _append_verification_record(services, evaluation, owner)
         return record_action_verification(ActionVerificationLineageRequest(
@@ -638,10 +706,19 @@ def self_test() -> dict[str, object]:
         "passed": bool(selected["action_occurrence_ref"]
                        and executed["execution_ref"]
                        and verified["verification_ref"])
-        and verified["execution_ref"] == executed["execution_ref"],
+        and verified["execution_ref"] == executed["execution_ref"]
+        and selected["intent_vector"]["action_id"] == action_id
+        and selected["intent_vector_digest"]
+        == _digest(selected["intent_vector"]),
     }, {
         "test": "only_action_source_gets_direct_local_credit",
         "passed": updated.outcome.downstream_use is True
+        and updated.outcome.execution_succeeded is True
+        and updated.outcome.observable_process_aligned is True
+        and updated.outcome.expected_output_satisfied is True
+        and updated.outcome.requested_output_satisfied is True
+        and updated.outcome.material_progress is True
+        and updated.outcome.continuation_available is False
         and updated.outcome.local_verification is True
         and untouched.outcome.local_verification is None,
     }, {

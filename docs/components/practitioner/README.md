@@ -60,6 +60,25 @@ expanded procedure can both remain valid choices. Use the
 [grid search guide](../../guides/configuration-grid-search-and-optimization.md)
 for comparisons instead of assuming the shorter procedure is better.
 
+Every admitted action also produces two linked records. The
+`action_intent_vector/v1` records the intended direction, expected state
+change, check, dependencies, fallback, and decision coordinates. The
+`outcome_vector/v2` records what was actually observed. A successful model
+response, observable process alignment, capability execution, expected action
+output, requested task output, local verification, material progress, and
+safe continuation are separate axes. An unchecked axis remains unknown.
+
+The Practitioner rejects a normal stop while the current action vector says
+that safe authorized work remains. It can continue, adjust, reframe, retrieve,
+repair, or compare another method. Declared budgets, cancellation, safety, and
+effect authority remain hard boundaries. The policy checks typed records and
+artifacts. It does not request or store private model reasoning.
+
+This policy belongs to the owning Practitioner Loop. It applies when the
+semantic work uses the custom implementation or a registered OpenCode, Codex,
+Pi, or other harness. A harness completion event cannot accept the task or
+grade its own vector.
+
 ## Ambiguity during orientation
 
 Missing text does not always require a question. The task compiler records one
@@ -89,11 +108,25 @@ ask_when_material
 
 autonomous
 ├── use a registered delegated-choice policy when safe
-└── return abstain_required when no safe policy exists
+└── complete the best available resolution when no safe policy exists
 ```
 
 Autonomous mode never waits indefinitely, but it can still end without a
 selection. Terminal abstention is preferable to invented facts or permissions.
+
+The public solver does not return that constraint as an empty product. Before
+a task-level stop, the Practitioner completes every safe reversible part and
+publishes a best-available resolution package. The package can contain a
+bounded analysis, explicit assumptions, scenario or pro forma work, labeled
+synthetic examples, estimates, analogous or first-principles approaches,
+supplemental artifacts, missing components, and useful next steps. It keeps
+those forms separate from observed facts and verified outcomes.
+
+A question is user-facing only when it is bound to a typed
+`USER_CLARIFICATION_REQUIRED` ambiguity. Questions about installed
+capabilities, workspaces, permissions already held by the runtime, or internal
+verification are resolved from runtime facts or recorded as internal
+constraints. They do not become user material questions.
 
 Templates may expose optional task feedback slots. A value supplied through a
 slot becomes structured task input. If the user supplies nothing, a permitted

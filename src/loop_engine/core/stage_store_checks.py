@@ -290,6 +290,38 @@ def run_checks() -> dict:
               == ("local_verification",)
               and back.observations[1].outcome.credit == UNKNOWN)
 
+        previous = os.path.join(folder, "previous-v2.jsonl")
+        previous_row = writing.observations[0].to_dict()
+        previous_row["record_type"] = "stage_observation/v2"
+        current_outcome = previous_row["outcome"]
+        legacy_names = (
+            "output_admitted", "local_verification", "downstream_use",
+            "branch_contribution", "later_invalidated", "task_outcome")
+        previous_row["outcome"] = {
+            "record_type": "outcome_vector/v1",
+            "credit": current_outcome["credit"],
+            "granularity": current_outcome["granularity"],
+            "known": [name for name in current_outcome["known"]
+                      if name in legacy_names],
+            "unknown": [name for name in current_outcome["unknown"]
+                        if name in legacy_names],
+            "contradictions": [
+                name for name in current_outcome["contradictions"]
+                if name in legacy_names],
+            "reading": current_outcome["reading"],
+            **{name: current_outcome[name] for name in legacy_names},
+        }
+        with open(previous, "w", encoding="utf-8") as handle:
+            handle.write(json.dumps(previous_row) + "\n")
+        migrated = StageStore(path=previous)
+        check("stage_v2_and_outcome_vector_v1_migrate_without_new_claims",
+              migrated.load() == 1
+              and migrated.observations[0].outcome.local_verification is True
+              and migrated.observations[0].outcome.observable_process_aligned
+              is None
+              and migrated.observations[0].outcome.continuation_available
+              is None)
+
         malformed = os.path.join(folder, "malformed-v2.jsonl")
         with open(malformed, "w", encoding="utf-8") as handle:
             handle.write(json.dumps({

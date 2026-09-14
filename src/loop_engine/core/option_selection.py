@@ -57,6 +57,9 @@ SELECTION_REPORT_CONTRACT = {
         "used_guidance_refs": ("record_id values from [SELECTED "
                                "INTELLIGENCE] that changed what you "
                                "returned"),
+        "used_work_function_refs": (
+            "function_ref values from [QUESTIONS].work_function_candidates "
+            "whose solving function you actually applied"),
         "wanted_but_absent": ("in your own words, anything you needed and "
                               "the portfolio did not offer"),
         "operator_gap": ("when you needed an operation this runtime has no "
@@ -128,7 +131,7 @@ def admitted_selection(value, offered: dict) -> dict:
     admitted: dict = {}
     unoffered: dict = {}
     for key in ("used_perspectives", "used_question_refs",
-                "used_guidance_refs"):
+                "used_guidance_refs", "used_work_function_refs"):
         reported = _named(value.get(key))
         available = set(offered.get(key) or ())
         admitted[key] = [item for item in reported if item in available]
@@ -195,6 +198,7 @@ class SelectionTally:
     perspectives: dict = field(default_factory=dict)
     question_refs: dict = field(default_factory=dict)
     guidance_refs: dict = field(default_factory=dict)
+    work_function_refs: dict = field(default_factory=dict)
     steps_reported: dict = field(default_factory=dict)
     steps_offered: dict = field(default_factory=dict)
     wanted_but_absent: list = field(default_factory=list)
@@ -222,7 +226,9 @@ class SelectionTally:
         counted = False
         for key, target in (("used_perspectives", self.perspectives),
                             ("used_question_refs", self.question_refs),
-                            ("used_guidance_refs", self.guidance_refs)):
+                            ("used_guidance_refs", self.guidance_refs),
+                            ("used_work_function_refs",
+                             self.work_function_refs)):
             for item in selection.get(key) or ():
                 target[item] = target.get(item, 0) + 1
                 counted = True
@@ -257,6 +263,8 @@ class SelectionTally:
             "perspectives": dict(sorted(self.perspectives.items())),
             "question_refs": dict(sorted(self.question_refs.items())),
             "guidance_refs": dict(sorted(self.guidance_refs.items())),
+            "work_function_refs": dict(sorted(
+                self.work_function_refs.items())),
             "steps_reported": dict(sorted(self.steps_reported.items())),
             "steps_offered": dict(sorted(self.steps_offered.items())),
             "wanted_but_absent": list(self.wanted_but_absent),
@@ -279,11 +287,13 @@ def self_test() -> dict:
         "used_perspectives": ["core.persona.adversary", "core.persona.researcher"],
         "used_question_refs": ["orient", "decide_next"],
         "used_guidance_refs": ["core.guidance.one_next_action"],
+        "used_work_function_refs": ["core.work_function.orient@1.0.0"],
     }
     admitted = admitted_selection({
         "used_perspectives": ["core.persona.adversary", "core.persona.invented"],
         "used_question_refs": ["decide_next"],
         "used_guidance_refs": [],
+        "used_work_function_refs": ["core.work_function.orient@1.0.0"],
         "wanted_but_absent": ["a perspective for cost over time"],
     }, offered)
     check("a_reported_option_the_packet_offered_is_counted",
@@ -303,7 +313,9 @@ def self_test() -> dict:
     tally.note_offered("verify")
     value = tally.to_dict()
     check("use_is_counted_per_option",
-          value["perspectives"] == {"core.persona.adversary": 1})
+          value["perspectives"] == {"core.persona.adversary": 1}
+          and value["work_function_refs"]
+          == {"core.work_function.orient@1.0.0": 1})
     check("a_step_that_called_without_reporting_is_still_visible",
           value["steps_offered"] == {"orient": 1, "verify": 1}
           and value["steps_reported"] == {"orient": 1},

@@ -39,6 +39,7 @@ from .adaptive_practitioner_project import (
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 from .source_role_orientation import orient_source_roles
 from .action_fence import ActionFenceLedger
+from .outcome_vector import ActionIntentVector, DEFAULT_OUTCOME_VECTOR_POLICY
 from .capability_rejection import (CapabilityRejection,
                                    rejection_from_exception)
 
@@ -82,6 +83,8 @@ def build_action_canvas_candidate(
             "note": "control action requires no executable capability graph",
         }
     capability_ref = decision.required_capabilities[0]
+    intent_vector = ActionIntentVector.from_decision(
+        decision_id, decision).to_dict()
     spec = SolutionSpec(
         f"adaptive.candidate.{decision_id.replace(':', '_')}",
         permitted_loop_modes=("deterministic",),
@@ -90,7 +93,11 @@ def build_action_canvas_candidate(
             input_role="next_action_decision/v1",
             output_role="capability_result/v1",
             params={"action_kind": decision.action_kind,
-                    "verification": decision.verification}),))
+                    "expected_output": decision.expected_output,
+                    "verification": decision.verification,
+                    "action_intent_vector": intent_vector,
+                    "outcome_vector_policy":
+                        DEFAULT_OUTCOME_VECTOR_POLICY.to_dict()}),))
     return {
         "record_type": "solution_canvas_candidate/v1",
         "candidate_id": f"canvas:{decision_id}",

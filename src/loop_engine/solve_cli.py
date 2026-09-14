@@ -396,9 +396,21 @@ def run_solve(args) -> int:
             lines = [
                 value["terminal_code"],
                 value["summary"],
-                "",
-                "Artifacts:",
             ]
+            resolution = value.get("result") or {}
+            if (isinstance(resolution, dict)
+                    and resolution.get("record_type")
+                    == "task_resolution_package/v1"):
+                lines.extend(("", str(resolution.get("report") or "").rstrip()))
+                provisional = resolution.get("provisional_outputs") or ()
+                if provisional:
+                    lines.extend(("", "Provisional outputs:"))
+                    for item in provisional:
+                        lines.extend((
+                            "",
+                            f"Output: {item.get('path') or 'unnamed output'}",
+                            str(item.get("content") or "")))
+            lines.extend(("", "Artifacts:"))
             artifacts = value["artifacts"]
             lines.extend(
                 f"  {item['path']} ({'verified' if item.get('verified') else 'unverified'})"
@@ -421,7 +433,7 @@ def run_solve(args) -> int:
                 f"Tool calls: {value['tool_calls']}",
             ])
             if value.get("questions"):
-                lines.extend(("", "Material questions:"))
+                lines.extend(("", "Questions that could improve the result:"))
                 lines.extend(
                     f"  [{item['answer_slot']}] {item['question']}"
                     for item in value["questions"])

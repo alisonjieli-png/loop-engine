@@ -1,11 +1,11 @@
-"""Answerable material questions: the screen before a run blocks on a person.
+"""Answerable material questions that may improve a returned resolution.
 
 Architectural role: the deterministic check between a model-written
-orientation and the BLOCKED_MATERIAL_INPUT terminal. A run may pause for a
-person only on text a person can answer: it must be phrased as a question and
-must not be one of the closed set of ways a model says "no question here".
-Entries that fail the screen are kept as recorded limitations, never
-silently dropped, and never become a blocking terminal.
+orientation and the public result. A question may be offered to a person only
+when it is answerable and the solve runtime binds it to a typed user
+clarification. It must be phrased as a question and must not be one of the
+closed set of ways a model says "no question here". Entries that fail the
+screen are kept as recorded limitations and never become user questions.
 
 Why it exists: a live run ended BLOCKED_MATERIAL_INPUT on the entry "None for
 this orientation step; the task is sufficiently specified..." after 73 model

@@ -1,0 +1,306 @@
+record_type: practitioner_work_function_catalog/v1
+catalog_id: core.work_functions.practitioner.general
+version: 1.0.0
+inventory_policy: open_ended
+proposal_channel: selection_report.wanted_but_absent
+functions:
+  - function_id: core.work_function.orient_and_represent
+    version: 1.0.0
+    family: orientation_and_framing
+    processing_visibility: observable_explicit
+    realization_kind: prompt_guidance
+    purpose: Preserve the request and construct a usable representation of the current and desired states.
+    step_affinities: [orient, standardize_task, reconcile_horizon]
+    thinking_methods: [decomposition, gap_analysis, constraint_analysis]
+    question_families: [direct, decomposition, missing_items]
+    instructions:
+      - Identify the requested outcome, consumer, inputs, constraints, unknowns, and proof of completion.
+      - Keep the original task separate from its current interpretation.
+    context_requirements: [original task, current governed state, supplied input inventory]
+    expected_observations: [typed orientation, explicit current and desired states]
+    evaluation_checks: [goal preservation, input and output coverage, constraint preservation]
+  - function_id: core.work_function.frame_alternatives
+    version: 1.0.0
+    family: orientation_and_framing
+    processing_visibility: observable_explicit
+    realization_kind: prompt_guidance
+    purpose: Carry materially different interpretations until evidence separates them.
+    step_affinities: [frame_alternatives, orient, decide_next]
+    thinking_methods: [maximum_diversity, comparison, assumption_reversal]
+    question_families: [novel_alternatives, comparison, inversion]
+    instructions:
+      - State materially different readings and what each would produce.
+      - Use a cheap discriminating observation before committing when possible.
+    context_requirements: [task wording, known ambiguities, decision consumer]
+    expected_observations: [alternative framings, discriminating tests]
+    evaluation_checks: [meaningful diversity, task support, premature commitment avoidance]
+  - function_id: core.work_function.allocate_attention
+    version: 1.0.0
+    family: attention_and_selection
+    processing_visibility: mixed
+    realization_kind: context_selection
+    purpose: Select the question, evidence, risk, or dependency that deserves bounded work now.
+    step_affinities: [assess_prepare, decide_next, route]
+    thinking_methods: [information_gain, prioritization, cost_value_analysis]
+    question_families: [evidence_needed, prerequisites, ranking]
+    instructions:
+      - Compare salience, information gain, dependency position, risk, and cost.
+      - State what was considered, selected, deferred, and omitted.
+    context_requirements: [open questions, dependencies, available evidence, budgets]
+    expected_observations: [selected focus, selection reason, deferred alternatives]
+    evaluation_checks: [selection trace exists, authority preserved, high-value dependency addressed]
+  - function_id: core.work_function.acquire_missing_information
+    version: 1.0.0
+    family: information_acquisition
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Determine whether a missing item should be derived, researched, retrieved, requested, assumed, or left unknown.
+    step_affinities: [orient, assess_prepare, decide_next, diagnose_stall]
+    thinking_methods: [gap_analysis, information_gain, uncertainty_calibration]
+    question_families: [missing_items, evidence_needed, uncertainty]
+    instructions:
+      - Classify each missing item by how it can be resolved and who owns the answer.
+      - Retrieve or research before asking the user when the runtime can answer safely.
+    context_requirements: [missing-item inventory, source catalog, capability inventory, authority]
+    expected_observations: [typed missing-item dispositions, selected acquisition action]
+    evaluation_checks: [user-only questions are justified, runtime questions stay internal, unknown remains unknown]
+  - function_id: core.work_function.retrieve_memory_and_prior_work
+    version: 1.0.0
+    family: memory_pattern_and_habit
+    processing_visibility: mixed
+    realization_kind: context_selection
+    purpose: Retrieve relevant reviewed context, procedures, prior attempts, failures, and solutions without treating similarity as authority.
+    step_affinities: [assess_prepare, how, diagnose_stall, propose_recovery]
+    thinking_methods: [analogy, best_practices, failure_analysis]
+    question_families: [analogy, best_practices, failure_recovery]
+    instructions:
+      - Search by the current task and failure conditions, then load only selected material.
+      - State applicability differences and never infer promotion from retrieval.
+    context_requirements: [task fingerprint, intelligence references, prior outcome summaries]
+    expected_observations: [considered references, selected references, applicability findings]
+    evaluation_checks: [source identity retained, lifecycle respected, negative transfer considered]
+  - function_id: core.work_function.recognize_patterns_and_analogies
+    version: 1.0.0
+    family: memory_pattern_and_habit
+    processing_visibility: configured_implicit
+    realization_kind: prompt_guidance
+    purpose: Use learned pattern recognition and analogy as candidate generation while keeping the supporting comparison explicit.
+    step_affinities: [orient, assess_prepare, decide_next, how]
+    thinking_methods: [analogy, exploration, maximum_diversity]
+    question_families: [analogy, comparison, novel_alternatives]
+    instructions:
+      - Generate candidate patterns or analogies, then state their shared structure and material differences.
+      - Treat implicit pattern use as configured behavior, not observable proof of hidden computation.
+    context_requirements: [current structure, selected prior cases, contradiction evidence]
+    expected_observations: [candidate analogy, similarity basis, transfer limitations]
+    evaluation_checks: [analogy differences stated, no unsupported identity claim, alternative retained]
+  - function_id: core.work_function.apply_reviewed_habit
+    version: 1.0.0
+    family: memory_pattern_and_habit
+    processing_visibility: configured_implicit
+    realization_kind: reviewed_procedure
+    purpose: Apply an independently reviewed reusable procedure without re-deriving every step.
+    step_affinities: [decide_next, how, act]
+    thinking_methods: [best_practices, minimum_complexity, verification]
+    question_families: [best_practices, prerequisites, evidence_needed]
+    instructions:
+      - Check exact applicability, inputs, effects, and invalidation conditions before reuse.
+      - Fall back to fresh reasoning when the procedure's reviewed scope does not cover the task.
+    context_requirements: [procedure identity, qualification evidence, current inputs, effect policy]
+    expected_observations: [eligibility decision, exact procedure reference, fallback decision]
+    evaluation_checks: [qualified scope matches, authority matches, stale procedure refused]
+  - function_id: core.work_function.reason_from_first_principles
+    version: 1.0.0
+    family: reasoning_and_modeling
+    processing_visibility: observable_explicit
+    realization_kind: prompt_guidance
+    purpose: Derive a solution from invariants, constraints, definitions, and causal mechanisms.
+    step_affinities: [frame_alternatives, assess_prepare, how, propose_recovery]
+    thinking_methods: [first_principles, decomposition, constraint_analysis]
+    question_families: [first_principles, decomposition, constraint_review]
+    instructions:
+      - State the irreducible constraints and derive candidate steps from them.
+      - Separate derivation from assumptions and test each dependency.
+    context_requirements: [task constraints, definitions, known mechanisms]
+    expected_observations: [invariant list, derived approach, dependency tests]
+    evaluation_checks: [derivation follows constraints, assumptions labeled, contradictions addressed]
+  - function_id: core.work_function.simulate_causes_and_counterfactuals
+    version: 1.0.0
+    family: reasoning_and_modeling
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Compare causal, counterfactual, scenario, and simulated outcomes before committing.
+    step_affinities: [frame_alternatives, forecast_outcome, how, verify]
+    thinking_methods: [causal_reasoning, counterfactual, systems_thinking]
+    question_families: [causal_reasoning, counterfactual, comparison]
+    instructions:
+      - Identify mechanisms, interventions, boundary conditions, and alternative explanations.
+      - Use a labeled simulation or scenario when direct observation is unavailable.
+    context_requirements: [candidate mechanisms, controllable variables, boundary conditions]
+    expected_observations: [scenario outcomes, causal assumptions, discriminating observations]
+    evaluation_checks: [correlation not called causation, synthetic output labeled, boundary cases included]
+  - function_id: core.work_function.estimate_and_calibrate
+    version: 1.0.0
+    family: reasoning_and_modeling
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Produce numerical estimates, ranges, sensitivities, and calibration records when exact values are unavailable.
+    step_affinities: [forecast_outcome, act, verify, calibrate]
+    thinking_methods: [statistical_reasoning, uncertainty_calibration, cost_value_analysis]
+    question_families: [calibration, uncertainty, comparison]
+    instructions:
+      - State units, basis, range, uncertainty, and sensitivity to assumptions.
+      - Compare forecasts with observed outcomes and retain the error.
+    context_requirements: [available measurements, assumptions, units, comparison baseline]
+    expected_observations: [estimate or interval, sensitivity cases, calibration difference]
+    evaluation_checks: [units valid, uncertainty not hidden, estimate distinguished from measurement]
+  - function_id: core.work_function.exercise_judgment
+    version: 1.0.0
+    family: judgment_and_decision
+    processing_visibility: mixed
+    realization_kind: prompt_guidance
+    purpose: Make a defensible delegated choice across quality, risk, cost, reversibility, and stakeholder effects.
+    step_affinities: [decide_next, adjudicate_recovery, route]
+    thinking_methods: [prioritization, cost_value_analysis, uncertainty_calibration]
+    question_families: [ranking, stakeholder_view, constraint_review]
+    instructions:
+      - State the decision criteria, hard constraints, tradeoffs, uncertainty, and tie-break rule.
+      - Do not turn a preference or confidence score into authority.
+    context_requirements: [candidate set, stakeholder needs, risks, budgets, delegated choices]
+    expected_observations: [selected option, rejected alternatives, tradeoff explanation]
+    evaluation_checks: [hard constraints preserved, uncertainty visible, decision consumer served]
+  - function_id: core.work_function.generate_creative_alternatives
+    version: 1.0.0
+    family: judgment_and_decision
+    processing_visibility: configured_implicit
+    realization_kind: prompt_guidance
+    purpose: Generate structurally different hypotheses, solutions, representations, or resource combinations.
+    step_affinities: [frame_alternatives, decide_next, propose_recovery]
+    thinking_methods: [maximum_diversity, exploration, assumption_reversal]
+    question_families: [novel_alternatives, inversion, worst_way]
+    instructions:
+      - Vary mechanisms and assumptions rather than paraphrasing one proposal.
+      - Retain useful minority alternatives until a discriminating check rejects them.
+    context_requirements: [current candidates, failed assumptions, available capabilities]
+    expected_observations: [diverse candidate set, changed assumptions, comparison plan]
+    evaluation_checks: [candidates materially differ, prohibited effects absent, baseline included]
+  - function_id: core.work_function.plan_decompose_and_coordinate
+    version: 1.0.0
+    family: planning_and_coordination
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Decompose work, bind dependencies, select serial or parallel execution, and define joins.
+    step_affinities: [standardize_task, decide_next, how]
+    thinking_methods: [decomposition, systems_thinking, prioritization]
+    question_families: [decomposition, prerequisites, ranking]
+    instructions:
+      - Give each independently governed assignment its own goal, contract, authority, and return destination.
+      - Make dependency and join conditions explicit before dispatch.
+    context_requirements: [subproblems, dependencies, capabilities, authority, budgets]
+    expected_observations: [typed plan, dependency graph, scheduling choice]
+    evaluation_checks: [no hidden dependency, ports compatible, cumulative authority preserved]
+  - function_id: core.work_function.build_and_act
+    version: 1.0.0
+    family: construction_and_action
+    processing_visibility: observable_explicit
+    realization_kind: capability
+    purpose: Create artifacts, execute tools, or change state through exact typed authority.
+    step_affinities: [how, act, integrate_commit]
+    thinking_methods: [improvement, minimum_complexity, verification]
+    question_families: [prerequisites, best_way, evidence_needed]
+    instructions:
+      - Bind exact inputs, outputs, workspace, effects, and verification before execution.
+      - Preserve partial artifacts and failures for repair without replaying uncertain effects.
+    context_requirements: [execution plan, capability contract, workspace, effect approval]
+    expected_observations: [execution result, artifact references, effect and usage records]
+    evaluation_checks: [selected capability ran, effects authorized, outputs have identities]
+  - function_id: core.work_function.observe_and_compare
+    version: 1.0.0
+    family: observation_and_measurement
+    processing_visibility: mixed
+    realization_kind: runtime_control
+    purpose: Observe actual responses, actions, artifacts, environments, and state changes and compare them with expectations.
+    step_affinities: [act, verify, calibrate, route]
+    thinking_methods: [comparison, statistical_reasoning, verification]
+    question_families: [comparison, evidence_needed, calibration]
+    instructions:
+      - Record the expected observation before reading the actual result.
+      - Keep unavailable, unexpected-compatible, incompatible, and matched observations distinct.
+    context_requirements: [expectation identity, action result, source and state identity]
+    expected_observations: [bound observation, comparison disposition, discrepancies]
+    evaluation_checks: [input identity matches, observation available, mismatch preserved]
+  - function_id: core.work_function.verify_falsify_and_critique
+    version: 1.0.0
+    family: verification_and_critique
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Try to reject the candidate through structural, semantic, adversarial, and independent checks.
+    step_affinities: [verify, calibrate, route]
+    thinking_methods: [verification, falsification, adversarial_review, failure_first]
+    question_families: [falsification, adversarial_review, evidence_needed, premortem]
+    instructions:
+      - Test the exact subject against preserved criteria and likely counterexamples.
+      - Keep producer confidence separate from independent evidence.
+    context_requirements: [original criteria, exact subject, verifier contract, prior failures]
+    expected_observations: [criterion assessments, counterexamples, verifier disposition]
+    evaluation_checks: [all criteria covered, subject binding exact, unavailable review not passed]
+  - function_id: core.work_function.monitor_metacognition
+    version: 1.0.0
+    family: metacognition_and_recovery
+    processing_visibility: observable_explicit
+    realization_kind: runtime_control
+    purpose: Monitor goal drift, assumptions, coverage, confidence, method fit, progress, and remaining safe work.
+    step_affinities: [reconcile_horizon, verify, calibrate, route, diagnose_stall]
+    thinking_methods: [uncertainty_calibration, gap_analysis, failure_analysis]
+    question_families: [calibration, uncertainty, failure_recovery]
+    instructions:
+      - Compare the current state with the intended vector and original horizon.
+      - Identify what is unknown, contradicted, misaligned, or still safely actionable.
+    context_requirements: [action intent vector, outcome vector, task horizon, failure history]
+    expected_observations: [alignment findings, progress disposition, continuation decision]
+    evaluation_checks: [response success not confused with task success, unknown retained, stop justified]
+  - function_id: core.work_function.diagnose_and_change_strategy
+    version: 1.0.0
+    family: metacognition_and_recovery
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Diagnose why progress stopped and apply a materially different safe strategy.
+    step_affinities: [diagnose_stall, propose_recovery, adjudicate_recovery, route]
+    thinking_methods: [failure_analysis, assumption_reversal, improvement]
+    question_families: [failure_recovery, inversion, novel_alternatives]
+    instructions:
+      - Name the failed assumption, method, capability, context, or verification boundary.
+      - Propose and select a changed strategy with an expected measurable delta.
+    context_requirements: [stall signal, repeated actions, failures, available alternatives]
+    expected_observations: [failure diagnosis, changed-strategy proposals, applied directive]
+    evaluation_checks: [strategy materially changes, repeated failure forbidden, next delta measurable]
+  - function_id: core.work_function.complete_best_available_resolution
+    version: 1.0.0
+    family: learning_and_communication
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Complete every safe useful part and communicate exact limitations when the requested outcome is not verified.
+    step_affinities: [orient, decide_next, act, verify, route]
+    thinking_methods: [gap_analysis, first_principles, analogy, uncertainty_calibration]
+    question_families: [missing_items, first_principles, analogy, uncertainty]
+    instructions:
+      - Assess evidence analysis, missing pieces, assumptions, scenarios, estimates, analogy, first principles, synthetic material, supplemental items, and next actions.
+      - Label every method completed, not applicable, unavailable, authority-required, or resource-exhausted.
+    context_requirements: [all available work, missing inventory, resolution method contract]
+    expected_observations: [complete method coverage, useful returned material, exact limitations]
+    evaluation_checks: [at least one useful method completed, no false completion, no fabricated authority]
+  - function_id: core.work_function.communicate_and_prepare_reuse
+    version: 1.0.0
+    family: learning_and_communication
+    processing_visibility: observable_explicit
+    realization_kind: mixed
+    purpose: Deliver a usable result and stage verified lessons or procedures for independent review.
+    step_affinities: [integrate_commit, route]
+    thinking_methods: [outline_to_detail, improvement, best_practices]
+    question_families: [outline_to_detail, top_improvements, best_practices]
+    instructions:
+      - Shape the result for its consumer and include evidence, assumptions, limitations, and next actions.
+      - Keep task-local learning candidate-only until independent review and promotion.
+    context_requirements: [consumer contract, accepted state, provenance, lifecycle policy]
+    expected_observations: [delivered response, exact output references, staged learning candidate]
+    evaluation_checks: [consumer can use result, provenance retained, producer does not self-promote]

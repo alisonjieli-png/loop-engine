@@ -18,7 +18,10 @@ if TYPE_CHECKING:
 
 PRODUCT_OUTCOME_FILENAME = "outcome.json"
 SOLVE_OUTCOME_V5 = "solve_outcome/v5"
-PRODUCT_OUTCOME_RECORD_TYPES = ("solve_outcome/v3", "solve_outcome/v4", SOLVE_OUTCOME_V5)
+SOLVE_OUTCOME_V6 = "solve_outcome/v6"
+PRODUCT_OUTCOME_RECORD_TYPES = (
+    "solve_outcome/v3", "solve_outcome/v4", SOLVE_OUTCOME_V5,
+    SOLVE_OUTCOME_V6)
 
 
 @dataclass(frozen=True)
@@ -144,16 +147,24 @@ def _validate_product_outcome(value: Mapping, run_id: str) -> dict:
             or not isinstance(body.get("artifacts"), list)
             or not isinstance(body.get("verification"), dict)):
         raise _error("saved product outcome violates its solve outcome contract")
-    if (body.get("record_type") in ("solve_outcome/v4", "solve_outcome/v5")
+    if (body.get("record_type") in (
+            "solve_outcome/v4", SOLVE_OUTCOME_V5, SOLVE_OUTCOME_V6)
             and not isinstance(body.get("questions"), list)):
-        raise _error("solve_outcome/v4 and v5 questions must be a list")
-    if body.get("record_type") == "solve_outcome/v5":
+        raise _error("versioned solve outcome questions must be a list")
+    if body.get("record_type") in (SOLVE_OUTCOME_V5, SOLVE_OUTCOME_V6):
         try:
             ProductModelCallAccounting(
                 body["model_calls"], body["model_call_accounting_complete"],
                 body["model_calls_known_subtotal"])
         except (KeyError, ValueError) as exc:
-            raise _error("solve_outcome/v5 model call accounting is invalid") from exc
+            raise _error("solve outcome model call accounting is invalid") from exc
+    if body.get("record_type") == SOLVE_OUTCOME_V6:
+        if (not isinstance(body.get("stage_vectors"), list)
+                or not isinstance(body.get("action_vectors"), list)
+                or any(not isinstance(item, dict)
+                       for item in (*body["stage_vectors"],
+                                    *body["action_vectors"]))):
+            raise _error("solve_outcome/v6 vector projections are invalid")
     return body
 
 

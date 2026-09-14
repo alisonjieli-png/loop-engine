@@ -40,6 +40,8 @@ def self_test() -> dict:
         "_conformance_test", "_conformance_scan",
         "conformance_report",
         "core.facets", "core.api_quality", "core.model_response_text",
+        "core.action_vector_assessment", "core.action_vector_routing",
+        "core.adaptive_practitioner_routing",
         "core.action_fence", "core.capability_rejection",
         "core.practitioner_runtime_facts",
         "core.source_role_orientation",

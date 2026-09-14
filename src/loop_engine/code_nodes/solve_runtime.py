@@ -1,7 +1,8 @@
-"""Canonical task intake, compilation, execution, verification, and history.
+"""Canonical task intake, execution, resolution, verification, and history.
 
 The Starting Practitioner owns intelligence queries and the selected Solution
-graph. Unknown work returns a typed failure instead of placeholder success.
+graph. An unverified requested outcome returns a complete best-available
+resolution package instead of an empty blocker or placeholder success.
 """
 from __future__ import annotations
 
@@ -36,7 +37,13 @@ from .solve_request_adaptation import (
     outcome_model_call_accounting,
     stage_assistance_summary,
 )
-from .solve_terminal import SOLVE_FAILURE_CODES, SolveTerminalCode, failure_code_for
+from .solve_terminal import (
+    SOLVE_FAILURE_CODES,
+    SolveTerminalCode,
+    build_task_resolution_package,
+    failure_code_for,
+    terminal_with_resolution,
+)
 
 #: The modes a solve may run in, named once. The first is also what a run
 #: becomes when there is no model execution to call, which is why it is
@@ -51,7 +58,7 @@ class SolveError(ValueError):
 
 @dataclass(frozen=True)
 class MaterialQuestion:
-    """One material clarification the Practitioner needs before continuing."""
+    """One typed clarification that can improve a later resolution revision."""
 
     question_id: str
     question: str
@@ -229,6 +236,8 @@ class SolveOutcome:
     elapsed_seconds: float = 0.0
     model_usage: tuple[dict, ...] = ()
     reuse_observation: dict = field(default_factory=dict)
+    stage_vectors: tuple[dict, ...] = ()
+    action_vectors: tuple[dict, ...] = ()
     model_call_accounting_complete: bool | None = None
     model_calls_known_subtotal: int | None = None
 
@@ -242,13 +251,32 @@ class SolveOutcome:
             raise SolveError(f"unknown solve failure code {self.failure_code!r}")
         if self.solved and self.failure_code:
             raise SolveError("a solved outcome cannot carry a failure code")
+        if self.solved and self.status != SolveTerminalCode.COMPLETED_VERIFIED.value:
+            raise SolveError("a solved outcome requires COMPLETED_VERIFIED")
+        if self.status == SolveTerminalCode.COMPLETED_PARTIAL.value:
+            if (not isinstance(self.result, dict)
+                    or self.result.get("record_type")
+                    != "task_resolution_package/v1"
+                    or self.result.get("response_complete") is not True
+                    or self.result.get("resolution_status") != "COMPLETE"
+                    or self.result.get("requested_outcome_verified") is not False):
+                raise SolveError(
+                    "COMPLETED_PARTIAL requires a complete best-available "
+                    "resolution without a requested-outcome success claim")
         if any(not isinstance(item, MaterialQuestion)
                for item in self.questions):
             raise SolveError("questions must contain MaterialQuestion values")
-        if self.questions and self.status != \
-                SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value:
+        for name in ("stage_vectors", "action_vectors"):
+            values = tuple(getattr(self, name))
+            if any(not isinstance(item, dict) for item in values):
+                raise SolveError(f"{name} must contain record mappings")
+            object.__setattr__(self, name, values)
+        if self.questions and self.status not in (
+                SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value,
+                SolveTerminalCode.COMPLETED_PARTIAL.value):
             raise SolveError(
-                "material questions require BLOCKED_MATERIAL_INPUT")
+                "material questions require a blocked legacy outcome or a "
+                "completed best-available resolution")
         if (self.status == SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
                 and not self.questions):
             raise SolveError(
@@ -256,7 +284,7 @@ class SolveOutcome:
 
     def to_dict(self) -> dict:
         return {
-            "record_type": "solve_outcome/v5", "run_id": self.run_id,
+            "record_type": "solve_outcome/v6", "run_id": self.run_id,
             "terminal_code": self.status, "status": self.status,
             "solved": self.solved, "summary": self.summary,
             "failure_code": self.failure_code, "result": self.result,
@@ -282,6 +310,8 @@ class SolveOutcome:
             "loop_count": self.loop_count,
             "elapsed_seconds": self.elapsed_seconds,
             "model_usage": list(self.model_usage),
+            "stage_vectors": list(self.stage_vectors),
+            "action_vectors": list(self.action_vectors),
         }
 
 
@@ -351,7 +381,7 @@ def _question_slot(subject: str, index: int) -> str:
 
 
 def _material_questions(result: dict) -> tuple[MaterialQuestion, ...]:
-    """Project the latest accepted orientation into answerable questions."""
+    """Project only typed user-answerable uncertainty into questions."""
     orientations = tuple(result.get("orientations") or ())
     if not orientations:
         return ()
@@ -361,14 +391,23 @@ def _material_questions(result: dict) -> tuple[MaterialQuestion, ...]:
     # so a model writing "None for this step" never blocks the run.
     raw_questions, screened_out = screen_material_questions(
         latest.get("blocking_questions", ()))
-    if screened_out:
-        result.setdefault("screened_material_questions", list(screened_out))
     if not raw_questions:
+        if screened_out:
+            result.setdefault("screened_material_questions", list(screened_out))
         return ()
     ambiguities = [
         item for item in latest.get("ambiguities", ())
         if isinstance(item, dict) and item.get("state")
-        in ("USER_CLARIFICATION_REQUIRED", "BLOCKED")]
+        == "USER_CLARIFICATION_REQUIRED"]
+    screened = list(screened_out)
+    if not ambiguities:
+        screened.extend({
+            "entry": question[:300],
+            "reason": (
+                "no USER_CLARIFICATION_REQUIRED ambiguity binds this question"),
+        } for question in raw_questions)
+        result.setdefault("screened_material_questions", screened)
+        return ()
     output = []
     used_slots = set()
     for index, question in enumerate(raw_questions):
@@ -377,7 +416,15 @@ def _material_questions(result: dict) -> tuple[MaterialQuestion, ...]:
             item for item in ambiguities
             if question_terms & set(re.findall(
                 r"[a-z0-9]{4,}", str(item.get("subject") or "").lower()))
-        ), ambiguities[index] if index < len(ambiguities) else {})
+        ), (ambiguities[index]
+            if len(raw_questions) == len(ambiguities)
+            and index < len(ambiguities) else None))
+        if matched is None:
+            screened.append({
+                "entry": question[:300],
+                "reason": "question has no matching user-clarification subject",
+            })
+            continue
         subject = str(matched.get("subject") or f"material input {index + 1}")
         reason = str(matched.get("reason") or
                      "The answer can materially change the work or result.")
@@ -393,6 +440,8 @@ def _material_questions(result: dict) -> tuple[MaterialQuestion, ...]:
             sort_keys=True, separators=(",", ":")).encode()).hexdigest()[:20]
         output.append(MaterialQuestion(
             question_id, question, subject, slot, reason))
+    if screened:
+        result.setdefault("screened_material_questions", screened)
     return tuple(output)
 
 
@@ -415,6 +464,43 @@ def _model_usage(adaptive: dict) -> tuple[dict, ...]:
     return tuple(adaptive.get("model_usage") or ())
 
 
+def _action_vectors(adaptive: dict) -> tuple[dict, ...]:
+    """Join intended and observed vectors for exact selected action occurrences."""
+    decisions = {
+        str(item.get("decision_id") or ""): item
+        for item in adaptive.get("action_decisions") or ()
+        if isinstance(item, dict) and item.get("decision_id")}
+    executions = {
+        str(item.get("action_occurrence_ref") or ""): item
+        for item in adaptive.get("stage_execution_links") or ()
+        if isinstance(item, dict) and item.get("action_occurrence_ref")}
+    outcomes = {
+        str(item.get("action_occurrence_ref") or ""): item
+        for item in adaptive.get("stage_outcome_links") or ()
+        if isinstance(item, dict) and item.get("action_occurrence_ref")}
+    output = []
+    for selected in adaptive.get("stage_action_links") or ():
+        if not isinstance(selected, dict):
+            continue
+        occurrence = str(selected.get("action_occurrence_ref") or "")
+        action_id = str(selected.get("action_id") or "")
+        decision = decisions.get(action_id, {})
+        execution = executions.get(occurrence, {})
+        outcome = outcomes.get(occurrence, {})
+        output.append({
+            "record_type": "action_vector_projection/v1",
+            "action_id": action_id,
+            "action_occurrence_ref": occurrence,
+            "intent_vector": decision.get("intent_vector")
+            or selected.get("intent_vector"),
+            "execution_succeeded": execution.get("execution_succeeded"),
+            "assessment_digest": outcome.get("action_vector_assessment_digest", ""),
+            "outcome_vector": outcome.get("outcome_after_verification"),
+            "projection_is_acceptance": False,
+        })
+    return tuple(output)
+
+
 def _product_result(adaptive: dict, solved: bool) -> dict:
     from ..core.adaptive_practitioner_result import latest_task_result
     attempt = latest_task_result(adaptive)
@@ -426,6 +512,12 @@ def _product_result(adaptive: dict, solved: bool) -> dict:
             "artifacts": tuple({"artifact_ref": ref, "verified": solved}
                                for ref in attempt.get("artifact_refs", ())),
             "workspace": "", "tool_calls": len(adaptive.get("host_results", ())),
+        }
+    if attempt and attempt.get("record_type") == "task_resolution_package/v1":
+        return {
+            "result": attempt,
+            "summary": "Completed a best-available task resolution package.",
+            "artifacts": (), "workspace": "", "tool_calls": 0,
         }
     if not attempt:
         return {
@@ -533,10 +625,16 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         "host_runtime_manifest": adaptive.get("host_runtime_manifest", {}),
     }
     questions, open_questions = _terminal_questions(adaptive, solved)
-    terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved
-                else SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
-                if questions
-                else failure_code_for(adaptive))
+    existing_resolution = (
+        product.get("result")
+        if isinstance(product.get("result"), dict)
+        and product["result"].get("record_type")
+        == "task_resolution_package/v1" else None)
+    underlying_terminal = (
+        SolveTerminalCode.COMPLETED_VERIFIED.value if solved
+        else SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
+        if questions else str(existing_resolution.get("underlying_terminal"))
+        if existing_resolution else failure_code_for(adaptive))
     history = adaptive.get("run_history") or {}
     inspect = tuple(filter(None, (
         (f"loop-engine report {adaptive.get('run_id')} --runs-dir "
@@ -551,20 +649,35 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         or deterministic_trace.get("unresolved_requirements")
         or deterministic_trace.get("diagnostics")
         or ("No compatible verified capability completed the task.",))))
-    summary = ("Material input is required before work can continue."
-               if terminal == SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value
-               else product["summary"])
+    resolution_value = (None if solved else existing_resolution or
+                        build_task_resolution_package(
+                            task=request.intake.original_input,
+                            adaptive=adaptive,
+                            product=product,
+                            underlying_terminal=underlying_terminal,
+                            questions=questions,
+                            limitations=limitations,
+                            suggested_next=_next_recovery(
+                                underlying_terminal)).to_dict())
+    terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved
+                else terminal_with_resolution(underlying_terminal))
+    summary = (product["summary"] if solved else
+               "Completed a best-available resolution package. The original "
+               "requested outcome remains unverified.")
+    resolution_next = (
+        resolution_value.get("next_actions", [""])[0]
+        if resolution_value and resolution_value.get("next_actions")
+        else _next_recovery(underlying_terminal))
     outcome = SolveOutcome(
         run_id=str(adaptive.get("run_id") or ""),
         status=terminal,
         solved=solved,
-        failure_code="" if solved else terminal,
+        failure_code="" if solved else underlying_terminal,
         result=({**product["result"],
                  **({"open_questions": [
                      item.to_dict() for item in open_questions]}
-                    if open_questions else {})} if solved else {
-            "error": adaptive.get("failure") or adaptive.get("failures")
-                     or "solve did not complete"}),
+                    if open_questions else {})} if solved
+                else resolution_value),
         compiled_task=compiled,
         intelligence={
             "context": adaptive.get("context_intelligence", {}),
@@ -597,13 +710,15 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         workspace=product["workspace"], limitations=limitations,
         questions=questions,
         next_action=("Inspect the verified artifacts and Run History."
-                     if solved else _next_recovery(terminal)),
+                     if solved else resolution_next),
         inspect_commands=inspect,
         **model_call_accounting(adaptive).to_dict(),
         tool_calls=int(product["tool_calls"]),
         loop_count=len(adaptive.get("loop_details") or ()),
         elapsed_seconds=round(time.monotonic() - started, 3),
         model_usage=_model_usage(adaptive),
+        stage_vectors=tuple(adaptive.get("stage_outcome_vectors") or ()),
+        action_vectors=_action_vectors(adaptive),
         reuse_observation=dict(
             adaptive.get("reuse_observation") or {}))
     if request.save_run_history and outcome.run_id and history.get("path"):
@@ -703,6 +818,7 @@ def self_test() -> dict:
               and model.failure_code == "BUDGET_EXHAUSTED"
               and model.run_history["chain_intact"])
         from ..core.adaptive_practitioner_acceptance_checks import (
+            _action_vector,
             _decision,
             _orientation,
         )
@@ -722,9 +838,15 @@ def self_test() -> dict:
                 expected_output="One destination answer.")]},
             {"verdict": "stop", "best_index": 0, "scores": [0.0],
              "notes": "Material input is missing.",
-             "remaining_gaps": [{"criterion_ref": "criterion:destination",
+             "remaining_gaps": [{"criterion_ref": "criterion:0",
                                   "gap": "required destination"}],
-             "advisory_findings": [], "new_requirement_proposals": []},
+             "advisory_findings": [], "new_requirement_proposals": [],
+             "action_vector": _action_vector(
+                 unresolved_refs=("criterion:0",),
+                 expected_output_status="unsatisfied",
+                 progress_status="neutral",
+                 continuation_status="await_authority",
+                 remaining_work=("Obtain the required destination.",))},
             {"route": "stop_unprofitable",
              "reason": "Material input is missing."},
         ))
@@ -737,24 +859,53 @@ def self_test() -> dict:
             runs_dir=root,
             interaction_mode=InteractionMode.ASK_WHEN_MATERIAL))
         asked_bundle = load_saved_run_bundle(root, asked.run_id)
-        check("material_question_is_a_typed_answerable_terminal_result",
+        check("material_question_is_advisory_inside_a_completed_resolution",
               not asked.solved
               and asked.failure_code == "BLOCKED_MATERIAL_INPUT"
+              and asked.status == "COMPLETED_PARTIAL"
               and len(asked.questions) == 1
               and asked.questions[0].answer_slot == "required_destination"
               and asked.run_history["product_outcome_bound"] is True
               and asked.run_history["terminal_code"]
-                  == "BLOCKED_MATERIAL_INPUT"
-              and asked.to_dict()["record_type"] == "solve_outcome/v5"
+                  == "COMPLETED_PARTIAL"
+              and asked.to_dict()["record_type"] == "solve_outcome/v6"
+              and asked.result["record_type"] == "task_resolution_package/v1"
+              and asked.result["response_complete"] is True
+              and asked.result["resolution_status"] == "COMPLETE"
+              and len(asked.result["method_assessments"])
+              == len(asked.result["resolution_policy"]["method_ids"])
+              and not (isinstance(asked.result.get("best_available_result"), dict)
+                       and asked.result["best_available_result"].get(
+                           "record_type") == "task_resolution_package/v1")
               and asked_bundle.outcome["questions"][0]["answer_slot"]
                   == "required_destination",
               asked.summary)
+        internal = {"orientations": [{
+            "blocking_questions": [
+                "Does the runtime permit a direct workspace write?"],
+            "ambiguities": [{
+                "subject": "runtime capability",
+                "state": "UNKNOWN",
+                "reason": "The runtime owns this answer."}],
+        }]}
+        check("runtime_uncertainty_never_becomes_a_question_for_the_user",
+              _material_questions(internal) == ()
+              and internal["screened_material_questions"][0]["reason"]
+              == "no USER_CLARIFICATION_REQUIRED ambiguity binds this question")
         unavailable = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="invent a new theorem")),
             runs_dir=root))
         check("unavailable_executor_never_returns_solved_true",
               not unavailable.solved
-              and unavailable.failure_code == "CAPABILITY_GAP")
+              and unavailable.failure_code == "CAPABILITY_GAP"
+              and unavailable.status == "COMPLETED_PARTIAL"
+              and unavailable.result["response_complete"] is True
+              and unavailable.result["resolution_status"] == "COMPLETE"
+              and any(item["method_id"] == "next_action_plan"
+                      and item["disposition"] == "completed"
+                      for item in unavailable.result["method_assessments"])
+              and unavailable.result["fulfillment_status"]
+                  == "constraint_report_only")
         unsaved_root = str(Path(root) / "unsaved")
         unsaved = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="invent another theorem")),

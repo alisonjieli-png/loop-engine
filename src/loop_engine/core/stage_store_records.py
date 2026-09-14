@@ -11,7 +11,13 @@ import json
 import math
 import os
 
-from .outcome_vector import SIGNAL_SCOPES, OutcomeVector
+from .outcome_vector import (
+    LEGACY_OUTCOME_SIGNAL_NAMES,
+    LEGACY_OUTCOME_VECTOR_RECORD_TYPE,
+    OUTCOME_VECTOR_RECORD_TYPE,
+    SIGNAL_SCOPES,
+    OutcomeVector,
+)
 from .outcome_vector import observe as observe_outcome
 
 
@@ -70,36 +76,60 @@ def text_sequence(value, name: str) -> tuple[str, ...]:
     return items
 
 
-def outcome_from(value: dict, *, strict: bool = False) -> OutcomeVector:
-    """Restore a current vector or migrate one legacy run-level Boolean."""
+def outcome_from(value: dict, *, strict: bool = False,
+                 stage_record_type: str = "") -> OutcomeVector:
+    """Restore a current vector or migrate an earlier vector or Boolean."""
     stored = value.get("outcome")
     if isinstance(stored, dict):
+        record_type = stored.get("record_type")
+        signal_names = (
+            tuple(SIGNAL_SCOPES)
+            if record_type == OUTCOME_VECTOR_RECORD_TYPE
+            else LEGACY_OUTCOME_SIGNAL_NAMES
+            if record_type == LEGACY_OUTCOME_VECTOR_RECORD_TYPE
+            else ())
         if strict:
+            expected_outcome_type = {
+                "stage_observation/v2": LEGACY_OUTCOME_VECTOR_RECORD_TYPE,
+                "stage_observation/v3": OUTCOME_VECTOR_RECORD_TYPE,
+            }.get(stage_record_type)
+            if record_type != expected_outcome_type:
+                raise ValueError(
+                    "stage and outcome vector versions do not match")
             expected = {
                 "record_type", "credit", "granularity", "known", "unknown",
-                "contradictions", "reading", *SIGNAL_SCOPES}
-            if set(stored) != expected \
-                    or stored.get("record_type") != "outcome_vector/v1":
-                raise ValueError("v2 stage outcome fields do not match")
-        signals = {name: stored.get(name) for name in SIGNAL_SCOPES}
+                "contradictions", "reading", *signal_names}
+            if not signal_names or set(stored) != expected:
+                raise ValueError("versioned stage outcome fields do not match")
+        elif not signal_names:
+            raise ValueError("unsupported outcome vector record type")
+        signals = {name: stored.get(name) for name in signal_names}
         if any(item is not None and not isinstance(item, bool)
                for item in signals.values()):
             raise TypeError("stage outcome signals must be bool or null")
         contradictions = text_sequence(
             stored.get("contradictions", ()), "outcome contradictions")
-        if any(name not in SIGNAL_SCOPES for name in contradictions):
+        if any(name not in signal_names for name in contradictions):
             raise ValueError("outcome contradiction names an unknown signal")
         vector = OutcomeVector(**signals, contradictions=contradictions)
         if strict:
             derived = vector.to_dict()
-            for name in ("credit", "granularity", "known", "unknown",
-                         "reading"):
-                if stored.get(name) != derived[name]:
+            comparisons = {
+                "credit": derived["credit"],
+                "granularity": derived["granularity"],
+                "known": [name for name in derived["known"]
+                          if name in signal_names],
+                "unknown": [name for name in derived["unknown"]
+                            if name in signal_names],
+                "reading": derived["reading"],
+            }
+            for name, expected_value in comparisons.items():
+                if stored.get(name) != expected_value:
                     raise ValueError(
                         f"stored outcome {name} does not match its signals")
         return vector
     if strict:
-        raise ValueError("a v2 stage record needs an outcome vector")
+        raise ValueError("a versioned stage record needs an outcome vector")
     legacy = value.get("helped")
     if legacy is not None and not isinstance(legacy, bool):
         raise TypeError("legacy helped must be bool or null")
@@ -124,8 +154,8 @@ def _optional_nonnegative(value, name: str, *, integer: bool = False):
     return value
 
 
-def validate_v2_record(value: dict) -> None:
-    """Validate the exact current JSONL contract before constructing a row."""
+def _validate_versioned_record(value: dict, record_type: str) -> None:
+    """Validate the shared exact fields of a versioned stage record."""
     expected = {
         "record_type", "digest", "motif", "shape", "responsibility",
         "run_id", "occurrence_id", "observation_ref", "semantic_call_id",
@@ -134,8 +164,8 @@ def validate_v2_record(value: dict) -> None:
         "pass_number", "outcome", "helped", "gateway_calls", "model_calls",
         "elapsed_seconds", "input_tokens", "output_tokens", "usage_complete",
     }
-    if set(value) != expected:
-        raise ValueError("stage_observation/v2 fields do not match")
+    if set(value) != expected or value.get("record_type") != record_type:
+        raise ValueError(f"{record_type} fields do not match")
     required_text = ("digest", "motif", "responsibility", "occurrence_id",
                      "observation_ref")
     optional_text = ("run_id", "semantic_call_id", "owner_loop_id",
@@ -143,11 +173,11 @@ def validate_v2_record(value: dict) -> None:
                      "model_name")
     if any(not isinstance(value.get(name), str) or not value[name]
            for name in required_text):
-        raise ValueError("v2 stage identity fields need non-empty text")
+        raise ValueError("stage identity fields need non-empty text")
     if any(not isinstance(value.get(name), str) for name in optional_text):
-        raise TypeError("v2 optional stage text fields must be text")
+        raise TypeError("optional stage text fields must be text")
     if not isinstance(value.get("shape"), list):
-        raise TypeError("v2 stage shape must be a JSON list")
+        raise TypeError("stage shape must be a JSON list")
     text_sequence(value.get("model_routes"), "model_routes")
     text_sequence(value.get("model_attempt_loop_ids"),
                   "model_attempt_loop_ids")
@@ -164,6 +194,16 @@ def validate_v2_record(value: dict) -> None:
         raise TypeError("helped must be bool or null")
     if not isinstance(value.get("usage_complete"), bool):
         raise TypeError("usage_complete must be boolean")
+
+
+def validate_v2_record(value: dict) -> None:
+    """Validate the exact previous stage record before migration."""
+    _validate_versioned_record(value, "stage_observation/v2")
+
+
+def validate_v3_record(value: dict) -> None:
+    """Validate the exact current stage record before construction."""
+    _validate_versioned_record(value, "stage_observation/v3")
 
 
 def validate_legacy_record(value: dict) -> None:
@@ -200,4 +240,4 @@ __all__ = (
     "complete_sum", "hashable", "legacy_occurrence_id", "occurrence_id",
     "outcome_from", "refuses_unknown_signal", "unique_text",
     "validate_legacy_record",
-    "validate_v2_record")
+    "validate_v2_record", "validate_v3_record")

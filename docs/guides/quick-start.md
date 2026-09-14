@@ -58,12 +58,15 @@ loop-engine report @last
 loop-engine studio --port 0
 ```
 
-A successful solve returns `COMPLETED_VERIFIED`, real artifact paths, the
-workspace, verification details, and the saved Run History. A blocked result
-preserves the exact reason and recovery action.
+A verified solve returns `COMPLETED_VERIFIED`, real artifact paths, the
+workspace, verification details, and the saved Run History. An unverified
+task-level outcome returns `COMPLETED_PARTIAL` with a complete best-available
+resolution. The resolution preserves useful work, the exact remaining
+constraint, assumptions, provisional outputs, missing pieces, alternatives,
+and recovery actions.
 
-`BLOCKED_MATERIAL_INPUT` includes answer slots. Rerun the same task with
-`--task-feedback 'answer_slot=value'`; feedback remains separate from the
-immutable original task.
+Typed user questions include answer slots inside that resolution. Rerun the
+same task with `--task-feedback 'answer_slot=value'`; feedback remains
+separate from the immutable original task.
 
 `loop-engine task build` only structures a task. It does not perform the work.

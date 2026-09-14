@@ -28,6 +28,12 @@ from .harness_model_authority import (
     HarnessBudget, HarnessError, HarnessModelIdentity, ModelOutputLimit,
     _validate_allocation_capacity,
 )
+from .outcome_vector import (
+    DEFAULT_OUTCOME_VECTOR_POLICY,
+    OutcomeVector,
+    OutcomeVectorPolicy,
+)
+from .outcome_vector import observe as observe_outcome
 
 if TYPE_CHECKING:
     from .context_artifacts import ContextArtifactManager
@@ -74,6 +80,7 @@ class HarnessRunRequest:
     metadata: Mapping[str, object] = field(default_factory=dict)
     execution_requirements: HarnessExecutionRequirements = field(
         default_factory=HarnessExecutionRequirements)
+    outcome_vector_policy: OutcomeVectorPolicy = DEFAULT_OUTCOME_VECTOR_POLICY
     authorized_model_identities: tuple[HarnessModelIdentity, ...] = ()
 
     def __post_init__(self) -> None:
@@ -82,6 +89,8 @@ class HarnessRunRequest:
             raise HarnessError("harness_id must be a bounded registered-adapter identifier")
         if not isinstance(self.execution_requirements, HarnessExecutionRequirements):
             raise HarnessError("typed harness execution requirements are required")
+        if not isinstance(self.outcome_vector_policy, OutcomeVectorPolicy):
+            raise HarnessError("typed outcome vector policy is required")
         if self.mode not in HARNESS_MODES:
             raise HarnessError(
                 "external LLM harnesses run only in hybrid or "
@@ -154,7 +163,7 @@ class HarnessRunRequest:
     @property
     def digest(self) -> str:
         safe = {
-            "record_type": "harness_request_identity/v2",
+            "record_type": "harness_request_identity/v3",
             "request_id": self.request_id,
             "harness_id": self.harness_id,
             "goal": self.goal,
@@ -176,6 +185,7 @@ class HarnessRunRequest:
             "input_data": plain_harness_json(self.input_data),
             "metadata": plain_harness_json(self.metadata),
             "execution_requirements": self.execution_requirements.to_dict(),
+            "outcome_vector_policy": self.outcome_vector_policy.to_dict(),
             "authorized_model_identities": [asdict(item) for item in self.authorized_model_identities],
         }
         return hashlib.sha256(json.dumps(
@@ -282,6 +292,7 @@ class HarnessRunResult:
     prompt_slot_schema_digest: str = ""
     prompt_render_digest: str = ""
     capability_evaluation: dict = field(default_factory=dict)
+    outcome_vector: OutcomeVector = field(default_factory=OutcomeVector)
     #: Bounded "<Type>: <message>" of the exception behind an adapter
     #: failure, mirroring ReactiveWorkerOutcome.underlying_error. The
     #: stable error_code stays machine-readable; this names the real
@@ -303,6 +314,8 @@ class HarnessRunResult:
         self.tool_events = tuple(self.tool_events)
         self.artifacts = tuple(self.artifacts)
         self.spawned_task_ids = tuple(self.spawned_task_ids)
+        if not isinstance(self.outcome_vector, OutcomeVector):
+            raise HarnessError("harness result outcome_vector must be typed")
         if (type(self.call_count_complete) is not bool or any(value is not None
                 and not valid_number(value, integer=True) for value in (
                     self.reported_model_call_count, self.aggregate_input_tokens, self.aggregate_output_tokens))
@@ -353,7 +366,7 @@ class HarnessRunResult:
 
     def safe_summary(self) -> dict:
         return {
-            "record_type": "external_harness_result/v2",
+            "record_type": "external_harness_result/v3",
             "request_id": self.request_id,
             "harness_id": self.harness_id,
             "status": self.status,
@@ -394,6 +407,7 @@ class HarnessRunResult:
                 if self.underlying_error else ""),
             "budget_assessment": "post_run_acceptance_not_preemptive_enforcement",
             "capability_evaluation": self.capability_evaluation,
+            "outcome_vector": self.outcome_vector.to_dict(),
         }
 
 
@@ -683,6 +697,9 @@ def run_external_harness(
             raise HarnessError("adapter changed model_id")
         if result.adapter_version and result.adapter_version != info.adapter_version:
             raise HarnessError("adapter changed its execution version")
+        if result.outcome_vector.known:
+            raise HarnessError(
+                "an external harness adapter cannot grade its own outcome vector")
         result.provider_id = request.provider_id
         result.model_id = request.model_id
         result.error_code = safe_harness_error_code(result.error_code)
@@ -701,7 +718,15 @@ def run_external_harness(
             "satisfied": True, "requirements": request.execution_requirements.to_dict(),
             "declared": (info.execution_capabilities.to_dict()
                          if info.execution_capabilities is not None else None),
-            "independent_qualification": "not_established_by_declaration"}
+            "independent_qualification": "not_established_by_declaration",
+            "outcome_vector_policy": {
+                "policy_id": request.outcome_vector_policy.policy_id,
+                "version": request.outcome_vector_policy.version,
+                "content_digest": hashlib.sha256(json.dumps(
+                    request.outcome_vector_policy.to_dict(), sort_keys=True,
+                    separators=(",", ":")).encode("utf-8")).hexdigest(),
+                "adapter_may_self_accept": False,
+            }}
         try:
             _capture_harness_output(result, active_services.artifact_store)
         except Exception:
@@ -718,6 +743,8 @@ def run_external_harness(
             result.status = "budget_exhausted"
             result.error_code = exceeded
             result.error = "external harness exceeded a post-run acceptance bound"
+        result.outcome_vector = observe_outcome(
+            result.outcome_vector, execution_succeeded=result.completed)
         holder["result"] = result
         for call in result.model_calls:
             if call.gateway_loop_id:

@@ -12,7 +12,8 @@ from types import SimpleNamespace
 from .adaptive_practitioner import run_adaptive_practitioner
 from .adaptive_practitioner_records import (
     AdaptivePractitionerDependencies, AdaptivePractitionerRequest,
-    NextActionDecision)
+    NextActionDecision, TaskOrientationResult)
+from .adaptive_practitioner_orientation import orientation_policy_findings
 from .adaptive_practitioner_recovery import (
     RecoveryPanelRequest, resolve_stall_with_panel)
 from .adaptive_practitioner_supervision import detect_stall
@@ -21,6 +22,7 @@ from ..loop.kernel import PractitionerState, ProblemSpec
 
 def run_checks() -> dict:
     """Prove one engine handles paraphrased and unrelated tasks."""
+    from .adaptive_practitioner_acceptance_checks import _action_vector
     from ..code_nodes.solution_model_port import (
         FixtureModelExecutionRequest, fixture_model_execution)
 
@@ -88,7 +90,8 @@ def run_checks() -> dict:
     verification = json.dumps({
         "verdict": "accept", "best_index": 0, "scores": [1.0],
         "notes": "Deterministic checks passed.", "remaining_gaps": [],
-        "advisory_findings": [], "new_requirement_proposals": []})
+        "advisory_findings": [], "new_requirement_proposals": [],
+        "action_vector": _action_vector()})
     route = json.dumps({
         "route": "stop_success", "reason": "Requested output is verified."})
 
@@ -141,6 +144,29 @@ def run_checks() -> dict:
                 and len(result["loop_details"]) >= 7,
                 "detail": result["run_id"],
             })
+    with tempfile.TemporaryDirectory() as root:
+        execution = fixture_model_execution(FixtureModelExecutionRequest(
+            answers=(orientation, decision, how, candidate,
+                     generated_file, verification, route),
+            max_model_calls=7))
+        inline_pack = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "Create the report from the attachment text captured here.",
+                mode="non_deterministic", runs_dir=root, max_passes=1,
+                source_kind="task_pack", source_refs=(),
+                allow_source_materialization_to_model=True,
+                allow_network_reads=False,
+                independent_verification_policy=IndependentVerificationPolicy(
+                    required=False)),
+            AdaptivePractitionerDependencies(
+                execution, project_executor=project_fixture))
+        results.append({
+            "test": "inline_task_pack_reaches_project_execution_without_source_selection",
+            "passed": (inline_pack["solved"]
+                       and len(inline_pack["project_attempts"]) == 1
+                       and inline_pack["source_inspections"] == []),
+            "detail": inline_pack["run_id"],
+        })
     # A request may declare the supervision policy the kernel applies to its
     # passes, so a campaign's ceiling is a configuration level; the outcome
     # names the policy that applied, declared or the repository default.
@@ -183,6 +209,26 @@ def run_checks() -> dict:
         "passed": not any(value in source for value in (
             "openml", "iris", "boosted-tree", "target_column=", "kaggle")),
         "detail": "source contains universal contracts and capability refs only",
+    })
+    meta_orientation = json.loads(orientation)
+    meta_orientation.update({
+        "immediate_goal": "Return TaskOrientationResult version 1.",
+        "unknowns": ["Whether the runtime permits a direct write."],
+        "ambiguities": [{
+            "subject": "runtime write capability", "state": "UNKNOWN",
+            "reason": "The runtime owns the capability registry."}],
+        "blocking_questions": [
+            "Does the runtime permit a direct workspace write?"],
+        "proposed_next_action": "ASK_USER",
+    })
+    meta_findings = orientation_policy_findings(
+        TaskOrientationResult.from_mapping(meta_orientation), "autonomous")
+    results.append({
+        "test": "orientation_cannot_make_its_protocol_or_runtime_a_user_blocker",
+        "passed": (any("immediate goal" in item for item in meta_findings)
+                   and any("USER_CLARIFICATION_REQUIRED" in item
+                           for item in meta_findings)),
+        "detail": str(meta_findings),
     })
     supervised = SimpleNamespace(
         web_results=[], source_inspections=[], project_attempts=[],

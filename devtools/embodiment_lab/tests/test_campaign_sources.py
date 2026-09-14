@@ -6,7 +6,9 @@ import tempfile
 import unittest
 
 from embodiment_lab.campaign_sources import (
-    SourceIdentityError, TaskSourceSnapshot, snapshot_task_sources, verify_task_sources)
+    SourceIdentityError, TaskSourceAvailability, TaskSourceSnapshot,
+    snapshot_available_task_sources, snapshot_task_sources,
+    verify_available_task_sources, verify_task_sources)
 
 
 class CampaignSourceChecks(unittest.TestCase):
@@ -99,6 +101,27 @@ class CampaignSourceChecks(unittest.TestCase):
         for change in ({"version": "9.0.0"}, {"trust_me": True}):
             with self.assertRaises(SourceIdentityError):
                 TaskSourceSnapshot.from_dict({**record, **change})
+
+    def test_missing_declared_source_is_frozen_as_a_gap_not_an_empty_task(self):
+        self.declaration["attachments"].append("missing.txt")
+        self.write_declaration()
+        with self.assertRaises(FileNotFoundError):
+            snapshot_task_sources(self.task, self.root)
+        availability = snapshot_available_task_sources(self.task, self.root)
+        relative = (self.task / "missing.txt").relative_to(self.root).as_posix()
+        self.assertFalse(availability.complete)
+        self.assertEqual(availability.missing, ((relative, "not_found"),))
+        self.assertIn(
+            "tasks/example/attachment.txt",
+            [entry[0] for entry in availability.available.entries])
+        restored = TaskSourceAvailability.from_dict(availability.to_dict())
+        self.assertEqual(restored, availability)
+        self.assertEqual(
+            verify_available_task_sources(self.task, self.root, restored),
+            availability)
+        (self.task / "missing.txt").write_text("arrived later")
+        with self.assertRaises(SourceIdentityError):
+            verify_available_task_sources(self.task, self.root, restored)
 
 
 if __name__ == "__main__":

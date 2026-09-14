@@ -69,9 +69,11 @@ is available. If the model chooses a reviewed exact capability, the execution
 of that capability may be recorded as deterministic. The fingerprint never
 replaces semantic orientation by itself.
 
-Interaction is a separate policy. The default returns material questions. The
-advanced `--unattended` option means the current activation must abstain rather
-than wait for an answer. It does not change how intelligently the Loop reasons.
+Interaction is a separate policy. The default can include typed material
+questions that improve a later revision. The advanced `--unattended` option
+means the current activation does not wait for an answer. Both modes still
+return the best available resolution. Interaction policy does not change how
+intelligently the Loop reasons.
 
 ## Candidates and hard gates
 
@@ -103,11 +105,47 @@ Search, generation, and spawned work have no implicit numeric ceiling. A user,
 provider, or authorized policy may set one. Safety boundaries remain enforced
 even when no work ceiling is configured.
 
+## Check every action as a vector
+
+A schema-admitted language model response proves only that one response met
+its response contract. It does not prove that the observable work process was
+appropriate or that the requested output was produced.
+
+Each selected action therefore binds an `action_intent_vector/v1`. After the
+action, verification issues an `action_vector_assessment/v1` and folds its
+tri-valued signals into `outcome_vector/v2`.
+
+```text
+Action check
+├── Response: was the model response admitted?
+├── Observable process: did typed decisions and plans follow the declared method?
+├── Execution: did the selected capability run?
+├── Action output: did the declared state change occur?
+├── Requested output: which task criteria passed, failed, or remain unknown?
+├── Verification: did the work hold up under the required checks?
+├── Progress: did the action add evidence or improve governed task state?
+└── Continuation: does another safe authorized action remain?
+```
+
+The observable process check reads decisions, plans, selected evidence,
+assumption labels, artifacts, and verification records. It does not read or
+store private model reasoning. A normal stop is rejected when continuation is
+true. Unknown continuation causes reframing or more evidence rather than a
+false completion claim.
+
+The owning Practitioner Loop applies this contract before and after the
+selected realization. The custom Practitioner path and registered OpenCode,
+Codex, Pi, or other harness paths receive the same semantic packet and outcome
+vector policy. Harness-native completion remains an observation and cannot
+replace the owning Loop's task acceptance.
+
 ## Questions and feedback
 
-A material uncertainty returns `BLOCKED_MATERIAL_INPUT` with one or more typed
-`MaterialQuestion` records. Each record includes an answer slot. Feedback is a
-separate input on the next activation, so the original task remains unchanged.
+A material uncertainty can add one or more typed `MaterialQuestion` records to
+a completed best-available resolution. Each record includes an answer slot.
+The question is advisory and can improve a later revision. It does not erase
+the work that can be completed now. Feedback is a separate input on the next
+activation, so the original task remains unchanged.
 
 ```bash
 loop-engine solve --file task.txt --quickstart \
@@ -116,6 +154,55 @@ loop-engine solve --file task.txt --quickstart \
 
 Delegated choices, safe defaults, derived values, research questions, and
 nonmaterial preferences do not interrupt the run.
+
+## Complete the best available resolution
+
+Missing input, unavailable execution, or incomplete verification does not
+justify an empty result. The Practitioner completes every safe reversible
+part of the task and returns a `task_resolution_package/v1` when the original
+requested outcome is not verified.
+
+```text
+Public solve result
+├── Requested outcome verified
+│   └── COMPLETED_VERIFIED with accepted artifacts or state
+├── Task-level constraint remains
+│   └── COMPLETED_PARTIAL with a complete best-available resolution package
+└── Operational interruption
+    ├── provider unavailable, with accumulated work preserved
+    └── operator cancellation, with no invented continuation
+```
+
+The word partial describes fulfillment of the original requested outcome. It
+does not describe an empty or unfinished response. The package separates:
+
+- work completed and observed evidence;
+- model analysis and explicit assumptions;
+- missing or unverified material;
+- scenario and delegated choices;
+- provisional output bodies that were proposed but not materialized;
+- alternative approaches and useful next actions; and
+- questions that could improve a later revision.
+
+The resolution also carries `resolution_status: COMPLETE` and
+`requested_outcome_status: UNVERIFIED`. Every registered safe resolution
+method has one `resolution_method_assessment/v1`. The method is completed, not
+applicable, unavailable, authority-required, or resource-exhausted. A method
+cannot be completed without its mapped material, and at least one useful
+method must complete.
+
+The model-facing policy also asks the Practitioner to consider pro forma
+analysis, labeled synthetic examples, estimates with uncertainty, analogous
+solutions, first-principles approaches, supplemental artifacts, and missing
+component maps. These are available methods, not claims that every method was
+used on every task.
+
+A missing approval or capability still prevents the Practitioner from
+claiming that an external effect occurred. The Practitioner can prepare the
+draft, simulation, validation plan, input template, or ready-to-run procedure
+that a careful person could complete without that authority. A runtime or
+capability question is answered from runtime facts or reported as an internal
+constraint. It is never converted into a question for the user.
 
 ## Task files and external data
 

@@ -323,8 +323,18 @@ def orient_source_roles(services) -> dict | None:
         try:
             record = validated_source_roles(value, admitted, digest,
                                             fields_by_path, allowance)
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=True,
+                      expected_output_satisfied=True,
+                      material_progress=True)
             break
         except AdaptivePractitionerError as exc:
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=False,
+                      expected_output_satisfied=False,
+                      material_progress=False)
             failures.append({"attempt": attempt, "error": str(exc)[:500]})
             services.diagnostic("source_role_orientation_invalid",
                                 {"attempt": attempt, "error": str(exc)[:500]})

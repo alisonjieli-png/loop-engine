@@ -41,6 +41,18 @@ def orientation_policy_findings(
     if (orientation.proposed_next_action == "ASK_USER"
             and not orientation.blocking_questions):
         findings.append("ASK_USER has no material blocking question")
+    user_clarifications = [
+        item for item in orientation.ambiguities
+        if item.state == "USER_CLARIFICATION_REQUIRED"]
+    if orientation.blocking_questions and not user_clarifications:
+        findings.append(
+            "blocking questions require a USER_CLARIFICATION_REQUIRED "
+            "ambiguity; runtime, capability, research, and authority questions "
+            "must be resolved or reported by the Practitioner")
+    if (orientation.proposed_next_action == "ASK_USER"
+            and not user_clarifications):
+        findings.append(
+            "ASK_USER requires a typed user-clarification ambiguity")
     if (interaction_mode == "autonomous"
             and orientation.proposed_next_action == "ASK_USER"
             and orientation.delegated_choices):
@@ -60,6 +72,13 @@ def orientation_policy_findings(
         findings.append(
             "verification obligations describe the orientation packet rather "
             "than the user's final task acceptance contract")
+    immediate = orientation.immediate_goal.lower().replace(" ", "")
+    if ("taskorientationresult" in immediate
+            or "orientationresult" in immediate
+            or "returnschema" in immediate):
+        findings.append(
+            "the immediate goal describes the orientation protocol rather than "
+            "the next useful part of the user's task")
     return findings
 
 

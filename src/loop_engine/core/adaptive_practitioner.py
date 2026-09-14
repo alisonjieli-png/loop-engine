@@ -49,9 +49,10 @@ from .adaptive_practitioner_supervision import (
     supervision_context, validate_progressing_action,
 )
 from .adaptive_practitioner_verification import (
-    AdaptiveRouteRequest, AdaptiveVerificationRequest,
-    route_adaptive_result, verify_adaptive_results,
+    AdaptiveVerificationRequest, verify_adaptive_results,
 )
+from .adaptive_practitioner_routing import (
+    AdaptiveRouteRequest, route_adaptive_result)
 from .context_artifacts import (
     ContextArtifactManager, ContextArtifactServices, ContextArtifactStore,
     ContextArtifactStoreSpec,
@@ -245,8 +246,16 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 findings = [str(exc)]
                 candidate = None
             if candidate is not None and not findings:
+                services.grade_current_stage(
+                    observable_process_aligned=True,
+                    expected_output_satisfied=True,
+                    material_progress=True)
                 parsed = candidate
                 break
+            services.grade_current_stage(
+                observable_process_aligned=False,
+                expected_output_satisfied=False,
+                material_progress=False)
             failures.append({
                 "attempt": attempt, "findings": findings,
                 "rejected_orientation": value})
@@ -421,15 +430,29 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                         # existing response-repair boundary.
                         raise AdaptivePractitionerError(str(exc)) from exc
                     validate_progressing_action(decision, services)
+                    if latest_task_result(services) is None:
+                        from ..code_nodes.solve_terminal import (
+                            RESOLUTION_REQUIRED_ACTION_KINDS,
+                            validate_resolution_input)
+                        if decision.action_kind in RESOLUTION_REQUIRED_ACTION_KINDS:
+                            validate_resolution_input(dict(decision.inputs))
                     budget = dict(decision.budget)
                     for key in ("information_gain", "estimated_cost", "risk",
                                 "reversibility"):
                         float(budget.get(key, 0.0))
                     parsed.append(decision)
+                services.grade_current_stage(
+                    observable_process_aligned=True,
+                    expected_output_satisfied=True,
+                    material_progress=True)
                 decisions = parsed
                 selected_index = raw_selected
                 break
             except ModelResponseRepairStalled as exc:
+                services.grade_current_stage(
+                    observable_process_aligned=False,
+                    expected_output_satisfied=False,
+                    material_progress=False)
                 from .adaptive_practitioner_recovery import recover_step_contract_failure
                 recover_step_contract_failure(exc,_model_state(state,services),services)
                 failure = str(exc)[:500]
@@ -437,6 +460,10 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             except SolutionModelError:
                 raise
             except (AdaptivePractitionerError, TypeError, ValueError) as exc:
+                services.grade_current_stage(
+                    observable_process_aligned=False,
+                    expected_output_satisfied=False,
+                    material_progress=False)
                 failure = str(exc)[:500]
                 services.diagnostic("next_action_invalid", {
                     "attempt": attempt, "error": failure})
@@ -464,10 +491,14 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 decision.to_dict(), sort_keys=True, separators=(",", ":"),
                 default=str).encode()).hexdigest()[:20]
             services.action_details[decision_id] = decision
+            from .outcome_vector import ActionIntentVector
+            intent_vector = ActionIntentVector.from_decision(
+                decision_id, decision)
             services.action_history.append({
                 "decision_id": decision_id, "state_version": state.version,
                 **_lineage.source_stage_fields(decision_stage),
-                **decision.to_dict()})
+                **decision.to_dict(),
+                "intent_vector": intent_vector.to_dict()})
             canvas_candidates.append(build_action_canvas_candidate(
                 decision_id, decision))
             budget = dict(decision.budget)
@@ -534,19 +565,63 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                 AdaptiveCapabilityExecutionRequest(state, plan, owner), services)
             _lineage._try_execution(services, owner, plan, result)
             return [result]
-        if plan.handle == "core.finish" and latest_task_result(services) is not None:
-            result = latest_task_result(services)
+        if plan.handle in (
+                "core.finish", "core.ask", "core.authority", "core.abstain"):
+            existing_result = latest_task_result(services)
+            if plan.handle == "core.finish" and existing_result is not None:
+                return [ResultPacket(
+                    objective="return task result", result=existing_result,
+                    confidence=(1.0 if task_result_succeeded(existing_result)
+                                else 0.0))]
+            # Returning without an accepted artifact used to produce another
+            # empty executor error. A human still returns the useful analysis,
+            # assumptions, missing pieces, provisional work, and next steps.
+            # This publication is candidate-only and cannot bypass task
+            # verification or claim that an external effect occurred.
+            from ..code_nodes.solve_terminal import build_task_resolution_package
+
+            decision = services.action_details.get(
+                str(plan.experiment.get("action_id") or ""))
+            orientations = [
+                item.to_dict() for _version, item in sorted(
+                    services.orientation_by_version.items())]
+            adaptive_view = {
+                "orientations": orientations,
+                "action_decisions": list(services.action_history),
+                "source_inspections": list(services.source_inspections),
+                "web_evidence": list(services.web_results),
+                "project_attempts": list(services.project_attempts),
+                "verification": list(services.verification_records),
+                "recovery_directives": list(services.recovery_directives),
+                "failures": list(state.failures),
+            }
+            package = build_task_resolution_package(
+                task=services.request.task,
+                adaptive=adaptive_view,
+                product={"artifacts": (), "result": existing_result},
+                underlying_terminal={
+                    "core.ask": "BLOCKED_MATERIAL_INPUT",
+                    "core.authority": "AUTHORITY_REQUIRED",
+                    "core.abstain": "ABSTAINED",
+                }.get(plan.handle, "REQUESTED_OUTCOME_UNVERIFIED"),
+                questions=(orientations[-1].get("blocking_questions", ())
+                           if orientations else ()),
+                limitations=((decision.reason,) if decision is not None else ()),
+                suggested_next=(decision.expected_output
+                                if decision is not None else ""))
+            result = package.to_dict()
+            services.task_results.append(result)
+            services.publish(
+                "practitioner.resolution.published",
+                fulfillment_status=package.fulfillment_status,
+                requested_outcome_verified=False)
             return [ResultPacket(
-                objective="return task result", result=result,
-                confidence=(1.0 if task_result_succeeded(result)
-                            else 0.0))]
-        if plan.handle in ("core.ask", "core.authority", "core.abstain"):
-            decision = next(reversed(services.action_details.values()))
-            return [ResultPacket(
-                objective=decision.goal,
-                errors=(decision.action_kind,), confidence=0.0,
-                limitations=(decision.reason,),
-                suggested_next=(decision.expected_output,))]
+                objective="publish the best available task resolution",
+                result=result, confidence=(decision.confidence
+                                           if decision is not None else 0.0),
+                limitations=(
+                    "The response is complete, but the original requested "
+                    "outcome remains unverified.",))]
         return [ResultPacket(
             objective=plan.handle or "unresolved action",
             errors=("action cannot execute through a registered capability",),

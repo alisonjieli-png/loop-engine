@@ -196,8 +196,18 @@ def project_manifest(
         try:
             candidate = GeneratedProjectCandidate.from_mapping(value)
             validate_generated_project_input_paths(candidate, input_artifacts)
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=True,
+                      expected_output_satisfied=True,
+                      material_progress=True)
             break
         except GeneratedProjectError as exc:
+            grade = getattr(services, "grade_current_stage", None)
+            if callable(grade):
+                grade(observable_process_aligned=False,
+                      expected_output_satisfied=False,
+                      material_progress=False)
             candidate = None
             failure = {
                 "attempt": attempt, "error_type": type(exc).__name__,
@@ -272,8 +282,18 @@ def project_manifest(
                         "generated file path differs from its specification")
                 generated_file = GeneratedProjectFile(
                     file_spec.path, value.get("content"))
+                grade = getattr(services, "grade_current_stage", None)
+                if callable(grade):
+                    grade(observable_process_aligned=True,
+                          expected_output_satisfied=True,
+                          material_progress=True)
                 break
             except GeneratedProjectError as exc:
+                grade = getattr(services, "grade_current_stage", None)
+                if callable(grade):
+                    grade(observable_process_aligned=False,
+                          expected_output_satisfied=False,
+                          material_progress=False)
                 failure = {
                     "attempt": attempt, "path": file_spec.path,
                     "error_type": type(exc).__name__,
@@ -346,7 +366,13 @@ def project_inputs(
 
 def _local_project_inputs(
         services: AdaptiveRunServices) -> tuple[GeneratedProjectInputArtifact, ...]:
-    if services.request.source_kind not in {"dataset", "repository", "task_pack"}:
+    if (services.request.source_kind not in {"dataset", "repository", "task_pack"}
+            or not services.request.source_refs):
+        # A task pack can carry small attachment bodies inside its immutable
+        # captured task text. In that case there is no external local source to
+        # select or materialize. Requiring core.source.inspect here created an
+        # impossible state because that capability is correctly unavailable
+        # when source_refs is empty.
         return ()
     if not services.request.allow_source_materialization_to_model:
         raise PermissionError(
@@ -423,6 +449,12 @@ def self_test() -> dict:
     used.add(first_path)
     duplicate_path = _input_artifact_path(
         "https://mirror.test/records.data", 2, used)
+    inline_task_pack = SimpleNamespace(
+        request=SimpleNamespace(
+            source_kind="task_pack", source_refs=(),
+            allow_source_materialization_to_model=True),
+        source_inspections=[])
+    inline_inputs = _local_project_inputs(inline_task_pack)
 
     file_spec = GeneratedProjectFileSpec(
         "pipeline.py", "Reusable pipeline.", ("Pipeline runs.",))
@@ -504,6 +536,10 @@ def self_test() -> dict:
             unselected_refused = "has not selected any" in str(exc)
 
     tests = [{
+        "test": "inline_task_pack_without_external_sources_needs_no_source_selection",
+        "passed": inline_inputs == (),
+        "detail": "captured inline attachment text is not an unread local source",
+    }, {
         "test": "normal_selected_sources_preserve_input_paths_and_exact_bytes",
         "passed": normal_selected,
         "detail": "both selected sources become existing typed input artifacts",

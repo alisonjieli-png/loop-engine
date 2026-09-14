@@ -50,12 +50,17 @@ from loop_engine.templates.intake import TaskIntake
 from .systematic_records import CampaignProjection, canonical, digest
 from .systematic_runtime import NativeGatewayAdapter, configure_environment
 from .campaign_activation import CampaignAccessPolicy, activation_due, probe_gateway, utc_time
-from .campaign_sources import (TaskSourceSnapshot, snapshot_task_sources,
-                               verify_task_sources)
+from .campaign_sources import (
+    TaskSourceAvailability, TaskSourceSnapshot,
+    snapshot_available_task_sources,
+    verify_available_task_sources, verify_task_sources,
+)
 
 
 # The trial's own lifecycle states, named once.
 TRIAL_STARTING, TRIAL_FINISHED, TRIAL_FAILED = 'starting', 'finished', 'failed'
+EXECUTION_AND_EVALUATION = 'queued_for_execution_and_evaluation'
+BEST_AVAILABLE_RESOLUTION = 'queued_for_best_available_resolution'
 
 
 def file_digest(path):
@@ -64,6 +69,11 @@ def file_digest(path):
         for block in iter(lambda: source.read(1024 * 1024), b''):
             hasher.update(block)
     return hasher.hexdigest()
+
+
+def optional_file_digest(path):
+    path = Path(path)
+    return file_digest(path) if path.is_file() else None
 
 
 def engine_identity(repository):
@@ -105,7 +115,9 @@ def public_population_rows(rows):
     directories of this machine."""
     return [{key: row[key] for key in ('id', 'path', 'job_family', 'status', 'admission',
                                         'descriptor_digest', 'brief_digest', 'source_snapshot_digest',
-                                        'source_freeze_state') if key in row}
+                                        'source_availability_digest',
+                                        'source_freeze_state',
+                                        'instruction_source_state') if key in row}
             for row in rows]
 
 
@@ -203,24 +215,44 @@ def prepare(root, task_root, provider_file, repository, *, route_name='', not_be
     try:
         for item in fair_order(catalog['tasks']):
             confined_name(item['id'])
-            directory = (task_root / item['path']).resolve(strict=True)
+            directory = (task_root / item['path']).resolve(strict=False)
             if not directory.is_relative_to(task_root):
                 raise ValueError('task directory leaves the admitted database')
             descriptor, brief = directory / 'task.json', directory / 'task.md'
             row = {**item, 'task_directory': str(directory), 'task_root': str(task_root),
-                'descriptor_digest': file_digest(descriptor), 'brief_digest': file_digest(brief),
-                'admission': 'queued_for_execution_and_evaluation' if item['status'] == 'ready'
-                             else 'requires_source_admission',
+                'descriptor_digest': optional_file_digest(descriptor),
+                'brief_digest': optional_file_digest(brief),
+                'instruction_source_state': (
+                    'complete' if descriptor.is_file() and brief.is_file()
+                    else 'partial' if descriptor.is_file() or brief.is_file()
+                    else 'missing'),
+                'admission': (EXECUTION_AND_EVALUATION
+                              if item['status'] == 'ready'
+                              else BEST_AVAILABLE_RESOLUTION),
                 'evaluator_qualification': 'task_specific_campaign_qualification_pending'}
+            if row['instruction_source_state'] != 'complete':
+                row['admission'] = BEST_AVAILABLE_RESOLUTION
             row['source_freeze_state'] = 'not_admitted'
-            if row['admission'] == 'queued_for_execution_and_evaluation':
-                try:
-                    snapshot = snapshot_task_sources(directory, task_root, cache=source_cache)
-                    row.update(source_snapshot=snapshot.to_dict(),
-                               source_snapshot_digest=snapshot.content_digest, source_freeze_state='frozen')
-                except (OSError, ValueError, TypeError) as exc:
-                    row.update(admission='requires_source_admission', source_freeze_state='unavailable',
-                               source_freeze_error=type(exc).__name__)
+            try:
+                availability = snapshot_available_task_sources(
+                    directory, task_root, cache=source_cache)
+                snapshot = availability.available
+                if row['admission'] == EXECUTION_AND_EVALUATION \
+                        and not availability.complete:
+                    row['admission'] = BEST_AVAILABLE_RESOLUTION
+                row.update(
+                    source_snapshot=snapshot.to_dict(),
+                    source_snapshot_digest=snapshot.content_digest,
+                    source_availability=availability.to_dict(),
+                    source_availability_digest=availability.content_digest,
+                    source_freeze_state=(
+                        'frozen' if availability.complete
+                        else 'available_sources_frozen_with_missing_items'))
+            except (OSError, ValueError, TypeError) as exc:
+                row.update(
+                    admission=BEST_AVAILABLE_RESOLUTION,
+                    source_freeze_state='unavailable',
+                    source_freeze_error=type(exc).__name__)
             rows.append(row)
             records.record('task_population', item['id'], row)
         identity = engine_identity(repository)
@@ -236,7 +268,13 @@ def prepare(root, task_root, provider_file, repository, *, route_name='', not_be
             'readiness_method': 'gateway_generation_probe',
             'access_probe_policy': access_policy.to_dict(),
             'source_freeze_policy': 'declared_input_contents/v1',
-            'source_frozen_count': sum(row['source_freeze_state'] == 'frozen' for row in rows),
+            'source_frozen_count': sum(
+                row['admission'] == EXECUTION_AND_EVALUATION
+                and row['source_freeze_state'] == 'frozen' for row in rows),
+            'best_available_resolution_count': sum(
+                row['admission'] == BEST_AVAILABLE_RESOLUTION for row in rows),
+            'available_source_snapshot_count': sum(
+                bool(row.get('source_snapshot')) for row in rows),
             'repository': str(repository), 'harnesses': harnesses,
             'harness_file_digests': {str(path): file_digest(path) for path in harness_files},
             'configuration_space': space.to_dict(), 'configuration_space_digest': space.digest,
@@ -266,18 +304,65 @@ def prepare(root, task_root, provider_file, repository, *, route_name='', not_be
 
 def task_intake(row, delivery):
     directory = Path(row['task_directory'])
-    if (file_digest(directory / 'task.json') != row['descriptor_digest']
-            or file_digest(directory / 'task.md') != row['brief_digest']):
+    descriptor_path, brief_path = directory / 'task.json', directory / 'task.md'
+    if (optional_file_digest(descriptor_path) != row.get('descriptor_digest')
+            or optional_file_digest(brief_path) != row.get('brief_digest')):
         raise ValueError('frozen task instructions changed')
-    descriptor = json.loads((directory / 'task.json').read_text())
-    if row.get('source_snapshot') is not None:
-        verify_task_sources(directory, row['task_root'], TaskSourceSnapshot.from_dict(row['source_snapshot']))
+    descriptor = (
+        json.loads(descriptor_path.read_text()) if descriptor_path.is_file()
+        else {
+            'attachments': list(row.get('attachments') or ()),
+            'data_path': row.get('data_path'),
+        })
+    instruction_gaps = []
+    if not descriptor_path.is_file():
+        instruction_gaps.append('The task descriptor file is missing.')
+    if not brief_path.is_file():
+        instruction_gaps.append('The task brief file is missing.')
+    availability = None
+    if row.get('source_availability') is not None:
+        availability = TaskSourceAvailability.from_dict(
+            row['source_availability'])
+        verify_available_task_sources(
+            directory, row['task_root'], availability)
+    elif row.get('source_snapshot') is not None:
+        verify_task_sources(
+            directory, row['task_root'],
+            TaskSourceSnapshot.from_dict(row['source_snapshot']))
+    missing_paths = {
+        path for path, _reason in (availability.missing if availability else ())}
+    missing_items = [{"path": path, "reason": reason}
+                     for path, reason in (
+                         availability.missing if availability else ())]
     attachments, references, sources = [], [], {}
-    for relative in descriptor.get('attachments', ()):
-        candidate = directory / relative
+
+    def admitted_path(relative, *, boundary):
+        supplied = Path(str(relative))
+        if supplied.is_absolute():
+            raise ValueError('declared task source path is not confined')
+        candidate = directory / supplied
+        unresolved = candidate.resolve(strict=False)
+        if not unresolved.is_relative_to(boundary):
+            raise ValueError('declared task source escapes its admitted boundary')
+        relative_path = unresolved.relative_to(
+            Path(row['task_root']).resolve()).as_posix()
+        if not candidate.exists():
+            if (relative_path in missing_paths
+                    or row.get('admission') == BEST_AVAILABLE_RESOLUTION):
+                if relative_path not in missing_paths:
+                    missing_paths.add(relative_path)
+                    missing_items.append({
+                        'path': relative_path, 'reason': 'not_found'})
+                return None
         path = candidate.resolve(strict=True)
-        if not path.is_relative_to(directory):
-            raise ValueError('an attachment escapes its admitted task directory')
+        if not path.is_relative_to(boundary):
+            raise ValueError('declared task source escapes its admitted boundary')
+        return path
+
+    for relative in descriptor.get('attachments', ()):
+        path = admitted_path(relative, boundary=directory)
+        if path is None:
+            continue
         sources[str(path)] = file_digest(path)
         if delivery == 'bounded_inline' and path.stat().st_size <= 65536:
             try:
@@ -288,17 +373,50 @@ def task_intake(row, delivery):
         references.append(str(path))
     data_path = descriptor.get('data_path')
     if data_path:
-        path = (directory / data_path).resolve(strict=True)
         database = Path(row['task_root']) if row.get('task_root') else Path(row['task_directory']).parents[3]
-        if not path.is_relative_to(database):
-            raise ValueError('dataset link escapes the admitted task database')
-        references.append(str(path))
+        path = admitted_path(data_path, boundary=database.resolve())
+        if path is not None:
+            references.append(str(path))
+    semantic_gaps = []
+    if row.get('status') == 'awaiting_data':
+        semantic_gaps.append(
+            'The task data is not available as an admitted task source.')
+    if row.get('status') == 'needs_metadata':
+        semantic_gaps.append(
+            'Task metadata or acceptance criteria remain incomplete.')
+    semantic_gaps.extend(instruction_gaps)
+    source_condition = {
+        'admission': row.get('admission'),
+        'catalog_status': row.get('status'),
+        'available_source_references': references,
+        'missing_declared_sources': missing_items,
+        'semantic_source_gaps': semantic_gaps,
+        'original_task_evaluation_eligible': (
+            row.get('admission') == EXECUTION_AND_EVALUATION),
+        'required_behavior': (
+            'Use every available source. Complete safe reversible work. '
+            'When literal task execution is unavailable, produce a complete '
+            'best-available resolution with explicit evidence, assumptions, '
+            'scenario or pro forma analysis, labeled synthetic material when '
+            'useful, estimates, analogous and first-principles solutions, '
+            'supplemental items, missing pieces, and next actions.'),
+    }
     prompt = ('Perform this task and produce its actual deliverables. Preserve all original requirements. '
         'This run authorizes local sandbox work and provider reasoning, not real business-system mutations, '
         'messages, submissions, purchases, or deployment. Use simulated services where the task needs effect tests. '
-        'Ask a precise material question when required information is absent.\n\n'
-        + (directory / 'task.md').read_text() + '\n\n'
-        + canonical({'provided_attachments': attachments, 'available_source_references': references}))
+        'A missing source does not justify an empty result or an early stop. '
+        'Ask a precise user question only when a typed user decision can improve a later revision.\n\n'
+        + (brief_path.read_text() if brief_path.is_file() else canonical({
+            'title': row.get('title') or row.get('id'),
+            'job_family': row.get('job_family'),
+            'source': row.get('source'),
+            'known_acceptance_criteria': row.get('acceptance_criteria'),
+            'instruction_limitation': (
+                'The original task brief is unavailable. Analyze only the '
+                'catalog facts and available admitted material.'),
+        })) + '\n\n'
+        + canonical({'provided_attachments': attachments,
+                     'task_source_condition': source_condition}))
     return TaskIntake('task_pack', prompt, tuple(references)), sources
 
 
@@ -429,9 +547,16 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
         records.record('task_sources', 'selected', {'source_digests': source_digests,
                        'input_digest': intake.content_digest, 'source_refs': list(intake.source_refs),
                        'source_snapshot_digest': row.get('source_snapshot_digest'),
-                       'source_freeze_state': row.get('source_freeze_state', 'legacy_not_population_frozen')})
+                       'source_availability_digest': row.get('source_availability_digest'),
+                       'source_freeze_state': row.get('source_freeze_state', 'legacy_not_population_frozen'),
+                       'admission': row.get('admission'),
+                       'original_task_evaluation_eligible': (
+                           row.get('admission') == EXECUTION_AND_EVALUATION)})
         records.record('source_verification', 'before', {
-            'state': 'verified' if row.get('source_snapshot') else 'legacy_not_population_frozen',
+            'state': ('available_sources_verified'
+                      if row.get('source_availability')
+                      else 'verified' if row.get('source_snapshot')
+                      else 'legacy_not_population_frozen'),
             'source_snapshot_digest': row.get('source_snapshot_digest')})
         artifacts = ContextArtifactManager(ContextArtifactServices(ContextArtifactStore(
             ContextArtifactStoreSpec(str(cell / 'artifacts')))))
@@ -482,12 +607,24 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
         value = outcome.to_dict()
         records.record('outcome', 'terminal', value)
         records.export_object(cell / 'outcome.json', value)
-        if row.get('source_snapshot') is not None:
+        if row.get('source_availability') is not None:
+            try:
+                verify_available_task_sources(
+                    row['task_directory'], row['task_root'],
+                    TaskSourceAvailability.from_dict(row['source_availability']))
+            except (OSError, ValueError, TypeError):
+                records.record('source_verification', 'after', {'state': 'changed_or_unreadable',
+                    'source_snapshot_digest': row.get('source_snapshot_digest')})
+                raise
+            records.record('source_verification', 'after', {'state': 'available_sources_verified',
+                'source_snapshot_digest': row.get('source_snapshot_digest')})
+        elif row.get('source_snapshot') is not None:
             try:
                 verify_task_sources(row['task_directory'], row['task_root'],
                                     TaskSourceSnapshot.from_dict(row['source_snapshot']))
             except (OSError, ValueError, TypeError):
-                records.record('source_verification', 'after', {'state': 'changed_or_unreadable',
+                records.record('source_verification', 'after', {
+                    'state': 'changed_or_unreadable',
                     'source_snapshot_digest': row.get('source_snapshot_digest')})
                 raise
             records.record('source_verification', 'after', {'state': 'verified',
@@ -499,7 +636,13 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
             model_calls=value['model_calls'], model_call_accounting_complete=value['model_call_accounting_complete'],
             model_calls_known_subtotal=value['model_calls_known_subtotal'], history_integrity=integrity,
             delivered_artifacts=len(value['artifacts']),
-            campaign_acceptance='independent_task_specific_review_required')
+            resolution_status=(value.get('result') or {}).get('resolution_status'),
+            original_task_evaluation_eligible=(
+                row.get('admission') == EXECUTION_AND_EVALUATION),
+            campaign_acceptance=(
+                'independent_task_specific_review_required'
+                if row.get('admission') == EXECUTION_AND_EVALUATION
+                else 'best_available_resolution_review_required_not_task_acceptance'))
     except Exception as exc:
         state.update(status=TRIAL_FAILED, error_type=type(exc).__name__,
                      error_message='trial boundary failed; private exception text is not exported',
@@ -695,9 +838,12 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                         'not_before_utc': manifest['not_before_utc'], 'provider': route.provider})
                     time.sleep(probe_interval)
                     continue
-                if row['admission'] != 'queued_for_execution_and_evaluation':
-                    # A source-admission gap is recorded once; repeating it
-                    # every round would write tens of thousands of no-op rows.
+                if row['admission'] not in (
+                        EXECUTION_AND_EVALUATION, BEST_AVAILABLE_RESOLUTION):
+                    # A legacy or unknown admission is recorded once. New
+                    # incomplete-source rows enter the separate best-available
+                    # resolution lane instead of disappearing before a
+                    # Practitioner can inspect what remains.
                     if cursor['round'] == 0:
                         records.record('trial_projection', row['id'] + ':' + str(cursor['round']),
                                        {'status': 'requires_source_admission', 'task_id': row['id'], 'attempted': False})

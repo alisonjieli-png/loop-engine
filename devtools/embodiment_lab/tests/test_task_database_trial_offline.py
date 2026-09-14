@@ -239,9 +239,39 @@ class RefusalPageTrialChecks(unittest.TestCase):
             self.assertEqual(report['accounting']['probe_calls'], 1)
             self.assertEqual(report['accounting']['probes'], 1)
             self.assertEqual(report['access_probes'][0]['run_id'], 'campaign-access-fixture')
+            # The page answers how many solutions were delivered for how many
+            # tasks: this cell attempted one task and delivered nothing.
+            self.assertEqual(report['solutions']['totals']['tasks_attempted'], 1)
+            self.assertEqual(report['solutions']['totals']['attempts'], 1)
+            self.assertEqual(report['solutions']['totals']['candidates_delivered'], 0)
+            self.assertEqual(report['solutions']['totals']['tasks_independently_evaluated'], 0)
+            self.assertEqual(report['solutions']['tasks'][0]['task_id'], 'T-PAGE')
+            from embodiment_lab.campaign_report import campaign_solutions
+            counted = campaign_solutions([
+                {'task_id': 'T-A', 'family': 'f', 'status': 'finished', 'engine_terminal': 'COMPLETED_VERIFIED',
+                 'artifacts': 3, 'independent_evaluation': False, 'model_calls': 4},
+                {'task_id': 'T-A', 'family': 'f', 'status': 'failed', 'engine_terminal': None,
+                 'artifacts': 0, 'independent_evaluation': False, 'model_calls': None},
+                {'task_id': 'T-B', 'family': 'f', 'status': 'finished', 'engine_terminal': 'VERIFICATION_FAILED',
+                 'artifacts': 2, 'independent_evaluation': True, 'model_calls': 7,
+                 'original_task_evaluation_eligible': False,
+                 'resolution_package': True, 'resolution_status': 'COMPLETE'}],
+                [{'id': 'T-A'}, {'id': 'T-B'}, {'id': 'T-C'}])
+            self.assertEqual(counted['totals'], {
+                'tasks_in_population': 3, 'tasks_attempted': 2, 'tasks_attempted_outside_population': 0,
+                'tasks_with_a_delivered_candidate': 1, 'tasks_engine_verified': 1,
+                'tasks_independently_evaluated': 0,
+                'tasks_with_a_best_available_resolution': 1,
+                'tasks_with_a_complete_resolution': 1,
+                'attempts': 3, 'candidates_delivered': 1,
+                'engine_verified_cells': 1, 'independently_evaluated_cells': 0,
+                'best_available_resolution_cells': 1,
+                'complete_resolution_cells': 1})
+            self.assertEqual(counted['tasks'][0]['cells_with_unknown_calls'], 1)
             page = render_campaign_html(report)
             self.assertIn('T-PAGE', page)
             self.assertIn('PROVIDER_UNAVAILABLE', page)
+            self.assertIn('0 candidate solutions delivered for 0 of the 1 tasks attempted', page)
             self.assertNotIn('<script', page)
             self.assertNotIn('http://', page.split('<main>', 1)[1].split('</main>')[0].replace('https://fixture.invalid', ''))
 
