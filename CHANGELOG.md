@@ -90,6 +90,12 @@ First public release.
   tolerance. Plan validation refuses a malformed tolerance, and the oracle
   review is asked to refuse a policy looser than the task justifies. Each
   new check was confirmed to fail when its fix is removed.
+- Product solve acceptance failed with `VERIFICATION_FAILED` once the
+  verification response required an `action_vector`: its scripted verifier
+  answers carried no vector, so format repair consumed the answer queue.
+  The acceptance oracle now binds each scripted verification answer to the
+  criteria registered in the actual verify prompt, and the answer declares
+  only whether requested work remains. The stricter contract is unchanged.
 
 ### Fixed on 2026-09-13
 

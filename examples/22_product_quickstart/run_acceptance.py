@@ -79,10 +79,16 @@ def _answers(summary: str, outputs: list[str], candidate: dict,
         "spawned_tasks": [], "rationale": "Use the registered project capability.",
     }
     verification = {
-        "verdict": "accept", "best_index": 0, "scores": [1.0],
-        "notes": "Commands met their exit contracts and artifacts passed inspection.",
-        "remaining_gaps": [], "advisory_findings": [],
-        "new_requirement_proposals": [],
+        "acceptance_verification_for": "adaptive_verification_response/v3",
+        "response": {
+            "verdict": "accept", "best_index": 0, "scores": [1.0],
+            "notes": "Commands met their exit contracts and artifacts passed inspection.",
+            "remaining_gaps": [], "advisory_findings": [],
+            "new_requirement_proposals": [],
+        },
+        "expected_output_finding": "The generated project ran and produced its declared artifacts.",
+        "progress_evidence": "The declared commands executed and the artifacts were inspected.",
+        "remaining_work": [],
     }
     route = {"route": "stop_success", "reason": "Artifacts are verified."}
     sequence = []
@@ -121,11 +127,16 @@ def _answers(summary: str, outputs: list[str], candidate: dict,
             "rationale": "Read the input selected by the model.",
         }
         inspect_verification = {
-            "verdict": "research_more", "best_index": 0, "scores": [1.0],
-            "notes": "Selected source content is now available.",
-            "remaining_gaps": [{"criterion_ref": "criterion:0",
-                                 "gap": "the requested work is not built yet"}],
-            "advisory_findings": [], "new_requirement_proposals": [],
+            "acceptance_verification_for": "adaptive_verification_response/v3",
+            "response": {
+                "verdict": "research_more", "best_index": 0, "scores": [1.0],
+                "notes": "Selected source content is now available.",
+                "remaining_gaps": [], "advisory_findings": [],
+                "new_requirement_proposals": [],
+            },
+            "expected_output_finding": "The selected source content and its digest are available.",
+            "progress_evidence": "Source inspection returned the selected content.",
+            "remaining_work": ["the requested work is not built yet"],
         }
         # core.source_role_orientation asks, once per manifest digest and
         # directly after the inspection, what each admitted file is. The
