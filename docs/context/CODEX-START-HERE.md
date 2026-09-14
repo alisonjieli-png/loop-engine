@@ -181,6 +181,35 @@ campaign page counts cells, calls, and tokens but not candidates per task,
 so the next report change adds, per task, the candidates produced,
 executed, and independently verified, with the exact denominators.
 
+Coordination, September 14 afternoon: the owner asked a Claude Opus 5
+session to reconcile all committed and uncommitted work onto `main`. The
+Codex session's uncommitted tree is preserved at
+`refs/backup/codex-inflight-20260914` and committed unchanged as `96fba39`.
+`aca062f` makes it pass the gates and changes two behaviors. First,
+`OutcomeVectorPolicy` 1.1.0 adds `after_acceptance`: an accepted,
+deterministically verified result publishes and stops by default instead of
+turning optional remaining work into another pass, and
+`continue_while_work_remains` keeps the earlier behavior as an explicit
+level; `ActionVectorRouteRequest` now takes `acceptance_established`.
+Second, a resolution package is `COMPLETE` only when substantive work
+completed a method: observed artifacts, inspections, provisional outputs, the
+Practitioner's resolution contribution, or recovery alternatives. Orientation
+restatements and the `_next_recovery` hint complete nothing,
+`PROVIDER_UNAVAILABLE` and `CANCELLED` report `OPERATIONAL_INTERRUPTION`, and
+`COMPLETED_PARTIAL` names only a complete package. The packaged
+`src/loop_engine/data/architecture.yaml` and `terminology.yaml` must match
+the root files byte for byte, and the three modules over the size cap carry
+split plans in `forbidden_paths.json`. Still open from the review of this
+work: vector axes are the verifier model's self-report, one unknown process
+check blocks acceptance, the outcome-vector policy cannot be selected through
+`SolveRequest`, and native multi-turn harness loops are not guarded between
+turns. The full self-test then exposed eleven failures from a stale spawn
+fixture, corrected in `aca062f`, and `89553f2` keeps generated project
+refusal reasons, names excluded sources, and adds verifier comparison
+policies. The [September 14 review](../verification/CLAUDE-OPUS-5-REVIEW-2026-09-14.md)
+and the [intake research](../research/SELF-RESOLVING-INTAKE-SANDBOXES-AND-SHARING-2026-09-14.md)
+record the rest.
+
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).
 It records 70 real Tactical calls, a forty-cell repair matrix with 159/160
