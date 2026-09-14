@@ -353,7 +353,7 @@ def inventory_source_files(services: AdaptiveRunServices) -> SourceInventory:
             relative, "excluded" if reason else "admitted", reason or "utf8_text_sample",
             size, len(body), len(body) == size))
 
-    for source_ref in services.request.source_refs:
+    for source_ref in (*services.request.source_refs, *getattr(services, "task_material_roots", ())):
         source = Path(source_ref).expanduser()
         if source.is_symlink():
             raise PermissionError("source inspection refuses symbolic-link roots")

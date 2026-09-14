@@ -83,6 +83,17 @@ First public release.
   do, and stops at a repeated identical response, at the shared bound of four
   format attempts, or when no declared model call remains. Before this change
   one inadmissible response made the whole independent report unavailable.
+- Supplied archives are unpacked before the Practitioner starts, as a person
+  would unpack a project's files. Zip, tar, gzip, bzip2, and xz archives are
+  recognized by their content, unpacked into the run's materials folder, and
+  unpacked again when they contain further archives. The source inventory
+  walks that folder, so a text file inside an archive can be inspected,
+  profiled, selected, and delivered to a project like any other supplied
+  file. Unpacking needs declared workspace write authority, stays within the
+  capacity this machine measures, refuses entries that would leave their
+  folder, links, and devices, skips archives whose bytes were already
+  unpacked, and records everything it unpacked or refused in the result's
+  `task_materials` record.
 
 ### Fixed on 2026-09-14
 

@@ -611,6 +611,10 @@ def run_adaptive_practitioner(
     if request.stage_assistance.control_manifest is not None:
         services.control_manifest_evidence = record_control_manifest(
             owner, request.stage_assistance.control_manifest)
+    # A person unpacks a project's archives before starting; the run does the
+    # same, so their text files enter the ordinary source inventory.
+    from .task_materials import gather_run_materials
+    gather_run_materials(services, owner, runs_dir)
     if request.mode == "non_deterministic":
         services.deterministic_attempt = DeterministicAttemptTrace(
             hashlib.sha256(request.task.encode()).hexdigest(), request.task,
@@ -698,6 +702,7 @@ def run_adaptive_practitioner(
         "carried_orientations": [
             {"state_version": version, **record} for version, record in
             sorted(services.carried_orientation_by_version.items())],
+        "task_materials": services.task_materials,
         "action_decisions": services.action_history,
         "context_snapshots": services.context_snapshots,
         "candidate_solution_canvases": services.candidate_canvases,

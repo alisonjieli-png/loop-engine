@@ -199,6 +199,7 @@ def self_test() -> dict:
         "core.adaptive_practitioner_orientation_capabilities",
         "core.adaptive_practitioner_result",
         "core.adaptive_practitioner_source",
+        "core.task_materials",
         "core.adaptive_practitioner_planning",
         "core.adaptive_practitioner_scope",
         "core.adaptive_practitioner_bindings",

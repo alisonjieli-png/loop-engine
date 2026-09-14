@@ -222,9 +222,12 @@ stalled format repair is a recoverable failure instead of the end of a run,
 and a rejected orientation is repaired as a whole record, then field by field,
 and then carried forward with its findings. The recovery panel's route now
 passes the action vector guard, and the independent verifier repairs a
-response whose format is not admitted. The next targets are a task-owned
-evaluator for campaign cells, one working folder per task that every step and
-Spawned Loop shares, and restarting campaign cells after a provider wait.
+response whose format is not admitted. Supplied archives are unpacked into a
+materials folder that the source inventory walks, which is the first part of
+one working folder per task. The next targets are a task-owned evaluator for
+campaign cells, the rest of that working folder (binary files selectable for
+sandboxed code, downloads as files, and Spawned Loops that share the folder
+and return their files), and restarting campaign cells after a provider wait.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

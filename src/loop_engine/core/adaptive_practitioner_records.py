@@ -1741,6 +1741,10 @@ class AdaptiveRunServices:
     #: values it withheld. A carried orientation is never reused as accepted.
     carried_orientation_by_version: dict[int, dict] = field(
         default_factory=dict)
+    #: Folders of unpacked supplied archives that the source inventory walks
+    #: beside the supplied sources, and the record of what was unpacked.
+    task_material_roots: tuple[str, ...] = ()
+    task_materials: dict | None = None
     web_search_results: list[dict] = field(default_factory=list)
     web_results: list[dict] = field(default_factory=list)
     source_inspections: list[dict] = field(default_factory=list)

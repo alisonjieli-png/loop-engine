@@ -159,7 +159,7 @@ MODULE_MAP = {
         "adaptive_practitioner_scope_checks",
         "adaptive_practitioner_bindings", "adaptive_practitioner_bindings_checks",
         "adaptive_practitioner_orientation",
-        "adaptive_practitioner_orientation_repair",
+        "adaptive_practitioner_orientation_repair", "task_materials",
         "adaptive_practitioner_prompting", "adaptive_practitioner_records",
         "adaptive_practitioner_result", "adaptive_practitioner_source",
         "adaptive_practitioner_recovery", "adaptive_practitioner_reuse",
