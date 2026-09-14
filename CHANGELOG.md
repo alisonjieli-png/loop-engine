@@ -51,6 +51,28 @@ First public release.
   Before this change a solve run always used the default policy, and a
   declared policy reached only the kernel's pass counts, not the Loop-level
   identical-failure limit, iteration backstop, or spawn depth guard.
+- A stalled format repair no longer ends a run. When a model step repeats an
+  invalid output or uses all four format repairs, orientation records the
+  stall and makes its repair attempt, verification treats the verifier as
+  unavailable and routes to repair, project generation records a typed
+  refusal, and routing falls back to its deterministic policy or reframes
+  when the recovery panel stalls. Each stall stays in Run History, and the
+  run ends only through a declared limit or another recorded reason.
+- A rejected orientation no longer ends a run. The orientation step asks
+  again for the whole record with each finding quoted, then asks only for the
+  fields that the findings name, and then carries the best orientation
+  forward with its findings recorded. A carried orientation withholds only
+  what the findings protect later steps from: an immediate goal that
+  describes the orientation step, verification obligations that describe the
+  orientation protocol, and questions or an ask action that the orientation
+  policy did not accept. The declared supervision policy decides when a
+  repair strategy is exhausted, and only spent model-call authority or an
+  unavailable provider ends orientation. Results list each carried
+  orientation. Before this change two rejected proposals raised an error. In
+  a live Ollama Cloud rerun on September 14 that ended five of the first nine
+  trials after two model calls, because the prompt showed the step objective
+  as the task's immediate goal and the model copied it. The prompt now leaves
+  the immediate goal empty until an orientation exists.
 
 ### Fixed on 2026-09-14
 

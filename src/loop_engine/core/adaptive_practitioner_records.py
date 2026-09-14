@@ -1736,6 +1736,11 @@ class AdaptiveRunServices:
     plan_details: dict[str, dict] = field(default_factory=dict)
     orientation_by_version: dict[int, "TaskOrientationResult"] = field(
         default_factory=dict)
+    #: State versions whose orientation was carried forward after repair
+    #: rather than accepted, each with its source, attempts, findings, and the
+    #: values it withheld. A carried orientation is never reused as accepted.
+    carried_orientation_by_version: dict[int, dict] = field(
+        default_factory=dict)
     web_search_results: list[dict] = field(default_factory=list)
     web_results: list[dict] = field(default_factory=list)
     source_inspections: list[dict] = field(default_factory=list)
@@ -2412,9 +2417,12 @@ class AdaptiveRunServices:
                 "ultimate_goal": (
                     orientation.ultimate_goal if orientation
                     else self.request.task),
+                # Before orientation the task's immediate goal is unknown. The
+                # step objective already travels in the work directive; shown
+                # here as well, a live campaign copied it into the orientation
+                # record as the task's immediate goal on every attempt.
                 "immediate_goal": (
-                    orientation.immediate_goal if orientation
-                    else request.objective),
+                    orientation.immediate_goal if orientation else None),
                 "current_state": bounded_state,
                 "desired_state": (
                     orientation.desired_state if orientation else "unknown"),

@@ -11,6 +11,7 @@ import json
 from dataclasses import asdict, dataclass
 
 from ..code_nodes.solution_model_port import SolutionModelError
+from .model_response_admission import ModelResponseRepairStalled
 from ..loop.kernel import PractitionerState, RouteDecision
 from ..loop.kernel_runtime import current_kernel_owner
 from .action_vector_routing import (
@@ -72,7 +73,7 @@ def route_adaptive_result(
         reason = _short_text(value.get("reason"), "route reason")
         route_semantic_observed = True
         model_selected_route = selected
-    except (AdaptivePractitionerError, SolutionModelError,
+    except (AdaptivePractitionerError, SolutionModelError, ModelResponseRepairStalled,
             TypeError, ValueError) as exc:
         services.diagnostic("route_model_unavailable", {
             "error_type": type(exc).__name__,
@@ -137,7 +138,7 @@ def route_adaptive_result(
                 services)
             selected = directive["route"]
             reason = directive["reason"]
-        except (AdaptivePractitionerError, SolutionModelError,
+        except (AdaptivePractitionerError, SolutionModelError, ModelResponseRepairStalled,
                 TypeError, ValueError) as exc:
             services.diagnostic("recovery_panel_unavailable", {
                 "error_type": type(exc).__name__,

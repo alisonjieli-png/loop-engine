@@ -28,15 +28,17 @@ from .adaptive_practitioner_capabilities import (
     execute_adaptive_capability,
 )
 from .adaptive_practitioner_deterministic import run_deterministic_attempt
-from .adaptive_practitioner_orientation import orientation_policy_findings
+from .adaptive_practitioner_orientation_repair import (
+    OrientationResolutionRequest, resolve_orientation,
+)
 from .adaptive_practitioner_planning import (
     AdaptivePlanningRequest, build_execution_plan, record_plan_outline,
 )
 from .adaptive_practitioner_records import (
-    _unnamed_fields, ADAPTIVE_PRACTITIONER_RECORD_TYPE, NEXT_ACTION_KINDS,
+    ADAPTIVE_PRACTITIONER_RECORD_TYPE, NEXT_ACTION_KINDS,
     AdaptivePractitionerDependencies, AdaptivePractitionerError,
     AdaptivePractitionerRequest, AdaptiveRunServices, DeterministicAttemptTrace,
-    ModelStepRequest, NextActionDecision, TaskOrientationResult, ModelResponseRepairStalled,
+    ModelStepRequest, NextActionDecision, ModelResponseRepairStalled,
 )
 from .adaptive_practitioner_result import (
     failed_adaptive_output, finish_deterministic_attempt, has_bound_accepted_incumbent,
@@ -166,122 +168,10 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
         services.active_pass_number += 1
         services.publish("practitioner.step.started", step="orient",
                          state_version=state.version)
-        schema = json.dumps({
-                "original_task_ref": "sha256:<digest>",
-                "task_summary": "string", "ultimate_goal": "string",
-                "immediate_goal": "string", "current_state": "string",
-                "desired_state": "string", "inputs": ["string"],
-                "outputs": ["string"], "operator_bundle": ["string"],
-                "response_contract": "string", "decision_consumer": "string",
-                "explicit_constraints": ["string"],
-                "inferred_constraints": ["string"], "non_goals": ["string"],
-                "knowns": ["string"], "unknowns": ["string"],
-                "assumptions": ["string"], "ambiguities": [{
-                    "subject": "string",
-                    "state": "UNKNOWN|AMBIGUOUS|DELEGATED_CHOICE|DEFAULTABLE_CHOICE|DERIVED_VALUE|RESEARCH_REQUIRED|USER_CLARIFICATION_REQUIRED|AUTHORITY_REQUIRED|BLOCKED",
-                    "reason": "string"}],
-                "delegated_choices": ["string"], "safe_defaults": ["string"],
-                "blocking_questions": ["string"],
-                "research_questions": ["string"], "subproblems": ["string"],
-                "dependencies": ["string"], "parallel_candidates": ["string"],
-                "candidate_profiles": ["string"],
-                "candidate_capabilities": ["string"],
-                "verification_obligations": ["string"],
-                "confidence_profile": {"overall": 0.0},
-                "proposed_next_action": "string",
-            }, separators=(",", ":"))
-        failures = []
-        parsed = None
-        for attempt in range(1, 3):
-            try:
-                value = services.model(ModelStepRequest(
-                    "orient",
-                    ("Orient on the task and return TaskOrientationResult "
-                     "version 1." if attempt == 1 else
-                     "Repair the internally inconsistent "
-                     "TaskOrientationResult."),
-                    {**_model_state(state, services),
-                     "orientation_validation_failures": failures}, schema))
-            except SolutionModelError as exc:
-                services.diagnostic("orientation_provider_unavailable", {
-                    "attempt": attempt,
-                    "error_code": exc.error_code or "model_gateway_failed"})
-                raise
-            except AdaptivePractitionerError as exc:
-                failures.append({
-                    "attempt": attempt,
-                    "findings": [f"{type(exc).__name__}: {str(exc)[:500]}"],
-                    "rejected_orientation": None})
-                services.diagnostic("orientation_model_unavailable", {
-                    "attempt": attempt, "error_type": type(exc).__name__})
-                continue
-            value["original_task_ref"] = (
-                "sha256:" + hashlib.sha256(
-                    services.request.task.encode("utf-8")).hexdigest())
-            try:
-                candidate = TaskOrientationResult.from_mapping(value)
-                # Fields the schema does not name are carried, not refused,
-                # so a caller with more to say than the form allows is not
-                # answered with a rejection of all of it. They are reported
-                # because tolerated-and-invisible is its own kind of loss.
-                note_decision(
-                    services,
-                    decision_id=f"{services.run_id}.orient.{attempt}",
-                    decision_kind="interpret_task", owner="llm",
-                    selected=candidate.immediate_goal[:200],
-                    # What the task might have meant, in the run's own words.
-                    alternatives=tuple(
-                        item.subject for item in candidate.ambiguities)[:8],
-                    reason_summary=candidate.task_summary[:300],
-                    assumptions=tuple(candidate.assumptions)[:8],
-                    uncertainties=tuple(candidate.unknowns)[:8],
-                    expected_observation=candidate.desired_state[:200])
-                unnamed = _unnamed_fields(value, TaskOrientationResult)
-                if unnamed:
-                    services.diagnostic("orientation_carried_unnamed_fields", {
-                        "attempt": attempt, "fields": unnamed})
-                findings = orientation_policy_findings(
-                    candidate, services.request.interaction_mode)
-            except (AdaptivePractitionerError, ValueError) as exc:
-                findings = [str(exc)]
-                candidate = None
-            if candidate is not None and not findings:
-                services.grade_current_stage(
-                    observable_process_aligned=True,
-                    expected_output_satisfied=True,
-                    material_progress=True)
-                parsed = candidate
-                break
-            services.grade_current_stage(
-                observable_process_aligned=False,
-                expected_output_satisfied=False,
-                material_progress=False)
-            failures.append({
-                "attempt": attempt, "findings": findings,
-                "rejected_orientation": value})
-            services.diagnostic("orientation_invalid", {
-                "attempt": attempt, "findings": findings})
-        if parsed is None:
-            if services.orientation_by_version:
-                previous = services.orientation_by_version[
-                    max(services.orientation_by_version)]
-                parsed = replace(
-                    previous,
-                    current_state=(
-                        "Latest accepted orientation reused after semantic "
-                        "resolver failure; typed Practitioner state remains "
-                        "authoritative."),
-                    proposed_next_action=(
-                        "Continue from the latest accepted orientation and "
-                        "current typed state."))
-                services.diagnostic("orientation_reused", {
-                    "source_state_version": max(
-                        services.orientation_by_version),
-                    "target_state_version": state.version})
-            else:
-                raise AdaptivePractitionerError(
-                    "orientation remained invalid after one model repair; "
-                    f"the findings were {findings}")
+        # A rejected proposal is repaired, then repaired field by field, then
+        # carried forward with its findings; orientation never ends the run.
+        parsed = resolve_orientation(OrientationResolutionRequest(
+            services, state.version, lambda: _model_state(state, services)))
         services.orientation_by_version[state.version] = parsed
         services.publish("practitioner.step.completed", step="orient",
                          task_summary=parsed.task_summary[:160])
@@ -805,6 +695,9 @@ def run_adaptive_practitioner(
         "failures": run.get("failures", []),
         "orientations": [item.to_dict()
                          for item in services.orientation_by_version.values()],
+        "carried_orientations": [
+            {"state_version": version, **record} for version, record in
+            sorted(services.carried_orientation_by_version.items())],
         "action_decisions": services.action_history,
         "context_snapshots": services.context_snapshots,
         "candidate_solution_canvases": services.candidate_canvases,

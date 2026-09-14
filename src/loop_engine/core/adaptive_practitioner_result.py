@@ -341,6 +341,9 @@ def failed_adaptive_output(
                                .decisions],
         "orientations": [item.to_dict()
                          for item in services.orientation_by_version.values()],
+        "carried_orientations": [
+            {"state_version": version, **record} for version, record in
+            sorted(services.carried_orientation_by_version.items())],
         "action_decisions": services.action_history,
         # A failed run still reports its best attempt, ranked by cross-attempt
         # agreement rather than by any value the model supplied.

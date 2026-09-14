@@ -1821,6 +1821,34 @@ entries:
     classification: RESOURCE_OR_TEMPLATE
     created_on: 2026-09-13
     expires_on: 2027-09-13
+  - finding_id: hardcoding.f667b029841ec23e2846779d
+    owner: loop_engine.core.adaptive_practitioner_orientation
+    rationale: >-
+      The orientation policy compares each proposed ambiguity state with the
+      USER_CLARIFICATION_REQUIRED value of the closed AMBIGUITY_STATES
+      vocabulary. The same comparison was baselined at commit 41cb7ae as
+      hardcoding.a94e9364d087a7caa3cefd0e inside orientation_policy_findings and
+      moved unchanged into orientation_policy_conflicts on 2026-09-14, when each
+      conflict began naming the record fields it concerns. The finding id
+      changed only because the enclosing symbol changed. It reads a typed
+      record value and grants no authority.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-14
+    expires_on: 2027-09-14
+  - finding_id: hardcoding.5c3b8b3d47fa11fa49312232
+    owner: loop_engine.core.adaptive_practitioner_orientation
+    rationale: >-
+      The orientation policy compares the typed interaction mode with the
+      autonomous value of its closed vocabulary to refuse an autonomous request
+      to ask the user despite recorded delegated choices. The same comparison
+      was baselined at commit 41cb7ae as hardcoding.f3cce74fbb0691703ca9d796
+      inside orientation_policy_findings and moved unchanged into
+      orientation_policy_conflicts on 2026-09-14. The finding id changed only
+      because the enclosing symbol changed. It reads a typed request value and
+      grants no authority.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-14
+    expires_on: 2027-09-14
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

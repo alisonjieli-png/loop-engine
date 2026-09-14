@@ -15,6 +15,7 @@ from unittest.mock import patch
 from ..code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
 from .adaptive_practitioner import run_adaptive_practitioner
+from .adaptive_practitioner_orientation_repair import ORIENTATION_OBJECTIVE
 from .source_role_orientation import manifest_digest
 from .independent_verification import IndependentVerificationPolicy
 from .adaptive_practitioner_records import (
@@ -478,16 +479,22 @@ def run_checks() -> dict:
             FixtureModelExecutionRequest(
                 answers=("same invalid response", "same invalid response"),
                 max_model_calls=2))
+        stall_events = []
         repeated = run_adaptive_practitioner(
             AdaptivePractitionerRequest(
                 "Refuse a repeated invalid model response cycle.",
                 mode="non_deterministic", runs_dir=root, max_passes=1),
-            AdaptivePractitionerDependencies(repeated_execution))
-        check("repeated_invalid_json_cycle_stops_by_digest_not_retry_count",
+            AdaptivePractitionerDependencies(
+                repeated_execution, progress=stall_events.append))
+        # The repeated digest still stops the repair cycle after two calls.
+        # The stall is a recorded, recoverable failure: the run ends because
+        # the declared two-call authority is spent, not because repair stalled.
+        check("repeated_invalid_json_cycle_stops_by_digest_and_ends_only_on_spent_authority",
               not repeated["solved"]
-              and repeated["failure_code"] == "ModelResponseRepairStalled"
               and repeated["model_calls"] == 2
-              and "repeated the same invalid JSON" in repeated["failure"],
+              and repeated["failure_code"] == "model_call_budget_exhausted"
+              and any(event.get("diagnostic_code") == "orientation_repair_stalled"
+                      for event in stall_events),
               repeated.get("failure", ""))
         # The stall shape contract lives beside admission
         # (model_response_admission_checks); this flow pins the behavior.
@@ -506,6 +513,96 @@ def run_checks() -> dict:
               horizon_repair["solved"]
               and horizon_repair["model_calls"] == 8,
               horizon_repair.get("failure", "orientation repaired"))
+
+    # A rejected orientation is repaired, then repaired field by field, then
+    # carried forward with its findings; orientation never ends the run. The
+    # echoed goal is what a live model wrote on every attempt of four tasks.
+    echoed_goal = "Orient on the task and return TaskOrientationResult version 1."
+    echoed = json.dumps(_orientation(immediate_goal=echoed_goal))
+
+    def persistent_orientation_run(task, answers, root, forbidden=()):
+        events = []
+        result = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                task, mode="hybrid", runs_dir=root, max_passes=1,
+                interaction_mode="autonomous", allow_network_reads=False,
+                independent_verification_policy=IndependentVerificationPolicy(
+                    required=False)),
+            AdaptivePractitionerDependencies(
+                fixture_model_execution(FixtureModelExecutionRequest(
+                    answers=answers, max_model_calls=len(answers),
+                    forbidden_prompt_fragments=forbidden)),
+                project_executor=_project_fixture, progress=events.append))
+        return result, [event.get("diagnostic_code") for event in events]
+
+    with tempfile.TemporaryDirectory() as root:
+        field_repair, codes = persistent_orientation_run(
+            "Build a verified artifact after a repeated protocol goal.",
+            (echoed, echoed,
+             json.dumps({"immediate_goal": "Build and test the result."}),
+             *_success_answers()[1:]), root)
+        check("repeated_protocol_goal_is_repaired_through_its_named_field",
+              field_repair["solved"] and field_repair["model_calls"] == 9
+              and not field_repair.get("carried_orientations")
+              and "orientation_strategy_changed" in codes
+              and "orientation_repaired" in codes,
+              field_repair.get("failure", str(codes)))
+    with tempfile.TemporaryDirectory() as root:
+        carried, codes = persistent_orientation_run(
+            "Build a verified artifact after an unrepaired protocol goal.",
+            (echoed, echoed, json.dumps({"immediate_goal": echoed_goal}),
+             *_success_answers()[1:]), root)
+        record = (carried.get("carried_orientations") or [{}])[0]
+        check("unrepaired_orientation_is_carried_forward_and_the_run_continues",
+              carried["solved"] and carried["model_calls"] == 9
+              and record.get("source") == "rejected_proposal"
+              and record.get("withheld", {}).get("immediate_goal")
+              == echoed_goal
+              and "orientation_carried_forward" in codes,
+              carried.get("failure", str(record)))
+    protocol_obligation = (
+        "Validate the TaskOrientationResult against the inline schema.")
+    leaked_both = _orientation(
+        immediate_goal=echoed_goal, verification_obligations=[
+            "execution command passes", protocol_obligation])
+    with tempfile.TemporaryDirectory() as root:
+        withheld_run, _codes = persistent_orientation_run(
+            "Build a verified artifact without adopting a protocol obligation.",
+            (json.dumps(leaked_both), json.dumps(leaked_both),
+             json.dumps({key: leaked_both[key] for key in (
+                 "immediate_goal", "verification_obligations")}),
+             *_success_answers(_orientation(
+                 verification_obligations=["execution command passes"]))[1:]),
+            root)
+        record = (withheld_run.get("carried_orientations") or [{}])[0]
+        check("carried_orientation_withholds_protocol_obligations_from_acceptance",
+              withheld_run["solved"] and withheld_run["model_calls"] == 9
+              and record.get("withheld", {}).get("verification_obligations")
+              == [protocol_obligation]
+              and (withheld_run.get("orientations") or [{}])[-1].get(
+                  "verification_obligations") == ["execution command passes"],
+              withheld_run.get("failure", str(record)))
+    incomplete = json.dumps({"task_summary": "An incomplete orientation."})
+    with tempfile.TemporaryDirectory() as root:
+        unresolved, _codes = persistent_orientation_run(
+            "Build a verified artifact when no orientation is admitted.",
+            (incomplete, incomplete, *_success_answers(_orientation(
+                verification_obligations=["the task text"]))[1:]), root)
+        record = (unresolved.get("carried_orientations") or [{}])[0]
+        check("inadmissible_orientation_continues_from_the_task_text",
+              unresolved["solved"] and unresolved["model_calls"] == 8
+              and record.get("source") == "unresolved_orientation",
+              unresolved.get("failure", str(record)))
+    with tempfile.TemporaryDirectory() as root:
+        objective_run, _codes = persistent_orientation_run(
+            "Build a verified artifact from a task context without the step.",
+            _success_answers(), root, forbidden=(
+                '"immediate_goal":'
+                + json.dumps(ORIENTATION_OBJECTIVE, ensure_ascii=False),))
+        check("step_objective_never_stands_in_for_the_task_immediate_goal",
+              objective_run["solved"] and objective_run["model_calls"] == 7,
+              objective_run.get(
+                  "failure", "the task context kept the step objective out"))
 
     method_answers = list(_success_answers())
     valid_how = json.loads(method_answers[2])

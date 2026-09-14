@@ -13,7 +13,8 @@ from .adaptive_practitioner import run_adaptive_practitioner
 from .adaptive_practitioner_records import (
     AdaptivePractitionerDependencies, AdaptivePractitionerRequest,
     NextActionDecision, TaskOrientationResult)
-from .adaptive_practitioner_orientation import orientation_policy_findings
+from .adaptive_practitioner_orientation import (
+    orientation_policy_conflicts, orientation_policy_findings)
 from .adaptive_practitioner_recovery import (
     RecoveryPanelRequest, resolve_stall_with_panel)
 from .adaptive_practitioner_supervision import detect_stall
@@ -229,6 +230,30 @@ def run_checks() -> dict:
                    and any("USER_CLARIFICATION_REQUIRED" in item
                            for item in meta_findings)),
         "detail": str(meta_findings),
+    })
+    # Repair asks for exactly the fields a conflict names, and a carried
+    # orientation withholds only those fields, so the names must be exact.
+    meta_conflicts = orientation_policy_conflicts(
+        TaskOrientationResult.from_mapping(meta_orientation), "autonomous")
+    protocol_obligation = (
+        "Validate the TaskOrientationResult against the inline schema.")
+    mixed_obligations = json.loads(orientation)
+    mixed_obligations["verification_obligations"] = [
+        "test command passes", protocol_obligation]
+    mixed_conflicts = orientation_policy_conflicts(
+        TaskOrientationResult.from_mapping(mixed_obligations), "autonomous")
+    results.append({
+        "test": "orientation_conflicts_name_their_fields_and_protocol_entries",
+        "passed": (
+            any(item.fields == ("immediate_goal",) for item in meta_conflicts)
+            and all("blocking_questions" in item.fields
+                    for item in meta_conflicts
+                    if item.fields != ("immediate_goal",))
+            and [(item.fields, item.protocol_items)
+                 for item in mixed_conflicts] == [
+                (("verification_obligations",), (protocol_obligation,))]),
+        "detail": str([(item.fields, item.protocol_items)
+                       for item in (*meta_conflicts, *mixed_conflicts)]),
     })
     supervised = SimpleNamespace(
         web_results=[], source_inspections=[], project_attempts=[],

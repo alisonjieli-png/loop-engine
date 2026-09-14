@@ -18,6 +18,7 @@ from ..code_nodes.solution_canvas import SolutionLoopSpec, SolutionSpec
 from ..code_nodes.solution_compiler import (
     compile_solution, render_canvas, run_compiled)
 from ..code_nodes.solution_model_port import SolutionModelError
+from .model_response_admission import ModelResponseRepairStalled
 from ..loop.kernel import ExecutionPlan, PractitionerState, ResultPacket
 from ..loop.encapsulate import as_practitioner_loop
 from .adaptive_practitioner_records import (
@@ -322,7 +323,7 @@ def execute_adaptive_capability(
             manifest = project_manifest(
                 request.state, plan, services, input_artifacts)
         except (AdaptivePractitionerError, GeneratedProjectError,
-                SolutionModelError, PermissionError) as exc:
+                SolutionModelError, ModelResponseRepairStalled, PermissionError) as exc:
             return refuse_project(
                 "prepare and construct a valid executable project", exc,
                 "The project could not be prepared from the current run "

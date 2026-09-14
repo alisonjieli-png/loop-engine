@@ -216,11 +216,14 @@ contract. The direction is recorded as proposed invariants in the
 [Constitution](../architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction)
 and designed in the
 [persistent general solving decision record](../architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md).
-The proposed invariants are not implemented yet. A typed supervision policy on
-`SolveRequest` now reaches the Starting and Spawned Practitioner Loops; the
-next targets are format repair stalls that end runs, the recovery panel stop
-that skips the action vector route guard, and JSON repair for the independent
-verifier.
+The proposed invariants are not qualified yet. A typed supervision policy on
+`SolveRequest` now reaches the Starting and Spawned Practitioner Loops, a
+stalled format repair is a recoverable failure instead of the end of a run,
+and a rejected orientation is repaired as a whole record, then field by field,
+and then carried forward with its findings. The next targets are the recovery
+panel stop that skips the action vector route guard, JSON repair for the
+independent verifier, a task-owned evaluator for campaign cells, and one
+working folder per task that every step and Spawned Loop shares.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

@@ -43,6 +43,7 @@ from .independent_verification import (
 from .model_response_admission import (
     ModelResponseAdmissionPolicy,
     ModelResponseContract,
+    ModelResponseRepairStalled,
 )
 from .action_vector_assessment import (
     CONTINUATION_STATUSES,
@@ -628,7 +629,7 @@ def verify_adaptive_results(
                   material_progress=True,
                   continuation_available=action_vector.continuation_available)
         semantic_verification_observed = True
-    except (AdaptivePractitionerError, SolutionModelError,
+    except (AdaptivePractitionerError, SolutionModelError, ModelResponseRepairStalled,
             TypeError, ValueError) as exc:
         grade = getattr(services, "grade_current_stage", None)
         if callable(grade):

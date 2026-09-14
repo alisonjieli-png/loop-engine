@@ -378,6 +378,37 @@ def verification_operational_checks() -> list[dict]:
             and not services.verification_records[-1]["gap_assessments"]
             and services.verification_records[-1]["semantic_verification_observed"])})
 
+    from .model_response_admission import ModelResponseRepairStalled
+
+    def stalled_model(_request):
+        raise ModelResponseRepairStalled(
+            "model step verify repeated the same invalid JSON output without progress",
+            step_id="verify", attempts=2, failure_code="repeated_invalid_output")
+
+    stalled_services = SimpleNamespace(
+        orientation_by_version={},
+        request=SimpleNamespace(
+            task="Return the requested result.",
+            independent_verification_policy=IndependentVerificationPolicy()),
+        model=stalled_model, diagnostic=lambda *_args: None,
+        verification_records=[], active_pass_number=1,
+        stage_store=StageStore(), stage_attribution_events=[])
+    try:
+        with patch("loop_engine.core.adaptive_practitioner_verification.run_independent_verification",
+                   return_value={"status": "unavailable", "notes": "not under test"}):
+            stalled = verify_adaptive_results(AdaptiveVerificationRequest(
+                PractitionerState(ProblemSpec(stalled_services.request.task)),
+                ExecutionPlan("generate", "run_dag"),
+                (ResultPacket("candidate", result=project),), {}), stalled_services)
+        stalled_recovered = bool(
+            stalled.verdict == "repair"
+            and any(item.get("source") == "semantic_verifier"
+                    for item in stalled_services.verification_records[-1]["operational_failures"]))
+    except ModelResponseRepairStalled:
+        stalled_recovered = False
+    tests.append({"test": "a_stalled_verifier_response_becomes_repair_not_the_end_of_the_run",
+                  "passed": stalled_recovered})
+
     criteria = [{"criterion_ref": "criterion:0", "text": services.request.task}]
     binding = {
         "independent_verification_policy":
