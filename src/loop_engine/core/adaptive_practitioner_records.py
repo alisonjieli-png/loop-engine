@@ -1357,7 +1357,7 @@ class NextActionDecision:
             'allOf':[{'if':{'properties':{'actions':{'minItems':2}}},
                       'then':{'required':['selected_action_index']}}]}
         return ModelResponseContract('next_action_response/v1', json.dumps(schema, sort_keys=True),
-            policy=ModelResponseAdmissionPolicy(report_required_field_names=True))
+            policy=ModelResponseAdmissionPolicy(report_required_field_names=True, report_constraint_paths=True))
 
 class DeterministicTaskResolver(Protocol):
     """Exact reusable resolver considered before model escalation."""

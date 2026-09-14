@@ -167,6 +167,11 @@ class ModelResponseAdmissionPolicy:
     allowed_strategies: tuple[str, ...] = _NORMALIZATION_STRATEGIES
     expected_root_type: str = "object"
     report_required_field_names: bool = False
+    #: Opt-in disclosure of the schema's own path to each failed
+    #: constraint (``properties/steps/minItems``), so a repair can be told
+    #: which declared field failed and not only which keyword. Never an
+    #: instance path: a candidate's unexpected property names stay out.
+    report_constraint_paths: bool = False
 
     def __post_init__(self) -> None:
         strategies = tuple(self.allowed_strategies)
@@ -178,6 +183,8 @@ class ModelResponseAdmissionPolicy:
             raise ValueError("version 1 response admission expects an object")
         if type(self.report_required_field_names) is not bool:
             raise TypeError('schema-field disclosure must be an explicit Boolean policy')
+        if type(self.report_constraint_paths) is not bool:
+            raise TypeError('schema-path disclosure must be an explicit Boolean policy')
         object.__setattr__(self, "allowed_strategies", strategies)
 
 
@@ -208,7 +215,11 @@ class ModelResponseContract:
                 'contract_ref':self.contract_ref, 'schema':json.loads(self.schema_json),
                 'normalization':{'allowed_strategies':list(self.policy.allowed_strategies),
                                  'expected_root_type':self.policy.expected_root_type,
-                                 'report_required_field_names':self.policy.report_required_field_names}}
+                                 'report_required_field_names':self.policy.report_required_field_names,
+                                 # Present only when on, so every contract digest
+                                 # recorded before this field existed still holds.
+                                 **({'report_constraint_paths': True}
+                                    if self.policy.report_constraint_paths else {})}}
 
     @property
     def content_digest(self):
@@ -388,6 +399,12 @@ def _admit(request: ModelResponseAdmissionRequest) \
                     for error in failures if error.validator == 'required'
                     and isinstance(error.instance, dict)
                     for name in error.validator_value if name not in error.instance)
+            if request.policy.report_constraint_paths:
+                # The schema's own path to the failed constraint: names the
+                # trusted contract declared, never the candidate's keys.
+                categories.extend(
+                    'schema_constraint_at:' + '/'.join(str(part) for part in error.absolute_schema_path)
+                    for error in failures)
             errors = tuple(sorted(set(categories)))
         if errors:
             return ModelResponseAdmissionResult(

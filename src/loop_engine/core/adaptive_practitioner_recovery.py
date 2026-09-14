@@ -72,7 +72,7 @@ def _response_contract(identity, properties):
     """Explicit response fields, never executable rules inferred from prose."""
     return ModelResponseContract(identity, json.dumps({
         'type':'object','required':list(properties),'properties':properties},sort_keys=True),
-        policy=ModelResponseAdmissionPolicy(report_required_field_names=True))
+        policy=ModelResponseAdmissionPolicy(report_required_field_names=True, report_constraint_paths=True))
 
 
 def _diagnosis_contract():

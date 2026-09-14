@@ -111,7 +111,7 @@ def _planning_response_contract(action_id, action):
     return ModelResponseContract('execution_method_response/v1',json.dumps({
         'type':'object','required':sorted(_PLAN_FIELDS),'properties':properties,
         'additionalProperties':False},sort_keys=True),
-        policy=ModelResponseAdmissionPolicy(report_required_field_names=True))
+        policy=ModelResponseAdmissionPolicy(report_required_field_names=True, report_constraint_paths=True))
 
 
 def _require_fields(value, required, location: str) -> None:

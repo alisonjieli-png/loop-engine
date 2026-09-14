@@ -9,6 +9,17 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- Schema repair is told which declared field failed. The first finished
+  live cell (deepseek-v4-pro on AE-001, eighteen calls, no verified
+  artifact) spent twelve admissions on `schema_constraint_failed:minItems`
+  with no field named, so the repair prompt could only say "an array is
+  too short". The admission policy now has an opt-in
+  `report_constraint_paths`, under which each failure also carries the
+  schema's own path to the constraint (`schema_constraint_at:
+  properties/steps/minItems`); it names what the trusted contract
+  declared, never a candidate's keys, and a contract's digest is unchanged
+  unless the policy is on. The Practitioner's own step, planning, and
+  recovery contracts turn it on.
 - A fallback order that names an uninstalled harness no longer fails the
   assignment before any attempt. The first live campaign cell with
   `harness_fallback: registered_alternatives` failed at the trial boundary
