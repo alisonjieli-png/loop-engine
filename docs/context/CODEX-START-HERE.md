@@ -105,6 +105,18 @@ the controller and package resources, and route-stop on a single generic
 renders a campaign root as one page from its exported records, counting
 the worker's access-probe calls apart from task calls.
 
+**Urgent, 01:30 UTC September 14:** the pro worker's `CS-001` cell
+(`.loop-engine-dev/fabric-readiness-20260913-N8fyhI/live-pro`) has made 320
+model calls and consumed 13.8 million provider-reported tokens in fifty
+minutes and is still running, with forty-nine verification rounds recorded;
+the campaign builds every trial with `max_model_calls=None` and
+`max_passes=None` (the runner's `ModelExecution(...)` and the Practitioner
+request), so one cell can spend the whole weekly allowance. A per-cell call
+ceiling and pass ceiling are configuration dimensions the grid should carry
+explicitly (the owner's rule is explicit ceilings, never implicit ones), and
+the worker should stop a cell that exceeds them with a recorded terminal.
+The flash worker's finished cells took 44 and 69 calls.
+
 Coordination, 23:52 UTC September 13: the Claude session's changes to
 campaign activation, the campaign page, provider accounting, and the
 runner's step-history checkpoints are committed and pushed (`d753ed9` and
