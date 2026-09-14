@@ -222,8 +222,7 @@ class ModelExecution:
         # adaptive_practitioner_result.py and adaptive_practitioner_scope.py
         # and was not validated: a documented four-member session passed
         # this check and failed with AttributeError when the run reported.
-        missing = [name for name in (
-            "invoke", "results", "calls_used", "accounting_uncertain")
+        missing = [name for name in MODEL_SESSION_MEMBERS
                    if not hasattr(session, name)]
         if missing:
             raise SolutionModelError(
@@ -231,6 +230,19 @@ class ModelExecution:
                 f"{missing}; the Practitioner reads invoke(), results, "
                 "calls_used and accounting_uncertain on every step")
         return session
+
+
+#: The members every model session exposes, whether it is the in-process
+#: session or one a session_factory returned. Code that needs a session
+#: checks this contract, not the in-process class, so a campaign or harness
+#: session reaches the same features.
+MODEL_SESSION_MEMBERS = ("invoke", "results", "calls_used", "accounting_uncertain")
+
+
+def exposes_model_session(value) -> bool:
+    """True when a value offers the model session contract a factory must meet."""
+    return (callable(getattr(value, "invoke", None))
+            and all(hasattr(value, name) for name in MODEL_SESSION_MEMBERS[1:]))
 
 
 @dataclass

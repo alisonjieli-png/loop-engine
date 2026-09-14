@@ -258,6 +258,59 @@ def self_test() -> dict:
     check("different_failure_histories_produce_different_explicit_allocations",
           decisions == [32, 128])
 
+    from ..code_nodes.solution_model_port import exposes_model_session
+
+    class _DelegatingSession:
+        """A session that wraps the in-process one, as a campaign session does."""
+
+        def __init__(self, inner):
+            self._inner = inner
+            self.invocations = 0
+
+        def __getattr__(self, name):
+            return getattr(self._inner, name)
+
+        def invoke(self, request, parent_loop):
+            self.invocations += 1
+            return self._inner.invoke(request, parent_loop)
+
+    step = ModelStepRequest("decide_next", "recover the bounded semantic responsibility",
+                            {}, '{"answer":"string"}')
+    _PromptSensitiveRecoveryAdapter.prompts = []
+    wrapped = _DelegatingSession(_session(2))
+    wrapped_owner = Loop("offline wrapped session recovery owner")
+    token = _ACTIVE_KERNEL_OWNER.set(wrapped_owner)
+    try:
+        try:
+            wrapped.invoke(ModelInvocationRequest(
+                "ORIGINAL_FAILURE", semantic_call_id="original:wrapped-failure"), wrapped_owner)
+        except SolutionModelError:
+            pass
+        wrapped_outcome = AdaptiveRunServices._reasoned_recovery(
+            _services(wrapped), step, "output_validation_failed", 1, provider_responded=True)
+    finally:
+        _ACTIVE_KERNEL_OWNER.reset(token)
+    check("a_session_from_a_session_factory_reaches_recovery_reasoning",
+          wrapped_outcome.reasoned and wrapped_outcome.selected == ("retry_same_route",)
+          and wrapped.invocations == 2
+          and any("KIND: choose_recovery" in prompt
+                  for prompt in _PromptSensitiveRecoveryAdapter.prompts))
+    incomplete = SimpleNamespace(invoke=lambda request, parent: "", results=[])
+    _PromptSensitiveRecoveryAdapter.prompts = []
+    incomplete_owner = Loop("offline incomplete session recovery owner")
+    token = _ACTIVE_KERNEL_OWNER.set(incomplete_owner)
+    try:
+        refused = AdaptiveRunServices._reasoned_recovery(
+            _services(incomplete), step, "output_validation_failed", 1, provider_responded=True)
+    finally:
+        _ACTIVE_KERNEL_OWNER.reset(token)
+    check("a_value_without_the_model_session_contract_gets_no_recovery_call",
+          exposes_model_session(wrapped) and not exposes_model_session(incomplete)
+          and not exposes_model_session(SimpleNamespace(
+              invoke="not callable", results=[], calls_used=0, accounting_uncertain=False))
+          and refused.blocker == NO_REASONING_ROUTE_AVAILABLE and not refused.reasoned
+          and _PromptSensitiveRecoveryAdapter.prompts == [])
+
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "model_output_recovery_checks/v1",

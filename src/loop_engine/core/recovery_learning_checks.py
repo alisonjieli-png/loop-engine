@@ -64,5 +64,19 @@ def run_self_test_checks():
         try:capture_recovery_learning(directive,s,parent=Loop('disabled capture control'))
         except ValueError:check('disabled_capture_spends_no_model_call',s.model_session.calls_used==0)
         else:check('disabled_capture_spends_no_model_call',False)
+        # A campaign session wraps the in-process one; the contract, not the class, admits it.
+        class DelegatingSession:
+            def __init__(self,inner):self._inner=inner
+            def __getattr__(self,name):return getattr(self._inner,name)
+            def invoke(self,request,parent_loop):return self._inner.invoke(request,parent_loop)
+        s=services(candidate);s.model_session=DelegatingSession(s.model_session)
+        try:wrapped=capture_recovery_learning(directive,s,parent=Loop('wrapped session capture'))
+        except TypeError:wrapped={'candidate_count':0}
+        check('a_session_from_a_session_factory_can_capture_learning',wrapped['candidate_count']==1
+              and s.model_session.calls_used==1)
+        s=services(candidate);s.model_session=SimpleNamespace(invoke=s.model_session.invoke,results=[])
+        try:capture_recovery_learning(directive,s,parent=Loop('incomplete session capture'))
+        except TypeError:check('a_value_without_the_model_session_contract_cannot_capture',True)
+        else:check('a_value_without_the_model_session_contract_cannot_capture',False)
     return {'tests':tests,'passed':sum(t['passed'] for t in tests),'total':len(tests),
             'all_passed':all(t['passed'] for t in tests)}

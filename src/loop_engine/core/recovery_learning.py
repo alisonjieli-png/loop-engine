@@ -40,12 +40,12 @@ def capture_recovery_learning(directive, services, *, parent):
     it is never added to selected intelligence or used as an execution policy.
     """
     from ..code_nodes.learning_bundle import LearningBundle, LearningCandidate
-    from ..code_nodes.solution_model_port import ModelExecutionSession, ModelInvocationRequest
+    from ..code_nodes.solution_model_port import ModelInvocationRequest, exposes_model_session
     from ..loop.loop_contract import LoopContract, execution_mode_for_runtime_mode
     from ..loop.loop_role import LoopRole, LoopRoleIdentity
     from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome
     from .semantic_decision import SemanticDecisionRecord
-    if not isinstance(parent, Loop) or not isinstance(services.model_session, ModelExecutionSession):
+    if not isinstance(parent, Loop) or not exposes_model_session(services.model_session):
         raise TypeError('recovery capture needs an owning Loop and its typed model session')
     if not isinstance(directive, dict) or directive.get('record_type') != 'practitioner_recovery_directive/v1':
         raise ValueError('a recorded recovery directive is required')

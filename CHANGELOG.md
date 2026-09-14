@@ -151,6 +151,13 @@ First public release.
   routing, and the final result read the same attempt, and no project runs
   again. The runtime facts name the attempt that would be submitted and whether
   its checks passed.
+- Recovery reasoning now runs for every model session the model authority
+  admits. A campaign builds its authority with a session factory whose session
+  wraps the in-process one, and recovery reasoning and recovery learning
+  required the in-process class, so in every campaign trial a failed model
+  call got no reasoned recovery and no recovery call was made. Both now check
+  the session contract that the authority already enforces: `invoke`,
+  `results`, `calls_used`, and `accounting_uncertain`.
 - A malformed method assessment from the model no longer discards a finished
   run's outcome. The model-facing resolution contract listed every method
   identifier in the value position, and a live model returned that list, or a

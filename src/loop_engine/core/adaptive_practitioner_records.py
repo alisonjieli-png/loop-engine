@@ -24,7 +24,6 @@ from typing import TYPE_CHECKING, Callable, Iterator, Protocol
 
 from ..code_nodes.solution_model_port import (
     ModelExecution,
-    ModelExecutionSession,
     ModelInvocationRequest,
     SolutionModelError,
 )
@@ -2025,7 +2024,7 @@ class AdaptiveRunServices:
                            *, provider_responded: bool):
         """Ask the same governed model session what executable recovery to use.
 
-        The recovery request uses ``ModelExecutionSession.invoke`` directly,
+        The recovery request uses the model session's ``invoke`` directly,
         rather than this model-step method, so a failed recovery call cannot
         recurse into another recovery decision. It is charged to the same
         physical-call and token authority as the failed work.
@@ -2035,11 +2034,14 @@ class AdaptiveRunServices:
         reasoning could not be reached — not a licence to finish the task some
         other way.
         """
+        from ..code_nodes.solution_model_port import exposes_model_session
         from .recovery import NO_REASONING_ROUTE_AVAILABLE, RecoveryOutcome
 
         session = self.model_session
         owner = current_kernel_owner()
-        if not isinstance(session, ModelExecutionSession) or owner is None:
+        # A campaign or harness session wraps the in-process one. Any session
+        # the model authority admits reaches recovery reasoning.
+        if not exposes_model_session(session) or owner is None:
             return RecoveryOutcome(
                 blocker=NO_REASONING_ROUTE_AVAILABLE,
                 reason="recovery reasoning needs the active typed model "
