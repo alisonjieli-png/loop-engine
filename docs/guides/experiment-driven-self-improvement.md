@@ -157,14 +157,20 @@ business-system mutation.
 `run_self_improvement` uses `practitioner.self_improvement@1.0.0`. It reads
 selected history, verifies chains, inspects intelligence, and stages candidate
 review items. `run_limit=None` selects the full directory population;
-`run_limit=0` selects no history. Missing or broken bundles remain excluded
-with a reason.
+`run_limit=0` selects no history. The population is every directory with a
+manifest, whether a saved run or an append-only checkpoint store; an
+artifact directory beside a run is listed as ignored and cannot take a
+selected run's place. Broken bundles remain excluded with a reason, and so
+does a later copy of an event content already loaded, naming the run it
+repeats.
 
 The history miner reads explicit model-response and failure events. Merely
 running a model-capable step does not establish that a model answered, that
 the answer was correct, or that a deterministic method was unavailable.
-Repeated events in one trace do not become several runs. Known copied
-histories are not additional observations. Candidate frequency and heuristic
+Repeated events in one trace do not become several runs. Copied histories
+are not additional observations: the miner deduplicates on the run id, the
+chain head, and the history's content digest, which survives re-projection
+of one ledger under another run id. Candidate frequency and heuristic
 scores remain review aids, not calibrated confidence or improvement evidence.
 
 ## Preparation for a configured endpoint

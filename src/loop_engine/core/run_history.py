@@ -258,6 +258,36 @@ class RunHistory:
         return {"intact": not broken, "broken_at": broken,
                 "events": len(self.event_log)}
 
+    # The event a ledger projection synthesizes first, and the source it
+    # names; its time is the projection's, not the run's.
+    PROJECTION_START_EVENT = "run_started"
+    PROJECTION_SOURCE = "loop_ledger"
+    PROJECTION_IDENTITY_FIELDS = ("run_id", "prev_digest")
+
+    def content_digest(self) -> str:
+        """The digest of what this history records, not of which projection
+        recorded it.
+
+        The chain head names one projection exactly: the run id sits in
+        every event body and the synthesized start event carries the time
+        of projection, so one ledger projected twice under two run ids has
+        two chain heads and would pass for two runs. This digest drops the
+        run id, the chain links, and the start event's projection time and
+        keeps everything else, the ledger's own timestamps included: a
+        copied or re-projected history is the same observation, while a
+        genuine repetition on the same subject, which happened at other
+        times, stays distinct.
+        """
+        contents = []
+        for e in self.event_log:
+            body = {k: v for k, v in e.body().items()
+                    if k not in self.PROJECTION_IDENTITY_FIELDS}
+            if (e.event_type == self.PROJECTION_START_EVENT
+                    and e.detail.get("source") == self.PROJECTION_SOURCE):
+                body.pop("ts", None)
+            contents.append(body)
+        return _digest(contents)
+
     # --- the ledger projection --------------------------------------------
 
     #: raw ledger kind -> stored bucket.  Narrowed 2026-08-23 (drift D-1),
@@ -307,7 +337,8 @@ class RunHistory:
         Explicit provider events are authoritative. Legacy ledgers without
         them may absorb the positional usage log for compatibility."""
         ch = cls(run_id)
-        ch.append("run_started", detail={"source": "loop_ledger"})
+        ch.append(cls.PROJECTION_START_EVENT,
+                  detail={"source": cls.PROJECTION_SOURCE})
         ch.extend_from_ledger(ledger_events, usage_log=usage_log)
         return ch
 

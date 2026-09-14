@@ -35,6 +35,7 @@ class SelfImprovementReport:
     loop_result: object
     ledger: object
     staged_only: bool = True
+    ignored_directories: tuple = ()
 
 
 def audit_intelligence_summary(summary: dict) -> list:
@@ -61,31 +62,73 @@ def audit_intelligence_summary(summary: dict) -> list:
     return candidates
 
 
+NOT_A_SAVED_RUN = "no manifest; not a saved run or checkpoint store"
+
+
+def _one_trace_per_observation(runs: list) -> tuple:
+    """Keep the earliest projection of each event content; name the rest.
+
+    One ledger projected twice under two run ids is one observation. The
+    trace whose first event is earliest (then the lower run id) stays; each
+    later copy is excluded with the run it repeats, so the report shows the
+    copy rather than a second independent run.
+    """
+    by_content: dict = {}
+    for trace in runs:
+        key = trace.get("content_digest") or trace["run_id"]
+        by_content.setdefault(key, []).append(trace)
+    copies = []
+    for traces in by_content.values():
+        ordered = sorted(traces, key=lambda t: (t.get("first_event_ts", 0.0),
+                                                t["run_id"]))
+        for copy in ordered[1:]:
+            copies.append({"run_id": copy["run_id"], "reason":
+                           f"same event content as run {ordered[0]['run_id']!r}"})
+    copied = {entry["run_id"] for entry in copies}
+    return [t for t in runs if t["run_id"] not in copied], copies
+
+
 def load_run_history(runs_dir: str, *, limit: "int | None" = None,
                            ledger=None, parent=None) -> dict:
-    """Load an exact verified run population for improvement review."""
+    """Load an exact verified run population for improvement review.
+
+    The population is every directory holding a manifest: a saved run or an
+    append-only checkpoint store, which loads as its latest checkpoint. A
+    sibling without one (the artifact directory beside its run) is listed
+    under ``ignored`` and takes no place in the limit. Histories with the
+    same event content are one observation; see
+    ``_one_trace_per_observation``.
+    """
     if limit is not None and (type(limit) is not int or limit < 0):
         raise ValueError('history limit must be a nonnegative integer or None')
+    import json
     from ..core.run_history import (RunHistory, default_runs_dir,
                                                   as_ledger_events)
     from ..loop.intelligence_loops import serve_historical_intelligence
     from .housekeeping import trace_from_loop_ledger
     root = default_runs_dir(runs_dir)
-    present = []
+    present, ignored = [], []
     if os.path.isdir(root):
-        present = [name for name in sorted(os.listdir(root))
-                   if os.path.isdir(os.path.join(root, name))]
+        for name in sorted(os.listdir(root)):
+            if not os.path.isdir(os.path.join(root, name)):
+                continue
+            if os.path.exists(os.path.join(root, name, "manifest.json")):
+                present.append(name)
+            else:
+                ignored.append({"name": name, "reason": NOT_A_SAVED_RUN})
     selected = present if limit is None else (present[-limit:] if limit else [])
     runs, excluded = [], []
     for run_id in selected:
         path = os.path.join(root, run_id)
-        if not os.path.exists(os.path.join(path, "manifest.json")):
-            excluded.append({"run_id": run_id, "reason": "manifest missing"})
-            continue
         try:
+            with open(os.path.join(path, "manifest.json"), encoding="utf-8") as stream:
+                record_type = str(json.load(stream).get("record_type", ""))
+            loader = (RunHistory.load_checkpoint
+                      if record_type == RunHistory.CHECKPOINT_STORE_RECORD_TYPE
+                      else RunHistory.load)
             served = serve_historical_intelligence(
                 f"self-improvement-history:{run_id}",
-                lambda run_id=run_id: RunHistory.load(root, run_id),
+                lambda run_id=run_id, loader=loader: loader(root, run_id),
                 ledger=ledger, parent=parent)
             if served.get("error") is not None or served.get("value") is None:
                 raise ValueError("saved run history could not be loaded")
@@ -97,15 +140,21 @@ def load_run_history(runs_dir: str, *, limit: "int | None" = None,
                 continue
             trace = trace_from_loop_ledger(as_ledger_events(run_history.event_log))
             trace["run_id"] = run_id
+            trace["record_type"] = record_type
             trace["events"] = len(run_history.event_log)
             trace["history_digest"] = run_history.event_log[-1].event_digest if run_history.event_log else ''
+            trace["content_digest"] = run_history.content_digest()
+            trace["first_event_ts"] = (run_history.event_log[0].ts
+                                       if run_history.event_log else 0.0)
             runs.append(trace)
         except (OSError, KeyError, TypeError, ValueError) as exc:
             excluded.append({"run_id": run_id,
                              "reason": f"unreadable: {type(exc).__name__}"})
+    runs, copies = _one_trace_per_observation(runs)
+    excluded.extend(copies)
     return {"root": root, "population": len(present),
             "selected": len(selected), "runs": runs,
-            "excluded": excluded, "limit": limit}
+            "excluded": excluded, "ignored": ignored, "limit": limit}
 
 
 def run_self_improvement(*, runs_dir: str = "", layer_records=None,
@@ -211,7 +260,8 @@ def run_self_improvement(*, runs_dir: str = "", layer_records=None,
         intelligence_items_reviewed=summary["total_items"],
         retrieval_hits=tuple(state["retrieval_hits"]),
         candidates=candidates, classification=classify_intelligence(candidates),
-        loop_result=result, ledger=log)
+        loop_result=result, ledger=log,
+        ignored_directories=tuple(history["ignored"]))
 
 
 def self_test() -> dict:
@@ -232,6 +282,26 @@ def self_test() -> dict:
             run_history = RunHistory.from_ledger(
                 lp.ledger.events, run_id=f"history-{index}")
             run_history.commit(); run_history.save(history_root)
+        # The last ledger projected again under another run id, a third
+        # run kept as an append-only checkpoint store, and an artifact
+        # directory beside it that sorts last, where a limit of one used
+        # to select it and review nothing.
+        again = RunHistory.from_ledger(
+            lp.ledger.events, run_id="history-1-projected-again")
+        again.commit(); again.save(history_root)
+        third = Loop("history 2", LoopConfig(
+            framework="custom", custom_steps=("research",),
+            allowable_modes=("hybrid",), preferred_modes=("hybrid",),
+            power="light"))
+        third.run(handler=lambda loop, step, context: StepOutcome(
+            output="research complete", mode="hybrid", confidence=0.9))
+        RunHistory.from_ledger(
+            third.ledger.events,
+            run_id="history-2-store").append_checkpoint(history_root)
+        artifacts = os.path.join(history_root, "history-2-store-artifacts")
+        os.makedirs(artifacts)
+        with open(os.path.join(artifacts, "output.txt"), "w") as handle:
+            handle.write("an artifact beside its run\n")
         broken = os.path.join(history_root, "broken-run")
         os.makedirs(broken)
         with open(os.path.join(broken, "manifest.json"), "w") as handle:
@@ -245,11 +315,15 @@ def self_test() -> dict:
             "user_feedback_intelligence": []}
         report = run_self_improvement(
             runs_dir=history_root, layer_records=catalog, min_frequency=2)
+        loaded = load_run_history(history_root, limit=None)
+        one_slot = load_run_history(history_root, limit=1)
+    copies = [entry for entry in report.excluded_runs
+              if entry["run_id"] == "history-1-projected-again"]
     tests = [{
         "test": "self_improvement_reviews_history_and_intelligence_in_one_loop",
-        "passed": bool(report.run_population == 3
-        and report.n_runs_reviewed == 2
-        and len(report.excluded_runs) == 1
+        "passed": bool(report.run_population == 5
+        and report.n_runs_reviewed == 3
+        and len(report.excluded_runs) == 2
         and report.intelligence_items_reviewed == 1
         and report.retrieval_hits and report.loop_result.stopped == "done"
         and any(candidate.source == "intelligence_audit"
@@ -259,6 +333,17 @@ def self_test() -> dict:
                 and event.get("logical_kind") == "search_improvement"
                 for event in report.ledger.events
                 if event.get("event") == "init"))
+    }, {
+        "test": "a_reprojected_ledger_a_checkpoint_store_and_an_artifact_sibling_are_counted_exactly",
+        "passed": bool(len(copies) == 1 and "'history-1'" in copies[0]["reason"]
+        and [trace["run_id"] for trace in loaded["runs"]]
+        == ["history-0", "history-1", "history-2-store"]
+        and loaded["runs"][2]["record_type"] == RunHistory.CHECKPOINT_STORE_RECORD_TYPE
+        and loaded["runs"][0]["content_digest"] != loaded["runs"][1]["content_digest"]
+        and report.ignored_directories == ({"name": "history-2-store-artifacts",
+                                            "reason": NOT_A_SAVED_RUN},)
+        and one_slot["selected"] == 1
+        and [trace["run_id"] for trace in one_slot["runs"]] == ["history-2-store"])
     }]
     with tempfile.TemporaryDirectory() as history_root:
         loop = Loop('history-limit fixture', LoopConfig(framework='custom', custom_steps=('act',)))

@@ -234,15 +234,22 @@ def mine_runtime(runs: "Sequence[dict]", *,
     if type(min_frequency) is not int or min_frequency < 1:
         raise ValueError('minimum frequency must be a positive integer')
     fails, decisions, fallbacks = Counter(), Counter(), Counter()
-    seen_runs, seen_histories = set(), set()
+    seen_runs, seen_histories, seen_contents = set(), set(), set()
     for r in runs:
         identity, history_identity = r.get('run_id'), r.get('history_digest')
-        if (identity and identity in seen_runs) or (history_identity and history_identity in seen_histories):
+        # The content digest survives re-projection under another run id;
+        # the chain digest does not, since the run id is in every event.
+        content_identity = r.get('content_digest')
+        if ((identity and identity in seen_runs)
+                or (history_identity and history_identity in seen_histories)
+                or (content_identity and content_identity in seen_contents)):
             continue
         if identity:
             seen_runs.add(identity)
         if history_identity:
             seen_histories.add(history_identity)
+        if content_identity:
+            seen_contents.add(content_identity)
         # Frequency is the number of supplied run traces containing the
         # pattern, not the number of repeated events within one run.
         fails.update({_sig(value) for value in r.get('failures', ())})
@@ -650,11 +657,16 @@ def self_test() -> dict:
     check('failed_model_invocations_are_not_successes_or_inferred_fallbacks',
           len(failed_trace['failures']) == 1 and not failed_trace['model_decisions']
           and not failed_trace['llm_fallbacks'])
-    one = {'run_id': 'one', 'history_digest': 'same-history', 'failures': ['same failure'] * 20}
+    one = {'run_id': 'one', 'history_digest': 'same-history',
+           'content_digest': 'same-content', 'failures': ['same failure'] * 20}
     duplicate = {**one, 'run_id': 'renamed-copy'}
+    projected_again = {**one, 'run_id': 'projected-again',
+                       'history_digest': 'another-chain'}
     check('events_and_copied_histories_do_not_become_independent_runs',
-          not mine_runtime([one, duplicate], min_frequency=2))
-    independent = {**one, 'run_id': 'two', 'history_digest': 'different-history'}
+          not mine_runtime([one, duplicate], min_frequency=2)
+          and not mine_runtime([one, projected_again], min_frequency=2))
+    independent = {**one, 'run_id': 'two', 'history_digest': 'different-history',
+                   'content_digest': 'different-content'}
     repeated = mine_runtime([one, independent], min_frequency=2)
     check('frequency_counts_traces_not_repeated_events', repeated
           and all(candidate.frequency == 2 for candidate in repeated))

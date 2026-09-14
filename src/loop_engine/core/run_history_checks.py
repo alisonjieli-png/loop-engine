@@ -521,6 +521,23 @@ def self_test() -> dict:
           and grown.verify_chain()["intact"],
           f"{len(grown.event_log)} events grown, {len(whole.event_log)} projected at once")
 
+    # The content digest names the observation, not the projection: one
+    # ledger projected twice under two run ids has two chain heads and one
+    # content digest, while the same work done again, at other times, has
+    # another content digest even under the same run id.
+    again = RunHistory.from_ledger(ledger, run_id="run-projected-again")
+    repeated = Loop("record this run", LoopConfig(framework="custom",
+                                               custom_steps=("orient", "research",
+                                                             "act"), power="deep"))
+    repeated.run(handler=handler)
+    repetition = RunHistory.from_ledger(list(repeated.ledger.events),
+                                        run_id="run-extension-check")
+    check("content_digest_names_the_observation_not_the_projection",
+          whole.content_digest() == again.content_digest()
+          and whole.event_log[-1].event_digest != again.event_log[-1].event_digest
+          and whole.content_digest() != repetition.content_digest()
+          and len(whole.content_digest()) == 64)
+
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}

@@ -37,9 +37,16 @@ candidate.
 
 `run_self_improvement()` performs a bounded review:
 
-1. Select an exact population from the saved-runs directory.
-2. Load each Run History record and verify its event chain.
-3. Exclude and report broken or unreadable runs.
+1. Select an exact population from the saved-runs directory: every
+   directory holding a manifest, which is a saved run or an append-only
+   checkpoint store. A sibling without a manifest, such as the artifact
+   directory beside its run, is reported under `ignored_directories` and
+   takes no place in the run limit.
+2. Load each Run History record (a checkpoint store loads as its latest
+   checkpoint) and verify its event chain.
+3. Exclude and report broken or unreadable runs, and every later copy of
+   an event content already loaded. One ledger projected twice under two
+   run ids is one observation: the exclusion names the run it repeats.
 4. Search current intelligence through the Retrieval Engine.
 5. Audit missing classifications and broad `other` categories.
 6. Find repeated failures, repeated model decisions, and repeated model
@@ -56,8 +63,10 @@ report = run_self_improvement(
     trigger_class="manual",
 )
 
+report.run_population
 report.n_runs_reviewed
 report.excluded_runs
+report.ignored_directories
 report.retrieval_hits
 report.candidates
 ```

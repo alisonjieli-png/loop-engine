@@ -70,9 +70,16 @@ any of them to apply.
    reachable through a hand-edited manifest. **Fixed:** an absent gate
    opens; any non-text value is refused.
 
-9. **Low, left open.** The self-improvement population counts non-run
-   directories, and the same ledger re-projected under a new run id counts
-   as an independent run, since the run id is in every event body.
+9. **Low.** The self-improvement population counted non-run directories,
+   and the same ledger re-projected under a new run id counted as an
+   independent run, since the run id is in every event body. **Fixed:**
+   the population is the directories holding a manifest (saved runs and
+   checkpoint stores, which now load as their latest checkpoint); an
+   artifact sibling is reported as ignored and no longer consumes a run
+   limit slot; `RunHistory.content_digest()` drops the run id, the chain
+   links, and the start event's projection time, and a later copy of an
+   already loaded content is excluded naming the run it repeats. The miner
+   deduplicates on that digest as well.
 
 10. **Low. The `encapsulate` guard was `is False` only**, so a failed
     result lacking the flag or carrying `None` recorded zero usage as

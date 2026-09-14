@@ -9,6 +9,21 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- The self-improvement review counts its run population exactly. The
+  population is the directories holding a manifest, saved runs and
+  append-only checkpoint stores alike (a store loads as its latest
+  checkpoint, so the campaign's step histories are reviewable); an
+  artifact directory beside its run is reported under
+  `ignored_directories` and no longer takes a selected run's place, which
+  with a limit of one used to select the artifact directory and review
+  nothing. One ledger projected twice under two run ids no longer counts
+  as two independent runs: `RunHistory.content_digest()` names what a
+  history records rather than which projection recorded it (the run id,
+  the chain links, and the synthesized start event's projection time are
+  dropped, the ledger's own timestamps kept, so a genuine repetition at
+  other times stays distinct), the loader excludes each later copy naming
+  the run it repeats, and the pattern miner deduplicates on that digest
+  beside the run id and the chain head.
 - A Practitioner request declares its supervision policy. `AdaptivePractitionerRequest`
   takes a typed `supervision` (the non-progress and unaccepted-pass counts,
   the escalation ladder, the spawn depth guard) and threads it to the

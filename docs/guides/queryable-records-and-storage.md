@@ -55,6 +55,14 @@ rebuilds the history as it stood at that checkpoint from the shared log's
 prefix and verifies the chain and the recorded head; a stored log that
 diverges from the history being checkpointed is refused, never written over.
 
+The chain head names one projection exactly, because the run id is in every
+event body and the synthesized start event carries the time of projection.
+`content_digest()` names what the history records instead: it drops the run
+id, the chain links, and the start event's projection time and keeps the
+ledger's own timestamps, so one ledger projected twice under two run ids has
+one content digest while the same work done again, at other times, has
+another. Reviewers that count independent runs use it beside the chain head.
+
 A large reviewed YAML file can be appropriate. A small file rewritten by
 several workers without concurrency checks can be unsafe. SQL access alone
 does not establish authority, transactional updates, or safe deletion.
