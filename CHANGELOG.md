@@ -43,6 +43,14 @@ First public release.
   one lane and sends missing-source or missing-instruction tasks through a
   separate best-available-resolution lane that cannot enter original-task
   success denominators.
+- A public solve request can declare its supervision policy.
+  `SolveRequest.supervision` takes a typed `SupervisionPolicy`, the solve
+  command reads one from `--supervision-policy FILE` through the strict
+  `SupervisionPolicy.from_dict`, and the policy now reaches the Starting
+  Practitioner Loop's configuration and every Spawned Practitioner it starts.
+  Before this change a solve run always used the default policy, and a
+  declared policy reached only the kernel's pass counts, not the Loop-level
+  identical-failure limit, iteration backstop, or spawn depth guard.
 
 ### Fixed on 2026-09-14
 

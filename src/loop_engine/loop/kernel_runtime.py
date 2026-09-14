@@ -91,7 +91,7 @@ def _definition_for(request: KernelRunRequest) -> LoopDefinition:
         power="standard",
         llm_thinking_power=(
             "medium" if request.selected_mode != "deterministic" else ""),
-        max_depth=MAX_SPAWN_DEPTH,
+        max_depth=MAX_SPAWN_DEPTH, supervision=request.supervision,
         loop_condition="steps_remain",
         exit_condition="steps_complete",
     )
@@ -360,8 +360,9 @@ def run_spawned_kernel(spec: ProblemSpec, impls: dict, *,
     if parent is None:
         raise KernelRuntimeError(
             "recursive kernel work requires an active Practitioner Loop owner")
-    request = KernelRunRequest(
-        spec=spec, impls=impls, selected_mode=selected_mode)
+    # A Spawned Practitioner inherits its spawning Loop's supervision policy.
+    request = KernelRunRequest(spec=spec, impls=impls, selected_mode=selected_mode,
+                               supervision=parent.config.supervision)
     _validate_request(request)
     if prepare is not None and not callable(prepare):
         raise KernelRuntimeError("kernel preparation must be callable")
@@ -636,6 +637,32 @@ def self_test() -> dict:
         rejected_mode = True
     check("kernel_runtime_refuses_unknown_selected_mode", rejected_mode,
           "invalid modes are refused before definition or execution")
+
+    from .kernel import ResultPacket
+    from .supervision_policy import SupervisionPolicy
+    declared = SupervisionPolicy(policy_id="loop.supervision.inherited", version="1.0.0",
+                                 identical_failures_before_stop=2)
+    inherited = {}
+
+    def spawning_act(_state, _plan):
+        def prepare(spawned_owner):
+            inherited["policy"] = spawned_owner.config.supervision
+            return None
+        run_spawned_kernel(ProblemSpec("inherited supervision", budget_passes=1, depth=1),
+                           default_impls(), selected_mode="deterministic", prepare=prepare)
+        return [ResultPacket("inheritance fixture", result="observed")]
+
+    inheriting_impls = default_impls()
+    inheriting_impls["act"] = spawning_act
+    inheriting_request = KernelRunRequest(
+        ProblemSpec("supervision owner", budget_passes=1), inheriting_impls,
+        max_passes=1, selected_mode="deterministic", supervision=declared)
+    inheriting_owner = _starting_loop(inheriting_request)
+    execute_kernel_run(replace(inheriting_request, owner_loop=inheriting_owner))
+    check("spawned_practitioner_inherits_the_declared_supervision_policy",
+          inheriting_owner.config.supervision == declared
+          and inherited.get("policy") == declared,
+          "the Starting and Spawned Loop configurations carry the same declared policy")
 
     spec = ProblemSpec("kernel ownership test",
                        success_criteria=("understanding",))

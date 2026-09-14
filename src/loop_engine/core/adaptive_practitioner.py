@@ -713,7 +713,7 @@ def run_adaptive_practitioner(
         delegated_modes=("deterministic", "hybrid", "non_deterministic"),
         power="deep", llm_thinking_power=(
             "" if request.mode == "deterministic" else "medium"),
-        max_depth=None,
+        max_depth=None, supervision=request.effective_supervision,
         loop_condition="steps_remain", exit_condition="steps_complete")
     owner = create_adaptive_owner(request, dependencies, config, ledger)
     if request.persist_run_history:

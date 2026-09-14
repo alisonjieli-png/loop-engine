@@ -355,6 +355,7 @@ def run_solve(args) -> int:
                 allow_source_materialization_to_model=
                     args.allow_source_to_model,
                 verifier_path=getattr(args, "verifier", "") or "",
+                supervision=_supervision_policy_from_args(args),
                 extension_snapshot=
                     extension_application.snapshot.to_dict(),
                 quiet_model_io=bool(getattr(args, "quiet_model_io", False)),
@@ -722,3 +723,13 @@ def _solve_route_plan(args, gateway, selected_route: str) -> tuple[str, ...]:
 
 
 __all__ = ("run_solve",)
+
+
+def _supervision_policy_from_args(args):
+    """Read an explicitly declared supervision policy file, or keep the default."""
+    path = getattr(args, "supervision_policy", "") or ""
+    if not path:
+        return None
+    from pathlib import Path
+    from .loop.supervision_policy import SupervisionPolicy
+    return SupervisionPolicy.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))

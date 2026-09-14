@@ -23,6 +23,7 @@ from ..core.adaptive_practitioner_records import (
 )
 from ..core.generated_project import execute_generated_project
 from ..core.independent_verification import IndependentVerificationPolicy
+from ..loop.supervision_policy import SupervisionPolicy
 from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
 from ..templates.model import InteractionMode, TaskFeedback
@@ -131,8 +132,13 @@ class SolveRequest:
     host_runtime: object | None = field(default=None, repr=False, compare=False)
     capture_recovery_learning: bool = False
     diagnose_unchanged_evidence: bool = False
+    #: Declared non-progress and unaccepted-pass limits for this run; None
+    #: selects the repository default, recorded as undeclared.
+    supervision: "SupervisionPolicy | None" = None
 
     def __post_init__(self) -> None:
+        if self.supervision is not None and not isinstance(self.supervision, SupervisionPolicy):
+            raise SolveError("supervision must use its typed SupervisionPolicy contract")
         if type(self.capture_recovery_learning) is not bool:
             raise SolveError('capture_recovery_learning must be a Boolean')
         if type(self.diagnose_unchanged_evidence) is not bool:

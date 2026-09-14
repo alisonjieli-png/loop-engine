@@ -67,6 +67,7 @@ def build_adaptive_request(
         prior_region_evidence=specification.region_evidence,
         stage_assistance=request.stage_assistance,
         independent_verification_policy=request.independent_verification_policy,
+        supervision=getattr(request, "supervision", None),
         host_runtime_manifest=(request.host_runtime.summary()
                                if request.host_runtime is not None else {}),
         **budget,

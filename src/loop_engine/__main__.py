@@ -334,6 +334,9 @@ def main(argv=None) -> int:
                         help="empty or new directory for generated task artifacts")
     parser.add_argument("--verifier", default="",
                         help="explicit verifier script, run mid-solve as an observation")
+    parser.add_argument("--supervision-policy", default="",
+                        help="JSON file declaring the run's supervision policy: non-progress, "
+                             "unaccepted-pass, and depth limits; omitted means the repository default")
     parser.add_argument(
         "--allow-source-to-model", action="store_true",
         help="allow supplied dataset or repository text to enter the selected "

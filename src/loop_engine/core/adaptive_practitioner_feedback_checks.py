@@ -237,11 +237,13 @@ def request_policy_checks() -> list[dict]:
 
     observed_pass_limits = []
     observed_verification_policies = []
+    observed_supervision = []
 
     def capture_adaptive_request(adaptive_request, _dependencies):
         observed_pass_limits.append(adaptive_request.max_passes)
         observed_verification_policies.append(
             adaptive_request.independent_verification_policy)
+        observed_supervision.append(adaptive_request.supervision)
         return {
             "run_id": "fixture-no-injected-pass-ceiling",
             "solved": False,
@@ -270,6 +272,51 @@ def request_policy_checks() -> list[dict]:
         "public_solve_requires_independent_verification_by_default",
         observed_verification_policies == [IndependentVerificationPolicy()],
         "verification policy reaches the canonical Practitioner request")
+    import tempfile
+    from ..code_nodes.solve_runtime import SolveError
+    from ..loop.supervision_policy import SupervisionPolicy
+    from . import adaptive_host_verification as owner_module
+    from . import adaptive_practitioner as practitioner_module
+    from .adaptive_practitioner_records import (
+        AdaptivePractitionerDependencies, AdaptivePractitionerRequest)
+    declared = SupervisionPolicy(
+        policy_id="loop.supervision.fixture", version="1.0.0",
+        identical_failures_before_stop=2, unaccepted_passes_before_stop=4)
+    with patch(
+            "loop_engine.code_nodes.solve_runtime.run_adaptive_practitioner",
+            side_effect=capture_adaptive_request):
+        solve_task(SolveRequest(
+            intake_task(TaskIntakeRequest(
+                text="Solve work not covered by the exact resolver.")),
+            deterministic_resolvers=(NonMatchingResolver(),),
+            save_run_history=False, supervision=declared))
+    check("public_solve_supervision_policy_is_undeclared_by_default_and_declared_when_set",
+          observed_supervision[0] is None and observed_supervision[-1] is declared,
+          "a declared policy reaches the canonical Practitioner request")
+    try:
+        SolveRequest(intake_task(TaskIntakeRequest(text="Refuse an untyped policy.")),
+                     supervision={"policy_id": "untyped"})
+        untyped_refused = False
+    except SolveError:
+        untyped_refused = True
+    check("solve_request_refuses_an_untyped_supervision_policy", untyped_refused)
+    owner_policies = []
+    original_owner = owner_module.create_adaptive_owner
+
+    def capture_owner(owner_request, dependencies, config, ledger):
+        owner_policies.append(config.supervision)
+        return original_owner(owner_request, dependencies, config, ledger)
+
+    with tempfile.TemporaryDirectory() as root, patch.object(
+            owner_module, "create_adaptive_owner", side_effect=capture_owner):
+        practitioner_module.run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "Produce the requested result.", mode="deterministic",
+                runs_dir=root, supervision=declared),
+            AdaptivePractitionerDependencies(None))
+    check("starting_practitioner_loop_config_carries_the_declared_supervision_policy",
+          owner_policies == [declared],
+          "Loop-level failure, iteration, and depth guards read the declared policy")
     from .adaptive_practitioner_records import AdaptivePractitionerRequest
     required = AdaptivePractitionerRequest("Produce the requested result.")
     legacy = replace(required, independent_verification_policy=

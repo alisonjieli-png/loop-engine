@@ -98,6 +98,22 @@ class SupervisionPolicy:
         index = min(escalation_count, len(self.escalation_ladder)) - 1
         return self.escalation_ladder[index]
 
+    @classmethod
+    def from_dict(cls, value) -> "SupervisionPolicy":
+        """Read a declared policy strictly; unknown or missing shapes fail closed."""
+        if not isinstance(value, dict):
+            raise SupervisionPolicyError("a supervision policy must be a mapping")
+        names = {item.name for item in fields(cls)}
+        unknown = sorted(set(value) - names)
+        if unknown:
+            raise SupervisionPolicyError(f"unknown supervision policy fields {unknown}")
+        values = dict(value)
+        if "escalation_ladder" in values:
+            if not isinstance(values["escalation_ladder"], (list, tuple)):
+                raise SupervisionPolicyError("escalation_ladder must be a list of rungs")
+            values["escalation_ladder"] = tuple(values["escalation_ladder"])
+        return cls(**values)
+
     def to_dict(self) -> dict:
         return {
             "policy_id": self.policy_id,
@@ -116,6 +132,17 @@ class SupervisionPolicy:
 #: The limits the runtime enforced as module constants before the policy
 #: existed. Declaring a different policy is the only way to change them.
 DEFAULT_SUPERVISION_POLICY = SupervisionPolicy()
+
+
+def _refuses(operation) -> bool:
+    """True only for the typed refusal; any other outcome is a failed check."""
+    try:
+        operation()
+    except SupervisionPolicyError:
+        return True
+    except Exception:  # noqa: BLE001 - an untyped error is not a closed refusal
+        return False
+    return False
 
 
 def self_test() -> dict:
@@ -186,6 +213,16 @@ def self_test() -> dict:
                 non_accepted_iterations_before_stop=200
             ).to_dict().items()}).non_accepted_iterations_before_stop == 200),
         "detail": "the ceiling a caller raises must reach the runtime",
+    }, {
+        "test": "a_declared_policy_is_read_back_exactly_from_its_mapping",
+        "passed": SupervisionPolicy.from_dict(custom.to_dict()) == custom,
+        "detail": "every field of a declared policy survives from_dict",
+    }, {
+        "test": "unknown_or_malformed_policy_mappings_fail_closed",
+        "passed": _refuses(lambda: SupervisionPolicy.from_dict({"stop_after": 1}))
+        and _refuses(lambda: SupervisionPolicy.from_dict({"escalation_ladder": "stop_unprofitable"}))
+        and _refuses(lambda: SupervisionPolicy.from_dict(["loop.supervision"])),
+        "detail": "an unrecognized field is refused instead of ignored",
     }]
     return {"module": "loop.supervision_policy",
             "passed": all(item["passed"] for item in tests),

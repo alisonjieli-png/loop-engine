@@ -168,7 +168,7 @@ The live cell counts come from the saved records, not from new runs.
 | After a stall, the recovery panel's route, including `stop_unprofitable`, is adopted without running the action vector route guard again. The saved records of the two live cells that delivered artifacts end with this route. | `core/adaptive_practitioner_routing.py:130-138` |
 | An independent verifier response that is not admitted raises at once, with no format repair, and the report becomes `unavailable`. | `core/independent_verification.py:243-256` |
 | A failed independent check forces repair, and the retained probe is reused on later passes. Nothing asks whether the probe is wrong. | `core/independent_verification.py:285`, `:355` |
-| `SolveRequest` has no supervision policy field, so every solve run uses the default policy. | `code_nodes/solve_request_adaptation.py`, `code_nodes/solve_runtime.py` |
+| `SolveRequest` had no supervision policy field, so every solve run used the default policy. Later on September 14 the request gained a typed policy that reaches the Starting and Spawned Practitioner Loops. | `code_nodes/solve_request_adaptation.py`, `code_nodes/solve_runtime.py` |
 | A campaign cell that reached the provider wait ceiling or a route stop is scored failed on restart without running. | `devtools/embodiment_lab/task_database_campaign.py:530`, `:910-933` |
 
 ## Planned tests
