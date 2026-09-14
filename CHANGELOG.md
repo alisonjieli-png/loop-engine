@@ -23,7 +23,12 @@ First public release.
   failure memory, cold restart, then `stop_unprofitable`), each trigger
   with its own count, and an accepted pass resets it. A declared pass
   budget keeps its own meaning. This bounds such a run to three times the
-  policy's count, twenty-seven passes by default.
+  policy's count, twenty-seven passes by default. The next pass's reasoning
+  sees the supervision knowns as facts (passes refused so far, the count
+  at which the ladder climbs, escalations used, the ladder), so the route
+  reasoner can stop honestly before the ladder does. The allowance the
+  runaway cell spent was gone again by 02:04 UTC: the flash worker's next
+  access check was refused with `usage_limit_reached`.
 - `RunHistory.verified_checkpoints(root, run_id)` settles every revision
   of an append-only store from one reading of the shared log (a revision
   is intact when no link before its count is broken and the digest at its

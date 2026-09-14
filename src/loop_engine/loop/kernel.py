@@ -50,6 +50,7 @@ from __future__ import annotations
 
 import json
 import os
+import dataclasses
 from dataclasses import dataclass, field, asdict
 from typing import Any, Callable, Sequence
 from .supervision_policy import DEFAULT_SUPERVISION_POLICY, SupervisionPolicy
@@ -222,6 +223,12 @@ ACT_MODES = ("run_direct", "run_dag", "spawn_practitioners")
 # VERIFY's verdicts.
 #: The verdicts that count as an accepted pass for the supervision ladder.
 ACCEPTED_VERDICTS = ("accept", "accept_provisional")
+#: The supervision knowns the kernel places in the state's facts for the
+#: next pass's reasoning when no pass budget was declared.
+SUPERVISION_FACT_PASSES_REFUSED = "supervision:passes_without_accepted_verification"
+SUPERVISION_FACT_PASSES_BEFORE_ESCALATION = "supervision:passes_before_escalation"
+SUPERVISION_FACT_ESCALATIONS_USED = "supervision:escalations_used"
+SUPERVISION_FACT_LADDER = "supervision:escalation_ladder"
 #: The observation record the ladder appends when the unaccepted-pass
 #: ceiling trips; not a rung of the ladder itself.
 UNACCEPTED_PASSES_OBSERVATION = "unaccepted_passes"
@@ -754,6 +761,19 @@ def _calculate_kernel_passes(request: KernelRunRequest) -> dict:
             unaccepted_escalations = 0
         else:
             unaccepted_passes += 1
+        if limit is None:
+            # The supervision facts are knowns for the next pass's
+            # reasoning: how many passes the verifier has refused, when the
+            # ladder climbs, and how far it has climbed. Facts, not a
+            # decision made for the reasoner; the version is unchanged so
+            # the pass records keep their numbering.
+            state = dataclasses.replace(state, facts={
+                **state.facts,
+                SUPERVISION_FACT_PASSES_REFUSED: unaccepted_passes,
+                SUPERVISION_FACT_PASSES_BEFORE_ESCALATION:
+                    supervision.unaccepted_passes_before_stop,
+                SUPERVISION_FACT_ESCALATIONS_USED: unaccepted_escalations,
+                SUPERVISION_FACT_LADDER: list(supervision.escalation_ladder)})
         route = rec.route.route if rec.route else "stop_unprofitable"
         if route in ("stop_success", "stop_unprofitable"):
             break
@@ -1361,6 +1381,13 @@ def self_test() -> dict:
           and not any("without an accepted verification" in r.route.reason
                       for r in out_budgeted["records"]),
           f"acts: {budgeted['n']}")
+    check("the_next_pass_sees_the_supervision_knowns_as_facts",
+          out_refused["facts"].get(SUPERVISION_FACT_PASSES_BEFORE_ESCALATION)
+          == policy_r.unaccepted_passes_before_stop
+          and SUPERVISION_FACT_PASSES_REFUSED in out_refused["facts"]
+          and out_refused["facts"].get(SUPERVISION_FACT_LADDER) == list(policy_r.escalation_ladder)
+          and SUPERVISION_FACT_PASSES_REFUSED not in out_budgeted["facts"],
+          str({k: v for k, v in out_refused["facts"].items() if k.startswith("supervision:")}))
 
     # 7. the swarm is a portfolio of parameterized runs of the SAME kernel.
     sw = run_swarm([SwarmSpawnedSpec("full", ProblemSpec(
