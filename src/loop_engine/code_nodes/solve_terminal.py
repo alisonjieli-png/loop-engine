@@ -163,8 +163,8 @@ class ResolutionMethodAssessment:
         if not isinstance(refs, list):
             raise ValueError("resolution method evidence_refs must be an array")
         return cls(
-            str(value.get("method_id") or ""),
-            str(value.get("disposition") or ""),
+            _single_text(value.get("method_id")),
+            _single_text(value.get("disposition")),
             str(value.get("summary") or ""), tuple(refs))
 
     def to_dict(self) -> dict:
@@ -366,6 +366,18 @@ def _unique_text(values) -> tuple[str, ...]:
     return tuple(output)
 
 
+def _single_text(value) -> str:
+    """A text field, or the one text item of a one-item array, else empty.
+
+    A model shown a field's allowed values may wrap its single choice in an
+    array. One unambiguous item is read as that choice; anything else is left
+    for the registered-value check to refuse.
+    """
+    if isinstance(value, list) and len(value) == 1:
+        value = value[0]
+    return value if isinstance(value, str) else ""
+
+
 def _provisional_outputs(adaptive: dict) -> tuple[ProvisionalTaskOutput, ...]:
     """Recover the latest unmaterialized file body per proposed path."""
     by_path: dict[str, ProvisionalTaskOutput] = {}
@@ -389,13 +401,16 @@ def resolution_input_contract() -> dict:
     return {"resolution": {
         **{field_name: ["string"]
            for field_name in RESOLUTION_CONTRIBUTION_FIELDS},
-        "constraint_code": sorted(_RESOLUTION_COMPLETABLE_TERMINALS),
+        # One text value per field, and one assessment per registered method.
+        # Listing the allowed values in the value position led a live model to
+        # return the whole list, or a one-item array, as every method_id.
+        "constraint_code": "|".join(sorted(_RESOLUTION_COMPLETABLE_TERMINALS)),
         "method_assessments": [{
-            "method_id": list(RESOLUTION_METHOD_IDS),
-            "disposition": "completed|not_applicable|unavailable|authority_required|resource_exhausted",
+            "method_id": method_id,
+            "disposition": "|".join(RESOLUTION_METHOD_DISPOSITIONS),
             "summary": "why this disposition is correct",
             "evidence_refs": ["optional typed reference"],
-        }],
+        } for method_id in RESOLUTION_METHOD_IDS],
     }}
 
 
@@ -486,37 +501,52 @@ def _default_method_disposition(terminal: str) -> str:
     return "unavailable"
 
 
+def _admitted_model_assessments(
+        raw, substantive_by_field: dict[str, tuple[str, ...]],
+        ) -> tuple[ResolutionMethodAssessment, ...]:
+    """The model's own method coverage, refused with a reason when invalid."""
+    assessments = tuple(
+        ResolutionMethodAssessment.from_mapping(item) for item in raw)
+    if (len(assessments) != len(RESOLUTION_METHOD_IDS)
+            or {item.method_id for item in assessments}
+            != set(RESOLUTION_METHOD_IDS)):
+        raise ValueError(
+            "resolution contribution must assess every method exactly once")
+    by_method = dict(RESOLUTION_METHOD_FIELDS)
+    for item in assessments:
+        has_content = any(
+            substantive_by_field.get(name)
+            for name in by_method[item.method_id])
+        if (item.disposition == "completed") is not bool(has_content):
+            raise ValueError(
+                f"resolution method {item.method_id} does not match the "
+                "material preserved in the package")
+    return assessments
+
+
 def _assess_resolution_methods(
         contribution: dict, values_by_field: dict[str, tuple[str, ...]],
         terminal: str,
         substantive_by_field: dict[str, tuple[str, ...]] | None = None,
-        ) -> tuple[ResolutionMethodAssessment, ...]:
-    """Validate model coverage or derive honest operational dispositions.
+        ) -> tuple[tuple[ResolutionMethodAssessment, ...], str]:
+    """Admit model coverage or derive honest operational dispositions.
 
     Material that only restates the task or repeats runtime guidance stays in
-    the package for the reader, but it never completes a method.
+    the package for the reader, but it never completes a method. Model coverage
+    that is malformed, incomplete, or claims more than its material supports is
+    not admitted: the dispositions are derived from the preserved material, and
+    the reason is returned so the package reports it instead of discarding the
+    whole resolution.
     """
     substantive_by_field = (values_by_field if substantive_by_field is None
                             else substantive_by_field)
     raw = contribution.get("method_assessments") or ()
+    refusal = ""
     if raw:
-        assessments = tuple(
-            ResolutionMethodAssessment.from_mapping(item) for item in raw)
-        if (len(assessments) != len(RESOLUTION_METHOD_IDS)
-                or {item.method_id for item in assessments}
-                != set(RESOLUTION_METHOD_IDS)):
-            raise ValueError(
-                "resolution contribution must assess every method exactly once")
-        by_method = dict(RESOLUTION_METHOD_FIELDS)
-        for item in assessments:
-            has_content = any(
-                substantive_by_field.get(name)
-                for name in by_method[item.method_id])
-            if (item.disposition == "completed") is not bool(has_content):
-                raise ValueError(
-                    f"resolution method {item.method_id} does not match the "
-                    "material preserved in the package")
-        return assessments
+        try:
+            return _admitted_model_assessments(raw, substantive_by_field), ""
+        except (TypeError, ValueError) as exc:
+            refusal = str(exc)
 
     unavailable = _default_method_disposition(terminal)
     assessments = []
@@ -542,7 +572,7 @@ def _assess_resolution_methods(
             assessments.append(ResolutionMethodAssessment(
                 method_id, unavailable,
                 f"No result for this method was available before {terminal}."))
-    return tuple(assessments)
+    return tuple(assessments), refusal
 
 
 def _question_texts(questions) -> tuple[str, ...]:
@@ -700,8 +730,14 @@ def build_task_resolution_package(*, task: str, adaptive: dict, product: dict,
             *(contribution.get("next_actions") or ()),
             alternatives[-1] if alternatives else "")),
     }
-    method_assessments = _assess_resolution_methods(
+    method_assessments, assessment_refusal = _assess_resolution_methods(
         contribution, method_values, underlying_terminal, substantive_values)
+    if assessment_refusal:
+        missing = _unique_text((
+            *missing,
+            "The Practitioner's method assessments were not admitted ("
+            + assessment_refusal + "); each disposition below is derived from "
+            "the material preserved in this package."))
     fulfillment = (
         "candidate_artifacts_available" if artifacts
         else "provisional_outputs_available" if provisional

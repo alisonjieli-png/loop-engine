@@ -86,6 +86,16 @@ First public release.
 
 ### Fixed on 2026-09-14
 
+- A malformed method assessment from the model no longer discards a finished
+  run's outcome. The model-facing resolution contract listed every method
+  identifier in the value position, and a live model returned that list, or a
+  one-item array, as each `method_id`; building the best-available resolution
+  then raised, and a campaign trial lost its whole outcome. The contract now
+  shows one assessment per registered method with a single text identifier, a
+  one-item array is read as its single choice, and an assessment that still
+  cannot be admitted is replaced by dispositions derived from the preserved
+  material, with the refusal reason listed as unverified material.
+
 - An accepted, deterministically verified result now publishes and stops by
   default when the verifier still lists optional work. `OutcomeVectorPolicy`
   1.1.0 adds `after_acceptance`, with `publish_and_stop` as the default and

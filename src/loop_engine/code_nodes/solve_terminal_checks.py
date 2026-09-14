@@ -209,6 +209,81 @@ def run_checks() -> dict:
                            for item in interrupted.method_assessments)),
         "detail": interrupted.resolution_status,
     })
+    from .solve_terminal import (
+        ResolutionMethodAssessment, resolution_input_contract)
+
+    contract = resolution_input_contract()["resolution"]
+    tests.append({
+        "test": "the_resolution_contract_shows_one_text_method_id_per_registered_method",
+        "passed": ([item["method_id"]
+                    for item in contract["method_assessments"]]
+                   == list(RESOLUTION_METHOD_IDS)
+                   and isinstance(contract["constraint_code"], str)
+                   and all(isinstance(item["disposition"], str)
+                           for item in contract["method_assessments"])),
+        "detail": str(contract["method_assessments"][:1]),
+    })
+    wrapped = ResolutionMethodAssessment.from_mapping({
+        "method_id": ["available_evidence_analysis"],
+        "disposition": "completed",
+        "summary": "The evidence was analyzed.", "evidence_refs": []})
+    try:
+        ResolutionMethodAssessment.from_mapping({
+            "method_id": list(RESOLUTION_METHOD_IDS),
+            "disposition": "completed",
+            "summary": "Every method at once.", "evidence_refs": []})
+        whole_list_refused = False
+    except ValueError:
+        whole_list_refused = True
+    tests.append({
+        "test": "a_one_item_method_id_array_is_read_and_a_whole_list_is_refused",
+        "passed": (wrapped.method_id == "available_evidence_analysis"
+                   and whole_list_refused),
+        "detail": wrapped.method_id,
+    })
+    # The two shapes a live model returned: every identifier in one entry, and
+    # ten entries whose identifiers were one-item arrays.
+    whole_list = deepcopy(valid_direct["resolution"])
+    whole_list["method_assessments"] = [{
+        "method_id": list(RESOLUTION_METHOD_IDS), "disposition": "completed",
+        "summary": "The model returned every method identifier at once.",
+        "evidence_refs": []}]
+    kept = build_task_resolution_package(
+        task="Produce a report.",
+        adaptive={"action_decisions": [{
+            "decision_id": "decision-1",
+            "inputs": {"resolution": whole_list}}]},
+        product=empty_product, underlying_terminal="BUDGET_EXHAUSTED",
+        questions=(), limitations=(), suggested_next="")
+    tests.append({
+        "test": "an_inadmissible_model_assessment_keeps_the_resolution_with_derived_dispositions",
+        "passed": (len(kept.method_assessments) == len(RESOLUTION_METHOD_IDS)
+                   and any("were not admitted" in item
+                           for item in kept.missing_or_unverified)
+                   and kept.analogous_solutions == ("string",)
+                   and all(item.disposition == "completed"
+                           for item in kept.method_assessments)),
+        "detail": kept.resolution_status,
+    })
+    one_item_arrays = deepcopy(valid_direct["resolution"])
+    one_item_arrays["method_assessments"] = [
+        {**item, "method_id": [item["method_id"]]}
+        for item in valid_direct["resolution"]["method_assessments"]]
+    admitted = build_task_resolution_package(
+        task="Produce a report.",
+        adaptive={"action_decisions": [{
+            "decision_id": "decision-1",
+            "inputs": {"resolution": one_item_arrays}}]},
+        product=empty_product, underlying_terminal="BUDGET_EXHAUSTED",
+        questions=(), limitations=(), suggested_next="")
+    tests.append({
+        "test": "one_item_method_id_arrays_keep_the_model_assessments",
+        "passed": (not any("were not admitted" in item
+                           for item in admitted.missing_or_unverified)
+                   and admitted.method_assessments[0].summary
+                   == "The fixture supplies the mapped contribution."),
+        "detail": str(admitted.missing_or_unverified)[:200],
+    })
     passed = sum(1 for item in tests if item["passed"])
     return {
         "record_type": "solve_terminal_test/v1", "tests": tests,
