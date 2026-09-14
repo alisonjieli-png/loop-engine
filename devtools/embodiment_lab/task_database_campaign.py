@@ -46,6 +46,7 @@ from loop_engine.core.run_history import load_saved_run_bundle
 from loop_engine.core.settings_loader import load_runtime_settings
 from loop_engine.generation.space import ConfigurationAxis, ConfigurationSpace
 from loop_engine.templates.intake import TaskIntake
+from loop_engine.strings.prompt_fragments import TASK_DATABASE_TRIAL_INSTRUCTION_PROMPT
 
 from .systematic_records import CampaignProjection, canonical, digest
 from .systematic_runtime import NativeGatewayAdapter, configure_environment
@@ -401,11 +402,7 @@ def task_intake(row, delivery):
             'useful, estimates, analogous and first-principles solutions, '
             'supplemental items, missing pieces, and next actions.'),
     }
-    prompt = ('Perform this task and produce its actual deliverables. Preserve all original requirements. '
-        'This run authorizes local sandbox work and provider reasoning, not real business-system mutations, '
-        'messages, submissions, purchases, or deployment. Use simulated services where the task needs effect tests. '
-        'A missing source does not justify an empty result or an early stop. '
-        'Ask a precise user question only when a typed user decision can improve a later revision.\n\n'
+    prompt = (TASK_DATABASE_TRIAL_INSTRUCTION_PROMPT
         + (brief_path.read_text() if brief_path.is_file() else canonical({
             'title': row.get('title') or row.get('id'),
             'job_family': row.get('job_family'),

@@ -2994,7 +2994,7 @@ semantic_terms:
   conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
 - term_id: "core.term.action_vector_assessment"
   canonical_name: "ActionVectorAssessment"
-  primary_category: "assessment"
+  primary_category: "record"
   definition: "Subject-bound assessment of observable process checks, action and requested outputs, progress, and continuation that supplies signals to OutcomeVector."
   source_of_truth: "loop_engine.core.action_vector_assessment:ActionVectorAssessment"
   source_symbol: "loop_engine.core.action_vector_assessment:ActionVectorAssessment"
@@ -3016,7 +3016,7 @@ semantic_terms:
   conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
 - term_id: "core.term.resolution_method_assessment"
   canonical_name: "ResolutionMethodAssessment"
-  primary_category: "assessment"
+  primary_category: "record"
   definition: "Typed disposition for one registered best-available-resolution method, with its summary and evidence references."
   source_of_truth: "loop_engine.code_nodes.solve_terminal:ResolutionMethodAssessment"
   source_symbol: "loop_engine.code_nodes.solve_terminal:ResolutionMethodAssessment"

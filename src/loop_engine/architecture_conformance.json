@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 522,
+ "files_scanned": 525,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
@@ -15,7 +15,7 @@
   "dynamic_import_registration_bypasses": 0,
   "forbidden_model_mentions_outside_guards": 0,
   "empty_placeholder_modules": 0,
-  "modules_over_size_cap_without_declared_exception": 3,
+  "modules_over_size_cap_without_declared_exception": 0,
   "public_interfaces_over_parameter_cap_without_declared_exception": 0,
   "syntax_newer_than_the_declared_minimum_python": 0,
   "modules_missing_llm_context_docstring": 0,
@@ -27,7 +27,7 @@
   "operational_boundaries_outside_loop_ontology": 0,
   "operational_boundary_relationship_kind_violations": 0,
   "operational_graph_vertex_types_outside_canonical_loop": 0,
-  "semantic_identities_without_one_meaning_and_authority": 4,
+  "semantic_identities_without_one_meaning_and_authority": 0,
   "direct_resource_access_above_baseline": 0,
   "architecture_map_freshness": 0
  },
@@ -103,49 +103,11 @@
   "operational_graph_vertex_types": [],
   "semantic_identity": {
    "record_type": "semantic_conformance/v1",
-   "violations": [
-    {
-     "rule": "category",
-     "term": "ActionVectorAssessment",
-     "detail": "assessment"
-    },
-    {
-     "rule": "category",
-     "term": "ResolutionMethodAssessment",
-     "detail": "assessment"
-    },
-    {
-     "rule": "semantic_projection",
-     "detail": "installed projection differs from terminology.yaml"
-    },
-    {
-     "rule": "data_dictionary_freshness",
-     "detail": "/home/username/loop-engine/docs/architecture/SEMANTIC-IDENTITY-DICTIONARY.md"
-    }
-   ],
-   "passed": false
+   "violations": [],
+   "passed": true
   },
   "retired_decision_spine_terms": [],
-  "scan_violations": [
-   {
-    "rule": "module_over_size_cap",
-    "file": "code_nodes/solve_terminal.py",
-    "line": 886,
-    "detail": "886 lines > cap 800; declare an exception with a split plan or split it"
-   },
-   {
-    "rule": "module_over_size_cap",
-    "file": "core/adaptive_practitioner.py",
-    "line": 873,
-    "detail": "873 lines > cap 800; declare an exception with a split plan or split it"
-   },
-   {
-    "rule": "module_over_size_cap",
-    "file": "core/stage_action_lineage.py",
-    "line": 873,
-    "detail": "873 lines > cap 800; declare an exception with a split plan or split it"
-   }
-  ]
+  "scan_violations": []
  },
  "direct_resource_access": {
   "current": 0,
@@ -163,5 +125,5 @@
   "max_power_grants_no_permissions: power scales budgets only"
  ],
  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
- "all_gates_pass": false
+ "all_gates_pass": true
 }

@@ -335,6 +335,13 @@ stage_assistance_evidence:
   hydrated_material: loop_engine.core.stage_assistance_material.StageAssistanceMaterial
   public_request_adapter: loop_engine.code_nodes.solve_request_adaptation
   action_lineage: loop_engine.core.stage_action_lineage
+  action_intent_vector: loop_engine.core.outcome_vector.ActionIntentVector
+  outcome_vector: loop_engine.core.outcome_vector.OutcomeVector
+  outcome_vector_policy: loop_engine.core.outcome_vector.OutcomeVectorPolicy
+  action_vector_assessment: loop_engine.core.action_vector_assessment.ActionVectorAssessment
+  action_vector_route_guard: loop_engine.core.action_vector_routing.guard_action_vector_route
+  current_outcome_vector_schema: outcome_vector/v2
+  current_stage_observation_schema: stage_observation/v3
   verification_record_schema: adaptive_verification/v2
   state_integration: loop_engine.core.adaptive_practitioner_result.integrate_adaptive_state
   control_manifest: loop_engine.core.solve_control_manifest.PublicSolveControlManifest
@@ -374,6 +381,13 @@ stage_assistance_evidence:
     - unrelated_semantic_stages_retain_unknown_local_credit
     - session_budgets_count_physical_attempts_and_preserve_unknown_usage
     - contradicted_stage_evidence_cannot_receive_positive_credit
+    - every_selected_action_has_a_typed_intended_direction_expected_delta_and_check
+    - response_admission_process_alignment_execution_expected_output_requested_output_progress_and_continuation_are_separate_vector_axes
+    - private_model_reasoning_is_not_stored_or_claimed_as_process_evidence
+    - a_harness_adapter_cannot_grade_or_accept_its_own_outcome_vector
+    - custom_opencode_codex_pi_and_other_registered_practitioner_realizations_share_the_owning_loop_vector_policy
+    - a_stop_route_is_rejected_while_the_current_vector_reports_safe_authorized_continuation
+    - stage_observation_v2_and_outcome_vector_v1_are_read_only_through_exact_migration
   unproven:
     - live_provider_public_solve_execution
     - canonical_run_history_intelligence_query_for_hydrated_candidates
@@ -650,6 +664,10 @@ product_solve:
   command: loop-engine solve
   request: loop_engine.code_nodes.solve_runtime.SolveRequest
   outcome: loop_engine.code_nodes.solve_runtime.SolveOutcome
+  resolution_completion_policy: loop_engine.code_nodes.solve_terminal.ResolutionCompletionPolicy
+  resolution_package: loop_engine.code_nodes.solve_terminal.TaskResolutionPackage
+  resolution_method_assessment: loop_engine.code_nodes.solve_terminal.ResolutionMethodAssessment
+  outcome_vector_policy: loop_engine.core.outcome_vector.OutcomeVectorPolicy
   saved_outcome_ref: loop_engine.core.product_outcome_store.ProductOutcomeRef
   saved_run_bundle: loop_engine.core.product_outcome_store.SavedRunBundle
   terminal_vocabulary: loop_engine.code_nodes.solve_runtime.SolveTerminalCode
@@ -658,6 +676,7 @@ product_solve:
   model_response_admission: loop_engine.core.model_response_admission.admit_model_response_as_loop
   response_contract: loop_engine.core.model_response_admission.ModelResponseContract
   progress_supervision: loop_engine.core.adaptive_practitioner_supervision.detect_stall
+  adaptive_routing: loop_engine.core.adaptive_practitioner_routing.route_adaptive_result
   recovery_candidate_capture: loop_engine.core.recovery_learning.capture_recovery_learning
   cognitive_recovery_invariants:
     - response_schema_is_explicit_not_inferred_from_example_prose
@@ -681,14 +700,31 @@ product_solve:
     - product_imposes_no_default_pass_depth_model_call_or_token_ceiling
     - repeated_work_stops_on_an_identical_state_action_failure_not_a_fixed_count
     - material_questions_return_typed_answer_slots
+    - material_questions_require_a_user_clarification_disposition_and_remain_advisory
+    - runtime_capability_questions_never_become_user_material_questions
     - selected_local_source_content_requires_explicit_source_to_model_authority
     - the_model_selects_local_sources_before_project_materialization
+    - inline_task_pack_bodies_are_not_unread_external_sources
     - task_build_does_not_claim_execution
     - completion_requires_verified_artifact_or_state_change
     - local_source_materialization_requires_explicit_model_authority
     - workspace_and_command_effects_require_exact_approval
     - generated_commands_run_in_a_confined_pinned_docker_image
     - unsupported_work_returns_a_typed_blocker
+    - task_level_constraints_complete_a_best_available_resolution_instead_of_returning_an_empty_blocker
+    - the_resolution_package_separates_response_completion_from_requested_outcome_verification
+    - best_available_resolution_preserves_provisional_outputs_assumptions_gaps_alternatives_and_next_actions
+    - best_available_resolution_never_invents_facts_authority_verification_or_external_effects
+    - every_best_available_resolution_assesses_each_registered_safe_method_exactly_once
+    - a_completed_resolution_contains_at_least_one_completed_useful_method
+    - a_method_cannot_be_marked_completed_without_its_mapped_material
+    - terminal_action_candidates_require_a_complete_resolution_contribution_before_selection
+    - resolution_completion_requested_outcome_verification_and_operational_interruption_are_separate_axes
+    - successful_model_response_observable_process_alignment_and_requested_output_satisfaction_are_distinct
+    - every_semantic_stage_exports_its_own_outcome_vector_with_unchecked_axes_left_unknown
+    - safe_authorized_continuation_prevents_a_normal_stop_route
+    - incomplete_task_sources_enter_a_separate_best_available_resolution_lane
+    - best_available_resolution_trials_never_enter_original_task_success_denominators
     - every_run_preserves_run_history
     - saved_run_manifest_binds_the_exact_product_outcome_digest
     - reports_playback_and_studio_project_the_bound_product_outcome

@@ -276,12 +276,15 @@ OBSERVABLE_WORK_CYCLE = (
 )
 
 
+AFTER_ACCEPTANCE_POLICIES = ("publish_and_stop", "continue_while_work_remains")
+
+
 @dataclass(frozen=True)
 class OutcomeVectorPolicy:
     """Canonical checks required before a semantic action may stop work."""
 
     policy_id: str = "practitioner.action_outcome_vector"
-    version: str = "1.0.0"
+    version: str = "1.1.0"
     require_semantic_action_vector: bool = True
     require_observable_process_alignment: bool = True
     stop_requires_resolved_continuation: bool = True
@@ -289,6 +292,10 @@ class OutcomeVectorPolicy:
     response_admission_is_not_process_or_output_success: bool = True
     evaluate_private_reasoning: bool = False
     observable_work_cycle: tuple[str, ...] = OBSERVABLE_WORK_CYCLE
+    # What an accepted, deterministically verified result does while the
+    # verifier still lists work. The first level publishes the result and
+    # stops; the second keeps working under the run's declared budgets.
+    after_acceptance: str = AFTER_ACCEPTANCE_POLICIES[0]
 
     def __post_init__(self) -> None:
         cycle = tuple(self.observable_work_cycle)
@@ -296,6 +303,10 @@ class OutcomeVectorPolicy:
                 or any(not isinstance(item, str) or not item.strip()
                        for item in cycle)):
             raise ValueError("outcome vector work cycle must be unique text")
+        if self.after_acceptance not in AFTER_ACCEPTANCE_POLICIES:
+            raise ValueError(
+                "after_acceptance must be one of "
+                f"{list(AFTER_ACCEPTANCE_POLICIES)}")
         object.__setattr__(self, "observable_work_cycle", cycle)
 
     def to_dict(self) -> dict:
@@ -314,6 +325,7 @@ class OutcomeVectorPolicy:
             "response_admission_is_not_process_or_output_success":
                 self.response_admission_is_not_process_or_output_success,
             "evaluate_private_reasoning": self.evaluate_private_reasoning,
+            "after_acceptance": self.after_acceptance,
             "observable_work_cycle": list(self.observable_work_cycle),
             "signal_descriptions": dict(SIGNAL_DESCRIPTIONS),
         }

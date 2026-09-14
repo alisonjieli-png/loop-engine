@@ -45,6 +45,13 @@ PROGRESS_STATUSES = ("advanced", "neutral", "regressed", "unknown")
 CONTINUATION_STATUSES = (
     "continue", "adjust", "complete", "await_authority",
     "no_safe_action", "unknown")
+# Named subsets of the closed vocabularies above, defined once so each
+# decision below refers to its vocabulary instead of repeating its tokens.
+CONTINUING_STATUSES = CONTINUATION_STATUSES[:2]
+WORK_BOUND_CONTINUATION_STATUSES = (
+    CONTINUATION_STATUSES[:2] + CONTINUATION_STATUSES[3:4])
+STOPPING_CONTINUATION_STATUSES = CONTINUATION_STATUSES[2:5]
+NON_ADVANCING_PROGRESS_STATUSES = PROGRESS_STATUSES[1:3]
 
 
 class ActionVectorAssessmentError(ValueError):
@@ -135,8 +142,7 @@ class ActionVectorAssessment:
                 raise ActionVectorAssessmentError(
                     f"{name} must contain unique non-empty text")
             object.__setattr__(self, name, values)
-        if (self.continuation_status in (
-                "continue", "adjust", "await_authority")
+        if (self.continuation_status in WORK_BOUND_CONTINUATION_STATUSES
                 and not self.remaining_work):
             raise ActionVectorAssessmentError(
                 "a continuing or authority-bound vector needs remaining work")
@@ -199,9 +205,9 @@ class ActionVectorAssessment:
 
     @property
     def expected_output_satisfied(self) -> bool | None:
-        if self.expected_output_status == "satisfied":
+        if self.expected_output_status == OUTPUT_CHECK_STATUSES[0]:
             return True
-        if self.expected_output_status == "unsatisfied":
+        if self.expected_output_status == OUTPUT_CHECK_STATUSES[1]:
             return False
         return None
 
@@ -216,18 +222,17 @@ class ActionVectorAssessment:
 
     @property
     def material_progress(self) -> bool | None:
-        if self.progress_status == "advanced":
+        if self.progress_status == PROGRESS_STATUSES[0]:
             return True
-        if self.progress_status in ("neutral", "regressed"):
+        if self.progress_status in NON_ADVANCING_PROGRESS_STATUSES:
             return False
         return None
 
     @property
     def continuation_available(self) -> bool | None:
-        if self.continuation_status in ("continue", "adjust"):
+        if self.continuation_status in CONTINUING_STATUSES:
             return True
-        if self.continuation_status in (
-                "complete", "await_authority", "no_safe_action"):
+        if self.continuation_status in STOPPING_CONTINUATION_STATUSES:
             return False
         return None
 

@@ -35,6 +35,7 @@ from .adaptive_practitioner_verification import (
     selected_project_matches,
     validate_adaptive_evaluation,
 )
+from .independent_evidence import ACCEPT
 
 
 @dataclass(frozen=True)
@@ -76,7 +77,7 @@ def route_adaptive_result(
         services.diagnostic("route_model_unavailable", {
             "error_type": type(exc).__name__,
             "verification_verdict": evaluation.verdict})
-        selected = ("stop_success" if evaluation.verdict == "accept"
+        selected = ("stop_success" if evaluation.verdict == ACCEPT
                     and deterministic_pass else "repair")
         reason = (
             "Deterministic route policy used after semantic route failure; "
@@ -85,23 +86,30 @@ def route_adaptive_result(
         services.verification_records[-1]
         if services.verification_records else {})
     vector_record = verification_record.get("action_vector")
+    # Acceptance here is the owning Loop's accepted verdict plus passing
+    # deterministic checks; the exact evaluation binding is still validated
+    # below before any success is published.
+    acceptance_established = bool(
+        evaluation.verdict == ACCEPT and deterministic_pass)
     try:
         vector_route = guard_action_vector_route(ActionVectorRouteRequest(
             selected, vector_record if isinstance(vector_record, dict) else None,
-            request.record.pass_number))
+            request.record.pass_number,
+            acceptance_established=acceptance_established))
     except (TypeError, ValueError) as exc:
         services.diagnostic("action_vector_route_invalid", {
             "error_type": type(exc).__name__})
         vector_route = guard_action_vector_route(ActionVectorRouteRequest(
             selected, {"record_type":
                        "action_vector_assessment_unavailable/v1"},
-            request.record.pass_number))
+            request.record.pass_number,
+            acceptance_established=acceptance_established))
     continuation = vector_route.continuation_available
     if vector_route.guarded:
         selected, reason = vector_route.route, vector_route.reason
         services.supervision_findings.append(vector_route.to_dict())
     if selected == "stop_success" and (
-            evaluation.verdict != "accept" or not deterministic_pass):
+            evaluation.verdict != ACCEPT or not deterministic_pass):
         selected = "repair"
     if selected == "stop_success":
         try:
@@ -195,6 +203,17 @@ def self_test() -> dict:
             "continuation_available": True}}
     guarded, _state = route_adaptive_result(
         AdaptiveRouteRequest(state, repair_record, {}), continuing_services)
+    accepted_services = services_for("stop_success", "accept")
+    accepted_services.verification_records[-1]["action_vector"] = {
+        "record_type": "action_vector_assessment/v1",
+        "outcome_signals": {
+            "observable_process_aligned": True,
+            "expected_output_satisfied": True,
+            "requested_output_satisfied": True,
+            "material_progress": True,
+            "continuation_available": True}}
+    route_adaptive_result(
+        AdaptiveRouteRequest(state, accepted_record, {}), accepted_services)
     tests = [{
         "test": "accepted_result_can_follow_model_selected_continue_route",
         "passed": continued.route == "continue",
@@ -206,6 +225,11 @@ def self_test() -> dict:
         "passed": (guarded.route == "repair"
                    and continuing_services.supervision_findings[-1][
                        "record_type"] == "action_vector_route_decision/v1"),
+    }, {
+        "test": "accepted_verified_result_is_not_rewritten_by_the_continuation_guard",
+        "passed": not any(
+            item.get("record_type") == "action_vector_route_decision/v1"
+            for item in accepted_services.supervision_findings),
     }]
     return {
         "record_type": "adaptive_practitioner_routing_test/v1",

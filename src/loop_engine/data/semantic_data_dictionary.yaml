@@ -1323,6 +1323,101 @@ entries:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.task_resolution_package
+  canonical_name: TaskResolutionPackage
+  primary_category: record
+  definition: Complete useful response returned when the original requested outcome is not verified, with
+    observed evidence, model analysis, assumptions, provisional outputs, missing or unverified material,
+    alternatives, questions, and next actions kept distinct.
+  source_of_truth: loop_engine.code_nodes.solve_terminal:TaskResolutionPackage
+  source_symbol: loop_engine.code_nodes.solve_terminal:TaskResolutionPackage
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: task_resolution_package/v1
+  related_terms:
+  - SolveOutcome
+  - SolveTerminalCode
+  - MaterialQuestion
+  difference_from_neighbors: TaskResolutionPackage completes the useful response without claiming that
+    the requested outcome, independent verification, or an external effect completed; SolveTerminalCode
+    retains the underlying constraint and SolveOutcome carries both.
+  parameterization_decision: requested_outcome_current_evidence_and_recorded_attempts
+  composition_decision: compose inside an unsolved SolveOutcome without creating another executable object
+  inheritance_decision: none
+  storage_authority: bound product outcome
+  lifecycle: immutable for one solve activation
+  legacy_aliases: []
+  migration: absent on earlier solve_outcome/v5 records
+  examples:
+  - TaskResolutionPackage
+  negative_examples:
+  - MaterialQuestion
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolution_completion_policy
+  canonical_name: ResolutionCompletionPolicy
+  primary_category: policy
+  definition: Passive versioned policy requiring a best-available resolution before a task-level stop
+    and listing useful fallback methods plus truth constraints.
+  source_of_truth: loop_engine.code_nodes.solve_terminal:ResolutionCompletionPolicy
+  source_symbol: loop_engine.code_nodes.solve_terminal:ResolutionCompletionPolicy
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: resolution_completion_policy/v1
+  related_terms:
+  - TaskResolutionPackage
+  - SolveTerminalCode
+  difference_from_neighbors: ResolutionCompletionPolicy requires useful completion behavior; TaskResolutionPackage
+    records the result and SolveTerminalCode records the terminal classification.
+  parameterization_decision: methods_and_truth_constraints
+  composition_decision: consumed by the existing Practitioner and solve projection
+  inheritance_decision: none
+  storage_authority: resolved solve configuration and bound product outcome
+  lifecycle: versioned for one solve contract
+  legacy_aliases: []
+  migration: absent on earlier solve configurations
+  examples:
+  - ResolutionCompletionPolicy
+  negative_examples:
+  - TaskResolutionPackage
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.provisional_task_output
+  canonical_name: ProvisionalTaskOutput
+  primary_category: record
+  definition: Model-authored candidate file body preserved for usefulness when it was not materialized
+    or verified.
+  source_of_truth: loop_engine.code_nodes.solve_terminal:ProvisionalTaskOutput
+  source_symbol: loop_engine.code_nodes.solve_terminal:ProvisionalTaskOutput
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: provisional_task_output/v1
+  related_terms:
+  - TaskResolutionPackage
+  difference_from_neighbors: ProvisionalTaskOutput is explicitly unmaterialized and unverified; an artifact
+    record describes bytes that were actually observed in a workspace or store.
+  parameterization_decision: proposed_path_content_digest_and_source_decision
+  composition_decision: nested inside TaskResolutionPackage
+  inheritance_decision: none
+  storage_authority: bound product outcome
+  lifecycle: immutable candidate for one solve activation
+  legacy_aliases: []
+  migration: absent on earlier solve outcomes
+  examples:
+  - ProvisionalTaskOutput
+  negative_examples:
+  - artifact
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
 - term_id: core.term.learning_candidate
   canonical_name: LearningCandidate
   primary_category: candidate
@@ -2440,136 +2535,347 @@ entries:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
-- term_id: "core.term.activation_history_disposition"
-  canonical_name: "ActivationHistoryDisposition"
-  primary_category: "ontology_category"
-  definition: "Distinguishes persisted, unavailable, failed, ephemeral, and legacy history without inventing durable evidence."
-  source_of_truth: "loop_engine.loop.reactive_activation:ActivationHistoryDisposition"
-  source_symbol: "loop_engine.loop.reactive_activation:ActivationHistoryDisposition"
-  public_or_internal: "public"
-  runtime_or_passive: "passive"
-  authoritative_or_projection: "authoritative"
-  versioning: "classification stored with activation_record/v2"
-  related_terms: ["ActivationHistoryRef"]
-  difference_from_neighbors: "Describes a typed boundary; it does not execute work, grant effects, or promote intelligence."
-  parameterization_decision: "typed_identity_scope_and_contract_fields"
-  composition_decision: "Consumed by existing canonical Loop execution and verification."
-  inheritance_decision: "none"
-  storage_authority: "Run History and existing reactive activation records when persisted."
-  lifecycle: "Validated before use; changed identities require new evidence."
+- term_id: core.term.activation_history_disposition
+  canonical_name: ActivationHistoryDisposition
+  primary_category: ontology_category
+  definition: Distinguishes persisted, unavailable, failed, ephemeral, and legacy history without inventing
+    durable evidence.
+  source_of_truth: loop_engine.loop.reactive_activation:ActivationHistoryDisposition
+  source_symbol: loop_engine.loop.reactive_activation:ActivationHistoryDisposition
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: classification stored with activation_record/v2
+  related_terms:
+  - ActivationHistoryRef
+  difference_from_neighbors: Describes a typed boundary; it does not execute work, grant effects, or promote
+    intelligence.
+  parameterization_decision: typed_identity_scope_and_contract_fields
+  composition_decision: Consumed by existing canonical Loop execution and verification.
+  inheritance_decision: none
+  storage_authority: Run History and existing reactive activation records when persisted.
+  lifecycle: Validated before use; changed identities require new evidence.
   legacy_aliases: []
-  migration: "Existing records retain explicit legacy handling; no implicit authority upgrade."
-  examples: ["Distinguishes persisted, unavailable, failed, ephemeral, and legacy history without inventing durable evidence."]
-  negative_examples: ["Treating a declaration or saved reference as proof that work is correct."]
-  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
-- term_id: "core.term.activation_history_ref"
-  canonical_name: "ActivationHistoryRef"
-  primary_category: "reference"
-  definition: "Exact committed Run History identity bound to one activation attempt, input, definition, terminal state, and consumed approval record."
-  source_of_truth: "loop_engine.loop.reactive_activation:ActivationHistoryRef"
-  source_symbol: "loop_engine.loop.reactive_activation:ActivationHistoryRef"
-  public_or_internal: "public"
-  runtime_or_passive: "passive"
-  authoritative_or_projection: "authoritative"
-  versioning: "activation_history_ref/v1"
-  related_terms: ["RunHistory"]
-  difference_from_neighbors: "Describes a typed boundary; it does not execute work, grant effects, or promote intelligence."
-  parameterization_decision: "typed_identity_scope_and_contract_fields"
-  composition_decision: "Consumed by existing canonical Loop execution and verification."
-  inheritance_decision: "none"
-  storage_authority: "Run History and existing reactive activation records when persisted."
-  lifecycle: "Validated before use; changed identities require new evidence."
+  migration: Existing records retain explicit legacy handling; no implicit authority upgrade.
+  examples:
+  - Distinguishes persisted, unavailable, failed, ephemeral, and legacy history without inventing durable
+    evidence.
+  negative_examples:
+  - Treating a declaration or saved reference as proof that work is correct.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.activation_history_ref
+  canonical_name: ActivationHistoryRef
+  primary_category: reference
+  definition: Exact committed Run History identity bound to one activation attempt, input, definition,
+    terminal state, and consumed approval record.
+  source_of_truth: loop_engine.loop.reactive_activation:ActivationHistoryRef
+  source_symbol: loop_engine.loop.reactive_activation:ActivationHistoryRef
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: activation_history_ref/v1
+  related_terms:
+  - RunHistory
+  difference_from_neighbors: Describes a typed boundary; it does not execute work, grant effects, or promote
+    intelligence.
+  parameterization_decision: typed_identity_scope_and_contract_fields
+  composition_decision: Consumed by existing canonical Loop execution and verification.
+  inheritance_decision: none
+  storage_authority: Run History and existing reactive activation records when persisted.
+  lifecycle: Validated before use; changed identities require new evidence.
   legacy_aliases: []
-  migration: "Existing records retain explicit legacy handling; no implicit authority upgrade."
-  examples: ["Exact committed Run History identity bound to one activation attempt, input, definition, terminal state, and consumed approval record."]
-  negative_examples: ["Treating a declaration or saved reference as proof that work is correct."]
-  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
-- term_id: "core.term.reactive_history_policy"
-  canonical_name: "ReactiveHistoryPolicy"
-  primary_category: "policy"
-  definition: "Optional host configuration requiring approved durable history before a reactive terminal outcome is published."
-  source_of_truth: "loop_engine.core.reactive_worker:ReactiveHistoryPolicy"
-  source_symbol: "loop_engine.core.reactive_worker:ReactiveHistoryPolicy"
-  public_or_internal: "public"
-  runtime_or_passive: "passive"
-  authoritative_or_projection: "authoritative"
-  versioning: "typed host configuration; required and ephemeral states remain distinct"
-  related_terms: ["ReactiveHandlerBinding"]
-  difference_from_neighbors: "Describes a typed boundary; it does not execute work, grant effects, or promote intelligence."
-  parameterization_decision: "typed_identity_scope_and_contract_fields"
-  composition_decision: "Consumed by existing canonical Loop execution and verification."
-  inheritance_decision: "none"
-  storage_authority: "Run History and existing reactive activation records when persisted."
-  lifecycle: "Validated before use; changed identities require new evidence."
+  migration: Existing records retain explicit legacy handling; no implicit authority upgrade.
+  examples:
+  - Exact committed Run History identity bound to one activation attempt, input, definition, terminal
+    state, and consumed approval record.
+  negative_examples:
+  - Treating a declaration or saved reference as proof that work is correct.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.reactive_history_policy
+  canonical_name: ReactiveHistoryPolicy
+  primary_category: policy
+  definition: Optional host configuration requiring approved durable history before a reactive terminal
+    outcome is published.
+  source_of_truth: loop_engine.core.reactive_worker:ReactiveHistoryPolicy
+  source_symbol: loop_engine.core.reactive_worker:ReactiveHistoryPolicy
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: typed host configuration; required and ephemeral states remain distinct
+  related_terms:
+  - ReactiveHandlerBinding
+  difference_from_neighbors: Describes a typed boundary; it does not execute work, grant effects, or promote
+    intelligence.
+  parameterization_decision: typed_identity_scope_and_contract_fields
+  composition_decision: Consumed by existing canonical Loop execution and verification.
+  inheritance_decision: none
+  storage_authority: Run History and existing reactive activation records when persisted.
+  lifecycle: Validated before use; changed identities require new evidence.
   legacy_aliases: []
-  migration: "Existing records retain explicit legacy handling; no implicit authority upgrade."
-  examples: ["Optional host configuration requiring approved durable history before a reactive terminal outcome is published."]
-  negative_examples: ["Treating a declaration or saved reference as proof that work is correct."]
-  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
-- term_id: "core.term.spawned_output_contract"
-  canonical_name: "SpawnedOutputContract"
-  primary_category: "contract"
-  definition: "Named output role, value contract, self-contained JSON Schema, and explicit path within a verified spawned result."
-  source_of_truth: "loop_engine.core.adaptive_practitioner_bindings:SpawnedOutputContract"
-  source_symbol: "loop_engine.core.adaptive_practitioner_bindings:SpawnedOutputContract"
-  public_or_internal: "internal"
-  runtime_or_passive: "passive"
-  authoritative_or_projection: "authoritative"
-  versioning: "nested output contract in adaptive_spawned_assignment/v1"
-  related_terms: ["LoopContract"]
-  difference_from_neighbors: "Describes a typed boundary; it does not execute work, grant effects, or promote intelligence."
-  parameterization_decision: "typed_identity_scope_and_contract_fields"
-  composition_decision: "Consumed by existing canonical Loop execution and verification."
-  inheritance_decision: "none"
-  storage_authority: "Owning run and its canonical history."
-  lifecycle: "Validated before use; changed identities require new evidence."
+  migration: Existing records retain explicit legacy handling; no implicit authority upgrade.
+  examples:
+  - Optional host configuration requiring approved durable history before a reactive terminal outcome
+    is published.
+  negative_examples:
+  - Treating a declaration or saved reference as proof that work is correct.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.spawned_output_contract
+  canonical_name: SpawnedOutputContract
+  primary_category: contract
+  definition: Named output role, value contract, self-contained JSON Schema, and explicit path within
+    a verified spawned result.
+  source_of_truth: loop_engine.core.adaptive_practitioner_bindings:SpawnedOutputContract
+  source_symbol: loop_engine.core.adaptive_practitioner_bindings:SpawnedOutputContract
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: nested output contract in adaptive_spawned_assignment/v1
+  related_terms:
+  - LoopContract
+  difference_from_neighbors: Describes a typed boundary; it does not execute work, grant effects, or promote
+    intelligence.
+  parameterization_decision: typed_identity_scope_and_contract_fields
+  composition_decision: Consumed by existing canonical Loop execution and verification.
+  inheritance_decision: none
+  storage_authority: Owning run and its canonical history.
+  lifecycle: Validated before use; changed identities require new evidence.
   legacy_aliases: []
-  migration: "Existing records retain explicit legacy handling; no implicit authority upgrade."
-  examples: ["Named output role, value contract, self-contained JSON Schema, and explicit path within a verified spawned result."]
-  negative_examples: ["Treating a declaration or saved reference as proof that work is correct."]
-  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
-- term_id: "core.term.spawned_input_binding"
-  canonical_name: "SpawnedInputBinding"
-  primary_category: "contract"
-  definition: "Explicit producer task and output role bound to a consumer role with value or reference-only delivery."
-  source_of_truth: "loop_engine.core.adaptive_practitioner_bindings:SpawnedInputBinding"
-  source_symbol: "loop_engine.core.adaptive_practitioner_bindings:SpawnedInputBinding"
-  public_or_internal: "internal"
-  runtime_or_passive: "passive"
-  authoritative_or_projection: "authoritative"
-  versioning: "nested input binding in adaptive_spawned_assignment/v1"
-  related_terms: ["LoopPortValue"]
-  difference_from_neighbors: "Describes a typed boundary; it does not execute work, grant effects, or promote intelligence."
-  parameterization_decision: "typed_identity_scope_and_contract_fields"
-  composition_decision: "Consumed by existing canonical Loop execution and verification."
-  inheritance_decision: "none"
-  storage_authority: "Owning run and its canonical history."
-  lifecycle: "Validated before use; changed identities require new evidence."
+  migration: Existing records retain explicit legacy handling; no implicit authority upgrade.
+  examples:
+  - Named output role, value contract, self-contained JSON Schema, and explicit path within a verified
+    spawned result.
+  negative_examples:
+  - Treating a declaration or saved reference as proof that work is correct.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.spawned_input_binding
+  canonical_name: SpawnedInputBinding
+  primary_category: contract
+  definition: Explicit producer task and output role bound to a consumer role with value or reference-only
+    delivery.
+  source_of_truth: loop_engine.core.adaptive_practitioner_bindings:SpawnedInputBinding
+  source_symbol: loop_engine.core.adaptive_practitioner_bindings:SpawnedInputBinding
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: nested input binding in adaptive_spawned_assignment/v1
+  related_terms:
+  - LoopPortValue
+  difference_from_neighbors: Describes a typed boundary; it does not execute work, grant effects, or promote
+    intelligence.
+  parameterization_decision: typed_identity_scope_and_contract_fields
+  composition_decision: Consumed by existing canonical Loop execution and verification.
+  inheritance_decision: none
+  storage_authority: Owning run and its canonical history.
+  lifecycle: Validated before use; changed identities require new evidence.
   legacy_aliases: []
-  migration: "Existing records retain explicit legacy handling; no implicit authority upgrade."
-  examples: ["Explicit producer task and output role bound to a consumer role with value or reference-only delivery."]
-  negative_examples: ["Treating a declaration or saved reference as proof that work is correct."]
-  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
-- term_id: "core.term.spawned_assignment"
-  canonical_name: "SpawnedAssignment"
-  primary_category: "definition"
-  definition: "Immutable named serial assignment with declared prerequisites, selected inputs, and an optional output contract."
-  source_of_truth: "loop_engine.core.adaptive_practitioner_bindings:SpawnedAssignment"
-  source_symbol: "loop_engine.core.adaptive_practitioner_bindings:SpawnedAssignment"
-  public_or_internal: "internal"
-  runtime_or_passive: "passive"
-  authoritative_or_projection: "authoritative"
-  versioning: "adaptive_spawned_assignment/v1"
-  related_terms: ["ProblemSpec"]
-  difference_from_neighbors: "Describes a typed boundary; it does not execute work, grant effects, or promote intelligence."
-  parameterization_decision: "typed_identity_scope_and_contract_fields"
-  composition_decision: "Consumed by existing canonical Loop execution and verification."
-  inheritance_decision: "none"
-  storage_authority: "Owning run and its canonical history."
-  lifecycle: "Validated before use; changed identities require new evidence."
+  migration: Existing records retain explicit legacy handling; no implicit authority upgrade.
+  examples:
+  - Explicit producer task and output role bound to a consumer role with value or reference-only delivery.
+  negative_examples:
+  - Treating a declaration or saved reference as proof that work is correct.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.spawned_assignment
+  canonical_name: SpawnedAssignment
+  primary_category: definition
+  definition: Immutable named serial assignment with declared prerequisites, selected inputs, and an optional
+    output contract.
+  source_of_truth: loop_engine.core.adaptive_practitioner_bindings:SpawnedAssignment
+  source_symbol: loop_engine.core.adaptive_practitioner_bindings:SpawnedAssignment
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: adaptive_spawned_assignment/v1
+  related_terms:
+  - ProblemSpec
+  difference_from_neighbors: Describes a typed boundary; it does not execute work, grant effects, or promote
+    intelligence.
+  parameterization_decision: typed_identity_scope_and_contract_fields
+  composition_decision: Consumed by existing canonical Loop execution and verification.
+  inheritance_decision: none
+  storage_authority: Owning run and its canonical history.
+  lifecycle: Validated before use; changed identities require new evidence.
   legacy_aliases: []
-  migration: "Existing records retain explicit legacy handling; no implicit authority upgrade."
-  examples: ["Immutable named serial assignment with declared prerequisites, selected inputs, and an optional output contract."]
-  negative_examples: ["Treating a declaration or saved reference as proof that work is correct."]
-  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
-source_digest: 7cdec2c18d124e66aec378c83dec5f13a4ac3507ca1bb6cc9d6ca7203571b35f
+  migration: Existing records retain explicit legacy handling; no implicit authority upgrade.
+  examples:
+  - Immutable named serial assignment with declared prerequisites, selected inputs, and an optional output
+    contract.
+  negative_examples:
+  - Treating a declaration or saved reference as proof that work is correct.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.outcome_vector
+  canonical_name: OutcomeVector
+  primary_category: record
+  definition: Tri-valued per-stage record separating response admission, observable process alignment,
+    execution, expected and requested output satisfaction, local verification, material progress, continuation,
+    downstream use, branch contribution, invalidation, and whole-task outcome.
+  source_of_truth: loop_engine.core.outcome_vector:OutcomeVector
+  source_symbol: loop_engine.core.outcome_vector:OutcomeVector
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: outcome_vector/v2; outcome_vector/v1 is read only through exact migration
+  related_terms:
+  - ActionIntentVector
+  - ActionVectorAssessment
+  difference_from_neighbors: OutcomeVector stores observed tri-valued signals; ActionIntentVector stores
+    the intended direction, and ActionVectorAssessment supplies subject-bound semantic evidence.
+  parameterization_decision: signals_are_observed_at_their_own_boundary
+  composition_decision: nested in stage observations and exact action lineage
+  inheritance_decision: none
+  storage_authority: Run History and the existing stage store
+  lifecycle: Signals accumulate without replacing unknown with false; contradictions remain visible.
+  legacy_aliases: []
+  migration: stage_observation/v2 with outcome_vector/v1 supplies only its historical axes; every new
+    axis remains unknown.
+  examples:
+  - A schema-admitted response with failed observable process alignment and unknown requested-output satisfaction.
+  negative_examples:
+  - A successful model response treated as proof that the requested task succeeded.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.outcome_vector_policy
+  canonical_name: OutcomeVectorPolicy
+  primary_category: policy
+  definition: Passive policy requiring separate action-vector checks and continued work while safe authorized
+    action remains, without inspecting private model reasoning.
+  source_of_truth: loop_engine.core.outcome_vector:OutcomeVectorPolicy
+  source_symbol: loop_engine.core.outcome_vector:OutcomeVectorPolicy
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: outcome_vector_policy/v1
+  related_terms:
+  - OutcomeVector
+  - ResolutionCompletionPolicy
+  difference_from_neighbors: OutcomeVectorPolicy controls required observations and continuation; OutcomeVector
+    records the resulting signals.
+  parameterization_decision: versioned owning_practitioner_policy
+  composition_decision: bound into custom and registered harness Practitioner prompts and action graphs
+  inheritance_decision: the owning Loop retains authority across harness realizations
+  storage_authority: resolved runtime facts and Run History
+  lifecycle: Bound before a semantic action and unchanged by an adapter response.
+  legacy_aliases: []
+  migration: Absent from earlier runs; their new axes remain unknown.
+  examples:
+  - Reject a stop route while continuation_available is true.
+  negative_examples:
+  - Letting a native harness completion event accept the owning task.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.action_intent_vector
+  canonical_name: ActionIntentVector
+  primary_category: record
+  definition: Passive projection of one admitted action's goal direction, expected state delta, verification
+    condition, dependencies, fallback, and bounded decision coordinates.
+  source_of_truth: loop_engine.core.outcome_vector:ActionIntentVector
+  source_symbol: loop_engine.core.outcome_vector:ActionIntentVector
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: action_intent_vector/v1
+  related_terms:
+  - NextActionDecision
+  - OutcomeVector
+  difference_from_neighbors: ActionIntentVector states what an action is intended to change; OutcomeVector
+    records what was later observed.
+  parameterization_decision: derived_only_from_the_admitted_next_action_decision
+  composition_decision: bound to candidate graphs and selected-action lineage
+  inheritance_decision: none
+  storage_authority: the admitted action decision and Run History
+  lifecycle: Immutable for one action occurrence.
+  legacy_aliases: []
+  migration: Absent from earlier action records.
+  examples:
+  - Build a checked report with a declared verification condition and repair fallback.
+  negative_examples:
+  - A free-form intention that changes after execution.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.action_vector_assessment
+  canonical_name: ActionVectorAssessment
+  primary_category: record
+  definition: Subject-bound assessment of observable process checks, action and requested outputs, progress,
+    and continuation that supplies signals to OutcomeVector.
+  source_of_truth: loop_engine.core.action_vector_assessment:ActionVectorAssessment
+  source_symbol: loop_engine.core.action_vector_assessment:ActionVectorAssessment
+  public_or_internal: internal
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: action_vector_assessment/v1
+  related_terms:
+  - ActionIntentVector
+  - OutcomeVector
+  - AdaptiveVerificationSubject
+  difference_from_neighbors: ActionVectorAssessment evaluates one exact observed action; it does not grant
+    task acceptance, effects, or positive stage credit by itself.
+  parameterization_decision: registered_process_checks_and_task_criteria
+  composition_decision: issued inside adaptive verification and folded through exact action lineage
+  inheritance_decision: none
+  storage_authority: subject-bound adaptive verification record
+  lifecycle: Immutable for the evaluated action, plan, and result set.
+  legacy_aliases: []
+  migration: Absent from earlier verification records; missing assessment remains unknown.
+  examples:
+  - Process aligned, expected output satisfied, task criterion unknown, safe continuation available.
+  negative_examples:
+  - A model declaring its own private reasoning correct.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.resolution_method_assessment
+  canonical_name: ResolutionMethodAssessment
+  primary_category: record
+  definition: Typed disposition for one registered best-available-resolution method, with its summary
+    and evidence references.
+  source_of_truth: loop_engine.code_nodes.solve_terminal:ResolutionMethodAssessment
+  source_symbol: loop_engine.code_nodes.solve_terminal:ResolutionMethodAssessment
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: resolution_method_assessment/v1
+  related_terms:
+  - TaskResolutionPackage
+  - ResolutionCompletionPolicy
+  difference_from_neighbors: ResolutionMethodAssessment proves coverage of one method; TaskResolutionPackage
+    combines every method disposition and its produced material.
+  parameterization_decision: registered_method_and_task_specific_disposition
+  composition_decision: every TaskResolutionPackage contains each registered method exactly once
+  inheritance_decision: none
+  storage_authority: bound product outcome
+  lifecycle: Immutable for one solve activation.
+  legacy_aliases: []
+  migration: Absent from earlier best-available-resolution candidates.
+  examples:
+  - Synthetic material is not applicable because exact observed data already satisfies the analysis.
+  negative_examples:
+  - Marking pro forma analysis complete while returning no pro forma material.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+source_digest: d43a1c70548987e7218cd966908561d248ab6a6264898a09356eb76a046f8e3a

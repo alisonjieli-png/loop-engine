@@ -132,6 +132,9 @@ class WorkFunctionSpec:
         }
 
 
+WORK_FUNCTION_CATALOG_RECORD = "practitioner_work_function_catalog/v1"
+
+
 @dataclass(frozen=True)
 class WorkFunctionCatalog:
     """Versioned baseline with an explicit open-ended discovery policy."""
@@ -141,10 +144,10 @@ class WorkFunctionCatalog:
     inventory_policy: str
     proposal_channel: str
     functions: tuple[WorkFunctionSpec, ...]
-    record_type: str = "practitioner_work_function_catalog/v1"
+    record_type: str = WORK_FUNCTION_CATALOG_RECORD
 
     def __post_init__(self) -> None:
-        if (self.record_type != "practitioner_work_function_catalog/v1"
+        if (self.record_type != WORK_FUNCTION_CATALOG_RECORD
                 or not self.catalog_id.strip()
                 or not _SEMVER.fullmatch(self.version)
                 or self.inventory_policy not in INVENTORY_POLICIES

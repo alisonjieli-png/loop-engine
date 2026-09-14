@@ -306,6 +306,12 @@ def campaign_report(root) -> dict:
             "resolution_status": (
                 result.get("resolution_status") if isinstance(result, dict)
                 else None),
+            # The underlying failure stays visible when a resolution package
+            # becomes the public result.
+            "failure_code": exported.get("failure_code") or report.get("failure_code"),
+            "underlying_terminal": (
+                result.get("underlying_terminal") if isinstance(result, dict)
+                else None),
             "step_checkpoints": report["links"].get("step_history", 0),
             "complete": report.get("complete"), "gaps": report.get("gaps", []),
             "disagreements": report.get("disagreements", {}),

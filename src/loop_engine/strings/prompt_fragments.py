@@ -87,6 +87,17 @@ ARTIFACT_TRIAL_FEEDBACK_POLICY_PROMPT = (
     'acceptance, or a change to the original requirements. Preserve obligations beyond '
     'the reported failures.')
 
+# Governed instruction text of the laboratory's task-database campaign trial.
+# The campaign prepends it to each frozen task brief; its bytes are part of
+# every recorded trial prompt and change only with a new resource version.
+TASK_DATABASE_TRIAL_PROMPT_RESOURCE = ("task_database_campaign.task_intake", "1.0.0")
+TASK_DATABASE_TRIAL_INSTRUCTION_PROMPT = (
+    'Perform this task and produce its actual deliverables. Preserve all original requirements. '
+    'This run authorizes local sandbox work and provider reasoning, not real business-system mutations, '
+    'messages, submissions, purchases, or deployment. Use simulated services where the task needs effect tests. '
+    'A missing source does not justify an empty result or an early stop. '
+    'Ask a precise user question only when a typed user decision can improve a later revision.\n\n')
+
 
 @dataclass(frozen=True)
 class PromptSlotDefinition:

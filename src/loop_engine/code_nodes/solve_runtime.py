@@ -38,6 +38,7 @@ from .solve_request_adaptation import (
     stage_assistance_summary,
 )
 from .solve_terminal import (
+    RESOLUTION_STATUSES,
     SOLVE_FAILURE_CODES,
     SolveTerminalCode,
     build_task_resolution_package,
@@ -659,10 +660,21 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
                             limitations=limitations,
                             suggested_next=_next_recovery(
                                 underlying_terminal)).to_dict())
+    resolution_complete = bool(
+        resolution_value
+        and resolution_value.get("resolution_status") == RESOLUTION_STATUSES[0])
+    # COMPLETED_PARTIAL names a complete best-available resolution. A package
+    # that holds only a constraint report, or an operational interruption,
+    # keeps its underlying terminal so the outcome says what happened.
     terminal = (SolveTerminalCode.COMPLETED_VERIFIED.value if solved
-                else terminal_with_resolution(underlying_terminal))
-    summary = (product["summary"] if solved else
-               "Completed a best-available resolution package. The original "
+                else terminal_with_resolution(underlying_terminal)
+                if resolution_complete else underlying_terminal)
+    summary = (product["summary"] if solved
+               else "Completed a best-available resolution package. The "
+               "original requested outcome remains unverified."
+               if resolution_complete
+               else "Returned the preserved work and the remaining constraint "
+               "without a complete best-available resolution. The original "
                "requested outcome remains unverified.")
     resolution_next = (
         resolution_value.get("next_actions", [""])[0]
@@ -895,15 +907,18 @@ def self_test() -> dict:
         unavailable = solve_task(SolveRequest(
             intake_task(TaskIntakeRequest(text="invent a new theorem")),
             runs_dir=root))
+        # With no model and no executor, the only material is the runtime's
+        # recovery hint, so the honest result is a constraint report under
+        # the underlying terminal, not a completed resolution.
         check("unavailable_executor_never_returns_solved_true",
               not unavailable.solved
               and unavailable.failure_code == "CAPABILITY_GAP"
-              and unavailable.status == "COMPLETED_PARTIAL"
-              and unavailable.result["response_complete"] is True
-              and unavailable.result["resolution_status"] == "COMPLETE"
-              and any(item["method_id"] == "next_action_plan"
-                      and item["disposition"] == "completed"
-                      for item in unavailable.result["method_assessments"])
+              and unavailable.status == "CAPABILITY_GAP"
+              and unavailable.result["response_complete"] is False
+              and unavailable.result["resolution_status"]
+                  == RESOLUTION_STATUSES[1]
+              and not any(item["disposition"] == "completed"
+                          for item in unavailable.result["method_assessments"])
               and unavailable.result["fulfillment_status"]
                   == "constraint_report_only")
         unsaved_root = str(Path(root) / "unsaved")

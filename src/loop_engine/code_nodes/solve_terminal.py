@@ -251,20 +251,33 @@ class TaskResolutionPackage:
                 != set(RESOLUTION_METHOD_IDS)):
             raise ValueError(
                 "task resolution must assess every registered method exactly once")
-        if (self.policy.require_completed_useful_work
-                and not any(item.disposition == "completed" for item in methods)):
-            raise ValueError(
-                "task resolution needs at least one completed useful method")
         object.__setattr__(self, "method_assessments", methods)
 
     @property
     def response_complete(self) -> bool:
-        return bool(
+        """True only when substantive work completed at least one method.
+
+        Methods completed only by runtime guidance or a restatement of the
+        task are not completed, so such a package is a constraint report. An
+        operational interruption is never a complete resolution.
+        """
+        assessed = (
             len(self.method_assessments) == len(RESOLUTION_METHOD_IDS)
             and {item.method_id for item in self.method_assessments}
-            == set(RESOLUTION_METHOD_IDS)
-            and any(item.disposition == "completed"
-                    for item in self.method_assessments))
+            == set(RESOLUTION_METHOD_IDS))
+        useful = (not self.policy.require_completed_useful_work
+                  or any(item.disposition == "completed"
+                         for item in self.method_assessments))
+        return bool(assessed and useful
+                    and self.underlying_terminal
+                    not in OPERATIONAL_INTERRUPTION_TERMINALS)
+
+    @property
+    def resolution_status(self) -> str:
+        """COMPLETE, CONSTRAINT_REPORT, or OPERATIONAL_INTERRUPTION."""
+        if self.underlying_terminal in OPERATIONAL_INTERRUPTION_TERMINALS:
+            return RESOLUTION_STATUSES[2]
+        return RESOLUTION_STATUSES[0 if self.response_complete else 1]
 
     def report(self) -> str:
         """Render the structured resolution as a compact readable report."""
@@ -310,8 +323,7 @@ class TaskResolutionPackage:
         return {
             "record_type": "task_resolution_package/v1",
             "response_complete": self.response_complete,
-            "resolution_status": (
-                "COMPLETE" if self.response_complete else "INCOMPLETE"),
+            "resolution_status": self.resolution_status,
             "requested_outcome_verified": False,
             "requested_outcome_status": "UNVERIFIED",
             "requested_outcome": self.requested_outcome,
@@ -476,8 +488,16 @@ def _default_method_disposition(terminal: str) -> str:
 
 def _assess_resolution_methods(
         contribution: dict, values_by_field: dict[str, tuple[str, ...]],
-        terminal: str) -> tuple[ResolutionMethodAssessment, ...]:
-    """Validate model coverage or derive honest operational dispositions."""
+        terminal: str,
+        substantive_by_field: dict[str, tuple[str, ...]] | None = None,
+        ) -> tuple[ResolutionMethodAssessment, ...]:
+    """Validate model coverage or derive honest operational dispositions.
+
+    Material that only restates the task or repeats runtime guidance stays in
+    the package for the reader, but it never completes a method.
+    """
+    substantive_by_field = (values_by_field if substantive_by_field is None
+                            else substantive_by_field)
     raw = contribution.get("method_assessments") or ()
     if raw:
         assessments = tuple(
@@ -490,7 +510,8 @@ def _assess_resolution_methods(
         by_method = dict(RESOLUTION_METHOD_FIELDS)
         for item in assessments:
             has_content = any(
-                values_by_field.get(name) for name in by_method[item.method_id])
+                substantive_by_field.get(name)
+                for name in by_method[item.method_id])
             if (item.disposition == "completed") is not bool(has_content):
                 raise ValueError(
                     f"resolution method {item.method_id} does not match the "
@@ -501,13 +522,22 @@ def _assess_resolution_methods(
     assessments = []
     for method_id, field_names in RESOLUTION_METHOD_FIELDS:
         completed_fields = tuple(
-            name for name in field_names if values_by_field.get(name))
+            name for name in field_names if substantive_by_field.get(name))
+        restated_fields = tuple(
+            name for name in field_names
+            if values_by_field.get(name) and name not in completed_fields)
         if completed_fields:
             assessments.append(ResolutionMethodAssessment(
                 method_id, "completed",
                 "Completed material is preserved in "
                 + ", ".join(completed_fields) + ".",
                 tuple(f"resolution.{name}" for name in completed_fields)))
+        elif restated_fields:
+            assessments.append(ResolutionMethodAssessment(
+                method_id, unavailable,
+                "Only a restatement of the task or runtime guidance is "
+                "preserved in " + ", ".join(restated_fields)
+                + "; it is not completed work."))
         else:
             assessments.append(ResolutionMethodAssessment(
                 method_id, unavailable,
@@ -655,13 +685,32 @@ def build_task_resolution_package(*, task: str, adaptive: dict, product: dict,
         "supplemental_items": supplemental,
         "next_actions": next_actions,
     }
+    # Only work that happened completes a method: observed artifacts,
+    # inspections, and provisional outputs, the Practitioner's own resolution
+    # contribution, and recovery alternatives. The orientation's restatement
+    # of the task and the runtime's recovery hint stay visible in the package
+    # but complete nothing.
+    substantive_values = {
+        **method_values,
+        "analysis": _unique_text(contribution.get("analysis") or ()),
+        "assumptions": _unique_text(contribution.get("assumptions") or ()),
+        "scenario_analysis": _unique_text(
+            contribution.get("scenario_analysis") or ()),
+        "next_actions": _unique_text((
+            *(contribution.get("next_actions") or ()),
+            alternatives[-1] if alternatives else "")),
+    }
     method_assessments = _assess_resolution_methods(
-        contribution, method_values, underlying_terminal)
+        contribution, method_values, underlying_terminal, substantive_values)
     fulfillment = (
         "candidate_artifacts_available" if artifacts
         else "provisional_outputs_available" if provisional
         else "analysis_and_plan_available" if (
-            analysis or scenarios or alternatives or contribution)
+            alternatives or any(
+                substantive_values[name] for name in (
+                    "analysis", "scenario_analysis", "pro_forma_analysis",
+                    "synthetic_material", "estimates", "analogous_solutions",
+                    "first_principles_solutions", "supplemental_items")))
         else "constraint_report_only")
     return TaskResolutionPackage(
         requested_outcome=requested_outcome,
@@ -690,6 +739,14 @@ def build_task_resolution_package(*, task: str, adaptive: dict, product: dict,
         policy=policy,
     )
 
+
+#: A provider outage or an operator cancellation interrupts the work itself.
+#: The preserved material is reported, but it is never a complete resolution.
+OPERATIONAL_INTERRUPTION_TERMINALS = frozenset({
+    SolveTerminalCode.PROVIDER_UNAVAILABLE.value,
+    SolveTerminalCode.CANCELLED.value,
+})
+RESOLUTION_STATUSES = ("COMPLETE", "CONSTRAINT_REPORT", "OPERATIONAL_INTERRUPTION")
 
 _RESOLUTION_COMPLETABLE_TERMINALS = frozenset({
     SolveTerminalCode.BLOCKED_MATERIAL_INPUT.value,

@@ -122,3 +122,12 @@ node_modules/
 /artifacts/project-review-*/product-acceptance/
 /artifacts/project-review-*/studio-runs/
 /artifacts/universal-compiler-audit-*/snapshot-*/
+
+# Added 2026-09-14: the local task database (about 276 GB of Kaggle,
+# OpenML, and synthetic task material) and campaign run outputs (about
+# 6 GB) now live inside this checkout. They are data, not source, and tools
+# that list untracked files must not walk them. stub-test is the moved
+# Capability-Reuse Harness workspace, which keeps its own history.
+/task_database/
+/task-campaign-runs/
+/stub-test/

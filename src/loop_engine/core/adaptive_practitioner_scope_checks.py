@@ -135,7 +135,10 @@ def run_checks():
                     "spawned_tasks": [{"objective": spawned_task,
                         "constraints": [], "success_criteria": [completion]}],
                     "rationale": "The selected responsibility needs its own verification."}
-            host_answers = _answers(host)
+            # A verification answer assesses exactly the criteria its step
+            # registers. The spawned task and the spawning task's first pass
+            # register two; the second pass registers its new orientation's one.
+            host_answers = _answers(host, criterion_refs=("criterion:0", "criterion:1"))
             first = tuple(json.dumps(v) for v in (
                 _orientation(candidate_capabilities=[host.action.capability_ref]),
                 {"actions": [decision]}, plan))
@@ -143,7 +146,7 @@ def run_checks():
                 "route": "continue" if parent_finishes else "stop_success",
                 "reason": "Inspect the spawned result before completing the spawning task."}))
             if parent_finishes:
-                answers += host_answers
+                answers += _answers(host)
             execution = fixture_model_execution(FixtureModelExecutionRequest(
                 answers=answers, max_model_calls=len(answers)))
             progress = []

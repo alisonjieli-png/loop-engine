@@ -165,6 +165,7 @@ MODULE_MAP = {
         "adaptive_practitioner_supervision",
         "recovery_learning", "recovery_learning_checks", "cognitive_response_checks",
         "action_vector_assessment", "action_vector_routing",
+        "work_function_catalog",
         "adaptive_practitioner_validation",
         "adaptive_practitioner_verification", "adaptive_practitioner_routing",
         "adaptive_practitioner_feedback_checks",

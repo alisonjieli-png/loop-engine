@@ -431,7 +431,7 @@ def _projection_checks() -> list[dict]:
     return tests
 
 
-def _answers(fixture, permissions=None):
+def _answers(fixture, permissions=None, criterion_refs=("criterion:0",)):
     from .adaptive_practitioner_acceptance_checks import (
         _action_vector,
         _decision,
@@ -456,7 +456,7 @@ def _answers(fixture, permissions=None):
                     "remaining_gaps": [], "advisory_findings": [],
                     "new_requirement_proposals": [],
                     "action_vector": _action_vector(
-                        criterion_refs=("criterion:0",))}
+                        criterion_refs=criterion_refs)}
     return tuple(json.dumps(value) for value in (
         orientation, {"actions": [decision]}, how, verification,
         {"route": "stop_success", "reason": "The host confirms completion."}))

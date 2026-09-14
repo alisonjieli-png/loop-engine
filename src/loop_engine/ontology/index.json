@@ -62,9 +62,9 @@
    "node": {
     "artifact_kind": "intelligence_record",
     "identity": {
-     "content_digest": "b95c66b4971a1c594775ea3bf8460ec5db653b69442c167a8a3df2416f55de31",
+     "content_digest": "18bfe3c29ce197f78d504fccf78a8a0dc386aeaae88350085956471911a36338",
      "object_id": "core.context.practitioner_portfolio",
-     "version": "1.1.0"
+     "version": "1.2.0"
     },
     "input_roles": [],
     "kind": "catalog_record",

@@ -5,7 +5,10 @@ interprets a task, chooses a solution, or grants authority.
 """
 from __future__ import annotations
 
-from .adaptive_practitioner_records import TaskOrientationResult
+from .adaptive_practitioner_records import NEXT_ACTION_KINDS, TaskOrientationResult
+
+#: The action kind that asks the user, named once from the action vocabulary.
+ASK_USER_ACTION = NEXT_ACTION_KINDS[0]
 
 
 def orientation_policy_findings(
@@ -38,7 +41,7 @@ def orientation_policy_findings(
                 f"{item.subject!r} is both delegated, defaultable, or "
                 "researchable and marked "
                 "for user clarification")
-    if (orientation.proposed_next_action == "ASK_USER"
+    if (orientation.proposed_next_action == ASK_USER_ACTION
             and not orientation.blocking_questions):
         findings.append("ASK_USER has no material blocking question")
     user_clarifications = [
@@ -49,12 +52,12 @@ def orientation_policy_findings(
             "blocking questions require a USER_CLARIFICATION_REQUIRED "
             "ambiguity; runtime, capability, research, and authority questions "
             "must be resolved or reported by the Practitioner")
-    if (orientation.proposed_next_action == "ASK_USER"
+    if (orientation.proposed_next_action == ASK_USER_ACTION
             and not user_clarifications):
         findings.append(
             "ASK_USER requires a typed user-clarification ambiguity")
     if (interaction_mode == "autonomous"
-            and orientation.proposed_next_action == "ASK_USER"
+            and orientation.proposed_next_action == ASK_USER_ACTION
             and orientation.delegated_choices):
         findings.append(
             "autonomous orientation asks despite recorded delegated choices")

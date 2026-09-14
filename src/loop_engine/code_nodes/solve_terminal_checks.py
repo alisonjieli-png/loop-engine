@@ -149,6 +149,66 @@ def run_checks() -> dict:
             "malformed, incomplete, or falsely completed method coverage is "
             "refused before selection"),
     })
+    from .solve_terminal import RESOLUTION_STATUSES
+
+    empty_product = {"artifacts": (), "result": None}
+    template_only = build_task_resolution_package(
+        task="Invent a new theorem.", adaptive={}, product=empty_product,
+        underlying_terminal="CAPABILITY_GAP", questions=(), limitations=(),
+        suggested_next=(
+            "Configure a supported model route or install a compatible "
+            "capability."))
+    restated = build_task_resolution_package(
+        task="Produce a report.",
+        adaptive={"orientations": [{
+            "ultimate_goal": "Produce a useful report.",
+            "task_summary": "Produce a report.",
+            "current_state": "No work has been done.",
+            "knowns": ["The task asks for a report."],
+            "proposed_next_action": "ASK_USER"}]},
+        product=empty_product, underlying_terminal="BLOCKED_MATERIAL_INPUT",
+        questions=(), limitations=(),
+        suggested_next="Answer the listed material questions.")
+    interrupted = build_task_resolution_package(
+        task="Produce a report.",
+        adaptive={"action_decisions": [{
+            "decision_id": "decision-1",
+            "inputs": {"resolution": {
+                **{name: [] for name in RESOLUTION_CONTRIBUTION_FIELDS},
+                "analysis": ["The supplied values support a draft."],
+                "next_actions": ["Resume when the provider answers."]}}}]},
+        product=empty_product, underlying_terminal="PROVIDER_UNAVAILABLE",
+        questions=(), limitations=(), suggested_next="")
+    tests.append({
+        "test": "runtime_guidance_alone_is_a_constraint_report_not_a_complete_resolution",
+        "passed": (template_only.resolution_status == RESOLUTION_STATUSES[1]
+                   and template_only.response_complete is False
+                   and template_only.to_dict()["resolution_status"]
+                   == RESOLUTION_STATUSES[1]
+                   and all(item.disposition != "completed"
+                           for item in template_only.method_assessments)
+                   and template_only.fulfillment_status
+                   == "constraint_report_only"),
+        "detail": template_only.resolution_status,
+    })
+    tests.append({
+        "test": "a_restated_task_does_not_complete_the_evidence_analysis_method",
+        "passed": (restated.resolution_status == RESOLUTION_STATUSES[1]
+                   and not any(
+                       item.method_id == "available_evidence_analysis"
+                       and item.disposition == "completed"
+                       for item in restated.method_assessments)
+                   and bool(restated.model_analysis)),
+        "detail": restated.resolution_status,
+    })
+    tests.append({
+        "test": "an_operational_interruption_is_never_a_complete_resolution",
+        "passed": (interrupted.resolution_status == RESOLUTION_STATUSES[2]
+                   and interrupted.response_complete is False
+                   and any(item.disposition == "completed"
+                           for item in interrupted.method_assessments)),
+        "detail": interrupted.resolution_status,
+    })
     passed = sum(1 for item in tests if item["passed"])
     return {
         "record_type": "solve_terminal_test/v1", "tests": tests,

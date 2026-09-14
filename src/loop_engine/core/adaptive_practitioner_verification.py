@@ -45,6 +45,7 @@ from .model_response_admission import (
     ModelResponseContract,
 )
 from .action_vector_assessment import (
+    CONTINUATION_STATUSES,
     ActionVectorAssessment,
     action_vector_schema,
 )
@@ -612,7 +613,7 @@ def verify_adaptive_results(
             raise AdaptivePractitionerError(
                 "accept requires aligned observable process, expected output, "
                 "and every requested-output criterion")
-        if (action_vector.continuation_status == "complete"
+        if (action_vector.continuation_status == CONTINUATION_STATUSES[2]
                 and action_vector.requested_output_satisfied is not True):
             raise AdaptivePractitionerError(
                 "complete continuation status requires requested-output satisfaction")

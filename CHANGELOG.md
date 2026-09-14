@@ -44,6 +44,37 @@ First public release.
   separate best-available-resolution lane that cannot enter original-task
   success denominators.
 
+### Fixed on 2026-09-14
+
+- An accepted, deterministically verified result now publishes and stops by
+  default when the verifier still lists optional work. `OutcomeVectorPolicy`
+  1.1.0 adds `after_acceptance`, with `publish_and_stop` as the default and
+  `continue_while_work_remains` kept as an explicit level. Before this fix
+  an accepted result could keep running without a bound, and a correct
+  deliverable was reported unsolved.
+- A best-available resolution is `COMPLETE` only when substantive work
+  completed a method: observed artifacts, inspections, provisional outputs,
+  the Practitioner's own resolution contribution, or recovery alternatives.
+  A restatement of the task and the runtime's recovery hint stay visible but
+  complete nothing. Provider interruptions and cancellations report
+  `OPERATIONAL_INTERRUPTION`. `COMPLETED_PARTIAL` names only a complete
+  package, so a run with no model now returns `CAPABILITY_GAP` with a
+  constraint report.
+- The integrated resolution and vector work passes the gates. The practitioner
+  portfolio manifest digest, ontology index, architecture map, semantic
+  projection, dictionary page, and packaged `architecture.yaml` and
+  `terminology.yaml` copies are current; the work-function catalog is
+  registered; three modules declare size exceptions with split plans; and
+  eighteen new hardcoding findings are fixed at their owning boundaries with
+  byte-identical prompt text. Campaign page cells show the underlying failure
+  code, and `task_database/`, `task-campaign-runs/`, and `stub-test/` are
+  ignored.
+- Eleven recursive spawn checks failed once the verification response
+  required an `action_vector`: the spawn fixture scripted one shared answer
+  that assessed only `criterion:0`, while each verify step registers its own
+  criteria. The fixture now scripts answers that assess exactly the criteria
+  each step registers; the stricter contract is unchanged.
+
 ### Fixed on 2026-09-13
 
 - The hardcoding delta gate is green again on `main`. The experiment
