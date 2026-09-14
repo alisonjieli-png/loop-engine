@@ -228,6 +228,45 @@ def run_file_identity_checks(check):
                       and repairs == ["file_response_shape_invalid"], str(error))
 
 
+def run_recovery_record_checks(check):
+    """A declined recovery keeps its decision on record before the refusal."""
+    from .recovery import RecoveryOutcome
+
+    packet = {"record_type": "offline_independent_recovery_record/v1",
+              "responsibility": "Return the fixture value.",
+              "response_contract": {"value": "integer"}}
+    for choice, chosen_by, selected in (
+            ("abandoned", "llm", ("abandon",)),
+            ("unreasoned", "deterministic", ("retry_same_route",))):
+        with tempfile.TemporaryDirectory(prefix="loop-independent-recovery-record-") as folder:
+            services, owner = _services(Path(folder))
+            services.model_session = fixture_model_execution(FixtureModelExecutionRequest(
+                answers=("FAIL",), max_model_calls=1,
+                validator=lambda raw: raw != "FAIL")).start_session()
+
+            def recovery(request, error_code, attempt, *, provider_responded,
+                         chosen_by=chosen_by, selected=selected):
+                return RecoveryOutcome(selected=selected, chosen_by=chosen_by,
+                                       reason="Offline recovery decision fixture.")
+
+            services._reasoned_recovery = recovery
+            error = None
+            try:
+                verification._call(services, owner, "fixture", packet)
+            except Exception as exc:
+                error = exc
+            declined = [event for event in owner.ledger.events
+                        if event.get("custom_kind")
+                        == "independent_verification_recovery_declined"]
+            check("independent_" + choice + "_recovery_is_recorded_before_the_refusal",
+                  error is not None and len(declined) == 1
+                  and declined[0].get("phase") == "fixture"
+                  and declined[0].get("reasoned") is (chosen_by == "llm")
+                  and declined[0].get("selected") == list(selected)
+                  and declined[0].get("reason") == "Offline recovery decision fixture.",
+                  str(declined)[:300])
+
+
 def qualify_plan_repair(output_root: str) -> dict:
     """Explicit Docker execution; model replies are local contract fixtures."""
     root = Path(output_root)

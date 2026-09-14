@@ -272,6 +272,16 @@ def _call_once(services, owner, purpose, packet, file_spec):
                 _bytes(packet["response_contract"]).decode()), error_code, attempt,
                 provider_responded=bool(services.model_session.results))
             if not recovery.reasoned or recovery.selected != ("retry_same_route",):
+                # A declined recovery keeps its reason on record, so an
+                # unavailable report can be traced to the recovery decision.
+                owner.ledger.record(
+                    loop_id=owner.loop_id, event="custom",
+                    custom_kind="independent_verification_recovery_declined",
+                    phase=purpose, attempt=attempt, error_code=str(error_code),
+                    reasoned=bool(recovery.reasoned),
+                    selected=list(recovery.selected or ()),
+                    blocker=str(getattr(recovery, "blocker", "") or ""),
+                    reason=str(getattr(recovery, "reason", "") or "")[:300])
                 raise
             # The existing Recovery Loop owns this typed allowance decision.
             # No numerical fallback ceiling is invented by the verifier.

@@ -457,8 +457,16 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             return [result]
         if plan.handle in (
                 "core.finish", "core.ask", "core.authority", "core.abstain"):
-            existing_result = latest_task_result(services)
+            from .adaptive_practitioner_result import best_available_task_result
+            # A later failed execution must not hide earlier passing work.
+            existing_result = best_available_task_result(services)
             if plan.handle == "core.finish" and existing_result is not None:
+                if (existing_result is not latest_task_result(services)
+                        and isinstance(getattr(services, "task_results", None), list)):
+                    # Presenting earlier work again makes it the latest
+                    # presented result, so verification, routing, and the
+                    # final projection all read the same record.
+                    services.task_results.append(existing_result)
                 return [ResultPacket(
                     objective="return task result", result=existing_result,
                     confidence=(1.0 if task_result_succeeded(existing_result)

@@ -323,6 +323,100 @@ def _permission_repair_acceptance_check() -> dict:
                     f"terminal route {blocked.get('final_route')}; project calls {project_executor.call_count}")}
 
 
+def _return_to_passing_work_acceptance_check() -> dict:
+    """A returned result presents earlier passing work, not a later failure."""
+    orientation = _orientation()
+    criterion_refs = tuple(
+        f"criterion:{index}" for index, _item in enumerate(
+            orientation.get("verification_obligations") or ())) or ("criterion:0",)
+    first = _decision(goal="Build the requested artifact.")
+    second = _decision(goal="Rebuild the artifact with a different design.")
+    returned = _decision(
+        "RETURN_RESULT", goal="Return the passing result for verification.",
+        required_capabilities=[], permissions=[],
+        reason="The first attempt passed its own checks.",
+        expected_output="The earlier passing result, verified.")
+
+    def how(decision):
+        return {"action_id": _decision_id(decision), "how_mode": "generate",
+                "act_mode": "run_dag", "capability_ref": "core.generated_project",
+                "arguments": {}, "steps": ["create", "run", "test"],
+                "spawned_tasks": [], "rationale": "Generate a bounded project."}
+
+    def candidate(summary):
+        return {"record_type": "generated_project_candidate/v1",
+                "project_id": "acceptance_test", "summary": summary,
+                "files": [{"path": "main.py", "purpose": "Create the output.",
+                           "acceptance": ["The file runs."]}],
+                "commands": [{"argv": ["python", "main.py"],
+                              "purpose": "Run the project.", "timeout_seconds": 30}],
+                "expected_artifacts": [{"path": "output.txt",
+                                        "media_type": "text/plain", "minimum_bytes": 1}]}
+
+    repair = {"verdict": "repair", "best_index": 0, "scores": [0.0],
+              "notes": "Semantic review asks for another look.",
+              "remaining_gaps": [{"criterion_ref": ref, "gap": "not yet accepted"}
+                                 for ref in criterion_refs],
+              "advisory_findings": [], "new_requirement_proposals": [],
+              "action_vector": _action_vector(
+                  unresolved_refs=criterion_refs, expected_output_status="satisfied",
+                  progress_status="advanced", continuation_status="adjust",
+                  remaining_work=("Accept or improve the result.",))}
+    accept = {"verdict": "accept", "best_index": 0, "scores": [1.0],
+              "notes": "The returned result satisfies the task.",
+              "remaining_gaps": [], "advisory_findings": [],
+              "new_requirement_proposals": [],
+              "action_vector": _action_vector(criterion_refs=criterion_refs)}
+    # The second pass reuses the checkpointed file, so it asks no file call.
+    answers = tuple(json.dumps(item) for item in (
+        orientation, {"actions": [first]}, how(first), candidate("first design"),
+        {"path": "main.py", "content": "print('done')\n"}, repair,
+        {"route": "repair", "reason": "Look again."},
+        orientation, {"actions": [second]}, how(second), candidate("second design"),
+        repair, {"route": "repair", "reason": "The rebuild failed."},
+        orientation, {"actions": [returned]}, accept,
+        {"route": "stop_success", "reason": "Verified."}))
+    executions = []
+
+    def executor(request, context):
+        executions.append(request)
+        value = _project_fixture(request, context)
+        if len(executions) == 2:
+            value.update(
+                deterministic_checks_passed=False,
+                commands=[{**value["commands"][0], "ok": False, "exit_code": 1,
+                           "stderr": "fixture failure"}],
+                artifacts=[{**value["artifacts"][0], "verified": False}])
+        return value
+
+    with tempfile.TemporaryDirectory(prefix="return-to-passing-work-") as root:
+        result = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "Build a verified artifact.", mode="hybrid", runs_dir=root,
+                max_passes=3, interaction_mode="autonomous",
+                allow_network_reads=False,
+                independent_verification_policy=IndependentVerificationPolicy(
+                    required=False)),
+            AdaptivePractitionerDependencies(
+                fixture_model_execution(FixtureModelExecutionRequest(
+                    answers=answers, max_model_calls=len(answers))),
+                project_executor=executor))
+    presented = [(item.get("attempt_number"), item.get("deterministic_checks_passed"))
+                 for item in result.get("task_results", ())]
+    attempts = result.get("project_attempts", [])
+    passed = (
+        result["solved"] and result["final_route"] == "stop_success"
+        and presented == [(1, True), (2, False), (1, True)]
+        and len(attempts) == 2 and len(executions) == 2
+        and result["task_results"][-1] == attempts[0]
+        and [item["action_kind"] for item in result.get("action_decisions", ())]
+        == ["BUILD_CAPABILITY", "BUILD_CAPABILITY", "RETURN_RESULT"])
+    return {"test": "return_result_presents_earlier_passing_work_after_a_later_failure",
+            "passed": bool(passed),
+            "detail": (f"presented {presented}; {len(executions)} executions; "
+                       f"route {result.get('final_route')}")}
+
+
 def _paraphrases() -> tuple[str, ...]:
     verbs = ("Create", "Build", "Produce", "Make", "Generate",
              "Construct", "Prepare", "Develop", "Assemble", "Deliver")
@@ -917,6 +1011,7 @@ def run_checks() -> dict:
                   if incomplete["task_results"] else "missing"))
 
     tests.append(_permission_repair_acceptance_check())
+    tests.append(_return_to_passing_work_acceptance_check())
 
     with tempfile.TemporaryDirectory() as root:
         execution = fixture_model_execution(FixtureModelExecutionRequest(

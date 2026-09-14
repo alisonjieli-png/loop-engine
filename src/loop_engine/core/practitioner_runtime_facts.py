@@ -196,8 +196,9 @@ def _verification_facts(services) -> dict:
                      IndependentVerificationPolicy())
     if not isinstance(policy, IndependentVerificationPolicy):
         raise TypeError("verification policy must use its typed contract")
-    from .adaptive_practitioner_result import latest_task_result
-    latest = latest_task_result(services)
+    from .adaptive_practitioner_result import (
+        best_available_task_result, task_result_succeeded)
+    presented = best_available_task_result(services)
     return {
         "independent_verification": {
             **policy.to_dict(), "authority": "runtime", "advisory": False,
@@ -214,8 +215,14 @@ def _verification_facts(services) -> dict:
             "available": True, "required_capabilities": [],
             "permissions": [],
             "result_source": (
-                "latest_task_result" if latest is not None
+                "best_available_task_result" if presented is not None
                 else "best_available_resolution_from_current_state"),
+            "presented_attempt_number": (
+                presented.get("attempt_number")
+                if isinstance(presented, dict) else None),
+            "presented_result_passed_checks": (
+                task_result_succeeded(presented)
+                if presented is not None else None),
             "direct_input_contract_ref":
                 "runtime_facts.direct_resolution_input_contract",
             "runs_verification": True, "regenerates_project": False,
@@ -223,7 +230,10 @@ def _verification_facts(services) -> dict:
                 "Select RETURN_RESULT without capability requirements to submit "
                 "an existing task result for verification, or to publish a "
                 "best-available resolution when no further executable task work "
-                "is possible. A resolution must preserve useful analysis, explicit "
+                "is possible. When a later attempt failed its checks, the "
+                "submitted result is the latest earlier execution whose checks "
+                "passed, so passing work can be verified again instead of being "
+                "rewritten. A resolution must preserve useful analysis, explicit "
                 "assumptions, missing pieces, provisional or analogous work, and "
                 "next actions. Put those contributions in the exact resolution "
                 "object named by direct_input_contract_ref. It cannot bypass "
@@ -231,6 +241,31 @@ def _verification_facts(services) -> dict:
                 "occurred."),
         }],
     }
+
+
+def _presented_attempt_facts() -> tuple[bool, str]:
+    """RETURN_RESULT names the attempt it would present and whether it passed."""
+    from types import SimpleNamespace
+
+    passing = {"record_type": "generated_project_execution/v1",
+               "attempt_number": 1, "deterministic_checks_passed": True}
+    failing = {**passing, "attempt_number": 2,
+               "deterministic_checks_passed": False}
+    regressed = _verification_facts(SimpleNamespace(
+        request=SimpleNamespace(), task_results=[passing, failing]))[
+            "control_actions"][0]
+    unresolved = _verification_facts(SimpleNamespace(
+        request=SimpleNamespace(), task_results=[failing]))["control_actions"][0]
+    passed = (regressed["result_source"] == "best_available_task_result"
+              and regressed["presented_attempt_number"] == 1
+              and regressed["presented_result_passed_checks"] is True
+              and unresolved["presented_attempt_number"] == 2
+              and unresolved["presented_result_passed_checks"] is False
+              and "verified again instead of being rewritten"
+              in regressed["interpretation"])
+    return passed, (f"after a failure presents attempt "
+                    f"{regressed['presented_attempt_number']}; with no passing "
+                    f"attempt presents {unresolved['presented_attempt_number']}")
 
 
 def self_test() -> dict:
@@ -352,6 +387,10 @@ def self_test() -> dict:
                    and facts["control_actions"][0]["regenerates_project"] is False
                    and facts["control_actions"][0]["required_capabilities"] == []),
         "detail": "the existing control action preserves mandatory verification",
+    }, {
+        "test": "return_result_presents_the_latest_passing_attempt_after_a_later_failure",
+        "passed": _presented_attempt_facts()[0],
+        "detail": _presented_attempt_facts()[1],
     }, {
         "test": "runtime_requires_a_best_available_resolution_before_task_stop",
         "passed": (facts["resolution_completion_policy"][

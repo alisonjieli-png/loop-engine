@@ -236,10 +236,12 @@ contract, and separates a recomputed expectation from a hardcoded
 observation. An unverified run now presents its passing attempt
 instead of a later failure.
 
-The next target is to verify unchanged passing work again when the verifier
-is unavailable. Today the `repair` verdict led one run to rewrite and break
-that work. Another target is a reasoned response to a verifier call that
-reaches its output limit. The earlier targets remain: a task-owned evaluator
+`RETURN_RESULT` now submits the latest execution whose checks passed, so
+passing work stays reachable for verification after a failed rewrite. A
+declined recovery inside the verifier is now recorded, so the next output
+limit shows why no retry followed. The next targets are a reasoned response
+to a verifier call that reaches its output limit and a live rerun that
+qualifies these verifier changes. The earlier targets remain: a task-owned evaluator
 for campaign cells, the rest of the working folder (downloads as files, and
 Spawned Loops that share the folder and return their files), and restarting
 campaign cells after a provider wait.

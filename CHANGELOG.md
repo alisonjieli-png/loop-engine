@@ -117,6 +117,11 @@ First public release.
   expected value recomputed from the task is required evidence and not a
   hardcoded observation, and lists only defects as issues. The design prompt
   asks for `timeout_seconds` as a number of seconds.
+- A model recovery that independent verification declines is now recorded in
+  the verifier's Run History with its phase, error code, whether it was
+  reasoned, the selected option, the blocker, and the reason, and the refusal
+  then stands. In a live rerun two verifier calls reached the output limit, and
+  no record showed why no retry followed.
 
 ### Fixed on 2026-09-14
 
@@ -138,6 +143,14 @@ First public release.
   refused. The contract now shows one item per registered criterion.
   Admission is unchanged: a review must be valid, list no issues, and cover
   exactly the registered criteria.
+- `RETURN_RESULT` now submits the latest execution whose checks passed when a
+  later attempt failed its checks, instead of the failed attempt. In a live
+  rerun the Practitioner returned a passing attempt for verification twice,
+  rewrote it into a failing attempt, and could then return only that failure.
+  The submitted record becomes the latest task result, so verification,
+  routing, and the final result read the same attempt, and no project runs
+  again. The runtime facts name the attempt that would be submitted and whether
+  its checks passed.
 - A malformed method assessment from the model no longer discards a finished
   run's outcome. The model-facing resolution contract listed every method
   identifier in the value position, and a live model returned that list, or a
