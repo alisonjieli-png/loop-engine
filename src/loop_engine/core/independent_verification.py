@@ -199,8 +199,46 @@ def _freeze(request, services):
 
 
 def _call(services, owner, purpose, packet, *, file_spec=None):
+    """Invoke the verifier, repairing a response whose format is not admitted.
+
+    An inadmissible response is asked for again with the failure on record, as
+    Practitioner steps repair format, instead of making the whole independent
+    report unavailable. Repair stops at a repeated identical response, at the
+    shared format attempt bound, or when no declared model call remains; the
+    original refusal then stands.
+    """
     if file_spec is not None and not isinstance(file_spec, GeneratedProjectFileSpec):
         raise TypeError("file response requires a typed predeclared file specification")
+    from .adaptive_practitioner_records import _MAXIMUM_FORMAT_ATTEMPTS
+    current, rejected_digests = packet, []
+    for format_attempt in range(1, _MAXIMUM_FORMAT_ATTEMPTS + 1):
+        admitted, value, references = _call_once(
+            services, owner, purpose, current, file_spec)
+        if admitted:
+            return value, references
+        failure_code, raw_digest = references["failure_code"], references["raw_digest"]
+        repeated = raw_digest in rejected_digests
+        rejected_digests.append(raw_digest)
+        maximum_calls = services.model_session.authority.max_model_calls
+        calls_spent = (maximum_calls is not None
+                       and services.model_session.calls_used >= maximum_calls)
+        if repeated or calls_spent or format_attempt == _MAXIMUM_FORMAT_ATTEMPTS:
+            raise ValueError("independent verifier response was not admitted: "
+                             + failure_code)
+        owner.ledger.record(loop_id=owner.loop_id, event="custom",
+                            custom_kind="independent_verification_format_repair",
+                            phase=purpose, format_attempt=format_attempt + 1,
+                            failure_code=failure_code,
+                            rejected_output_digest=raw_digest)
+        current = {**packet, "format_repair": {
+            "format_repair_required": True, "additional_text_allowed": False,
+            "failure_code": failure_code,
+            "rejected_output_digests": list(rejected_digests)}}
+    raise ValueError("independent verifier format repair allowance is exhausted")
+
+
+def _call_once(services, owner, purpose, packet, file_spec):
+    """One admitted-or-refused verifier response for one exact packet."""
     prompt = _bytes(packet).decode("utf-8")
     prompt_ref = _store(services, packet, "independent_verification_prompt")
     invocation = ModelInvocationRequest(
@@ -252,8 +290,10 @@ def _call(services, owner, purpose, packet, *, file_spec=None):
                               raw, flags=re.DOTALL)
                  if file_spec is not None and file_spec.path.endswith(".py") else None)
         if match is None:
-            raise ValueError("independent verifier response was not admitted: "
-                             + admission.failure_code)
+            return False, None, {
+                "prompt_ref": prompt_ref, "response_ref": response_ref,
+                "failure_code": admission.failure_code,
+                "raw_digest": admission.raw_digest}
         content = match.group(1) + "\n"
         ast.parse(content, filename=file_spec.path)
         file = GeneratedProjectFile(file_spec.path, content)
@@ -263,9 +303,10 @@ def _call(services, owner, purpose, packet, *, file_spec=None):
         owner.ledger.record(loop_id=owner.loop_id, event="custom",
                             custom_kind="independent_file_representation",
                             **representation)
-        return file.to_dict(), {"prompt_ref": prompt_ref, "response_ref": response_ref,
-                                "representation": representation}
-    return admission.value, {"prompt_ref": prompt_ref, "response_ref": response_ref}
+        return True, file.to_dict(), {
+            "prompt_ref": prompt_ref, "response_ref": response_ref,
+            "representation": representation}
+    return True, admission.value, {"prompt_ref": prompt_ref, "response_ref": response_ref}
 
 
 def _validate_probe(value, criteria):

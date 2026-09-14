@@ -2,7 +2,8 @@
 
 Status: proposed and partly implemented. Owner requirement recorded on
 September 14, 2026. A declared supervision policy on solve requests,
-recoverable format repair stalls, and persistent orientation are implemented
+recoverable format repair stalls, persistent orientation, the action vector
+guard on recovery panel routes, and verifier format repair are implemented
 and pass offline checks. No proposed invariant is qualified yet.
 
 ## Owner direction
@@ -167,11 +168,12 @@ The live cell counts come from the saved records, not from new runs.
 | Departure | Evidence |
 |---|---|
 | Four inadmissible outputs for one step, or one byte-identical repeat, raise `ModelResponseRepairStalled`, and several steps do not catch it. In the saved records it ended two of the eight executed live cells. Later on September 14 orientation, verification, project generation, routing, and the recovery panel began treating the stall as a recoverable failure. | `core/adaptive_practitioner_records.py:376`, `:2555-2569`, `:2857-2871` |
-| After a stall, the recovery panel's route, including `stop_unprofitable`, is adopted without running the action vector route guard again. The saved records of the two live cells that delivered artifacts end with this route. | `core/adaptive_practitioner_routing.py:130-138` |
-| An independent verifier response that is not admitted raises at once, with no format repair, and the report becomes `unavailable`. | `core/independent_verification.py:243-256` |
+| After a stall, the recovery panel's route, including `stop_unprofitable`, is adopted without running the action vector route guard again. The saved records of the two live cells that delivered artifacts end with this route. Later on September 14 the panel's route began passing the same guard and final acceptance binding as the model's route. | `core/adaptive_practitioner_routing.py:130-138` |
+| An independent verifier response that is not admitted raises at once, with no format repair, and the report becomes `unavailable`. Later on September 14 the verifier began repairing the response format within declared call authority. | `core/independent_verification.py:243-256` |
 | A failed independent check forces repair, and the retained probe is reused on later passes. Nothing asks whether the probe is wrong. | `core/independent_verification.py:285`, `:355` |
 | Two rejected orientation proposals raised an error, which ended any run without an earlier accepted orientation. In a live Ollama Cloud rerun on September 14 this ended five of the first nine trials after two model calls: the prompt showed the step objective as the task's immediate goal, and the model copied it into its proposal. Later that day orientation began repairing the whole record, then the named fields, and then carrying an orientation forward with its findings. | `core/adaptive_practitioner.py:195`, `:282-284`, and `core/adaptive_practitioner_records.py:2415-2417`, at commit `41cb7ae` |
 | `SolveRequest` had no supervision policy field, so every solve run used the default policy. Later on September 14 the request gained a typed policy that reaches the Starting and Spawned Practitioner Loops. | `code_nodes/solve_request_adaptation.py`, `code_nodes/solve_runtime.py` |
+| A transport failure is retried only when the recovery reasoning call selects a retry, and that call uses the same model session. When the provider is unavailable, the reasoning call cannot answer, and the step raises after one attempt. In the September 14 rerun a flash trial with a 150-call ceiling ended `PROVIDER_UNAVAILABLE` after two model calls this way. The run records the outage for a later resumption, but nothing inside the run waits for the provider to recover. | `core/adaptive_practitioner_records.py` (`_reasoned_recovery` and the transport loop in `_model_step`) |
 | A campaign cell that reached the provider wait ceiling or a route stop is scored failed on restart without running. | `devtools/embodiment_lab/task_database_campaign.py:530`, `:910-933` |
 
 ## Planned tests

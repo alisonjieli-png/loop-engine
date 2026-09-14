@@ -763,7 +763,8 @@ def run_checks() -> dict:
     def check(name, passed, detail=""):
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
 
-    from .independent_verification_plan_checks import run_plan_checks
+    from .independent_verification_plan_checks import (
+        run_format_repair_checks, run_plan_checks)
 
     for label, group in (("comparison", _comparison_checks),
                          ("proposal", _proposal_checks),
@@ -775,6 +776,7 @@ def run_checks() -> dict:
                          ("planned_files", _planned_file_checks),
                          ("reasoned_retry", _reasoned_retry_checks),
                          ("file_envelope", _file_envelope_checks),
+                         ("format_repair", run_format_repair_checks),
                          ("plan_feedback", run_plan_checks)):
         try:
             group(check)

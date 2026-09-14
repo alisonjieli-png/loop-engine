@@ -1,4 +1,4 @@
-"""Invalid-plan feedback controls and an explicit Docker verifier probe.
+"""Invalid-plan feedback, response format repair, and a Docker verifier probe.
 
 The folded checks use declared fixtures. The separate opt-in qualification
 executes the existing verifier in Docker without a real model call.
@@ -12,6 +12,8 @@ from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
+from ..code_nodes.solution_model_port import (
+    FixtureModelExecutionRequest, fixture_model_execution)
 from . import independent_verification as verification
 from .independent_probe_planning import InvalidProbePlan, validate_probe_plan
 from .independent_verification_checks import (
@@ -107,6 +109,51 @@ def run_plan_checks(check):
                       result["status"] == "unavailable" and not executions
                       and services.model_session.calls_used == expected_calls
                       and not services.independent_probe_cache)
+
+
+def run_format_repair_checks(check):
+    """An inadmissible verifier response is repaired, never beyond authority."""
+    packet = {"record_type": "offline_independent_format_repair/v1",
+              "responsibility": "Return the fixture value.",
+              "response_contract": {"value": "integer"}}
+    prose = "The value is twelve."
+    for name, answers, calls in (
+            ("repaired", (prose, '{"value":12}'), 3),
+            ("repeated", (prose, prose, '{"value":12}'), 3),
+            ("spent_authority", (prose, '{"value":12}'), 1)):
+        with tempfile.TemporaryDirectory(prefix="loop-independent-format-") as folder:
+            services, owner = _services(Path(folder))
+            services.model_session = fixture_model_execution(FixtureModelExecutionRequest(
+                answers=answers, max_model_calls=calls)).start_session()
+            value, references, error = None, None, None
+            try:
+                value, references = verification._call(
+                    services, owner, "fixture", packet)
+            except ValueError as exc:
+                error = exc
+            repairs = [event for event in owner.ledger.events
+                       if event.get("custom_kind")
+                       == "independent_verification_format_repair"]
+            if name == "repaired":
+                prompt = (verification._load(services, references["prompt_ref"])
+                          if references else {})
+                check("inadmissible_verifier_response_is_repaired_within_authority",
+                      error is None and value == {"value": 12}
+                      and services.model_session.calls_used == 2
+                      and len(repairs) == 1
+                      and prompt.get("format_repair", {}).get(
+                          "format_repair_required") is True,
+                      str(error))
+            elif name == "repeated":
+                check("repeated_inadmissible_verifier_response_ends_format_repair",
+                      error is not None and value is None
+                      and services.model_session.calls_used == 2
+                      and len(repairs) == 1, str(error))
+            else:
+                check("verifier_format_repair_never_exceeds_declared_calls",
+                      error is not None and value is None
+                      and services.model_session.calls_used == 1
+                      and repairs == [], str(error))
 
 
 def qualify_plan_repair(output_root: str) -> dict:

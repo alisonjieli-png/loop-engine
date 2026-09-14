@@ -220,10 +220,11 @@ The proposed invariants are not qualified yet. A typed supervision policy on
 `SolveRequest` now reaches the Starting and Spawned Practitioner Loops, a
 stalled format repair is a recoverable failure instead of the end of a run,
 and a rejected orientation is repaired as a whole record, then field by field,
-and then carried forward with its findings. The next targets are the recovery
-panel stop that skips the action vector route guard, JSON repair for the
-independent verifier, a task-owned evaluator for campaign cells, and one
-working folder per task that every step and Spawned Loop shares.
+and then carried forward with its findings. The recovery panel's route now
+passes the action vector guard, and the independent verifier repairs a
+response whose format is not admitted. The next targets are a task-owned
+evaluator for campaign cells, one working folder per task that every step and
+Spawned Loop shares, and restarting campaign cells after a provider wait.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

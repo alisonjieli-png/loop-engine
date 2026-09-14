@@ -73,6 +73,16 @@ First public release.
   trials after two model calls, because the prompt showed the step objective
   as the task's immediate goal and the model copied it. The prompt now leaves
   the immediate goal empty until an orientation exists.
+- A recovery panel directive now passes the same action vector guard and
+  final acceptance binding as the model's route. Before this change a stalled
+  pass adopted the panel's route unchecked: `stop_unprofitable` could end a
+  run while the action vector recorded safe authorized work, and
+  `stop_success` skipped the exact verification binding.
+- The independent verifier now repairs a response whose format is not
+  admitted. It asks again with the failure on record, as Practitioner steps
+  do, and stops at a repeated identical response, at the shared bound of four
+  format attempts, or when no declared model call remains. Before this change
+  one inadmissible response made the whole independent report unavailable.
 
 ### Fixed on 2026-09-14
 

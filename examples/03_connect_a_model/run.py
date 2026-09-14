@@ -13,7 +13,8 @@ first, and a model is asked only for the step that needs judgement. You are not
 choosing "AI mode": you are permitting an escalation.
 """
 
-from loop_engine import configure, call_with_failover, LoopLedger
+from loop_engine import (
+    configure, call_with_failover, LoopLedger, ProviderFailoverRequest)
 from loop_engine.loop.encapsulate import as_model_loop
 from loop_engine.code_nodes.loop_report import report_from_ledger, render_text
 from loop_engine.core.custom_endpoint import CustomEndpoint
@@ -60,10 +61,10 @@ def main():
     ledger = LoopLedger()
     task = as_model_loop(
         "identify when gradient boosting is a poor fit",
-        lambda: call_with_failover(
+        lambda: call_with_failover(ProviderFailoverRequest(
             "In two sentences: when is gradient boosting a poor choice for "
             "tabular data?",
-            order=tuple(access.providers_working)),
+            order=tuple(access.providers_working))),
         ledger=ledger,
     )
     answer = task["value"]
