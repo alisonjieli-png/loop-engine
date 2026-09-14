@@ -460,6 +460,7 @@ quality. Live-provider claims require a separately saved authorized result.
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
 ## Companion workspaces
 
 `stub-test/` is the moved Capability-Reuse Harness/Taedri workspace. It remains a distinct project inside Loop Engine, with its benchmark evidence, datasets, model cache and dirty working tree preserved. The former `/home/username/stub-test` path is a compatibility symlink. Read `stub-test/MOVED_TO_LOOP_ENGINE.md` before running new work.
