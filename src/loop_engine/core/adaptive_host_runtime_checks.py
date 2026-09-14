@@ -424,6 +424,16 @@ def _projection_checks() -> list[dict]:
                               "host_results": [result], "project_attempts": [project]}) is project
           and latest_task_result({"task_results": [project, result],
                                   "host_results": [result], "project_attempts": [project]}) is result)
+    failed = {**project, "deterministic_checks_passed": False,
+              "workspace_path": "/fixture/failed"}
+    regressed = {"task_results": [project, failed], "project_attempts": [project, failed]}
+    unrelated = {"record_type": "fixture_record/v1"}
+    check("unverified_projection_keeps_the_passing_attempt_a_later_failure_would_hide",
+          _product_result(regressed, False)["result"] is project
+          and _product_result(regressed, False)["workspace"] == "/fixture/project"
+          and latest_task_result(regressed) is failed
+          and _product_result({"task_results": [failed]}, False)["result"] is failed
+          and _product_result({"task_results": [project, unrelated]}, False)["result"] is unrelated)
     check("host_operational_success_requires_literal_true",
           task_result_succeeded(result)
           and all(not task_result_succeeded({**result, "ok": value})

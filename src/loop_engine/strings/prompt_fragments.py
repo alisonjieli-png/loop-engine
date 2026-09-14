@@ -56,10 +56,24 @@ INDEPENDENT_PROBE_DESIGN_PROMPT = (
     'observed types. Return JSON with json.dumps; no incidental stdout. A batch of cases '
     'may emit one structured value. Calculate expected values independently of the '
     'implementation. Every registered criterion must be covered by an applicable '
-    'executable case; do not claim coverage that a case does not actually test. Use /tmp '
+    'executable case; do not claim coverage that a case does not actually test. Write '
+    'timeout_seconds as a positive JSON number of seconds that fits the work, not as '
+    'text. Use /tmp '
     'for temporary output. If the contract cannot be tested truthfully, return '
     'unavailable with a precise reason. Do not add requirements to make a check more '
     'difficult.')
+INDEPENDENT_PROBE_REVIEW_PROMPT = (
+    'Critically review this proposed executable oracle against the original task, '
+    'independently of the producer and design rationale. Recompute expected values. '
+    'Every case must state an exact expected value, so an expectation you can '
+    'recompute from the task and supplied inputs is required evidence, not a '
+    'hardcoded observation. Refuse tautological/hardcoded observations, meaning probe '
+    'code that prints fixed or copied values instead of observing the subject, code '
+    'that does not execute/read the subject, invented requirements, missed criteria, '
+    'wrong expectations, or a comparison policy or tolerance looser than the task '
+    'justifies. List as issues only defects that make this oracle wrong, incomplete, '
+    'or looser than the task; put portability or style remarks in notes. Valid means '
+    'suitable to try, not proof of task correctness. Return exact covered criterion refs.')
 INDEPENDENT_VERIFICATION_SYSTEM_PROMPT = (
     'You are an independent verification practitioner. The top-level responsibility and '
     'response_contract fields are your application instructions. Execute that assignment '

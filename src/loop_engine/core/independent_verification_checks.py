@@ -589,7 +589,9 @@ def _planned_file_checks(check):
                 bodies[0]["path"] = "checks/replacement.py"
             elif fault == "duplicate_planned_path":
                 plan["files"][1]["path"] = "checks/probe.py"
-            services, owner = _services(Path(folder), (plan, *bodies, approved))
+            # Asked again once, the same changed path is still refused.
+            repeated = (bodies[0],) if fault == "changed_file_path" else ()
+            services, owner = _services(Path(folder), (plan, bodies[0], *repeated, bodies[1], approved))
             bad = _subject(services)
             executions = []
 
@@ -606,9 +608,12 @@ def _planned_file_checks(check):
                     good = _subject(services, "attempt-2", _GOOD_SOURCE)
                     second = verification.run_independent_verification(good, services, owner)
             if fault != "none":
+                repairs = [event.get("failure_code") for event in owner.ledger.events
+                           if event.get("custom_kind") == "independent_verification_format_repair"]
                 check("planned_probe_refuses_" + fault,
                       first["status"] == "unavailable" and executions == []
-                      and services.model_session.calls_used == 2
+                      and services.model_session.calls_used == 2 + len(repeated)
+                      and repairs == ["file_identity_changed"] * len(repeated)
                       and services.independent_probe_cache == {})
                 continue
             bundle = verification._load(services, first["probe_ref"])
@@ -764,7 +769,7 @@ def run_checks() -> dict:
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
 
     from .independent_verification_plan_checks import (
-        run_format_repair_checks, run_plan_checks)
+        run_file_identity_checks, run_format_repair_checks, run_plan_checks)
 
     for label, group in (("comparison", _comparison_checks),
                          ("proposal", _proposal_checks),
@@ -777,6 +782,7 @@ def run_checks() -> dict:
                          ("reasoned_retry", _reasoned_retry_checks),
                          ("file_envelope", _file_envelope_checks),
                          ("format_repair", run_format_repair_checks),
+                         ("file_identity", run_file_identity_checks),
                          ("plan_feedback", run_plan_checks)):
         try:
             group(check)

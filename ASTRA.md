@@ -492,13 +492,29 @@ findings name, and then carries an orientation forward with the findings
 recorded. The recovery panel's route passes the action vector guard, and the
 independent verifier repairs response formats within declared calls. These
 changes pass offline checks, and mutants confirm that each new check fails
-without its behavior. No live rerun has qualified them yet.
+without its behavior.
+
+Observed result. A matched live rerun on commit `d3bda30`, which contains these
+changes, completed 6 of 27 planned trials before the host stopped its runner
+for low memory during the seventh. No completed trial ended early. CS-001 was
+independently verified after 50 model calls. The other five ended
+`COMPLETED_PARTIAL` with complete resolution packages after 41 to 60 calls,
+where the `cd3bc85` rerun had stopped four of them after two calls. In each of
+those five, an attempt passed its own checks, but every independent
+verification report was unavailable. Every inspected oracle review returned
+only the example criterion reference that its response contract showed, a
+refused probe case named no field to repair, a probe file response omitted its
+path, and some verifier calls reached the output limit. The
+[persistent general solving decision record](docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md#current-state)
+records the evidence and the later changes. No live rerun has qualified those
+later changes yet.
 
 Proposal. Proposed invariants LE-SOLVE-004 and LE-SOLVE-005 in the
 [Constitution](docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction)
 record persistence at every component and one task working folder. A matched
-rerun on the new runtime, with an experiment runner that waits through
-provider outages within a declared wait, is the next live qualification step.
+rerun on the runtime with the verifier and attachment file changes, with an
+experiment runner that waits through provider outages within a declared wait,
+is the next live qualification step.
 
 Unresolved question. Whether a model step should wait and retry inside the run
 when the provider is unavailable and the recovery reasoning call cannot

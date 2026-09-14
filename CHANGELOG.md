@@ -102,9 +102,42 @@ First public release.
   protected files stay excluded for every purpose. The profile operation moved
   to `core.source_profile` to make room in the source module and is
   re-exported for existing callers.
+- New task database campaign configuration spaces declare `attachment_files`
+  as `supplied`. Every admitted attachment then reaches the run as a source
+  file, as a person saves each attachment into a project folder, and bounded
+  inline delivery still includes the text in the prompt. A saved
+  configuration without the setting keeps its recorded `inline_only`
+  behavior, so a matched rerun does not change. The artifact task trial
+  accepts the setting, and each trial records it with its selected sources.
+- An unverified run now presents its latest execution whose checks passed as
+  the best available result when a later execution failed its checks. A
+  verified run still presents its latest accepted attempt.
+- The independent verifier's oracle review prompt is a governed constant
+  beside its design prompt. It keeps every refusal class, states that an
+  expected value recomputed from the task is required evidence and not a
+  hardcoded observation, and lists only defects as issues. The design prompt
+  asks for `timeout_seconds` as a number of seconds.
 
 ### Fixed on 2026-09-14
 
+- A planned probe file response that gives only its content no longer makes
+  independent verification unavailable. It receives the path its plan
+  declared, as a fenced body already did, and records that representation. A
+  response with a different path or another shape is asked again through the
+  bounded format repair and is never rebound to the declared file. In a live
+  rerun this made a correct first attempt impossible to verify.
+- A refused independent probe case now names the case and the field to
+  repair, such as a `timeout_seconds` written as text. The earlier generic
+  refusal gave the plan repair nothing to change, so a live model repeated the
+  same value until its plan attempts ran out. Which plans are accepted is
+  unchanged.
+- An independent oracle review can now approve checks for a task with several
+  acceptance criteria. Its response contract showed one example criterion
+  reference, live reviewers copied it, and admission requires the covered
+  references to match every registered criterion, so such an approval was
+  refused. The contract now shows one item per registered criterion.
+  Admission is unchanged: a review must be valid, list no issues, and cover
+  exactly the registered criteria.
 - A malformed method assessment from the model no longer discards a finished
   run's outcome. The model-facing resolution contract listed every method
   identifier in the value position, and a live model returned that list, or a

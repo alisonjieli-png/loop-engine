@@ -50,6 +50,28 @@ def _valid_tolerance(tolerance, comparison) -> bool:
                         for bound in tolerance.values()))
 
 
+def _case_execution_problem(case, error) -> str:
+    """Describe why a refused case cannot become a command, naming the field.
+
+    Acceptance is unchanged. The refusal names what to repair, so a repaired
+    plan can change that field instead of repeating the same value.
+    """
+    try:
+        json.dumps(case["expected"], ensure_ascii=False, sort_keys=True,
+                   allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError):
+        return "expected must be a finite JSON value"
+    if not isinstance(case["argv"], list):
+        return "argv must be a list of strings"
+    if not isinstance(case["purpose"], str):
+        return "purpose must be text"
+    timeout = case["timeout_seconds"]
+    if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
+        return ("timeout_seconds must be a positive JSON number of seconds, not "
+                + json.dumps(timeout, ensure_ascii=False, default=str)[:40])
+    return "the command is invalid: " + str(error)[:200]
+
+
 def validate_probe_plan(value, criteria, *, materialized=False):
     """Validate actual model claims; return declarations and typed commands."""
     required = set(dict(criteria))
@@ -108,11 +130,13 @@ def validate_probe_plan(value, criteria, *, materialized=False):
             if not isinstance(case["argv"], list) or not isinstance(case["purpose"], str):
                 raise ValueError("argv is not a list")
             command = GeneratedProjectCommand(tuple(case["argv"]), case["purpose"], case["timeout_seconds"], "verify")
-        except (TypeError, ValueError):
-            fail("invalid_case_execution", "independent case expectation or command is invalid")
+        except (TypeError, ValueError) as exc:
+            fail("invalid_case_execution",
+                 f"independent case {case_id!r}: {_case_execution_problem(case, exc)}")
         argv = case["argv"]
         if len(argv) < 2 or argv[1] not in paths or argv[0] not in ("python", "python3"):
-            fail("invalid_case_execution", "independent command must run its exact declared check file")
+            fail("invalid_case_execution", f"independent case {case_id!r}: argv must be python or "
+                 "python3 followed by one of the plan's declared check file paths")
         commands.append(command)
         ids.add(case_id)
         covered.update(refs)

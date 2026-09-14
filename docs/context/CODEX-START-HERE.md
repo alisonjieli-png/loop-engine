@@ -224,11 +224,25 @@ and then carried forward with its findings. The recovery panel's route now
 passes the action vector guard, and the independent verifier repairs a
 response whose format is not admitted. Supplied archives are unpacked into a
 materials folder that the source inventory walks, and supplied binary files can
-be selected for a project's inputs without the model reading them. These are
-the first parts of one working folder per task. The next targets are a
-task-owned evaluator for campaign cells, the rest of that working folder
-(downloads as files, and Spawned Loops that share the folder and return their
-files), and restarting campaign cells after a provider wait.
+be selected for a project's inputs without the model reading them. New task
+database campaign spaces also supply every attachment as a source file. These
+are the first parts of one working folder per task.
+
+A live rerun on `d3bda30` found correct work that was never accepted, because
+the independent verifier could not produce an admitted check program. The
+verifier now gives a planned file its declared path, names the field that a
+refused case must repair, shows every registered criterion in its review
+contract, and separates a recomputed expectation from a hardcoded
+observation. An unverified run now presents its passing attempt
+instead of a later failure.
+
+The next target is to verify unchanged passing work again when the verifier
+is unavailable. Today the `repair` verdict led one run to rewrite and break
+that work. Another target is a reasoned response to a verifier call that
+reaches its output limit. The earlier targets remain: a task-owned evaluator
+for campaign cells, the rest of the working folder (downloads as files, and
+Spawned Loops that share the folder and return their files), and restarting
+campaign cells after a provider wait.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

@@ -442,7 +442,12 @@ Apply it to engine behavior and to your own development work:
 - Work like a person with one project folder. The proposed task working
   folder gathers supplied files, unpacked archives, downloads, generated
   work, and outputs, persists across attempts, and is shared with Spawned
-  Loops through scoped views. It is not implemented yet.
+  Loops through scoped views. Its first parts are implemented: supplied
+  archives are unpacked into a materials folder that the source inventory
+  walks, supplied binary files can be selected for a project's inputs, and
+  new task database campaign spaces supply every attachment as a source
+  file. Downloads kept as files and scoped views for Spawned Loops are not
+  implemented yet.
 - Run live experiments only under explicit owner authority. Record every
   trial, including failures and outages, keep runners waiting through a
   provider outage within a declared wait, and stop before an allowance is

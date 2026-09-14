@@ -220,8 +220,8 @@ def _run_artifact_trial(request, gateway, records):
     try:
         publish('validating_composition_eligibility')
         supported = {'provider', 'route', 'model', 'harness', 'temperature', 'output_allocation_tokens',
-                     'context_delivery', 'harness_fallback', 'provider_failover', 'mode',
-                     'max_model_calls', 'max_passes'}
+                     'context_delivery', 'attachment_files', 'harness_fallback',
+                     'provider_failover', 'mode', 'max_model_calls', 'max_passes'}
         if set(configuration) - supported:
             raise ArtifactTrialUnavailable('configuration_dimension_not_supported')
         if (configuration.get('harness_fallback', 'none') != 'none'
@@ -237,7 +237,8 @@ def _run_artifact_trial(request, gateway, records):
         _validate_feedback(request.feedback, expected)
         state['feedback'] = [dict(item.__dict__) for item in request.feedback]
         inputs = _inputs_for_composition(request.task)
-        intake, _ = task_intake(request.task, configuration['context_delivery'])
+        intake, _ = task_intake(request.task, configuration['context_delivery'],
+                                configuration.get('attachment_files'))
         records.record('source', 'runtime', {
             'engine': engine_identity(Path(__file__).resolve().parents[2]),
             'composition_source_digest': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),

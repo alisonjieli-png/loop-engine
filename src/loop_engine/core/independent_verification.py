@@ -17,7 +17,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..strings.prompt_fragments import (
-    INDEPENDENT_PROBE_DESIGN_PROMPT, INDEPENDENT_VERIFICATION_SYSTEM_PROMPT)
+    INDEPENDENT_PROBE_DESIGN_PROMPT, INDEPENDENT_PROBE_REVIEW_PROMPT,
+    INDEPENDENT_VERIFICATION_SYSTEM_PROMPT)
 from ..code_nodes.solution_model_port import ModelInvocationRequest
 from ..loop.loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
 from ..loop.recursive_loop import LoopConfig, StepOutcome
@@ -306,7 +307,40 @@ def _call_once(services, owner, purpose, packet, file_spec):
         return True, file.to_dict(), {
             "prompt_ref": prompt_ref, "response_ref": response_ref,
             "representation": representation}
+    if file_spec is not None:
+        return _declared_file_response(owner, file_spec, admission, {
+            "prompt_ref": prompt_ref, "response_ref": response_ref})
     return True, admission.value, {"prompt_ref": prompt_ref, "response_ref": response_ref}
+
+
+def _declared_file_response(owner, file_spec, admission, references):
+    """Hold an admitted file object to the path its plan declared.
+
+    The plan owns the path, as it does for a fenced body, so an object that
+    gives only the content receives the declared path and records that
+    representation. A different path or any other shape is refused with its
+    own failure code, which the caller's bounded format repair asks about
+    again. A conflicting path is never rebound to the declared file.
+    """
+    value = admission.value
+    if isinstance(value, dict) and isinstance(value.get("content"), str):
+        if set(value) == {"path", "content"} and value["path"] == file_spec.path:
+            return True, value, references
+        if set(value) == {"content"}:
+            file = GeneratedProjectFile(file_spec.path, value["content"])
+            representation = {"strategy": "predeclared_path_binding",
+                              "source_digest": hashlib.sha256(file.content.encode()).hexdigest(),
+                              "path": file.path, "raw_digest": admission.raw_digest}
+            owner.ledger.record(loop_id=owner.loop_id, event="custom",
+                                custom_kind="independent_file_representation",
+                                **representation)
+            return True, file.to_dict(), {**references, "representation": representation}
+    failure = ("file_identity_changed"
+               if isinstance(value, dict) and "path" in value
+               and value.get("path") != file_spec.path
+               else "file_response_shape_invalid")
+    return False, None, {**references, "failure_code": failure,
+                         "raw_digest": admission.raw_digest}
 
 
 def _validate_probe(value, criteria):
@@ -368,15 +402,11 @@ def _probe(request, services, owner, subject, visible, *, plan_attempts=None, or
         "record_type": "independent_probe_review/v1", "task": request.task,
         "registered_acceptance_criteria": dict(request.criteria),
         "subject_inventory": subject["inventory"], "proposal": proposal,
-        "responsibility": (
-            "Critically review this proposed executable oracle against the original "
-            "task, independently of the producer and design rationale. Recompute "
-            "expected values. Refuse tautological/hardcoded observations, code that "
-            "does not execute/read the subject, invented requirements, missed "
-            "criteria, wrong expectations, or a comparison policy or tolerance "
-            "looser than the task justifies. Valid means suitable to try, not "
-            "proof of task correctness. Return exact covered criterion refs."),
-        "response_contract": {"valid": "boolean", "criterion_refs": ["criterion:0"],
+        "responsibility": INDEPENDENT_PROBE_REVIEW_PROMPT,
+        # One item per registered criterion. Live reviewers copied a lone
+        # example reference, so an approval of several criteria never matched.
+        "response_contract": {"valid": "boolean",
+                              "criterion_refs": [ref for ref, _text in request.criteria],
                               "issues": ["string"], "notes": "string"}})
     oracle_reviews.append(capture_oracle_review(services, owner, request, subject, proposal,
         generation=generation, file_calls=file_calls, review=review, review_call=review_call))

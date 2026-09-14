@@ -55,6 +55,19 @@ def run_plan_checks(check):
     check("invalid_plan_diagnostic_names_unknown_and_missing_criteria",
           unknown_diagnostic is not None and unknown_diagnostic.unknown_criteria == ("criterion:foreign",)
           and unknown_diagnostic.missing_criteria == ("criterion:0", "criterion:1"))
+    textual_timeout = deepcopy(corrected)
+    textual_timeout["cases"][0]["timeout_seconds"] = "10"
+    try:
+        validate_probe_plan(textual_timeout, criteria)
+        timeout_diagnostic = None
+    except InvalidProbePlan as exc:
+        timeout_diagnostic = exc.diagnostic
+    check("invalid_case_diagnostic_names_the_case_and_the_field_to_repair",
+          timeout_diagnostic is not None and timeout_diagnostic.code == "invalid_case_execution"
+          and repr(textual_timeout["cases"][0]["case_id"]) in timeout_diagnostic.detail
+          and "timeout_seconds must be a positive JSON number" in timeout_diagnostic.detail
+          and '"10"' in timeout_diagnostic.detail and timeout_diagnostic.repairable
+          and validate_probe_plan(corrected, criteria) is not None)
     check("plan_attempt_policy_is_explicit_positive_and_versioned",
           verification.IndependentVerificationPolicy().maximum_plan_attempts == 2
           and verification.IndependentVerificationPolicy(maximum_plan_attempts=5).to_dict()["record_type"]
@@ -90,8 +103,20 @@ def run_plan_checks(check):
                   original == responses[0] and all(verification._load(services, item["attempt_ref"])["proposal_ref"]
                       == item["proposal_ref"] for item in attempts))
             if mode == "repaired":
+                from ..strings.prompt_fragments import INDEPENDENT_PROBE_REVIEW_PROMPT
                 bundle = verification._load(services, result["probe_ref"])
                 feedback = verification._load(services, attempts[1]["generation"]["prompt_ref"])
+                review_packet = verification._load(services, bundle["review_call"]["prompt_ref"])
+                check("oracle_review_contract_shows_every_registered_criterion_once",
+                      review_packet["response_contract"]["criterion_refs"]
+                      == [ref for ref, _text in criteria])
+                check("oracle_review_uses_the_governed_prompt_and_keeps_every_refusal_class",
+                      review_packet["responsibility"] == INDEPENDENT_PROBE_REVIEW_PROMPT
+                      and all(phrase in INDEPENDENT_PROBE_REVIEW_PROMPT for phrase in (
+                          "Refuse tautological/hardcoded observations",
+                          "does not execute/read the subject", "invented requirements",
+                          "missed criteria", "wrong expectations",
+                          "looser than the task justifies", "Return exact covered criterion refs")))
                 check("invalid_plan_is_revised_before_code_generation_and_independent_review",
                       result["status"] == "passed" and services.model_session.calls_used == 4
                       and len(executions) == 1 and [item["valid"] for item in attempts] == [False, True]
@@ -154,6 +179,53 @@ def run_format_repair_checks(check):
                       error is not None and value is None
                       and services.model_session.calls_used == 1
                       and repairs == [], str(error))
+
+
+def run_file_identity_checks(check):
+    """A planned file keeps its declared path; a conflicting path is asked again."""
+    from .generated_project import GeneratedProjectFileSpec
+    spec = GeneratedProjectFileSpec("checks/probe.py", "Observe the frozen combine function.")
+    body = _proposal()["files"][0]["content"]
+    packet = {"record_type": "offline_independent_file_identity/v1",
+              "responsibility": "Return the planned probe file.",
+              "response_contract": {"path": spec.path, "content": "complete Python source"}}
+    exact = {"path": spec.path, "content": body}
+    moved = {"path": "checks/replacement.py", "content": body}
+    for name, answers in (
+            ("omitted", ({"content": body},)),
+            ("conflict_repaired", (moved, exact)),
+            ("conflict_repeated", (moved, moved)),
+            ("extra_field_repaired", ({**exact, "notes": "extra"}, exact))):
+        with tempfile.TemporaryDirectory(prefix="loop-independent-file-identity-") as folder:
+            services, owner = _services(Path(folder), answers)
+            value, references, error = None, None, None
+            try:
+                value, references = verification._call(
+                    services, owner, "file.fixture", packet, file_spec=spec)
+            except ValueError as exc:
+                error = exc
+            repairs = [event.get("failure_code") for event in owner.ledger.events
+                       if event.get("custom_kind") == "independent_verification_format_repair"]
+            bound = [event for event in owner.ledger.events
+                     if event.get("custom_kind") == "independent_file_representation"]
+            calls = services.model_session.calls_used
+            if name == "omitted":
+                check("file_response_without_a_path_receives_the_declared_path",
+                      error is None and value == exact and repairs == [] and calls == 1
+                      and len(bound) == 1 and bound[0].get("strategy") == "predeclared_path_binding"
+                      and references["representation"]["path"] == spec.path, str(error))
+            elif name == "conflict_repaired":
+                check("file_response_with_a_different_path_is_asked_again_not_rebound",
+                      error is None and value == exact and bound == [] and calls == 2
+                      and repairs == ["file_identity_changed"], str(error))
+            elif name == "conflict_repeated":
+                check("repeated_different_file_path_is_still_refused",
+                      error is not None and value is None and bound == [] and calls == 2
+                      and repairs == ["file_identity_changed"], str(error))
+            else:
+                check("file_response_with_extra_fields_is_asked_again",
+                      error is None and value == exact and bound == [] and calls == 2
+                      and repairs == ["file_response_shape_invalid"], str(error))
 
 
 def qualify_plan_repair(output_root: str) -> dict:

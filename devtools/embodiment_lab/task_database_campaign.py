@@ -62,6 +62,14 @@ from .campaign_sources import (
 TRIAL_STARTING, TRIAL_FINISHED, TRIAL_FAILED = 'starting', 'finished', 'failed'
 EXECUTION_AND_EVALUATION = 'queued_for_execution_and_evaluation'
 BEST_AVAILABLE_RESOLUTION = 'queued_for_best_available_resolution'
+# Whether each admitted attachment reaches the run as a source file. A person
+# given a project saves every attachment into its folder even when the text
+# was also pasted into the message, so new campaign spaces supply the files.
+# A saved configuration without this setting predates it, and its bounded
+# inline text replaced the file, so it reads as inline only.
+ATTACHMENT_FILES_SUPPLIED = 'supplied'
+ATTACHMENT_FILES_INLINE_ONLY = 'inline_only'
+ATTACHMENT_FILE_POLICIES = (ATTACHMENT_FILES_SUPPLIED, ATTACHMENT_FILES_INLINE_ONLY)
 
 
 def file_digest(path):
@@ -170,6 +178,7 @@ def campaign_space(harnesses, *, route=None, model_call_limits=(None,), pass_lim
         axis('harness_fallback', ('none', 'registered_alternatives'))]
     fixed = {'mode': 'non_deterministic', 'provider': route.provider,
             'model': route.model, 'route': route.name,
+            'attachment_files': ATTACHMENT_FILES_SUPPLIED,
             'provider_failover': False, 'max_model_calls': None, 'max_passes': None}
     for name, values in (('max_model_calls', model_call_limits), ('max_passes', pass_limits)):
         if not isinstance(values, tuple) or not values:
@@ -303,7 +312,9 @@ def prepare(root, task_root, provider_file, repository, *, route_name='', not_be
         records.close()
 
 
-def task_intake(row, delivery):
+def task_intake(row, delivery, attachment_files=None):
+    # None is a saved configuration that predates the attachment file setting.
+    attachment_files = ATTACHMENT_FILES_INLINE_ONLY if attachment_files is None else attachment_files
     directory = Path(row['task_directory'])
     descriptor_path, brief_path = directory / 'task.json', directory / 'task.md'
     if (optional_file_digest(descriptor_path) != row.get('descriptor_digest')
@@ -360,6 +371,8 @@ def task_intake(row, delivery):
             raise ValueError('declared task source escapes its admitted boundary')
         return path
 
+    if attachment_files not in ATTACHMENT_FILE_POLICIES:
+        raise ValueError('unknown attachment file policy')
     for relative in descriptor.get('attachments', ()):
         path = admitted_path(relative, boundary=directory)
         if path is None:
@@ -368,7 +381,8 @@ def task_intake(row, delivery):
         if delivery == 'bounded_inline' and path.stat().st_size <= 65536:
             try:
                 attachments.append({'name': relative, 'text': path.read_text(encoding='utf-8')})
-                continue
+                if attachment_files == ATTACHMENT_FILES_INLINE_ONLY:
+                    continue
             except UnicodeError:
                 pass
         references.append(str(path))
@@ -540,8 +554,10 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
     try:
         model_call_limit = _work_limit(configuration.get('max_model_calls'))
         pass_limit = _work_limit(configuration.get('max_passes'))
-        intake, source_digests = task_intake(row, configuration['context_delivery'])
+        intake, source_digests = task_intake(
+            row, configuration['context_delivery'], configuration.get('attachment_files'))
         records.record('task_sources', 'selected', {'source_digests': source_digests,
+                       'attachment_files': configuration.get('attachment_files'),
                        'input_digest': intake.content_digest, 'source_refs': list(intake.source_refs),
                        'source_snapshot_digest': row.get('source_snapshot_digest'),
                        'source_availability_digest': row.get('source_availability_digest'),

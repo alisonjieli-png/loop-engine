@@ -509,8 +509,12 @@ def _action_vectors(adaptive: dict) -> tuple[dict, ...]:
 
 
 def _product_result(adaptive: dict, solved: bool) -> dict:
-    from ..core.adaptive_practitioner_result import latest_task_result
-    attempt = latest_task_result(adaptive)
+    from ..core.adaptive_practitioner_result import (
+        best_available_task_result, latest_task_result)
+    # An unverified run presents its strongest observation, so a later failed
+    # execution does not hide an earlier one whose checks passed.
+    attempt = (latest_task_result(adaptive) if solved
+               else best_available_task_result(adaptive))
     if attempt and attempt.get("record_type") == "host_operation_result/v1":
         return {
             "result": attempt,

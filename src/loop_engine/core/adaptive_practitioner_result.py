@@ -162,6 +162,32 @@ def task_result_succeeded(result) -> bool:
     return result.get("deterministic_checks_passed") is True
 
 
+def best_available_task_result(source) -> dict | None:
+    """The strongest actual observation to present when a run is not verified.
+
+    A later execution whose own checks failed does not hide the latest earlier
+    execution whose checks passed. Any other latest record, including one that
+    succeeded or one with no execution outcome, stays the latest.
+    """
+    latest = latest_task_result(source)
+    if not _failed_execution(latest):
+        return latest
+
+    def records(name):
+        return source.get(name, ()) if isinstance(source, dict) else getattr(source, name, ())
+    ordered = records("task_results") or records("host_results") or records("project_attempts")
+    for result in reversed(ordered):
+        if task_result_succeeded(result):
+            return result
+    return latest
+
+
+def _failed_execution(result) -> bool:
+    """An execution observation whose own success signal is present and not true."""
+    return (isinstance(result, dict) and not task_result_succeeded(result)
+            and ("ok" in result or "deterministic_checks_passed" in result))
+
+
 def has_bound_accepted_incumbent(run: dict, final_attempt: dict) -> bool:
     """Require current integrated acceptance before public success projection."""
     from ..loop.kernel import ResultPacket

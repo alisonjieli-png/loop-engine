@@ -361,6 +361,48 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                           missing_intake.original_input)
             self.assertEqual(missing_digests, {})
 
+    def test_supplied_attachment_files_reach_the_run_beside_inline_text(self):
+        from embodiment_lab.campaign_sources import snapshot_available_task_sources
+        from embodiment_lab.task_database_campaign import (
+            ATTACHMENT_FILES_INLINE_ONLY, ATTACHMENT_FILES_SUPPLIED, EXECUTION_AND_EVALUATION)
+        with tempfile.TemporaryDirectory(prefix='task-attachment-files-') as root_value:
+            root = Path(root_value)
+            task = root / 'tasks' / 'analysis' / 'T-FILES'
+            task.mkdir(parents=True)
+            descriptor = task / 'task.json'
+            brief = task / 'task.md'
+            descriptor.write_text(json.dumps({'attachments': ['orders.txt'], 'data_path': None}))
+            brief.write_text('Repair the join using the supplied orders.')
+            (task / 'orders.txt').write_text('order_id,region\nO1,East\n')
+            availability = snapshot_available_task_sources(task, root)
+            row = {
+                'id': 'T-FILES', 'task_directory': str(task), 'task_root': str(root),
+                'status': 'ready', 'admission': EXECUTION_AND_EVALUATION,
+                'descriptor_digest': file_digest(descriptor), 'brief_digest': file_digest(brief),
+                'source_snapshot': availability.available.to_dict(),
+                'source_snapshot_digest': availability.available.content_digest,
+                'source_availability': availability.to_dict(),
+                'source_availability_digest': availability.content_digest,
+            }
+            attachment = str((task / 'orders.txt').resolve())
+            supplied, digests = task_intake(row, 'bounded_inline', ATTACHMENT_FILES_SUPPLIED)
+            self.assertIn('O1,East', supplied.original_input)
+            self.assertEqual(supplied.source_refs, (attachment,))
+            self.assertEqual(list(digests), [attachment])
+            legacy, _ = task_intake(row, 'bounded_inline')
+            self.assertIn('O1,East', legacy.original_input)
+            self.assertEqual(legacy.source_refs, ())
+            inline_only, _ = task_intake(row, 'bounded_inline', ATTACHMENT_FILES_INLINE_ONLY)
+            self.assertEqual(inline_only.source_refs, ())
+            referenced, _ = task_intake(row, 'selected_references', ATTACHMENT_FILES_SUPPLIED)
+            self.assertNotIn('O1,East', referenced.original_input)
+            self.assertEqual(referenced.source_refs, (attachment,))
+            with self.assertRaises(ValueError):
+                task_intake(row, 'bounded_inline', 'hidden')
+        space = campaign_space(('native_gateway',))
+        self.assertEqual({space.configuration_at(index)['attachment_files']
+                          for index in range(space.cardinality)}, {ATTACHMENT_FILES_SUPPLIED})
+
 
 if __name__ == '__main__':
     unittest.main()
