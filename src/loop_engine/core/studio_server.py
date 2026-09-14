@@ -47,8 +47,8 @@ from urllib.parse import unquote
 
 _PKG = os.path.dirname(os.path.dirname(__file__))
 from .run_history import (
-    RunHistoryIntegrityError, SavedRunBundle, default_runs_dir,
-    load_saved_run_bundle, saved_run_ids)
+    MODEL_INVOCATION_EVENT, RunHistoryIntegrityError, SavedRunBundle,
+    default_runs_dir, load_saved_run_bundle, saved_run_ids)
 from .studio_operational_views import (
     StudioReadSources, project_run_runtime, project_runtime_inventory)
 from .run_history_usage import TokenUsageTotals, total_model_usage
@@ -172,7 +172,7 @@ def _product_projection(outcome: "dict | None") -> dict:
 
 def _run_row(bundle: SavedRunBundle) -> dict:
     ch = bundle.history
-    calls = [e for e in ch.event_log if e.event_type == "model_invocation"]
+    calls = [e for e in ch.event_log if e.event_type == MODEL_INVOCATION_EVENT]
     goal = next((e.detail.get("goal", "") for e in ch.event_log
                  if e.event_type == "loop_init"), "")
     product = _product_projection(bundle.outcome)
@@ -213,7 +213,7 @@ def _run_detail(rid: str) -> dict:
                 e.spawning_loop_id, []).append(e.loop_id)
         elif e.event_type == "iteration":
             iters += 1
-        elif e.event_type == "model_invocation":
+        elif e.event_type == MODEL_INVOCATION_EVENT:
             calls.append({"seq": e.sequence_number, "loop": e.loop_id,
                           "step": e.step, "model": e.model,
                           "prompt_tokens": e.prompt_tokens,
@@ -221,7 +221,7 @@ def _run_detail(rid: str) -> dict:
         events.append({"type": e.event_type, "loop": e.loop_id,
                        "step": e.step, "mode": e.mode,
                        "tokens": (total_model_usage((e.body(),)).total_tokens
-                                  if e.event_type == "model_invocation" else ""),
+                                  if e.event_type == MODEL_INVOCATION_EVENT else ""),
                        "detail": str(e.detail.get("output",
                                      e.detail.get("reason", "")))[:100]})
 
@@ -259,7 +259,7 @@ def _run_detail(rid: str) -> dict:
             row["steps"].append({"step": e.step, "mode": e.mode,
                                  "out": str((e.detail or {}).get("output",
                                                                  ""))[:90]})
-        elif e.event_type == "model_invocation":
+        elif e.event_type == MODEL_INVOCATION_EVENT:
             row["calls"] += 1
             per_loop_usage[e.loop_id] = (
                 per_loop_usage.get(e.loop_id, TokenUsageTotals())
@@ -282,7 +282,7 @@ def _run_detail(rid: str) -> dict:
     tree_json = [node(loop_id) for loop_id in starting_ids]
     starting_loop_ids = set(starting_ids)
     playback_events = [event for event in events if (
-        event["type"] == "model_invocation"
+        event["type"] == MODEL_INVOCATION_EVENT
         or (event["loop"] in starting_loop_ids
         and event["type"] in {"loop_init", "iteration", "terminal",
                               "fallback", "budget_stop", "cancel"}))]

@@ -9,6 +9,18 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- The hardcoding delta gate is green again on `main`. The experiment
+  evidence commit had introduced ten new high findings: raw tokens that
+  select behaviour now come from closed vocabularies at their owning
+  boundary (`SETUP_UNAVAILABLE_REASONS` in the harness process adapter,
+  `CORE_TIER` and `GATED_TIER` beside `TIERS` in the store, the existing
+  `MODEL_INVOCATION_EVENT` in the Studio run detail, `SOURCE_IDENTITY_KINDS`
+  in the campaign source snapshot, `NATIVE_GATEWAY_HARNESS` in the artifact
+  trial), and the artifact trial's instruction texts are governed prompt
+  resources in `strings/prompt_fragments.py` (`ARTIFACT_TRIAL_*_PROMPT`,
+  identified by `ARTIFACT_TRIAL_PROMPT_RESOURCE`), whose identity the trial
+  state now records. No behaviour changed; the model-facing prompt text is
+  byte-identical.
 - The self-improvement review counts its run population exactly. The
   population is the directories holding a manifest, saved runs and
   append-only checkpoint stores alike (a store loads as its latest

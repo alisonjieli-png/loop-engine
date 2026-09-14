@@ -34,6 +34,7 @@ from typing import Sequence
 STORE_KINDS = ("node", "question", "persona", "context", "strategy")
 # The gating tiers.
 TIERS = ("core", "experimental", "gated")
+CORE_TIER, EXPERIMENTAL_TIER, GATED_TIER = TIERS
 
 SEARCH_STAGES = ("parse_query", "filter_eligible", "score", "rank", "serve")
 

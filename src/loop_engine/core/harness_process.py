@@ -29,11 +29,16 @@ class HarnessProcessError(ValueError):
     """A process identity, confinement, or transport contract was refused."""
 
 
+# Why a declared setup has no compatible installed implementation.
+SETUP_UNAVAILABLE_REASONS = ('unsupported_style', 'executable_unavailable',
+                             'software_mount_absent')
+
+
 class HarnessSetupUnavailable(HarnessProcessError):
     """A declared setup has no compatible installed implementation."""
 
     def __init__(self, reason_code):
-        if reason_code not in ('unsupported_style', 'executable_unavailable', 'software_mount_absent'):
+        if reason_code not in SETUP_UNAVAILABLE_REASONS:
             raise ValueError('unknown harness setup availability code')
         self.reason_code = reason_code
         super().__init__(reason_code)

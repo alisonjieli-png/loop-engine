@@ -160,6 +160,27 @@ instead of `load_checkpoint` per row: on the live FIN-001 cell (sixty-nine
 checkpoints, six thousand events) that is a quarter of a second instead of
 more than forty-five.
 
+Coordination, 03:25 UTC September 14: `d511b43` changes what the
+self-improvement review counts. Its population is the directories holding
+a manifest, and an append-only checkpoint store now loads as its latest
+checkpoint, so the campaign's `step-history` stores are reviewable
+without copying them into saved runs. `RunHistory.content_digest()` names
+the event content without the run id, the chain links, or the start
+event's projection time; the loader excludes a later copy of an already
+loaded content naming the run it repeats, and `mine_runtime` deduplicates
+on that digest as well, so a re-projected ledger is one observation and a
+repetition at other times stays two. The evidence tooling can use the
+same digest wherever two histories must be told apart from two copies.
+The experiment evidence commit `078fffc` left ten new high hardcoding
+findings on `main` (the delta gate exited 1); the follow-up commit moves
+those tokens to closed vocabularies and the artifact trial's instruction
+texts to `strings/prompt_fragments.py`, the one module the audit treats
+as prompt-resource authority, without changing the prompt bytes. The
+owner asked how many solutions were generated for how many tasks: the
+campaign page counts cells, calls, and tokens but not candidates per task,
+so the next report change adds, per task, the candidates produced,
+executed, and independently verified, with the exact denominators.
+
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).
 It records 70 real Tactical calls, a forty-cell repair matrix with 159/160

@@ -467,6 +467,7 @@ def query_intelligence(
     if not isinstance(request, IntelligenceSearchRequest):
         raise TypeError("query_intelligence needs IntelligenceSearchRequest")
     from .retrieval import Retriever
+    from .store_serve import CORE_TIER, GATED_TIER
     selected_context = context or IntelligenceSearchContext()
     need = request.need
     normalized = normalize_layer_records(request.layer_records)
@@ -486,9 +487,9 @@ def query_intelligence(
             reason = ''
             if any(state is not None and not isinstance(state, str) for state in states):
                 reason = 'invalid_lifecycle_declaration'
-            elif record.tier == 'gated':
+            elif record.tier == GATED_TIER:
                 reason = 'separate_access_grant_required'
-            elif not request.include_candidates and (record.tier != 'core' or inactive):
+            elif not request.include_candidates and (record.tier != CORE_TIER or inactive):
                 reason = 'candidate_or_inactive_requires_review'
             if reason:
                 excluded.append({'layer': layer, 'record_id': record.record_id,

@@ -22,6 +22,12 @@ class SourceIdentityError(ValueError):
     """Declared source contents cannot be frozen or no longer match."""
 
 
+# What one source identity entry can describe.
+FILE_KIND = "file"
+DIRECTORY_KIND = "directory"
+SOURCE_IDENTITY_KINDS = (FILE_KIND, DIRECTORY_KIND)
+
+
 @dataclass(frozen=True)
 class TaskSourceSnapshot:
     """Portable content identities, never source content or execution authority."""
@@ -40,7 +46,7 @@ class TaskSourceSnapshot:
             if (not isinstance(path, str) or not path
                     or Path(path).is_absolute() or ".." in Path(path).parts):
                 raise SourceIdentityError("source identity needs a confined relative path")
-            if kind not in ("file", "directory") or type(size) is not int or size < 0:
+            if kind not in SOURCE_IDENTITY_KINDS or type(size) is not int or size < 0:
                 raise SourceIdentityError("invalid source identity kind or byte count")
             if (not isinstance(value, str) or len(value) != 64
                     or any(character not in "0123456789abcdef" for character in value)):
@@ -131,7 +137,7 @@ def snapshot_task_sources(task_directory, task_root, *, cache=None):
             descriptor = _open_source(path, directory=True)
             try:
                 names = sorted(os.listdir(descriptor))
-                records[relative] = (relative, "directory", 0, digest(names))
+                records[relative] = (relative, DIRECTORY_KIND, 0, digest(names))
                 for name in names:
                     visit(path / name)
                 if names != sorted(os.listdir(descriptor)):
@@ -140,7 +146,7 @@ def snapshot_task_sources(task_directory, task_root, *, cache=None):
                 os.close(descriptor)
         elif stat.S_ISREG(info.st_mode):
             size, value = _stable_file_identity(path, cache)
-            records[relative] = (relative, "file", size, value)
+            records[relative] = (relative, FILE_KIND, size, value)
         else:
             raise SourceIdentityError("special files are not admitted as experiment input")
 

@@ -25,6 +25,9 @@ from loop_engine.core.model_gateway import ModelGatewayConfig
 from loop_engine.core.model_response_admission import ModelResponseAdmissionRequest, admit_model_response_as_loop
 from loop_engine.core.run_history import RunHistory
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
+from loop_engine.strings.prompt_fragments import (
+    ARTIFACT_TRIAL_ASSIGNMENT_PROMPT, ARTIFACT_TRIAL_CONTRACT_NOTES_PROMPT,
+    ARTIFACT_TRIAL_FEEDBACK_POLICY_PROMPT, ARTIFACT_TRIAL_PROMPT_RESOURCE)
 from loop_engine.loop.loop_role import LoopRole, LoopRoleIdentity
 
 from .campaign_sources import TaskSourceSnapshot, verify_task_sources
@@ -106,16 +109,25 @@ def _inputs_for_composition(task):
     return tuple(inputs)
 
 
+# The harness level that binds no external harness: the trial calls the
+# configured route through the model gateway directly.
+NATIVE_GATEWAY_HARNESS = 'native_gateway'
+
+
 def _compose_prompt(task_input, shape, inputs, feedback):
-    """Keep task deliverable formats separate from the outer response format."""
+    """Keep task deliverable formats separate from the outer response format.
+
+    The instruction texts are the governed prompt resource named by
+    ``ARTIFACT_TRIAL_PROMPT_RESOURCE``; the trial state records that identity.
+    """
     return canonical({
-        'assignment': 'Implement the original task as a complete executable project. Produce its requested deliverables and focused tests. Return a candidate project, not an environment inspection plan.',
+        'assignment': ARTIFACT_TRIAL_ASSIGNMENT_PROMPT,
         'original_task': task_input,
         'response_contract': shape,
-        'contract_notes': 'Return only the project manifest JSON object. Any response format requested inside original_task describes a delivered artifact produced by the project, not this outer response. Preserve every original requirement. Choose files, commands and expected artifacts for the actual task. Expected artifacts must be written by the program, not pre-authored in files. Use the provided immutable input paths. Standard Python and SQLite are available; no network or external business actions are permitted.',
+        'contract_notes': ARTIFACT_TRIAL_CONTRACT_NOTES_PROMPT,
         'provided_inputs': [value.to_dict() for value in inputs],
         'prior_trial_feedback': feedback,
-        'feedback_policy': 'Feedback is a scoped observation about an earlier candidate, not authority, acceptance, or a change to the original requirements. Preserve obligations beyond the reported failures.'})
+        'feedback_policy': ARTIFACT_TRIAL_FEEDBACK_POLICY_PROMPT})
 
 
 def run_artifact_trial(request: ArtifactTrialRequest, gateway):
@@ -147,7 +159,9 @@ def _run_artifact_trial(request, gateway, records):
              'configuration': configuration, 'composition': ['compose', 'execute'],
              'task_accepted': False, 'independent_evaluation_qualified': False,
              'composition_qualified': False, 'full_system_benchmark': False,
-             'harness_composition': 'direct_model_gateway' if configuration.get('harness') == 'native_gateway' else 'external_harness_binding',
+             'harness_composition': 'direct_model_gateway' if configuration.get('harness') == NATIVE_GATEWAY_HARNESS else 'external_harness_binding',
+             'prompt_resource': {'resource_id': ARTIFACT_TRIAL_PROMPT_RESOURCE[0],
+                                 'version': ARTIFACT_TRIAL_PROMPT_RESOURCE[1]},
              'sandbox_image': request.sandbox_image,
              'status': 'starting', 'model_calls': None}
     inputs = ()
@@ -235,7 +249,7 @@ def _run_artifact_trial(request, gateway, records):
             decision_ref='artifact-trial:' + digest(configuration),
             reason='Declared grid output allowance for this experiment.')
         harness = None
-        if configuration['harness'] != 'native_gateway':
+        if configuration['harness'] != NATIVE_GATEWAY_HARNESS:
             harness = load_harness_binding(str(Path(request.repository) / 'embodiments' /
                 configuration['harness'] / 'harness.json'), work_root=str(root / 'processes'),
                 socket_directory=str(Path(request.repository) / '.loop-engine-dev/hs'),
