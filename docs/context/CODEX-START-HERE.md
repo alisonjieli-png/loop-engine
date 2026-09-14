@@ -93,9 +93,9 @@ campaign runner's `RecordedSettingSession` now keeps one history per trial,
 grown with `extend_from_ledger`, and checkpoints it into that store after
 every invocation (`step_history` rows carry `layout`, `checkpoint`, and
 `revision`; the retention test pins that every revision reloads). `ollama_client.learn_output_capability(model)`
-reads a model's output ceiling from the service's own refusal, for the
-thirteen listed models without a declared maximum, once the allowance
-resets. The [campaign activation review](../verification/CAMPAIGN-ACTIVATION-REVIEW-2026-09-13.md)
+read the output ceilings of the thirteen listed models that lacked one
+when the allowance reset at 00:25 UTC on September 14, so all nineteen
+Ollama Cloud models are declarable routes with source-backed maxima. The [campaign activation review](../verification/CAMPAIGN-ACTIVATION-REVIEW-2026-09-13.md)
 probed `65593c7` offline before the launch: the worker's frozen snapshot
 predates every fix since `dd49ca3`, a page in the provider's place drained
 the queue (fixed at the ledger's usage rule), and three items are left for

@@ -33,7 +33,12 @@ until the allowance resets and the probe
 (`.loop-engine-dev/fable-review-probe-20260913/ollama-live-prep/probe_model_maxima.py`)
 can read each declared maximum. On the OpenAI-compatible path the 429 body
 is the OpenAI error shape; on the native path it is `{"error": ...}`; both
-classify as `usage_limit_reached`.
+classify as `usage_limit_reached`. At 00:25 UTC on September 14 the
+allowance had reset and the same probe was refused HTTP 400 for all
+thirteen, each naming the model's exact maximum ("max_tokens (100000000)
+exceeds model's maximum output tokens (393216) for model
+deepseek-v4.1-flash", with a reference id); the built-in table now holds
+all nineteen listed models.
 
 ## Defects, and what was fixed the same evening
 

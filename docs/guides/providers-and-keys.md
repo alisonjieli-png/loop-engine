@@ -42,7 +42,10 @@ maximum (the source every table entry already cites). Only a refusal that
 names exactly one number yields a capability; an accepted request is closed
 on its first byte and recorded as acceptance without a ceiling, since a
 server may clamp silently. `learn_output_capabilities(models)` does this for
-a listing and stops at the first refusal by allowance or credential.
+a listing and stops at the first refusal by allowance or credential. On
+September 14, 2026 it read the maxima of the thirteen listed models that
+lacked one, so all nineteen models Ollama Cloud lists carry a source-backed
+maximum in the built-in table.
 
 The model listing (`/api/tags`) is not readiness: on the evening of
 September 13, 2026 the key listed twenty models while every generation was

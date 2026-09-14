@@ -58,8 +58,12 @@ First public release.
   path; a 400 that names exactly one maximum yields a source-backed
   capability, an accepted request is closed on its first byte and recorded
   as acceptance without a ceiling, and a refusal by allowance or credential
-  stops a batch. Thirteen of the nineteen models Ollama Cloud lists have no
-  declared maximum yet; the probe waits for the allowance to reset.
+  stops a batch. When the allowance reset at 00:25 UTC on September 14 the
+  batch read all thirteen missing maxima from the service's refusals in
+  one request each (the wording names the number beside a reference id
+  and a model name with digits, which the parser now sets aside), so every
+  one of the nineteen listed models carries a source-backed output maximum
+  in the built-in table.
 - A provider's stated wait is honoured. A refusal that carries
   `Retry-After` is waited for before the same route is retried, up to a
   sixty-second ceiling, and the ledger records what was stated, what was

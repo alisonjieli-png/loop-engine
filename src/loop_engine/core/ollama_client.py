@@ -75,6 +75,62 @@ MODEL_OUTPUT_CAPABILITIES = {
         262144,
         "Ollama HTTP 400 response declared the exact model maximum",
         observed_at="2026-09-06"),
+    # The thirteen remaining models Ollama Cloud listed on 2026-09-13,
+    # each maximum read from the service's own refusal of an over-limit
+    # request on 2026-09-14 by learn_output_capability (one request per
+    # model, no generation); the refusal names the exact number.
+    "deepseek-v4.1-flash": ModelOutputCapability(
+        393216,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "glm-5.1": ModelOutputCapability(
+        131072,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "glm-5.2": ModelOutputCapability(
+        131072,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "glm-5.3": ModelOutputCapability(
+        1048576,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "gpt-oss:120b": ModelOutputCapability(
+        131072,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "kimi-k2.6": ModelOutputCapability(
+        262144,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "kimi-k2.7-code": ModelOutputCapability(
+        262144,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "minimax-m2.7": ModelOutputCapability(
+        131072,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "minimax-m3": ModelOutputCapability(
+        131072,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "mistral-large-3:675b": ModelOutputCapability(
+        262144,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "nemotron-3-super": ModelOutputCapability(
+        65536,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "nemotron-3-ultra": ModelOutputCapability(
+        65536,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
+    "qwen3.5:397b": ModelOutputCapability(
+        65536,
+        "Ollama HTTP 400 response declared the exact model maximum",
+        observed_at="2026-09-14"),
 }
 # Compatibility projection for read-only catalog consumers.  It has no default.
 MODEL_MAX_OUTPUT = {
@@ -229,9 +285,24 @@ LEARNED_CAPABILITY_RECORD_TYPE = "learned_output_capability/v1"
 
 
 def _declared_maximum(message: str, requested: int) -> "int | None":
-    """The one integer a refusal names that is not the number we sent."""
+    """The one integer a refusal names as the maximum, never the number we
+    sent, a reference id, or a digit in the model's name.
+
+    Ollama Cloud's wording on 2026-09-14: ``max_tokens (100000000) exceeds
+    model's maximum output tokens (393216) for model deepseek-v4.1-flash
+    (ref: 9e1e0e6a-...)``. The number after "maximum" is taken when the
+    wording names one; otherwise the refusal must contain exactly one
+    plausible integer once references and the request are removed.
+    """
     import re
-    numbers = {int(n.replace(",", "")) for n in re.findall(r"\d[\d,]*", message)}
+    text = re.sub(r"\(ref:[^)]*\)|\b(?=[0-9a-f-]*[a-f])[0-9a-f]{6,}(?:-[0-9a-f]{2,})*\b", " ",
+                  message, flags=re.I)
+    named = {int(n.replace(",", "")) for n in re.findall(
+        r"maximum[^0-9]{0,60}?(\d[\d,]*)", text, flags=re.I)}
+    named = {n for n in named if n != requested and n >= SMALLEST_PLAUSIBLE_CEILING}
+    if len(named) == 1:
+        return next(iter(named))
+    numbers = {int(n.replace(",", "")) for n in re.findall(r"(?<![\w.:-])\d[\d,]*(?![\w.:-])", text)}
     numbers.discard(requested)
     candidates = sorted(n for n in numbers if n >= SMALLEST_PLAUSIBLE_CEILING)
     return candidates[0] if len(candidates) == 1 else None
@@ -616,12 +687,16 @@ def self_test() -> dict:
         accepted = _Accepted()
         scripted.update({
             "named": lambda: _refusal(400, b'{"error":{"message":"max_tokens 100000000 exceeds the maximum of 65536 for this model"}}'),
+            "live": lambda: _refusal(400, b'{"error":{"message":"max_tokens (100000000) exceeds model\'s maximum output '
+                                          b'tokens (65536) for model qwen3.5:397b (ref: 9e1e0e6a-3cd6-4cc1-804f-a124c7436645)",'
+                                          b'"type":"invalid_request_error","param":null,"code":null}}'),
             "plain": lambda: _refusal(400, b'{"error":"num_predict must be at most 131,072"}'),
             "vague": lambda: _refusal(400, b'{"error":"invalid request"}'),
             "spent": lambda: _refusal(429, b'{"error":"you have reached your weekly usage limit"}'),
             "open": lambda: accepted,
         })
         named = learn_output_capability("named", api_key="fixture-key", observed_at="2026-09-13")
+        live = learn_output_capability("live", api_key="fixture-key")
         plain = learn_output_capability("plain", api_key="fixture-key")
         vague = learn_output_capability("vague", api_key="fixture-key")
         spent = learn_output_capability("spent", api_key="fixture-key")
@@ -629,6 +704,8 @@ def self_test() -> dict:
         batch = learn_output_capabilities(["named", "spent", "plain"], api_key="fixture-key")
     finally:
         urllib.request.urlopen = saved
+    check("the_live_wording_with_a_reference_id_and_digits_in_the_model_name_yields_the_maximum",
+          live["ok"] and live["maximum_output_tokens"] == 65536, live["error"])
     check("a_refusal_that_names_the_maximum_yields_a_source_backed_capability",
           named["ok"] and named["maximum_output_tokens"] == 65536
           and isinstance(named["capability"], ModelOutputCapability)
