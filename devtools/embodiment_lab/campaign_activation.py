@@ -5,6 +5,7 @@ provider dispatch and accounting; this application records a separate probe
 history and never treats a probe as task completion or model quality.
 """
 from datetime import datetime, timezone
+from dataclasses import dataclass
 import hashlib
 from pathlib import Path
 import uuid
@@ -14,6 +15,34 @@ from loop_engine.core.model_gateway import ModelGatewayConfig, _error_code
 from loop_engine.core.run_history import RunHistory
 from loop_engine.loop.loop_role import LoopRole, LoopRoleIdentity
 from loop_engine.loop.recursive_loop import Loop, LoopConfig, StepOutcome
+
+
+@dataclass(frozen=True)
+class CampaignAccessPolicy:
+    """When to spend a separate provider-access call in one worker activation."""
+
+    frequency: str = "per_worker_activation"
+    version: str = "1.0.0"
+
+    def __post_init__(self):
+        if self.frequency not in ("per_worker_activation", "per_trial") or self.version != "1.0.0":
+            raise ValueError("unsupported campaign access policy")
+
+    def requires_probe(self, verified_in_activation):
+        if type(verified_in_activation) is not bool:
+            raise TypeError("access verification state must be explicit")
+        return self.frequency == "per_trial" or not verified_in_activation
+
+    def to_dict(self):
+        return {"record_type": "campaign_access_policy/v1", "frequency": self.frequency,
+                "version": self.version}
+
+    @classmethod
+    def from_dict(cls, value):
+        if (not isinstance(value, dict) or set(value) != {"record_type", "frequency", "version"}
+                or value["record_type"] != "campaign_access_policy/v1"):
+            raise ValueError("invalid campaign access policy record")
+        return cls(value["frequency"], value["version"])
 
 
 def utc_time(value):

@@ -63,7 +63,7 @@ class OfflineTrialChecks(unittest.TestCase):
                              'context_delivery': 'bounded_inline', 'harness_fallback': 'none',
                              'mode': 'non_deterministic', 'provider': 'offline_fixture', 'model': 'fixture-model',
                              'route': 'fixture.route', 'provider_failover': False,
-                             'max_model_calls': None, 'max_passes': None}
+                             'max_model_calls': 1, 'max_passes': 2}
             manifest = {'harnesses': ['native_gateway'], 'repository': str(REPOSITORY),
                         'harness_file_digests': {}, 'provider_file': ''}
             transport = CannedTransport()
@@ -73,6 +73,7 @@ class OfflineTrialChecks(unittest.TestCase):
             self.assertIn(state['status'], ('finished', 'failed'), state)
             self.assertEqual(state['task_id'], 'T-OFFLINE')
             self.assertFalse(state['task_accepted'])
+            self.assertEqual(transport.calls, 1, 'the declared per-cell call ceiling must reach the model authority')
             cell = Path(state['path'])
             self.assertTrue((cell / 'status.json').is_file())
             self.assertEqual(json.loads((cell / 'status.json').read_text())['status'], state['status'])
@@ -126,7 +127,7 @@ class OfflineTrialChecks(unittest.TestCase):
             import hashlib
             digest = hashlib.sha256(b'delivered').hexdigest()
             self.assertTrue(_artifact_verified({'path': str(artifact), 'sha256': digest}))
-            self.assertTrue(_artifact_verified({'path': str(artifact)}))
+            self.assertFalse(_artifact_verified({'path': str(artifact)}))
             self.assertFalse(_artifact_verified({'path': str(artifact), 'sha256': 'not-the-digest'}))
             self.assertFalse(_artifact_verified({'path': str(root / 'absent.txt')}))
             self.assertFalse(_artifact_verified({'artifact_ref': ''}))

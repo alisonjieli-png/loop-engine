@@ -75,11 +75,15 @@ def _ndjson(*objects):
     return [json.dumps(item).encode() + b"\n" for item in objects]
 
 
-def _chat(endpoint, opener, prompt="say online"):
+def _chat(endpoint, opener, prompt="say online", *, authorized_transport_retry=False):
     saved_opener, saved_slot = ce._endpoint_opener, ce._claim_call_slot
     ce._endpoint_opener = lambda ep: opener
     ce._claim_call_slot = lambda name: 0.0
     try:
+        if authorized_transport_retry:
+            return ce._chat_once(endpoint, prompt, system='',
+                max_tokens=endpoint.output_capability.declared_maximum,
+                temperature=0.0, timeout=5, allow_transport_retry=True)
         return make_adapter(endpoint).chat(prompt, max_tokens=0, temperature=0.0, timeout=5)
     finally:
         ce._endpoint_opener, ce._claim_call_slot = saved_opener, saved_slot
@@ -130,7 +134,7 @@ def run_checks():
 
     auto = _endpoint(name="auto_box", stream="auto")
     opener = _Opener([_http_error(504, b"upstream timed out"), _Response(lines=stream)])
-    first = _chat(auto, opener)
+    first = _chat(auto, opener, authorized_transport_retry=True)
     second_opener = _Opener([_Response(lines=stream)])
     second = _chat(auto, second_opener)
     check("auto_mode_learns_that_this_endpoint_needs_streaming_and_streams_first_next_time",
@@ -290,7 +294,7 @@ def run_checks():
 
     forget_learned_stream_modes()
     opener = _Opener([_http_error(504, b"upstream timed out"), _Response(lines=stream)])
-    result = _chat(_endpoint(name="count_box", stream="auto"), opener)
+    result = _chat(_endpoint(name="count_box", stream="auto"), opener, authorized_transport_retry=True)
     plain = _chat(_endpoint(stream="buffer"), _Opener([_Response(
         body=json.dumps({"message": {"content": "x"}, "done": True, "done_reason": "stop",
                          "prompt_eval_count": 1, "eval_count": 1}).encode())]))

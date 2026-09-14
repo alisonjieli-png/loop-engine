@@ -245,6 +245,10 @@ def as_model_loop(objective: str, fn, *, inputs=None,
     _prompt_tokens = _reported_token_attr(value, "prompt_tokens")
     _eval_tokens = _reported_token_attr(value, "eval_tokens")
     _total_tokens = _reported_token_attr(value, "total_tokens")
+    _physical_requests = _reported_token_attr(value, "physical_requests")
+    _last_response_usage = {"prompt_tokens": _prompt_tokens, "eval_tokens": _eval_tokens}
+    if _physical_requests is not None and _physical_requests > 1:
+        _prompt_tokens = _eval_tokens = _total_tokens = None
     if not ok and getattr(value, 'response_received', None) is not True:
         # Legacy response objects default their counters to zero even when
         # no provider response arrived, or when the flag is missing or
@@ -261,6 +265,8 @@ def as_model_loop(objective: str, fn, *, inputs=None,
               "prompt_tokens": _prompt_tokens,
               "eval_tokens": _eval_tokens,
               "total_tokens": _total_tokens,
+              "provider_physical_requests": _physical_requests,
+              "last_response_usage": _last_response_usage,
               "accounting_complete": (
                   _prompt_tokens is not None and _eval_tokens is not None),
               "usage_state": (

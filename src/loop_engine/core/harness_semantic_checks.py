@@ -198,7 +198,7 @@ def run_checks():
         info = adapter.info()
         check('an_uninstalled_harness_refuses_by_default_and_registers_as_unavailable_when_allowed',
               refused and isinstance(adapter, UnavailableHarnessAdapter) and info.available is False
-              and info.availability_reason == 'harness executable is unavailable'
+              and info.availability_reason == 'executable_unavailable'
               and info.adapter_version.startswith('unavailable+') and info.package_version == '0.36.0',
               info.availability_reason)
         still_refused = False

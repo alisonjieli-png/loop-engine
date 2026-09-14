@@ -310,7 +310,7 @@ def self_test() -> dict:
     r = chat("hi", api_key="")
     check("a_missing_key_returns_a_reason_not_an_exception",
           r.ok is False and "OPENROUTER_API_KEY" in r.error
-          and r.prompt_tokens == 0,
+          and r.prompt_tokens is None,
           "a resolver can fall back; nothing raises")
 
     # 2. THE POLICY RULE: a forbidden model is refused on THIS provider too.
@@ -327,7 +327,7 @@ def self_test() -> dict:
     # failover swap providers without any caller noticing.
     check("returns_the_same_result_contract_as_the_other_provider",
           isinstance(r, ChatResult) and hasattr(r, "total_tokens")
-          and r.to_dict()["total_tokens"] == 0,
+          and r.to_dict()["total_tokens"] is None,
           "identical shape means failover is invisible to callers")
 
     # 4. Unknown stays unknown.  No fallback number can silently truncate or

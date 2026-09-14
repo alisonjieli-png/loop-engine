@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from embodiment_lab.campaign_activation import activation_due, probe_gateway, utc_time
+from embodiment_lab.campaign_activation import CampaignAccessPolicy, activation_due, probe_gateway, utc_time
 from embodiment_lab.systematic_records import CampaignProjection
 from embodiment_lab.task_database_campaign import campaign_space
 from loop_engine.code_nodes.solution_model_port import FixtureModelExecutionRequest, fixture_model_execution
@@ -12,6 +12,17 @@ from loop_engine.core.model_routes import ModelRoute
 
 
 class CampaignActivationChecks(unittest.TestCase):
+    def test_probe_policy_is_explicit_and_does_not_probe_every_cell_by_default(self):
+        policy = CampaignAccessPolicy()
+        self.assertTrue(policy.requires_probe(False))
+        self.assertFalse(policy.requires_probe(True))
+        self.assertTrue(CampaignAccessPolicy('per_trial').requires_probe(True))
+        self.assertEqual(CampaignAccessPolicy.from_dict(policy.to_dict()), policy)
+        with self.assertRaises(ValueError):
+            CampaignAccessPolicy('never_check')
+        with self.assertRaises(TypeError):
+            policy.requires_probe('yes')
+
     def test_time_gate_is_explicit_and_never_uses_a_naive_clock(self):
         gate = '2026-09-14T00:23:46+00:00'
         self.assertFalse(activation_due(gate, datetime(2026, 9, 13, 23, tzinfo=timezone.utc)))

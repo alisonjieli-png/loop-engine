@@ -466,7 +466,8 @@ class GatewayAttempt:
             "delivered_by_stream": self.delivered_by_stream,
             "provider_physical_requests": self.provider_physical_requests,
             "reported_provider_attempts": self.reported_provider_attempts,
-            "model_call_accounting_complete": self.reported_provider_attempts in (None, 1),
+            "model_call_accounting_complete": (self.reported_provider_attempts in (None, 1)
+                                                and self.provider_physical_requests in (None, 0, 1)),
             "output_capacity_digest": (hashlib.sha256(json.dumps(
                 self.output_capacity.summary(), sort_keys=True).encode()).hexdigest()
                 if self.output_capacity is not None else ""),
@@ -511,7 +512,9 @@ class ModelGatewayResult:
 
     @property
     def physical_model_calls(self) -> int:
-        return len(self.physical_provider_attempts)
+        return sum(attempt.provider_physical_requests
+                   if attempt.provider_physical_requests is not None else 1
+                   for attempt in self.physical_provider_attempts)
 
     @property
     def total_tokens(self) -> "int | None":
@@ -1179,7 +1182,8 @@ class ModelGateway:
                 identity_ok = reported_model == route.model
                 provider_error = str(getattr(provider_result, "error", "") or "")
                 declared_attempts = getattr(provider_result, "attempts", 1)
-                multiplicity_invalid = type(declared_attempts) is not int or declared_attempts != 1
+                multiplicity_invalid = (type(declared_attempts) is not int or declared_attempts != 1
+                                        or provider_physical_requests not in (None, 0, 1))
                 completion_invalid = bool(
                     provider_done is False or output_limit_reached
                     or provider_stop_reason in ("length", "max_tokens", "max_output_tokens")
@@ -1210,7 +1214,8 @@ class ModelGateway:
                     getattr(provider_result, "eval_tokens", None))
                 # Legacy adapters use two zero defaults when the provider sent
                 # no usage object. Do not turn that absence into known zero.
-                if input_tokens == 0 and output_tokens == 0:
+                if (input_tokens == 0 and output_tokens == 0 and provider_usage is None
+                        and getattr(provider_result, 'usage_reported', False) is not True):
                     input_tokens = output_tokens = None
                 usage_complete = (
                     input_tokens is not None and output_tokens is not None)

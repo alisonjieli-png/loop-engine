@@ -172,7 +172,7 @@ const pages = {
   async home() { const s = await api("summary");
     $("#main").innerHTML = `<h1>Operations</h1><div class="cards">` +
       s.cards.map(c => `<a class="card" href="#/${c.link}">
-        <b>${esc(c.value)}</b><span>${esc(c.label)}</span></a>`).join("") +
+        <b>${esc(c.value ?? "unknown")}</b><span>${esc(c.label)}</span></a>`).join("") +
       `</div><div class="warnbox">${esc(s.honesty)}</div>
       <h1 style="font-size:1.05rem">Recent runs</h1>` + runsTable(s.recent);
     sortable($("#main table")); },
@@ -190,7 +190,7 @@ const pages = {
     if (tab === "overview") body = `<div class="cards">` + [
       ["events", d.totals.events], ["iterations", d.totals.iterations],
       ["semantic calls", d.totals.calls],
-      ["tokens", d.totals.prompt_tokens + "+" + d.totals.eval_tokens],
+      ["tokens", (d.totals.prompt_tokens ?? "unknown") + "+" + (d.totals.eval_tokens ?? "unknown")],
       ["chain", d.chain_intact ? "intact" : "BROKEN"],
       ["stuckness", d.stuckness.stuckness_score]]
       .map(([l, v]) => `<div class="card"><b>${esc(v)}</b><span>${l}</span>
@@ -355,15 +355,15 @@ const pages = {
         `<div class="ev ${e.type === "model_invocation" ? "model" : ""}"
           id="ev${i}">[${i}] <b>${esc(e.type)}</b> ${esc(e.loop)}
           ${esc(e.step)} ${e.mode ? "(" + esc(e.mode) + ")" : ""}
-          ${e.tokens ? "· " + e.tokens + " tok" : ""}
+          ${e.tokens === null ? "· usage unknown" : (e.tokens !== "" ? "· " + esc(e.tokens) + " tok" : "")}
           <div class="k">${esc(e.detail)}</div></div>`).join("") + "</div>";
     if (tab === "calls") body = d.calls.length ? `<table><tr>
       <th class="num">#</th><th>loop</th><th>step</th><th>model</th>
       <th class="num">in</th><th class="num">out</th></tr>` +
       d.calls.map(c => `<tr class="row"><td class="num">${c.seq}</td>
         <td>${esc(c.loop)}</td><td>${esc(c.step)}</td><td>${esc(c.model)}
-        </td><td class="num">${c.prompt_tokens}</td>
-        <td class="num">${c.eval_tokens}</td></tr>`).join("") + "</table>"
+        </td><td class="num">${esc(c.prompt_tokens ?? "unknown")}</td>
+        <td class="num">${esc(c.eval_tokens ?? "unknown")}</td></tr>`).join("") + "</table>"
       : `<p class="k">zero semantic calls, fully code-served</p>`;
     $("#main").innerHTML = `<h1>${esc(id)}</h1><div class="tabs">` +
       T.map(t => `<a href="#/runs/${encodeURIComponent(id)}/${t}"
@@ -560,7 +560,7 @@ function runsTable(rows) { return `<table><tr><th>run</th><th>goal</th>
       `<div class="k">${esc(r.error)}</div>` : ""}</td>
     <td class="num">${r.artifact_count || 0}</td>
     <td class="num">${r.events}</td><td class="num">${r.calls}</td>
-    <td class="num">${r.tokens}</td>
+    <td class="num">${esc(r.tokens ?? "unknown")}</td>
     <td>${r.intact ? "intact" : "<b>BROKEN</b>"}</td></tr>`).join("") +
   `</table>`; }
 
@@ -613,7 +613,7 @@ function pickLoop(id) {
     <table><tr><th>parent</th><td>${esc(l.parent || "root")}</td></tr>
     <tr><th>iterations</th><td>${l.iterations || 0}</td></tr>
     <tr><th>semantic calls</th><td>${l.calls || 0}</td></tr>
-    <tr><th>tokens</th><td>${l.tokens || 0}</td></tr>
+    <tr><th>tokens</th><td>${esc(l.tokens ?? "unknown")}</td></tr>
     <tr><th>terminal</th><td>${esc(l.terminal || "running")}</td></tr></table>
     <h3>steps</h3><table><tr><th>step</th><th>mode</th><th>output</th></tr>
     ${steps || "<tr><td colspan=3 class=k>no iterations recorded</td></tr>"}

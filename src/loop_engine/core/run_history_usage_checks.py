@@ -7,6 +7,7 @@ from __future__ import annotations
 import tempfile
 
 from .run_history import RunHistory, as_ledger_events
+from .run_history_usage import TokenUsageTotals, total_model_usage
 
 
 def self_test() -> dict:
@@ -51,9 +52,35 @@ def self_test() -> dict:
         "passed": preserved,
         "detail": "model_usage/v2 preserves positive, missing, partial, zero",
     }]
+    def check(name, passed):
+        tests.append({"test": name, "passed": bool(passed)})
+    combined = total_model_usage(projected)
+    check("aggregate_keeps_missing_usage_unknown_and_known_subtotals_separate",
+          combined.total_tokens is None and combined.prompt_tokens is None
+          and combined.eval_tokens is None and combined.known_subtotal == 8
+          and combined.observations == 4 and not combined.complete)
+    check("real_zero_and_empty_usage_remain_exact_zero",
+          total_model_usage((projected[3],)).total_tokens == 0
+          and total_model_usage(()).total_tokens == 0)
+    partial_total = total_model_usage((projected[2],))
+    check("partial_usage_preserves_known_direction",
+          partial_total.prompt_tokens is None and partial_total.eval_tokens == 3)
+    for invalid in (True, False, -1, 1.5, "3"):
+        check("invalid_token_count_is_unknown_" + repr(invalid),
+              total_model_usage(({"prompt_tokens": invalid, "eval_tokens": 0},)).total_tokens is None)
+    check("usage_aggregation_is_additive_without_changing_unknowns",
+          total_model_usage(projected[:2]) + total_model_usage(projected[2:]) == combined)
+    for values in ((True, 0, 0, 0, 0), (0, 0, 0, 1, 0), (-1, 0, 0, 0, 0)):
+        try:
+            TokenUsageTotals(*values)
+            refused = False
+        except ValueError:
+            refused = True
+        check("invalid_usage_totals_refused_" + repr(values), refused)
+    passed = sum(item["passed"] for item in tests)
     return {"record_type": "run_history_usage_test/v1", "tests": tests,
-            "passed": int(preserved), "total": 1,
-            "all_passed": preserved}
+            "passed": passed, "total": len(tests),
+            "all_passed": passed == len(tests)}
 
 
 __all__ = ("self_test",)

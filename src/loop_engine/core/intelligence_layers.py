@@ -6,10 +6,8 @@ Code, Runtime History and Solution, and User Feedback Intelligence.
 Owns:
     - the canonical layer vocabulary (LAYERS) and its plain meanings:
       context_intelligence (questions, prompts, personas, timeframes,
-      templates — everything appended to a model's context; template
-      STRINGS live here), code_intelligence (runnable Code Nodes,
-      deterministic and non-deterministic alike — prompt-engineering
-      operations and template EXECUTORS live here), and
+      and templates), code_intelligence (implementations and executable
+      assets used through classified Loops), and
       runtime_history_solution_intelligence (previous Loop Engine solutions and runs served
       as searchable starting points, prior-not-proof);
     - query_intelligence(): ONE query fanned across the layers through
@@ -28,15 +26,15 @@ Does not own:
 Public entry points:
     - query_intelligence(need, layer_records, ...) -> labeled hits
     - layer_handshake() -> the four layers + runtime-memory state
-    - runtime_memory_write(...) -> ALWAYS refuses (fail closed until the
-      note board exists; absence is explicit, never a silent no-op)
+    - runtime_memory_write(...) -> writes through a supplied run-scoped
+      board; absence is explicit, never a silent no-op
 
 Key invariants:
     - exactly FOUR layers, spelled from LAYERS (the fourth, user
       intelligence, was the owner's 2026-08-24 decision) — a fifth
       bucket is a new owner decision, not a code change;
     - every hit names its layer (search provenance);
-    - runtime memory refuses writes until implemented.
+    - Runtime Memory requires a supplied run-scoped board.
 
 Verification: self_test() — labeled fan-out, per-layer routing, shared
 classification, real population building, and the four-layer invariant.
@@ -95,9 +93,9 @@ LAYER_MEANING = {
     "context_intelligence": ("reusable context the loop can pull in: questions, "
                             "methods, personas, timeframes, evaluations, "
                             "instructions, and templates"),
-    "code_intelligence": ("runnable Code Nodes, deterministic and "
-                          "non-deterministic — fast, repeatable work "
-                          "including prompt-engineering operations"),
+    "code_intelligence": ("implementations and executable assets used through "
+                          "classified Loops, including prompt-engineering "
+                          "operations; retrieval alone does not permit execution"),
     "runtime_history_solution_intelligence": ("previous runs AND solutions: loop trees, "
                               "decisions and alternatives, failures and "
                               "repairs, costs, model-call history, prior and "
@@ -446,6 +444,10 @@ class IntelligenceSearchRequest:
     filter: object | None = None
     include_candidates: bool = False
 
+    def __post_init__(self):
+        if type(self.include_candidates) is not bool:
+            raise TypeError('candidate review selection must be an explicit Boolean')
+
 
 @dataclass(frozen=True)
 class IntelligenceSearchContext:
@@ -468,13 +470,31 @@ def query_intelligence(
     selected_context = context or IntelligenceSearchContext()
     need = request.need
     normalized = normalize_layer_records(request.layer_records)
-    combined, identities, unqueried = [], {}, []
+    combined, identities, unqueried, excluded = [], {}, [], []
     for layer in LAYERS:
-        recs = list(normalized.get(layer) or ())
-        if not request.include_candidates:
-            recs = [record for record in recs if record.tier == "core"
-                    and str((record.body or {}).get("maturity", ""))
-                    != "candidate"]
+        recs = []
+        for record in normalized.get(layer) or ():
+            body = record.body or {}
+            facets = body.get('facets') or {}
+            # All explicit lifecycle declarations constrain admission. A core
+            # tier or a contradictory maturity cannot erase a candidate state.
+            states = (body.get('maturity', ''), body.get('lifecycle', ''),
+                      facets.get('lifecycle', ''))
+            inactive = {state for state in states if isinstance(state, str)}.intersection({
+                'draft', 'generated', 'staged', 'candidate', 'validated',
+                'deprecated', 'quarantined', 'rejected', 'superseded', 'retired'})
+            reason = ''
+            if any(state is not None and not isinstance(state, str) for state in states):
+                reason = 'invalid_lifecycle_declaration'
+            elif record.tier == 'gated':
+                reason = 'separate_access_grant_required'
+            elif not request.include_candidates and (record.tier != 'core' or inactive):
+                reason = 'candidate_or_inactive_requires_review'
+            if reason:
+                excluded.append({'layer': layer, 'record_id': record.record_id,
+                                 'reason': reason})
+            else:
+                recs.append(record)
         if not recs:
             unqueried.append(layer)
             continue
@@ -512,6 +532,7 @@ def query_intelligence(
                      "classification": classification,
                      "intelligence_item_ref": ref.as_dict(), "score": score})
     return {"need": need, "hits": hits, "unqueried": unqueried,
+            "excluded": excluded,
             "unqueried_public": [LAYER_PUBLIC_KEY[layer]
                                  for layer in unqueried],
             "candidates_included": bool(request.include_candidates),
@@ -843,6 +864,37 @@ def self_test() -> dict:
     check("candidate_context_is_off_by_default",
           not hidden["hits"] and visible["hits"]
           and visible["hits"][0]["public_label"] == "Context Intelligence")
+    for layer in LAYERS:
+        for field in ('maturity', 'lifecycle', 'facets'):
+            body = ({'facets': {'lifecycle': 'candidate'}, 'maturity': 'registered'}
+                    if field == 'facets' else {field: 'candidate'})
+            record = StoreRecord('conflicting-tier', 'context', 'review this method',
+                                 body=body, tier='core')
+            hidden = query_intelligence(IntelligenceSearchRequest(
+                record.title, {layer: [record]}))
+            reviewed = query_intelligence(IntelligenceSearchRequest(
+                record.title, {layer: [record]}, include_candidates=True))
+            check(f'candidate_lifecycle_excludes_{layer}_{field}',
+                  not hidden['hits'] and len(hidden['excluded']) == 1
+                  and bool(reviewed['hits']))
+    gated = StoreRecord('restricted', 'context', 'restricted method', tier='gated')
+    review_gate = query_intelligence(IntelligenceSearchRequest(
+        gated.title, {'context_intelligence': [gated]}, include_candidates=True))
+    check('candidate_review_does_not_grant_gated_access',
+          not review_gate['hits'] and review_gate['excluded'][0]['reason']
+          == 'separate_access_grant_required')
+    invalid = StoreRecord('invalid-state', 'context', 'review method',
+                          body={'lifecycle': ['candidate']})
+    invalid_result = query_intelligence(IntelligenceSearchRequest(
+        invalid.title, {'context_intelligence': [invalid]}))
+    check('malformed_lifecycle_is_an_explicit_exclusion', not invalid_result['hits']
+          and invalid_result['excluded'][0]['reason'] == 'invalid_lifecycle_declaration')
+    refused = False
+    try:
+        IntelligenceSearchRequest('review', {}, include_candidates='false')
+    except TypeError:
+        refused = True
+    check('review_flag_cannot_be_a_truthy_string', refused)
     import shutil
     shutil.rmtree(root, ignore_errors=True)
 

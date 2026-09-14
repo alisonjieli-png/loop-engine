@@ -29,6 +29,16 @@ class HarnessProcessError(ValueError):
     """A process identity, confinement, or transport contract was refused."""
 
 
+class HarnessSetupUnavailable(HarnessProcessError):
+    """A declared setup has no compatible installed implementation."""
+
+    def __init__(self, reason_code):
+        if reason_code not in ('unsupported_style', 'executable_unavailable', 'software_mount_absent'):
+            raise ValueError('unknown harness setup availability code')
+        self.reason_code = reason_code
+        super().__init__(reason_code)
+
+
 def _json(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"),
                       ensure_ascii=False, allow_nan=False)
@@ -81,10 +91,7 @@ class HarnessProcessSpec:
     def __post_init__(self):
         from .harness_execution_contracts import valid_harness_id
         if (not valid_harness_id(self.harness_id) or not isinstance(self.package_version, str)
-                or not self.package_version.strip() or self.style not in (
-                    "aider", "continue", "pi", "qwen_code", "gemini_cli", "goose", "opencode",
-                    "mini_swe_agent", "mistral_vibe", "gptme", "cline", "kilo",
-                    "nanocode", "trae_agent", "codex", "openinterpreter_rust", "hermes_agent", "forgecode")):
+                or not self.package_version.strip() or not isinstance(self.style, str) or not self.style):
             raise HarnessProcessError("exact harness identity and installed style are required")
         if (not isinstance(self.command_prefix, tuple) or not self.command_prefix
                 or any(not isinstance(part, str) or not part or "\x00" in part for part in self.command_prefix)
@@ -92,14 +99,22 @@ class HarnessProcessSpec:
                 or len(set(self.read_only_paths)) != len(self.read_only_paths)):
             raise HarnessProcessError("command and mounts must be explicit unique tuples")
         executable = _absolute(self.command_prefix[0])
+        for value in self.read_only_paths:
+            path = _absolute(value)
+            if len(path.parts) < 4 or path.parts[1] in ("etc", "proc", "dev", "run", "sys"):
+                raise HarnessProcessError("software mount is too broad")
+        if self.style not in (
+                "aider", "continue", "pi", "qwen_code", "gemini_cli", "goose", "opencode",
+                "mini_swe_agent", "mistral_vibe", "gptme", "cline", "kilo",
+                "nanocode", "trae_agent", "codex", "openinterpreter_rust", "hermes_agent", "forgecode"):
+            raise HarnessSetupUnavailable('unsupported_style')
         if not executable.is_file() or not os.access(executable, os.X_OK):
-            raise HarnessProcessError("harness executable is unavailable")
+            raise HarnessSetupUnavailable('executable_unavailable')
         paths = list(self.read_only_paths)
         for value in paths:
             path = _absolute(value)
-            if (len(path.parts) < 4 or path.parts[1] in ("etc", "proc", "dev", "run", "sys")
-                    or not path.exists()):
-                raise HarnessProcessError("software mount is absent or too broad")
+            if not path.exists():
+                raise HarnessSetupUnavailable('software_mount_absent')
         paths.extend(part for part in self.command_prefix if part.startswith("/"))
         object.__setattr__(self, "software_identities", tuple(
             (value, _path_digest(_absolute(value))) for value in sorted(set(paths))))

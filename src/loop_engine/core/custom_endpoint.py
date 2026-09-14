@@ -69,6 +69,7 @@ from .model_capabilities import (
     UnknownModelOutputLimit, require_declared_maximum,
 )
 from .provider_failover import PROVIDERS
+from .run_history_usage import optional_token
 
 #: Wire formats understood. "openai" covers the overwhelming majority of
 #: self-hosted servers; "ollama" is the native /api/chat shape.
@@ -712,7 +713,7 @@ def _claim_call_slot(endpoint_name: str) -> float:
 
 def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                max_tokens: int, temperature: float,
-               timeout: float) -> ChatResult:
+               timeout: float, allow_transport_retry: bool = True) -> ChatResult:
     """One request in whichever wire format the endpoint declared.
 
     Streaming is self-orienting in ``auto`` mode: the first attempt uses the
@@ -778,7 +779,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                 pass
             retry_after = _retry_after_seconds(getattr(e, "headers", None))
             if e.code in (504, 524):
-                if ep.stream == "auto" and not use_streaming:
+                if allow_transport_retry and ep.stream == "auto" and not use_streaming:
                     # Self-orient: the proxy cut a silent non-streamed
                     # connection. Retry the same request with streaming
                     # so the proxy's read timer stays fed.
@@ -809,7 +810,7 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                               response_received=True,
                               physical_requests=physical_requests)
         except (urllib.error.URLError, OSError, ValueError) as e:
-            if ep.stream == "auto" and not use_streaming \
+            if allow_transport_retry and ep.stream == "auto" and not use_streaming \
                     and isinstance(e, (urllib.error.URLError, OSError)) \
                     and "timed out" in str(e).lower():
                 use_streaming = True
@@ -844,8 +845,8 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
     if ep.wire == "ollama":
         message = body.get("message") or {}
         text = message.get("content", "")
-        p_tok = int(body.get("prompt_eval_count", 0) or 0)
-        e_tok = int(body.get("eval_count", 0) or 0)
+        p_tok = optional_token(body.get("prompt_eval_count"))
+        e_tok = optional_token(body.get("eval_count"))
         done = body.get("done") if isinstance(body.get("done"), bool) else None
         done_reason = str(body.get("done_reason", "") or "")
         reasoning_present = bool(
@@ -854,9 +855,9 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
         choices = body.get("choices") or []
         text = (choices[0].get("message", {}).get("content", "")
                 if choices else "")
-        usage = body.get("usage") or {}
-        p_tok = int(usage.get("prompt_tokens", 0) or 0)
-        e_tok = int(usage.get("completion_tokens", 0) or 0)
+        usage = body.get("usage") if isinstance(body.get("usage"), dict) else {}
+        p_tok = optional_token(usage.get("prompt_tokens"))
+        e_tok = optional_token(usage.get("completion_tokens"))
         done = body.get("_done") if isinstance(body.get("_done"), bool) \
             else True
         done_reason = str(choices[0].get("finish_reason", "") or "") \
@@ -887,7 +888,8 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                       reasoning_present=reasoning_present,
                       output_limit_reached=output_limit_reached,
                       delivered_by_stream=bool(body.get("_streamed")),
-                      physical_requests=physical_requests)
+                      physical_requests=physical_requests,
+                      usage_reported=p_tok is not None and e_tok is not None)
 
 
 def make_adapter(ep: CustomEndpoint):
@@ -926,7 +928,8 @@ def make_adapter(ep: CustomEndpoint):
                                   error=str(exc))
             return _chat_once(
                 ep, prompt, system=system, max_tokens=maximum,
-                temperature=temperature, timeout=timeout or ep.timeout)
+                temperature=temperature, timeout=timeout or ep.timeout,
+                allow_transport_retry=False)
 
         @staticmethod
         def chat_maxout(prompt, *, model="", system="", temperature=0.7,

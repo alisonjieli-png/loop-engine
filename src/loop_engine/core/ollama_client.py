@@ -22,6 +22,7 @@ from .model_capabilities import (
     UnknownModelOutputLimit, require_declared_maximum,
     resolve_output_capability,
 )
+from .run_history_usage import optional_token
 
 ENDPOINT = "https://ollama.com/api/chat"
 #: Structured-output calls default to no reasoning; see chat().
@@ -432,8 +433,8 @@ def load_api_key(env_path: str | Path | None = None) -> str | None:
 class ChatResult:
     text: str
     model: str
-    prompt_tokens: int = 0
-    eval_tokens: int = 0
+    prompt_tokens: int | None = None
+    eval_tokens: int | None = None
     ok: bool = True
     error: str = ""
     num_predict_used: int = 0      # the output ceiling this call actually ran at
@@ -453,9 +454,12 @@ class ChatResult:
     #: streaming retried a proxy timeout, zero when the adapter refused
     #: before sending. ``attempts`` stays the contract's one.
     physical_requests: int = 1
+    usage_reported: bool = False
 
     @property
-    def total_tokens(self) -> int:
+    def total_tokens(self) -> int | None:
+        if self.prompt_tokens is None or self.eval_tokens is None:
+            return None
         return self.prompt_tokens + self.eval_tokens
 
     def to_dict(self) -> dict:
@@ -470,7 +474,8 @@ class ChatResult:
                 "output_limit_reached": self.output_limit_reached,
                 "retry_after_seconds": self.retry_after_seconds,
                 "delivered_by_stream": self.delivered_by_stream,
-                "physical_requests": self.physical_requests}
+                "physical_requests": self.physical_requests,
+                "usage_reported": self.usage_reported}
 
 
 def response_reached_output_limit(
@@ -486,7 +491,7 @@ def response_reached_output_limit(
     normalized = str(done_reason or "").strip().lower()
     if normalized:
         return normalized in OUTPUT_LIMIT_STOP_REASONS
-    return bool(maximum_output_tokens > 0
+    return bool(type(output_tokens) is int and maximum_output_tokens > 0
                 and output_tokens >= maximum_output_tokens)
 
 
@@ -597,8 +602,8 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
     reasoning_present = bool(str(message.get("thinking", "") or "").strip())
     done = data.get("done") if isinstance(data.get("done"), bool) else None
     done_reason = str(data.get("done_reason", "") or "")
-    prompt_tokens = int(data.get("prompt_eval_count", 0) or 0)
-    eval_tokens = int(data.get("eval_count", 0) or 0)
+    prompt_tokens = optional_token(data.get("prompt_eval_count"))
+    eval_tokens = optional_token(data.get("eval_count"))
     output_limit_reached = response_reached_output_limit(
         done_reason, eval_tokens, maximum)
     error = ""
@@ -621,7 +626,8 @@ def chat(prompt: str, *, model: str = DEFAULT_MODEL, system: str = "",
         error=error, num_predict_used=maximum, response_received=True,
         done=done, done_reason=done_reason,
         reasoning_present=reasoning_present,
-        output_limit_reached=output_limit_reached)
+        output_limit_reached=output_limit_reached,
+        usage_reported=prompt_tokens is not None and eval_tokens is not None)
 
 
 def verify(model: str = DEFAULT_MODEL) -> dict:

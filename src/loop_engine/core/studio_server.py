@@ -51,9 +51,15 @@ from .run_history import (
     load_saved_run_bundle, saved_run_ids)
 from .studio_operational_views import (
     StudioReadSources, project_run_runtime, project_runtime_inventory)
+from .run_history_usage import TokenUsageTotals, total_model_usage
 
 _RUNS = default_runs_dir()
 _READ_SOURCES = StudioReadSources()
+
+
+def _optional_sum(values):
+    values = tuple(values)
+    return None if any(value is None for value in values) else sum(values)
 
 
 @dataclass(frozen=True)
@@ -105,7 +111,7 @@ def _run_loads() -> tuple[list[SavedRunBundle], list[dict]]:
         except (OSError, KeyError, ValueError, TypeError, AttributeError,
                 json.JSONDecodeError, RunHistoryIntegrityError, LoopError) as exc:
             errors.append({
-                "run_id": run_id, "events": 0, "calls": 0, "tokens": 0,
+                "run_id": run_id, "events": None, "calls": None, "tokens": None,
                 "intact": False, "goal": "Unreadable saved run",
                 "outcome_available": False, "terminal_code": "RUN_INVALID",
                 "solved": False, "artifact_count": 0,
@@ -171,9 +177,10 @@ def _run_row(bundle: SavedRunBundle) -> dict:
                  if e.event_type == "loop_init"), "")
     product = _product_projection(bundle.outcome)
     verification = product["verification"]
+    usage = total_model_usage(event.body() for event in calls)
     return {"run_id": ch.run_id, "events": len(ch.event_log),
             "calls": len(calls),
-            "tokens": sum(e.prompt_tokens + e.eval_tokens for e in calls),
+            "tokens": usage.total_tokens, "token_accounting": usage.to_dict(),
             "intact": ch.verify_chain()["intact"], "goal": goal,
             "outcome_available": product["available"],
             "terminal_code": product["terminal_code"],
@@ -213,7 +220,8 @@ def _run_detail(rid: str) -> dict:
                           "eval_tokens": e.eval_tokens})
         events.append({"type": e.event_type, "loop": e.loop_id,
                        "step": e.step, "mode": e.mode,
-                       "tokens": e.prompt_tokens + e.eval_tokens or "",
+                       "tokens": (total_model_usage((e.body(),)).total_tokens
+                                  if e.event_type == "model_invocation" else ""),
                        "detail": str(e.detail.get("output",
                                      e.detail.get("reason", "")))[:100]})
 
@@ -235,6 +243,7 @@ def _run_detail(rid: str) -> dict:
     # tree shows shape; it cannot be selected, and a loop you cannot select
     # is a loop you cannot inspect or advise.
     per_loop: dict = {}
+    per_loop_usage: dict = {}
     for e in ch.event_log:
         if not e.loop_id:
             continue
@@ -252,7 +261,11 @@ def _run_detail(rid: str) -> dict:
                                                                  ""))[:90]})
         elif e.event_type == "model_invocation":
             row["calls"] += 1
-            row["tokens"] += (e.prompt_tokens or 0) + (e.eval_tokens or 0)
+            per_loop_usage[e.loop_id] = (
+                per_loop_usage.get(e.loop_id, TokenUsageTotals())
+                + total_model_usage((e.body(),)))
+            row["tokens"] = per_loop_usage[e.loop_id].total_tokens
+            row["token_accounting"] = per_loop_usage[e.loop_id].to_dict()
         elif e.event_type == "terminal":
             row["terminal"] = str((e.detail or {}).get("reason", ""))
     for spawning_loop_id, spawned_ids in spawned_by_owner.items():
@@ -296,13 +309,14 @@ def _run_detail(rid: str) -> dict:
             "mode": "deterministic", "tokens": "",
             "detail": item["relative_path"]}
             for item in product["artifacts"])
+    usage = total_model_usage(calls)
     return {"run_id": rid,
             "goal": next(iter(goals.values()), ""),
             "totals": {"events": len(ch.event_log), "iterations": iters,
                        "calls": len(calls),
-                       "prompt_tokens": sum(c["prompt_tokens"]
-                                            for c in calls),
-                       "eval_tokens": sum(c["eval_tokens"] for c in calls)},
+                       "prompt_tokens": usage.prompt_tokens,
+                       "eval_tokens": usage.eval_tokens,
+                       "token_accounting": usage.to_dict()},
             "chain_intact": ch.verify_chain()["intact"],
             "stuckness": stuckness_report(ch.event_log),
             "tree": tree_txt, "tree_json": tree_json,
@@ -457,9 +471,9 @@ def _summary() -> dict:
     intelligence = _intelligence_inventory()["summary"]
     return {"cards": [
         {"label": "saved runs", "value": len(rows), "link": "runs"},
-        {"label": "semantic calls", "value": sum(r["calls"] for r in rows),
+        {"label": "semantic calls", "value": _optional_sum(r["calls"] for r in rows),
          "link": "runs"},
-        {"label": "provider tokens", "value": sum(r["tokens"] for r in rows),
+        {"label": "provider tokens", "value": _optional_sum(r["tokens"] for r in rows),
          "link": "runs"},
         {"label": "zero-call runs", "value":
             sum(1 for r in rows if r["calls"] == 0), "link": "runs"},
@@ -718,6 +732,29 @@ def self_test() -> dict:
           and d["product"]["artifacts"][0]["relative_path"] == "result.txt"
           and d["product"]["artifacts"][0]["present"] is True
           and d["playback_events"][-1]["type"] == "product.artifact")
+
+    usage_fixture = RunHistory.from_ledger([
+        {"event": "init", "loop_id": "mixed", "goal": "unknown usage fixture"},
+        {"event": "model_led", "loop_id": "mixed", "model": "fixture",
+         "prompt_tokens": 2, "eval_tokens": 3},
+        {"event": "model_invocation_failed", "loop_id": "mixed", "model": "fixture",
+         "prompt_tokens": None, "eval_tokens": 4},
+        {"event": "model_led", "loop_id": "mixed", "model": "fixture",
+         "prompt_tokens": 0, "eval_tokens": 0},
+    ], run_id="studio-unknown-usage-fixture")
+    usage_fixture.commit()
+    usage_fixture.save(_RUNS)
+    mixed = build_projection("run", usage_fixture.run_id)
+    mixed_row = next(row for row in build_projection("runs")["runs"]
+                     if row["run_id"] == usage_fixture.run_id)
+    check("unknown_usage_renders_without_crashing_or_becoming_zero",
+          mixed["totals"]["prompt_tokens"] is None
+          and mixed["totals"]["eval_tokens"] == 7
+          and mixed_row["tokens"] is None
+          and mixed_row["token_accounting"]["known_tokens_subtotal"] == 9
+          and mixed["loops"][0]["tokens"] is None
+          and next(card for card in build_projection("summary")["cards"]
+                   if card["label"] == "provider tokens")["value"] is None)
 
     # Safe operational views use allowlists and report missing saved-history
     # emitters instead of starting a second history store.

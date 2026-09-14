@@ -54,7 +54,12 @@ import json
 from dataclasses import dataclass, field
 
 from ..core.run_history import to_canonical_events
+from ..core.run_history_usage import TokenUsageTotals, total_model_usage
 from .run_analytics import LoopRelationshipDag, loop_relationship_dag
+
+
+def _count(value) -> str:
+    return "unknown" if value is None else str(value)
 
 #: Events that open and close a loop, used to build the tree and the timings.
 _OPEN = "init"
@@ -72,8 +77,8 @@ class LoopReportRecord:
     steps: list = field(default_factory=list)
     events: int = 0
     model_calls: int = 0
-    prompt_tokens: int = 0
-    eval_tokens: int = 0
+    token_usage: TokenUsageTotals = field(default_factory=TokenUsageTotals)
+    provider_usage: dict = field(default_factory=dict)
     providers: list = field(default_factory=list)
     started: "float | None" = None
     ended: "float | None" = None
@@ -81,8 +86,16 @@ class LoopReportRecord:
     spawned_loops: list = field(default_factory=list)
 
     @property
-    def total_tokens(self) -> int:
-        return self.prompt_tokens + self.eval_tokens
+    def prompt_tokens(self) -> int | None:
+        return self.token_usage.prompt_tokens
+
+    @property
+    def eval_tokens(self) -> int | None:
+        return self.token_usage.eval_tokens
+
+    @property
+    def total_tokens(self) -> int | None:
+        return self.token_usage.total_tokens
 
     @property
     def seconds(self) -> "float | None":
@@ -101,6 +114,7 @@ class LoopReportRecord:
                 "prompt_tokens": self.prompt_tokens,
                 "eval_tokens": self.eval_tokens,
                 "total_tokens": self.total_tokens,
+                "token_accounting": self.token_usage.to_dict(),
                 "providers": list(self.providers), "seconds": self.seconds,
                 "outcome": self.outcome,
                 "spawned_loops": [c.as_dict() for c in self.spawned_loops]}
@@ -128,15 +142,22 @@ class LoopReport:
         return sum(n.model_calls for n in self.by_id.values())
 
     @property
-    def total_tokens(self) -> int:
-        return sum(n.total_tokens for n in self.by_id.values())
+    def total_tokens(self) -> int | None:
+        return self.token_usage.total_tokens
+
+    @property
+    def token_usage(self) -> TokenUsageTotals:
+        total = TokenUsageTotals()
+        for item in self.by_id.values():
+            total += item.token_usage
+        return total
 
     def cost_by_provider(self) -> dict:
         out: dict = {}
         for n in self.by_id.values():
-            for p in n.providers:
-                out[p] = out.get(p, 0) + n.total_tokens
-        return out
+            for provider, usage in n.provider_usage.items():
+                out[provider] = out.get(provider, TokenUsageTotals()) + usage
+        return {provider: usage.total_tokens for provider, usage in out.items()}
 
     def deepest(self) -> int:
         return max((n.depth for n in self.by_id.values()), default=0)
@@ -173,6 +194,7 @@ class LoopReport:
                 "loops": self.loops, "events": self.total_events,
                 "max_depth": self.deepest(), "model_calls": self.model_calls,
                 "total_tokens": self.total_tokens,
+                "token_accounting": self.token_usage.to_dict(),
                 "tokens_by_provider": self.cost_by_provider(),
                 "event_families": dict(self.families),
                 "chain_intact": self.chain_intact,
@@ -255,9 +277,12 @@ def report_from_ledger(events, *, run_id: str = "",
         # model cost: provider-reported only, attributed to whoever answered
         if kind in ("model_led", "model_invocation", "model_invocation_failed"):
             node.model_calls += 1
-            node.prompt_tokens += int(e.get("prompt_tokens", 0) or 0)
-            node.eval_tokens += int(e.get("eval_tokens", 0) or 0)
+            usage = total_model_usage((e,))
+            node.token_usage += usage
             prov = str(e.get("provider", "") or "")
+            provider_key = prov or "provider unrecorded"
+            node.provider_usage[provider_key] = (
+                node.provider_usage.get(provider_key, TokenUsageTotals()) + usage)
             if prov and prov not in node.providers:
                 node.providers.append(prov)
 
@@ -311,7 +336,7 @@ def _cost_line(n: LoopReportRecord) -> str:
     if n.model_calls == 0:
         return "0 model calls"
     who = "/".join(n.providers) if n.providers else "provider unknown"
-    return f"{n.model_calls} model call(s), {n.total_tokens} tokens ({who})"
+    return f"{n.model_calls} model call(s), {_count(n.total_tokens)} tokens ({who})"
 
 
 def _ownership_tree_lines(rep: LoopReport, *, show_steps: bool = True
@@ -344,7 +369,7 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
     out = [f"LOOP REPORT: {rep.run_id or 'unsaved run'}",
            f"  {rep.loops} loops, {rep.total_events} events, "
            f"max depth {rep.deepest()}",
-           f"  {rep.model_calls} model calls, {rep.total_tokens} tokens"]
+           f"  {rep.model_calls} model calls, {_count(rep.total_tokens)} tokens"]
     if rep.chain_intact is not None:
         out.append(f"  chain verified: {'yes' if rep.chain_intact else 'NO'}")
     product = rep.product_summary()
@@ -371,7 +396,7 @@ def render_text(rep: LoopReport, *, show_steps: bool = True) -> str:
     prov = rep.cost_by_provider()
     if prov:
         out.append("  by provider: "
-                   + ", ".join(f"{k} {v}" for k, v in sorted(prov.items())))
+                   + ", ".join(f"{k} {_count(v)}" for k, v in sorted(prov.items())))
     if not rep.by_id:
         out.append("  (this run recorded no loops)")
         return "\n".join(out)
@@ -390,7 +415,7 @@ def render_markdown(rep: LoopReport) -> str:
            f"| Events | {rep.total_events} |",
            f"| Max depth | {rep.deepest()} |",
            f"| Model calls | {rep.model_calls} |",
-           f"| Tokens (provider-reported) | {rep.total_tokens} |"]
+           f"| Tokens (provider-reported) | {_count(rep.total_tokens)} |"]
     if rep.chain_intact is not None:
         out.append(f"| Chain verified | {'yes' if rep.chain_intact else 'NO'} |")
     product = rep.product_summary()
@@ -421,7 +446,7 @@ def render_markdown(rep: LoopReport) -> str:
     if prov:
         out += ["", "## Cost by provider", "",
                 "| Provider | Tokens |", "|---|---:|"]
-        out += [f"| {k} | {v} |" for k, v in sorted(prov.items())]
+        out += [f"| {k} | {_count(v)} |" for k, v in sorted(prov.items())]
     if not rep.by_id:
         out += ["", "_This run recorded no loops._"]
         return "\n".join(out)
@@ -456,7 +481,7 @@ def render_html(rep: LoopReport) -> str:
             f'{esc(n.mode or "mode unrecorded")}</span>'
             f'<span class="meta">{n.events} events'
             + (f' · {secs}s' if secs is not None else '')
-            + (f' · {n.model_calls} calls, {n.total_tokens} tok'
+            + (f' · {n.model_calls} calls, {_count(n.total_tokens)} tok'
                if n.model_calls else ' · no model')
             + '</span></div>')
         if n.spawned_loops:
@@ -472,7 +497,7 @@ def render_html(rep: LoopReport) -> str:
         "<p class='empty'>This run recorded no loops.</p>"
     fam = "".join(f"<tr><td><code>{esc(k)}</code></td><td>{v}</td></tr>"
                   for k, v in sorted(rep.families.items()))
-    prov = "".join(f"<tr><td>{esc(k)}</td><td>{v}</td></tr>"
+    prov = "".join(f"<tr><td>{esc(k)}</td><td>{_count(v)}</td></tr>"
                    for k, v in sorted(rep.cost_by_provider().items()))
     relationship_text = "\n".join(rep.relationship_dag.text_lines())
     product = rep.product_summary()
@@ -550,7 +575,7 @@ border-top:1px solid var(--line);padding-top:1rem}}
 <div class="stat"><b>{rep.total_events}</b><span>events</span></div>
 <div class="stat"><b>{rep.deepest()}</b><span>max depth</span></div>
 <div class="stat"><b>{rep.model_calls}</b><span>model calls</span></div>
-<div class="stat"><b>{rep.total_tokens}</b><span>tokens</span></div>
+<div class="stat"><b>{_count(rep.total_tokens)}</b><span>tokens</span></div>
 {chain}
 </div>
 <h2>Product result</h2>{product_html}
@@ -650,6 +675,24 @@ def self_test() -> dict:
           and rep.cost_by_provider() == {"mistral": 200}
           and rep.by_id["kid1"].model_calls == 0,
           "200 tokens, all attributed to mistral")
+
+    mixed = report_from_ledger([
+        {"loop_id": "mixed", "event": "model_led", "provider": "first",
+         "prompt_tokens": 2, "eval_tokens": 3},
+        {"loop_id": "mixed", "event": "model_invocation_failed", "provider": "second",
+         "prompt_tokens": None, "eval_tokens": 4},
+        {"loop_id": "mixed", "event": "model_led", "provider": "first",
+         "prompt_tokens": 0, "eval_tokens": 0},
+    ])
+    check("unknown_usage_survives_all_report_formats",
+          mixed.total_tokens is None and mixed.token_usage.known_subtotal == 9
+          and mixed.by_id["mixed"].eval_tokens == 7
+          and mixed.as_dict()["total_tokens"] is None
+          and "unknown tokens" in render_text(mixed)
+          and "| Tokens (provider-reported) | unknown |" in render_markdown(mixed)
+          and '<b>unknown</b><span>tokens</span>' in render_html(mixed))
+    check("multiple_providers_in_one_loop_do_not_duplicate_usage",
+          mixed.cost_by_provider() == {"first": 5, "second": None})
 
     # 3. TIMINGS come from recorded timestamps.
     check("timings_are_read_from_recorded_timestamps",

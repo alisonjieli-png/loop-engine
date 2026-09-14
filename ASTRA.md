@@ -276,6 +276,66 @@ historical status into a new source of truth.
 
 ## Reading and instruction entry points
 
+The owner subsequently requested resolution of all experiment-readiness
+issues and described the direction as an AGI fabric. Treat that as a research
+and engineering requirement, not as proof of general intelligence. Use the
+[September 14 readiness checklist](docs/verification/EXPERIMENT-FABRIC-READINESS-2026-09-14.md)
+for source freezing, exact invocation accounting, independent evaluation,
+adaptive selection, recovery, and large-population reporting. Keep the
+full configuration inventory extensible. Do not infer readiness from a
+large address space, a diagram, a registered adapter, or a successful probe.
+
+The original delayed Ollama worker was stopped before its first task.
+Replacement workers later made real Ollama calls. The September 14 readiness
+report records their cancellation and provider-allowance failures. Preserve
+their queues, interrupted occurrences, and records.
+Verify the current task-database location and launch record before claiming
+that a replacement is running. Do not restart an old frozen manifest by
+silently accepting changed code or changed source paths.
+
+The owner's subsequent direction includes system-level recursive improvement,
+the four intelligence layers, and comparison with Discovery Loop. Read
+[recurrent models and system-level improvement](docs/research/RECURRENT-MODELS-AND-SYSTEM-IMPROVEMENT-2026-09-14.md)
+for the research, architectural placement, additional experiment dimensions,
+and proof sequence. Read the
+[Discovery Loop comparison](docs/research/DISCOVERY-LOOP-COMPARISON-2026-09-14.md)
+for primary sources and the distinction between similar research aims and
+demonstrated comparative performance.
+
+These are research and review inputs. They do not create runtime types,
+activate imported intelligence, enable undisclosed model controls, or approve
+the system's own improvements. Preserve task-local repair, reusable
+cross-task improvement, and improvement of the discovery process as separate
+claims. Automated evaluation feedback belongs in experimental history, not
+in User Feedback Intelligence disguised as a human instruction.
+
+Resolved cross-session review finding, September 14: the full offline
+suite failed `wrong_frozen_source_state_is_refused_before_execution` while
+the staged supervision change was being edited. In that staged version,
+`effective_supervision` and `supervision_policy_record` were inserted before
+the end of `AdaptivePractitionerRequest.__post_init__`. The remaining source
+reference and frozen-state validation became unreachable after a method's
+return. The owning session restored the validation before committing
+`ba05d472c248d56689d008a88719a16938ea0d9e`. The source-state negative test and
+the other 19 solve-adaptation checks passed after that commit. The preserved
+failed suite describes the earlier staged version, not the corrected source.
+
+The owner also requested research and experiments on fixed-weight harness
+optimization, including the reported $49.97 OpenCode search. The
+[fixed-weight harness section](docs/research/RECURRENT-MODELS-AND-SYSTEM-IMPROVEMENT-2026-09-14.md#fixed-weight-harness-optimization)
+records the supplied claims, unresolved source details, primary research,
+and concrete treatments for verification before completion, continued work,
+and malformed tool-call repair. Continue research without waiting for the
+owner to locate sources. Never turn these treatments into mandatory behavior
+for every task or confuse additional sampling with reusable improvement.
+
+Implemented controls in this iteration: declared call and pass ceilings reach
+campaign execution and can be independent configuration axes; frozen spaces
+are read as records rather than rebuilt from defaults; integer-range report
+axes preserve cardinality without allocating every possible level. These
+changes permit wider controlled experiments. They do not prove that the
+full grid was run or that an adaptive selector is independently qualified.
+
 [CLAUDE.md](CLAUDE.md) imports the shared repository rules and this note for
 Claude Code. [Harness development instructions](embodiments/AGENTS.md) and
 [development-tool instructions](devtools/AGENTS.md) provide narrower guidance

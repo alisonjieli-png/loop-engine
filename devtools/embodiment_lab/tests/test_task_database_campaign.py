@@ -49,6 +49,21 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                        for round_number in range(space.cardinality)}
             self.assertEqual(visited, set(range(space.cardinality)))
 
+    def test_declared_work_limits_are_independent_grid_axes(self):
+        from loop_engine.generation.space import ConfigurationSpace
+        space = campaign_space(('native_gateway',), model_call_limits=(1, 4), pass_limits=(1, 3, None))
+        self.assertEqual(space.cardinality, 16 * 2 * 3)
+        restored = ConfigurationSpace.from_dict(space.to_dict())
+        self.assertEqual(restored.digest, space.digest)
+        limits = {(space.configuration_at(i)['max_model_calls'], space.configuration_at(i)['max_passes'])
+                  for i in range(space.cardinality)}
+        self.assertEqual(limits, {(calls, passes) for calls in (1, 4) for passes in (1, 3, None)})
+
+    def test_invalid_work_limit_levels_refuse(self):
+        for invalid in ((), [1], (True,), (0,), (-1,), ('unbounded',)):
+            with self.subTest(value=invalid), self.assertRaises(ValueError):
+                campaign_space(('native_gateway',), model_call_limits=invalid)
+
     def test_setting_wrapper_retains_gateway_authority_and_history(self):
         with tempfile.TemporaryDirectory(prefix='task-campaign-check-') as directory:
             records = CampaignProjection(Path(directory) / 'projection.duckdb')
@@ -62,10 +77,10 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                 self.assertEqual(session.calls_used, 1)
                 self.assertFalse(session.accounting_uncertain)
                 self.assertEqual(session.authority.config, authority.config)
-                applied = records.latest('applied_configuration', invocation.semantic_call_id)
+                applied = records.latest('applied_configuration', invocation.semantic_call_id + ':1')
                 self.assertEqual(applied['setting_report']['after']['settings'][0]['value'], 0.0)
                 self.assertEqual(applied['input_digest'], invocation.exact_input_digest)
-                history = records.latest('step_history', invocation.semantic_call_id)
+                history = records.latest('step_history', invocation.semantic_call_id + ':1')
                 self.assertTrue(history['integrity']['intact'])
                 self.assertEqual(history['known_calls'], 1)
                 self.assertTrue(session.results)
@@ -239,7 +254,9 @@ class TaskDatabaseCampaignChecks(unittest.TestCase):
                 for number in range(3):
                     session.invoke(ModelInvocationRequest('Fixture input ' + str(number),
                                                           semantic_call_id='retention-step'), owner)
-                history = records.latest('step_history', 'retention-step')
+                history = records.latest('step_history', 'retention-step:3')
+                self.assertEqual(records.connection.execute(
+                    "SELECT count(DISTINCT record_id) FROM experiment_records WHERE namespace='step_history'").fetchone()[0], 3)
                 self.assertEqual(history['revision'], 2)
                 self.assertEqual(history['retention'], 'immutable_history_preserved')
                 self.assertEqual(history['layout'], 'append_only_checkpoint_store')

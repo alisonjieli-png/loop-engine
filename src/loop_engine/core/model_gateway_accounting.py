@@ -17,6 +17,10 @@ def reported_token(value: object) -> int | None:
 def complete_attempt_sum(attempts, field_name: str) -> int | None:
     """Sum one usage field only across complete physical provider attempts."""
     physical = tuple(attempt for attempt in attempts if attempt.loop_id)
+    if any(getattr(attempt, 'provider_physical_requests', None) not in (None, 0, 1)
+           for attempt in physical):
+        # A final reply does not account for an earlier hidden request.
+        return None
     values = tuple(getattr(attempt, field_name, None) for attempt in physical)
     if not values or any(value is None for value in values):
         return None

@@ -92,6 +92,25 @@ class SavedRunBundle:
     outcome_ref: "ProductOutcomeRef | None" = None
 
 
+def matches_bound_product_outcome(value: Mapping, bundle: SavedRunBundle) -> bool:
+    """Accept the bound body or its exact post-binding public projection.
+
+    The public solver adds the outcome's own reference after binding, since
+    the hashed body cannot contain its own digest. No other field may differ.
+    """
+    if not isinstance(bundle, SavedRunBundle) or bundle.outcome is None or bundle.outcome_ref is None:
+        return False
+    if value == bundle.outcome:
+        return True
+    body = dict(bundle.outcome)
+    body['run_history'] = {**dict(body.get('run_history') or {}),
+        'product_outcome_bound': True,
+        'product_outcome_digest': bundle.outcome_ref.content_digest,
+        'terminal_code': body['status'],
+        'product_outcome': bundle.outcome_ref.to_dict()}
+    return value == body
+
+
 def _is_digest(value: str) -> bool:
     return (len(str(value)) == 64
             and all(char in "0123456789abcdef" for char in str(value)))
@@ -227,4 +246,4 @@ def load_saved_run_bundle(root: str, run_id: str) -> SavedRunBundle:
 __all__ = (
     "PRODUCT_OUTCOME_FILENAME", "PRODUCT_OUTCOME_RECORD_TYPES",
     "ProductModelCallAccounting", "ProductOutcomeRef", "SavedRunBundle",
-    "bind_product_outcome", "load_saved_run_bundle")
+    "bind_product_outcome", "load_saved_run_bundle", "matches_bound_product_outcome")

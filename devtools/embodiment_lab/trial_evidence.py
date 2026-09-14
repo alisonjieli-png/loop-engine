@@ -18,15 +18,22 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+from dataclasses import dataclass
+from collections import Counter
 from pathlib import Path
+from typing import Callable
 
 import duckdb
 
-from loop_engine.core.run_history import MODEL_INVOCATION_EVENT, RunHistory, load_saved_run_bundle
+from loop_engine.core.run_history import MODEL_INVOCATION_EVENT, RunHistory, SavedRunBundle, load_saved_run_bundle
+from loop_engine.core.adaptive_practitioner_source import _open_source
+from loop_engine.core.product_outcome_store import matches_bound_product_outcome
+from .systematic_records import canonical
 
 from .task_database_campaign import TRIAL_FAILED, TRIAL_FINISHED
 
-REPORT_RECORD_TYPE = "trial_evidence_report/v2"
+REPORT_RECORD_TYPE = "trial_evidence_report/v3"
 APPLIED_STATUSES = ("applied_in_memory", "unchanged")
 ARTIFACT_DIGEST_FIELDS = ("sha256", "digest", "content_digest")
 #: Links the report re-verifies from disk; the rest are taken as recorded.
@@ -34,7 +41,24 @@ REVERIFIED_LINKS = ("applied_configuration", "step_history", "run_history_intact
                     "model_calls_accounted", "delivered_artifacts")
 REQUIRED_LINKS = ("trial_state", "task_sources", "applied_configuration", "step_history", "outcome",
                   "run_history_intact", "model_calls_accounted", "delivered_artifacts",
-                  "independent_evaluation")
+                  "independent_evaluation", "every_invocation_configured",
+                  "every_invocation_checkpointed", "source_snapshot_verified")
+
+
+@dataclass(frozen=True)
+class TrialEvidenceServices:
+    """An independently supplied, read-only evaluator-evidence resolver.
+
+    The resolver must verify the qualified evaluator and exact subject against
+    the host's existing authoritative records. A verdict label is not a
+    resolver. Missing service means missing qualification, never acceptance.
+    """
+
+    resolve_evaluation: Callable[[dict, SavedRunBundle], bool] | None = None
+
+    def __post_init__(self):
+        if self.resolve_evaluation is not None and not callable(self.resolve_evaluation):
+            raise TypeError("evaluation evidence resolution requires a callable host service")
 
 
 def _projection_rows(path):
@@ -48,18 +72,21 @@ def _projection_rows(path):
         return None
     try:
         rows = connection.execute(
-            "SELECT namespace, record_id, payload FROM experiment_records r WHERE revision = "
+            "SELECT namespace, record_id, payload, digest FROM experiment_records r WHERE revision = "
             "(SELECT max(revision) FROM experiment_records s WHERE s.namespace = r.namespace "
             "AND s.record_id = r.record_id) ORDER BY namespace, record_id").fetchall()
     finally:
         connection.close()
     latest = {}
-    for namespace, record_id, payload in rows:
-        latest.setdefault(namespace, {})[record_id] = json.loads(payload)
+    for namespace, record_id, payload, expected in rows:
+        value = json.loads(payload)
+        if hashlib.sha256(canonical(value).encode()).hexdigest() != expected:
+            return None
+        latest.setdefault(namespace, {})[record_id] = value
     return latest
 
 
-def _step_history_verified(row) -> bool:
+def _step_history_verified(row, checkpoint_cache=None) -> bool:
     """The saved step history re-loads and its chain verifies intact; the
     writer's own ``integrity`` flag is not enough. A row that names a
     checkpoint in an append-only store is verified at that revision; a
@@ -73,9 +100,13 @@ def _step_history_verified(row) -> bool:
     try:
         if (saved / "checkpoints.jsonl").is_file():
             revision = row.get("revision")
-            history = RunHistory.load_checkpoint(
-                str(saved.parent), saved.name,
-                revision if type(revision) is int else None)
+            if type(revision) is not int or revision < 0:
+                return False
+            key = str(saved.absolute())
+            cache = checkpoint_cache if checkpoint_cache is not None else {}
+            if key not in cache:
+                cache[key] = RunHistory.verified_checkpoints(str(saved.parent), saved.name)
+            return cache[key].get(revision) is True
         else:
             history = RunHistory.load(str(saved.parent), saved.name)
         return bool(history.verify_chain().get("intact"))
@@ -92,15 +123,33 @@ def _artifact_verified(entry) -> bool:
     if not isinstance(path, str) or not path:
         return False
     target = Path(path)
-    if not target.is_file():
+    if not target.is_file() or target.is_symlink():
         return False
+    expected_values = []
     for field in ARTIFACT_DIGEST_FIELDS:
         recorded = entry.get(field)
         if isinstance(recorded, str) and recorded:
-            digest = hashlib.sha256(target.read_bytes()).hexdigest()
-            expected = recorded.split(":")[-1]
-            return digest == expected
-    return True
+            expected = recorded.removeprefix('sha256:')
+            if len(expected) != 64 or any(c not in '0123456789abcdef' for c in expected):
+                return False
+            expected_values.append(expected)
+    if not expected_values or len(set(expected_values)) != 1:
+        return False
+    try:
+        with os.fdopen(_open_source(target.absolute()), 'rb') as source:
+            before = os.fstat(source.fileno())
+            digest = hashlib.sha256()
+            for block in iter(lambda: source.read(1024 * 1024), b''):
+                digest.update(block)
+            after = os.fstat(source.fileno())
+        if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+            return False
+        if 'byte_count' in entry and (type(entry['byte_count']) is not int
+                                     or entry['byte_count'] != after.st_size):
+            return False
+        return digest.hexdigest() == expected_values[0]
+    except OSError:
+        return False
 
 
 def _configuration_applied(row, configuration) -> bool:
@@ -112,9 +161,11 @@ def _configuration_applied(row, configuration) -> bool:
     return configuration is None or row.get("configuration") == configuration
 
 
-def trial_evidence_report(cell) -> dict:
+def trial_evidence_report(cell, *, services=TrialEvidenceServices()) -> dict:
     """The evidence links one trial cell holds, each present or missing."""
     cell = Path(cell)
+    if not isinstance(services, TrialEvidenceServices):
+        raise TypeError("trial evidence services must be typed")
     if not cell.is_dir():
         raise ValueError("a trial cell is a directory the runner wrote")
     projection = cell / "projection.duckdb"
@@ -132,18 +183,30 @@ def trial_evidence_report(cell) -> dict:
             state = {}
     sources = records.get("task_sources", {}).get("selected") or {}
     applied = records.get("applied_configuration", {})
+    effective = records.get("effective_configuration", {})
     steps = records.get("step_history", {})
     configuration = state.get("configuration") if isinstance(state.get("configuration"), dict) else None
     outcome_path = cell / "outcome.json"
     outcome = json.loads(outcome_path.read_text()) if outcome_path.is_file() else {}
     run_id = outcome.get("run_id") or ""
     history_intact, physical_calls, history_error = False, None, ""
+    bundle = None
+    outcome_bound = False
+    expected_calls = Counter()
     if run_id:
         try:
             bundle = load_saved_run_bundle(str(cell / "runs"), run_id)
             history_intact = bool(bundle.history.verify_chain().get("intact"))
-            physical_calls = sum(1 for event in bundle.history.event_log
-                                 if event.event_type == MODEL_INVOCATION_EVENT)
+            outcome_bound = matches_bound_product_outcome(outcome, bundle)
+            if not outcome_bound:
+                history_error = 'outcome_binding_mismatch'
+            model_events = [event for event in bundle.history.event_log
+                            if event.event_type == MODEL_INVOCATION_EVENT]
+            physical_calls = sum(event.detail['provider_physical_requests']
+                if type(event.detail.get('provider_physical_requests')) is int else 1
+                for event in model_events)
+            expected_calls = Counter((event.loop_id, event.detail.get('semantic_call_id', ''))
+                                     for event in model_events)
         except Exception as exc:  # the report names the failure; it never guesses the history
             history_error = type(exc).__name__
     claimed = outcome.get("model_calls")
@@ -152,9 +215,32 @@ def trial_evidence_report(cell) -> dict:
     verification = outcome.get("verification") or {}
     evaluation_present = bool(verification.get("independent") or verification.get("evaluator_ref")
                               or verification.get("verdict"))
+    evaluation_qualified = False
+    if services.resolve_evaluation is not None and bundle is not None and history_intact and outcome_bound:
+        try:
+            evaluation_qualified = services.resolve_evaluation(outcome, bundle) is True
+        except Exception:
+            evaluation_qualified = False
+    configured_calls, checkpointed_calls = Counter(), Counter()
+    checkpoint_cache = {}
+    verified_steps = {operation: _step_history_verified(row, checkpoint_cache)
+                      for operation, row in steps.items()}
+    for operation, observed in effective.items():
+        attempts = Counter((attempt.get('loop_id', ''), attempt.get('semantic_call_id', ''))
+                           for attempt in observed.get('provider_attempts', ()) if attempt.get('loop_id'))
+        if operation in applied and _configuration_applied(applied[operation], configuration):
+            configured_calls.update(attempts)
+        if verified_steps.get(operation):
+            checkpointed_calls.update(attempts)
+    source_checks = records.get('source_verification', {})
+    before, after = source_checks.get('before', {}), source_checks.get('after', {})
+    source_verified = (before.get('state') == after.get('state') == 'verified'
+                       and bool(before.get('source_snapshot_digest'))
+                       and before.get('source_snapshot_digest') == after.get('source_snapshot_digest')
+                       == sources.get('source_snapshot_digest'))
     applied_verified = sum(1 for row in applied.values() if _configuration_applied(row, configuration))
     steps_recorded = sum(1 for row in steps.values() if (row.get("integrity") or {}).get("intact"))
-    steps_verified = sum(1 for row in steps.values() if _step_history_verified(row))
+    steps_verified = sum(verified_steps.values())
     artifacts_verified = sum(1 for entry in artifacts if _artifact_verified(entry))
     links = {
         "trial_state": bool(state) and state.get("status") in (TRIAL_FINISHED, TRIAL_FAILED),
@@ -165,14 +251,17 @@ def trial_evidence_report(cell) -> dict:
         "applied_configuration": applied_verified,
         # Only step histories whose saved chain re-verifies count.
         "step_history": steps_verified,
-        "outcome": bool(outcome) and outcome.get("record_type", "").startswith("solve_outcome/"),
+        "outcome": outcome_bound and bool(outcome) and outcome.get("record_type", "").startswith("solve_outcome/"),
         "run_history_intact": history_intact,
         "model_calls_accounted": (physical_calls is not None and claimed is not None
                                   and accounting_complete and physical_calls == claimed),
         # Only artifacts that exist, with their recorded digest when one
         # was recorded, count as delivered.
         "delivered_artifacts": artifacts_verified,
-        "independent_evaluation": evaluation_present,
+        "independent_evaluation": evaluation_qualified,
+        "every_invocation_configured": history_intact and configured_calls == expected_calls,
+        "every_invocation_checkpointed": history_intact and checkpointed_calls == expected_calls,
+        "source_snapshot_verified": source_verified,
     }
     gaps = [name for name in REQUIRED_LINKS if not links[name]]
     # What the writer recorded beside what this report could confirm, so a
@@ -189,6 +278,12 @@ def trial_evidence_report(cell) -> dict:
             "recorded": recorded, "disagreements": disagreements,
             "physical_model_calls": physical_calls, "claimed_model_calls": claimed,
             "accounting_complete": accounting_complete, "history_error": history_error,
+            "outcome_bound_to_history": outcome_bound,
+            "evaluation_record_present": evaluation_present,
+            "evaluation_qualification": "verified_by_host_resolver" if evaluation_qualified else "unqualified",
+            "expected_invocation_occurrences": sum(expected_calls.values()),
+            "configured_invocation_occurrences": sum(configured_calls.values()),
+            "checkpointed_invocation_occurrences": sum(checkpointed_calls.values()),
             "applied_configuration_calls": sorted(applied),
             "task_accepted": bool(state.get("task_accepted")),
             "campaign_acceptance": state.get("campaign_acceptance")}

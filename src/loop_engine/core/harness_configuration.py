@@ -12,20 +12,10 @@ from pathlib import Path
 
 from .external_harness import HarnessAdapterInfo, HarnessRegistry, HarnessRunResult
 from .harness_execution_contracts import valid_harness_id
-from .harness_process import HarnessProcessError, HarnessProcessSpec
+from .harness_process import HarnessProcessError, HarnessProcessSpec, HarnessSetupUnavailable
 from .harness_semantic import GatewayHarnessProcessAdapter, HarnessSemanticBinding
 from .harness_fallback import HarnessFallbackPolicy
 from .harness_selection_records import HarnessSelectionPolicy
-
-
-#: The refusals a process spec raises when the software it names is not
-#: installed here, as opposed to a malformed declaration. Only these may be
-#: registered as an unavailable adapter; everything else stays a refusal.
-_INSTALLATION_REFUSALS = (
-    "harness executable is unavailable",
-    "software mount is absent or too broad",
-    "installed harness software changed after binding",
-)
 
 
 @dataclass(frozen=True)
@@ -127,7 +117,7 @@ def load_harness_binding(path: str, *, work_root: str, socket_directory: str,
                                   tuple(value['command_prefix']), tuple(value['read_only_paths']),
                                   value['style'])
     except HarnessProcessError as exc:
-        if not allow_unavailable or str(exc) not in _INSTALLATION_REFUSALS:
+        if not allow_unavailable or not isinstance(exc, HarnessSetupUnavailable):
             raise
         registry = HarnessRegistry((UnavailableHarnessAdapter(
             value['harness_id'], str(value['package_version']), str(exc)),))

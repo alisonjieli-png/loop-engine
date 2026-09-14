@@ -46,6 +46,19 @@ class CampaignSafetyChecks(unittest.TestCase):
             self.assertEqual(json.loads((root / 'campaign/status.json').read_text())['status'],
                              'waiting_for_activation_window')
 
+    def test_verified_access_is_reused_across_successive_trials_only_in_this_activation(self):
+        with TemporaryDirectory(prefix='campaign-probe-frequency-') as directory:
+            root = Path(directory)
+            self.prepare_fixture(root)
+            finished = {'status': 'finished', 'engine_terminal': 'VERIFICATION_FAILED'}
+            with patch('embodiment_lab.task_database_campaign.probe_gateway', return_value={'reachable': True}) as probe, \
+                 patch('embodiment_lab.task_database_campaign.run_trial', return_value=finished) as dispatch, \
+                 patch('embodiment_lab.task_database_campaign.signal.signal'):
+                worker(root / 'campaign')
+                self.assertEqual(probe.call_count, 1)
+                self.assertEqual(dispatch.call_count, 16)
+
+
     def test_quota_wait_does_not_fail_the_task_or_drain_the_queue(self):
         with TemporaryDirectory(prefix='campaign-quota-') as directory:
             root = Path(directory)

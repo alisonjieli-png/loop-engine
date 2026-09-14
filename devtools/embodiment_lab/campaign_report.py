@@ -19,9 +19,11 @@ from pathlib import Path
 
 from loop_engine.core.run_history import MODEL_INVOCATION_EVENT, RunHistory
 from loop_engine.core.run_history_paths import saved_run_ids
+from loop_engine.core.run_history_usage import optional_token, total_model_usage
 from loop_engine.generation.space import INTEGER_RANGE, ConfigurationSpace, GenerationError, parse_json
 
 from .trial_evidence import REQUIRED_LINKS, campaign_evidence_summary
+from .systematic_records import CampaignProjection
 
 REPORT_RECORD_TYPE = "campaign_report/v1"
 
@@ -39,20 +41,33 @@ def _load(path):
 def _tokens(outcome) -> dict:
     """Provider-reported tokens the outcome carries, summed over its usage
     entries, with the entries that carried no counts kept as a number."""
-    prompt = completion = 0
-    unknown = 0
+    entries = []
     for entry in outcome.get("model_usage") or ():
         if not isinstance(entry, dict):
+            entries.append({})
             continue
         p = entry.get("prompt_tokens", entry.get("input_tokens"))
         c = entry.get("eval_tokens", entry.get("completion_tokens", entry.get("output_tokens")))
-        if isinstance(p, int) and isinstance(c, int):
-            prompt += p
-            completion += c
-        else:
-            unknown += 1
-    return {"prompt_tokens": prompt, "completion_tokens": completion,
-            "total_tokens": prompt + completion, "entries_without_counts": unknown}
+        entries.append({'prompt_tokens': p, 'eval_tokens': c})
+    usage = total_model_usage(entries)
+    missing = not entries and not (outcome.get('model_calls') == 0
+                                   and outcome.get('model_call_accounting_complete') is True)
+    return {'prompt_tokens': None if missing else usage.prompt_tokens,
+            'completion_tokens': None if missing else usage.eval_tokens,
+            'total_tokens': None if missing else usage.total_tokens,
+            'known_prompt_tokens_subtotal': usage.prompt_known,
+            'known_completion_tokens_subtotal': usage.output_known,
+            'known_tokens_subtotal': usage.known_subtotal,
+            'entries_without_counts': sum(optional_token(row.get('prompt_tokens')) is None
+                                          or optional_token(row.get('eval_tokens')) is None
+                                          for row in entries),
+            'usage_record_missing': missing,
+            'accounting_complete': usage.complete and not missing}
+
+
+def _sum_known(values):
+    values = tuple(values)
+    return None if any(value is None for value in values) else sum(values)
 
 
 def access_probes(root) -> list:
@@ -71,11 +86,17 @@ def access_probes(root) -> list:
     for run_id in run_ids:
         try:
             history = RunHistory.load(str(store), run_id)
-            calls = sum(1 for event in history.event_log if event.event_type == MODEL_INVOCATION_EVENT)
+            events = [event for event in history.event_log if event.event_type == MODEL_INVOCATION_EVENT]
+            calls = sum(event.detail['provider_physical_requests']
+                        if type(event.detail.get('provider_physical_requests')) is int else 1
+                        for event in events)
             probes.append({"run_id": run_id, "model_calls": calls,
+                           'tokens': _tokens({'model_usage': [event.body() for event in events],
+                                             'model_calls': calls, 'model_call_accounting_complete': True}),
                            "intact": bool(history.verify_chain().get("intact")), "readable": True})
         except Exception as exc:  # a broken probe history is reported, never guessed
             probes.append({"run_id": run_id, "model_calls": None, "intact": False,
+                           'tokens': _tokens({}),
                            "readable": False, "error_type": type(exc).__name__})
     return probes
 
@@ -98,10 +119,16 @@ def campaign_grid(space_record, cells) -> dict:
     axes = []
     for axis in space.axes:
         if axis.value_kind == INTEGER_RANGE:
-            levels = [str(v) for v in range(axis.minimum, axis.maximum + 1)]
+            # A large address space is not a request to allocate a list with
+            # one element per possible integer. Project only observed levels.
+            levels = []
+            domain = {'kind': INTEGER_RANGE, 'minimum': axis.minimum,
+                      'maximum': axis.maximum, 'cardinality': axis.cardinality}
         else:
             levels = [str(parse_json(value)) for value in axis.encoded_values]
-        axes.append({"dimension_id": axis.dimension_id, "levels": levels})
+            domain = {'kind': axis.value_kind, 'cardinality': axis.cardinality}
+        axes.append({"dimension_id": axis.dimension_id, "levels": levels,
+                     'level_domain': domain})
     placed, unindexed = [], 0
     by_level = {axis["dimension_id"]: {level: {"cells": 0, "finished": 0, "failed": 0}
                                       for level in axis["levels"]} for axis in axes}
@@ -117,10 +144,12 @@ def campaign_grid(space_record, cells) -> dict:
         for axis, declared in zip(reversed(space.axes), reversed(axes)):
             offset = remainder % axis.cardinality
             remainder //= axis.cardinality
-            coordinates.append(declared["levels"][offset])
+            coordinates.append(str(axis.minimum + offset) if axis.value_kind == INTEGER_RANGE
+                               else declared['levels'][offset])
         coordinates.reverse()
         for declared, level in zip(axes, coordinates):
-            counts = by_level[declared["dimension_id"]][level]
+            counts = by_level[declared["dimension_id"]].setdefault(
+                level, {"cells": 0, "finished": 0, "failed": 0})
             counts["cells"] += 1
             if cell.get("status") == "finished":
                 counts["finished"] += 1
@@ -150,8 +179,10 @@ def campaign_report(root) -> dict:
     evidence = campaign_evidence_summary(root)
     cells = []
     visited = set()
+    family_visited = {family: set() for family in families}
     totals = {"model_calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0,
-              "elapsed_seconds": 0.0, "cells_with_unknown_calls": 0}
+              "elapsed_seconds": 0.0, "cells_with_unknown_calls": 0,
+              'known_tokens_subtotal': 0, 'known_model_calls_subtotal': 0}
     for report in evidence["reports"]:
         cell = Path(report["cell"])
         outcome = _load(cell / "outcome.json")
@@ -161,19 +192,21 @@ def campaign_report(root) -> dict:
         calls = report.get("physical_model_calls")
         if calls is None:
             calls = report.get("claimed_model_calls")
-        if isinstance(calls, int):
-            totals["model_calls"] += calls
-        else:
+        if type(calls) is int:
+            totals['known_model_calls_subtotal'] += calls
+        if calls is None or report.get('accounting_complete') is not True:
             totals["cells_with_unknown_calls"] += 1
         for key in ("prompt_tokens", "completion_tokens", "total_tokens"):
-            totals[key] += tokens[key]
+            totals[key] = _sum_known((totals[key], tokens[key]))
+        totals['known_tokens_subtotal'] += tokens['known_tokens_subtotal']
         elapsed = outcome.get("elapsed_seconds")
         if isinstance(elapsed, (int, float)):
             totals["elapsed_seconds"] += float(elapsed)
         if task_id:
             visited.add(task_id)
             if family in families:
-                families[family]["visited"] += 1
+                family_visited[family].add(task_id)
+                families[family]["visited"] = len(family_visited[family])
                 if report.get("status") == "finished":
                     families[family]["finished"] += 1
                 elif report.get("status") == "failed":
@@ -192,7 +225,12 @@ def campaign_report(root) -> dict:
             "disagreements": report.get("disagreements", {}),
         })
     probes = access_probes(root)
-    totals["probe_calls"] = sum(p["model_calls"] for p in probes if isinstance(p["model_calls"], int))
+    totals['model_calls'] = None if totals['cells_with_unknown_calls'] else totals['known_model_calls_subtotal']
+    totals['probe_calls_known_subtotal'] = sum(p['model_calls'] for p in probes if type(p['model_calls']) is int)
+    totals["probe_calls"] = _sum_known(p['model_calls'] for p in probes)
+    totals['total_model_calls_including_probes'] = _sum_known((totals['model_calls'], totals['probe_calls']))
+    totals['probe_tokens'] = _sum_known(p['tokens']['total_tokens'] for p in probes)
+    totals['total_tokens_including_probes'] = _sum_known((totals['total_tokens'], totals['probe_tokens']))
     totals["probes"] = len(probes)
     totals["probes_unreadable"] = sum(1 for p in probes if not p["readable"])
     by_gap = {name: evidence["gaps"].get(name, 0) for name in REQUIRED_LINKS}
@@ -226,7 +264,7 @@ def campaign_report(root) -> dict:
 
 
 def _esc(value) -> str:
-    return html.escape("" if value is None else str(value))
+    return html.escape("unknown" if value is None else str(value))
 
 
 def _bar(count: int, total: int, label: str) -> str:
@@ -251,7 +289,7 @@ def _fabric_svg(report: dict) -> str:
         if item["family"] not in families:
             continue
         y = top + families.index(item["family"]) * cell_h
-        colour = {"finished": "var(--ok)", "failed": "var(--bad)"}.get(item["status"], "var(--warn)")
+        colour = {"finished": "var(--accent)", "failed": "var(--bad)"}.get(item["status"], "var(--warn)")
         marks.append(f'<rect x="{left + item["index"] * cell_w}" y="{y + 1}" width="{cell_w}" height="{cell_h - 2}" '
                      f'fill="{colour}"><title>{_esc(item["task_id"])} at {item["index"]}: {_esc(item["status"])} '
                      f'{_esc(item["engine_terminal"] or "")} ({_esc(", ".join(item["coordinates"]))})</title></rect>')
@@ -296,8 +334,8 @@ def render_campaign_html(report: dict) -> str:
         f"<td><span class='chip {_esc(c['status'])}'>{_esc(c['status'])}</span>"
         + ("" if c["projection_readable"] else " <span class='chip locked'>projection locked</span>")
         + f"</td><td>{_esc(c['engine_terminal'])}</td>"
-        f"<td class='num'>{_esc(c['model_calls'])}</td><td class='num'>{c['tokens']['prompt_tokens']}</td>"
-        f"<td class='num'>{c['tokens']['completion_tokens']}</td><td class='num'>{c['step_checkpoints']}</td>"
+        f"<td class='num'>{_esc(c['model_calls'])}</td><td class='num'>{_esc(c['tokens']['prompt_tokens'])}</td>"
+        f"<td class='num'>{_esc(c['tokens']['completion_tokens'])}</td><td class='num'>{c['step_checkpoints']}</td>"
         f"<td class='num'>{c['artifacts']}</td><td>{'complete' if c['complete'] else _esc(', '.join(c['gaps']))}</td>"
         f"<td>{_esc(', '.join(c['disagreements']) or '')}</td></tr>"
         for c in report["cells"])
@@ -337,7 +375,7 @@ dd {{ margin:.1rem 0 0; font-family:ui-monospace,monospace; font-size:.9rem; ove
 table {{ border-collapse:collapse; width:100%; font-size:.9rem }} th,td {{ text-align:left; padding:.45rem .6rem; border-bottom:1px solid var(--line); vertical-align:top }}
 th {{ background:var(--code); font-size:.8rem; position:sticky; top:0 }} td.num {{ text-align:right; font-variant-numeric:tabular-nums }}
 .chip {{ font-family:ui-monospace,monospace; font-size:.72rem; padding:.1rem .4rem; border-radius:3px; background:var(--code) }}
-.chip.finished {{ color:var(--ok); background:var(--ok-bg) }} .chip.failed {{ color:var(--bad); background:var(--bad-bg) }} .chip.locked {{ color:var(--warn); background:var(--warn-bg) }}
+.chip.finished {{ color:var(--accent) }} .chip.failed {{ color:var(--bad); background:var(--bad-bg) }} .chip.locked {{ color:var(--warn); background:var(--warn-bg) }}
 </style></head><body><main>
 <header><div class="muted" style="font-size:.78rem;letter-spacing:.08em;text-transform:uppercase">Loop Engine task-database campaign</div>
 <h1>{_esc(camp.get('campaign_id') or Path(report['root']).name)}</h1>
@@ -346,16 +384,19 @@ th {{ background:var(--code); font-size:.8rem; position:sticky; top:0 }} td.num 
 <section><h2>Coverage and evidence</h2><div class="bars">{''.join(bars)}</div>
 <p class="muted">{cov['cells']} cells written, {cov['in_progress']} in progress, {cov['projection_locked']} with a locked projection, {ev['with_disagreements']} where the recorded counts and the re-verified counts disagree.</p></section>
 <section><h2>Accounting</h2><dl class="facts">
-<div><dt>model calls</dt><dd>{acc['model_calls']}{' (+' + str(unknown) + ' cells unknown)' if unknown else ''}</dd></div>
-<div><dt>prompt tokens</dt><dd>{acc['prompt_tokens']}</dd></div><div><dt>completion tokens</dt><dd>{acc['completion_tokens']}</dd></div>
-<div><dt>total tokens</dt><dd>{acc['total_tokens']}</dd></div><div><dt>elapsed seconds</dt><dd>{round(acc['elapsed_seconds'], 1)}</dd></div>
-<div><dt>access probe calls</dt><dd>{acc['probe_calls']} in {acc['probes']} probes{' (' + str(acc['probes_unreadable']) + ' unreadable)' if acc['probes_unreadable'] else ''}</dd></div></dl>
-<p class="muted">Task model calls are each cell's physical count from its Run History where the history could be read, else the outcome's claim; tokens are the provider-reported usage the outcome carries. Access probe calls are the worker's readiness checks, counted from their own saved histories and kept apart from task calls.</p></section>
+<div><dt>model calls</dt><dd>{_esc(acc['model_calls'])}{' (' + str(unknown) + ' cells unknown)' if unknown else ''}</dd></div>
+<div><dt>prompt tokens</dt><dd>{_esc(acc['prompt_tokens'])}</dd></div><div><dt>completion tokens</dt><dd>{_esc(acc['completion_tokens'])}</dd></div>
+<div><dt>total tokens</dt><dd>{_esc(acc['total_tokens'])}</dd></div><div><dt>elapsed seconds</dt><dd>{round(acc['elapsed_seconds'], 1)}</dd></div>
+<div><dt>known task-call subtotal</dt><dd>{acc['known_model_calls_subtotal']}</dd></div>
+<div><dt>known task-token subtotal</dt><dd>{acc['known_tokens_subtotal']}</dd></div>
+<div><dt>access probe calls</dt><dd>{_esc(acc['probe_calls'])} in {acc['probes']} probes{' (' + str(acc['probes_unreadable']) + ' unreadable)' if acc['probes_unreadable'] else ''}</dd></div></dl>
+<p class="muted">Task model calls are each cell's physical count from its Run History where the history could be read, else the outcome's claim; tokens are the provider-reported usage the outcome carries. Access probe calls are the worker's readiness checks, counted from their own saved histories and kept apart from task calls. Known subtotals exclude missing observations and are not totals. Finished means the trial ended, not that its task was accepted.</p></section>
 <section><h2>Provider observation</h2>{observation_html}</section>
 <section><h2>Grid</h2><p class="muted">{grid_summary}</p><div class="wrap" style="padding:.5rem">{fabric}</div>
 <div class="wrap"><table><thead><tr><th>axis</th><th>level</th><th class="num">cells</th><th class="num">finished</th><th class="num">failed</th></tr></thead><tbody>{level_rows}</tbody></table></div></section>
 <section><h2>Evidence gaps by link</h2><div class="wrap"><table><thead><tr><th>link</th><th class="num">cells missing it</th></tr></thead><tbody>{gap_rows}</tbody></table></div></section>
 <section><h2>Population by job family</h2><div class="wrap"><table><thead><tr><th>family</th><th class="num">tasks</th><th class="num">visited</th><th class="num">finished</th><th class="num">failed</th></tr></thead><tbody>{family_rows}</tbody></table></div></section>
+<p class="muted">Integer-range axes retain their full bounds and cardinality without listing every possible level. Their level counts show observed values only. This does not reduce the declared search space.</p>
 <section><h2>Cells</h2><div class="wrap"><table><thead><tr><th>task</th><th>family</th><th>occurrence</th><th>status</th><th>terminal</th><th class="num">calls</th><th class="num">prompt</th><th class="num">completion</th><th class="num">checkpoints</th><th class="num">artifacts</th><th>evidence</th><th>disagreements</th></tr></thead><tbody>{cell_rows or '<tr><td colspan="12" class="muted">No cell has been written yet.</td></tr>'}</tbody></table></div></section>
 </main></body></html>
 """
@@ -369,7 +410,13 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     report = campaign_report(args.root)
     if args.json:
-        Path(args.json).write_text(json.dumps(report, indent=1, sort_keys=True))
+        destination = Path(args.json)
+        projection = CampaignProjection(destination.with_suffix('.duckdb'))
+        try:
+            projection.record('campaign_report', 'report', report)
+            projection.export_object(destination, report)
+        finally:
+            projection.close()
     if args.html:
         Path(args.html).write_text(render_campaign_html(report))
     if not args.html and not args.json:

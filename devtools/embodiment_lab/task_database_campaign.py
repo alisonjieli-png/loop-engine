@@ -49,7 +49,9 @@ from loop_engine.templates.intake import TaskIntake
 
 from .systematic_records import CampaignProjection, canonical, digest
 from .systematic_runtime import NativeGatewayAdapter, configure_environment
-from .campaign_activation import activation_due, probe_gateway, utc_time
+from .campaign_activation import CampaignAccessPolicy, activation_due, probe_gateway, utc_time
+from .campaign_sources import (TaskSourceSnapshot, snapshot_task_sources,
+                               verify_task_sources)
 
 
 # The trial's own lifecycle states, named once.
@@ -102,7 +104,8 @@ def public_population_rows(rows):
     identities, relative paths, and the instruction digests, never absolute
     directories of this machine."""
     return [{key: row[key] for key in ('id', 'path', 'job_family', 'status', 'admission',
-                                        'descriptor_digest', 'brief_digest') if key in row}
+                                        'descriptor_digest', 'brief_digest', 'source_snapshot_digest',
+                                        'source_freeze_state') if key in row}
             for row in rows]
 
 
@@ -128,28 +131,52 @@ def fair_order(tasks):
     return output
 
 
-def campaign_space(harnesses, *, route=None):
+def _work_limit(value):
+    if value is not None and (type(value) is not int or value < 1):
+        raise ValueError('a declared work limit must be a positive integer or None')
+    return value
+
+
+def _parse_work_limit(value):
+    try:
+        return _work_limit(None if value == 'unbounded' else int(value))
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(str(exc)) from exc
+
+
+def campaign_space(harnesses, *, route=None, model_call_limits=(None,), pass_limits=(None,)):
     route = route or ModelRoute('custom.tactical', 'tactical', 'gemma-4-coding-abliterated', 'cloud')
     if not isinstance(route, ModelRoute):
         raise TypeError('a campaign route must use the existing ModelRoute contract')
     def axis(name, values):
         return ConfigurationAxis(name, 'categorical', tuple(canonical(value) for value in values))
-    return ConfigurationSpace('task-database-executable-grid', '1.0.0', (
+    axes = [
         axis('harness', harnesses), axis('temperature', (0.0, 0.7)),
         axis('output_allocation_tokens', (16384, 65536)),
         axis('context_delivery', ('bounded_inline', 'selected_references')),
-        axis('harness_fallback', ('none', 'registered_alternatives'))),
-        canonical({'mode': 'non_deterministic', 'provider': route.provider,
+        axis('harness_fallback', ('none', 'registered_alternatives'))]
+    fixed = {'mode': 'non_deterministic', 'provider': route.provider,
             'model': route.model, 'route': route.name,
-            'provider_failover': False, 'max_model_calls': None, 'max_passes': None}))
+            'provider_failover': False, 'max_model_calls': None, 'max_passes': None}
+    for name, values in (('max_model_calls', model_call_limits), ('max_passes', pass_limits)):
+        if not isinstance(values, tuple) or not values:
+            raise ValueError('work-limit levels must be a nonempty explicit tuple')
+        values = tuple(_work_limit(value) for value in values)
+        if values != (None,):
+            axes.append(axis(name, values))
+            del fixed[name]
+    return ConfigurationSpace('task-database-executable-grid', '1.0.0', tuple(axes), canonical(fixed))
 
 
-def prepare(root, task_root, provider_file, repository, *, route_name='', not_before=''):
+def prepare(root, task_root, provider_file, repository, *, route_name='', not_before='',
+            access_policy=CampaignAccessPolicy(), model_call_limits=(None,), pass_limits=(None,)):
     os.umask(0o077)
     root, task_root, repository = Path(root).resolve(), Path(task_root).resolve(), Path(repository).resolve()
     root.mkdir(parents=True, exist_ok=True)
     if (root / 'campaign.json').exists():
         raise ValueError('this campaign is already frozen')
+    if not isinstance(access_policy, CampaignAccessPolicy):
+        raise TypeError('campaign access policy must be typed')
     catalog_path = task_root / 'catalog.json'
     catalog = json.loads(catalog_path.read_text())
     if len({row['id'] for row in catalog['tasks']}) != len(catalog['tasks']):
@@ -168,9 +195,11 @@ def prepare(root, task_root, provider_file, repository, *, route_name='', not_be
         raise ValueError('the selected route has no configured provider')
     if not_before:
         not_before = utc_time(not_before).isoformat()
-    space = campaign_space(harnesses, route=route)
+    space = campaign_space(harnesses, route=route, model_call_limits=model_call_limits,
+                           pass_limits=pass_limits)
     records = CampaignProjection(root / 'campaign.duckdb')
     rows = []
+    source_cache = {}
     try:
         for item in fair_order(catalog['tasks']):
             confined_name(item['id'])
@@ -178,11 +207,20 @@ def prepare(root, task_root, provider_file, repository, *, route_name='', not_be
             if not directory.is_relative_to(task_root):
                 raise ValueError('task directory leaves the admitted database')
             descriptor, brief = directory / 'task.json', directory / 'task.md'
-            row = {**item, 'task_directory': str(directory),
+            row = {**item, 'task_directory': str(directory), 'task_root': str(task_root),
                 'descriptor_digest': file_digest(descriptor), 'brief_digest': file_digest(brief),
                 'admission': 'queued_for_execution_and_evaluation' if item['status'] == 'ready'
                              else 'requires_source_admission',
                 'evaluator_qualification': 'task_specific_campaign_qualification_pending'}
+            row['source_freeze_state'] = 'not_admitted'
+            if row['admission'] == 'queued_for_execution_and_evaluation':
+                try:
+                    snapshot = snapshot_task_sources(directory, task_root, cache=source_cache)
+                    row.update(source_snapshot=snapshot.to_dict(),
+                               source_snapshot_digest=snapshot.content_digest, source_freeze_state='frozen')
+                except (OSError, ValueError, TypeError) as exc:
+                    row.update(admission='requires_source_admission', source_freeze_state='unavailable',
+                               source_freeze_error=type(exc).__name__)
             rows.append(row)
             records.record('task_population', item['id'], row)
         identity = engine_identity(repository)
@@ -196,6 +234,9 @@ def prepare(root, task_root, provider_file, repository, *, route_name='', not_be
             'provider_file': str(Path(provider_file).resolve()), 'provider_file_digest': file_digest(provider_file),
             'selected_route_name': route.name, 'not_before_utc': not_before,
             'readiness_method': 'gateway_generation_probe',
+            'access_probe_policy': access_policy.to_dict(),
+            'source_freeze_policy': 'declared_input_contents/v1',
+            'source_frozen_count': sum(row['source_freeze_state'] == 'frozen' for row in rows),
             'repository': str(repository), 'harnesses': harnesses,
             'harness_file_digests': {str(path): file_digest(path) for path in harness_files},
             'configuration_space': space.to_dict(), 'configuration_space_digest': space.digest,
@@ -229,6 +270,8 @@ def task_intake(row, delivery):
             or file_digest(directory / 'task.md') != row['brief_digest']):
         raise ValueError('frozen task instructions changed')
     descriptor = json.loads((directory / 'task.json').read_text())
+    if row.get('source_snapshot') is not None:
+        verify_task_sources(directory, row['task_root'], TaskSourceSnapshot.from_dict(row['source_snapshot']))
     attachments, references, sources = [], [], {}
     for relative in descriptor.get('attachments', ()):
         candidate = directory / relative
@@ -246,7 +289,7 @@ def task_intake(row, delivery):
     data_path = descriptor.get('data_path')
     if data_path:
         path = (directory / data_path).resolve(strict=True)
-        database = Path(row['task_directory']).parents[3]
+        database = Path(row['task_root']) if row.get('task_root') else Path(row['task_directory']).parents[3]
         if not path.is_relative_to(database):
             raise ValueError('dataset link escapes the admitted task database')
         references.append(str(path))
@@ -273,6 +316,7 @@ class RecordedSettingSession:
         # N full copies; every checkpoint stays referenced and re-loadable.
         self._trial_history = None
         self._projected_events = 0
+        self._invocation_sequence = 0
 
     def __getattr__(self, name):
         return getattr(self._session, name)
@@ -297,7 +341,8 @@ class RecordedSettingSession:
             ParameterSourceKind.EXPLICIT_INVOCATION, 'campaign-treatment@1.0.0', '1.0.0', allow_unqualified=True)
         result, run = apply_configuration_as_loop(update,
             ConfigurationSetterContext(target, request, authority, now), parent=parent_loop)
-        operation = request.semantic_call_id or parent_loop.loop_id
+        self._invocation_sequence += 1
+        operation = (request.semantic_call_id or parent_loop.loop_id) + ':' + str(self._invocation_sequence)
         self.records.record('applied_configuration', operation, {'setting_report': result.report,
             'setting_loop_id': run['loop_id'], 'semantic_call_id': request.semantic_call_id,
             'owner_loop_id': parent_loop.loop_id, 'configuration': self.configuration,
@@ -316,7 +361,7 @@ class RecordedSettingSession:
                     provider_attempts.append({key: attempt.get(key) for key in (
                         'provider', 'model', 'route', 'maximum_output_tokens', 'maximum_output_source',
                         'output_capacity_digest', 'provider_ok', 'error_code', 'input_tokens', 'output_tokens',
-                        'loop_id', 'semantic_call_id')})
+                        'loop_id', 'semantic_call_id', 'provider_physical_requests')})
             harness_attempts = [{key: event.get(key) for key in ('harness_id', 'adapter_version', 'status', 'attempt_index')}
                 for event in parent_loop.ledger.events[event_start:]
                 if event.get('action') == 'external_harness_result']
@@ -378,9 +423,16 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
     records.refresh_export(cell / 'status.json', state)
     started = time.monotonic()
     try:
+        model_call_limit = _work_limit(configuration.get('max_model_calls'))
+        pass_limit = _work_limit(configuration.get('max_passes'))
         intake, source_digests = task_intake(row, configuration['context_delivery'])
         records.record('task_sources', 'selected', {'source_digests': source_digests,
-                       'input_digest': intake.content_digest, 'source_refs': list(intake.source_refs)})
+                       'input_digest': intake.content_digest, 'source_refs': list(intake.source_refs),
+                       'source_snapshot_digest': row.get('source_snapshot_digest'),
+                       'source_freeze_state': row.get('source_freeze_state', 'legacy_not_population_frozen')})
+        records.record('source_verification', 'before', {
+            'state': 'verified' if row.get('source_snapshot') else 'legacy_not_population_frozen',
+            'source_snapshot_digest': row.get('source_snapshot_digest')})
         artifacts = ContextArtifactManager(ContextArtifactServices(ContextArtifactStore(
             ContextArtifactStoreSpec(str(cell / 'artifacts')))))
         if not isinstance(services, CampaignTrialServices):
@@ -399,7 +451,7 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
                     raise ValueError('harness configuration changed after freeze')
                 bound = load_harness_binding(path, work_root=str(cell / 'processes'),
                     socket_directory=str(Path(manifest['repository']) / '.loop-engine-dev/hs'),
-                    artifact_store=artifacts, expected_id=name)
+                    artifact_store=artifacts, expected_id=name, allow_unavailable=True)
                 adapters.append(bound.registry.get(name))
         policy = HarnessFallbackPolicy(tuple(names), tuple(HarnessFailureKind) if len(names) > 1 else ())
         binding = HarnessSemanticBinding(names[0], HarnessRegistry(tuple(adapters)), str(cell / 'processes'),
@@ -410,11 +462,11 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
             model_id=configuration['model'], route_name=configuration['route'],
             requested_tokens=configuration['output_allocation_tokens'],
             decision_ref='campaign-configuration:' + digest(configuration),
-            reason='Explicit experimental response allocation; total task calls and passes remain uncapped.')
+            reason='Explicit experimental response allocation; per-cell call and pass authority are separate configuration fields.')
         authority = ModelExecution(gateway, ModelGatewayConfig(route_names=(configuration['route'],),
             allowed_models=(configuration['model'],), allow_failover=False,
             max_route_attempts=None, timeout_seconds=1200, max_total_tokens=None, output_allocation=allocation),
-            max_model_calls=None, harness=binding,
+            max_model_calls=model_call_limit, harness=binding,
             session_factory=lambda authority: RecordedSettingSession(authority, artifacts, configuration, records))
         def progress(event):
             safe = {key: event.get(key) for key in ('event_type', 'step', 'model_calls_completed',
@@ -423,13 +475,23 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
             records.refresh_export(cell / 'status.json', {**state, 'status': 'running', 'latest_progress': safe})
             print(canonical({'task': row['id'], **safe}), flush=True)
         outcome = solve_task(SolveRequest(intake, model_execution=authority, runs_dir=str(cell / 'runs'),
-            interaction_mode='autonomous', practitioner_mode='non_deterministic', max_passes=None,
+            interaction_mode='autonomous', practitioner_mode='non_deterministic', max_passes=pass_limit,
             allow_network_reads=False, allow_workspace_writes=True, allow_sandbox_commands=True,
             workspace_root=str(cell / 'workspace'), allow_source_materialization_to_model=True,
             allow_local_execution=False, quiet_model_io=True, progress=progress))
         value = outcome.to_dict()
         records.record('outcome', 'terminal', value)
         records.export_object(cell / 'outcome.json', value)
+        if row.get('source_snapshot') is not None:
+            try:
+                verify_task_sources(row['task_directory'], row['task_root'],
+                                    TaskSourceSnapshot.from_dict(row['source_snapshot']))
+            except (OSError, ValueError, TypeError):
+                records.record('source_verification', 'after', {'state': 'changed_or_unreadable',
+                    'source_snapshot_digest': row.get('source_snapshot_digest')})
+                raise
+            records.record('source_verification', 'after', {'state': 'verified',
+                'source_snapshot_digest': row.get('source_snapshot_digest')})
         integrity = load_saved_run_bundle(str(cell / 'runs'), value['run_id']).history.verify_chain()
         state.update(status=TRIAL_FINISHED, engine_terminal=value['terminal_code'], engine_solved=value['solved'],
             failure_code=value.get('failure_code', ''),
@@ -588,7 +650,9 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
             gateway = load_runtime_settings(manifest['provider_file']).settings.build_gateway()
             route_name = manifest.get('selected_route_name') or manifest['configuration_space']['fixed_context']['route']
             route = gateway.registry.get(route_name)
-            space = campaign_space(manifest['harnesses'], route=route)
+            # The frozen typed space is authoritative. Rebuilding from today's
+            # defaults would erase declared budget levels or change old trials.
+            space = ConfigurationSpace.from_dict(manifest['configuration_space'])
             if space.digest != manifest['configuration_space_digest']:
                 raise ValueError('configuration space changed')
             cursor = records.latest('controller', 'cursor')
@@ -617,6 +681,11 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                 'frozen_engine_digest': frozen, 'controller_file': str(Path(__file__).resolve()),
                 'controller_digest': file_digest(__file__), 'worker_pid': os.getpid(),
                 'started_at': datetime.now(timezone.utc).isoformat()})
+            # Old frozen manifests retain their declared per-trial behavior.
+            access_policy = (CampaignAccessPolicy.from_dict(manifest['access_probe_policy'])
+                             if 'access_probe_policy' in manifest else CampaignAccessPolicy('per_trial'))
+            access_verified = False
+            probe = None
             while cursor['round'] < space.cardinality:
                 row = rows[cursor['task_position']]
                 base = {'worker_pid': os.getpid(), 'task_count': len(rows), 'cursor': cursor,
@@ -640,7 +709,9 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                     continue
                 else:
                     if manifest.get('readiness_method') == 'gateway_generation_probe':
-                        probe = probe_gateway(gateway, route, records)
+                        if access_policy.requires_probe(access_verified):
+                            probe = probe_gateway(gateway, route, records)
+                            access_verified = bool(probe['reachable'])
                         if not probe['reachable']:
                             # A catalog entry or elapsed reset estimate cannot
                             # authorize an endless sequence of failed calls.
@@ -679,6 +750,8 @@ def worker(root, *, probe_interval=60, wait_attempt_ceiling=3, refuse_interrupte
                     records.record('controller', 'active_trial', {})
                     decision = outage_decision(result, cursor.get('trial_attempt', 0), wait_attempt_ceiling)
                     if decision is not None:
+                        if any(code in (OUTAGE, ALLOWANCE) for code in decision['classes']):
+                            access_verified = False
                         result = {**result, 'decision': decision}
                         records.record('trial_projection', row['id'] + ':' + occurrence, result)
                         if decision['decision'] in (WAIT_FOR_RECOVERY, WAIT_FOR_ALLOWANCE):
@@ -738,10 +811,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('operation', choices=('prepare', 'worker', 'reconcile'))
     parser.add_argument('--root', required=True)
-    parser.add_argument('--task-root', default='/home/username/task_database')
+    parser.add_argument('--task-root', default=str(Path(__file__).resolve().parents[2] / 'task_database'))
     parser.add_argument('--provider-file')
     parser.add_argument('--route-name', default='')
     parser.add_argument('--not-before', default='')
+    parser.add_argument('--model-call-limit', action='append', type=_parse_work_limit,
+                        help='repeat to declare per-cell call-budget grid levels; use unbounded explicitly for no ceiling')
+    parser.add_argument('--pass-limit', action='append', type=_parse_work_limit,
+                        help='repeat to declare per-cell pass-budget grid levels; no new ceiling is assumed when omitted')
     parser.add_argument('--repository', default=str(Path(__file__).resolve().parents[2]))
     parser.add_argument('--probe-interval', type=int, default=60)
     parser.add_argument('--wait-attempt-ceiling', type=int, default=3,
@@ -752,11 +829,15 @@ def main():
                         help='continue a campaign on a changed engine, recording the change')
     parser.add_argument('--wait-for-launch-signal', action='store_true')
     args = parser.parse_args()
+    if args.operation != 'prepare' and (args.model_call_limit or args.pass_limit):
+        parser.error('work-limit levels belong to prepare; a worker must use its frozen configuration space')
     if args.operation == 'prepare':
         if not args.provider_file:
             parser.error('prepare requires an explicit provider file')
         print(canonical(prepare(args.root, args.task_root, args.provider_file, args.repository,
-                               route_name=args.route_name, not_before=args.not_before)), flush=True)
+                               route_name=args.route_name, not_before=args.not_before,
+                               model_call_limits=tuple(args.model_call_limit) if args.model_call_limit else (None,),
+                               pass_limits=tuple(args.pass_limit) if args.pass_limit else (None,))), flush=True)
     elif args.operation == 'reconcile':
         records = CampaignProjection(Path(args.root).resolve() / 'campaign.duckdb')
         try:
