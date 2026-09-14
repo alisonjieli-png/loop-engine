@@ -516,6 +516,52 @@ class RunHistory:
         return ch
 
     @classmethod
+    def verified_checkpoints(cls, root: str, run_id: str) -> dict:
+        """Which checkpoint revisions of one store verify, from one reading
+        of the shared log: ``{revision: intact}``.
+
+        A checkpoint is the log's prefix up to its count, so verifying the
+        whole chain once settles every prefix: a revision is intact when no
+        link before its count is broken and the digest at its count is the
+        head it recorded. Reloading the store per revision would read and
+        digest the log once per checkpoint; a sixty-nine-checkpoint trial
+        of six thousand events took the better part of a minute that way.
+        """
+        run_id = validated_run_id(run_id)
+        d = os.path.join(root, run_id)
+        with open(os.path.join(d, "manifest.json"), encoding="utf-8") as stream:
+            man = json.load(stream)
+        if man.get("record_type") != cls.CHECKPOINT_STORE_RECORD_TYPE or man.get("run_id") != run_id:
+            raise RunHistoryIntegrityError("manifest is not this run's checkpoint store")
+        whole = cls(run_id, parent_run_id=man.get("parent_run_id", ""))
+        with open(os.path.join(d, "events.jsonl"), encoding="utf-8") as stream:
+            for line in stream:
+                if not line.strip():
+                    continue
+                row = json.loads(line)
+                dig = row.pop("event_digest")
+                row["consumed_refs"] = tuple(row.get("consumed_refs", ()))
+                row["produced_refs"] = tuple(row.get("produced_refs", ()))
+                ev = RunHistoryEvent(**row)
+                ev.event_digest = dig
+                whole.event_log.append(ev)
+        verification = whole.verify_chain()
+        first_break = min(verification["broken_at"]) if verification["broken_at"] else None
+        digests = [e.event_digest for e in whole.event_log]
+        verified = {}
+        for record in cls.checkpoints(root, run_id):
+            count = record.get("events")
+            revision = record.get("revision")
+            if type(count) is not int or count < 0 or count > len(digests):
+                verified[revision] = False
+                continue
+            head = digests[count - 1] if count else ""
+            verified[revision] = (
+                (first_break is None or first_break >= count)
+                and str(record.get("head_digest", "")) == head)
+        return verified
+
+    @classmethod
     def load(cls, root: str, run_id: str) -> "RunHistory":
         run_id = validated_run_id(run_id)
         d = os.path.join(root, run_id)

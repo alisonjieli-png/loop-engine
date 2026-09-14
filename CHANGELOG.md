@@ -9,6 +9,13 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- `RunHistory.verified_checkpoints(root, run_id)` settles every revision
+  of an append-only store from one reading of the shared log (a revision
+  is intact when no link before its count is broken and the digest at its
+  count is the head it recorded). The evidence report had reloaded and
+  re-digested the log once per checkpoint: a live cell with sixty-nine
+  checkpoints over six thousand events took over forty-five seconds to
+  verify and now takes a quarter of a second.
 - Schema repair is told which declared field failed. The first finished
   live cell (deepseek-v4-pro on AE-001, eighteen calls, no verified
   artifact) spent twelve admissions on `schema_constraint_failed:minItems`

@@ -129,7 +129,12 @@ model call because `load_harness_binding` refuses an alternative whose
 executable is not installed; the loaders now take `allow_unavailable=True`,
 which registers such an alternative as unavailable so the fallback moves
 on with `adapter_unavailable`. The runner's dispatch (the loop that loads
-`manifest['harnesses']`) is the place to pass it for alternatives.
+`manifest['harnesses']`) is the place to pass it for alternatives. The
+evidence report's step-history check should call
+`RunHistory.verified_checkpoints(store.parent, store.name)` once per store
+instead of `load_checkpoint` per row: on the live FIN-001 cell (sixty-nine
+checkpoints, six thousand events) that is a quarter of a second instead of
+more than forty-five.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

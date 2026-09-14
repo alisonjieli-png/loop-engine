@@ -489,6 +489,17 @@ def self_test() -> dict:
             refused_tamper = True
         check("a_diverging_history_and_a_tampered_log_are_refused",
               refused_divergence and refused_tamper and len(stored_lines) == 6)
+        # One reading of the log settles every revision: the tampered
+        # second event breaks revisions at or past it and leaves none before.
+        verified = RunHistory.verified_checkpoints(store, grown.run_id)
+        check("one_reading_of_the_log_verifies_every_checkpoint_revision",
+              verified == {0: False, 1: False, 2: False}, str(verified))
+        lines[1] = lines[1].replace("step-9", "step-1")
+        with open(os.path.join(store_dir, "events.jsonl"), "w", encoding="utf-8") as stream:
+            stream.writelines(lines)
+        restored = RunHistory.verified_checkpoints(store, grown.run_id)
+        check("a_restored_log_verifies_every_revision_again",
+              restored == {0: True, 1: True, 2: True}, str(restored))
     finally:
         shutil.rmtree(store, ignore_errors=True)
         shutil.rmtree(full_copies, ignore_errors=True)
