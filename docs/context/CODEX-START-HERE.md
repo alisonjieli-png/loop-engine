@@ -210,6 +210,17 @@ policies. The [September 14 review](../verification/CLAUDE-OPUS-5-REVIEW-2026-09
 and the [intake research](../research/SELF-RESOLVING-INTAKE-SANDBOXES-AND-SHARING-2026-09-14.md)
 record the rest.
 
+Later on September 14 the owner asked for persistent general solving, a
+review whenever a check fails, and a declared evaluation mode for every
+contract. The direction is recorded as proposed invariants in the
+[Constitution](../architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction)
+and designed in the
+[persistent general solving decision record](../architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md).
+None of it is implemented yet. The first targets are a supervision policy on
+`SolveRequest`, format repair stalls that end runs, the recovery panel stop
+that skips the action vector route guard, and JSON repair for the independent
+verifier.
+
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).
 It records 70 real Tactical calls, a forty-cell repair matrix with 159/160

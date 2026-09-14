@@ -414,6 +414,28 @@ Do not import Taedri-specific authority levels, campaign paths, business
 claims, internal identifiers, or legacy terminology merely because they exist.
 The reference-source map is in `docs/context/REFERENCE-SOURCES.md`.
 
+## Persistent general solving
+
+The owner's September 14 direction is recorded as proposed invariants in the
+[Constitution](docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction)
+and designed in the
+[persistent general solving decision record](docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md).
+Apply it to engine behavior and to your own development work:
+
+- Build general mechanisms. Do not add control flow, prompts, or checks
+  written for one task, dataset, or benchmark.
+- Persist within declared authority. Turn a failure into a typed next action.
+  End only for a verified result, exhausted declared authority, a question
+  that only the owner can answer, a cancellation, or a provider outage
+  recorded for resumption, and record which one.
+- When a check fails, first decide whether the work, the check, or the
+  environment is wrong, and record why. Do not weaken a check to make it
+  pass. A revised check must still reject a known-wrong answer.
+- Never let a review waive a permission, secret, network, spending, sandbox,
+  or external effect contract.
+- Treat a tool written during a run as a candidate until a different process
+  qualifies it.
+
 ## Verification and completion
 
 Run the smallest relevant check first, then the owning component checks,

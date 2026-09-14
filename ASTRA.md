@@ -427,3 +427,41 @@ Read the [harness guide](embodiments/HARNESS-GUIDE.md) and
 [session orientation](docs/context/CODEX-START-HERE.md) for current source and
 evidence pointers. These instruction files do not change executable harness
 manifests, launch flags, or native-control settings.
+
+## Persistent general solving, September 14
+
+Owner requirement. The owner asked for generalized solving in which every
+applicable approach is tried, the work is highly persistent, and the system
+does not give up. The owner asked for a general cognitive and action
+Practitioner Loop that thinks, acts, and writes tools as needed, not one-off
+solutions. When any check fails, a waterfall of reviews should ask whether the
+test is the problem, whether it is too arbitrary, or whether other edits are
+needed, across every aspect of the work. Every contract should be
+deterministic, hybrid, or model-reasoned, so that a failed contract can be
+asked whether it was supposed to fail or failed unreasonably. These rules
+belong in the Constitution and the governing Markdown files.
+
+Proposal. The
+[persistent general solving decision record](docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md)
+and the
+[proposed invariants in the Constitution](docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction)
+place these directions in existing boundaries. Persistence stays within
+declared authority. A review cannot waive a permission, secret, network,
+spending, sandbox, or external effect contract. A changed check needs a second
+independent review and must still reject a known-wrong answer. A tool written
+during a run stays a candidate until a different process qualifies it.
+
+Observed result. A read-only map of the solve path at commit `89553f2` found
+that a declared supervision policy never reaches a solve run, that a format
+repair stall ends a run, that the recovery panel's stop is adopted without the
+action vector route guard, and that the independent verifier gets no JSON
+repair. These are the first implementation targets.
+
+Observed result. During reconciliation, eleven failed self-test checks first
+looked like a runtime regression. Review showed that the stricter verification
+contract was correct and the scripted fixture was stale, so the fixture
+changed and the contract did not. That review was a manual instance of the
+waterfall described above.
+
+Unresolved question. Which model route and context should perform each review
+stage when only one provider route is authorized.

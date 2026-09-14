@@ -210,6 +210,90 @@ A Practitioner or plugin MUST NOT approve its own generated candidate.
 
 Enforcement: `test_self_review_cannot_self_approve`.
 
+## Proposed invariants from owner direction
+
+Status: proposed on September 14, 2026. These entries record owner direction.
+They are not enforced invariants and do not describe implemented behavior.
+Each one becomes an invariant only when its enforcement test exists and
+`architecture.yaml` carries its machine-readable entry, as the strongest
+documentation rule below requires. The
+[persistent general solving decision record](ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md)
+explains the design, the current gaps, and the planned tests.
+
+### LE-SOLVE-001 (proposed)
+
+A run MUST NOT end without an accepted and verified result while a safe
+authorized next action and declared authority remain. A run MAY end for an
+accepted verified result, exhausted declared authority, a question or
+authority request that only the owner can answer, an operator cancellation,
+or a provider outage recorded for resumption. It MUST record which reason
+ended it.
+
+Rationale: persistence turns each failure into a typed next action instead of
+an early end. Persistence never grants authority, repeats an external effect,
+or invents a budget.
+
+Planned enforcement: `test_run_cannot_end_while_authorized_continuation_remains`.
+
+### LE-SOLVE-002 (proposed)
+
+Task knowledge MUST enter through typed context, capabilities, skills,
+contracts, and generated artifacts. The runtime MUST NOT contain control flow,
+prompts, or checks written for one task, dataset, or benchmark.
+
+Rationale: the same Practitioner Loop must be able to understand, plan, act,
+verify, and write tools for work it has not seen before.
+
+Planned enforcement: `test_runtime_has_no_task_specific_control_flow`,
+extending the existing hardcoding delta gate.
+
+### LE-SOLVE-003 (proposed)
+
+A tool written during a run MUST remain a candidate. It MUST execute only in
+the declared sandbox. It MUST NOT be reused within the run until checks
+written by a process other than its builder pass, and it MUST NOT be reused
+across tasks without Code Intelligence admission.
+
+Rationale: a tool that only its builder has checked is not evidence that the
+tool works.
+
+Planned enforcement: `test_self_built_tool_requires_independent_qualification`.
+
+### LE-CONTRACT-001 (proposed)
+
+Every contract check MUST declare its evaluation mode: deterministic, hybrid,
+or model-reasoned. An evaluation mode MUST NOT be treated as a Loop run mode
+and MUST NOT grant authority.
+
+Rationale: a failure can be reviewed only when it is known how the outcome was
+decided.
+
+Planned enforcement: `test_every_contract_check_declares_evaluation_mode`.
+
+### LE-CONTRACT-002 (proposed)
+
+A failed contract check MUST start a recorded review before the work or the
+check changes. The review MUST ask whether the failure is correct, whether
+the check is wrong or stricter than the task requires, whether the
+environment or harness caused it, and which part of the work needs edits.
+The original failure MUST remain in Run History.
+
+Rationale: a wrong or arbitrary check can block a correct solution on every
+later attempt.
+
+Planned enforcement: `test_failed_check_starts_a_recorded_review`.
+
+### LE-CONTRACT-003 (proposed)
+
+A review MUST NOT waive an authority contract: permissions, secrets, network
+access, spending, sandbox policy, or external effects. A change to any other
+check MUST be confirmed by a second independent review, and the revised check
+MUST still reject at least one known-wrong answer.
+
+Rationale: a check that the checked work can weaken is not evidence.
+
+Planned enforcement: `test_review_cannot_waive_authority_or_remove_discrimination`.
+
 ## Documentation authority hierarchy
 
 ```text
