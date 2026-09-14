@@ -337,7 +337,25 @@ def self_test() -> dict:
                      "missing_dependency": package,
                      "detail": f"FAILED: missing {exc.name}. Reinstall "
                                "Loop Engine to restore all dependencies."}]
+        except Exception as exc:
+            # One module that raises or times out is one failed record, not
+            # the end of the suite. A transport check's asyncio timeout once
+            # aborted the whole run before its summary, hiding every other
+            # module's result; the suite still reports FAILED for this one.
+            return [{"test": f"{name}_self_test_completed", "passed": False,
+                     "error_type": type(exc).__name__,
+                     "detail": f"FAILED: {name} self_test raised "
+                               f"{type(exc).__name__}: {str(exc)[:300]}"}]
 
+    def _raises_timeout():
+        raise TimeoutError("offline fixture timeout")
+
+    crashed = _fold("suite_crash_fixture", _raises_timeout)
+    results.append({
+        "test": "a_module_that_raises_is_one_failed_record_not_the_end_of_the_suite",
+        "passed": (len(crashed) == 1 and crashed[0]["passed"] is False
+                   and crashed[0].get("error_type") == "TimeoutError"),
+        "detail": str(crashed)[:300]})
     for _name in _FOLDED_SUBMODULE_TESTS:
         results.extend(_fold(_name, _name))
     # solve.py (the demo module) is shadowed on the package by the universal
