@@ -259,6 +259,40 @@ tool works.
 
 Planned enforcement: `test_self_built_tool_requires_independent_qualification`.
 
+### LE-SOLVE-004 (proposed)
+
+Every step, Loop, atomic component, pipeline, ontology operation, and
+experiment runner MUST treat a failed or rejected attempt as input to a
+changed next attempt. It MUST NOT end a run on a fixed attempt count while
+declared authority remains. When the same failure repeats, the component MUST
+change its approach: quote the failure, narrow the request to the failing
+part, use another registered method, or carry its best result forward as
+provisional with the findings recorded. A provisional result MUST NOT be
+graded or reused as accepted, and it MUST withhold only the values that its
+findings protect later steps from.
+
+Rationale: in a September 14 live rerun, a rejected orientation ended six of
+twelve finished trials after two model calls while each run still held most
+of its declared call authority.
+
+Planned enforcement: `test_no_component_ends_a_run_on_a_fixed_attempt_count`.
+
+### LE-SOLVE-005 (proposed)
+
+A task MUST have one path-confined working folder that persists across passes
+and attempts. The supplied files, unpacked archives, downloaded material,
+generated work, and outputs of the task MUST be placed there with their
+provenance, and every step, Spawned Loop, and harness working on the task
+MUST receive a scoped view of it. The folder MUST NOT grant write, command,
+network, or spending authority; those remain separate typed permissions.
+
+Rationale: a person working on a project gathers everything in one folder and
+works there. Separate per-attempt folders, skipped binary files, downloads
+kept only as records, and Spawned Loop outputs that never reach the owner make
+the engine lose work that a person would keep.
+
+Planned enforcement: `test_task_working_folder_is_shared_persistent_and_confined`.
+
 ### LE-CONTRACT-001 (proposed)
 
 Every contract check MUST declare its evaluation mode: deterministic, hybrid,

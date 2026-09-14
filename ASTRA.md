@@ -465,3 +465,41 @@ waterfall described above.
 
 Unresolved question. Which model route and context should perform each review
 stage when only one provider route is authorized.
+
+## Persistence at every component, September 14
+
+Owner requirement. Later on September 14 the owner asked for persistence in
+every component, ontology operation, Loop, atomic component, and group, as a
+persistent human worker would provide: a person who gives up on a task is not
+kept on, so giving up is not acceptable. The owner then asked why runs kept
+ending completely, noted that a person continues with full flexibility to
+adjust their environment, and asked whether the engine truly generalizes how a
+person works: gathering every file sent for a project into one folder,
+downloading material into it, using it as the working directory, and verifying
+there.
+
+Observed result. A live Ollama Cloud rerun of the first campaign's cells on
+commit `cd3bc85` finished 12 of 27 trials before a provider outage stopped the
+experiment runner. None produced an accepted result. Six ended after two model
+calls: the prompt showed the orientation step objective as the task's
+immediate goal, the model copied it, and orientation raised after two rejected
+attempts. On repair the models also copied the repair instruction into the
+immediate goal, so repeating a whole-record request was not enough. Five used every allowed call without acceptance, and one ended on a
+provider outage after its second call.
+
+Observed result. Orientation now repairs the whole record, then the fields its
+findings name, and then carries an orientation forward with the findings
+recorded. The recovery panel's route passes the action vector guard, and the
+independent verifier repairs response formats within declared calls. These
+changes pass offline checks, and mutants confirm that each new check fails
+without its behavior. No live rerun has qualified them yet.
+
+Proposal. Proposed invariants LE-SOLVE-004 and LE-SOLVE-005 in the
+[Constitution](docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction)
+record persistence at every component and one task working folder. A matched
+rerun on the new runtime, with an experiment runner that waits through
+provider outages within a declared wait, is the next live qualification step.
+
+Unresolved question. Whether a model step should wait and retry inside the run
+when the provider is unavailable and the recovery reasoning call cannot
+answer, and which declared authority would bound that wait.

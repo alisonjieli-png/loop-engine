@@ -435,6 +435,21 @@ Apply it to engine behavior and to your own development work:
   or external effect contract.
 - Treat a tool written during a run as a candidate until a different process
   qualifies it.
+- Never end work on a fixed attempt count. When the same failure repeats,
+  change the approach: quote the failure, narrow the request to the failing
+  part, try another registered method, or carry the best result forward as
+  provisional with its findings recorded.
+- Work like a person with one project folder. The proposed task working
+  folder gathers supplied files, unpacked archives, downloads, generated
+  work, and outputs, persists across attempts, and is shared with Spawned
+  Loops through scoped views. It is not implemented yet.
+- Run live experiments only under explicit owner authority. Record every
+  trial, including failures and outages, keep runners waiting through a
+  provider outage within a declared wait, and stop before an allowance is
+  drained.
+- Before committing, run the continuous integration commands on an export of
+  the exact tree, lint the full documentation scope, and confirm with mutants
+  that each new check fails when its behavior is removed.
 
 ## Verification and completion
 
