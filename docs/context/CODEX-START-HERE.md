@@ -120,7 +120,11 @@ answered on main: the kernel now applies the supervision policy's
 `unaccepted_passes_before_stop` to its own passes when no pass budget is
 declared, climbing the reset ladder to `stop_unprofitable` after
 twenty-seven refused passes by default; the running worker's snapshot
-predates it.
+predates it. The [first live cells record](../verification/LIVE-CAMPAIGN-FIRST-CELLS-2026-09-14.md)
+tabulates every cell of both workers: seven executed flash cells cost 817
+calls and 21.2 million tokens for one verified solution, the pro CS-001
+cell was cancelled at 489 calls, and the allowance was spent again at
+02:04 UTC.
 
 Coordination, 23:52 UTC September 13: the Claude session's changes to
 campaign activation, the campaign page, provider accounting, and the
