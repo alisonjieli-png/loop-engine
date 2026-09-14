@@ -20,8 +20,8 @@ from pathlib import Path
 
 from .adaptive_practitioner_records import (
     AdaptivePractitionerError, AdaptiveRunServices)
-from .capability_rejection import (CapabilityRejected, CapabilityRejection,
-                                   bounded_admitted_values)
+from .capability_rejection import (ADMITTED_VALUES_LIMIT, CapabilityRejected,
+                                   CapabilityRejection, bounded_admitted_values)
 from .runtime_capacity import converged, model_evidence_bytes
 from .context_budget import ContextBudgetPolicy
 
@@ -411,6 +411,24 @@ def _resolve_requested_paths(
     return resolved
 
 
+def _exclusion_matches(requested, records) -> dict[str, list[str]]:
+    """Name observed exclusions an unresolved request may refer to, by shared
+    path suffix, absolute path, or excluded parent directory. Only paths and
+    reasons are reported, never excluded content."""
+    matches: dict[str, list[str]] = {}
+    for raw in requested:
+        wanted = f"/{Path(raw).as_posix().strip('/')}/"
+        for item in records:
+            entry, parts = f"/{item.path}/", item.path.split("/")
+            if item.disposition == "excluded" and (
+                    entry.endswith(wanted) or entry in wanted
+                    or any(wanted.startswith(f"/{'/'.join(parts[index:])}/")
+                           for index in range(len(parts)))):
+                matches.setdefault(raw, []).append(f"{item.path} ({item.reason})")
+    return {raw: list(dict.fromkeys(found))[:ADMITTED_VALUES_LIMIT]
+            for raw, found in matches.items()}
+
+
 def source_inspection_operation(
         arguments: dict, services: AdaptiveRunServices) -> dict:
     """Bind materialized text and metadata to the same revalidated byte read.
@@ -444,8 +462,7 @@ def source_inspection_operation(
             "core.source.inspect", "argument_not_admitted",
             f"source inspection requested unknown paths {unknown_paths}"
             "; inspect manifest_paths for the exact admitted paths. Exclusions: "
-            + str({item.path: item.reason for item in admission
-                   if item.path in unknown_paths and item.disposition == "excluded"}),
+            + str(_exclusion_matches(unknown_paths, admission)),
             rejected_arguments=(("paths", tuple(unknown_paths)),),
             admitted_values=admitted, admitted_values_total=total,
             repair_hint=("omit paths to receive the manifest, then request "
@@ -646,7 +663,8 @@ def source_profile_operation(
         raise CapabilityRejected(CapabilityRejection(
             "core.source.profile", "argument_not_admitted",
             f"source profile requested unknown paths {unknown}"
-            "; inspect manifest_paths from core.source.inspect first",
+            "; inspect manifest_paths from core.source.inspect first. Exclusions: "
+            + str(_exclusion_matches(unknown, inventory.records)),
             rejected_arguments=(("paths", tuple(unknown)),),
             admitted_values=admitted, admitted_values_total=total,
             repair_hint=("omit paths to profile every admitted source, or "

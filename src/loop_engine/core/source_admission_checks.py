@@ -265,6 +265,28 @@ def _content_admission_checks() -> list[dict]:
                   inspection, source_inspection_model_view([inspection])))
               and all(not any(part in (".git", ".private", "node_modules", "secrets", ".env")
                               for part in path.parts) for path, _ in touched))
+
+        def refusal(operation, paths):
+            try:
+                operation({"paths": paths}, services)
+            except CapabilityRejected as refused:
+                return refused.rejection.message
+            return ""
+
+        by_basename = refusal(source_inspection_operation, ["binary.bin"])
+        check("unresolved_basename_request_names_the_matching_exclusion_reason",
+              "repo/binary.bin (binary_or_unsupported_encoding)" in by_basename)
+        inside = refusal(source_inspection_operation, ["node_modules/private.txt"])
+        protected = refusal(source_inspection_operation, [str(root / "secret-document.txt")])
+        check("requests_inside_excluded_directories_or_by_absolute_path_name_reasons_not_content",
+              "repo/node_modules (ignored_directory)" in inside
+              and "repo/secret-document.txt (protected_content)" in protected
+              and "never-export-this" not in inside + protected)
+        check("source_profile_refusal_names_the_same_exclusion_evidence",
+              "repo/binary.bin (binary_or_unsupported_encoding)"
+              in refusal(source_profile_operation, ["binary.bin"]))
+        check("unrelated_unknown_request_reports_no_invented_exclusion",
+              refusal(source_inspection_operation, ["absent/elsewhere.txt"]).endswith("Exclusions: {}"))
         services.request.source_refs = (str(root / "main.ts"),)
         check("explicit_non_python_text_file_is_admitted",
               dict(inspectable_source_files(services)) == {"main.ts": root / "main.ts"})

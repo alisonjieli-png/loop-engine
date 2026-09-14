@@ -7,9 +7,17 @@ an oracle. The existing independent verifier remains the operational owner.
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 
 from .generated_project import GeneratedProjectCommand, GeneratedProjectFile, GeneratedProjectFileSpec
+
+# Declared comparison policies for probe cases. Exact JSON and exact text keep
+# their meaning. A subset policy lets observed objects carry fields a case does
+# not constrain. A tolerance is a separate optional field for JSON policies.
+PROBE_COMPARISONS = ("json_equal", "text_equal", "json_subset")
+JSON_PROBE_COMPARISONS = (PROBE_COMPARISONS[0], PROBE_COMPARISONS[2])
+PROBE_TOLERANCE_FIELDS = ("absolute", "relative")
 
 
 @dataclass(frozen=True)
@@ -30,6 +38,16 @@ class InvalidProbePlan(ValueError):
     def __init__(self, diagnostic: ProbePlanDiagnostic):
         self.diagnostic = diagnostic
         super().__init__(diagnostic.detail)
+
+
+def _valid_tolerance(tolerance, comparison) -> bool:
+    """An optional tolerance bounds JSON numbers with finite non-negative values."""
+    if tolerance is None:
+        return True
+    return bool(comparison in JSON_PROBE_COMPARISONS and isinstance(tolerance, dict)
+                and tolerance and set(tolerance) <= set(PROBE_TOLERANCE_FIELDS)
+                and all(type(bound) in (int, float) and math.isfinite(bound) and bound >= 0
+                        for bound in tolerance.values()))
 
 
 def validate_probe_plan(value, criteria, *, materialized=False):
@@ -69,7 +87,7 @@ def validate_probe_plan(value, criteria, *, materialized=False):
         typed_files.append(file)
     commands, ids, covered = [], set(), set()
     for case in cases:
-        if not isinstance(case, dict) or set(case) != {
+        if not isinstance(case, dict) or set(case) - {"tolerance"} != {
                 "case_id", "criterion_refs", "purpose", "argv", "timeout_seconds", "comparison", "expected"}:
             fail("invalid_case_declaration", "independent probe case shape is invalid")
         case_id, refs = case["case_id"], case["criterion_refs"]
@@ -78,10 +96,13 @@ def validate_probe_plan(value, criteria, *, materialized=False):
                 or any(not isinstance(ref, str) or not ref for ref in refs)
                 or len(refs) != len(set(refs))):
             fail("invalid_case_identity", "independent case identity or coverage is invalid")
-        if case["comparison"] not in ("json_equal", "text_equal"):
+        if case["comparison"] not in PROBE_COMPARISONS:
             fail("invalid_comparison", "independent comparison is unsupported")
-        if case["comparison"] == "text_equal" and (not isinstance(case["expected"], str) or not case["expected"]):
+        if case["comparison"] == PROBE_COMPARISONS[1] and (not isinstance(case["expected"], str) or not case["expected"]):
             fail("invalid_expectation", "text comparison needs nonempty exact expected output")
+        if not _valid_tolerance(case.get("tolerance"), case["comparison"]):
+            fail("invalid_tolerance", "a tolerance applies only to JSON comparisons and needs "
+                 "finite non-negative absolute or relative bounds")
         try:
             json.dumps(case["expected"], ensure_ascii=False, sort_keys=True, allow_nan=False).encode("utf-8")
             if not isinstance(case["argv"], list) or not isinstance(case["purpose"], str):

@@ -45,11 +45,16 @@ the interface. It does not receive the producer's plan or conversation history.
 Supplied data and computed output are copied into the sandbox without being
 silently added to the model packet.
 
-The model proposes Python probes and exact expected JSON or text values. A
-separate model call reviews the oracle against the task. The probe prints
-observations; the controller compares those observations outside the candidate
-process. An empty response, an exit code alone, a forged `passed` field,
-truncated output, or an unavailable verifier cannot satisfy acceptance.
+The model proposes Python probes and, for each case, an expected JSON or text
+value with a declared comparison policy. Exact JSON and exact text remain
+available. A JSON subset policy lets observed objects carry fields that the
+case does not constrain, and a JSON policy may declare a finite numeric
+tolerance. A separate model call reviews the oracle against the task and
+refuses a comparison policy or tolerance looser than the task justifies. The
+probe prints observations; the controller compares those observations outside
+the candidate process. An empty response, an exit code alone, a forged
+`passed` field, truncated output, or an unavailable verifier cannot satisfy
+acceptance.
 
 Probe planning and file generation use separate requests. For a predeclared
 Python file, the response may contain the planned JSON `path`/`content` object

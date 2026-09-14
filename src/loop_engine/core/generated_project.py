@@ -413,6 +413,10 @@ def _project_mapping_parts(value: object, *, candidate: bool) -> dict:
     def construct(factory, location, **parts):
         try:
             return factory(**parts)
+        except GeneratedProjectError as exc:
+            # A typed refusal already names what was refused and what would be
+            # admitted; keep that reason so the next proposal can change it.
+            raise GeneratedProjectError(f"{location}: {exc}") from None
         except (ValueError, TypeError, OverflowError):
             raise GeneratedProjectError(f"{location}: invalid_value") from None
 
@@ -1296,6 +1300,14 @@ def self_test() -> dict:
         typed_output_refused = ""
     except GeneratedProjectError as exc:
         typed_output_refused = str(exc)[:80]
+    try:
+        GeneratedProjectManifest.from_mapping({
+            **valid.to_dict(), "commands": [{
+                "argv": ["python", "-c", "print('ok')"],
+                "purpose": "Run inline code.", "timeout_seconds": 30}]})
+        inline_refusal = ""
+    except GeneratedProjectError as exc:
+        inline_refusal = str(exc)
     tests = [{
         "test": "generic_project_candidate_round_trips",
         "passed": GeneratedProjectCandidate.from_mapping(
@@ -1324,6 +1336,14 @@ def self_test() -> dict:
         "test": "an_expected_artifact_may_not_be_a_file_the_model_typed",
         "passed": bool(typed_output_refused),
         "detail": typed_output_refused or "a typed output was accepted",
+    }, {
+        "test": "a_typed_command_refusal_keeps_its_location_and_reason",
+        # A generic code in place of the refusal left the next proposal
+        # nothing to change; the typed reason names the admitted shape.
+        "passed": ("commands[0]: " in inline_refusal
+                   and "not inline code" in inline_refusal
+                   and "invalid_value" not in inline_refusal),
+        "detail": inline_refusal[:120] or "inline code was accepted",
     }]
     for label, media_type, body, expected in (
             ("pdf", "application/pdf", b"%PDF-1.4\n%%EOF", True),

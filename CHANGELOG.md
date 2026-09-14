@@ -74,6 +74,22 @@ First public release.
   that assessed only `criterion:0`, while each verify step registers its own
   criteria. The fixture now scripts answers that assess exactly the criteria
   each step registers; the stricter contract is unchanged.
+- A refused generated project command keeps its reason. `construct()` used
+  to replace typed refusals, such as the inline code refusal that names the
+  admitted command shape, with `commands[N]: invalid_value`, so the next
+  proposal had nothing to change. The refusal keeps its location prefix.
+- A source inspection or source profile request for a path that was not
+  admitted now names each matching exclusion with its reason, for example
+  `repo/binary.bin (binary_or_unsupported_encoding)`. A basename, an
+  absolute path, or a path inside an excluded directory matches. Only paths
+  and reasons are reported, never excluded content.
+- An independent verifier case may declare a comparison policy.
+  `json_equal` and `text_equal` keep their meaning, `json_subset` lets
+  observed objects carry fields the case does not constrain, and a JSON
+  policy may declare a finite non-negative `absolute` or `relative`
+  tolerance. Plan validation refuses a malformed tolerance, and the oracle
+  review is asked to refuse a policy looser than the task justifies. Each
+  new check was confirmed to fail when its fix is removed.
 
 ### Fixed on 2026-09-13
 

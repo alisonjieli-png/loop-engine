@@ -168,11 +168,47 @@ def _comparison_checks(check):
           verification._compare(exact_text, _observed("ready\n"))[0]["passed"]
           and not verification._compare(exact_text, _observed("ready"))[0]["passed"])
 
+    def policy(comparison, expected, stdout, tolerance=None):
+        changed = deepcopy(cases)
+        changed[0].update(comparison=comparison, expected=expected)
+        if tolerance is not None:
+            changed[0]["tolerance"] = tolerance
+        return verification._compare(changed, _observed(stdout))[0]["passed"]
+
+    check("json_subset_admits_additional_observed_fields_and_nothing_else",
+          policy("json_subset", {"x": 12}, '{"x":12,"diagnostic":"extra"}')
+          and policy("json_subset", {"rows": [{"id": 1}]}, '{"rows":[{"id":1,"score":0.5}]}')
+          and not policy("json_subset", {"x": 12}, '{"y":12}')
+          and not policy("json_subset", {"x": 0}, '{"x":false}')
+          and not policy("json_subset", {"x": None}, '{}')
+          and not policy("json_subset", [1, 2], "[1,2,3]"))
+    check("numeric_tolerance_bounds_numbers_without_relaxing_types_or_structure",
+          policy("json_equal", {"score": 0.3}, '{"score":0.30000000000000004}', {"absolute": 1e-9})
+          and policy("json_equal", 12, "12.0", {"absolute": 0})
+          and policy("json_equal", 200.0, "201", {"relative": 0.01})
+          and not policy("json_equal", {"score": 0.3}, '{"score":0.31}', {"absolute": 1e-9})
+          and not policy("json_equal", {"score": 0.3}, '{"score":0.3,"extra":1}', {"absolute": 1})
+          and not policy("json_equal", 1, "true", {"absolute": 1})
+          and not policy("json_equal", 12, "1e400", {"relative": 1})
+          and not policy("json_equal", 12, "1" + "0" * 400, {"relative": 1}))
+    check("exact_json_without_tolerance_keeps_integer_and_decimal_forms_distinct",
+          not policy("json_equal", 12, "12.0"))
+    check("json_subset_accepts_a_tolerance_as_a_separate_declared_field",
+          policy("json_subset", {"metrics": {"auc": 0.91}}, '{"metrics":{"auc":0.9100004,"n":10}}',
+                 {"absolute": 1e-5}))
+
 
 def _proposal_checks(check):
     check("independent_probe_accepts_typed_covered_executable_cases",
           verification._validate_probe(_proposal(), _CRITERIA).commands[0]
           .expected_exit_codes == (0,))
+    subset, unset = _proposal(), _proposal()
+    subset["cases"][0].update(comparison="json_subset", expected={"sum": 12},
+                              tolerance={"absolute": 0.5, "relative": 0.01})
+    unset["cases"][0]["tolerance"] = None
+    check("independent_probe_accepts_declared_subset_tolerance_and_absent_tolerance",
+          all(len(verification._validate_probe(item, _CRITERIA).commands) == 1
+              for item in (subset, unset)))
     invalid = []
     for name, key, value in (
         ("unavailable", "status", "unavailable"),
@@ -215,6 +251,19 @@ def _proposal_checks(check):
     invalid.append(("empty_text_expectation", empty_text, _CRITERIA))
     invalid.append(("uncovered_criterion", _proposal(),
                     _CRITERIA + (("criterion:1", "Preserve both inputs."),)))
+    for name, changes in (
+        ("tolerance_on_text", {"comparison": "text_equal", "expected": "12\n",
+                               "tolerance": {"absolute": 1}}),
+        ("negative_tolerance", {"tolerance": {"absolute": -1}}),
+        ("nonfinite_tolerance", {"tolerance": {"relative": float("inf")}}),
+        ("boolean_tolerance", {"tolerance": {"absolute": True}}),
+        ("unknown_tolerance_field", {"tolerance": {"percent": 1}}),
+        ("empty_tolerance", {"tolerance": {}}),
+        ("undeclared_case_field", {"weight": 1}),
+    ):
+        proposal = _proposal()
+        proposal["cases"][0].update(changes)
+        invalid.append((name, proposal, _CRITERIA))
     for name, proposal, criteria in invalid:
         check("probe_validation_refuses_" + name,
               _refused(lambda: verification._validate_probe(proposal, criteria)))

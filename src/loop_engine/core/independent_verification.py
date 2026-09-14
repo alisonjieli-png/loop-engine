@@ -32,7 +32,9 @@ from .generated_project import (
 from .model_response_admission import (
     ModelResponseAdmissionRequest, admit_model_response_as_loop,
 )
-from .independent_probe_planning import InvalidProbePlan, validate_probe_plan
+from .independent_probe_planning import (
+    JSON_PROBE_COMPARISONS, PROBE_COMPARISONS, PROBE_TOLERANCE_FIELDS, InvalidProbePlan,
+    validate_probe_plan)
 from .independent_probe_review import (
     capture_oracle_review, oracle_review_admissible, prior_oracle_feedback)
 
@@ -297,7 +299,10 @@ def _probe(request, services, owner, subject, visible, *, plan_attempts=None, or
         "cases": [{"case_id": "unique string", "criterion_refs": ["criterion:0"],
                    "purpose": "string", "argv": ["python", "checks/probe.py"],
                    "timeout_seconds": "positive number based on needed work",
-                   "comparison": "json_equal|text_equal", "expected": "exact JSON value or text"}]}
+                   "comparison": "|".join(PROBE_COMPARISONS), "expected": "exact JSON value or text",
+                   "tolerance": ("optional object with non-negative "
+                                 + " and/or ".join(PROBE_TOLERANCE_FIELDS)
+                                 + " numbers, only for JSON comparisons of approximate numbers")}]}
     packet = {
         "record_type": "independent_probe_design/v1", "task": request.task,
         "registered_acceptance_criteria": dict(request.criteria),
@@ -327,7 +332,8 @@ def _probe(request, services, owner, subject, visible, *, plan_attempts=None, or
             "task, independently of the producer and design rationale. Recompute "
             "expected values. Refuse tautological/hardcoded observations, code that "
             "does not execute/read the subject, invented requirements, missed "
-            "criteria, or wrong expectations. Valid means suitable to try, not "
+            "criteria, wrong expectations, or a comparison policy or tolerance "
+            "looser than the task justifies. Valid means suitable to try, not "
             "proof of task correctness. Return exact covered criterion refs."),
         "response_contract": {"valid": "boolean", "criterion_refs": ["criterion:0"],
                               "issues": ["string"], "notes": "string"}})
@@ -480,14 +486,19 @@ def _compare(cases, execution):
                      and not command.get("error_code")
                      and command.get("argv") == case["argv"])
         actual = command.get("stdout")
-        if completed and case["comparison"] == "json_equal":
+        if completed and case["comparison"] in JSON_PROBE_COMPARISONS:
             try:
                 parsed = json.loads(actual, parse_constant=lambda _: (_ for _ in ()).throw(
                     ValueError("nonfinite output")), object_pairs_hook=_unique_pairs)
-                # Canonical JSON distinguishes false from zero and null from missing.
-                matches = _bytes(parsed) == _bytes(case["expected"])
+                # Canonical JSON distinguishes false from zero and null from missing,
+                # and refuses nonfinite numbers before any declared policy applies.
+                canonical = _bytes(parsed)
+                matches = (canonical == _bytes(case["expected"])
+                           if case["comparison"] == PROBE_COMPARISONS[0] and not case.get("tolerance")
+                           else _json_matches(case["expected"], parsed, case["comparison"],
+                                              case.get("tolerance") or {}))
                 actual = parsed
-            except (TypeError, ValueError):
+            except (TypeError, ValueError, OverflowError):
                 matches = False
         else:
             matches = completed and actual == case["expected"]
@@ -498,6 +509,31 @@ def _compare(cases, execution):
                              "stderr": command.get("stderr", ""),
                              "error_code": command.get("error_code", "")})
     return observations
+
+
+def _json_matches(expected, observed, comparison, tolerance) -> bool:
+    """Apply one declared JSON comparison policy to parsed observed output.
+
+    Types stay distinct: false is not zero and null is not a missing field.
+    A subset policy lets observed objects carry fields the case does not name;
+    lists keep their length and order. A tolerance bounds numbers only.
+    """
+    if (tolerance and type(expected) in (int, float)
+            and type(observed) in (int, float)):
+        return abs(observed - expected) <= max(
+            tolerance.get(PROBE_TOLERANCE_FIELDS[0], 0),
+            tolerance.get(PROBE_TOLERANCE_FIELDS[1], 0) * abs(expected))
+    if isinstance(expected, dict):
+        return (isinstance(observed, dict)
+                and (comparison != PROBE_COMPARISONS[0] or set(observed) == set(expected))
+                and all(key in observed
+                        and _json_matches(value, observed[key], comparison, tolerance)
+                        for key, value in expected.items()))
+    if isinstance(expected, list):
+        return (isinstance(observed, list) and len(observed) == len(expected)
+                and all(_json_matches(item, seen, comparison, tolerance)
+                        for item, seen in zip(expected, observed)))
+    return _bytes(expected) == _bytes(observed)
 
 
 def _valid_execution(execution, cases, image):
