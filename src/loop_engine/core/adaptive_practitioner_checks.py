@@ -141,6 +141,41 @@ def run_checks() -> dict:
                 and len(result["loop_details"]) >= 7,
                 "detail": result["run_id"],
             })
+    # A request may declare the supervision policy the kernel applies to its
+    # passes, so a campaign's ceiling is a configuration level; the outcome
+    # names the policy that applied, declared or the repository default.
+    from ..loop.supervision_policy import SupervisionPolicy
+    from .adaptive_practitioner_records import AdaptivePractitionerError
+    declared_policy = SupervisionPolicy(unaccepted_passes_before_stop=2,
+                                        non_progress_passes_before_escalation=2)
+    with tempfile.TemporaryDirectory() as root:
+        execution = fixture_model_execution(FixtureModelExecutionRequest(
+            answers=(orientation, decision, how, candidate,
+                     generated_file, verification, route),
+            max_model_calls=7))
+        declared_run = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                tasks[0], runs_dir=root, max_passes=1, allow_network_reads=False,
+                supervision=declared_policy,
+                independent_verification_policy=IndependentVerificationPolicy(required=False)),
+            AdaptivePractitionerDependencies(execution, project_executor=project_fixture))
+    refused_policy = False
+    try:
+        AdaptivePractitionerRequest(tasks[0], supervision="strict")
+    except AdaptivePractitionerError:
+        refused_policy = True
+    results.append({
+        "test": "a_request_declares_the_supervision_policy_and_the_outcome_names_it",
+        "passed": declared_run["supervision_policy"]["unaccepted_passes_before_stop"] == 2
+        and declared_run["supervision_policy"]["policy_id"] == declared_policy.policy_id
+        and declared_run["supervision_policy"]["declared"] is True
+        and results[0]["passed"]
+        and result["supervision_policy"] == {"policy_id": "loop.supervision", "declared": False}
+        and AdaptivePractitionerRequest(tasks[0], supervision=declared_policy).source_state_digest
+        != AdaptivePractitionerRequest(tasks[0]).source_state_digest
+        and refused_policy,
+        "detail": str(declared_run.get("supervision_policy"))[:120],
+    })
     from . import adaptive_practitioner as implementation
     source = Path(implementation.__file__).read_text(encoding="utf-8").lower()
     results.append({

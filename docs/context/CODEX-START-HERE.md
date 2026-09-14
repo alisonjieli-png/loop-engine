@@ -124,7 +124,10 @@ predates it. The [first live cells record](../verification/LIVE-CAMPAIGN-FIRST-C
 tabulates every cell of both workers: seven executed flash cells cost 817
 calls and 21.2 million tokens for one verified solution, the pro CS-001
 cell was cancelled at 489 calls, and the allowance was spent again at
-02:04 UTC.
+02:04 UTC. `AdaptivePractitionerRequest(..., supervision=SupervisionPolicy(...))`
+now carries the per-run ceiling policy to the kernel, so the campaign grid
+can declare `unaccepted_passes_before_stop` as a level per cell instead of
+relying on the default of nine.
 
 Coordination, 23:52 UTC September 13: the Claude session's changes to
 campaign activation, the campaign page, provider accounting, and the

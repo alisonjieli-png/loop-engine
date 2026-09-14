@@ -669,15 +669,13 @@ def run_adaptive_practitioner(
         artifact_store=services.artifacts)
     try:
         run = run_kernel_passes(KernelRunRequest(
-            ProblemSpec(
-                request.task, budget_passes=request.max_passes,
-                seed_facts={
-                    "context_portfolio_id": portfolio.portfolio_id,
-                    "context_portfolio_version": portfolio.version,
-                    "persona_id": portfolio.persona.persona_id,
-                }),
+            ProblemSpec(request.task, budget_passes=request.max_passes, seed_facts={
+                "context_portfolio_id": portfolio.portfolio_id,
+                "context_portfolio_version": portfolio.version,
+                "persona_id": portfolio.persona.persona_id}),
             _adaptive_impls(services), owner_loop=owner,
-            max_passes=request.max_passes, selected_mode=request.mode))
+            max_passes=request.max_passes, selected_mode=request.mode,
+            supervision=request.effective_supervision))
     except KeyboardInterrupt:
         if not owner.is_terminal:
             owner.cancel("operator_interrupt")
@@ -752,6 +750,7 @@ def run_adaptive_practitioner(
             request.independent_verification_policy.to_dict(),
         "independent_verification_records": services.independent_verification_records,
         "supervision": services.supervision_findings,
+        "supervision_policy": request.supervision_policy_record(),
         "recovery_directives": services.recovery_directives,
         "generated_file_checkpoints":
             services.generated_file_checkpoint_summaries(),

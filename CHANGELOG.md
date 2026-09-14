@@ -9,6 +9,13 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- A Practitioner request declares its supervision policy. `AdaptivePractitionerRequest`
+  takes a typed `supervision` (the non-progress and unaccepted-pass counts,
+  the escalation ladder, the spawn depth guard) and threads it to the
+  kernel, so a campaign's per-cell ceiling is a configuration level rather
+  than the repository default; the outcome names the policy that applied,
+  declared or default, and a request digest moves only when a policy is
+  declared. An untyped value is refused.
 - A Practitioner run whose fresh candidates the verifier keeps refusing
   now reaches the honest stop. The live pro cell on CS-001 made more than
   470 model calls and consumed over 14 million tokens with sixty

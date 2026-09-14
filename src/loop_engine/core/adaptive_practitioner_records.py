@@ -29,6 +29,7 @@ from ..code_nodes.solution_model_port import (
     SolutionModelError,
 )
 from ..loop.kernel_runtime import current_kernel_owner
+from ..loop.supervision_policy import SupervisionPolicy
 from ..templates.intake import CapturedInstructionProvenance
 from ..templates.model import TaskFeedback
 from .adaptive_practitioner_prompting import (
@@ -1398,6 +1399,12 @@ class AdaptivePractitionerRequest:
     independent_verification_policy: IndependentVerificationPolicy = field(
         default_factory=IndependentVerificationPolicy)
     host_runtime_manifest: dict = field(default_factory=dict)
+    #: The supervision policy the kernel applies to this run's passes (the
+    #: non-progress and unaccepted-pass counts, the escalation ladder, the
+    #: spawn depth guard). None means the repository default; a campaign
+    #: declares its own so the ceiling is a configuration level, never an
+    #: implied one.
+    supervision: "SupervisionPolicy | None" = None
     #: Explicit operator-declared verifier script (e.g. a task gate). Empty
     #: means no verifier runs mid-solve. Only an explicit path is ever
     #: executed — nothing is discovered, inferred, or defaulted — and its
@@ -1466,6 +1473,9 @@ class AdaptivePractitionerRequest:
                 "max_passes must be positive when provided")
         if self.interaction_mode not in ("autonomous", "ask_when_material"):
             raise AdaptivePractitionerError("interaction mode is not registered")
+        if self.supervision is not None and not isinstance(self.supervision, SupervisionPolicy):
+            raise AdaptivePractitionerError(
+                "supervision must be a typed SupervisionPolicy when provided")
         refs = tuple(self.source_refs)
         if any(not isinstance(item, str) or not item.strip() for item in refs):
             raise AdaptivePractitionerError("source refs must be non-empty text")
@@ -1506,6 +1516,18 @@ class AdaptivePractitionerRequest:
                 "request's treatment-neutral task/source state")
 
     @property
+    def effective_supervision(self) -> SupervisionPolicy:
+        """The policy the kernel applies: the declared one, else the default."""
+        from ..loop.supervision_policy import DEFAULT_SUPERVISION_POLICY
+        return self.supervision if self.supervision is not None else DEFAULT_SUPERVISION_POLICY
+
+    def supervision_policy_record(self) -> dict:
+        """The policy that applied, named as declared or the repository default."""
+        if self.supervision is not None:
+            return {**self.supervision.to_dict(), "declared": True}
+        return {"policy_id": "loop.supervision", "declared": False}
+
+    @property
     def source_state_digest(self) -> str:
         """Digest task/source semantics, authority, policy, and budgets.
 
@@ -1520,6 +1542,10 @@ class AdaptivePractitionerRequest:
             **({'diagnose_unchanged_evidence':True} if self.diagnose_unchanged_evidence else {}),
             "mode": self.mode,
             "max_passes": self.max_passes,
+            # Present only when declared, so every request digest recorded
+            # before this field existed still holds.
+            **({"supervision": self.supervision.to_dict()}
+               if self.supervision is not None else {}),
             "interaction_mode": self.interaction_mode,
             "independent_verification_policy":
                 self.independent_verification_policy.to_dict(),
