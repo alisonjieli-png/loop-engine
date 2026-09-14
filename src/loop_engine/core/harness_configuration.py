@@ -5,24 +5,71 @@ Only the existing registry and canonical semantic binding can execute it.
 """
 from __future__ import annotations
 
+import hashlib
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
-from .external_harness import HarnessRegistry
+from .external_harness import HarnessAdapterInfo, HarnessRegistry, HarnessRunResult
 from .harness_execution_contracts import valid_harness_id
-from .harness_process import HarnessProcessSpec
+from .harness_process import HarnessProcessError, HarnessProcessSpec
 from .harness_semantic import GatewayHarnessProcessAdapter, HarnessSemanticBinding
 from .harness_fallback import HarnessFallbackPolicy
 from .harness_selection_records import HarnessSelectionPolicy
 
 
+#: The refusals a process spec raises when the software it names is not
+#: installed here, as opposed to a malformed declaration. Only these may be
+#: registered as an unavailable adapter; everything else stays a refusal.
+_INSTALLATION_REFUSALS = (
+    "harness executable is unavailable",
+    "software mount is absent or too broad",
+    "installed harness software changed after binding",
+)
+
+
+@dataclass(frozen=True)
+class UnavailableHarnessAdapter:
+    """A harness whose configuration was read but whose software is not
+    installed on this host.
+
+    It registers with ``available=False`` and the exact reason, so a fallback
+    order that names it moves on with ``adapter_unavailable`` (the failure
+    kind the fallback policy already knows) instead of failing the whole
+    assignment before any attempt. It never runs anything: the executor
+    refuses on ``info().available`` before ``run`` is reached.
+    """
+
+    harness_id: str
+    package_version: str
+    reason: str
+
+    def info(self) -> HarnessAdapterInfo:
+        return HarnessAdapterInfo(
+            harness_id=self.harness_id,
+            adapter_version="unavailable+" + hashlib.sha256(self.reason.encode()).hexdigest()[:16],
+            package_name=self.harness_id, package_version=self.package_version,
+            available=False, availability_reason=self.reason,
+            limitations=("not installed on this host: " + self.reason,))
+
+    def run(self, request, services) -> HarnessRunResult:
+        return HarnessRunResult(
+            request.request_id, request.harness_id, "unavailable",
+            error_code="adapter_unavailable", error="harness adapter is unavailable",
+            adapter_version=self.info().adapter_version,
+            provider_id=request.provider_id, model_id=request.model_id)
+
+
 def load_harness_fallback_binding(paths: tuple[str, ...], *, policy: HarnessFallbackPolicy,
                                   work_root: str, socket_directory: str,
-                                  artifact_store=None, selection_policy=None) -> HarnessSemanticBinding:
+                                  artifact_store=None, selection_policy=None,
+                                  allow_unavailable: bool = False) -> HarnessSemanticBinding:
     """Read exact host configurations in a typed fallback order, without execution.
 
     Reading configuration is passive. No adapter is installed or launched,
     and none of its native tools, plugins or credentials are authorized here.
+    With ``allow_unavailable`` an alternative whose software is not installed
+    here is registered as unavailable rather than refusing the whole order.
     """
     if not isinstance(policy, HarnessFallbackPolicy):
         raise TypeError('an explicit typed fallback policy is required')
@@ -32,7 +79,7 @@ def load_harness_fallback_binding(paths: tuple[str, ...], *, policy: HarnessFall
     for path, harness_id in zip(paths, policy.harness_ids):
         selected = load_harness_binding(path, work_root=work_root,
             socket_directory=socket_directory, artifact_store=artifact_store,
-            expected_id=harness_id)
+            expected_id=harness_id, allow_unavailable=allow_unavailable)
         adapters.append(selected.registry.get(harness_id))
     return HarnessSemanticBinding(policy.harness_ids[0], HarnessRegistry(adapters),
         work_root, artifact_store=artifact_store, socket_directory=socket_directory,
@@ -40,8 +87,17 @@ def load_harness_fallback_binding(paths: tuple[str, ...], *, policy: HarnessFall
 
 
 def load_harness_binding(path: str, *, work_root: str, socket_directory: str,
-                         artifact_store=None, expected_id: str = '',selection_policy=None) -> HarnessSemanticBinding:
-    """Resolve one explicit config file; no identifier implies installation."""
+                         artifact_store=None, expected_id: str = '',selection_policy=None,
+                         allow_unavailable: bool = False) -> HarnessSemanticBinding:
+    """Resolve one explicit config file; no identifier implies installation.
+
+    A declaration whose software is not installed here refuses, as before;
+    with ``allow_unavailable`` it is registered as an
+    :class:`UnavailableHarnessAdapter` instead, so a campaign can name every
+    registered harness in a fallback order on a host that has installed only
+    some of them and record the rest as unavailable at attempt time. A
+    malformed declaration refuses either way.
+    """
     source = Path(path)
     if (not source.is_absolute() or not source.is_file() or source.is_symlink()
             or source.stat().st_size > 1024 * 1024):
@@ -66,9 +122,19 @@ def load_harness_binding(path: str, *, work_root: str, socket_directory: str,
     for name in ('command_prefix', 'read_only_paths'):
         if type(value[name]) is not list or any(type(part) is not str for part in value[name]):
             raise ValueError('harness command and software paths must be lists of text')
-    spec = HarnessProcessSpec(value['harness_id'], value['package_version'],
-                              tuple(value['command_prefix']), tuple(value['read_only_paths']),
-                              value['style'])
+    try:
+        spec = HarnessProcessSpec(value['harness_id'], value['package_version'],
+                                  tuple(value['command_prefix']), tuple(value['read_only_paths']),
+                                  value['style'])
+    except HarnessProcessError as exc:
+        if not allow_unavailable or str(exc) not in _INSTALLATION_REFUSALS:
+            raise
+        registry = HarnessRegistry((UnavailableHarnessAdapter(
+            value['harness_id'], str(value['package_version']), str(exc)),))
+        return HarnessSemanticBinding(value['harness_id'], registry, work_root,
+                                      artifact_store=artifact_store,
+                                      socket_directory=socket_directory,
+                                      selection_policy=selection_policy)
     registry = HarnessRegistry((GatewayHarnessProcessAdapter(spec),))
     return HarnessSemanticBinding(value['harness_id'], registry, work_root,
                                    artifact_store=artifact_store,

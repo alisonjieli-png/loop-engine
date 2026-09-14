@@ -159,5 +159,66 @@ def run_checks():
         except ValueError:
             full = True
         check('prompt_filling_the_window_is_refused_not_truncated', full)
+
+    # A fallback order may name every registered harness on a host that has
+    # installed only some of them: an uninstalled alternative registers as
+    # unavailable, the failure kind the policy already knows, instead of
+    # refusing the whole assignment before any attempt.
+    import json as _json
+    import os as _os
+    from .harness_configuration import (UnavailableHarnessAdapter, load_harness_binding,
+                                        load_harness_fallback_binding)
+    from .harness_fallback import HarnessFailureKind, HarnessFallbackPolicy
+    from .harness_process import HarnessProcessError
+    with tempfile.TemporaryDirectory(prefix='harness-availability-') as directory:
+        root = Path(directory).resolve()
+        software = root / 'software' / 'aider' / 'lib'
+        software.mkdir(parents=True)
+        executable = root / 'aider-bin'
+        executable.write_text('#!/bin/sh\nexit 0\n')
+        _os.chmod(executable, 0o755)
+        installed = root / 'aider.json'
+        installed.write_text(_json.dumps({
+            'schema_version': 1, 'harness_id': 'aider', 'package_version': '0.86.2', 'style': 'aider',
+            'command_prefix': [str(executable)], 'read_only_paths': [str(software)]}))
+        absent = root / 'codex.json'
+        absent.write_text(_json.dumps({
+            'schema_version': 1, 'harness_id': 'codex', 'package_version': '0.36.0', 'style': 'codex',
+            'command_prefix': [str(root / 'absent-codex')], 'read_only_paths': [str(root / 'software' / 'codex' / 'lib')]}))
+        malformed = root / 'broken.json'
+        malformed.write_text(_json.dumps({'schema_version': 1, 'harness_id': 'kilo'}))
+        common = dict(work_root=str(root / 'work'), socket_directory=str(root / 'hs'))
+        refused = False
+        try:
+            load_harness_binding(str(absent), expected_id='codex', **common)
+        except HarnessProcessError:
+            refused = True
+        tolerated = load_harness_binding(str(absent), expected_id='codex', allow_unavailable=True, **common)
+        adapter = tolerated.registry.get('codex')
+        info = adapter.info()
+        check('an_uninstalled_harness_refuses_by_default_and_registers_as_unavailable_when_allowed',
+              refused and isinstance(adapter, UnavailableHarnessAdapter) and info.available is False
+              and info.availability_reason == 'harness executable is unavailable'
+              and info.adapter_version.startswith('unavailable+') and info.package_version == '0.36.0',
+              info.availability_reason)
+        still_refused = False
+        try:
+            load_harness_binding(str(malformed), expected_id='kilo', allow_unavailable=True, **common)
+        except (ValueError, HarnessProcessError):
+            still_refused = True
+        check('a_malformed_declaration_refuses_even_when_unavailability_is_allowed', still_refused)
+        policy = HarnessFallbackPolicy(('aider', 'codex'), (HarnessFailureKind.UNAVAILABLE,))
+        order = load_harness_fallback_binding((str(installed), str(absent)), policy=policy,
+                                              allow_unavailable=True, **common)
+        check('a_fallback_order_keeps_an_uninstalled_alternative_as_unavailable',
+              order.harness_id == 'aider' and order.registry.get('aider').info().available is True
+              and order.registry.get('codex').info().available is False
+              and order.fallback_policy is policy)
+        order_refused = False
+        try:
+            load_harness_fallback_binding((str(installed), str(absent)), policy=policy, **common)
+        except HarnessProcessError:
+            order_refused = True
+        check('the_same_order_refuses_without_the_allowance', order_refused)
     return {'tests': tests, 'passed': sum(t['passed'] for t in tests),
             'total': len(tests), 'all_passed': all(t['passed'] for t in tests)}

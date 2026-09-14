@@ -123,7 +123,13 @@ counts from the final line), and keeps one physical request per attempt;
 request inside one attempt, which the adapter contract may refuse. And
 `think: 'off'` on a model that cannot run without thinking is refused with
 HTTP 400 (`invalid_request`, a route stop); `think: model` leaves that
-model's default.
+model's default. The first live cell with `registered_alternatives`
+(`BA-001` on the pro route) failed with `HarnessProcessError` before any
+model call because `load_harness_binding` refuses an alternative whose
+executable is not installed; the loaders now take `allow_unavailable=True`,
+which registers such an alternative as unavailable so the fallback moves
+on with `adapter_unavailable`. The runner's dispatch (the loop that loads
+`manifest['harnesses']`) is the place to pass it for alternatives.
 
 For the subsequent September 12 configuration experiments, read the
 [configuration and native initialization report](../verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md).

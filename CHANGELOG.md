@@ -9,6 +9,17 @@ First public release.
 
 ### Fixed on 2026-09-13
 
+- A fallback order that names an uninstalled harness no longer fails the
+  assignment before any attempt. The first live campaign cell with
+  `harness_fallback: registered_alternatives` failed at the trial boundary
+  with a process error while loading the alternatives' configurations,
+  before its first model call, because the process spec refuses an
+  executable that is not installed here. `load_harness_binding` and
+  `load_harness_fallback_binding` now accept `allow_unavailable`, under
+  which such a declaration registers as an `UnavailableHarnessAdapter`
+  (`available=False` with the exact reason), so the executor answers
+  `adapter_unavailable`, the failure kind the fallback policy already
+  knows, and moves on; a malformed declaration refuses either way.
 - Campaign activation and safety, after a same-night offline
   [review](docs/verification/CAMPAIGN-ACTIVATION-REVIEW-2026-09-13.md) of
   the Codex session's activation gate, access check, and worker: a page in
