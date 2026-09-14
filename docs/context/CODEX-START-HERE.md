@@ -116,8 +116,11 @@ product's adapters and the evidence tooling, and it reads this file and
 `ASTRA.md` for anything addressed to it. Two notes for the relaunch: the
 prepared provider files declare `stream: buffer`, and a hosted service
 behind a proxy read wall cuts a long generation with 504 or 524, which
-`buffer` cannot answer; `stream: auto` retries once with streaming, which
-the Ollama wire now speaks, and records which mode delivered. And
+`buffer` cannot answer. `stream: stream` sends every request streamed,
+which the Ollama wire now speaks (newline-delimited JSON, joined with the
+counts from the final line), and keeps one physical request per attempt;
+`stream: auto` retries a cut request once with streaming, a second physical
+request inside one attempt, which the adapter contract may refuse. And
 `think: 'off'` on a model that cannot run without thinking is refused with
 HTTP 400 (`invalid_request`, a route stop); `think: model` leaves that
 model's default.
