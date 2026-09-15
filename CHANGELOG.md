@@ -122,6 +122,18 @@ First public release.
   reasoned, the selected option, the blocker, and the reason, and the refusal
   then stands. In a live rerun two verifier calls reached the output limit, and
   no record showed why no retry followed.
+- The independent verifier can judge a natural-language deliverable, such as
+  a customer message, a report, or a plan, against its registered acceptance
+  criteria. A probe case may declare `criterion_judgment`: the probe prints
+  the deliverable text read from the subject files, the case restates one
+  registered criterion word for word, and a separate model call judges that
+  criterion from the task, the criterion, and the printed text alone. The
+  judgment passes only when it is satisfied and every quoted passage appears
+  in the printed text, and validation grounds each stored judgment again
+  without a model call. In the September 14 rerun on `2aaa5d5`, all five
+  oracle reviews for CS-001 refused probes that searched the customer reply
+  for literal phrases, as stricter than the task or looser than its criteria,
+  so no check program could accept or reject the reply.
 
 ### Fixed on 2026-09-14
 

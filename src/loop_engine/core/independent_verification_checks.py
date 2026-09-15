@@ -769,7 +769,8 @@ def run_checks() -> dict:
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
 
     from .independent_verification_plan_checks import (
-        run_file_identity_checks, run_format_repair_checks, run_plan_checks, run_recovery_record_checks)
+        run_file_identity_checks, run_format_repair_checks, run_judgment_checks, run_plan_checks,
+        run_recovery_record_checks)
 
     for label, group in (("comparison", _comparison_checks),
                          ("proposal", _proposal_checks),
@@ -783,7 +784,7 @@ def run_checks() -> dict:
                          ("file_envelope", _file_envelope_checks),
                          ("format_repair", run_format_repair_checks),
                          ("file_identity", run_file_identity_checks), ("recovery_record", run_recovery_record_checks),
-                         ("plan_feedback", run_plan_checks)):
+                         ("plan_feedback", run_plan_checks), ("criterion_judgment", run_judgment_checks)):
         try:
             group(check)
         except Exception as exc:

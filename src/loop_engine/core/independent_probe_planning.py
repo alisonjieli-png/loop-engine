@@ -11,11 +11,14 @@ import math
 from dataclasses import dataclass
 
 from .generated_project import GeneratedProjectCommand, GeneratedProjectFile, GeneratedProjectFileSpec
+from .independent_judgment import JUDGMENT_COMPARISON, judgment_rubric_problem
 
 # Declared comparison policies for probe cases. Exact JSON and exact text keep
 # their meaning. A subset policy lets observed objects carry fields a case does
-# not constrain. A tolerance is a separate optional field for JSON policies.
-PROBE_COMPARISONS = ("json_equal", "text_equal", "json_subset")
+# not constrain. A tolerance is a separate optional field for JSON policies. A
+# criterion judgment has an independent judge read the printed deliverable text
+# against one registered criterion, grounded in verbatim quotes.
+PROBE_COMPARISONS = ("json_equal", "text_equal", "json_subset", JUDGMENT_COMPARISON)
 JSON_PROBE_COMPARISONS = (PROBE_COMPARISONS[0], PROBE_COMPARISONS[2])
 PROBE_TOLERANCE_FIELDS = ("absolute", "relative")
 
@@ -120,6 +123,10 @@ def validate_probe_plan(value, criteria, *, materialized=False):
             fail("invalid_case_identity", "independent case identity or coverage is invalid")
         if case["comparison"] not in PROBE_COMPARISONS:
             fail("invalid_comparison", "independent comparison is unsupported")
+        rubric_problem = (judgment_rubric_problem(case, criteria)
+                          if case["comparison"] == JUDGMENT_COMPARISON else "")
+        if rubric_problem:
+            fail("invalid_expectation", f"independent case {case_id!r}: {rubric_problem}")
         if case["comparison"] == PROBE_COMPARISONS[1] and (not isinstance(case["expected"], str) or not case["expected"]):
             fail("invalid_expectation", "text comparison needs nonempty exact expected output")
         if not _valid_tolerance(case.get("tolerance"), case["comparison"]):

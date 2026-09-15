@@ -1,4 +1,4 @@
-"""Invalid-plan feedback, response format repair, and a Docker verifier probe.
+"""Invalid-plan feedback, response format repair, criterion judgment, and a Docker verifier probe.
 
 The folded checks use declared fixtures. The separate opt-in qualification
 executes the existing verifier in Docker without a real model call.
@@ -15,6 +15,8 @@ from unittest.mock import patch
 from ..code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
 from . import independent_verification as verification
+from .generated_project import GeneratedProjectCommand, GeneratedProjectFile, GeneratedProjectManifest
+from .independent_judgment import JUDGMENT_COMPARISON, JUDGMENT_RECORD_TYPE
 from .independent_probe_planning import InvalidProbePlan, validate_probe_plan
 from .independent_verification_checks import (
     _CRITERIA, _GOOD_SOURCE, _proposal, _refused, _sandbox_observation, _services, _subject,
@@ -265,6 +267,154 @@ def run_recovery_record_checks(check):
                   and declined[0].get("selected") == list(selected)
                   and declined[0].get("reason") == "Offline recovery decision fixture.",
                   str(declined)[:300])
+
+
+_NOTICE = ("Dear patrons,\n\nThe library will close at 6 pm on Friday for scheduled "
+           "maintenance.\nWe will reopen at 9 am on Monday with the usual hours.\n")
+_NOTICE_TASK = "Write notice.md telling patrons when the library closes, why, and when it reopens."
+_NOTICE_CRITERIA = (("criterion:0", "The notice states when the library closes and why."),
+                    ("criterion:1", "The notice states when the library reopens."))
+
+
+def _notice_request(services):
+    """A natural-language deliverable that no exact expected value can check."""
+    root = Path(services.workspace_base) / "attempt-notice"
+    root.mkdir(parents=True)
+    show = "print(open('notice.md', encoding='utf-8').read())\n"
+    files = (GeneratedProjectFile("notice.md", _NOTICE), GeneratedProjectFile("show_notice.py", show))
+    for file in files:
+        (root / file.path).write_text(file.content, encoding="utf-8")
+    manifest = GeneratedProjectManifest(
+        "notice_fixture", "Offline natural-language deliverable fixture", files,
+        (GeneratedProjectCommand(("python", "show_notice.py"), "Show the notice", 5, "verify"),), ())
+    project = {"record_type": "generated_project_execution/v1", "workspace_path": str(root),
+               "manifest": manifest.to_dict(), "manifest_digest": manifest.digest,
+               "deterministic_checks_passed": True, "writes": [], "artifacts": [],
+               "producer_plan": "PRODUCER_PLAN_MUST_NOT_REACH_VERIFIER"}
+    return verification.IndependentVerificationRequest(_NOTICE_TASK, _NOTICE_CRITERIA, project)
+
+
+def _judged_plan():
+    return {"status": "ready", "notes": "Each criterion is judged against the printed notice.",
+            "files": [{"path": "checks/read_notice.py", "purpose": "Print the notice exactly as written."}],
+            "cases": [{"case_id": f"notice-{index}", "criterion_refs": [ref],
+                       "purpose": "Show the notice to an independent judge.",
+                       "argv": ["python", "checks/read_notice.py"], "timeout_seconds": 5,
+                       "comparison": JUDGMENT_COMPARISON,
+                       "expected": {"criterion_ref": ref, "requirement": text}}
+                      for index, (ref, text) in enumerate(_NOTICE_CRITERIA)]}
+
+
+def run_judgment_checks(check):
+    """A natural-language deliverable passes only on grounded criterion judgments."""
+    from ..strings.prompt_fragments import (
+        INDEPENDENT_PROBE_DESIGN_PROMPT, INDEPENDENT_PROBE_REVIEW_PROMPT)
+    plan = _judged_plan()
+    refusals = {}
+    for label, change in (
+            ("added_requirement", lambda case: case["expected"].update(
+                requirement=case["expected"]["requirement"] + " It names the branch manager.")),
+            ("other_criterion", lambda case: case["expected"].update(criterion_ref="criterion:1")),
+            ("tolerance", lambda case: case.update(tolerance={"absolute": 1}))):
+        changed = deepcopy(plan)
+        change(changed["cases"][0])
+        try:
+            validate_probe_plan(changed, _NOTICE_CRITERIA)
+            refusals[label] = None
+        except InvalidProbePlan as exc:
+            refusals[label] = exc.diagnostic.code
+    check("criterion_judgment_rubric_must_restate_its_one_registered_criterion",
+          validate_probe_plan(plan, _NOTICE_CRITERIA) is not None
+          and refusals == {"added_requirement": "invalid_expectation",
+                           "other_criterion": "invalid_expectation", "tolerance": "invalid_tolerance"},
+          str(refusals))
+    check("verifier_prompts_offer_criterion_judgment_only_where_exact_checks_cannot_apply",
+          "use criterion_judgment" in INDEPENDENT_PROBE_DESIGN_PROMPT
+          and "copied word for word" in INDEPENDENT_PROBE_DESIGN_PROMPT
+          and "A criterion_judgment case states no exact value" in INDEPENDENT_PROBE_REVIEW_PROMPT
+          and "refuse it when an exact comparison could check" in INDEPENDENT_PROBE_REVIEW_PROMPT)
+    source = {"path": "checks/read_notice.py", "content": (
+        "from pathlib import Path\n"
+        "print(Path('subject/notice.md').read_text(encoding='utf-8'), end='')\n")}
+    review = {"valid": True, "criterion_refs": [ref for ref, _text in _NOTICE_CRITERIA],
+              "issues": [], "notes": "The probe prints the notice read from the subject."}
+    closing = {"satisfied": True, "reason": "The closing time and its reason are stated.",
+               "evidence": ["The library will close at 6 pm on Friday for scheduled maintenance."]}
+    reopening = {"satisfied": True, "reason": "The reopening time is stated.",
+                 "evidence": ["We will reopen at 9 am on Monday"]}
+    invented = "The library stays open through the weekend."
+
+    def forged(_task, _cases, observations, _call):
+        response = {"satisfied": True, "evidence": [invented], "reason": "Forged."}
+        return [{**item, "passed": True, "judgment": {
+            "record_type": JUDGMENT_RECORD_TYPE, "satisfied": True, "evidence": [invented],
+            "missing_quotes": [], "reason": "Forged.", "grounded": True, "failure": "",
+            "response": response, "call": {}}} for item in observations]
+
+    for mode, judgments in (
+            ("grounded", (closing, reopening)),
+            ("not_satisfied", (closing, {**reopening, "satisfied": False,
+                                         "reason": "No reopening time is given."})),
+            ("invented_quote", ({**closing, "evidence": [invented]}, reopening)),
+            ("probe_failed", ()), ("judge_unavailable", ()), ("forged", ())):
+        with tempfile.TemporaryDirectory(prefix="independent-criterion-judgment-") as directory:
+            services, owner = _services(Path(directory), (plan, source, review, *judgments))
+            request = _notice_request(services)
+
+            def execute(active_request, _context, mode=mode):
+                observed = _sandbox_observation(active_request, _NOTICE)
+                failed = {"exit_code": 1, "ok": False} if mode == "probe_failed" else {}
+                observed["commands"] = [{**observed["commands"][0], "argv": list(command.argv), **failed}
+                                        for command in active_request.manifest.commands]
+                return observed
+
+            with patch.object(verification, "execute_generated_project", execute):
+                if mode == "forged":
+                    with patch.object(verification, "judge_observations", forged):
+                        result = verification.run_independent_verification(request, services, owner)
+                else:
+                    result = verification.run_independent_verification(request, services, owner)
+            judged = [item.get("judgment") or {} for item in result["checks"]]
+            calls = services.model_session.calls_used
+            if mode == "grounded":
+                bundle = verification._load(services, result["probe_ref"])
+                design = verification._load(services, bundle["generation"]["prompt_ref"])
+                file_packet = verification._load(services, bundle["file_calls"][0]["prompt_ref"])
+                prompts = [verification._load(services, item["call"]["prompt_ref"])
+                           for item in judged if item.get("call")]
+                check("natural_language_deliverable_passes_on_grounded_criterion_judgments",
+                      result["status"] == "passed" and calls == 5
+                      and all(item.get("grounded") is True for item in judged)
+                      and not _refused(lambda: verification.validate_independent_verification(
+                          result, request, services, owner)), str(result.get("notes")))
+                contract = design["response_contract"]["cases"][0]
+                check("judge_sees_only_the_task_one_criterion_and_the_printed_text",
+                      [item["criterion_ref"] for item in prompts] == ["criterion:0", "criterion:1"]
+                      and all(item["observed_deliverable"] == _NOTICE and item["task"] == _NOTICE_TASK
+                              and "PRODUCER_PLAN" not in json.dumps(item) for item in prompts)
+                      and JUDGMENT_COMPARISON in contract["comparison"]
+                      and "criterion_ref and requirement" in contract["expected"]
+                      and "print the deliverable text exactly as read" in file_packet["responsibility"])
+            elif mode in ("not_satisfied", "invented_quote"):
+                index, failure = (1, "not_satisfied") if mode == "not_satisfied" else (0, "ungrounded_quote")
+                check("criterion_judgment_" + mode + "_fails_the_report",
+                      result["status"] == "failed" and calls == 5
+                      and judged[index].get("failure") == failure
+                      and result["checks"][index]["passed"] is False
+                      and result["checks"][1 - index]["passed"] is True, str(judged)[:400])
+            elif mode == "probe_failed":
+                check("judged_case_whose_probe_did_not_complete_gets_no_judge_call",
+                      result["status"] == "failed" and calls == 3 and judged == [{}, {}],
+                      str(result.get("notes")))
+            elif mode == "judge_unavailable":
+                check("unanswered_judge_call_leaves_the_report_unavailable",
+                      result["status"] == "unavailable" and calls == 3 and result["checks"] == [],
+                      str(result.get("notes")))
+            else:
+                check("stored_judgment_is_grounded_again_when_the_report_is_validated",
+                      result["status"] == "passed" and calls == 3
+                      and _refused(lambda: verification.validate_independent_verification(
+                          result, request, services, owner)), str(result.get("notes")))
 
 
 def qualify_plan_repair(output_root: str) -> dict:

@@ -516,6 +516,15 @@ rerun on the runtime with the verifier and attachment file changes, with an
 experiment runner that waits through provider outages within a declared wait,
 is the next live qualification step.
 
+Observed result. In a live rerun on `2aaa5d5`, oracle reviews refused every
+check program that searched a customer reply for literal phrases, so a
+natural-language deliverable could be neither accepted nor rejected. The
+independent verifier now offers a hybrid contract for such a criterion. A
+deterministic rule holds the case to one registered criterion, a separate
+model call judges it, and deterministic grounding passes the judgment only
+when its quoted passages appear in the printed deliverable. No live rerun has
+qualified it yet.
+
 Unresolved question. Whether a model step should wait and retry inside the run
 when the provider is unavailable and the recovery reasoning call cannot
 answer, and which declared authority would bound that wait.

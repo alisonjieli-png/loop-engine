@@ -33,6 +33,7 @@ from .generated_project import (
 from .model_response_admission import (
     ModelResponseAdmissionRequest, admit_model_response_as_loop,
 )
+from .independent_judgment import judge_observations, revalidated_judgments
 from .independent_probe_planning import (
     JSON_PROBE_COMPARISONS, PROBE_COMPARISONS, PROBE_TOLERANCE_FIELDS, InvalidProbePlan,
     validate_probe_plan)
@@ -384,7 +385,9 @@ def _probe(request, services, owner, subject, visible, *, plan_attempts=None, or
         "cases": [{"case_id": "unique string", "criterion_refs": ["criterion:0"],
                    "purpose": "string", "argv": ["python", "checks/probe.py"],
                    "timeout_seconds": "positive number based on needed work",
-                   "comparison": "|".join(PROBE_COMPARISONS), "expected": "exact JSON value or text",
+                   "comparison": "|".join(PROBE_COMPARISONS),
+                   "expected": ("exact JSON value or text; for criterion_judgment, an object with "
+                                "criterion_ref and requirement copied from one registered criterion"),
                    "tolerance": ("optional object with non-negative "
                                  + " and/or ".join(PROBE_TOLERANCE_FIELDS)
                                  + " numbers, only for JSON comparisons of approximate numbers")}]}
@@ -512,7 +515,9 @@ def _materialize_probe_files(request, services, owner, proposal, subject, visibl
                 "oracle: the outside controller compares stdout. The workspace "
                 "is read-only; use /tmp for temporary output. Do not change the "
                 "case expectations, invent requirements, or run producer tests "
-                "as a substitute for observing behavior."),
+                "as a substitute for observing behavior. For a criterion_judgment "
+                "case, print the deliverable text exactly as read from the subject "
+                "files, without summarizing it; an independent judge reads it."),
             "response_contract": {"path": path, "content": "complete Python source"}},
             file_spec=GeneratedProjectFileSpec(path, item["purpose"]))
         if not isinstance(value, dict) or set(value) != {"path", "content"} or value["path"] != path:
@@ -696,7 +701,10 @@ def run_independent_verification(request, services, owner_loop) -> dict:
             report["execution_ref"] = _store(services, execution, "independent_probe_execution")
             report["execution"] = {key: execution.get(key) for key in (
                 "commands", "sandbox", "deterministic_checks_passed", "workspace_path")}
-            checks = _compare(bundle["proposal"]["cases"], execution)
+            # A judged case gets one isolated judge call over its printed text.
+            checks = judge_observations(
+                request.task, bundle["proposal"]["cases"], _compare(bundle["proposal"]["cases"], execution),
+                lambda purpose, packet: _call(services, active, purpose, packet))
             report["checks"] = checks
             after, _, _ = _freeze(request, services)
             report["source_unchanged"] = _digest(after) == report["subject_digest"]
@@ -761,7 +769,9 @@ def validate_independent_verification(report, request, services, owner_loop) -> 
             or bundle["criteria_digest"] != subject["criteria_digest"]):
         raise ValueError("independent probe has a different contract")
     execution = _load(services, report["execution_ref"])
-    checks = _compare(bundle["proposal"]["cases"], execution)
+    # Stored judgments are grounded again from the stored text; no model is called.
+    checks = revalidated_judgments(bundle["proposal"]["cases"],
+                                   _compare(bundle["proposal"]["cases"], execution), report["checks"])
     if (checks != report["checks"] or not checks
             or not all(item["passed"] for item in checks)
             or not _valid_execution(execution, checks, subject["image"])):
