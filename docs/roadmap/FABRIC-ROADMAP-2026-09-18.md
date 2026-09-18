@@ -221,6 +221,23 @@ Append one line per iteration: date, step, result, evidence path, commit.
 
 - 2026-09-18, S-0.5, offline_verified on an exported tree; evidence in the
   batch 6 gate log; commit recorded in the changelog.
+- 2026-09-18, S-5.1, offline_verified; evidence
+  `docs/research/BRANDING-OPTIONS-2026-09-18.md`.
+- 2026-09-18, S-2.9, offline_verified; evidence
+  `docs/architecture/INTELLIGENCE-STORAGE-AND-SERVING-2026-09-18.md` with
+  the measured adapter table; decision: DuckDB over packaged files as the
+  default, package references and a characteristics sidecar as the record
+  shape, a server database behind the same contract for rollout.
+- 2026-09-18, S-1.1, S-1.2, S-1.3, building: temporal facts, record
+  versioning, and shared memory scopes pass their module checks; gates and
+  mutants pending.
+- 2026-09-18, research for S-1.10, S-1.11, S-2.7, and S-2.8 recorded in
+  `docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md`.
+- 2026-09-18, S-2.6, offline_verified; evidence
+  `docs/architecture/DIMENSION-INVENTORY-2026-09-18.md`, which places the
+  twenty-five baseline node dimensions in the levels above and below and
+  adds the deployment, space, graph, step, prompt, model call, intelligence
+  access, solutions space, and economics rows with their owning boundaries.
 
 ## Unresolved questions for the owner
 

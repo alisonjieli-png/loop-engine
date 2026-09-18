@@ -9,6 +9,34 @@ First public release.
 
 ### Added on 2026-09-18
 
+- Three records for the September 18 direction: the
+  [fabric roadmap](docs/roadmap/FABRIC-ROADMAP-2026-09-18.md) with its
+  machine-readable copy, the
+  [intelligence storage and serving decision](docs/architecture/INTELLIGENCE-STORAGE-AND-SERVING-2026-09-18.md)
+  with the measured adapter table, the
+  [dimension inventory](docs/architecture/DIMENSION-INVENTORY-2026-09-18.md)
+  at every level, the
+  [pre-packaged intelligence research](docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md)
+  with verified package and occupation-database facts, and the
+  [branding options](docs/research/BRANDING-OPTIONS-2026-09-18.md).
+- Temporal facts and a fact graph over Context Intelligence records.
+  `core/temporal_facts.py` owns `TemporalFact` (subject, predicate, object,
+  validity interval, confidence, source, successor) stored as catalog
+  records with artifact kind `temporal_fact`, and `FactGraph` with
+  assertion, functional-predicate conflict refusal, supersession that
+  closes the old interval and names the successor, as-of and as-of-all
+  queries, history, neighbors, and time-aware paths. Nothing is deleted.
+- Record versioning over any catalog store. `catalog/versioning.py` keeps
+  every previous version as an immutable `record_revision` record with
+  lifecycle `revision`, so ordinary queries do not see it, and offers
+  `revise` under a precondition, `history`, `diff`, and `rollback` as a new
+  version that names its origin.
+- Shared memory scopes. `core/shared_memory_scopes.py` owns
+  `SharedMemoryScope` (namespace, members, visibility) and `SharedMemory`,
+  whose writes carry the writer identity, scope, and time, refuse
+  non-members, and guard against stale concurrent writes by the version
+  last read; reads are filtered by membership and visibility and show who
+  wrote each record.
 - Text conformance with a confidence per correction.
   `code_nodes/text_conformance_operations.py` imports only the standard
   library and owns seven operations (whitespace, Unicode, case with catalog

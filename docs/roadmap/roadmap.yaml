@@ -21,23 +21,23 @@ steps:
   - id: S-1.1
     phase: 1
     title: Temporal fact graph in Context Intelligence
-    status: ready
+    status: building
     depends_on: [S-0.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the validity check; the as-of check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/core/temporal_facts.py self_test"
   - id: S-1.2
     phase: 1
     title: Memory versioning with history, diff, and rollback
-    status: proposed
+    status: building
     depends_on: [S-1.1]
     verify: [SELF, MUTANT]
     adversarial: "remove the revision write; the history check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/catalog/versioning.py self_test"
   - id: S-1.3
     phase: 1
     title: Shared memory scopes with writer identity
-    status: proposed
+    status: building
     depends_on: [S-1.2]
     verify: [SELF, MUTANT]
     adversarial: "remove writer identity; the visibility check must fail"
@@ -109,11 +109,11 @@ steps:
   - id: S-2.6
     phase: 2
     title: Dimension inventory at every level
-    status: ready
+    status: offline_verified
     depends_on: [S-0.5]
     verify: [LINT]
     adversarial: "a dimension without an owning boundary fails review"
-    evidence: ""
+    evidence: "docs/architecture/DIMENSION-INVENTORY-2026-09-18.md"
   - id: S-2.7
     phase: 2
     title: Prompt element and response-style dimensions as grid axes
@@ -133,11 +133,11 @@ steps:
   - id: S-2.9
     phase: 2
     title: Intelligence storage analysis and measurement
-    status: ready
+    status: offline_verified
     depends_on: [S-0.5]
     verify: [measured table with script and denominators]
     adversarial: "a variation without a measured row is marked unmeasured, never recommended"
-    evidence: ""
+    evidence: "docs/architecture/INTELLIGENCE-STORAGE-AND-SERVING-2026-09-18.md"
   - id: S-2.10
     phase: 2
     title: Intelligence access contract and no-direct-edit conformance rule

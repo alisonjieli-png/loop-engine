@@ -754,6 +754,30 @@ runs the whole path offline, and `loop-engine export` exposes it. Offline
 checks and mutants cover each rule. No live run has used the escalation
 path yet, and the confidence values are declared signals, not calibrations.
 
+Owner requirement, later on September 18. Intelligence is stored and served
+through one store contract, never by editing text files: packaged JSONL and
+YAML ship as the default and are read and written through DuckDB or an
+equivalent with full create, read, update, and delete by tool or Python
+call; a server database serves wide rollouts; search characteristics live
+in the database with a key that is a file, an object store location, or a
+package reference; large bodies stay in files or packages; and every
+variation is analyzed and measured before one is chosen.
+
+Observed result. The
+[storage and serving record](docs/architecture/INTELLIGENCE-STORAGE-AND-SERVING-2026-09-18.md)
+measured the four existing catalog adapters on 20,000 seeded records: the
+packaged JSONL adapter scans the shard for every get (1,000 gets in 42.8
+seconds), SQLite gets by identity in microseconds but filters attributes in
+Python, and the DuckDB adapter inserts one row per statement (20,000 rows
+in 80.6 seconds). The decision is DuckDB over packaged files as the
+default, package references and a characteristics sidecar as the record
+shape, and a server database behind the same contract for rollout, with a
+conformance scan that refuses direct writes to intelligence files. Steps
+S-2.10 and S-2.11 implement it. Three memory boundaries also landed:
+temporal facts with a fact graph, record versioning inside the same store,
+and shared memory scopes with signed writes; each passes its module checks
+and the gates and mutants are recorded in the changelog when they land.
+
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of
 concept, billing, publication, and unseen-task runs.

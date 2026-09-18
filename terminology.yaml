@@ -3349,3 +3349,91 @@ semantic_terms:
   examples: ["Six checks passed for company_conformance with loop_engine absent from the loaded modules."]
   negative_examples: ["Reporting an export as runnable from file presence alone."]
   conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.temporal_fact"
+  canonical_name: "TemporalFact"
+  primary_category: "record"
+  definition: "One asserted triple (subject, predicate, object) with a validity interval, a confidence, its source, and its successor, stored as a Context Intelligence catalog record."
+  source_of_truth: "loop_engine.core.temporal_facts:TemporalFact"
+  source_symbol: "loop_engine.core.temporal_facts:TemporalFact"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "temporal_fact/v1"
+  related_terms: ["FactGraph","RecordRevision"]
+  difference_from_neighbors: "TemporalFact is one time-bounded assertion; a Claim in an epistemic state is a run-scoped belief without an interval; a RecordRevision preserves a whole record version."
+  parameterization_decision: "normalized_utc_interval_and_unit_interval_confidence"
+  composition_decision: "identity from subject, predicate, object, and start; supersession closes the interval and names the successor"
+  inheritance_decision: "none"
+  storage_authority: "catalog store in the fact graph's namespace"
+  lifecycle: "Immutable; a superseded fact keeps its record with lifecycle superseded."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["acme chief_executive alice from 2020-01-01 until superseded by bob on 2024-06-01."]
+  negative_examples: ["Deleting the old chief executive fact when a new one is asserted."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.fact_graph"
+  canonical_name: "FactGraph"
+  primary_category: "service"
+  definition: "The time-aware view over temporal facts in one namespace: assertion with functional-predicate conflict refusal, supersession, as-of and as-of-all queries, history, neighbors, and paths."
+  source_of_truth: "loop_engine.core.temporal_facts:FactGraph"
+  source_symbol: "loop_engine.core.temporal_facts:FactGraph"
+  public_or_internal: "public"
+  runtime_or_passive: "runtime"
+  authoritative_or_projection: "projection"
+  versioning: "temporal_fact/v1"
+  related_terms: ["TemporalFact","IntelligenceQuery"]
+  difference_from_neighbors: "FactGraph answers time-aware questions over stored facts; the catalog store holds the records and stays the authority."
+  parameterization_decision: "namespace_bound_view_over_one_catalog_store"
+  composition_decision: "queries go through IntelligenceQuery; writes go through the store's put with a precondition"
+  inheritance_decision: "none"
+  storage_authority: "the catalog store it wraps"
+  lifecycle: "Stateless per call."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["as_of(acme, chief_executive, 2022-03-03) returns alice."]
+  negative_examples: ["Returning the successor for a time before it started."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "catalog.term.record_revision"
+  canonical_name: "RecordRevision"
+  primary_category: "record"
+  definition: "One preserved version of a catalog record with its digest, whether it is current, and the version it was restored from when it came from a rollback."
+  source_of_truth: "loop_engine.catalog.versioning:RecordRevision"
+  source_symbol: "loop_engine.catalog.versioning:RecordRevision"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "record_history/v1"
+  related_terms: ["IntelligenceQuery","TemporalFact"]
+  difference_from_neighbors: "RecordRevision preserves a whole earlier version of any record; TemporalFact bounds one assertion in time."
+  parameterization_decision: "revision_records_in_the_same_store_with_lifecycle_revision"
+  composition_decision: "revise under the version last read; rollback is a new version that names its origin"
+  inheritance_decision: "none"
+  storage_authority: "the catalog store that holds the record"
+  lifecycle: "Immutable; never deleted."
+  legacy_aliases: []
+  migration: "New on 2026-09-18; earlier stores kept one row per identity and forgot the past."
+  examples: ["ctx.fact.python at 1.0.0, 1.1.0, and 1.2.0 restored from 1.0.0."]
+  negative_examples: ["Replacing a row in place and calling the change reversible."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.shared_memory_scope"
+  canonical_name: "SharedMemoryScope"
+  primary_category: "record"
+  definition: "One shared memory space for several Loops: its namespace, its members, its visibility (members only, organization, public), and the organization when visibility is organization."
+  source_of_truth: "loop_engine.core.shared_memory_scopes:SharedMemoryScope"
+  source_symbol: "loop_engine.core.shared_memory_scopes:SharedMemoryScope"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "shared_memory_scope/v1"
+  related_terms: ["SharedWrite","IntelligenceQuery"]
+  difference_from_neighbors: "SharedMemoryScope says who may write and read a namespace; Runtime Memory is scoped to one run and is never shared across runs."
+  parameterization_decision: "closed_visibility_vocabulary_and_member_identifiers"
+  composition_decision: "every write carries the writer identity, the scope, and the time; reads filter by membership and visibility"
+  inheritance_decision: "none"
+  storage_authority: "the catalog store the shared memory wraps"
+  lifecycle: "Immutable per scope definition; a changed membership is a new scope record."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["project.alpha shared by loop.planner and loop.builder in namespace project:alpha."]
+  negative_examples: ["A write without a writer identity, or a read by a non-member of a members-only scope."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]

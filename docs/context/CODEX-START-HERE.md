@@ -32,7 +32,12 @@ machine-readable copy `docs/roadmap/roadmap.yaml`: pick the first ready step
 whose dependencies are verified, build it at the boundary it names, run its
 verification on an exported tree, run its adversarial check, record the
 evidence, and move its status. The requirements register in that document
-lists every owner direction with its owning boundary and state.
+lists every owner direction with its owning boundary and state. Two
+companions: the
+[dimension inventory](../architecture/DIMENSION-INVENTORY-2026-09-18.md)
+lists every setting a grid can vary at every level, and the
+[storage and serving decision](../architecture/INTELLIGENCE-STORAGE-AND-SERVING-2026-09-18.md)
+says how intelligence is stored and served, with measured numbers.
 
 Before continuing after the September 12 account change, read the
 [discrete cognitive or act step Loop node complete explanation and session handoff](DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md)

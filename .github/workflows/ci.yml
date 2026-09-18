@@ -260,6 +260,7 @@ jobs:
           python examples/20_compile_text_tasks/run.py
           python examples/21_schema_org_data_standardization/run.py
           python examples/23_drop_in_extensions/run.py
+          python examples/26_export_a_standalone_solution/run.py
 
       - name: Product solve acceptance
         run: |
