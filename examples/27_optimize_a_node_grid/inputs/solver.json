@@ -1,0 +1,5 @@
+{"kind": "text_conformance", "column": "name",
+ "rules": [{"rule_id": "whitespace", "operation": "whitespace_normalize", "columns": ["name"]},
+           {"rule_id": "case", "operation": "case_normalize", "columns": ["name"]},
+           {"rule_id": "suffix", "operation": "suffix_canonicalize", "columns": ["name"]}],
+ "policy": {"apply_at_or_above": 0.9, "escalate_below": 0.6}}

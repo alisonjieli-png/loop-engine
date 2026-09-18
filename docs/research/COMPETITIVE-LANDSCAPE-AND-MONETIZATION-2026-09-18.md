@@ -1,6 +1,6 @@
 # Competitive landscape and monetization: memory, learning, and optimization layers for agents
 
-Date: 2026-09-18, extended the same day with the feature matrix. Requested by
+Date: 2026-09-18, extended the same day with the feature matrix and again after commits fcca293 and 67d5d8f changed the Loop Engine row. Requested by
 the owner after the SenseLab reading: compare the companies and projects adjacent to Loop Engine, contrast them with Loop
 Engine's boundaries, and learn from how they charge. Every price, quota, and
 claim below was read from the vendor's own public page or its public
@@ -49,32 +49,38 @@ Each cell is Y (documented), N (not documented or documented as absent),
 P (partial, see the cell notes), or ? (unverified today). Every non-obvious
 cell names the page or fact it rests on. Letta was added to the chart.
 
-| Company | Persistent memory | Graph or temporal facts | Outcome changes retrieval | Memory versioning | Multi-agent shared memory | Procedures as instructions | Executable code reuse | Executes code or tools | Standalone solution export | Independent verification | Evaluation or simulation product | Per-implementation cost records | Model routing | Model versus non-model choice | Harness or prompt optimization | Trains or exports specialists | Open source core | Self-hosted option | Hosted cloud | Public pricing |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | P | Y | N | P | Y | Y | Y | P | Y | P | P | Y | P | P | P | Y | Y | N | N |
-| Mem0 | Y | Y | N | N | Y | Y | N | N | N | N | P | N | N | N | N | N | Y | Y | Y | Y |
-| Zep and Graphiti | Y | Y | N | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Supermemory | Y | Y | P | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Cognee | Y | Y | ? | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Honcho (Plastic Labs) | Y | Y | N | N | Y | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| MemOS (MemTensor) | Y | Y | P | N | Y | Y | N | P | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Hindsight (Vectorize) | Y | Y | N | N | Y | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| SenseLab (AMFS) | Y | Y | Y | Y | Y | N | N | N | N | N | P | N | N | N | N | Y | Y | Y | Y | Y |
-| Letta | Y | N | N | Y | P | Y | P | Y | N | N | N | N | N | N | P | N | Y | Y | Y | Y |
-| Synth | N | N | N | N | N | N | P | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | P |
-| Tellurio and Afnio | N | N | N | N | N | N | N | Y | N | N | Y | N | N | N | Y | N | P | ? | Y | Y |
-| LangWatch | N | N | N | N | N | N | N | P | N | P | Y | N | N | N | Y | Y | Y | Y | Y | Y |
-| Not Diamond | N | N | N | N | N | N | N | N | N | N | N | N | Y | N | ? | N | N | N | Y | Y |
-| TypeSafe (Jev) | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y |
-| PrismML (Bonsai) | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y | N | N |
-| Osmosis (Gulp AI) | N | N | N | N | N | N | N | N | N | N | P | N | N | N | N | Y | N | N | Y | N |
-| Adaptive ML (acquired by Datadog) | N | N | N | N | N | N | N | N | N | P | Y | N | N | N | N | Y | N | N | Y | N |
-| Distyl | ? | ? | ? | ? | ? | ? | ? | Y | ? | P | ? | ? | ? | ? | ? | ? | N | ? | Y | N |
-| TensorZero (archived) | N | N | N | N | N | N | N | N | N | N | Y | N | Y | N | Y | Y | Y | Y | N | N |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+The intelligence layers band was added later on 2026-09-18 so that Context, Code, Runtime History and Solution, and User Feedback Intelligence are visible as areas; competitor cells in that band are marked unverified unless a note already supported them.
+
+| Company | Context Intelligence | Code Intelligence | Runtime History and Solution Intelligence | User Feedback Intelligence | Persistent memory | Graph or temporal facts | Outcome changes retrieval | Memory versioning | Multi-agent shared memory | Procedures as instructions | Executable code reuse | Executes code or tools | Standalone solution export | Independent verification | Evaluation or simulation product | Per-implementation cost records | Model routing | Model versus non-model choice | Harness or prompt optimization | Trains or exports specialists | Open source core | Self-hosted option | Hosted cloud | Public pricing |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N |
+| Mem0 | Y | N | ? | Y | Y | Y | N | N | Y | Y | N | N | N | N | P | N | N | N | N | N | Y | Y | Y | Y |
+| Zep and Graphiti | Y | N | ? | ? | Y | Y | N | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
+| Supermemory | Y | N | ? | Y | Y | Y | P | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
+| Cognee | Y | N | ? | ? | Y | Y | ? | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
+| Honcho (Plastic Labs) | Y | N | ? | ? | Y | Y | N | N | Y | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
+| MemOS (MemTensor) | Y | N | P | P | Y | Y | P | N | Y | Y | N | P | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
+| Hindsight (Vectorize) | Y | N | ? | ? | Y | Y | N | N | Y | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
+| SenseLab (AMFS) | Y | N | Y | ? | Y | Y | Y | Y | Y | N | N | N | N | N | P | N | N | N | N | Y | Y | Y | Y | Y |
+| Letta | Y | P | ? | ? | Y | N | N | Y | P | Y | P | Y | N | N | N | N | N | N | P | N | Y | Y | Y | Y |
+| Synth | P | P | Y | ? | N | N | N | N | N | N | P | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | P |
+| Tellurio and Afnio | ? | N | ? | ? | N | N | N | N | N | N | N | Y | N | N | Y | N | N | N | Y | N | P | ? | Y | Y |
+| LangWatch | ? | N | Y | ? | N | N | N | N | N | N | N | P | N | P | Y | N | N | N | Y | Y | Y | Y | Y | Y |
+| Not Diamond | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | N | N | Y | N | ? | N | N | N | Y | Y |
+| TypeSafe (Jev) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y |
+| PrismML (Bonsai) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y | N | N |
+| Osmosis (Gulp AI) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | P | N | N | N | N | Y | N | N | Y | N |
+| Adaptive ML (acquired by Datadog) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | P | Y | N | N | N | N | Y | N | N | Y | N |
+| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | Y | ? | P | ? | ? | ? | ? | ? | ? | N | ? | Y | N |
+| TensorZero (archived) | N | N | Y | ? | N | N | N | N | N | N | N | N | N | N | Y | N | Y | N | Y | Y | Y | Y | N | N |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 
 Column definitions:
 
+- Context Intelligence: Facts, instructions, personas, and forms kept as a served layer with identity and version.
+- Code Intelligence: Executable capabilities kept with identity, contract, tests, and digest, invoked without a model.
+- Runtime History and Solution Intelligence: What ran, what it cost, and what was verified, kept for later runs to search and compare.
+- User Feedback Intelligence: What people said and decided, kept and applied at run time.
 - Persistent memory: Keeps facts or entries across sessions.
 - Graph or temporal facts: Relationships between entries, or validity times on facts.
 - Outcome changes retrieval: A task outcome changes what is retrieved or how much it is trusted.
@@ -98,36 +104,27 @@ Column definitions:
 
 Cell notes:
 
-- Loop Engine (this repository): Graph or temporal facts: evidence records with time validity; no graph store; Outcome changes retrieval: reuse evidence and the failed-check review, offline only; Multi-agent shared memory: one task working folder; scoped views not built; Executable code reuse: qualified reusable capabilities and registered resolvers; live reuse not yet measured; Executes code or tools: generated projects run in a confined workspace or sandbox; Standalone solution export: package export in progress on 2026-09-18; Evaluation or simulation product: campaign runner and independent verifier; no simulation product; Per-implementation cost records: operation cost records landed 2026-09-18; selector not wired; Model versus non-model choice: engineering-lab question forms and cost records; no live selector; Harness or prompt optimization: question engine and configuration grid; no automatic tuner; Trains or exports specialists: training export with named exclusions; no training; Open source core: MIT.
-- Mem0: Graph or temporal facts: Graph Memory page; Outcome changes retrieval: Feedback Mechanism captures user signals, not outcome confidence; Multi-agent shared memory: Team Task Agent cookbook; Procedures as instructions: Memory Types: procedural_memory; Evaluation or simulation product: Memory Evaluation benchmarks memory quality, not task outcomes; Trains or exports specialists: Memory Export exports memories, not training sets; Open source core: Apache 2.0, 65,589 stars.
+- Loop Engine (this repository): Context Intelligence: catalog adapters, the string bank, packaged data files, temporal facts, shared scopes; served through intelligence_layers and retrieval; Code Intelligence: capability directory surfaces, reusable capability records, registered resolvers, the text conformance family, specialists; Runtime History and Solution Intelligence: run history, solutions space, model call and operation cost records, reuse evidence, evaluation reports, dataset versions; User Feedback Intelligence: the advice store, typed task feedback slots, approvals, reviewed candidates; Graph or temporal facts: core/temporal_facts: typed triples with validity intervals, supersession, as-of, neighbors, paths (commit 67d5d8f); Outcome changes retrieval: reuse evidence and the failed-check review, offline only; Memory versioning: catalog/versioning: immutable revisions, history, diff, rollback in the same store (commit 67d5d8f); Multi-agent shared memory: core/shared_memory_scopes: signed writes, membership and visibility filtered reads, stale-write refusal (commit 67d5d8f); Executable code reuse: qualified reusable capabilities and registered resolvers; live reuse not yet measured; Executes code or tools: generated projects run in a confined workspace or sandbox; Standalone solution export: code_nodes/solution_export: package with tests, manifest, Dockerfile, Job, verified in an interpreter that cannot import loop_engine (commit fcca293); Evaluation or simulation product: core/evaluation_suite and loop-engine evaluate: frozen suites, registered graders, exact denominators, case-level comparison; no simulation product; Per-implementation cost records: core/operation_cost_capture wired into every capability directory call; cheapest verified implementation query; Model versus non-model choice: core/implementation_choice: a decision record per operation from ledger evidence or the declared fallback order; written for every conformance escalation; Harness or prompt optimization: core/configuration_optimizer and loop-engine optimize: declared parameter space, acceptance only when train gains and holdout does not lose; offline graders only; Trains or exports specialists: core/specialist_training: naive Bayes specialist from recorded rows with a run-level split, exported as JSON weights, candidate resolver; no fine-tuning; Open source core: MIT; Hosted cloud: service software and container in progress; no public hosted endpoint is operated; Public pricing: packaging tiers drafted in the landscape record; no prices published.
+- Mem0: Context Intelligence: memories and procedural memory as entries; User Feedback Intelligence: Feedback Mechanism captures user signals; Graph or temporal facts: Graph Memory page; Outcome changes retrieval: Feedback Mechanism captures user signals, not outcome confidence; Multi-agent shared memory: Team Task Agent cookbook; Procedures as instructions: Memory Types: procedural_memory; Evaluation or simulation product: Memory Evaluation benchmarks memory quality, not task outcomes; Trains or exports specialists: Memory Export exports memories, not training sets; Open source core: Apache 2.0, 65,589 stars.
 - Zep and Graphiti: Graph or temporal facts: Fact Invalidation stores when a fact became invalid; Multi-agent shared memory: per-user graphs; shared provenance not documented; Open source core: Graphiti Apache 2.0, 30,986 stars.
-- Supermemory: Graph or temporal facts: Graph memory: relationships, temporal truth, forgetting; Outcome changes retrieval: Review Inferred Memories: approve or decline, not task outcomes; Multi-agent shared memory: multi-tenancy and container tags; provenance not documented; Open source core: MIT, 30,159 stars.
-- Cognee: Graph or temporal facts: induced ontologies; bi-temporal facts in the enterprise tier; Executable code reuse: indexes code as a data source; does not run or reuse it; Outcome changes retrieval: feedback-informed retrieval claimed by the vendor; not found in the documentation index; Open source core: Apache 2.0, 30,809 stars.
+- Supermemory: Context Intelligence: memories with relationships and temporal truth; User Feedback Intelligence: Review Inferred Memories: approve or decline; Graph or temporal facts: Graph memory: relationships, temporal truth, forgetting; Outcome changes retrieval: Review Inferred Memories: approve or decline, not task outcomes; Multi-agent shared memory: multi-tenancy and container tags; provenance not documented; Open source core: MIT, 30,159 stars.
+- Cognee: Graph or temporal facts: induced ontologies; bi-temporal facts in the enterprise tier; Outcome changes retrieval: feedback-informed retrieval claimed by the vendor; not found in the documentation index; Executable code reuse: indexes code as a data source; does not run or reuse it; Open source core: Apache 2.0, 30,809 stars.
 - Honcho (Plastic Labs): Graph or temporal facts: Peer Representations and Directional Representations; Outcome changes retrieval: search filters change queries, not trust from outcomes; Multi-agent shared memory: multi-peer memory with an Evidence page for reasoning origins; Open source core: AGPL-3.0, 7,244 stars; Public pricing: ingestion $2 per million tokens; reasoning $0.001 to $0.50 per query.
-- MemOS (MemTensor): Graph or temporal facts: Neo4j and PolarDB graph modules; Outcome changes retrieval: feedback exists; no verification; Multi-agent shared memory: Group Chat; Procedures as instructions: Self-Evolving: distills reusable structured methods; Executable code reuse: a distilled skill is rendered into the prompt as an invocation guide; Executes code or tools: Tool Calling records tool decisions and results; the agent runs them; Open source core: Apache 2.0, 11,455 stars.
+- MemOS (MemTensor): Runtime History and Solution Intelligence: Tool Calling records tool decisions and results; User Feedback Intelligence: feedback exists; no verification; Graph or temporal facts: Neo4j and PolarDB graph modules; Outcome changes retrieval: feedback exists; no verification; Multi-agent shared memory: Group Chat; Procedures as instructions: Self-Evolving: distills reusable structured methods; Executable code reuse: a distilled skill is rendered into the prompt as an invocation guide; Executes code or tools: Tool Calling records tool decisions and results; the agent runs them; Open source core: Apache 2.0, 11,455 stars.
 - Hindsight (Vectorize): Graph or temporal facts: entities, relationships, graph search; Multi-agent shared memory: shared memory banks; Executable code reuse: its tools are retain, recall, reflect over memory, not reusable task code; Open source core: MIT, 23,894 stars.
-- SenseLab (AMFS): Outcome changes retrieval: evidence posterior in evidence.py; action priors; Memory versioning: branches, merge, rollback in the paid edition; Multi-agent shared memory: rooms in the paid edition; Evaluation or simulation product: a preregistered benchmark harness in the repository; not a product; Trains or exports specialists: training export and Managed Models, paid; Open source core: Apache 2.0 core, 76 stars.
-- Letta: Memory versioning: git-versioned memory filesystem; Multi-agent shared memory: team organizations and agent sharing; Procedures as instructions: Skills: folders of instructions, scripts, and assets; Executable code reuse: skills may carry scripts and Mods are trusted local code, but the model chooses to invoke them; Executes code or tools: cloud sandboxes and tool execution billed per second; Harness or prompt optimization: harness customization by hand, not automatic; Open source core: Apache 2.0, 24,786 stars.
-- Synth: Executable code reuse: projects bind repos and reusable knowledge; no capability library; Executes code or tools: container pools; Standalone solution export: Repo Review and PR returns a pull request; Independent verification: Evaluation Standards: verifiers, rubrics, rewards over immutable traces; Harness or prompt optimization: GEPA and GELO optimizers; Trains or exports specialists: supervised fine-tuning from the workshop; Open source core: software development kit MIT, 82 stars; Public pricing: $10 workshop allowance; no price list.
+- SenseLab (AMFS): Runtime History and Solution Intelligence: outcomes reconcile the read set; the evidence posterior; Outcome changes retrieval: evidence posterior in evidence.py; action priors; Memory versioning: branches, merge, rollback in the paid edition; Multi-agent shared memory: rooms in the paid edition; Evaluation or simulation product: a preregistered benchmark harness in the repository; not a product; Trains or exports specialists: training export and Managed Models, paid; Open source core: Apache 2.0 core, 76 stars.
+- Letta: Code Intelligence: skills may carry scripts; the model chooses to invoke them; Memory versioning: git-versioned memory filesystem; Multi-agent shared memory: team organizations and agent sharing; Procedures as instructions: Skills: folders of instructions, scripts, and assets; Executable code reuse: skills may carry scripts and Mods are trusted local code, but the model chooses to invoke them; Executes code or tools: cloud sandboxes and tool execution billed per second; Harness or prompt optimization: harness customization by hand, not automatic; Open source core: Apache 2.0, 24,786 stars.
+- Synth: Context Intelligence: projects bind repos and reusable knowledge; Code Intelligence: no capability library; Runtime History and Solution Intelligence: immutable traces with verifiers and rubrics; Executable code reuse: projects bind repos and reusable knowledge; no capability library; Executes code or tools: container pools; Standalone solution export: Repo Review and PR returns a pull request; Independent verification: Evaluation Standards: verifiers, rubrics, rewards over immutable traces; Harness or prompt optimization: GEPA and GELO optimizers; Trains or exports specialists: supervised fine-tuning from the workshop; Open source core: software development kit MIT, 82 stars; Public pricing: $10 workshop allowance; no price list.
 - Tellurio and Afnio: Executes code or tools: the software development kit runs the workflow it optimizes; Harness or prompt optimization: auto-tunes harness and prompts; Open source core: claimed open source; repository not found today; Public pricing: $50 per user; $1 per optimize hour.
-- LangWatch: Executes code or tools: tracks tool calls; workflow nodes; Independent verification: evaluators and scenario tests; not independent of the configuration; Harness or prompt optimization: Automatic Prompt Optimization; DSPy with scenarios as the metric; Trains or exports specialists: Finetuning Agents with GRPO guide; Open source core: Apache 2.0 open core, 4,814 stars.
+- LangWatch: Runtime History and Solution Intelligence: traces of tool calls and workflow nodes with evaluators; Executes code or tools: tracks tool calls; workflow nodes; Independent verification: evaluators and scenario tests; not independent of the configuration; Harness or prompt optimization: Automatic Prompt Optimization; DSPy with scenarios as the metric; Trains or exports specialists: Finetuning Agents with GRPO guide; Open source core: Apache 2.0 open core, 4,814 stars.
 - Not Diamond: Model routing: $0.05 per million tokens routed; Harness or prompt optimization: prompt optimization mentioned by the vendor; not verified today; Open source core: Python software development kit archived 2025-12-11.
 - TypeSafe (Jev): Public pricing: $0.042 per million input tokens, output free; text only; no open weights.
 - PrismML (Bonsai): Open source core: Apache 2.0 weights on the model hub; Self-hosted option: runs on a laptop with its runtime.
 - Osmosis (Gulp AI): Evaluation or simulation product: evaluation integration for retraining cycles; Trains or exports specialists: forward-deployed reinforcement learning post-training.
 - Adaptive ML (acquired by Datadog): Independent verification: custom judges and A/B testing, configured by the customer; Trains or exports specialists: ADAPT, EVALUATE, SERVE.
 - Distyl: Executes code or tools: composable routines with policy-aware execution; Independent verification: built-in auditability claimed; Hosted cloud: services-led deployments; the platform page was not reachable today.
-- TensorZero (archived): Model routing: gateway; Open source core: Apache 2.0, archived 2026-06-11; no longer maintained.
+- TensorZero (archived): Runtime History and Solution Intelligence: a gateway that stores inference data for optimization; Model routing: gateway; Open source core: Apache 2.0, archived 2026-06-11; no longer maintained.
 - Overmind, Lemma: Persistent memory: sites unreachable at any resolvable domain today.
-
-The claim holds with one exception. Every memory vendor has persistent memory
-and most have a graph. Only Letta stores executable scripts inside its skills,
-and even there the model decides to invoke them. No memory vendor executes
-code itself, verifies task outcomes independently, or records which
-implementation of an operation was cheapest. Mem0 and MemOS store procedures
-as text a model reads. The optimization and evaluation vendors (Synth,
-Tellurio, LangWatch) execute and evaluate but keep no memory and no capability
-library.
 
 ## Comparison chart
 

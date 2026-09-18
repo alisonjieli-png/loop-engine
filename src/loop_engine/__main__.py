@@ -211,6 +211,27 @@ def main(argv=None) -> int:
     parser.add_argument("--run-arguments", default="",
                         help="JSON list of arguments for the exported entry "
                              "point during --verify-export")
+    parser.add_argument("--evaluate", metavar="SUITE", default="",
+                        help="score a solver on a frozen evaluation suite with "
+                             "registered graders and exact denominators")
+    parser.add_argument("--optimize", metavar="SUITE", default="",
+                        help="optimize a declared parameter space on a frozen "
+                             "suite; a cell is accepted only when it gains on "
+                             "train and does not lose on holdout")
+    parser.add_argument("--solver-spec", metavar="SPEC", default="",
+                        help="JSON solver specification for --evaluate and --optimize")
+    parser.add_argument("--space", metavar="SPACE", default="",
+                        help="JSON parameter space for --optimize")
+    parser.add_argument("--serve-api", action="store_true",
+                        help="serve the hosted service surface (health, conform, "
+                             "evaluate, usage) for the tenants in --tenants")
+    parser.add_argument("--tenants", metavar="PATH", default="",
+                        help="JSON file of service tenant records (key digests only)")
+    parser.add_argument("--bind", default="127.0.0.1",
+                        help="address the service binds to (default 127.0.0.1)")
+    parser.add_argument("--new-tenant", metavar="TENANT_ID", default="",
+                        help="mint one tenant key, print it once, and append the "
+                             "tenant record with its digest to --tenants")
     parser.add_argument(
         "--compile-provider",
         default="",
@@ -514,6 +535,12 @@ def main(argv=None) -> int:
             parser.error("export requires solution SPEC or verify DIR")
         raw_argv[:3] = ["--export-solution" if raw_argv[1] == "solution"
                         else "--verify-export", raw_argv[2]]
+    elif raw_argv[:1] in (["evaluate"], ["optimize"]):
+        if len(raw_argv) < 2 or raw_argv[1].startswith("-"):
+            parser.error(f"{raw_argv[0]} requires SUITE")
+        raw_argv[:2] = ["--" + raw_argv[0], raw_argv[1]]
+    elif raw_argv[:2] == ["serve", "api"]:
+        raw_argv[:2] = ["--serve-api"]
     elif raw_argv[:1] == ["settings"]:
         if len(raw_argv) < 2 or raw_argv[1] not in ("init", "show", "check"):
             parser.error("settings requires init, show, or check")
@@ -767,6 +794,12 @@ def main(argv=None) -> int:
     if args.export_solution or args.verify_export:
         from .cli_operations import run_solution_export
         return run_solution_export(args)
+    if args.evaluate or args.optimize:
+        from .cli_operations import run_evaluation
+        return run_evaluation(args)
+    if args.serve_api or args.new_tenant:
+        from .cli_operations import run_service
+        return run_service(args)
     if args.task_compile:
         from .cli_operations import run_task_compile
         return run_task_compile(args)

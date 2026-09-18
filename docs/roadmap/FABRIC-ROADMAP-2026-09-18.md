@@ -170,6 +170,7 @@ named check fails.
 | S-2.6 Dimension inventory | One document listing every setting or dimension at every level: space, graph, node, step, prompt element, response style, context, intelligence layer, harness, model, placement, and economics, each with its owning boundary, initial choice, fallback order, and qualification state. | `LINT`; every dimension names a boundary | A dimension without an owning boundary fails review | S-0.5 |
 | S-2.7 Prompt element and response-style dimensions | Prompt resources declare their elements (task background, context background, atomic information, inputs and outputs, expectations, format) and a response-style slot (concise, only what was asked, full); both are grid axes with recorded effects on verified outcomes and tokens. | `SELF`; a grid cell changes only the declared slot and the render digest records it | Remove the slot from the digest; the check must fail | S-2.6 |
 | S-2.8 Middleware and wrapper abstractions | Typed service boundaries for the Core Architecture ports so each can run in process or as a microservice behind the same contract; request and response records, idempotency keys, and authority propagation. | `SELF`; the same contract passes in process and over a local service | Remove authority propagation; the check must fail | S-2.2 |
+| S-2.15 Noise injection and explorative optimization | Perturb inputs, prompts, or catalogs of a frozen suite and require a candidate cell to hold its gain on the perturbed suite; explorative strategies from the campaign vocabulary run through the same acceptance gate. | `SELF`; a cell that wins only on clean inputs is refused | Remove the perturbed check; the refusal check must fail | S-1.7 |
 | S-2.9 Intelligence storage analysis and measurement | A decision record that enumerates the storage and serving variations (files only, DuckDB over packaged files, SQLite, a server database with vectors, an analytics warehouse, package references, and a sidecar of search characteristics with body references), analyzes each for space, read and write time, offline availability, concurrency, and maintenance, and measures the existing adapters on one synthetic population; a recommendation with the measured numbers. | The record carries the measured table with its script and denominators | A variation without a measured row is marked unmeasured, never recommended | S-0.5 |
 | S-2.10 Intelligence access contract and no-direct-edit rule | Every read and write of intelligence records goes through a catalog store call; the string bank and the question forms load through a store adapter; package references (`loop_engine.data.<collection>#<record_id>`) resolve through the catalog; a conformance scan refuses runtime code that opens an intelligence file for writing outside the declared adapters; a settings record names the default store per deployment profile (demo, self-hosted, hosted). | `CONF`; the scan finds a planted direct write and refuses it | Remove the scan; the planted write passes, so the check must fail | S-2.9 |
 | S-2.11 Search characteristics sidecar and hybrid retrieval | Facets, digests, and optional embeddings stored beside body references; a large body stays in a file, an object store, or a package; hybrid (lexical plus vector) and iterative retrieval over the same records through the existing Retriever; the same query answered by DuckDB and by a server adapter with identical results on the fixture population. | `SELF`; two adapters return identical ranked identities for the fixture queries | Remove the body reference; the large-body check must fail | S-2.10 |
@@ -244,6 +245,33 @@ Append one line per iteration: date, step, result, evidence path, commit.
   twenty-five baseline node dimensions in the levels above and below and
   adds the deployment, space, graph, step, prompt, model call, intelligence
   access, solutions space, and economics rows with their owning boundaries.
+- 2026-09-18, S-2.1, S-2.5, S-1.5, S-1.6, S-1.8, published as commit
+  `b1fbcdc` after the batch 8 gates (battery of 30 steps) and eighteen
+  killed mutants.
+- 2026-09-18, S-1.12 ready and S-2.12 offline_verified: the
+  [per-feature adversarial validation plan](../architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md)
+  lists the attacks and audit questions for all twenty features and five
+  open attacks that currently succeed; the
+  [component interface record](../architecture/COMPONENT-INTERFACES-AND-INTELLIGENCE-FLOW-2026-09-18.md)
+  names every hop of a solve and nine inconsistencies; the
+  [deployment shapes guide](../guides/feature-deployment-shapes-and-substitution.md)
+  says how each feature is containerized, wrapped, and swapped; the
+  [typed-decision model record](../research/JEV-TYPED-DECISION-INTEGRATION-2026-09-18.md)
+  answers the Jev question and adds S-2.13.
+- 2026-09-18, S-4.1, S-4.2, S-4.3, building: the repository `Dockerfile`,
+  example 28 with a worker Deployment and a solution Job validated
+  offline, the hosted service surface with tenants, digest-only keys,
+  four endpoints, and metering, and the packaging tiers guide; the image
+  is not yet built or digest-pinned, no endpoint is operated, and no price
+  is set.
+- 2026-09-18, S-1.4, S-1.7, S-2.4, building: evaluation suites with
+  registered graders and exact denominators, the configuration optimizer
+  with its train-gain and holdout-loss acceptance gate, and the node grid
+  with separate stage counts pass their module checks; on the twelve-case
+  company-name suite of example 27 the conformance solver passed eight,
+  and the optimizer accepted, exhaustively over twelve cells, the best
+  qualifying cell, a gain of three training cases without a held-out
+  loss; gates and mutants pending.
 - 2026-09-18, S-2.1, S-2.5, S-1.5, S-1.6, S-1.8, building: the efficiency
   review record with its deterministic judge, the versioned training data
   store with the heuristic adoption policy, operation cost capture wired

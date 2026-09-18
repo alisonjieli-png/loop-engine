@@ -3589,4 +3589,266 @@ entries:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
-source_digest: f2fa49837ae600f3f9c15cd8265ba6916d8bf715209311038004ff2e9ff83367
+- term_id: core.term.evaluation_suite
+  canonical_name: EvaluationSuite
+  primary_category: record
+  definition: A frozen population of typed cases (input, expected, registered grader, tags) with a population
+    digest; the same digest means the same test.
+  source_of_truth: loop_engine.core.evaluation_suite:EvaluationSuite
+  source_symbol: loop_engine.core.evaluation_suite:EvaluationSuite
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: evaluation_suite/v1
+  related_terms:
+  - EvaluationReport
+  - ParameterSpace
+  - CapabilityTaskDefinition
+  difference_from_neighbors: EvaluationSuite freezes cases and graders for a solver; a campaign runs Practitioner
+    arms over problem cases with model calls.
+  parameterization_decision: closed_grader_vocabulary_and_strict_json_cases
+  composition_decision: a deterministic split by case digest keeps the suite identity on both sides
+  inheritance_decision: none
+  storage_authority: suite file or record
+  lifecycle: Immutable per version.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - fixture.company_names 1.0.0 with ten exact-graded cases.
+  negative_examples:
+  - A suite whose cases change between two reports that are compared.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.evaluation_report
+  canonical_name: EvaluationReport
+  primary_category: record
+  definition: 'Exact counts of one solver over one frozen population: denominator, attempted, passed,
+    failed, errored, skipped, per grader and per tag, with every failure kept.'
+  source_of_truth: loop_engine.core.evaluation_suite:EvaluationReport
+  source_symbol: loop_engine.core.evaluation_suite:EvaluationReport
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: evaluation_report/v1
+  related_terms:
+  - EvaluationSuite
+  - OptimizationResult
+  difference_from_neighbors: EvaluationReport scores one solver; a comparison is case-level between two
+    reports over the same population.
+  parameterization_decision: counts_per_status_grader_and_tag
+  composition_decision: an exception is an errored case, never a pass
+  inheritance_decision: none
+  storage_authority: report file or record
+  lifecycle: Immutable per evaluation.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - passed 6 of 10, failed 4, errored 0, with the four failures listed.
+  negative_examples:
+  - Reporting a pass rate without the denominator.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.parameter_space
+  canonical_name: ParameterSpace
+  primary_category: record
+  definition: A finite declared grid of axes with distinct values; its size is the represented count,
+    and its baseline is the first value of every axis.
+  source_of_truth: loop_engine.core.configuration_optimizer:ParameterSpace
+  source_symbol: loop_engine.core.configuration_optimizer:ParameterSpace
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: optimization_result/v1
+  related_terms:
+  - OptimizationResult
+  - NodeGrid
+  - EvaluationSuite
+  difference_from_neighbors: ParameterSpace is the grid an optimizer searches; NodeGrid is the grid of
+    one Loop node's typed parameters with stage counts.
+  parameterization_decision: finite_json_values_per_axis
+  composition_decision: cells are enumerated exhaustively or sampled with a seed; sampling never claims
+    exhaustive coverage
+  inheritance_decision: none
+  storage_authority: space file or record
+  lifecycle: Immutable per declaration.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - apply_at_or_above in 0.9, 0.8, 0.7 by particle_confidence in 0.8, 0.9.
+  negative_examples:
+  - An axis with duplicate values.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.optimization_result
+  canonical_name: OptimizationResult
+  primary_category: record
+  definition: 'The outcome of one optimization: separate represented, dispatched, evaluated, and accepted
+    counts, the baseline and best cells, the reason, the comparisons, and whether the enumeration was
+    exhaustive.'
+  source_of_truth: loop_engine.core.configuration_optimizer:OptimizationResult
+  source_symbol: loop_engine.core.configuration_optimizer:OptimizationResult
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: optimization_result/v1
+  related_terms:
+  - ParameterSpace
+  - EvaluationReport
+  - AcceptancePolicy
+  difference_from_neighbors: OptimizationResult records a search and its acceptance; an EvaluationReport
+    records one solver on one population.
+  parameterization_decision: acceptance_by_train_gain_and_holdout_loss_limits
+  composition_decision: a candidate replaces the baseline only when it gains on train and does not lose
+    on holdout beyond the allowance
+  inheritance_decision: none
+  storage_authority: result file or record
+  lifecycle: Immutable per optimization.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - 12 represented, 11 dispatched, 11 evaluated, exhaustive, one cell accepted for a gain of one training
+    case.
+  negative_examples:
+  - Reporting a sampled search as complete coverage.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.node_grid
+  canonical_name: NodeGrid
+  primary_category: record
+  definition: The declared grid over one Loop node's typed input parameters (choice, integer range, Boolean)
+    with simple constraints; its represented count is the full product and its applicable cells pass the
+    constraints.
+  source_of_truth: loop_engine.core.node_grid:NodeGrid
+  source_symbol: loop_engine.core.node_grid:NodeGrid
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: node_grid/v1
+  related_terms:
+  - GridLedger
+  - ParameterSpace
+  - ParameterDefinition
+  difference_from_neighbors: NodeGrid enumerates one node's parameter cells; GridLedger records what stage
+    each cell reached.
+  parameterization_decision: closed_parameter_kinds_and_comparison_constraints
+  composition_decision: cells are enumerated in declared order; limits cap the returned cells, never the
+    represented count
+  inheritance_decision: none
+  storage_authority: grid record
+  lifecycle: Immutable per declaration; the grid digest identifies it.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - 'conform.name over two thresholds, a Boolean, and a row limit: 54 represented, 36 applicable.'
+  negative_examples:
+  - Reporting applicable cells as the represented count.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.grid_ledger
+  canonical_name: GridLedger
+  primary_category: record
+  definition: 'Where each cell of one node grid stands: represented, applicable, proposed, dispatched,
+    evaluated, verified, or promoted, with stages reached only through the previous one and exhaustive
+    coverage claimed only when every applicable cell was evaluated.'
+  source_of_truth: loop_engine.core.node_grid:GridLedger
+  source_symbol: loop_engine.core.node_grid:GridLedger
+  public_or_internal: public
+  runtime_or_passive: runtime
+  authoritative_or_projection: authoritative
+  versioning: node_grid_counts/v1
+  related_terms:
+  - NodeGrid
+  - OptimizationResult
+  difference_from_neighbors: GridLedger counts stages per cell; OptimizationResult reports one search's
+    acceptance.
+  parameterization_decision: closed_stage_vocabulary_and_selection_kind
+  composition_decision: advance refuses skipped stages and inapplicable cells
+  inheritance_decision: none
+  storage_authority: run record
+  lifecycle: One ledger per grid per run.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - two cells proposed and dispatched, two evaluated, one verified, one promoted, coverage not exhaustive.
+  negative_examples:
+  - Promoting a cell that was never evaluated.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.tenant_record
+  canonical_name: TenantRecord
+  primary_category: record
+  definition: 'One hosted service tenant: its identifier, namespace, allowed endpoints, and the SHA-256
+    digest of its key; the key text is never stored.'
+  source_of_truth: loop_engine.core.service_api:TenantRecord
+  source_symbol: loop_engine.core.service_api:TenantRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: service_tenant/v1
+  related_terms:
+  - MeteringRecord
+  - SharedMemoryScope
+  difference_from_neighbors: TenantRecord governs who may call the hosted surface; SharedMemoryScope governs
+    who may read and write one memory namespace.
+  parameterization_decision: digest_only_credential_and_closed_endpoint_vocabulary
+  composition_decision: authentication compares digests in constant time before any endpoint runs
+  inheritance_decision: none
+  storage_authority: tenants file or secret mounted into the worker
+  lifecycle: Immutable per key; a rotated key is a new record.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - acme in namespace tenant:acme with every endpoint allowed.
+  negative_examples:
+  - A tenants file that holds the key text.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.metering_record
+  canonical_name: MeteringRecord
+  primary_category: record
+  definition: One metered quantity for one tenant in one of the units the packaging guide names (verified
+    completion, avoided model call, optimize hour, judgment depth), with the digest of the record it counts
+    and never a body.
+  source_of_truth: loop_engine.core.service_api:MeteringRecord
+  source_symbol: loop_engine.core.service_api:MeteringRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: metering_record/v1
+  related_terms:
+  - TenantRecord
+  - OperationCostRecord
+  - ImplementationDecision
+  difference_from_neighbors: MeteringRecord counts what a tenant is charged for; OperationCostRecord measures
+    what an implementation cost the engine.
+  parameterization_decision: closed_unit_vocabulary_and_non_negative_quantity
+  composition_decision: an append-only ledger sums per tenant and unit; outcome and verification records
+    are never metered
+  inheritance_decision: none
+  storage_authority: the metering ledger
+  lifecycle: Append-only.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - acme, avoided_model_call, 1.0, the conformance report digest.
+  negative_examples:
+  - A metering record that carries the corrected rows.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+source_digest: 6af271ae9aa3c66e8be2730bcaceb20bfa857a2cfa921ecc1245cbdc92ec5022

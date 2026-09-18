@@ -761,6 +761,98 @@ def run_solution_export(args) -> int:
         return 2
 
 
+def _solver_from_spec(spec: dict, cell: dict | None = None):
+    """A solver callable for the evaluation commands; owned by the service endpoints module."""
+    from .code_nodes.service_endpoints import solver_from_spec
+    return solver_from_spec(spec, cell)
+
+
+def run_evaluation(args) -> int:
+    """``--evaluate SUITE`` and ``--optimize SUITE`` with a solver specification."""
+    from .core.evaluation_suite import EvaluationSuite, EvaluationSuiteError, evaluate_suite
+    try:
+        if not args.solver_spec:
+            raise EvaluationSuiteError("--solver-spec SPEC is required")
+        suite = EvaluationSuite.from_dict(json.loads(Path(args.evaluate or args.optimize).read_text("utf-8")))
+        spec = json.loads(Path(args.solver_spec).read_text("utf-8"))
+        if args.evaluate:
+            solver, solver_id = _solver_from_spec(spec)
+            report = evaluate_suite(suite, solver, solver_id=solver_id).to_dict()
+            if args.out:
+                Path(args.out).write_text(json.dumps(report, indent=1, sort_keys=True) + "\n", "utf-8")
+            _emit_cli_result(args, report, [
+                f"suite {report['suite_id']} {report['suite_version']} population {report['population_digest'][:12]}",
+                f"solver {report['solver_id']}: passed {report['passed']} of {report['denominator']} "
+                f"(failed {report['failed']}, errored {report['errored']}, skipped {report['skipped']})",
+                *(f"  {item['status']} {item['case_id']}" + (f": {item['error']}" if item['error'] else "")
+                  for item in report["failures"][:20])])
+            return 0
+        from .core.configuration_optimizer import (AcceptancePolicy, OptimizerError, ParameterAxis,
+                                                   ParameterSpace, optimize)
+        if not args.space:
+            raise OptimizerError("--space SPACE is required")
+        space_record = json.loads(Path(args.space).read_text("utf-8"))
+        space = ParameterSpace(tuple(ParameterAxis(str(item["name"]), tuple(item["values"]))
+                                     for item in space_record.get("axes") or ()))
+        train, holdout = suite.split(float(space_record.get("holdout_fraction", 0.3)),
+                                     salt=str(space_record.get("salt") or ""))
+
+        def evaluate(cell, part, solver_id):
+            solver, _ = _solver_from_spec(spec, cell)
+            return evaluate_suite(part, solver, solver_id=solver_id)
+
+        result = optimize(space, train, holdout, evaluate,
+                          strategy=str(space_record.get("strategy") or "exact_enumeration"),
+                          seed=int(space_record.get("seed") or 0), limit=space_record.get("limit"),
+                          policy=AcceptancePolicy(**(space_record.get("acceptance") or {}))).to_dict()
+        if args.out:
+            Path(args.out).write_text(json.dumps(result, indent=1, sort_keys=True) + "\n", "utf-8")
+        _emit_cli_result(args, result, [
+            f"space of {result['space_size']} cells, strategy {result['strategy']}, "
+            f"represented {result['represented']}, dispatched {result['dispatched']}, "
+            f"evaluated {result['evaluated']}, exhaustive {result['exhaustive']}",
+            f"accepted: {result['accepted']}; best cell {json.dumps(result['best_cell'], sort_keys=True)}",
+            result["reason"]])
+        return 0
+    except (OSError, ValueError, KeyError) as exc:
+        _emit_cli_result(args, {"record_type": "evaluation_error/v1", "error": str(exc)},
+                         [f"evaluation error: {exc}"])
+        return 2
+
+
+def run_service(args) -> int:
+    """``--serve-api --tenants PATH`` and ``--new-tenant ID --tenants PATH``."""
+    from .core.service_api import ServiceError, ServiceRequest, load_tenants, new_tenant, serve
+    try:
+        if not args.tenants:
+            raise ServiceError("--tenants PATH is required")
+        path = Path(args.tenants)
+        if args.new_tenant:
+            existing = load_tenants(str(path)) if path.is_file() else ()
+            namespace = f"tenant:{args.new_tenant}"
+            record, key = new_tenant(args.new_tenant, namespace)
+            if any(item.tenant_id == record.tenant_id for item in existing):
+                raise ServiceError(f"tenant {record.tenant_id!r} already exists")
+            path.write_text(json.dumps([item.to_dict() for item in (*existing, record)], indent=1) + "\n", "utf-8")
+            _emit_cli_result(args, {"record_type": "service_tenant_minted/v1", "tenant": record.to_dict(),
+                                    "key": key}, [
+                f"tenant {record.tenant_id} added to {path} (digest only)",
+                "key, shown once and never stored: " + key])
+            return 0
+        from .code_nodes.service_endpoints import default_handlers
+        tenants = load_tenants(str(path))
+        port = int(getattr(args, "port", 0) or 0)
+        print(f"serving {len(tenants)} tenant(s) on {args.bind}:{port or 'ephemeral'}; "
+              f"endpoints health, conform, evaluate, usage; header X-Loop-Engine-Key", flush=True)
+        serve(ServiceRequest(tenants, bind=args.bind, port=port, handlers=default_handlers()),
+              ready=lambda bound: print(f"listening on {args.bind}:{bound}", flush=True))
+        return 0
+    except (ServiceError, OSError, ValueError) as exc:
+        _emit_cli_result(args, {"record_type": "service_error/v1", "error": str(exc)},
+                         [f"service error: {exc}"])
+        return 2
+
+
 def run_task_compile(args) -> int:
     from .templates.compiler import TaskCompileRequest, compile_task
     from .templates.intake import TaskIntakeError

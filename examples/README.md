@@ -27,6 +27,8 @@ installation instructions before running them.
 | [24 managed records](24_managed_records/) | Queries and changes host-configured records through exact schema, revision, and approval checks. |
 | [25 host-owned work](25_host_runtime/) | Repairs staged source, checks generated counterexamples, reuses scoped failure evidence, and produces review-only exported-ticket results. |
 | [26 export a standalone solution](26_export_a_standalone_solution/) | Conforms a messy company file with a confidence per correction, then exports and verifies a package that runs without Loop Engine. |
+| [27 optimize a node grid](27_optimize_a_node_grid/) | Walks a declared grid over one node's parameters on a frozen suite, counts every stage separately, and accepts only a cell that gains on training cases without a held-out loss. |
+| [28 containerized worker](28_containerized_worker/) | Validates the engine image recipe and the Kubernetes worker and Job manifests offline; nothing is built or deployed. |
 | [Downloadable tasks](tasks/) | Plain text tasks and matching sample inputs for the GitHub quickstart. |
 
 ## Models and intelligence

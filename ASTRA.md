@@ -791,6 +791,55 @@ carries a cost ledger. None of these is wired into a live solve yet; the
 efficiency review is a record a step can write, not yet a step the
 Practitioner performs, and that wiring is the next step under S-2.1.
 
+Observed result. The evaluation product and the optimizer landed offline:
+`loop-engine evaluate` scores a solver on a frozen suite with registered
+deterministic graders and exact denominators, and `loop-engine optimize`
+walks a declared parameter space and accepts a cell only when it gains on
+the training side without losing on the held-out side. On the twelve-case
+company-name suite the conformance resolver passes the confident cases and
+holds the ambiguous ones, and the optimizer, exhaustively over twelve
+cells, accepts the best qualifying cell, a gain of three training cases
+with no held-out loss. The node grid records every cell's stage separately and refuses to
+skip a stage; example 27 shows the whole walk. This is a proof of the
+mechanism on deterministic graders, not a convergence result on live
+model-led work, which remains step S-3.2.
+
+Observed result. The hosted delivery software exists offline: the service
+surface with tenants, digest-only keys, four endpoints, and metering; the
+engine `Dockerfile`; the worker and Job manifests validated by example 28;
+and the packaging tiers guide. The two feature-matrix cells that stay
+absent, hosted cloud and public pricing, need an operated endpoint and a
+price the owner sets; the software is ready for both and claims neither.
+
+Owner requirement, later on September 18. Adversarially validate and audit
+every aspect of every feature; document how each feature is containerized,
+run as a separate process or microservice, wrapped with middleware, and
+swapped for a newer version; document how every component interfaces with
+the others, how intelligence is queried, how code reuse happens, how the
+layers are consumed, and how a harness inside a Loop reaches the core;
+break each feature into its subcomponents, dependencies, and
+prerequisites with the four intelligence layers as visible areas; and say
+whether a typed-decision model such as Jev could help and whether the
+architecture admits other models, endpoints, and model types.
+
+Proposal and observed result. The
+[adversarial validation plan](docs/architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md)
+lists the attacks and audit questions for all twenty features and five
+attacks that currently succeed; the
+[component interface record](docs/architecture/COMPONENT-INTERFACES-AND-INTELLIGENCE-FLOW-2026-09-18.md)
+names every hop and nine inconsistencies, the first being that the
+standard capability directory has no runtime caller; the
+[deployment shapes guide](docs/guides/feature-deployment-shapes-and-substitution.md)
+and the
+[feature component breakdown](docs/architecture/FEATURE-COMPONENT-BREAKDOWN-2026-09-18.md)
+map every feature to its shapes, wrap points, registries, subcomponents,
+and layers; and the
+[typed-decision record](docs/research/JEV-TYPED-DECISION-INTEGRATION-2026-09-18.md)
+answers yes on both counts: a Jev-class judge fits the ranked-list
+contracts the engine already declares and enters as a route with a
+judgment profile behind the model call boundary, with five pieces of work
+listed and none of the vendor's speed claims assumed.
+
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of
 concept, billing, publication, and unseen-task runs.

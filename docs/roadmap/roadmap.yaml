@@ -45,15 +45,15 @@ steps:
   - id: S-1.4
     phase: 1
     title: Evaluation product command over a frozen suite
-    status: ready
+    status: building
     depends_on: [S-0.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the denominator; the report check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/core/evaluation_suite.py self_test; loop-engine evaluate on the company-name suite: 6 of 10 passed"
   - id: S-1.5
     phase: 1
     title: Operation cost records wired into invocations and calls
-    status: building
+    status: published
     depends_on: [S-0.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the emit; the cheapest-implementation query check must fail"
@@ -61,7 +61,7 @@ steps:
   - id: S-1.6
     phase: 1
     title: Model-versus-not decision record per operation
-    status: building
+    status: published
     depends_on: [S-1.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the record; the escalation-path check must fail"
@@ -69,15 +69,15 @@ steps:
   - id: S-1.7
     phase: 1
     title: Runnable prompt and harness optimization command
-    status: proposed
+    status: building
     depends_on: [S-1.4]
     verify: [SELF, MUTANT]
     adversarial: "remove the acceptance gate; the improvement check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/core/configuration_optimizer.py self_test; loop-engine optimize over 12 cells accepted one cell with a train gain and no holdout loss"
   - id: S-1.8
     phase: 1
     title: Specialist training from learnable call records
-    status: building
+    status: published
     depends_on: [S-0.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the held-out split; the accuracy check must fail"
@@ -154,10 +154,58 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "remove the body reference; the large-body check must fail"
     evidence: ""
+  - id: S-1.12
+    phase: 1
+    title: Adversarial validation and audit of every matrix feature
+    status: ready
+    depends_on: [S-0.5]
+    verify: [each attack in the plan run and recorded; open attacks listed]
+    adversarial: "an attack that succeeds keeps the feature at partial until its boundary changes"
+    evidence: "docs/architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md"
+  - id: S-2.12
+    phase: 2
+    title: Component interface and intelligence flow documentation with inconsistencies
+    status: offline_verified
+    depends_on: [S-0.5]
+    verify: [LINT]
+    adversarial: "an interface described without its module path fails review"
+    evidence: "docs/architecture/COMPONENT-INTERFACES-AND-INTELLIGENCE-FLOW-2026-09-18.md; docs/guides/feature-deployment-shapes-and-substitution.md"
+  - id: S-2.14
+    phase: 2
+    title: Feature component breakdown with the four intelligence layers as areas
+    status: offline_verified
+    depends_on: [S-0.5]
+    verify: [LINT]
+    adversarial: "a feature without its subcomponents, dependencies, prerequisites, and layers fails review"
+    evidence: "docs/architecture/FEATURE-COMPONENT-BREAKDOWN-2026-09-18.md; the intelligence layers band in the feature matrix"
+  - id: S-2.16
+    phase: 2
+    title: Dated record folders by document type with generated indexes and link rewriting
+    status: proposed
+    depends_on: []
+    verify: [LINT, every moved link resolves, a lint refuses an undated record in a dated folder]
+    adversarial: "a record placed outside its type folder or without a date fails the lint"
+    evidence: ""
+  - id: S-2.15
+    phase: 2
+    title: Noise injection and explorative optimization over the evaluation product
+    status: proposed
+    depends_on: [S-1.7]
+    verify: [SELF, MUTANT]
+    adversarial: "a cell that wins only on clean inputs must be refused when the perturbed suite loses"
+    evidence: ""
+  - id: S-2.13
+    phase: 2
+    title: Typed-decision model route (a Jev-class judge) behind the model call boundary
+    status: proposed
+    depends_on: [S-2.1]
+    verify: [SELF, MUTANT, fixture suite of bounded decisions with exact denominators]
+    adversarial: "a probability response admitted without its contract fails; a route without a profile is refused"
+    evidence: "docs/research/JEV-TYPED-DECISION-INTEGRATION-2026-09-18.md"
   - id: S-2.1
     phase: 2
     title: Step efficiency review record with a deterministic judge
-    status: building
+    status: published
     depends_on: [S-0.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the size check; the flagged-record check must fail"
@@ -181,15 +229,15 @@ steps:
   - id: S-2.4
     phase: 2
     title: Node grid over typed input parameters with separate counts
-    status: proposed
+    status: building
     depends_on: [S-1.7]
     verify: [SELF, MUTANT]
     adversarial: "remove the separate counts; the check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/core/node_grid.py self_test; example 27"
   - id: S-2.5
     phase: 2
     title: Versioned training data store and heuristic adoption policy
-    status: building
+    status: published
     depends_on: [S-1.8]
     verify: [SELF, MUTANT]
     adversarial: "remove the run-count threshold; the refusal check must fail"
@@ -238,27 +286,27 @@ steps:
   - id: S-4.1
     phase: 4
     title: Worker image, Kubernetes manifests, placement policy
-    status: ready
+    status: building
     depends_on: [S-0.5]
-    verify: [image builds, manifests validate, a Job runs example 26 in the container]
+    verify: [manifests validate offline in example 28; image build and a Job run need Docker and a cluster]
     adversarial: "a manifest without resource limits fails validation"
-    evidence: ""
+    evidence: "Dockerfile; examples/28_containerized_worker; image not yet built or digest-pinned"
   - id: S-4.2
     phase: 4
     title: Service software with tenants, keys, and metering
-    status: proposed
+    status: building
     depends_on: [S-4.1]
     verify: [SELF, MUTANT]
     adversarial: "remove the key check; the refusal check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/core/service_api.py self_test; loop-engine serve api"
   - id: S-4.3
     phase: 4
     title: Packaging tiers and pricing draft
-    status: proposed
+    status: building
     depends_on: [S-4.2]
     verify: [LINT]
     adversarial: "a tier that meters outcomes fails review"
-    evidence: ""
+    evidence: "docs/guides/packaging-tiers-and-hosted-service.md; prices not set"
   - id: S-4.4
     phase: 4
     title: Deployment to the owner's cloud account

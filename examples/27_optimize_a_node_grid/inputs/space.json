@@ -1,0 +1,5 @@
+{"axes": [{"name": "apply_at_or_above", "values": [0.9, 0.8, 0.7]},
+          {"name": "short_token_confidence", "values": [0.75, 0.9]},
+          {"name": "particle_confidence", "values": [0.8, 0.9]}],
+ "strategy": "exact_enumeration", "holdout_fraction": 0.3, "salt": "example-27",
+ "acceptance": {"minimum_train_gain": 1, "maximum_holdout_loss": 0}}

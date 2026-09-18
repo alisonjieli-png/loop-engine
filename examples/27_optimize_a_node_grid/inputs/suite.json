@@ -1,0 +1,16 @@
+{"record_type": "evaluation_suite/v1", "suite_id": "example.company_names", "version": "1.0.0",
+ "description": "company name conformance, graded exactly",
+ "cases": [
+  {"case_id": "c1", "input": "ACME CORPORATION", "expected": "Acme Corp", "grader": "exact", "tags": ["case", "suffix"]},
+  {"case_id": "c2", "input": "  mcdouglas & sons, inc.  ", "expected": "McDouglas & Sons Inc", "grader": "exact", "tags": ["case", "suffix", "whitespace"]},
+  {"case_id": "c3", "input": "LAPOINTE CONSULTING LLC", "expected": "LaPointe Consulting LLC", "grader": "exact", "tags": ["case"]},
+  {"case_id": "c4", "input": "AA CAREERS", "expected": "AA Careers", "grader": "exact", "tags": ["case", "abbreviation"]},
+  {"case_id": "c5", "input": "de la cruz bakery", "expected": "De la Cruz Bakery", "grader": "exact", "tags": ["case", "particle"]},
+  {"case_id": "c6", "input": "THE BOX STORE", "expected": "The Box Store", "grader": "exact", "tags": ["case"]},
+  {"case_id": "c7", "input": "JOHNSON & JOHNSON", "expected": "Johnson & Johnson", "grader": "exact", "tags": ["case"]},
+  {"case_id": "c8", "input": "3M COMPANY", "expected": "3M Co", "grader": "exact", "tags": ["case", "suffix"]},
+  {"case_id": "c9", "input": "Acme Spa", "expected": "Acme SpA", "grader": "exact", "tags": ["suffix", "ambiguous"]},
+  {"case_id": "c10", "input": "IBM CORP", "expected": "IBM Corp", "grader": "exact", "tags": ["case", "abbreviation"]},
+  {"case_id": "c11", "input": "O'BRIEN PLUMBING", "expected": "O'Brien Plumbing", "grader": "exact", "tags": ["case", "apostrophe"]},
+  {"case_id": "c12", "input": "l-e industries", "expected": "L-E Industries", "grader": "exact", "tags": ["case", "hyphen"]}
+ ]}

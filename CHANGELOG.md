@@ -19,6 +19,50 @@ First public release.
   [pre-packaged intelligence research](docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md)
   with verified package and occupation-database facts, and the
   [branding options](docs/research/BRANDING-OPTIONS-2026-09-18.md).
+- The
+  [feature component breakdown](docs/architecture/FEATURE-COMPONENT-BREAKDOWN-2026-09-18.md)
+  maps the four intelligence layers to the modules that realize them and
+  breaks every matrix feature into subcomponents, dependencies,
+  prerequisites, and the layers it reads and writes; the feature matrix
+  gains an intelligence layers band.
+- Four records for the September 18 review requests: the
+  [per-feature adversarial validation plan](docs/architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md),
+  the
+  [component interfaces and intelligence flow record](docs/architecture/COMPONENT-INTERFACES-AND-INTELLIGENCE-FLOW-2026-09-18.md)
+  with nine inconsistencies, the
+  [deployment shapes and substitution guide](docs/guides/feature-deployment-shapes-and-substitution.md),
+  and the
+  [typed-decision model integration record](docs/research/JEV-TYPED-DECISION-INTEGRATION-2026-09-18.md).
+- The hosted service surface, the worker image recipe, and the packaging
+  tiers. `core/service_api.py` serves health, conform, evaluate, and usage
+  endpoints over the standard library HTTP server for tenants whose keys
+  are stored only as digests; every request is authenticated before any
+  work, endpoints are restricted per tenant, and metering records count
+  verified completions, avoided model calls, optimize hours, and judgment
+  depth with digests and never bodies. `loop-engine serve api --tenants
+  PATH` runs it and `loop-engine --new-tenant ID --tenants PATH` mints a
+  key shown once. The repository `Dockerfile` builds the engine image as a
+  non-root user; example 28 carries a worker Deployment and a solution Job
+  and validates them offline. The
+  [packaging tiers guide](docs/guides/packaging-tiers-and-hosted-service.md)
+  records hosted intelligence versus hosted compute, the three tiers, the
+  metered units, and what is never metered. No hosted endpoint is operated
+  and no price is published.
+- An evaluation product and a runnable optimizer. `core/evaluation_suite.py`
+  owns `EvaluationSuite` (a frozen population with a digest), six
+  registered deterministic graders, `EvaluationReport` with exact
+  denominators per status, grader, and tag, and case-level
+  `compare_reports` that refuses different populations;
+  `loop-engine evaluate SUITE --solver-spec SPEC` scores a text
+  conformance rule set or recorded outputs. `core/configuration_optimizer.py`
+  owns `ParameterSpace`, `AcceptancePolicy`, and `optimize`, which counts
+  represented, dispatched, evaluated, and accepted cells separately and
+  accepts a cell only when it gains on the training side and does not lose
+  on the held-out side; `loop-engine optimize SUITE --solver-spec SPEC
+  --space SPACE` runs it. `core/node_grid.py` owns `NodeGrid` over one
+  node's typed parameters and `GridLedger`, which refuses skipped stages
+  and claims exhaustive coverage only when every applicable cell was
+  evaluated. Example 27 walks a grid over the company-name suite offline.
 - The efficiency review a step records before it spends anything.
   `core/step_efficiency_review.py` owns `SizeExpectation`,
   `EfficiencyAlternative`, and `EfficiencyReview` with the judge kind
