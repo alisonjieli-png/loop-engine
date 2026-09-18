@@ -1,5 +1,7 @@
 # Benchmark registry
 
+Kind: benchmark registry and evaluation plans.
+
 The [TrafficFlowBench native/OpenCode plan](TRAFFICFLOWBENCH-NATIVE-OPENCODE-PLAN.md)
 defines a proposed capstone with matched execution arms and explicit local
 scoring limits. Account entry and file-list access were checked. The comparison

@@ -62,6 +62,43 @@ def _stale_docs() -> list:
     return stale
 
 
+#: The line a documentation folder's README must carry in its head: its kind.
+DOCS_CHARTER_MARKER = "Kind:"
+DOCS_CHARTER_HEAD_CHARACTERS = 600
+
+
+def _docs_folders_without_charter(docs_dir: "str | None" = None) -> list:
+    """Documentation folders that hold files but carry no README stating their kind.
+
+    A source checkout is chartered folder by folder; an installed package has
+    no documentation tree and reports nothing. A folder with no files at all
+    (an untracked placeholder) is not chartered.
+    """
+    if docs_dir is None:
+        repository, _exclusions = _nomenclature_scan_layout()
+        if repository == _HERE:
+            return []
+        docs_dir = os.path.join(repository, "docs")
+    if not os.path.isdir(docs_dir):
+        return []
+    missing = []
+    for name in sorted(os.listdir(docs_dir)):
+        folder = os.path.join(docs_dir, name)
+        if not os.path.isdir(folder) or name.startswith("."):
+            continue
+        if not any(files for _root, _dirs, files in os.walk(folder)):
+            continue
+        readme = os.path.join(folder, "README.md")
+        if not os.path.isfile(readme):
+            missing.append(name)
+            continue
+        with open(readme, encoding="utf-8") as stream:
+            head = stream.read(DOCS_CHARTER_HEAD_CHARACTERS)
+        if DOCS_CHARTER_MARKER not in head:
+            missing.append(name)
+    return missing
+
+
 def _unclassified() -> list:
     from .architecture_map import MODULE_MAP, ROOT_MODULES, SUBPACKAGES
     flat = {m for mods in MODULE_MAP.values() for m in mods}
@@ -229,9 +266,11 @@ def run_conformance() -> dict:
     unclassified = _unclassified()
     legacy_flat_paths = _legacy_flat_paths_reachable()
     stale = _stale_docs()
+    uncharted = _docs_folders_without_charter()
     c = scan["counts_by_rule"]
     gates = {
         "unclassified_files": len(unclassified),
+        "docs_folders_without_a_charter_readme": len(uncharted),
         "reachable_legacy_flat_paths": len(legacy_flat_paths),
         "legacy_flat_imports_on_live_paths": c.get(
             "legacy_flat_import", 0),
@@ -242,6 +281,8 @@ def run_conformance() -> dict:
             c.get("network_outside_gateway", 0),
         "subprocess_outside_declared_adapters":
             c.get("subprocess_outside_declared", 0),
+        "direct_writes_to_intelligence_files_outside_adapters":
+            c.get("intelligence_file_direct_write", 0),
         "eval_or_exec_anywhere": c.get("eval_or_exec", 0),
         "secret_shaped_literals_in_code_or_run_records":
             c.get("secret_shaped_literal", 0),
@@ -292,6 +333,7 @@ def run_conformance() -> dict:
         "files_scanned": scan["files_scanned"],
         "zero_tolerance_gates": gates,
         "gate_details": {"unclassified_files": unclassified,
+                         "docs_folders_without_a_charter_readme": uncharted,
                          "reachable_legacy_flat_paths": legacy_flat_paths,
                          "stale_current_architecture_documents": stale,
                          "operational_boundary_ontology": boundaries,
@@ -360,6 +402,19 @@ def self_test() -> dict:
     check("operational_vertex_canary_refuses_non_loop_and_ignores_passive_records",
           [item["type"] for item in canary] == ["TaskNode"],
           f"violations={canary}")
+    with tempfile.TemporaryDirectory() as directory:
+        os.makedirs(os.path.join(directory, "uncharted"))
+        open(os.path.join(directory, "uncharted", "note.md"), "w", encoding="utf-8").write("x")
+        os.makedirs(os.path.join(directory, "chartered"))
+        open(os.path.join(directory, "chartered", "README.md"), "w", encoding="utf-8").write(
+            "# Chartered\n\nKind: fixture records.\n")
+        os.makedirs(os.path.join(directory, "unmarked"))
+        open(os.path.join(directory, "unmarked", "README.md"), "w", encoding="utf-8").write(
+            "# Unmarked\n\nA README that never states its kind.\n")
+        os.makedirs(os.path.join(directory, "empty"))
+        uncharted = _docs_folders_without_charter(directory)
+    check("docs_charter_canary_reports_folders_without_a_kind_and_skips_empty_ones",
+          uncharted == ["uncharted", "unmarked"], f"uncharted={uncharted}")
     with tempfile.TemporaryDirectory() as directory:
         installed_package = os.path.join(directory, "loop_engine")
         os.makedirs(installed_package)

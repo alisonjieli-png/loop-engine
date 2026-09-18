@@ -3745,3 +3745,157 @@ semantic_terms:
   examples: ["acme, avoided_model_call, 1.0, the conformance report digest."]
   negative_examples: ["A metering record that carries the corrected rows."]
   conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.occupation_record"
+  canonical_name: "OccupationRecord"
+  primary_category: "record"
+  definition: "One occupation with its code, title, description, task statements, domain, source, license, and version, read from a public occupation table through a declared column mapping or from the packaged seeds."
+  source_of_truth: "loop_engine.core.seeded_generation:OccupationRecord"
+  source_symbol: "loop_engine.core.seeded_generation:OccupationRecord"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "occupation_record/v1"
+  related_terms: ["SeedRecord","ColumnMapping"]
+  difference_from_neighbors: "OccupationRecord is the source a seed batch is generated from; SeedRecord is one generated candidate."
+  parameterization_decision: "declared_column_mapping_per_source_layout"
+  composition_decision: "an occupation table is read by joining an occupation file and a task file on the code column; the O*NET and ESCO layouts ship as data"
+  inheritance_decision: "none"
+  storage_authority: "the packaged occupation seeds file or the caller's source files"
+  lifecycle: "Immutable; a new source version is a new record."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["LE-OCC-0001, Data entry clerk, six task statements, hand authored, version 2026-09-18."]
+  negative_examples: ["An occupation without a task statement."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.seed_record"
+  canonical_name: "SeedRecord"
+  primary_category: "record"
+  definition: "One candidate question, fact triple, or code seed specification generated from an occupation, with the category job_position, a provenance that names the generator version and the source, and a digest; its maturity is always candidate."
+  source_of_truth: "loop_engine.core.seeded_generation:SeedRecord"
+  source_symbol: "loop_engine.core.seeded_generation:SeedRecord"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "seed_record/v1"
+  related_terms: ["OccupationRecord","SeedBatch","ReusableCapabilityRecord"]
+  difference_from_neighbors: "SeedRecord is a candidate the admission ladder has not seen; a ReusableCapabilityRecord is what admission produces from a qualified candidate."
+  parameterization_decision: "closed_seed_kind_vocabulary_and_declared_question_templates_and_verb_operations"
+  composition_decision: "a code seed is a specification with no implementation, emitted only for a whole-word verb match; staging writes through a store contract and reports only acknowledged writes"
+  inheritance_decision: "none"
+  storage_authority: "the catalog store or the search and serve store the caller supplies"
+  lifecycle: "Candidate only; promotion belongs to the admission ladder."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["question: for a data entry clerk, which inputs does the task 'verify entered data against source documents' need."]
+  negative_examples: ["A seed whose maturity is qualified.", "A code seed that carries an implementation."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.seeded_generation"
+  canonical_name: "seeded generation"
+  primary_category: "procedure"
+  definition: "The deterministic step that turns one occupation record into a seed batch of candidate questions, facts, and code seeds and stages them through a store contract; it grants nothing and qualifies nothing."
+  source_of_truth: "loop_engine.core.seeded_generation:generate_seeds"
+  source_symbol: "loop_engine.core.seeded_generation:generate_seeds"
+  public_or_internal: "public"
+  runtime_or_passive: "runtime"
+  authoritative_or_projection: "authoritative"
+  versioning: "seeded_generation version constant"
+  related_terms: ["OccupationRecord","SeedRecord","ContextIntelligence"]
+  difference_from_neighbors: "seeded generation produces candidates from an occupation table; the string foundry produces candidates from model calls; both stage, neither promotes."
+  parameterization_decision: "version_and_declared_templates"
+  composition_decision: "same occupation and version give the same digests; batches are found by domain and by job position"
+  inheritance_decision: "none"
+  storage_authority: "none; the staging store owns the records"
+  lifecycle: "Stateless."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["the six packaged occupations generate 327 candidate seeds."]
+  negative_examples: ["A seed batch written to a file under the package."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.typed_decision"
+  canonical_name: "TypedDecision"
+  primary_category: "record"
+  definition: "An admitted answer to one bounded question: a chosen candidate from a declared set, a probability mass per candidate that sums to one, a confidence, and an abstention flag, with the route, provider, model, and output digest that produced it."
+  source_of_truth: "loop_engine.core.typed_decision:TypedDecision"
+  source_symbol: "loop_engine.core.typed_decision:TypedDecision"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "typed_decision/v1"
+  related_terms: ["TypedDecisionRequest","ModelCallRecord","ResponseContract","SuggestedOutput"]
+  difference_from_neighbors: "TypedDecision is the admitted typed answer; ModelCallRecord is what the call cost and returned; the response contract is the shape the judge was asked for."
+  parameterization_decision: "declared_candidate_set_and_unit_interval_probabilities"
+  composition_decision: "admission refuses rows over the wrong candidate set, rows that do not sum to one, a choice that is not the top row, and any answer whose request did not name the typed decision contract"
+  inheritance_decision: "none"
+  storage_authority: "the model call record ledger and the operation cost ledger"
+  lifecycle: "Immutable."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["chosen b, probabilities a 0.2, b 0.7, c 0.1, confidence 0.7, not abstained."]
+  negative_examples: ["A decision whose rows sum to 1.4.", "A probability response admitted under the practitioner route contract."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.typed_decision_request"
+  canonical_name: "TypedDecisionRequest"
+  primary_category: "record"
+  definition: "One bounded question with its declared candidates (at most ten), evidence parts, purpose, and response contract, which becomes a judgment model call with labeled text parts and the registered suggested output."
+  source_of_truth: "loop_engine.core.typed_decision:TypedDecisionRequest"
+  source_symbol: "loop_engine.core.typed_decision:TypedDecisionRequest"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "typed_decision_request/v1"
+  related_terms: ["TypedDecision","ModelCallRequest"]
+  difference_from_neighbors: "TypedDecisionRequest bounds the question; ModelCallRequest is the wider boundary it becomes for any model kind."
+  parameterization_decision: "unique_nonempty_candidates_with_a_declared_maximum"
+  composition_decision: "the request names the typed decision contract; another contract makes every admission refuse"
+  inheritance_decision: "none"
+  storage_authority: "none; the request digest is kept on the call record"
+  lifecycle: "Immutable."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["which column holds the invoice total, candidates total, amount, sum."]
+  negative_examples: ["A request with eleven candidates."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.typed_decision_route"
+  canonical_name: "typed decision route"
+  primary_category: "route"
+  definition: "A ModelRoute whose profile is a judgment model declaring label and probability outputs and serving the decide_label purpose; a route without such a profile is refused before any judge is called, and every decision passes the same route screen as every model call."
+  source_of_truth: "loop_engine.core.typed_decision:validate_typed_decision_route"
+  source_symbol: "loop_engine.core.typed_decision:validate_typed_decision_route"
+  public_or_internal: "public"
+  runtime_or_passive: "runtime"
+  authoritative_or_projection: "authoritative"
+  versioning: "model_profile/v1"
+  related_terms: ["ModelRoute","ModelProfile","TypedDecision"]
+  difference_from_neighbors: "a typed decision route is a model route constrained to judgment profiles; a text route serves generative text."
+  parameterization_decision: "profile_kind_output_kinds_and_purpose"
+  composition_decision: "the specialist judge runs an in-process small model with a declared memory ceiling; the endpoint judge maps a provider body received through an injected transport; neither is network code"
+  inheritance_decision: "none"
+  storage_authority: "the route registry"
+  lifecycle: "A route is data; a retired profile is refused."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["a route named judge.specialist over a trained naive Bayes specialist, in process, 64 megabytes."]
+  negative_examples: ["A route with a generative text profile used for a typed decision."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "core.term.typed_decision_suite"
+  canonical_name: "TypedDecisionSuite"
+  primary_category: "record"
+  definition: "Frozen bounded decisions with known answers, evaluated with exact denominators: total equals decided plus abstained plus errored, decided equals correct plus wrong, and an error is never counted as correct."
+  source_of_truth: "loop_engine.core.typed_decision:TypedDecisionSuite"
+  source_symbol: "loop_engine.core.typed_decision:TypedDecisionSuite"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "typed_decision_suite_report/v1"
+  related_terms: ["EvaluationSuite","TypedDecision"]
+  difference_from_neighbors: "TypedDecisionSuite scores a judge on bounded choices; EvaluationSuite scores a solver on cases with registered graders."
+  parameterization_decision: "cases_with_expected_candidates"
+  composition_decision: "accuracy over decided cases is unknown when nothing was decided"
+  inheritance_decision: "none"
+  storage_authority: "the caller's suite file"
+  lifecycle: "Frozen per version."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["four cases: three decided of which two correct, one errored; accuracy over decided two thirds."]
+  negative_examples: ["A report that counts an erroring judge as a pass."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]

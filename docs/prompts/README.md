@@ -1,5 +1,7 @@
 # Loop Engine prompts
 
+Kind: point-in-time prompt records loaded into agents.
+
 Every prompt defers to the current repository, `AGENTS.md`, the Architecture
 Constitution, machine-readable contracts, and enforcing tests. Load one prompt
 for the active task. Do not concatenate several prompts into a larger mandate.

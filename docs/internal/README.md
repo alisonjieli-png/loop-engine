@@ -1,5 +1,7 @@
 # Internal development notes
 
+Kind: maintainer handoff pointers and historical development notes.
+
 This directory contains a stable maintainer-handoff pointer and historical
 development notes. It does not contain a live checkout snapshot.
 

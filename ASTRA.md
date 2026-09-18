@@ -856,6 +856,38 @@ note supported them, and the Loop Engine row states its own gaps: seeded
 generation, noise injection, a typed-decision route, hosted operation,
 pricing, and a published image.
 
+Owner requirement, later on September 18. The Loop Engine row of the
+feature matrix must have no absent cell: identify, ideate, and implement
+the missing capabilities and list more fields. The owner also asked for a
+better folder structure, because the difference between folder paths,
+structures, trees, and files was not clear.
+
+Observed result. Seeded generation by role or domain landed: occupation
+tables are read through a declared column mapping with the O*NET and ESCO
+layouts packaged as data, six hand-authored occupations generate 327
+candidate questions, facts, and code seed specifications, staging goes
+through a store contract and reports only acknowledged writes, and no path
+emits any maturity but candidate. The typed-decision route landed behind
+the model call boundary: a bounded question with at most ten candidates,
+admission under the `typed_decision.choice` contract that refuses wrong
+candidate sets and rows that do not sum to one, a route refused without a
+judgment profile, an in-process specialist judge, an endpoint judge over an
+injected transport, and a suite with exact denominators; no live provider
+route is declared. The conformance scan refuses a direct write to a
+packaged intelligence path outside the catalog adapters. The worker image
+pins its base by digest, builds locally, runs `doctor`, and
+is published to the GitHub Container Registry by a workflow on every push
+to `main`. The
+[layout and record kinds record](docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md)
+answers the folder question: a folder path says where, a classification
+tree says what kind, a record file says what; every documentation folder
+now states its kind in its README under a conformance gate, and the
+records index lists every version of each dated record in one place. The
+matrix has seventy-four columns; the cells that stay absent are hosted
+cloud and public pricing, which need an operated endpoint and a price the
+owner sets, and verification on a different route, which is roadmap step
+S-3.3.
+
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of
 concept, billing, publication, and unseen-task runs.

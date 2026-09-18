@@ -20,7 +20,7 @@ defines the native/OpenCode experiment; it is not a score report.
 
 | Order | Page | What it explains |
 |---:|---|---|
-| 1 | [Repository organization](REPOSITORY-ORGANIZATION.md) | Which directory owns runtime code, contracts, guides, examples, benchmarks, case studies, and presentation assets. |
+| 1 | [Repository organization](REPOSITORY-ORGANIZATION.md) and the [layout and record kinds charter](architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md) | Which directory owns runtime code, contracts, guides, examples, benchmarks, case studies, and presentation assets; the kind, naming rule, and version rule of every folder; the [records index](RECORDS-INDEX.md) that lists every version of each dated record in one place. |
 | 2 | [Contract index](contracts/) | Current definition, start, runtime-context, graph, intelligence, Solution, and event contracts. |
 | 3 | [Taxonomy, ontology, and class map](architecture/TAXONOMY-ONTOLOGY-AND-CLASS-MAP.md) | One complete classification tree, exact registered profiles, public classes, and current limits. |
 | 4 | [Component guide](components/) | The complete map and the recommended reading order. |

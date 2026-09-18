@@ -84,10 +84,16 @@ learnable call records carry digests and sizes by contract.
 | Self-hosted | Nodes as containers on the customer's cluster; Jobs for exported solutions | SQLite or DuckDB for one host, a server database for a cluster | S-4.1, S-4.2 |
 | Hosted | Nodes as containers on the vendor's cluster with per-tenant namespaces | A server database with vector columns behind the catalog contract | S-4.2, S-4.4 |
 
-The engine image is built from the repository `Dockerfile`; example 28
-carries the Kubernetes manifests for a worker and a Job and validates them
-offline. Deployment to a cloud account, billing, and package index
-publication are blocked on accounts the owner supplies (S-4.4 to S-4.6).
+The engine image is built from the repository `Dockerfile`, which pins its
+base image by digest; example 28 carries the Kubernetes manifests for a
+worker and a Job and validates them offline. The publish workflow
+(`.github/workflows/publish-image.yml`) builds the image on every push to
+`main`, pushes it to the GitHub Container Registry under this repository
+as `ghcr.io/alisonjieli-png/loop-engine:main` and `:sha-<commit>`, pulls it
+back by digest, runs `doctor`, and writes the digest to the job summary;
+a deployment manifest should pin that digest. Deployment to a cloud
+account, billing, and package index publication are blocked on accounts
+the owner supplies (S-4.4 to S-4.6).
 
 ## What this guide does not claim
 

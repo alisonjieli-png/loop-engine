@@ -85,11 +85,11 @@ steps:
   - id: S-1.9
     phase: 1
     title: Feature matrix regeneration with evidence links
-    status: proposed
+    status: offline_verified
     depends_on: [S-1.1, S-1.2, S-1.3, S-1.4, S-1.5, S-1.6, S-1.7, S-1.8]
     verify: [LINT]
     adversarial: "a Loop Engine cell without an evidence link fails the matrix script"
-    evidence: ""
+    evidence: "the matrix generator refuses a Loop Engine cell without an evidence note; six tables, seventy-four columns, regenerated into docs/research/COMPETITIVE-LANDSCAPE-AND-MONETIZATION-2026-09-18.md and the published artifact"
   - id: S-1.10
     phase: 1
     title: Detection and correction node family with confidence
@@ -101,11 +101,11 @@ steps:
   - id: S-1.11
     phase: 1
     title: Job-description-seeded intelligence pipeline and first seeds
-    status: proposed
+    status: offline_verified
     depends_on: [S-1.10]
     verify: [SELF, MUTANT]
     adversarial: "remove the candidate state; the check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/core/seeded_generation.py self_test (13 checks); src/loop_engine/data/occupation_seeds.yaml (six hand-authored occupations, 327 candidate seeds); nine killed mutants including the candidate token replaced by registered; O*NET and ESCO column mappings packaged as data, their files not downloaded"
   - id: S-2.6
     phase: 2
     title: Dimension inventory at every level
@@ -181,10 +181,34 @@ steps:
   - id: S-2.16
     phase: 2
     title: Dated record folders by document type with generated indexes and link rewriting
-    status: proposed
+    status: superseded
     depends_on: []
     verify: [LINT, every moved link resolves, a lint refuses an undated record in a dated folder]
     adversarial: "a record placed outside its type folder or without a date fails the lint"
+    evidence: "superseded by S-2.17 and S-2.19: the layout record found that the folder already is the kind and that moving dated records breaks several hundred links for no information the records index does not give"
+  - id: S-2.17
+    phase: 2
+    title: Records index and folder charters
+    status: offline_verified
+    depends_on: []
+    verify: [tools/test_build_records_index.py, CONF gate docs_folders_without_a_charter_readme with its canary]
+    adversarial: "a dated record added without regenerating the index fails the tools test; a docs folder with files and no README stating its kind fails conformance"
+    evidence: "tools/build_records_index.py; docs/RECORDS-INDEX.md; README with a Kind line in every docs folder; docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md"
+  - id: S-2.18
+    phase: 2
+    title: Relayer each declared boundary package from core one boundary at a time
+    status: proposed
+    depends_on: [S-2.17]
+    verify: [CONF dependency ratchet, import-boundary tests per moved boundary]
+    adversarial: "a move that raises the dependency-direction count above the ratchet fails conformance"
+    evidence: "src/loop_engine/intelligence/README.md names the implementing modules per layer"
+  - id: S-2.19
+    phase: 2
+    title: Move the specifications at the docs root into their kind folders with redirect stubs
+    status: proposed
+    depends_on: [S-2.17]
+    verify: [LINT, every moved link resolves]
+    adversarial: "a moved record without a redirect stub breaks a link and fails the link check"
     evidence: ""
   - id: S-2.15
     phase: 2
@@ -197,11 +221,11 @@ steps:
   - id: S-2.13
     phase: 2
     title: Typed-decision model route (a Jev-class judge) behind the model call boundary
-    status: proposed
+    status: offline_verified
     depends_on: [S-2.1]
     verify: [SELF, MUTANT, fixture suite of bounded decisions with exact denominators]
     adversarial: "a probability response admitted without its contract fails; a route without a profile is refused"
-    evidence: "docs/research/JEV-TYPED-DECISION-INTEGRATION-2026-09-18.md"
+    evidence: "src/loop_engine/core/typed_decision.py self_test (14 checks) with the specialist judge in process and the endpoint judge over an injected transport; eleven killed mutants; the typed_decision.choice response contract; docs/research/JEV-TYPED-DECISION-INTEGRATION-2026-09-18.md; no live provider route declared"
   - id: S-2.1
     phase: 2
     title: Step efficiency review record with a deterministic judge
@@ -286,11 +310,19 @@ steps:
   - id: S-4.1
     phase: 4
     title: Worker image, Kubernetes manifests, placement policy
-    status: building
+    status: offline_verified
     depends_on: [S-0.5]
-    verify: [manifests validate offline in example 28; image build and a Job run need Docker and a cluster]
+    verify: [manifests validate offline in example 28; the image builds locally and runs doctor; a Job run needs a cluster]
     adversarial: "a manifest without resource limits fails validation"
-    evidence: "Dockerfile; examples/28_containerized_worker; image not yet built or digest-pinned"
+    evidence: "Dockerfile with python:3.12-slim pinned by digest sha256:78387bc3; local build image id sha256:08ed84d3 (75.8 MB) runs doctor with exit 0; examples/28_containerized_worker; no cluster Job run yet"
+  - id: S-4.7
+    phase: 4
+    title: Worker image publication to the GitHub Container Registry
+    status: building
+    depends_on: [S-4.1]
+    verify: [the publish workflow pushes ghcr.io/alisonjieli-png/loop-engine:main and :sha-<commit>, pulls it back by digest, and runs doctor]
+    adversarial: "a pushed image whose doctor command fails must fail the workflow"
+    evidence: ".github/workflows/publish-image.yml; the first published digest is recorded here after the run"
   - id: S-4.2
     phase: 4
     title: Service software with tenants, keys, and metering
@@ -341,10 +373,10 @@ steps:
   - id: S-5.2
     phase: 5
     title: Business paths record
-    status: ready
+    status: offline_verified
     depends_on: [S-5.1]
     verify: [LINT]
-    evidence: ""
+    evidence: "docs/research/BUSINESS-PATHS-2026-09-18.md: funding, partner programs, and open roles for seventeen landscape companies with a source and date per cell, the four paths with decision criteria, and a recommendation sequence; the owner decides"
   - id: S-5.3
     phase: 5
     title: Career research

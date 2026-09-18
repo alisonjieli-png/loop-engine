@@ -713,6 +713,68 @@ def scan_llm_first_semantic_freedom(root: str, rules: dict) -> list:
 RATCHETED_RULES = ("dependency_direction",)
 
 
+#: The calls that write a file by path; a read-only open is not one of them.
+_WRITE_CALLS = ("open", "write_text", "write_bytes")
+_WRITE_MODE_LETTERS = ("w", "a", "x", "+")
+
+
+def _open_mode_writes(node) -> bool:
+    """Whether an ``open`` call names a writing mode; a missing mode reads."""
+    mode = None
+    if len(node.args) > 1:
+        mode = node.args[1]
+    for keyword in node.keywords:
+        if keyword.arg == "mode":
+            mode = keyword.value
+    if not isinstance(mode, ast.Constant) or not isinstance(mode.value, str):
+        return False
+    return any(letter in mode.value for letter in _WRITE_MODE_LETTERS)
+
+
+def scan_intelligence_file_writes(root: str, rules: dict) -> list:
+    """Packaged intelligence files are written only through the store contract.
+
+    The owner's rule of 2026-09-18: intelligence is stored and served through
+    one store contract, never by editing text files. A module outside the
+    declared adapters that opens a path naming a packaged intelligence folder
+    for writing or appending, or calls write_text or write_bytes on such a
+    path, is a direct edit and fails the gate. Paths are matched on the
+    declared markers in the rules store; a path held in a variable is
+    governed by the adapters' own checks, not by this static scan.
+    """
+    markers = tuple(rules.get("intelligence_file_markers", ()))
+    allowed = set(rules.get("intelligence_write_allowed_modules", {}))
+    if not markers:
+        return []
+    v = []
+    for rel in _py_files(root):
+        norm = rel.replace(os.sep, "/")
+        if norm in allowed:
+            continue
+        tree = _source_tree(os.path.join(root, rel))
+        if tree is None:
+            continue
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            fname = (node.func.id if isinstance(node.func, ast.Name)
+                     else node.func.attr if isinstance(node.func, ast.Attribute) else "")
+            if fname not in _WRITE_CALLS:
+                continue
+            literals = [item.value for item in ast.walk(node)
+                        if isinstance(item, ast.Constant) and isinstance(item.value, str)]
+            if not any(marker in text for text in literals for marker in markers):
+                continue
+            if fname == _WRITE_CALLS[0] and not _open_mode_writes(node):
+                continue
+            v.append({"rule": "intelligence_file_direct_write", "file": norm,
+                      "line": node.lineno,
+                      "detail": f"{fname} on a packaged intelligence path; write "
+                                "through the store contract (a catalog adapter), "
+                                "never the file"})
+    return v
+
+
 def ratchet_baselines(rules: dict) -> dict:
     """The declared ceiling of every ratcheted rule, from the rules store."""
     return {"dependency_direction": sum(
@@ -732,7 +794,8 @@ DETECTORS = (scan_legacy_flat_imports,
              scan_unmapped_event_kinds, scan_public_node_naming,
              scan_uncollected_self_tests, scan_direct_resource_access,
              scan_unregistered_boundaries,
-             scan_llm_first_semantic_freedom)
+             scan_llm_first_semantic_freedom,
+             scan_intelligence_file_writes)
 
 
 def run_scan(root: "str | None" = None) -> dict:
@@ -785,6 +848,9 @@ _FIXTURES = {
         'class SolverRequest:\n    max_passes: int = 12\n',
     "dependency_direction":
         "from ..code_nodes.solution_records import SolutionCandidate\n",
+    "intelligence_file_direct_write":
+        'open("governance/candidates/part-00000.jsonl", "a").write("{}")\n'
+        'open("governance/candidates/part-00000.jsonl").read()\n',
 }
 
 

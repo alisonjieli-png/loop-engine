@@ -19,6 +19,85 @@ First public release.
   [pre-packaged intelligence research](docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md)
   with verified package and occupation-database facts, and the
   [branding options](docs/research/BRANDING-OPTIONS-2026-09-18.md).
+- The [business paths record](docs/research/BUSINESS-PATHS-2026-09-18.md)
+  (roadmap S-5.2) reads the latest funding or acquisition, partner
+  programs, and open roles of seventeen landscape companies with a source
+  and date per cell, lays out own startup, partnering, joining for equity,
+  and licensing with decision criteria, lists every fact that stayed
+  unverified, and recommends a sequence; it decides nothing.
+- The repository layout is chartered. The
+  [layout and record kinds record](docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md)
+  separates a folder path, a classification tree, and a record file, and
+  gives every top-level entry and every documentation folder its kind,
+  naming rule, and version rule. Every documentation folder that holds
+  files now carries a README whose head states `Kind:`, the conformance
+  gate `docs_folders_without_a_charter_readme` counts any that do not, and
+  its self-test plants an uncharted folder to prove the detector. The
+  records index (`python tools/build_records_index.py`, committed as
+  `docs/RECORDS-INDEX.md`) lists every version of each dated record under
+  its folder and subject with the newest first, and its test fails when a
+  dated record is added without regenerating it. The intelligence package
+  README names the modules that implement each of the four layers.
+- The worker image is digest-pinned and published. The `Dockerfile` pins
+  `python:3.12-slim` by digest, the image builds locally and runs
+  `doctor`, and the publish workflow builds it on every push to `main`,
+  pushes it to the GitHub Container Registry under this repository as
+  `main` and `sha-<commit>`, pulls it back by digest, runs `doctor`, and
+  records the digest in the job summary.
+- The feature matrix has seventy-four columns across its six tables. The
+  twenty added columns name tested behavior (typed references before
+  bodies, reuse evidence with credit split, suggested output shapes, the
+  task working folder, run-scoped Runtime Memory, the fast path, the
+  resolution package, multiplied question forms, action vectors,
+  budget-phase supervision, contract matching modes, verification on a
+  different route, the step efficiency review, meta-selection, the model
+  ontology, the convergence report, packaging tiers, the machine-readable
+  roadmap, the verified comparison, and the digest-pinned base image);
+  vendor cells in added columns are unverified unless an earlier note
+  supported them, and the generator now refuses a Loop Engine cell
+  without an evidence note.
+- Seeded generation by role or domain landed as the first
+  job-description-seeded intelligence pipeline (roadmap S-1.11).
+  `core/seeded_generation.py` reads an occupation table through a declared
+  column mapping (the public O*NET and ESCO layouts ship as data, their
+  files are not downloaded), turns each occupation into a seed batch of
+  candidate questions from six general forms, fact triples, and code seed
+  specifications emitted only for a whole-word verb match, and stages the
+  batch through the catalog or the search and serve store contract, never
+  a file, reporting only acknowledged writes. Six hand-authored
+  occupations ship in `data/occupation_seeds.yaml` and generate 327
+  candidate seeds. No path in the module emits any maturity but candidate
+  and no function promotes or qualifies; nine mutants, including the
+  candidate token replaced by registered, are killed.
+- The conformance scan gains `intelligence_file_direct_write` and the gate
+  `direct_writes_to_intelligence_files_outside_adapters`: a module outside
+  the declared catalog adapters that opens a packaged intelligence path
+  for writing, or calls `write_text` or `write_bytes` on one, fails the
+  build; the canary plants such a write and a read and expects only the
+  write reported. This is the durable form of the owner's rule that
+  intelligence is written through the store contract, never by editing
+  files (Constitution LE-DATA-002, proposed).
+- The typed-decision model route landed behind the model call boundary
+  (roadmap S-2.13). `core/typed_decision.py` bounds one question to at most
+  ten declared candidates, builds a judgment model call with labeled parts
+  and the registered suggested output, and admits an answer only under the
+  `typed_decision.choice` contract: rows name exactly the declared
+  candidates and sum to one within a named tolerance, the choice is the
+  top row or an abstention with no choice, and a route without a judgment
+  profile declaring label and probability outputs is refused before any
+  judge runs. Two judges ship: a specialist judge over an in-process
+  trained naive Bayes specialist with a declared memory ceiling, and an
+  endpoint judge that maps a provider body received through an injected
+  transport, so a Jev-class provider enters as a declared network adapter
+  outside the module. Every decision passes the same route screen as every
+  model call, writes a model call record with digests and counts only, and
+  writes one operation cost record when a ledger is given. A typed
+  decision suite scores a judge with exact denominators, and an erroring
+  judge is errored, never correct. Eleven mutants are killed.
+- The response contract registry gains `typed_decision.choice`: one chosen
+  candidate from a declared set of at most ten, a probability per
+  candidate as the row confidence, a decision confidence, and an
+  abstention flag, with a ranked-list suggested output.
 - Four of the five open attacks in the adversarial validation plan are
   closed. Reuse evidence now reaches retrieval: `Retriever` accepts reuse
   evidence by record identity and adds a bounded ranking term (a fully

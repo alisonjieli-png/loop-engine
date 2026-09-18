@@ -1,5 +1,7 @@
 # Loop Engine components
 
+Kind: component explanations, one guide per architecture component.
+
 This section explains Loop Engine from the shared runtime outward. Read the
 pages in this order if the system is new to you.
 

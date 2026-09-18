@@ -173,6 +173,10 @@ named check fails.
 | S-2.15 Noise injection and explorative optimization | Perturb inputs, prompts, or catalogs of a frozen suite and require a candidate cell to hold its gain on the perturbed suite; explorative strategies from the campaign vocabulary run through the same acceptance gate. | `SELF`; a cell that wins only on clean inputs is refused | Remove the perturbed check; the refusal check must fail | S-1.7 |
 | S-2.9 Intelligence storage analysis and measurement | A decision record that enumerates the storage and serving variations (files only, DuckDB over packaged files, SQLite, a server database with vectors, an analytics warehouse, package references, and a sidecar of search characteristics with body references), analyzes each for space, read and write time, offline availability, concurrency, and maintenance, and measures the existing adapters on one synthetic population; a recommendation with the measured numbers. | The record carries the measured table with its script and denominators | A variation without a measured row is marked unmeasured, never recommended | S-0.5 |
 | S-2.10 Intelligence access contract and no-direct-edit rule | Every read and write of intelligence records goes through a catalog store call; the string bank and the question forms load through a store adapter; package references (`loop_engine.data.<collection>#<record_id>`) resolve through the catalog; a conformance scan refuses runtime code that opens an intelligence file for writing outside the declared adapters; a settings record names the default store per deployment profile (demo, self-hosted, hosted). | `CONF`; the scan finds a planted direct write and refuses it | Remove the scan; the planted write passes, so the check must fail | S-2.9 |
+| S-2.16 Dated record folders by type | Superseded by S-2.17 and S-2.19: the [layout record](../architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md) found that the folder already is the kind and that moving dated records breaks several hundred links for no information the index does not give. | none | none | none |
+| S-2.17 Records index and folder charters | `tools/build_records_index.py` writes `docs/RECORDS-INDEX.md`, every version of each dated record under its folder and subject with the newest first; a README with a `Kind:` line in every docs folder; the conformance gate `docs_folders_without_a_charter_readme` with a canary. | tools test; `CONF` | A dated record added without regenerating the index fails the tools test; a docs folder with files and no chartered README fails conformance | none |
+| S-2.18 Relayer declared boundaries | Move the implementation of each README-only package (`intelligence` first) out of `core` one boundary at a time behind the dependency ratchet, with import-boundary tests. | `CONF`; import-boundary tests | A move that raises the dependency-direction count above the ratchet fails | S-2.17 |
+| S-2.19 Docs root specifications | Move the specifications at the `docs` root into their kind folders with redirect stubs so the root holds only entry points. | `LINT`; every moved link resolves | A moved record without a redirect stub fails the link check | S-2.17 |
 | S-2.11 Search characteristics sidecar and hybrid retrieval | Facets, digests, and optional embeddings stored beside body references; a large body stays in a file, an object store, or a package; hybrid (lexical plus vector) and iterative retrieval over the same records through the existing Retriever; the same query answered by DuckDB and by a server adapter with identical results on the fixture population. | `SELF`; two adapters return identical ranked identities for the fixture queries | Remove the body reference; the large-body check must fail | S-2.10 |
 
 ### Phase 3: proof of concept
@@ -195,6 +199,7 @@ named check fails.
 | S-4.4 Deployment | Deploy the service and the site to the owner's cloud account. | A public health endpoint answers; a recorded run | Blocked until the owner supplies the account | S-4.2 |
 | S-4.5 Billing | Payment provider integration with metered usage. | A test-mode charge recorded | Blocked until the owner supplies the account | S-4.4 |
 | S-4.6 Package index publication | Publish `loop-engine` and an exported solution to a package index. | Installable from the index in a clean environment | Blocked until the owner supplies the account | S-0.5 |
+| S-4.7 Worker image publication | The publish workflow builds the digest-pinned image on every push to `main`, pushes it to the GitHub Container Registry under this repository as `main` and `sha-<commit>`, pulls it back by digest, runs `doctor`, and records the digest in the job summary. | The workflow run succeeds and the digest is recorded in this roadmap | A pushed image whose `doctor` command fails must fail the workflow | S-4.1 |
 
 ### Phase 5: business and brand
 
@@ -248,6 +253,44 @@ Append one line per iteration: date, step, result, evidence path, commit.
 - 2026-09-18, S-2.1, S-2.5, S-1.5, S-1.6, S-1.8, published as commit
   `b1fbcdc` after the batch 8 gates (battery of 30 steps) and eighteen
   killed mutants.
+- 2026-09-18, S-1.12, S-2.15, S-3.1, S-1.4, S-1.7, S-2.4 published as
+  commit `130c86c` after the batch 10 gates (conformance, hardcoding
+  delta, documentation lint, self-test of 5,103 checks, battery of 32
+  steps) and ten killed mutants; S-1.4, S-1.7, and S-2.4 had landed as
+  `f8a2ec1` in batch 9.
+- 2026-09-18, S-2.17 offline_verified and S-2.16 superseded: the
+  [layout and record kinds record](../architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md)
+  answers the owner's folder question; every docs folder now states its
+  kind; the records index lists 146 dated records under 143 subjects; the
+  conformance gate and its canary hold new folders to the charter. S-2.18
+  and S-2.19 proposed.
+- 2026-09-18, S-1.11 offline_verified: seeded generation reads an
+  occupation table through a declared column mapping (the O*NET and ESCO
+  layouts ship as data), six hand-authored occupations generate 327
+  candidate questions, facts, and code seed specifications, staging goes
+  through a store contract and reports only acknowledged writes, and nine
+  mutants including the candidate token replaced by registered are killed;
+  the conformance scan now refuses a direct write to a packaged
+  intelligence path outside the catalog adapters (S-2.10 partial).
+- 2026-09-18, S-5.2 offline_verified: the
+  [business paths record](../research/BUSINESS-PATHS-2026-09-18.md) reads
+  the latest funding or acquisition, partner programs, and open roles of
+  seventeen landscape companies with a source and date per cell, lays out
+  own startup, partnering, joining for equity, and licensing with decision
+  criteria, and recommends a sequence (licensing decision first, partnering
+  for evidence, own startup after a hosted proof of concept and a paying
+  run, joining for equity as the fallback); the owner decides.
+- 2026-09-18, S-2.13 offline_verified: the typed-decision route behind the
+  model call boundary with the `typed_decision.choice` contract, admission
+  rules, route validation, a specialist judge in process, an endpoint judge
+  over an injected transport, and a suite with exact denominators; eleven
+  killed mutants; no live provider route declared.
+- 2026-09-18, S-4.1 offline_verified: the Dockerfile pins its base by
+  digest and the image builds locally (75.8 MB) and runs `doctor`; S-4.7
+  building: the publish workflow to the GitHub Container Registry lands
+  with batch 11 and its first digest is recorded after the run. S-1.9
+  offline_verified: the matrix generator refuses a Loop Engine cell
+  without an evidence note; seventy-four columns across the six tables.
 - 2026-09-18, S-1.12 building: four of the five attacks that succeeded
   are closed with checks and mutants (reuse evidence reaches retrieval as
   a bounded ranking term; the gateway writes a cost record per invocation;

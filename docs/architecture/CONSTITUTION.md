@@ -383,6 +383,31 @@ Rationale: the owner's September 18 direction asks that the data be
 collected now and that heuristics wait for enough evidence; a threshold that
 lives in a policy record can be reviewed, one that lives in code cannot.
 
+### LE-DATA-002 (proposed)
+
+Intelligence records MUST be read and written through the store contract.
+No module outside the declared catalog adapters MUST open a packaged
+intelligence path for writing, and no run MUST edit an intelligence file
+directly. The conformance gate
+`direct_writes_to_intelligence_files_outside_adapters` counts literal-path
+writes; the adapters govern paths held in variables.
+
+Rationale: the owner's September 18 direction that intelligence is stored
+and served through one contract, never by editing text files; a scan that
+fails the build is the rule's only durable form.
+
+### LE-LAYOUT-001 (proposed)
+
+Every documentation folder that holds files MUST carry a README whose head
+states its kind, naming rule, and version rule, and every new top-level
+folder MUST appear in the layout charter. Dated records keep the
+`STEM-YYYY-MM-DD` convention, and the records index MUST list every version
+of each dated record.
+
+Rationale: the owner's September 18 question about folder paths, trees, and
+files; the folder is the kind, the tree is the classification, the file is
+the record, and a reader must be able to tell which is which without asking.
+
 Planned enforcement: `test_heuristic_adoption_waits_for_the_declared_run_count`.
 The policy and the versioned dataset store exist in `core/heuristic_adoption`
 with the check

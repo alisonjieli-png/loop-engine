@@ -39,6 +39,8 @@ The current checks cover:
 | Relationships | Boundary relationship kinds remain compatible with their role families. |
 | Graph vertices | Every executable graph vertex uses the canonical `Loop` runtime type. |
 | Resource access | Product code does not add undeclared direct store access. |
+| Intelligence files | No module outside the declared catalog adapters opens a packaged intelligence path for writing; intelligence is written through the store contract. |
+| Documentation folders | Every documentation folder that holds files carries a README whose head states its kind. |
 | Architecture map | The generated module map matches the current package. |
 
 The machine-readable configuration is

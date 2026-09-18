@@ -49,35 +49,35 @@ Each cell is Y (documented), N (not documented or documented as absent),
 P (partial, see the cell notes), or ? (unverified today). Every non-obvious
 cell names the page or fact it rests on. Letta was added to the chart.
 
-The matrix is six tables, one per band, with fifty-two columns; the bands and the columns added after the first reading were introduced later on 2026-09-18, and a vendor cell in an added column is marked unverified unless an earlier note supported it.
+The matrix is six tables, one per band, with seventy-four columns; the bands and the columns added after the first reading were introduced later on 2026-09-18, and a vendor cell in an added column is marked unverified unless an earlier note supported it.
 
-The matrix is six tables, one per band, with fifty-two columns. The intelligence layers band and the columns added after the first reading were introduced later on 2026-09-18; a vendor cell in an added column is marked unverified unless an earlier note supported it. Each table is followed by vendor counts.
+The matrix is six tables, one per band, with seventy-four columns. The intelligence layers band and the columns added after the first reading were introduced later on 2026-09-18, and twenty more columns on the same day after the owner asked for more fields; a vendor cell in an added column is marked unverified unless an earlier note supported it, and the generator refuses a Loop Engine cell without an evidence note. Each table is followed by vendor counts.
 
 ### Intelligence layers
 
-| Company | Context Intelligence served as records | Temporal validity on facts | Seeded generation by role or domain | Code Intelligence with contracts | Candidate to qualified admission | Runtime History with cost and verification | Training data from records | User Feedback applied at run time |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | Y | N | Y | Y | Y | Y | Y |
-| Mem0 | Y | ? | ? | N | ? | ? | P | Y |
-| Zep and Graphiti | Y | Y | ? | N | ? | ? | ? | ? |
-| Supermemory | Y | Y | ? | N | ? | ? | ? | Y |
-| Cognee | Y | P | ? | N | ? | ? | ? | ? |
-| Honcho (Plastic Labs) | Y | ? | ? | N | ? | ? | ? | ? |
-| MemOS (MemTensor) | Y | ? | ? | N | ? | P | ? | P |
-| Hindsight (Vectorize) | Y | ? | ? | N | ? | ? | ? | ? |
-| SenseLab (AMFS) | Y | ? | ? | N | ? | Y | Y | ? |
-| Letta | Y | N | ? | P | ? | ? | ? | ? |
-| Synth | P | ? | ? | P | ? | Y | Y | ? |
-| Tellurio and Afnio | ? | ? | ? | N | ? | ? | ? | ? |
-| LangWatch | ? | ? | ? | N | ? | Y | Y | ? |
-| Not Diamond | ? | ? | ? | ? | ? | ? | ? | ? |
-| TypeSafe (Jev) | ? | ? | ? | ? | ? | ? | ? | ? |
-| PrismML (Bonsai) | ? | ? | ? | ? | ? | ? | ? | ? |
-| Osmosis (Gulp AI) | ? | ? | ? | ? | ? | ? | ? | ? |
-| Adaptive ML (acquired by Datadog) | ? | ? | ? | ? | ? | ? | ? | P |
-| Distyl | ? | ? | ? | ? | ? | ? | ? | ? |
-| TensorZero (archived) | N | ? | ? | N | ? | Y | ? | ? |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? |
+| Company | Context Intelligence served as records | Temporal validity on facts | Seeded generation by role or domain | Code Intelligence with contracts | Candidate to qualified admission | Runtime History with cost and verification | Training data from records | User Feedback applied at run time | Search returns typed references before bodies | Reuse evidence with credit split and regime shift | Suggested output shapes on model calls |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y |
+| Mem0 | Y | ? | ? | N | ? | ? | P | Y | ? | ? | ? |
+| Zep and Graphiti | Y | Y | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Supermemory | Y | Y | ? | N | ? | ? | ? | Y | ? | ? | ? |
+| Cognee | Y | P | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | Y | ? | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| MemOS (MemTensor) | Y | ? | ? | N | ? | P | ? | P | ? | ? | ? |
+| Hindsight (Vectorize) | Y | ? | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| SenseLab (AMFS) | Y | ? | ? | N | ? | Y | Y | ? | ? | ? | ? |
+| Letta | Y | N | ? | P | ? | ? | ? | ? | ? | ? | ? |
+| Synth | P | ? | ? | P | ? | Y | Y | ? | ? | ? | ? |
+| Tellurio and Afnio | ? | ? | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| LangWatch | ? | ? | ? | N | ? | Y | Y | ? | ? | ? | ? |
+| Not Diamond | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| PrismML (Bonsai) | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | ? | ? | ? | ? | ? | ? | ? | P | ? | ? | ? |
+| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | ? | ? | N | ? | Y | ? | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 
 Vendor counts for intelligence layers (Loop Engine and the unverified pair excluded):
 
@@ -91,32 +91,35 @@ Vendor counts for intelligence layers (Loop Engine and the unverified pair exclu
 | Runtime History with cost and verification | 4 | 1 | 0 | 14 |
 | Training data from records | 3 | 1 | 0 | 15 |
 | User Feedback applied at run time | 2 | 2 | 0 | 15 |
+| Search returns typed references before bodies | 0 | 0 | 0 | 19 |
+| Reuse evidence with credit split and regime shift | 0 | 0 | 0 | 19 |
+| Suggested output shapes on model calls | 0 | 0 | 0 | 19 |
 
 ### Memory
 
-| Company | Persistent memory | Graph or temporal facts | Outcome changes retrieval | Memory versioning | Multi-agent shared memory | Working memory with eviction | Episodic memory | Semantic claims with contradictions | Procedural memory | One store contract, many adapters | Namespaces and tenancy |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y |
-| Mem0 | Y | Y | N | N | Y | ? | ? | ? | Y | ? | ? |
-| Zep and Graphiti | Y | Y | N | N | P | ? | ? | ? | ? | ? | P |
-| Supermemory | Y | Y | P | N | P | ? | ? | ? | ? | ? | Y |
-| Cognee | Y | Y | ? | N | P | ? | ? | ? | ? | ? | ? |
-| Honcho (Plastic Labs) | Y | Y | N | N | Y | ? | ? | ? | ? | ? | ? |
-| MemOS (MemTensor) | Y | Y | P | N | Y | ? | ? | ? | Y | ? | ? |
-| Hindsight (Vectorize) | Y | Y | N | N | Y | ? | ? | ? | ? | ? | ? |
-| SenseLab (AMFS) | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? |
-| Letta | Y | N | N | Y | P | ? | ? | ? | ? | ? | ? |
-| Synth | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| Tellurio and Afnio | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| LangWatch | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| Not Diamond | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| TypeSafe (Jev) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| PrismML (Bonsai) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| Osmosis (Gulp AI) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| Adaptive ML (acquired by Datadog) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
-| TensorZero (archived) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| Company | Persistent memory | Graph or temporal facts | Outcome changes retrieval | Memory versioning | Multi-agent shared memory | Working memory with eviction | Episodic memory | Semantic claims with contradictions | Procedural memory | One store contract, many adapters | Namespaces and tenancy | One task working folder | Runtime Memory scoped to one run |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | P | Y |
+| Mem0 | Y | Y | N | N | Y | ? | ? | ? | Y | ? | ? | ? | ? |
+| Zep and Graphiti | Y | Y | N | N | P | ? | ? | ? | ? | ? | P | ? | ? |
+| Supermemory | Y | Y | P | N | P | ? | ? | ? | ? | ? | Y | ? | ? |
+| Cognee | Y | Y | ? | N | P | ? | ? | ? | ? | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | Y | Y | N | N | Y | ? | ? | ? | ? | ? | ? | ? | ? |
+| MemOS (MemTensor) | Y | Y | P | N | Y | ? | ? | ? | Y | ? | ? | ? | ? |
+| Hindsight (Vectorize) | Y | Y | N | N | Y | ? | ? | ? | ? | ? | ? | ? | ? |
+| SenseLab (AMFS) | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? | ? |
+| Letta | Y | N | N | Y | P | ? | ? | ? | ? | ? | ? | ? | ? |
+| Synth | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Tellurio and Afnio | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| LangWatch | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Not Diamond | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| PrismML (Bonsai) | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | N | N | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 
 Vendor counts for memory (Loop Engine and the unverified pair excluded):
 
@@ -133,32 +136,34 @@ Vendor counts for memory (Loop Engine and the unverified pair excluded):
 | Procedural memory | 2 | 0 | 0 | 17 |
 | One store contract, many adapters | 0 | 0 | 0 | 19 |
 | Namespaces and tenancy | 1 | 1 | 0 | 17 |
+| One task working folder | 0 | 0 | 0 | 19 |
+| Runtime Memory scoped to one run | 0 | 0 | 0 | 19 |
 
 ### Procedures
 
-| Company | Procedures as instructions | Executable code reuse | Executes code or tools | Sandbox with declared effects | Standalone solution export | Container and Job export | Model Context Protocol tools | Native harness adapters | Plugin and skill admission |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y |
-| Mem0 | Y | N | N | ? | N | ? | ? | ? | ? |
-| Zep and Graphiti | N | N | N | ? | N | ? | ? | ? | ? |
-| Supermemory | N | N | N | ? | N | ? | ? | ? | ? |
-| Cognee | N | N | N | ? | N | ? | ? | ? | ? |
-| Honcho (Plastic Labs) | N | N | N | ? | N | ? | ? | ? | ? |
-| MemOS (MemTensor) | Y | N | P | ? | N | ? | ? | ? | ? |
-| Hindsight (Vectorize) | N | N | N | ? | N | ? | ? | ? | ? |
-| SenseLab (AMFS) | N | N | N | ? | N | ? | ? | ? | ? |
-| Letta | Y | P | Y | Y | N | ? | ? | ? | ? |
-| Synth | N | P | Y | Y | Y | ? | ? | ? | ? |
-| Tellurio and Afnio | N | N | Y | ? | N | ? | ? | ? | ? |
-| LangWatch | N | N | P | ? | N | ? | ? | ? | ? |
-| Not Diamond | N | N | N | ? | N | ? | ? | ? | ? |
-| TypeSafe (Jev) | N | N | N | ? | N | ? | ? | ? | ? |
-| PrismML (Bonsai) | N | N | N | ? | N | ? | ? | ? | ? |
-| Osmosis (Gulp AI) | N | N | N | ? | N | ? | ? | ? | ? |
-| Adaptive ML (acquired by Datadog) | N | N | N | ? | N | ? | ? | ? | ? |
-| Distyl | ? | ? | Y | ? | ? | ? | ? | ? | ? |
-| TensorZero (archived) | N | N | N | ? | N | ? | ? | ? | ? |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| Company | Procedures as instructions | Executable code reuse | Executes code or tools | Sandbox with declared effects | Standalone solution export | Container and Job export | Model Context Protocol tools | Native harness adapters | Plugin and skill admission | Fast path before the first model call | Best-available resolution package | Question forms multiplied deterministically |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y |
+| Mem0 | Y | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Zep and Graphiti | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Supermemory | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Cognee | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| MemOS (MemTensor) | Y | N | P | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Hindsight (Vectorize) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| SenseLab (AMFS) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Letta | Y | P | Y | Y | N | ? | ? | ? | ? | ? | ? | ? |
+| Synth | N | P | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Tellurio and Afnio | N | N | Y | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| LangWatch | N | N | P | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Not Diamond | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| PrismML (Bonsai) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Distyl | ? | ? | Y | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | N | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 
 Vendor counts for procedures (Loop Engine and the unverified pair excluded):
 
@@ -173,32 +178,35 @@ Vendor counts for procedures (Loop Engine and the unverified pair excluded):
 | Model Context Protocol tools | 0 | 0 | 0 | 19 |
 | Native harness adapters | 0 | 0 | 0 | 19 |
 | Plugin and skill admission | 0 | 0 | 0 | 19 |
+| Fast path before the first model call | 0 | 0 | 0 | 19 |
+| Best-available resolution package | 0 | 0 | 0 | 19 |
+| Question forms multiplied deterministically | 0 | 0 | 0 | 19 |
 
 ### Assurance
 
-| Company | Independent verification | Failed-check review | Evaluation or simulation product | Registered deterministic graders | Per-implementation cost records | Adversarial checks and mutants in the repository | Conformance gates on every commit | Secret-free records by contract |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y |
-| Mem0 | N | ? | P | ? | N | ? | ? | ? |
-| Zep and Graphiti | N | ? | N | ? | N | ? | ? | ? |
-| Supermemory | N | ? | N | ? | N | ? | ? | ? |
-| Cognee | N | ? | N | ? | N | ? | ? | ? |
-| Honcho (Plastic Labs) | N | ? | N | ? | N | ? | ? | ? |
-| MemOS (MemTensor) | N | ? | N | ? | N | ? | ? | ? |
-| Hindsight (Vectorize) | N | ? | N | ? | N | ? | ? | ? |
-| SenseLab (AMFS) | N | ? | P | ? | N | ? | ? | ? |
-| Letta | N | ? | N | ? | N | ? | ? | ? |
-| Synth | Y | ? | Y | Y | N | ? | ? | ? |
-| Tellurio and Afnio | N | ? | Y | ? | N | ? | ? | ? |
-| LangWatch | P | ? | Y | Y | N | ? | ? | ? |
-| Not Diamond | N | ? | N | ? | N | ? | ? | ? |
-| TypeSafe (Jev) | N | ? | N | ? | N | ? | ? | ? |
-| PrismML (Bonsai) | N | ? | N | ? | N | ? | ? | ? |
-| Osmosis (Gulp AI) | N | ? | P | ? | N | ? | ? | ? |
-| Adaptive ML (acquired by Datadog) | P | ? | Y | Y | N | ? | ? | ? |
-| Distyl | P | ? | ? | ? | ? | ? | ? | ? |
-| TensorZero (archived) | N | ? | Y | ? | N | ? | ? | ? |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? |
+| Company | Independent verification | Failed-check review | Evaluation or simulation product | Registered deterministic graders | Per-implementation cost records | Adversarial checks and mutants in the repository | Conformance gates on every commit | Secret-free records by contract | Action vectors on every step | Budget-phase supervision | Contract matching modes declared | Verification on a different model route |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N |
+| Mem0 | N | ? | P | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Zep and Graphiti | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Supermemory | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Cognee | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| MemOS (MemTensor) | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Hindsight (Vectorize) | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| SenseLab (AMFS) | N | ? | P | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Letta | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Synth | Y | ? | Y | Y | N | ? | ? | ? | ? | ? | ? | ? |
+| Tellurio and Afnio | N | ? | Y | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| LangWatch | P | ? | Y | Y | N | ? | ? | ? | ? | ? | ? | ? |
+| Not Diamond | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| PrismML (Bonsai) | N | ? | N | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | ? | P | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | P | ? | Y | Y | N | ? | ? | ? | ? | ? | ? | ? |
+| Distyl | P | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | ? | Y | ? | N | ? | ? | ? | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 
 Vendor counts for assurance (Loop Engine and the unverified pair excluded):
 
@@ -212,32 +220,36 @@ Vendor counts for assurance (Loop Engine and the unverified pair excluded):
 | Adversarial checks and mutants in the repository | 0 | 0 | 0 | 19 |
 | Conformance gates on every commit | 0 | 0 | 0 | 19 |
 | Secret-free records by contract | 0 | 0 | 0 | 19 |
+| Action vectors on every step | 0 | 0 | 0 | 19 |
+| Budget-phase supervision | 0 | 0 | 0 | 19 |
+| Contract matching modes declared | 0 | 0 | 0 | 19 |
+| Verification on a different model route | 0 | 0 | 0 | 19 |
 
 ### Selection
 
-| Company | Model routing | Model versus non-model choice | Harness or prompt optimization | Exhaustive grid with honest coverage | Explorative or evolutionary search | Noise injection robustness | Train gain and holdout loss acceptance | Trains or exports specialists | Heuristic adoption policy | Typed-decision model route |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | N |
-| Mem0 | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| Zep and Graphiti | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| Supermemory | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| Cognee | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| Honcho (Plastic Labs) | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| MemOS (MemTensor) | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| Hindsight (Vectorize) | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| SenseLab (AMFS) | N | N | N | ? | ? | ? | ? | Y | ? | ? |
-| Letta | N | N | P | ? | ? | ? | ? | N | ? | ? |
-| Synth | N | N | Y | ? | Y | ? | ? | Y | ? | ? |
-| Tellurio and Afnio | N | N | Y | ? | ? | ? | ? | N | ? | ? |
-| LangWatch | N | N | Y | ? | P | ? | ? | Y | ? | ? |
-| Not Diamond | Y | N | ? | ? | ? | ? | ? | N | ? | ? |
-| TypeSafe (Jev) | N | N | N | ? | ? | ? | ? | N | ? | Y |
-| PrismML (Bonsai) | N | N | N | ? | ? | ? | ? | N | ? | ? |
-| Osmosis (Gulp AI) | N | N | N | ? | ? | ? | ? | Y | ? | ? |
-| Adaptive ML (acquired by Datadog) | N | N | N | ? | ? | ? | ? | Y | ? | ? |
-| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
-| TensorZero (archived) | Y | N | Y | ? | ? | ? | ? | Y | ? | ? |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| Company | Model routing | Model versus non-model choice | Harness or prompt optimization | Exhaustive grid with honest coverage | Explorative or evolutionary search | Noise injection robustness | Train gain and holdout loss acceptance | Trains or exports specialists | Heuristic adoption policy | Typed-decision model route | Step efficiency review | Meta-selection of selectors | Model ontology with placement rule | Convergence report with honest stability |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | P | Y | Y |
+| Mem0 | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| Zep and Graphiti | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| Supermemory | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| Cognee | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| MemOS (MemTensor) | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| Hindsight (Vectorize) | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| SenseLab (AMFS) | N | N | N | ? | ? | ? | ? | Y | ? | ? | ? | ? | ? | ? |
+| Letta | N | N | P | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| Synth | N | N | Y | ? | Y | ? | ? | Y | ? | ? | ? | ? | ? | ? |
+| Tellurio and Afnio | N | N | Y | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| LangWatch | N | N | Y | ? | P | ? | ? | Y | ? | ? | ? | ? | ? | ? |
+| Not Diamond | Y | N | ? | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | N | N | N | ? | ? | ? | ? | N | ? | Y | ? | ? | ? | ? |
+| PrismML (Bonsai) | N | N | N | ? | ? | ? | ? | N | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | N | N | ? | ? | ? | ? | Y | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | N | ? | ? | ? | ? | Y | ? | ? | ? | ? | ? | ? |
+| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | Y | N | Y | ? | ? | ? | ? | Y | ? | ? | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 
 Vendor counts for selection (Loop Engine and the unverified pair excluded):
 
@@ -253,32 +265,36 @@ Vendor counts for selection (Loop Engine and the unverified pair excluded):
 | Trains or exports specialists | 6 | 0 | 12 | 1 |
 | Heuristic adoption policy | 0 | 0 | 0 | 19 |
 | Typed-decision model route | 1 | 0 | 0 | 18 |
+| Step efficiency review | 0 | 0 | 0 | 19 |
+| Meta-selection of selectors | 0 | 0 | 0 | 19 |
+| Model ontology with placement rule | 0 | 0 | 0 | 19 |
+| Convergence report with honest stability | 0 | 0 | 0 | 19 |
 
 ### Business
 
-| Company | Open source core | Self-hosted option | Hosted cloud | Public pricing | Metered units documented | Never-metered list | Tenant keys stored as digests | Container image published |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | Y | N | N | Y | Y | Y | N |
-| Mem0 | Y | Y | Y | Y | Y | ? | ? | ? |
-| Zep and Graphiti | Y | Y | Y | Y | Y | ? | ? | ? |
-| Supermemory | Y | Y | Y | Y | Y | ? | ? | ? |
-| Cognee | Y | Y | Y | Y | Y | ? | ? | ? |
-| Honcho (Plastic Labs) | Y | Y | Y | Y | Y | ? | ? | ? |
-| MemOS (MemTensor) | Y | Y | Y | Y | Y | ? | ? | ? |
-| Hindsight (Vectorize) | Y | Y | Y | Y | Y | ? | ? | ? |
-| SenseLab (AMFS) | Y | Y | Y | Y | Y | Y | ? | ? |
-| Letta | Y | Y | Y | Y | Y | ? | ? | ? |
-| Synth | Y | Y | Y | P | ? | ? | ? | ? |
-| Tellurio and Afnio | P | ? | Y | Y | Y | ? | ? | ? |
-| LangWatch | Y | Y | Y | Y | Y | ? | ? | ? |
-| Not Diamond | N | N | Y | Y | Y | ? | ? | ? |
-| TypeSafe (Jev) | N | N | Y | Y | Y | ? | ? | ? |
-| PrismML (Bonsai) | Y | Y | N | N | ? | ? | ? | ? |
-| Osmosis (Gulp AI) | N | N | Y | N | ? | ? | ? | ? |
-| Adaptive ML (acquired by Datadog) | N | N | Y | N | ? | ? | ? | ? |
-| Distyl | N | ? | Y | N | ? | ? | ? | ? |
-| TensorZero (archived) | Y | Y | N | N | ? | ? | ? | ? |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? |
+| Company | Open source core | Self-hosted option | Hosted cloud | Public pricing | Metered units documented | Never-metered list | Tenant keys stored as digests | Container image published | Packaging tiers documented | Machine-readable roadmap | Verified competitor comparison | Base image pinned by digest |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | N | N | Y | Y | Y | P | Y | Y | Y | Y |
+| Mem0 | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Zep and Graphiti | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Supermemory | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Cognee | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| MemOS (MemTensor) | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Hindsight (Vectorize) | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| SenseLab (AMFS) | Y | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? |
+| Letta | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Synth | Y | Y | Y | P | ? | ? | ? | ? | ? | ? | ? | ? |
+| Tellurio and Afnio | P | ? | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| LangWatch | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| Not Diamond | N | N | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | N | N | Y | Y | Y | ? | ? | ? | ? | ? | ? | ? |
+| PrismML (Bonsai) | Y | Y | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | N | Y | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | Y | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Distyl | N | ? | Y | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | Y | Y | N | N | ? | ? | ? | ? | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
 
 Vendor counts for business (Loop Engine and the unverified pair excluded):
 
@@ -292,6 +308,10 @@ Vendor counts for business (Loop Engine and the unverified pair excluded):
 | Never-metered list | 1 | 0 | 0 | 18 |
 | Tenant keys stored as digests | 0 | 0 | 0 | 19 |
 | Container image published | 0 | 0 | 0 | 19 |
+| Packaging tiers documented | 0 | 0 | 0 | 19 |
+| Machine-readable roadmap | 0 | 0 | 0 | 19 |
+| Verified competitor comparison | 0 | 0 | 0 | 19 |
+| Base image pinned by digest | 0 | 0 | 0 | 19 |
 
 ### Column definitions
 
@@ -349,10 +369,30 @@ Vendor counts for business (Loop Engine and the unverified pair excluded):
 - Never-metered list: What a customer never pays for is named.
 - Tenant keys stored as digests: Service keys are kept only as digests and checked before any work.
 - Container image published: A built, digest-pinned image is published for deployment.
+- Search returns typed references before bodies: Intelligence search returns small typed references; a body is loaded only after selection and permission checks.
+- Reuse evidence with credit split and regime shift: A verified outcome updates a posterior for every cited record, credit is split across citations, and a regime shift is recorded as an event.
+- Suggested output shapes on model calls: A call names the answer shape it wants, for example a ranked list with a confidence, and records deviation without raising.
+- One task working folder: Supplied files, unpacked archives, downloads, and generated work live in one folder that persists across attempts.
+- Runtime Memory scoped to one run: A temporary run-scoped memory kept separate from the four persistent layers.
+- Fast path before the first model call: Registered exact resolvers run before any model call; a verified fast path finishes with zero model calls.
+- Best-available resolution package: A task that cannot be verified still ends with analysis, labeled assumptions, provisional files, and next actions.
+- Question forms multiplied deterministically: Stored ways of asking are multiplied by persona and policy into a combination space without a model.
+- Action vectors on every step: Each selected action declares its intended direction and expected delta and is assessed on observable process, output, and continuation.
+- Budget-phase supervision: Declared thresholds of remaining call authority demote exploration to consolidation and present the best result for verification.
+- Contract matching modes declared: Every contract names how it is matched: exact, canonical text, purpose, semantic with blocking keys, or judged.
+- Verification on a different model route: The independent verifier confirms on a route different from the producer's.
+- Step efficiency review: A step asks whether its inputs or outputs are too big and ranks alternatives with a cheap judge.
+- Meta-selection of selectors: Selector methods and their settings are configuration choices with initial and fallback priorities.
+- Model ontology with placement rule: Every route and tool declares model kind, placement, size class, and provenance; a tool never loads a large model in process.
+- Convergence report with honest stability: Seeded rounds report separate counts and claim stability only when the best cell repeats or the enumeration was exhaustive.
+- Packaging tiers documented: Community, self-hosted, and hosted tiers with what each includes and what stays free.
+- Machine-readable roadmap: A roadmap a loop can walk, with verification, adversarial check, evidence, and status per step.
+- Verified competitor comparison: A dated comparison read from vendors' own pages with an evidence note per cell.
+- Base image pinned by digest: The worker image pins its base image by digest and the built image digest is recorded.
 
 ### Cell notes
 
-- Loop Engine (this repository): Context Intelligence served as records: catalog adapters, the string bank, packaged data files; served through intelligence_layers and retrieval; Temporal validity on facts: core/temporal_facts: validity intervals, supersession, as-of queries (commit 67d5d8f); Seeded generation by role or domain: roadmap S-1.11 proposed; O*NET and ESCO verified as seeds; Code Intelligence with contracts: capability directory surfaces, reusable capability records, registered resolvers, the text conformance family; Candidate to qualified admission: the reusable capability flywheel: opportunity, assessment, candidate, generalization, admission; Runtime History with cost and verification: run history, operation cost records, independent verification reports, solutions space; Training data from records: learnable call records with a run-level split; dataset versions in the training data store (commit b1fbcdc); User Feedback applied at run time: the advice store, typed task feedback slots, approvals, reviewed candidates; Graph or temporal facts: core/temporal_facts: typed triples with validity intervals, supersession, as-of, neighbors, paths (commit 67d5d8f); Outcome changes retrieval: reuse evidence with a bounded ranking term in core/retrieval: a validated record overtakes one adjacent rank, a discredited record sinks last, nothing is removed (batch 10); Memory versioning: catalog/versioning: immutable revisions, history, diff, rollback in the same store (commit 67d5d8f); Multi-agent shared memory: core/shared_memory_scopes: signed writes, membership and visibility filtered reads, stale-write refusal (commit 67d5d8f); the hosted memory endpoints bind the writer to the authenticated tenant (batch 10); Working memory with eviction: memory/working: compartments, capacity, pinning, eviction and compaction history; Episodic memory: memory/episodic records with run identity, acceptance, and failure classes; Semantic claims with contradictions: memory/semantic and strings/knowledge_state: claims, unknowns, contradictions; Procedural memory: memory/procedural, question forms, ask strategies; One store contract, many adapters: catalog/protocol with in-memory, packaged JSONL, SQLite, DuckDB, and composite adapters; server adapter planned (S-2.11); Namespaces and tenancy: catalog namespaces, shared memory scopes, service tenants; Executable code reuse: qualified reusable capabilities and registered resolvers; live reuse not yet measured; Executes code or tools: generated projects run in a confined workspace or sandbox; Sandbox with declared effects: workspace backends with Docker resource limits and effect approval; no raw-host fallback; Standalone solution export: code_nodes/solution_export: package with tests and a manifest, verified in an interpreter that cannot import loop_engine (commit fcca293); Container and Job export: the export writes a Dockerfile and a Kubernetes Job; example 28 validates the worker manifests; Model Context Protocol tools: core/mcp_adapter and core/mcp_sdk_transport as adapters used by Loops; Native harness adapters: OpenCode, Codex, Pi, and other registered recipes run a step under the owning Loop; Plugin and skill admission: extension discovery, skill admission, plugin handshakes; nothing runs from file presence; Failed-check review: core/independent_failure_review: classification with quoted evidence and a second confirmation call; Evaluation or simulation product: core/evaluation_suite and loop-engine evaluate: frozen suites, exact denominators, case-level comparison; no simulation product (commit f8a2ec1); Registered deterministic graders: exact, canonical text, JSON equality, numeric tolerance, set overlap, regular expression; Per-implementation cost records: core/operation_cost_capture wired into every capability directory call and every model gateway invocation; cheapest verified implementation query (commit b1fbcdc, batch 10); Adversarial checks and mutants in the repository: every batch ships a mutant script; a surviving mutant blocks the commit; Conformance gates on every commit: conformance, hardcoding delta, documentation lint, self-test, and an example battery on an exported tree; Secret-free records by contract: learning records, metering records, and cost records carry digests and counts; secret-shaped text is refused; Model versus non-model choice: core/implementation_choice: a decision record per operation from ledger evidence or the declared fallback order (commit b1fbcdc); the fast path records the decision it made on every deterministic attempt (batch 10); Harness or prompt optimization: core/configuration_optimizer and loop-engine optimize; offline graders only (commit f8a2ec1); Exhaustive grid with honest coverage: exact enumeration with the exhaustive flag set only when every cell was evaluated; node grid stage counts; Explorative or evolutionary search: seeded stratified sampling; the campaign vocabulary names beam, successive halving, evolutionary, and novelty strategies (represented, not qualified); Noise injection robustness: core/configuration_optimizer optimize_with_noise: a cell must hold its gain under whitespace, case, typographic quote, and extra token perturbations of the held-out suite; converge reports honest stability (batch 10); Train gain and holdout loss acceptance: AcceptancePolicy: minimum train gain and maximum holdout loss; a memorizing cell is refused; Trains or exports specialists: core/specialist_training: naive Bayes specialist from recorded rows with a run-level split, exported as JSON weights, candidate resolver; no fine-tuning; Heuristic adoption policy: core/heuristic_adoption: one million runs by default; an exact atomic fingerprint is the only exception; Typed-decision model route: roadmap S-2.13 proposed; the model ontology and call boundary admit it; Hosted cloud: service software and container recipes exist; no public hosted endpoint is operated; Public pricing: packaging tiers drafted; no prices published; Metered units documented: verified completions, avoided model calls, optimize hours, judgment depth; Never-metered list: outcome and verification records, reading own history, exports, refusals; Tenant keys stored as digests: core/service_api: SHA-256 digests compared in constant time before any work; Container image published: Dockerfile in the repository; no image built or pinned yet; Open source core: MIT.
+- Loop Engine (this repository): Context Intelligence served as records: catalog adapters, the string bank, packaged data files; served through intelligence_layers and retrieval; Temporal validity on facts: core/temporal_facts: validity intervals, supersession, as-of queries (commit 67d5d8f); Seeded generation by role or domain: core/seeded_generation: occupation tables read through a declared column mapping (O*NET and ESCO layouts as data), six packaged occupations generate 327 candidate questions, facts, and code seeds staged through the store contract; nothing leaves candidate state (batch 11); Code Intelligence with contracts: capability directory surfaces, reusable capability records, registered resolvers, the text conformance family; Candidate to qualified admission: the reusable capability flywheel: opportunity, assessment, candidate, generalization, admission; Runtime History with cost and verification: run history, operation cost records, independent verification reports, solutions space; Training data from records: learnable call records with a run-level split; dataset versions in the training data store (commit b1fbcdc); User Feedback applied at run time: the advice store, typed task feedback slots, approvals, reviewed candidates; Graph or temporal facts: core/temporal_facts: typed triples with validity intervals, supersession, as-of, neighbors, paths (commit 67d5d8f); Outcome changes retrieval: reuse evidence with a bounded ranking term in core/retrieval: a validated record overtakes one adjacent rank, a discredited record sinks last, nothing is removed (batch 10); Memory versioning: catalog/versioning: immutable revisions, history, diff, rollback in the same store (commit 67d5d8f); Multi-agent shared memory: core/shared_memory_scopes: signed writes, membership and visibility filtered reads, stale-write refusal (commit 67d5d8f); the hosted memory endpoints bind the writer to the authenticated tenant (batch 10); Working memory with eviction: memory/working: compartments, capacity, pinning, eviction and compaction history; Episodic memory: memory/episodic records with run identity, acceptance, and failure classes; Semantic claims with contradictions: memory/semantic and strings/knowledge_state: claims, unknowns, contradictions; Procedural memory: memory/procedural, question forms, ask strategies; One store contract, many adapters: catalog/protocol with in-memory, packaged JSONL, SQLite, DuckDB, and composite adapters; server adapter planned (S-2.11); Namespaces and tenancy: catalog namespaces, shared memory scopes, service tenants; Executable code reuse: qualified reusable capabilities and registered resolvers; live reuse not yet measured; Executes code or tools: generated projects run in a confined workspace or sandbox; Sandbox with declared effects: workspace backends with Docker resource limits and effect approval; no raw-host fallback; Standalone solution export: code_nodes/solution_export: package with tests and a manifest, verified in an interpreter that cannot import loop_engine (commit fcca293); Container and Job export: the export writes a Dockerfile and a Kubernetes Job; example 28 validates the worker manifests; Model Context Protocol tools: core/mcp_adapter and core/mcp_sdk_transport as adapters used by Loops; Native harness adapters: OpenCode, Codex, Pi, and other registered recipes run a step under the owning Loop; Plugin and skill admission: extension discovery, skill admission, plugin handshakes; nothing runs from file presence; Failed-check review: core/independent_failure_review: classification with quoted evidence and a second confirmation call; Evaluation or simulation product: core/evaluation_suite and loop-engine evaluate: frozen suites, exact denominators, case-level comparison; no simulation product (commit f8a2ec1); Registered deterministic graders: exact, canonical text, JSON equality, numeric tolerance, set overlap, regular expression; Per-implementation cost records: core/operation_cost_capture wired into every capability directory call and every model gateway invocation; cheapest verified implementation query (commit b1fbcdc, batch 10); Adversarial checks and mutants in the repository: every batch ships a mutant script; a surviving mutant blocks the commit; Conformance gates on every commit: conformance, hardcoding delta, documentation lint, self-test, and an example battery on an exported tree; Secret-free records by contract: learning records, metering records, and cost records carry digests and counts; secret-shaped text is refused; Model versus non-model choice: core/implementation_choice: a decision record per operation from ledger evidence or the declared fallback order (commit b1fbcdc); the fast path records the decision it made on every deterministic attempt (batch 10); Harness or prompt optimization: core/configuration_optimizer and loop-engine optimize; offline graders only (commit f8a2ec1); Exhaustive grid with honest coverage: exact enumeration with the exhaustive flag set only when every cell was evaluated; node grid stage counts; Explorative or evolutionary search: seeded stratified sampling; the campaign vocabulary names beam, successive halving, evolutionary, and novelty strategies (represented, not qualified); Noise injection robustness: core/configuration_optimizer optimize_with_noise: a cell must hold its gain under whitespace, case, typographic quote, and extra token perturbations of the held-out suite; converge reports honest stability (batch 10); Train gain and holdout loss acceptance: AcceptancePolicy: minimum train gain and maximum holdout loss; a memorizing cell is refused; Trains or exports specialists: core/specialist_training: naive Bayes specialist from recorded rows with a run-level split, exported as JSON weights, candidate resolver; no fine-tuning; Heuristic adoption policy: core/heuristic_adoption: one million runs by default; an exact atomic fingerprint is the only exception; Typed-decision model route: core/typed_decision: the typed_decision.choice contract, admission that refuses wrong candidate sets or rows that do not sum to one, a route refused without a judgment profile, an in-process specialist judge and an endpoint judge over an injected transport, a suite with exact denominators; no live provider route yet (batch 11); Hosted cloud: service software and container recipes exist; no public hosted endpoint is operated; Public pricing: packaging tiers drafted; no prices published; Metered units documented: verified completions, avoided model calls, optimize hours, judgment depth; Never-metered list: outcome and verification records, reading own history, exports, refusals; Tenant keys stored as digests: core/service_api: SHA-256 digests compared in constant time before any work; Container image published: Dockerfile pinned by digest; local build sha256:08ed84d3 runs doctor; the publish workflow to the GitHub Container Registry lands with batch 11 and the first published digest is recorded after its run; Open source core: MIT; Persistent memory: catalog adapters (in-memory, packaged JSONL, SQLite, DuckDB, composite) keep records with identity and digest across sessions; Procedures as instructions: question forms, ask strategies, packs, and skill folders admitted before use; a model reads them at run time; Independent verification: core/independent_verification: a separate process with its own probes and criterion judgments; the producer's report is never the verdict; Model routing: core/model_routes: named routes with declared purposes, provider handshakes, and a policy gate on every call; Self-hosted option: pip install from the repository, the Dockerfile, and the Kubernetes manifests of example 28; Search returns typed references before bodies: core/intelligence_layers and core/retrieval return references first and materialize a body after selection; example 09; Reuse evidence with credit split and regime shift: core/reuse_evidence: surprise weighted credit split posterior and a regime shift event; consulted by retrieval since batch 10; Suggested output shapes on model calls: core/suggested_output and core/response_contracts: seven registered contracts; deviation is recorded on the call record, never raised; One task working folder: materials folder with unpacked archives and selected binary inputs implemented; downloads kept as files and scoped views for Spawned Loops are not (Constitution LE-SOLVE-005 proposed); Runtime Memory scoped to one run: core/runtime_memory RunNoteBoard: temporary, scoped to one run, registered as a boundary; Fast path before the first model call: allow_fast_path_resolution: registered resolvers run before the first model call, a verified fast path ends with zero calls, an incomplete trace stays as repair evidence, and the decision is recorded (batch 10); Best-available resolution package: task_resolution_package/v1 on COMPLETED_PARTIAL: evidence, labeled assumptions, provisional bodies, missing material, questions, next actions; Question forms multiplied deterministically: strings/question_engine: forms with slots, multiply, combination_space; forms served as store records; Action vectors on every step: action_intent_vector/v1, action_vector_assessment/v1, outcome_vector/v2 with unknown kept distinct from false; the route guard; Budget-phase supervision: supervision policy thresholds in core/adaptive_practitioner_routing; demotion recorded; no live rerun has qualified it; Contract matching modes declared: core/contract_matching owns the five modes; strict on solution ports, flexible in the solutioning space; review of the remaining exact comparisons open; Verification on a different model route: roadmap S-3.3; the one open attack in the adversarial validation plan; Step efficiency review: core/step_efficiency_review with a deterministic size judge and recorded judge kind (commit b1fbcdc); a record a step can write, not yet a step the Practitioner performs live; Meta-selection of selectors: in-memory preference setter and advisory interface; autonomous selector portfolios proposed (configuration preferences guide); Model ontology with placement rule: core/model_ontology ModelProfile and validate_tool_model_use; core/model_call_contract refuses non-text kinds by name; Convergence report with honest stability: core/configuration_optimizer converge: convergence_report/v1 (batch 10); Packaging tiers documented: docs/guides/packaging-tiers-and-hosted-service.md; Machine-readable roadmap: docs/roadmap/roadmap.yaml: R-01 to R-36, steps with verify, adversarial, evidence, status, and a dated status log; Verified competitor comparison: this record; nineteen companies read from their own pages on 2026-09-18; Base image pinned by digest: Dockerfile pins python:3.12-slim by digest; local build sha256:08ed84d3 runs doctor with exit 0 (batch 11).
 - Mem0: Context Intelligence served as records: memories and procedural memory as entries; Training data from records: Memory Export exports memories, not training sets; User Feedback applied at run time: Feedback Mechanism captures user signals; Graph or temporal facts: Graph Memory page; Outcome changes retrieval: Feedback Mechanism captures user signals, not outcome confidence; Multi-agent shared memory: Team Task Agent cookbook; Procedures as instructions: Memory Types: procedural_memory; Procedural memory: Memory Types: procedural_memory; Evaluation or simulation product: Memory Evaluation benchmarks memory quality, not task outcomes; Trains or exports specialists: Memory Export exports memories, not training sets; Metered units documented: add and retrieval requests; Open source core: Apache 2.0, 65,589 stars.
 - Zep and Graphiti: Temporal validity on facts: Fact Invalidation stores when a fact became invalid; Graph or temporal facts: Fact Invalidation stores when a fact became invalid; Multi-agent shared memory: per-user graphs; shared provenance not documented; Namespaces and tenancy: per-user graphs; Metered units documented: credits; Open source core: Graphiti Apache 2.0, 30,986 stars.
 - Supermemory: Context Intelligence served as records: memories with relationships and temporal truth; Temporal validity on facts: Graph memory: relationships, temporal truth, forgetting; User Feedback applied at run time: Review Inferred Memories: approve or decline; Graph or temporal facts: Graph memory: relationships, temporal truth, forgetting; Outcome changes retrieval: Review Inferred Memories: approve or decline, not task outcomes; Multi-agent shared memory: multi-tenancy and container tags; provenance not documented; Namespaces and tenancy: multi-tenancy and container tags; Metered units documented: ingested tokens; Open source core: MIT, 30,159 stars.

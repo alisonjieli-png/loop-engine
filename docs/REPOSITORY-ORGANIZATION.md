@@ -34,6 +34,11 @@ never imports it, depends on it at runtime, or copies it in bulk. A developer
 may inspect one Taedri idea, verify that it fits the Loop ontology, and then
 implement a small Loop Engine contract in this repository.
 
+The [layout and record kinds charter](architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md)
+gives every top-level entry and every documentation folder its kind, naming
+rule, and version rule, and the [records index](RECORDS-INDEX.md) lists every
+version of each dated record in one place.
+
 Read [reference sources](context/REFERENCE-SOURCES.md) before consulting an
 older folder.
 

@@ -1,0 +1,101 @@
+# Packaged occupation seeds for seeded generation by role or domain.
+#
+# These six occupations are hand-authored from general knowledge of each
+# role. They are not O*NET or ESCO text. Public occupation tables are read
+# through ONET_MAPPING or ESCO_MAPPING in core/seeded_generation.py, and the
+# seeds generated from any table stay candidates until an independent process
+# qualifies them. Task statements are written so that a plain reader can
+# tell what a careful worker in the role does; the verbs that name a
+# detection or correction operation (verify, reconcile, classify, enter,
+# review, calculate, match, detect, correct, deduplicate, format, export,
+# standardize, monitor) yield code seed specifications, never code.
+catalog_id: loop_engine.occupation_seeds.packaged
+version: "2026-09-18"
+source: hand_authored
+license: MIT (this repository)
+note: >
+  Authored seeds, not O*NET text. Read O*NET or ESCO through the packaged
+  column mappings when a licensed copy is available in the task folder.
+occupations:
+  - code: LE-OCC-0001
+    title: Data Entry Clerk
+    domain: business_operations
+    description: >
+      Transfers information from paper or digital sources into a system of
+      record, keeps it accurate, and flags what cannot be read or resolved.
+    tasks:
+      - Enter customer, order, and invoice details from source documents into the system of record.
+      - Verify entered values against the source document before the batch is released.
+      - Correct rejected rows using the validation report and record the reason for each correction.
+      - Detect duplicate records before a new record is created.
+      - Format names, addresses, and telephone numbers to the house style.
+      - Keep a daily log of batches entered, rows rejected, and rows corrected.
+  - code: LE-OCC-0002
+    title: Accounts Payable Clerk
+    domain: finance
+    description: >
+      Receives supplier invoices, matches them to orders and receipts, and
+      prepares approved payments on time.
+    tasks:
+      - Match each supplier invoice to its purchase order and goods receipt before approval.
+      - Enter approved invoices into the ledger with the correct cost center and tax code.
+      - Reconcile supplier statements with the ledger every month and list every open difference.
+      - Calculate early payment discounts and due dates from the supplier terms.
+      - Review payment runs for duplicate invoices and changed bank details.
+      - Export the approved payment file for the bank in the agreed format.
+      - Keep the invoice register and the approval record for the audit.
+  - code: LE-OCC-0003
+    title: Customer Service Representative
+    domain: customer_support
+    description: >
+      Answers customer questions, resolves complaints within policy, and
+      records every contact so the next person can continue the case.
+    tasks:
+      - Classify each incoming contact by product, reason, and urgency.
+      - Verify the customer's identity before discussing an account.
+      - Record the contact, the promised action, and the deadline in the case record.
+      - Resolve billing questions from the account history and explain each charge.
+      - Escalate a complaint that exceeds the agent's authority with the evidence attached.
+      - Monitor open cases and contact the customer before a promised deadline passes.
+  - code: LE-OCC-0004
+    title: Database Administrator
+    domain: information_technology
+    description: >
+      Keeps databases available, correct, and recoverable, and controls who
+      can read and change them.
+    tasks:
+      - Monitor database health, storage, and slow queries every day.
+      - Verify that every backup restores to a test system on the agreed schedule.
+      - Review access requests and grant the least privilege the request needs.
+      - Detect schema drift between environments before a release.
+      - Standardize naming and data types across new tables through a review checklist.
+      - Export usage and growth reports for capacity planning each month.
+      - Record every change to the production database with its approval and rollback plan.
+  - code: LE-OCC-0005
+    title: Records and Information Manager
+    domain: business_operations
+    description: >
+      Decides how records are named, kept, found, and destroyed, and proves
+      that the rules were followed.
+    tasks:
+      - Classify each record series by retention period and legal hold status.
+      - Standardize file naming and metadata for new records.
+      - Review disposal lists and approve destruction only after the retention period and holds are checked.
+      - Detect records stored outside the approved repositories.
+      - Deduplicate copies of the same record kept in several locations.
+      - Keep the retention schedule and the disposal certificates for the audit.
+  - code: LE-OCC-0006
+    title: Data Engineer
+    domain: data_and_analytics
+    description: >
+      Builds and runs the pipelines that move data from sources to the
+      systems where analysts and models use it, with known quality.
+    tasks:
+      - Validate every incoming file against its declared schema before loading it.
+      - Deduplicate rows across sources using declared matching keys.
+      - Reconcile row counts and totals between source and destination after each load.
+      - Monitor pipeline runs and alert on late, failed, or unusually small loads.
+      - Standardize timestamps, currencies, and identifiers to the warehouse conventions.
+      - Review pipeline changes for backward compatibility with downstream consumers.
+      - Export data quality metrics for each load to the quality dashboard.
+      - Record the lineage of each table from its sources to its consumers.
