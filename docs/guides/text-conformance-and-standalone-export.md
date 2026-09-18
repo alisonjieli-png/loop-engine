@@ -65,6 +65,10 @@ contract `text_conformance.escalation_response`, whose suggested output is a
 ranked list of at most three candidates with a unit-interval confidence and
 an allowed abstention. The request performs no call. A hybrid Loop dispatches
 it under its own authority, and only the low-confidence rows reach a model.
+Each escalation also carries an implementation decision record: the
+deterministic resolver reached a confidence below the threshold, so a
+service model is the next implementation, with both candidates and the
+reason recorded for later learning.
 
 ## Where an exception can live
 

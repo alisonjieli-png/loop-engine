@@ -190,10 +190,13 @@ class CapabilitySnapshot:
 class CapabilityDirectory:
     """The standardized directory of surfaces the practitioner can search + call."""
 
-    def __init__(self):
+    def __init__(self, *, cost_ledger=None, run_id: str = ""):
         self._hs: dict = {}                         # surface -> handshake
         self._ep: dict = {}                         # (surface, op) -> Endpoint
         self._default_fallback: dict = {}           # surface -> (surface, op)
+        #: When present, every call writes one operation cost record to it.
+        self.cost_ledger = cost_ledger
+        self.run_id = run_id
 
     def register(self, handshake: CapabilityHandshake,
                  endpoints: "Sequence[Endpoint]" = (), *,
@@ -302,7 +305,27 @@ class CapabilityDirectory:
              policy: CapabilityInvocationPolicy | None = None,
              **kwargs) -> CallResult:
         """Invoke a bound callable; optional policy pins identity and blocks fallback.
-        Ledger events retain start, completion, failure, and fallback identity."""
+        Ledger events retain start, completion, failure, and fallback identity.
+        When the directory carries a cost ledger, every call writes one
+        operation cost record: the execution phase timed, the outcome failed
+        when the call did not succeed and unknown otherwise, counts unknown."""
+        if self.cost_ledger is None:
+            return self._call(surface, operation, ledger=ledger, policy=policy, **kwargs)
+        from .operation_cost_capture import OperationCostCapture
+        capture = OperationCostCapture(self.cost_ledger, f"{surface}.{operation}", surface,
+                                       self.run_id or "unknown-run")
+        capture.phase("execution")
+        try:
+            result = self._call(surface, operation, ledger=ledger, policy=policy, **kwargs)
+        except Exception:
+            capture.end("failed")
+            raise
+        capture.end("unknown" if result.ok else "failed")
+        return result
+
+    def _call(self, surface: str, operation: str, *, ledger=None,
+              policy: CapabilityInvocationPolicy | None = None,
+              **kwargs) -> CallResult:
         if policy is not None and type(policy) is not CapabilityInvocationPolicy:
             raise TypeError("capability invocation policy must use its typed contract")
         policy = CapabilityInvocationPolicy() if policy is None else policy

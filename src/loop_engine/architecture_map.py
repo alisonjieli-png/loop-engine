@@ -260,6 +260,8 @@ MODULE_MAP = {
         "capability_directory_checks",
         "reuse_evidence", "model_call_records", "operation_cost_records",
         "temporal_facts", "shared_memory_scopes",
+        "step_efficiency_review", "heuristic_adoption", "implementation_choice",
+        "specialist_training", "operation_cost_capture",
         "model_prompt_envelope",
         "model_gateway_accounting", "model_gateway_accounting_checks", "model_token_preflight",
         "model_output_recovery_checks", "model_output_allocation_checks",

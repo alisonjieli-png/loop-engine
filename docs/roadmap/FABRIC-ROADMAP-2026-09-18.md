@@ -219,8 +219,14 @@ required evidence count.
 
 Append one line per iteration: date, step, result, evidence path, commit.
 
-- 2026-09-18, S-0.5, offline_verified on an exported tree; evidence in the
-  batch 6 gate log; commit recorded in the changelog.
+- 2026-09-18, S-0.5, published as commit `fcca293` after the batch 6 gates
+  (conformance, hardcoding, documentation lint, self-test, battery of 29
+  steps) and fourteen killed mutants.
+- 2026-09-18, S-1.1, S-1.2, S-1.3, published as commit `67d5d8f` after the
+  batch 7 gates (battery of 30 steps including example 26) and thirteen
+  killed mutants; the feature matrix cells for graph or temporal facts,
+  memory versioning, and multi-agent shared memory now have tested behavior
+  behind them and are regenerated at S-1.9.
 - 2026-09-18, S-5.1, offline_verified; evidence
   `docs/research/BRANDING-OPTIONS-2026-09-18.md`.
 - 2026-09-18, S-2.9, offline_verified; evidence
@@ -238,6 +244,13 @@ Append one line per iteration: date, step, result, evidence path, commit.
   twenty-five baseline node dimensions in the levels above and below and
   adds the deployment, space, graph, step, prompt, model call, intelligence
   access, solutions space, and economics rows with their owning boundaries.
+- 2026-09-18, S-2.1, S-2.5, S-1.5, S-1.6, S-1.8, building: the efficiency
+  review record with its deterministic judge, the versioned training data
+  store with the heuristic adoption policy, operation cost capture wired
+  into every capability directory call, the model-versus-not decision
+  written for every text conformance escalation, and specialist training
+  with a run-level split all pass their module checks; gates and mutants
+  pending.
 
 ## Unresolved questions for the owner
 

@@ -19,6 +19,37 @@ First public release.
   [pre-packaged intelligence research](docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md)
   with verified package and occupation-database facts, and the
   [branding options](docs/research/BRANDING-OPTIONS-2026-09-18.md).
+- The efficiency review a step records before it spends anything.
+  `core/step_efficiency_review.py` owns `SizeExpectation`,
+  `EfficiencyAlternative`, and `EfficiencyReview` with the judge kind
+  recorded; the deterministic judge flags oversized inputs and outputs from
+  declared limits and ranks the available methods cheapest first; a
+  specialist or model review is built from the registered
+  `practitioner.step_efficiency_review` contract. Records and training rows
+  carry digests and sizes, never text.
+- Versioned training datasets and the heuristic adoption policy.
+  `core/heuristic_adoption.py` owns `DatasetVersion` (published as an
+  immutable catalog record with schema, split counts, exclusions, digest,
+  and run count), `TrainingDataStore` over any catalog store, and
+  `HeuristicAdoptionPolicy`, which allows an exact atomic fingerprint and
+  refuses every other heuristic until the declared run count (one million
+  by default) is reached and the dataset version is published.
+- The model-versus-not decision. `core/implementation_choice.py` owns
+  `ImplementationCandidate`, `ImplementationPolicy`, and
+  `ImplementationDecision`; `choose_implementation` picks the cheapest
+  candidate that meets the verified rate over enough ledger samples and
+  otherwise follows the declared fallback order, saying which happened;
+  `decision_for_escalation` records the model as the next implementation
+  when a deterministic pass fell below its threshold.
+- Specialist training. `core/specialist_training.py` trains a multinomial
+  naive Bayes specialist from recorded rows with a run-level split, refuses
+  leaked splits, measures only on held-out runs, exports JSON weights, and
+  registers a `SpecialistResolver` that answers only its typed task and
+  never claims verification.
+- Operation cost capture. `core/operation_cost_capture.py` times the
+  declared phases with a monotonic clock, keeps unknown counts unknown,
+  writes one record per implementation to the ledger, and names the
+  cheapest verified implementation with the ranking it beat.
 - Temporal facts and a fact graph over Context Intelligence records.
   `core/temporal_facts.py` owns `TemporalFact` (subject, predicate, object,
   validity interval, confidence, source, successor) stored as catalog

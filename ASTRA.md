@@ -778,6 +778,19 @@ temporal facts with a fact graph, record versioning inside the same store,
 and shared memory scopes with signed writes; each passes its module checks
 and the gates and mutants are recorded in the changelog when they land.
 
+Observed result. Five more boundaries from the roadmap landed with offline
+checks and mutants: the step efficiency review with its deterministic size
+judge and recorded judge kind; the versioned training data store and the
+heuristic adoption policy that allows an exact atomic fingerprint and
+refuses every other heuristic below the declared one million runs; the
+model-versus-not decision, written for every text conformance escalation;
+specialist training with a run-level split that refuses leaked splits and
+registers a candidate resolver that never claims verification; and
+operation cost capture wired into every capability directory call that
+carries a cost ledger. None of these is wired into a live solve yet; the
+efficiency review is a record a step can write, not yet a step the
+Practitioner performs, and that wiring is the next step under S-2.1.
+
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of
 concept, billing, publication, and unseen-task runs.

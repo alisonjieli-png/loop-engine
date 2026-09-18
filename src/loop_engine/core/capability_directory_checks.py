@@ -8,7 +8,8 @@ ceiling; a service-sized model is never loaded inside a tool.
 from __future__ import annotations
 
 from .capability_directory import (
-    CapabilityHandshake, CapabilityQuery, Endpoint, HandshakeError, default_directory)
+    CapabilityDirectory, CapabilityHandshake, CapabilityQuery, Endpoint, HandshakeError,
+    default_directory)
 from .model_ontology import ModelProfile
 
 
@@ -130,6 +131,23 @@ def run_checks() -> dict:
           == ["contract_registry", "fixture_nodes"]
           and supplied.call("fixture_nodes", "validate", value=1).ok and bad_registration,
           "a code intelligence package supplies its surface; core imports nothing from it")
+    from .operation_cost_records import OperationCostLedger
+    cost_ledger = OperationCostLedger()
+    costed = CapabilityDirectory(cost_ledger=cost_ledger, run_id="run-cost")
+    costed.register(fixture_surface.handshake, fixture_surface.endpoints)
+    costed.call("fixture_nodes", "validate", value=1)
+    try:
+        costed.call("missing_surface", "validate")
+    except HandshakeError:
+        pass
+    records = cost_ledger.records
+    check("a_directory_with_a_cost_ledger_writes_one_cost_record_per_call_with_unknown_counts",
+          [(item.operation_id, item.outcome) for item in records]
+          == [("fixture_nodes.validate", "unknown"), ("missing_surface.validate", "failed")]
+          and all(item.run_id == "run-cost" and item.model_calls is None for item in records)
+          and dict(records[0].phase_ms)["execution"] is not None
+          and dict(records[0].phase_ms)["verification"] is None,
+          "the execution phase is timed; verification stays unknown until a verifier records it")
 
     # 4. negotiate: a supported op is ok; an unsupported one names a fallback.
     ok_neg = d.negotiate("resource_search", ["search", "get"])

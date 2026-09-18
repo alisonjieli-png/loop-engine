@@ -340,7 +340,10 @@ Rationale: the owner's September 18 direction asks at every step whether
 this is the most efficient way and how confident each alternative is; a
 review that is not recorded cannot train a cheaper judge later.
 
-Planned enforcement: `test_every_step_records_an_efficiency_review`.
+Planned enforcement: `test_every_step_records_an_efficiency_review`. The
+record and its deterministic judge exist in `core/step_efficiency_review`
+with the check `the_deterministic_judge_flags_an_oversized_input_and_records_its_reason`;
+the step that writes it during a solve is not wired yet.
 
 ### LE-FABRIC-002 (proposed)
 
@@ -381,6 +384,10 @@ collected now and that heuristics wait for enough evidence; a threshold that
 lives in a policy record can be reviewed, one that lives in code cannot.
 
 Planned enforcement: `test_heuristic_adoption_waits_for_the_declared_run_count`.
+The policy and the versioned dataset store exist in `core/heuristic_adoption`
+with the check
+`an_exact_atomic_fingerprint_is_allowed_below_the_threshold_and_nothing_else_is`;
+no runtime path adopts a heuristic yet, so nothing can bypass the policy.
 
 ## Documentation authority hierarchy
 

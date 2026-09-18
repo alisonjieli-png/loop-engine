@@ -150,6 +150,11 @@ def run_checks() -> dict:
     with_held = run_conformance(rows, rules, ConformancePolicy(escalate_held=True), catalogs)
     check("escalate_held_sends_held_corrections_too",
           len(with_held.escalations) == 3)
+    check("every_escalation_carries_a_model_versus_not_decision_naming_the_service_model",
+          len(run.decisions) == 1 and run.decisions[0].operation_id == "conform.email"
+          and run.decisions[0].chosen.kind == "service_model"
+          and run.decisions[0].candidates[0].implementation_id == RESOLVER_ID
+          and "0.30" in run.decisions[0].reason and len(with_held.decisions) == 3)
     together = run_conformance([{"name": "MÜLLER GMBH"}, {"name": "3M COMPANY"}, {"name": "Acme Spa"},
                                 {"name": "ACME CORPORATION"}], rules[:3], ConformancePolicy(), catalogs)
     rule_dicts = [rule.to_dict() for rule in rules[:3]]

@@ -44,6 +44,9 @@ REPORT_RECORD_TYPE = "conformance_report/v1"
 CATALOG_LAYER_RECORD_TYPE = "exception_catalog_layer/v1"
 ESCALATION_CONTRACT_ID = "text_conformance.escalation_response"
 RESOLVER_ID = "code_nodes.text_conformance/v1"
+#: The implementation an escalation names as next; the route that serves it
+#: is chosen by the dispatching Loop under its own authority.
+SERVICE_MODEL_IMPLEMENTATION = "service_model:escalation"
 DEFAULT_MAX_RESOLVER_ROWS = 100_000
 _LIST_KINDS = ("null_sentinels", "preserved_tokens", "minor_words", "lowercase_particles",
                "apostrophe_prefixes")
@@ -378,6 +381,9 @@ class ConformanceRun:
     corrections: tuple[CorrectionRecord, ...]
     escalations: tuple[EscalationRequest, ...]
     evidence_layer: ExceptionCatalogLayer | None
+    #: One model-versus-not decision per escalation: the deterministic pass
+    #: fell short, so a service model is the next implementation.
+    decisions: tuple = ()
 
 
 def _escalation_for(record: CorrectionRecord, policy: ConformancePolicy, task: str) -> EscalationRequest:
@@ -422,7 +428,12 @@ def run_conformance(rows, rules, policy: ConformancePolicy | None = None, catalo
     report = ConformanceReport(len(rows), summary["per_rule"], summary["overall"],
                                tuple(summary["confidence_histogram"]), summary["reason_counts"],
                                _digest(rule_dicts), _digest(catalogs), idempotent=again == 0)
-    return ConformanceRun(report, tuple(outputs), tuple(corrections), tuple(escalations), layer)
+    from ..core.implementation_choice import decision_for_escalation
+    decisions = tuple(
+        decision_for_escalation(f"conform.{item.column}", RESOLVER_ID, SERVICE_MODEL_IMPLEMENTATION,
+                                item.candidates[0][1], policy.escalate_below)
+        for item in escalations)
+    return ConformanceRun(report, tuple(outputs), tuple(corrections), tuple(escalations), layer, decisions)
 
 
 def second_pass_changes(rows, rule_dicts, catalogs: dict, policy_dict: dict, evidence: dict) -> int:
