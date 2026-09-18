@@ -42,6 +42,20 @@ First public release.
   from the column's dominant pattern is flagged with the share margin,
   with nothing flagged when no dominant pattern exists. Seven mutants are
   killed.
+- Typed action decisions over an element table (roadmap S-2.20), after the
+  owner pointed at Jev Ultrafast from browser-use. `core/typed_action_decision.py`
+  renders an indexed table of controls as text lines, declares an action
+  vocabulary (the browser vocabulary click, type text, select, scroll up,
+  scroll down, wait, done, and blocked is the packaged default), bounds a
+  request by a declared row ceiling, admits an answer under the new
+  `typed_decision.action` contract only when the operation is in the
+  vocabulary, the target is in the table, a typing operation carries text,
+  and a finishing operation carries no target, and records a decision whose
+  confidence is the weaker of its two confidences and which marks done or
+  blocked as still needing independent verification. Eight mutants are
+  killed. The typed-decision research record carries an addendum with the
+  facts read from the repository; a live TypeSafe route and a browser act
+  adapter stay open.
 - The publish workflow pulls the digest-pinned base image with up to five
   retries before building, on the plain Docker driver, after one run
   failed on a transient token fetch at the registry (connection reset)

@@ -265,7 +265,7 @@ MODULE_MAP = {
         "specialist_training", "operation_cost_capture",
         "evaluation_suite", "configuration_optimizer", "node_grid", "service_api",
         "seeded_generation", "typed_decision", "route_separation", "route_separation_checks",
-        "prompt_elements",
+        "prompt_elements", "typed_action_decision",
         "model_prompt_envelope",
         "model_gateway_accounting", "model_gateway_accounting_checks", "model_token_preflight",
         "model_output_recovery_checks", "model_output_allocation_checks",

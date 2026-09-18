@@ -235,7 +235,7 @@ def self_test() -> dict:
         "core.evaluation_suite", "core.configuration_optimizer", "core.node_grid",
         "core.service_api", "code_nodes.service_endpoints",
         "core.seeded_generation", "core.typed_decision", "core.route_separation",
-        "core.prompt_elements",
+        "core.prompt_elements", "core.typed_action_decision",
         "core.model_output_recovery_checks", "core.model_output_allocation_checks",
         "core.model_discovery",
         "core.model_routes",

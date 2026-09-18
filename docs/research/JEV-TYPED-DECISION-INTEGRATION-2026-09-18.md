@@ -81,3 +81,60 @@ extractor, a reranker, an embedding model, a tabular foundation model, or a
 custom-trained specialist served as a local endpoint. The specialist
 trained on 2026-09-18 is the first in-house instance: it is a candidate
 resolver today and becomes a route with a profile when it is served.
+
+## Addendum, later on 2026-09-18: Jev Ultrafast and typed action decisions
+
+The owner pointed at Jev Ultrafast from browser-use and asked whether the
+engine needs out-of-the-box core support for it. Facts read from the
+repository on 2026-09-18 (`https://github.com/browser-use/jev-ultrafast`,
+created 2026-09-16, MIT license, 5,345 stars at the time of reading):
+
+- The model receives an element table of indexed controls, one line per
+  control with the index, the control type, the label, and the current
+  value, for example `[3] combobox  Where to?  · empty`, instead of a
+  screenshot.
+- One network round trip returns the operation (click, type text, select,
+  scroll up, scroll down, wait, done, or blocked) and the target element;
+  when the operation types text, a small text model produces the text.
+- Waits are adaptive: up to 200 milliseconds for suggestions after typing
+  into a combobox, otherwise at most two animation frames or 50
+  milliseconds.
+- The timing claim reads, in the authors' words, "Zürich → London on Google
+  Flights in 7.1 seconds. One natural-language goal, actual text
+  generation, and loading waits included." The authors also state that the
+  measurement is "three repeats of one task on one browser profile, not a
+  general reliability benchmark."
+- It needs a TypeSafe API key, a text model key, and Chrome with remote
+  debugging; it does not handle shadow roots, frames, canvas, file uploads,
+  pop-up tabs, nested scrolling, or arbitrary keyboard widgets; and the
+  authors state that the done choice "requires independent outcome
+  verification".
+
+What Loop Engine holds after this addendum:
+
+- `core/typed_action_decision.py`: an element table with indexed rows and
+  the same text rendering, a declared action vocabulary (the browser
+  vocabulary above is the packaged default, and a caller declares its
+  own), a bounded request that refuses a table above its declared row
+  ceiling, admission under the registered `typed_decision.action` contract
+  that refuses an operation outside the vocabulary, a target outside the
+  table, a typing operation without text, and a finishing operation with a
+  target, and a decision record whose confidence is the weaker of the
+  operation and target confidences and which marks a done or blocked
+  decision as still needing independent verification. The judge is
+  injected exactly as for typed decisions, the call passes the same route
+  screen, and one model call record and one cost record are written per
+  decision. Nothing in the engine performs the action.
+- The typed-decision route from earlier the same day (`core/typed_decision`)
+  for bounded choices of at most ten candidates; the action contract exists
+  because an element table is far wider than a choice.
+
+What stays open, and what only the owner can supply:
+
+- A live TypeSafe adapter behind the gateway needs a key the owner
+  authorizes; until then the route is exercised with fixture judges only.
+- Performing the chosen action is an effect: a browser act adapter with
+  declared effects, a page reader that builds the element table, and the
+  adaptive waits belong to a harness adapter (roadmap S-2.21), not to core.
+- The done decision is a claim; Loop Engine's independent verifier owns
+  acceptance, which matches the authors' own statement.

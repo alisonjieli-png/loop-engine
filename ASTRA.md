@@ -893,8 +893,16 @@ live run has consumed a member of the family yet. Prompt elements and
 response style are two declared grid axes over 192 combinations in
 `core/prompt_elements`, rendering only the selected elements with a style
 instruction from a data table and recording the changed slot in the render
-digest; no live grid has measured them. The conformance scan refuses a
-direct write to a packaged intelligence path outside the catalog adapters. The worker image
+digest; no live grid has measured them. The owner then pointed at Jev
+Ultrafast from browser-use, which reads a page as an indexed element table
+and asks a typed-decision model for the operation and the target in one
+round trip; `core/typed_action_decision` now holds that shape behind the
+same call boundary, with a declared vocabulary, a row ceiling, admission
+rules, and a decision that marks done or blocked as still needing
+independent verification, while a live TypeSafe route needs a key the
+owner authorizes and the browser act adapter is roadmap step S-2.21. The
+conformance scan refuses a direct write to a packaged intelligence path
+outside the catalog adapters. The worker image
 pins its base by digest, builds locally, runs `doctor`, and
 is published to the GitHub Container Registry by a workflow on every push
 to `main`. Verification on a different route, the last attack that

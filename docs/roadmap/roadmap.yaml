@@ -122,6 +122,22 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "remove the slot from the render digest; the check must fail"
     evidence: "src/loop_engine/core/prompt_elements.py self_test (6 checks): two integer-range axes over 192 combinations, rendering of selected elements only, render digest per slot; five killed mutants; no live grid has measured the axes"
+  - id: S-2.20
+    phase: 2
+    title: Typed action decisions over an element table
+    status: offline_verified
+    depends_on: [S-2.13]
+    verify: [SELF, MUTANT]
+    adversarial: "a target outside the table or an operation outside the vocabulary must be refused; a done decision must still need verification"
+    evidence: "src/loop_engine/core/typed_action_decision.py self_test (8 checks) with the typed_decision.action contract; eight killed mutants; docs/research/JEV-TYPED-DECISION-INTEGRATION-2026-09-18.md addendum on Jev Ultrafast; no live TypeSafe route"
+  - id: S-2.21
+    phase: 2
+    title: Browser harness adapter with an element table reader and independent outcome verification
+    status: proposed
+    depends_on: [S-2.20, S-2.2]
+    verify: [SELF, MUTANT, a recorded browser task with exact denominators]
+    adversarial: "a done decision accepted without the independent verifier must fail"
+    evidence: "a live TypeSafe key and a browser reader are needed; the act adapter declares its effects"
   - id: S-2.8
     phase: 2
     title: Middleware and wrapper abstractions for microservice hosting

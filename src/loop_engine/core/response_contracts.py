@@ -33,6 +33,9 @@ STEP_EFFICIENCY_REVIEW = "practitioner.step_efficiency_review"
 TYPED_DECISION = "typed_decision.choice"
 #: The most candidates one typed decision may weigh; a wider choice is split.
 TYPED_DECISION_MAX_CANDIDATES = 10
+#: One operation from a declared vocabulary and one target row of an element
+#: table in one answer; the table may be far wider than a plain choice.
+TYPED_ACTION_DECISION = "typed_decision.action"
 
 #: The evidence a failure review must quote; shared by its classification
 #: and confirmation calls so both are grounded the same way.
@@ -153,6 +156,16 @@ _REGISTRY = {contract.contract_id: contract for contract in (
                                      notes="One row per declared candidate whose confidence is "
                                            "the probability mass given to it; rows sum to one; "
                                            "abstain when no candidate is defensible.")),
+    ResponseContract(TYPED_ACTION_DECISION, "1.0.0",
+                     "one operation from the declared vocabulary and one target row of the element "
+                     "table, each with a confidence, plus text when the operation types it",
+                     {"operation": "string", "target_index": 0, "operation_confidence": 0.0,
+                      "target_confidence": 0.0, "text": "string", "abstain": "boolean",
+                      "reason": "string"},
+                     SuggestedOutput("object", abstention_allowed=True,
+                                     notes="Name one declared operation and, when it needs one, "
+                                           "the index of one table row; abstain when no action "
+                                           "is defensible.")),
 )}
 
 
@@ -201,7 +214,7 @@ def self_test() -> dict:
           and rendered["action_vector"]["process_checks"][0]["status"].split("|")
           == list(PROCESS_CHECK_STATUSES))
     check("every_contract_has_a_unique_id_a_version_and_a_stable_digest",
-          len(set(contract_ids())) == len(contract_ids()) == 7
+          len(set(contract_ids())) == len(contract_ids()) == 8
           and all(record["version"].count(".") == 2 for record in registry_records())
           and verify.content_digest == registered_contract(PRACTITIONER_VERIFY).content_digest)
     judgment = registered_contract(INDEPENDENT_CRITERION_JUDGMENT)

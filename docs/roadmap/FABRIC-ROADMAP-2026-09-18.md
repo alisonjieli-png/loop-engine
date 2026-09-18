@@ -177,6 +177,8 @@ named check fails.
 | S-2.17 Records index and folder charters | `tools/build_records_index.py` writes `docs/RECORDS-INDEX.md`, every version of each dated record under its folder and subject with the newest first; a README with a `Kind:` line in every docs folder; the conformance gate `docs_folders_without_a_charter_readme` with a canary. | tools test; `CONF` | A dated record added without regenerating the index fails the tools test; a docs folder with files and no chartered README fails conformance | none |
 | S-2.18 Relayer declared boundaries | Move the implementation of each README-only package (`intelligence` first) out of `core` one boundary at a time behind the dependency ratchet, with import-boundary tests. | `CONF`; import-boundary tests | A move that raises the dependency-direction count above the ratchet fails | S-2.17 |
 | S-2.19 Docs root specifications | Move the specifications at the `docs` root into their kind folders with redirect stubs so the root holds only entry points. | `LINT`; every moved link resolves | A moved record without a redirect stub fails the link check | S-2.17 |
+| S-2.20 Typed action decisions over an element table | An indexed element table rendered as text lines, a declared action vocabulary with the browser vocabulary as the packaged default, a bounded request, admission under `typed_decision.action` that refuses an operation outside the vocabulary, a target outside the table, a typing operation without text, and a finishing operation with a target, and a decision that marks done or blocked as still needing independent verification. | `SELF`; eight killed mutants | A target outside the table or an operation outside the vocabulary must be refused | S-2.13 |
+| S-2.21 Browser harness adapter | A page reader that builds the element table, an act adapter with declared effects and adaptive waits, and a live TypeSafe route; a done decision is accepted only by the independent verifier. | A recorded browser task with exact denominators | A done decision accepted without the verifier must fail | S-2.20, S-2.2, a key the owner authorizes |
 | S-2.11 Search characteristics sidecar and hybrid retrieval | Facets, digests, and optional embeddings stored beside body references; a large body stays in a file, an object store, or a package; hybrid (lexical plus vector) and iterative retrieval over the same records through the existing Retriever; the same query answered by DuckDB and by a server adapter with identical results on the fixture population. | `SELF`; two adapters return identical ranked identities for the fixture queries | Remove the body reference; the large-body check must fail | S-2.10 |
 
 ### Phase 3: proof of concept
@@ -277,6 +279,12 @@ Append one line per iteration: date, step, result, evidence path, commit.
   records index check, self-test of 5,131 checks, battery of 32 steps) and
   twenty-six killed mutants across the typed-decision, seeded generation,
   and layout scripts.
+- 2026-09-18, S-2.20 offline_verified: typed action decisions over an
+  element table in `core/typed_action_decision.py` after the owner pointed
+  at Jev Ultrafast from browser-use (facts read from the repository the
+  same day are in the typed-decision research record); eight killed
+  mutants; a live TypeSafe route needs a key the owner authorizes and the
+  browser act adapter is S-2.21, proposed.
 - 2026-09-18, S-2.7 offline_verified: prompt elements and response style
   are two integer-range grid axes in `core/prompt_elements.py` that address
   all 192 combinations exactly once, render only the selected elements
