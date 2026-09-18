@@ -256,6 +256,7 @@ MODULE_MAP = {
         "model_call", "model_call_contract", "model_capabilities", "model_gateway",
         "model_ontology", "response_contracts", "suggested_output", "contract_matching",
         "capability_directory_checks",
+        "reuse_evidence", "model_call_records", "operation_cost_records",
         "model_prompt_envelope",
         "model_gateway_accounting", "model_gateway_accounting_checks", "model_token_preflight",
         "model_output_recovery_checks", "model_output_allocation_checks",

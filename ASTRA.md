@@ -667,6 +667,21 @@ the five modes, and the criterion rubric is the first exact comparison
 relaxed to canonical text; a review of every remaining exact comparison
 against this rule is open work.
 
+Observed result, later on September 18. The full raia-live/amfs repository
+was read at b9547b4 and its evidence model, action priors, and
+preregistered benchmark are recorded in the
+[SenseLab research record](docs/research/EXTERNAL-SENSELAB-2026-09-18.md).
+Its first benchmark run is a negative result the owner should know: every
+memory arm had a stale-pick rate of 13 to 16 percent with no downward
+trend, lower first-attempt success than no memory, and five to seven
+times the tokens. Loop Engine now holds the typed pieces that reading
+argued for: reuse evidence with a surprise weighted, credit split
+posterior and a regime-shift event; learnable model call records with a
+run-level split and named exclusions; operation cost records; the
+engineering-lab question forms; and a dependency-direction ratchet with
+the measured debt as its ceiling. None of these is wired into a live run
+yet, and no live rerun has measured them.
+
 Unresolved question. Whether `core` should keep importing `code_nodes` or
 the two should be re-layered, which steps beyond `decide_next` should carry
 suggested outputs, and where a hosted judgment service would keep its

@@ -226,6 +226,7 @@ def self_test() -> dict:
         "core.model_call", "core.model_gateway_accounting_checks", "core.model_token_preflight",
         "core.model_call_contract", "core.model_ontology", "core.response_contracts",
         "core.suggested_output", "core.contract_matching",
+        "core.reuse_evidence", "core.model_call_records", "core.operation_cost_records",
         "core.model_output_recovery_checks", "core.model_output_allocation_checks",
         "core.model_discovery",
         "core.model_routes",

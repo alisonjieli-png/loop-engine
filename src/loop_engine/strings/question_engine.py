@@ -68,6 +68,13 @@ FORM_TO_QUESTION_FAMILY = {
     "reversibility": "best_practices", "stakeholder_view": "best_practices",
     "second_order": "best_practices", "analogy_probe": "analogy",
     "constraint_inversion": "inversion", "done_definition": "best_practices",
+    # The engineering-lab forms the owner asked for on 2026-09-18: the
+    # questions a data science or machine learning engineer asks before
+    # spending a model call.
+    "model_necessity": "cost_compression", "implementation_choice": "cost_compression",
+    "train_or_call": "comparison", "data_sufficiency": "evidence_needed",
+    "step_confidence": "calibration", "minimum_context": "cost_compression",
+    "context_boundary_probe": "falsification", "reuse_before_reasoning": "best_way",
 }
 
 
@@ -220,6 +227,38 @@ def core_forms() -> dict:
         F("established_facts", "For {task}, this run already established: "
           "{options}. Which planned probe or setup step does each item make "
           "unnecessary?", "list"),
+        # Engineering-lab forms (owner, 2026-09-18): is a model the most
+        # efficient implementation, what would it take to do without one,
+        # and how sure are we.
+        F("model_necessity", "For the step {step} in {task}, is a language "
+          "model the most efficient way to do it? Give the verdict, then the "
+          "cheapest alternative you considered: a registered deterministic "
+          "resolver, a small or specialized model, or a tool written for it.",
+          "verdict"),
+        F("implementation_choice", "For the step {step} in {task}, compare "
+          "the implementations that satisfy its contract: {options}. Rank them "
+          "by expected total cost including setup, verification, and recovery, "
+          "and name the evidence that would change the ranking.", "ranking"),
+        F("train_or_call", "For the step {step} in {task}, would a model "
+          "trained on our own verified records beat calling a general model? "
+          "State the verified examples we hold, the break-even reuse count, "
+          "and the verdict.", "comparison"),
+        F("data_sufficiency", "What data would training a specialist for "
+          "{step} in {task} need, and do we have it? List each source, its "
+          "size, its label quality, and what is missing.", "list"),
+        F("step_confidence", "From 0 to 100, how confident are you that "
+          "{candidate} is the best next step for {task}? Give the number, "
+          "then the single observation that would lower it most.", "score"),
+        F("minimum_context", "What is the least information the step {step} "
+          "in {task} needs to be done correctly? List each item and say what "
+          "breaks without it.", "elimination"),
+        F("context_boundary_probe", "We believe {options} is the right "
+          "amount of information for {step} in {task}. Name one addition and "
+          "one removal that would test that belief, and the result that "
+          "would refute it.", "proposals"),
+        F("reuse_before_reasoning", "Before reasoning about {task}, which "
+          "verified procedure, tool, or result from earlier runs could be "
+          "reused as it is, with which parameters?", "proposals"),
     ]
     return {f.name: f for f in forms}
 
@@ -369,7 +408,8 @@ def self_test() -> dict:
     # 3. multiplication is deterministic and covers every form early.
     slot_values = {"task": "win the competition",
                    "options": "A;B;C", "candidate": "use xgboost",
-                   "option": "use xgboost", "a": "xgb", "b": "mlp"}
+                   "option": "use xgboost", "a": "xgb", "b": "mlp",
+                   "step": "locate the invoice total"}
     v1 = multiply(forms, personas=("a skeptic", "an optimist"),
                   policies=("fully_informed", "goal_only"),
                   seeds=(0, 3), slot_values=slot_values,

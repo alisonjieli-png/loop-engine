@@ -45,6 +45,12 @@ def _access_baseline() -> int:
     return int(_rules().get("direct_resource_access_baseline", 0))
 
 
+def _dependency_direction_baseline() -> int:
+    """The declared ceiling of the dependency-direction ratchet."""
+    from ._conformance_scan import _rules, ratchet_baselines
+    return ratchet_baselines(_rules()).get("dependency_direction", 0)
+
+
 def _stale_docs() -> list:
     stale = []
     for f in sorted(os.listdir(_HERE)):
@@ -274,6 +280,8 @@ def run_conformance() -> dict:
             len(semantics["violations"]),
         "direct_resource_access_above_baseline": max(
             0, c.get("direct_resource_access", 0) - _access_baseline()),
+        "dependency_direction_above_baseline": max(
+            0, c.get("dependency_direction", 0) - _dependency_direction_baseline()),
         "architecture_map_freshness": _stale_architecture_map(),
     }
     all_pass = all(v == 0 for v in gates.values())

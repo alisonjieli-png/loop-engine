@@ -62,6 +62,37 @@ First public release.
   nothing and names the judgment contract a separate call must answer).
   The criterion rubric now restates the registered criterion in canonical
   text instead of byte-exact text; an added sentence is still refused.
+- Reuse evidence. `core/reuse_evidence.py` owns the rule for how one
+  verified outcome changes what a reused record is worth: a recency
+  weighted Beta posterior with a surprise term, a credit split across the
+  records one outcome cited, first-strike tolerance for a long-validated
+  record, a windowed regime-shift event, evidence labels (untested,
+  validated, contested, discredited) kept separate from lifecycle status,
+  inherited evidence for a restated claim, and a marked contrast lesson
+  for a fail-then-succeed run. Design input: the evidence model in the
+  raia-live/amfs repository at b9547b4, re-expressed in typed records.
+- Learnable model call records. `core/model_call_records.py` joins a run's
+  model step events into one record per call (contract identifier,
+  prompt and output digests, attempts, rejections, suggested output
+  deviations) labeled by the independently verified outcome, and exports
+  training rows split by run so no run straddles the sides, excluding
+  unverified outcomes, incomplete calls, synthetic records, and any row
+  that matches the repository's secret patterns, each with its reason.
+- Operation cost records. `core/operation_cost_records.py` keeps what
+  each implementation of one operation cost by phase (setup, execution,
+  verification, recovery) with the outcome it earned; unknown timings
+  stay unknown, only verified complete records are averaged, and the
+  comparison prefers the lowest mean total time, then fewer model calls.
+- Engineering-lab question forms. Eight forms join the question engine:
+  model necessity, implementation choice, train or call, data
+  sufficiency, step confidence from 0 to 100, minimum context, a context
+  boundary probe, and reuse before reasoning, each mapped to an existing
+  question family.
+- A dependency-direction ratchet. The conformance scanner counts imports
+  from `core` into `code_nodes` (73 statements in 38 modules on
+  2026-09-18) against a declared baseline in `forbidden_paths.json`; the
+  count is published, the gate fails if it rises, and the baseline may
+  only be lowered.
 - Six terminology entries: SolutioningSpace, SolutionsSpace, ModelProfile,
   ModelCallRequest, SuggestedOutput, and ResponseContract, with the
   dictionary projection and rendered dictionary regenerated.

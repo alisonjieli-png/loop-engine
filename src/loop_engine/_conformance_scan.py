@@ -350,6 +350,39 @@ def scan_cross_component_imports(root: str, rules: dict) -> list:
     return v
 
 
+def scan_dependency_direction(root: str, rules: dict) -> list:
+    """A declared dependency direction is a RATCHET: every import that goes
+    against it is counted against a baseline that may only fall.
+
+    The September 18 audit measured core importing code_nodes 73 times while
+    the map says code_nodes builds on core. Until that seam is re-layered,
+    a new import in the wrong direction is refused by the gate, not excused;
+    the baseline lives in forbidden_paths.json with its reason and plan."""
+    from .architecture_map import PACKAGE
+    v = []
+    for edge, spec in (rules.get("dependency_direction_ratchet") or {}).items():
+        source, target = (part.strip() for part in edge.split("->", 1))
+        for rel in _py_files(root):
+            norm = rel.replace(os.sep, "/")
+            if not norm.startswith(source + "/"):
+                continue
+            tree = _source_tree(os.path.join(root, rel))
+            if tree is None:
+                continue
+            for node in ast.walk(tree):
+                if not isinstance(node, ast.ImportFrom):
+                    continue
+                module = node.module or ""
+                relative = node.level == 2 and (module == target or module.startswith(target + "."))
+                absolute = module == f"{PACKAGE}.{target}" or module.startswith(f"{PACKAGE}.{target}.")
+                if relative or absolute:
+                    v.append({"rule": "dependency_direction", "file": norm,
+                              "line": node.lineno,
+                              "detail": f"{source} imports {target}; the declared direction "
+                                        f"is {target} -> {source} ({spec.get('reason', '')})"})
+    return v
+
+
 def scan_public_node_naming(root: str, rules: dict) -> list:
     """The loop-node rule, active on the surfaces the migration actually landed:
     the Solution graph, its compiler, and the public SaaS/Studio API now expose
@@ -673,10 +706,18 @@ def scan_llm_first_semantic_freedom(root: str, rules: dict) -> list:
 #: a zero-tolerance gate.  A ratchet is not a pass: the count is published,
 #: its own gate fails if it rises, and the baseline may only be lowered.
 #:
-#: EMPTY as of 2026-08-24 — direct_resource_access GRADUATED to zero-tolerance
-#: when its last violation was routed through a loop envelope. A rule leaves
-#: this tuple by being fixed, never by being excused.
-RATCHETED_RULES = ()
+#: direct_resource_access GRADUATED to zero-tolerance on 2026-08-24 when its
+#: last violation was routed through a loop envelope. dependency_direction
+#: entered on 2026-09-18 with the measured core -> code_nodes debt as its
+#: baseline. A rule leaves this tuple by being fixed, never by being excused.
+RATCHETED_RULES = ("dependency_direction",)
+
+
+def ratchet_baselines(rules: dict) -> dict:
+    """The declared ceiling of every ratcheted rule, from the rules store."""
+    return {"dependency_direction": sum(
+        int(spec.get("baseline", 0))
+        for spec in (rules.get("dependency_direction_ratchet") or {}).values())}
 
 
 DETECTORS = (scan_legacy_flat_imports,
@@ -687,6 +728,7 @@ DETECTORS = (scan_legacy_flat_imports,
              scan_empty_modules, scan_skip_markers, scan_module_size,
              scan_min_python_syntax,
              scan_short_docstring, scan_cross_component_imports,
+             scan_dependency_direction,
              scan_unmapped_event_kinds, scan_public_node_naming,
              scan_uncollected_self_tests, scan_direct_resource_access,
              scan_unregistered_boundaries,
@@ -741,6 +783,8 @@ _FIXTURES = {
         '        return "fixed.template"\n',
     "implicit_semantic_work_ceiling":
         'class SolverRequest:\n    max_passes: int = 12\n',
+    "dependency_direction":
+        "from ..code_nodes.solution_records import SolutionCandidate\n",
 }
 
 
@@ -769,8 +813,11 @@ def self_test() -> dict:
                     if rule == "conformance_test_skip_marker"
                     else "__init__.py"
                     if rule == "public_parallel_runtime_surface"
+                    else "core/fixture_dependency_direction.py"
+                    if rule == "dependency_direction"
                     else f"fixture_{rule}.py")
             names[rule] = base
+            os.makedirs(os.path.dirname(os.path.join(tmp, base)) or tmp, exist_ok=True)
             with open(os.path.join(tmp, base), "w") as f:
                 f.write(src)
         report = run_scan(tmp)
@@ -800,6 +847,13 @@ def self_test() -> dict:
           json.dumps(zero_tolerance) if zero_tolerance
           else f"{live['files_scanned']} files, 0 zero-tolerance violations"
                + (f"; ratcheted debt held at {ratcheted}" if ratcheted else ""))
+
+    # 3b. ratcheted debt is held at or below its declared baseline.
+    ceilings = ratchet_baselines(_rules())
+    over = {rule: (count, ceilings.get(rule)) for rule, count in ratcheted.items()
+            if count > ceilings.get(rule, 0)}
+    check("ratcheted_debt_does_not_rise_above_its_baseline", not over,
+          json.dumps(over) if over else f"ratchets {ratcheted} within {ceilings}")
 
     # 4. the rules are data in a store (forbidden_paths.json), not literals.
     check("rules_live_in_the_forbidden_paths_store",

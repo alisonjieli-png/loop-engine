@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 539,
+ "files_scanned": 542,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "reachable_legacy_flat_paths": 0,
@@ -29,6 +29,7 @@
   "operational_graph_vertex_types_outside_canonical_loop": 0,
   "semantic_identities_without_one_meaning_and_authority": 0,
   "direct_resource_access_above_baseline": 0,
+  "dependency_direction_above_baseline": 0,
   "architecture_map_freshness": 0
  },
  "gate_details": {
@@ -107,7 +108,446 @@
    "passed": true
   },
   "retired_decision_spine_terms": [],
-  "scan_violations": []
+  "scan_violations": [
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_host_runtime_checks.py",
+    "line": 392,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_host_runtime_checks.py",
+    "line": 476,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_host_runtime_checks.py",
+    "line": 480,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_host_runtime_checks.py",
+    "line": 538,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_host_runtime_checks.py",
+    "line": 542,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner.py",
+    "line": 20,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner.py",
+    "line": 493,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner.py",
+    "line": 338,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_acceptance_checks.py",
+    "line": 15,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_acceptance_checks.py",
+    "line": 60,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_bindings_checks.py",
+    "line": 43,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_capabilities.py",
+    "line": 17,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_capabilities.py",
+    "line": 18,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_capabilities.py",
+    "line": 20,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_checks.py",
+    "line": 27,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_feedback_checks.py",
+    "line": 15,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_feedback_checks.py",
+    "line": 35,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_feedback_checks.py",
+    "line": 232,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_feedback_checks.py",
+    "line": 290,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_orientation_repair.py",
+    "line": 23,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_planning.py",
+    "line": 12,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_records.py",
+    "line": 25,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_records.py",
+    "line": 2080,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_routing.py",
+    "line": 13,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_scope_checks.py",
+    "line": 16,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/adaptive_practitioner_verification.py",
+    "line": 14,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_class.py",
+    "line": 259,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_class.py",
+    "line": 325,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_class.py",
+    "line": 326,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_class.py",
+    "line": 329,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_lifecycle.py",
+    "line": 303,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_lifecycle.py",
+    "line": 387,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_lifecycle.py",
+    "line": 388,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_lifecycle.py",
+    "line": 389,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/asset_lifecycle.py",
+    "line": 390,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/cognitive_response_checks.py",
+    "line": 20,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/configuration_setter_checks.py",
+    "line": 192,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/context_catalog.py",
+    "line": 19,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/context_catalog.py",
+    "line": 38,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/context_catalog.py",
+    "line": 74,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/context_catalog.py",
+    "line": 86,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/development_planning.py",
+    "line": 15,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/external_harness_checks.py",
+    "line": 603,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/generated_project.py",
+    "line": 1847,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_fallback_checks.py",
+    "line": 16,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_selection_checks.py",
+    "line": 150,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_selection_checks.py",
+    "line": 179,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_selection_checks.py",
+    "line": 195,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_selection_checks.py",
+    "line": 205,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_selection_checks.py",
+    "line": 235,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_selection_checks.py",
+    "line": 290,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/harness_semantic_checks.py",
+    "line": 18,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/independent_verification.py",
+    "line": 22,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/independent_verification_checks.py",
+    "line": 17,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/independent_verification_plan_checks.py",
+    "line": 16,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/intelligence_registry.py",
+    "line": 317,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/lifecycle_extensions.py",
+    "line": 14,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/model_gateway_accounting_checks.py",
+    "line": 12,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/model_output_recovery_checks.py",
+    "line": 13,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/model_output_recovery_checks.py",
+    "line": 261,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/practitioner_runtime_facts.py",
+    "line": 154,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/reactive_worker.py",
+    "line": 17,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/reactive_worker_checks.py",
+    "line": 20,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/recovery_learning.py",
+    "line": 42,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/recovery_learning.py",
+    "line": 43,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/recovery_learning_checks.py",
+    "line": 20,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/reusable_capability_checks.py",
+    "line": 21,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/studio_server.py",
+    "line": 201,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/studio_server.py",
+    "line": 333,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/studio_server.py",
+    "line": 335,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/studio_server.py",
+    "line": 336,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/studio_server.py",
+    "line": 447,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   },
+   {
+    "rule": "dependency_direction",
+    "file": "core/studio_server.py",
+    "line": 448,
+    "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
+   }
+  ]
  },
  "direct_resource_access": {
   "current": 0,
