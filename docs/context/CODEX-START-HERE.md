@@ -16,6 +16,16 @@ The repository [CLAUDE.md](../../CLAUDE.md) imports it with the shared
 [embodiments](../../embodiments/AGENTS.md) or
 [devtools](../../devtools/AGENTS.md) when working there.
 
+The September 18 records are the
+[adversarial project audit](../verification/ADVERSARIAL-PROJECT-AUDIT-2026-09-18.md)
+with its ranked backlog, the
+[session digest and research inventory](AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md),
+and the [repository and session review](../verification/CLAUDE-FABLE-5-1-REVIEW-2026-09-18.md).
+The boundaries that followed them are the model ontology, the model call
+request, suggested outputs, the response contract registry, and the
+solutions space record, listed in the [contracts index](../contracts/README.md)
+and described in the changelog under September 18.
+
 Before continuing after the September 12 account change, read the
 [discrete cognitive or act step Loop node complete explanation and session handoff](DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md)
 in full. Preserve the full phrase and the behavioral explanation. Do not

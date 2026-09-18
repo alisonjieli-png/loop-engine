@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from typing import Sequence
 
 from ..core.ollama_client import FORBIDDEN_MODELS, DEFAULT_MODEL
+from .model_ontology import ModelProfile
 
 LOCALITIES = ("cloud", "organization", "local")
 # What a model call is FOR — the axis the cloud-only rule actually turns on.
@@ -71,6 +72,8 @@ class ModelRoute:
     # Which purposes this route DECLARES it can serve (policy still decides).
     purposes: tuple = ("counted_generation",)
     capabilities: "ModelProviderCapabilities | None" = None
+    # The declared model ontology profile; optional until every route declares one.
+    profile: "ModelProfile | None" = None
 
     def __post_init__(self):
         if self.locality not in LOCALITIES:
@@ -81,6 +84,8 @@ class ModelRoute:
         for p in self.purposes:
             if p not in PURPOSES:
                 raise ValueError(f"unknown purpose {p!r}; valid: {PURPOSES}")
+        if self.profile is not None and not isinstance(self.profile, ModelProfile):
+            raise ValueError("a route's profile must be a typed ModelProfile")
 
 
 @dataclass
@@ -369,6 +374,18 @@ def self_test() -> dict:
               and not route.capabilities.supports_structured_output
               for route in reg.all() if route.provider == "ollama_cloud"),
           "Cloud JSON prompting remains distinct from constrained decoding")
+
+    untyped_profile_refused = False
+    try:
+        ModelRoute("fixture.profiled", "fixture", "fixture-model", profile="large")
+    except ValueError:
+        untyped_profile_refused = True
+    profiled = ModelRoute("fixture.profiled", "fixture", "fixture-model",
+                          profile=ModelProfile(kind="generative_text"))
+    check("a_route_profile_is_a_typed_model_profile_or_absent",
+          untyped_profile_refused and profiled.profile.text_servable
+          and ModelRoute("fixture.plain", "fixture", "fixture-model").profile is None,
+          "the ontology profile is optional data on the route, never a string")
 
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "model_routes_self_test", "tests": results,

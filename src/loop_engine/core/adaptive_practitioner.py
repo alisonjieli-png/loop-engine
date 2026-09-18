@@ -8,6 +8,7 @@ active model run, never from source branches in this module.
 from __future__ import annotations
 
 from ..loop.loop_control import HYBRID, NON_DETERMINISTIC
+from .suggested_output import SuggestedOutput
 
 import hashlib
 import json
@@ -284,7 +285,8 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
                     {**_model_state(state, services),
                      "orientation": situation.knowns["orientation"].to_dict(),
                      "next_action_validation_failure": failure}, schema,
-                    admission_contract=admission_contract))
+                    admission_contract=admission_contract,
+                    suggested_output=NEXT_ACTION_SUGGESTED_OUTPUT))
                 decision_stage = services._graded_stage
                 actions = value.get("actions")
                 if not isinstance(actions, list) or not actions:
@@ -577,6 +579,17 @@ def _history_record(owner: Loop, services: AdaptiveRunServices,
         "saved": False, "product_outcome_bound": False,
         "product_outcome_digest": "", "terminal_code": "",
     }
+#: The largest candidate list decide_next is asked for. The owner's
+#: September 18 example asked for a ranked list of at most ten candidates
+#: with a confidence; more rows are admitted and recorded as a deviation.
+NEXT_ACTION_CANDIDATE_CEILING = 10
+NEXT_ACTION_SUGGESTED_OUTPUT = SuggestedOutput(
+    "ranked_list", columns=("action_kind", "confidence"),
+    cardinality=NEXT_ACTION_CANDIDATE_CEILING, confidence_scale="unit_interval",
+    abstention_allowed=False, path="actions",
+    notes="Name the chosen row with selected_action_index.")
+
+
 def run_adaptive_practitioner(
         request: AdaptivePractitionerRequest,
         dependencies: AdaptivePractitionerDependencies) -> dict:

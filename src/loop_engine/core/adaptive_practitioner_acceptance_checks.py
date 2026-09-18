@@ -14,7 +14,9 @@ from unittest.mock import patch
 
 from ..code_nodes.solution_model_port import (
     FixtureModelExecutionRequest, fixture_model_execution)
-from .adaptive_practitioner import run_adaptive_practitioner
+from .adaptive_practitioner import (
+    NEXT_ACTION_CANDIDATE_CEILING, run_adaptive_practitioner)
+from .response_contracts import PRACTITIONER_ROUTE, PRACTITIONER_VERIFY
 from .adaptive_practitioner_orientation_repair import ORIENTATION_OBJECTIVE
 from .source_role_orientation import manifest_digest
 from .independent_verification import IndependentVerificationPolicy
@@ -465,6 +467,40 @@ def run_checks() -> dict:
               and all(item["solved"] for item in results)
               and all(item["model_calls"] == 7 for item in results),
               f"{sum(item['solved'] for item in results)}/50 solved")
+
+    with tempfile.TemporaryDirectory(prefix="suggested-output-") as root:
+        events = []
+        answers = list(_success_answers())
+        # decide_next asks for at most the ceiling; one more row is
+        # admitted by the schema and must be recorded, not retried.
+        answers[1] = json.dumps({
+            "actions": [_decision()] * (NEXT_ACTION_CANDIDATE_CEILING + 1),
+            "selected_action_index": 0})
+        execution = fixture_model_execution(FixtureModelExecutionRequest(
+            answers=tuple(answers), max_model_calls=len(answers)))
+        result = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "record a suggested output deviation", mode="hybrid", runs_dir=root,
+                max_passes=1, interaction_mode="autonomous",
+                allow_network_reads=False,
+                independent_verification_policy=IndependentVerificationPolicy(
+                    required=False)),
+            AdaptivePractitionerDependencies(
+                execution, project_executor=_project_fixture,
+                progress=events.append))
+        deviations = [item for item in events
+                      if item.get("event_type") == "model.step.suggested_output_deviation"]
+        named = {item.get("step"): item.get("output_contract_id") for item in events
+                 if item.get("event_type") == "model.step.started"}
+        check("an_admitted_answer_outside_its_suggested_shape_is_recorded_not_retried",
+              result["solved"] and len(deviations) == 1
+              and deviations[0]["step"] == "decide_next"
+              and "exceed" in deviations[0]["problems"][0],
+              f"{len(deviations)} deviations; solved={result.get('solved')}; "
+              f"calls={result.get('model_calls')}")
+        check("model_steps_name_their_registered_contracts_in_their_trace_events",
+              named.get("verify") == PRACTITIONER_VERIFY
+              and named.get("route") == PRACTITIONER_ROUTE, str(named))
 
     multilingual = (
         "Crea un artefacto de texto verificado.",

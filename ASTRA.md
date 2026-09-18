@@ -629,3 +629,45 @@ pipeline are 0.6065 on 20-newsgroups and 0.9804 on Kannada-MNIST, both
 above their floors. Campaign cells scored on the leaked gates keep their
 records with this correction attached; regrading them needs the corrected
 evaluation, not a silent edit.
+
+## Model calls, the model ontology, and the two spaces, September 18
+
+Owner requirement. The owner asked that every component be sectioned off so
+it can be replaced without reprogramming its interfaces; that the space
+where the Practitioner works be called the solutioning space and the space
+of published solutions be called the solutions space, plural, with the
+Solution Canvas as one member; that a language model call be wrapped as a
+model call under a model ontology covering deterministic and
+non-deterministic models, large, small, and specialized language models,
+extractors, custom-trained models, image, forecasting, and tabular
+foundation models; that heavy models run on separate systems so a tool may
+call a model but never loads a large one; and that every call log its
+metadata, prompt, and a suggested output shape (for example a ranked list of
+candidates with a confidence, top ten) so the records can train smaller
+models and answer engineering-lab questions later.
+
+Observed result. The
+[adversarial project audit](docs/verification/ADVERSARIAL-PROJECT-AUDIT-2026-09-18.md)
+recorded the gaps. This iteration lands the model ontology and typed
+`ModelProfile`, the tool placement rule on capability handshakes, the
+`ModelCallRequest` boundary that refuses non-text kinds by name, the
+`SuggestedOutput` contract with its advisory deviation diagnostic and its
+first use on `decide_next`, the response contract registry that the route,
+verify, criterion judgment, and failure confirmation steps now name, the
+`SolutionsSpaceRecord`, and six terminology entries. Offline checks and
+mutants cover each rule. No route declares a profile yet, no non-text route
+exists, the run does not write the solutions space, and nothing here
+changes which provider a run may call.
+
+Owner requirement, later on September 18. Whenever a contract is proposed,
+decide how it is matched: an exact match, a purpose match, a semantic
+match with blocking on the decisive facts, or a judged match. Making every
+contract exact makes the engine brittle. `core/contract_matching.py` owns
+the five modes, and the criterion rubric is the first exact comparison
+relaxed to canonical text; a review of every remaining exact comparison
+against this rule is open work.
+
+Unresolved question. Whether `core` should keep importing `code_nodes` or
+the two should be re-layered, which steps beyond `decide_next` should carry
+suggested outputs, and where a hosted judgment service would keep its
+records without receiving private prompts.

@@ -153,3 +153,33 @@ of each space is a Loop, not an agent or a tool. The session-era terms
 "practitioner space" and "solutions space" from the stub experiment
 readmes are synonyms for the solutioning space and the solutions space
 respectively and are updated where they appear in new documents.
+
+## Current implementation, September 18
+
+Both spaces are now registered terms. `SolutioningSpace` binds to
+`run_adaptive_practitioner`, the operation that realizes it. `SolutionsSpace`
+binds to `SolutionsSpaceRecord` in
+[`code_nodes/solutions_space.py`](../../src/loop_engine/code_nodes/solutions_space.py).
+
+```text
+Solutions space for one task
+├── task_digest
+└── members, one per published Solution Canvas
+    ├── candidate_id and graph_digest (the member identity)
+    ├── status: candidate, verified, superseded, or retired
+    ├── verification_report_digest (required for a verified member)
+    ├── applicability, cost, and evidence_refs
+    └── superseded_by (required for a superseded member)
+```
+
+What the record enforces: adding a member never removes another; a member
+with the same graph digest is the same member; a verified member cites the
+passed independent report; supersession names a successor inside the same
+space. `solutions_space_from_adaptive` projects a finished run's candidate
+canvases into a space and verifies only the accepted canvas when the run is
+solved and holds a passed independent report.
+
+What is missing: the run does not write the space yet, there is no store
+that keeps a task's space across runs, and selection among members by
+applicability and cost is not implemented. Those are the next steps, and
+none of them changes the rule that the solutions space stays plural.

@@ -52,6 +52,7 @@ from .action_vector_assessment import (
     ActionVectorAssessment,
     action_vector_schema,
 )
+from .response_contracts import PRACTITIONER_VERIFY, registered_contract
 
 
 @dataclass(frozen=True)
@@ -523,35 +524,8 @@ def verify_adaptive_results(
                  "in their separate advisory fields; they cannot block. A passed "
                  "host check may accept an intermediate observation. Host "
                  "task_complete must also be true before final success." )},
-            json.dumps({
-                "verdict": (
-                    "accept|accept_provisional|repair|research_more|"
-                    "try_another|expand_swarm|tune|reset|stop"),
-                "best_index": 0, "scores": [0.0], "notes": "string",
-                "remaining_gaps": [{
-                    "criterion_ref": "criterion:0", "gap": "string"}],
-                "advisory_findings": ["string"],
-                "new_requirement_proposals": ["string"],
-                "action_vector": {
-                    "process_checks": [{
-                        "check_id": "one registered process check",
-                        "status": "passed|failed|unknown|not_applicable",
-                        "finding": "observable finding"}],
-                    "expected_output_status": "satisfied|unsatisfied|unknown",
-                    "expected_output_findings": ["string"],
-                    "requested_output_checks": [{
-                        "criterion_ref": "criterion:0",
-                        "status": "satisfied|unsatisfied|unknown",
-                        "finding": "string"}],
-                    "progress_status": "advanced|neutral|regressed|unknown",
-                    "progress_evidence": ["string"],
-                    "continuation_status": (
-                        "continue|adjust|complete|await_authority|"
-                        "no_safe_action|unknown"),
-                    "remaining_work": ["string"],
-                },
-            }, separators=(",", ":")),
-            response_contract))
+            registered_contract(PRACTITIONER_VERIFY).contract_json(),
+            response_contract, contract_id=PRACTITIONER_VERIFY))
         verdict = str(value.get("verdict"))
         admitted_verdicts = ADMITTED_VERDICTS
         if verdict not in admitted_verdicts:
@@ -785,6 +759,34 @@ def self_test() -> dict:
             and scope_services.stage_attribution_events[0][
                 "local_stage_outcomes_changed"] is False),
         "detail": "local contribution stays unknown without an exact join",
+    })
+
+    captured = []
+
+    def capturing_model(request):
+        captured.append(request)
+        raise SolutionModelError(
+            "offline semantic verifier unavailable",
+            error_code="provider_unavailable")
+
+    capture_services = SimpleNamespace(
+        orientation_by_version={},
+        request=SimpleNamespace(task="verify the requested artifact"),
+        model=capturing_model, diagnostic=lambda code, payload: None,
+        verification_records=[], active_pass_number=1,
+        stage_store=StageStore(), stage_attribution_events=[])
+    verify_adaptive_results(
+        AdaptiveVerificationRequest(
+            PractitionerState(ProblemSpec("verify the requested artifact")),
+            ExecutionPlan("generate", "run_dag"),
+            (ResultPacket("fixture", result={"ok": True}),), {}),
+        capture_services)
+    tests.append({
+        "test": "the_verify_step_names_its_registered_contract",
+        "passed": bool(captured) and captured[0].contract_id == PRACTITIONER_VERIFY
+        and captured[0].output_contract
+        == registered_contract(PRACTITIONER_VERIFY).contract_json(),
+        "detail": "the packet names practitioner.verify and shows its registered JSON",
     })
 
     from .adaptive_practitioner_feedback_checks import verification_operational_checks

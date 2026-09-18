@@ -38,6 +38,7 @@ from .adaptive_practitioner_prompting import (
     serialize_work_packet,
 )
 from .adaptive_practitioner_validation import _short_strings, _short_text
+from .suggested_output import SuggestedOutput
 from .context_artifacts import ContextArtifactManager
 from .choice import ParameterSpec
 from .model_capabilities import ModelOutputAllocation, ModelOutputCapability
@@ -1666,10 +1667,16 @@ class ModelStepRequest:
     state: dict
     output_contract: str
     admission_contract: ModelResponseContract | None = None
+    contract_id: str = ''
+    suggested_output: SuggestedOutput | None = None
 
     def __post_init__(self):
         if self.admission_contract is not None and not isinstance(self.admission_contract, ModelResponseContract):
             raise TypeError('model-step admission requires a typed response contract')
+        if not isinstance(self.contract_id, str):
+            raise TypeError('a model-step contract identifier is text')
+        if self.suggested_output is not None and not isinstance(self.suggested_output, SuggestedOutput):
+            raise TypeError('a model-step suggested output requires a typed SuggestedOutput')
 
     @property
     def output_contract_digest(self):
@@ -2547,6 +2554,10 @@ class AdaptiveRunServices:
             output_contract={
                 "schema_ref": directive.return_schema_ref,
                 "schema": request.output_contract,
+                "contract_id": request.contract_id,
+                **({"suggested_output": request.suggested_output.to_dict(),
+                    "suggested_output_instruction": request.suggested_output.to_instruction()}
+                   if request.suggested_output is not None else {}),
                 **({'validated_contract':request.admission_contract.to_dict()}
                    if request.admission_contract is not None else {}),
                 "format": "json", "additional_text_allowed": False,
@@ -2692,6 +2703,7 @@ class AdaptiveRunServices:
                 prompt_assembly_id=snapshot["assembly_id"],
                 prompt_digest=snapshot["prompt_digest"],
                 deterministic_attempt_status=self.deterministic_attempt.status,
+                output_contract_id=request.contract_id,
                 output_schema_digest=request.output_contract_digest)
             pending_output_allocation = None
             response_guard_failure = None
@@ -2706,6 +2718,7 @@ class AdaptiveRunServices:
                     "prompt_digest": snapshot["prompt_digest"],
                     "prompt_bytes": len(assembled.prompt),
                     "output_schema_digest": request.output_contract_digest,
+                    "output_contract_id": request.contract_id,
                 }
                 if not self.request.quiet_model_io:
                     trace_event["prompt_text"] = assembled.prompt
@@ -2826,6 +2839,18 @@ class AdaptiveRunServices:
                        if request.admission_contract is not None else {})),
                 parent=owner)
             value = admitted.value
+            if request.suggested_output is not None:
+                suggestion_check = request.suggested_output.check(value)
+                if not suggestion_check["conforms"]:
+                    # Advisory: the answer was admitted, its shape differs
+                    # from the suggestion, and the deviation is kept for the
+                    # learning records rather than turned into a retry.
+                    self.publish(
+                        "model.step.suggested_output_deviation",
+                        step=request.step_id, format_attempt=format_attempt,
+                        transport_attempt=transport_attempt,
+                        suggested_output_digest=request.suggested_output.content_digest,
+                        problems=list(suggestion_check["problems"]))
             decision_failure_code = ""
             if isinstance(value, dict):
                 assistance_decision = value.get(

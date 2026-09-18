@@ -43,6 +43,8 @@ from .generated_project import (
     GeneratedProjectAuthority, GeneratedProjectExecutionContext,
     GeneratedProjectExecutionRequest, GeneratedProjectInputArtifact, _relative_path)
 from .independent_judgment import JUDGMENT_COMPARISON, MINIMUM_QUOTE_CHARACTERS, grounded_quotes
+from .response_contracts import (FAILURE_REVIEW_EVIDENCE_CONTRACT,
+                                 INDEPENDENT_FAILURE_CONFIRMATION, registered_contract)
 
 FAILURE_CLASSES = ("correct_failure", "wrong_expectation", "check_stricter_than_task",
                    "environment_defect", "ambiguous_requirement", "unknown")
@@ -56,7 +58,7 @@ KNOWN_WRONG_SUBJECT = "authored_and_produced_files_emptied"
 #: Bounds on subject and probe text sent to one review call.
 EXCERPT_CHARACTERS = 12000
 EXCERPT_BUDGET = 48000
-_EVIDENCE_CONTRACT = ["exact passage copied from the failed cases, probe source, or subject excerpts"]
+_EVIDENCE_CONTRACT = FAILURE_REVIEW_EVIDENCE_CONTRACT
 
 
 def _bounded(value, limit=EXCERPT_CHARACTERS):
@@ -277,8 +279,7 @@ def _classify(request, services, active, report, record):
         answer, confirm_call = verification._call(services, active, "failure_confirmation", {
             "record_type": "independent_failure_confirmation_request/v1", **packet, "claim": claim,
             "responsibility": INDEPENDENT_FAILURE_CONFIRMATION_PROMPT,
-            "response_contract": {"confirmed": "boolean", "evidence": _EVIDENCE_CONTRACT,
-                                  "reason": "string"}})
+            "response_contract": registered_contract(INDEPENDENT_FAILURE_CONFIRMATION).schema_copy()})
         record["confirmation"] = {**ground_confirmation(answer, texts), "call": _refs(confirm_call)}
     record["decision"] = review_decision(record["classification"], record["confirmation"])
     record["status"] = "reviewed"

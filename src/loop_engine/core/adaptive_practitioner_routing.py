@@ -31,6 +31,7 @@ from .adaptive_practitioner_recovery import (
 from .adaptive_practitioner_result import latest_task_result, task_result_succeeded
 from .adaptive_practitioner_supervision import detect_stall
 from .adaptive_practitioner_validation import MODEL_ROUTE_VALUES, _short_text
+from .response_contracts import PRACTITIONER_ROUTE, registered_contract
 from ..loop.supervision_policy import BUDGET_PHASES, SupervisionPolicy
 from .adaptive_practitioner_verification import (
     AdaptiveEvaluationBindingRequest,
@@ -74,8 +75,8 @@ def route_adaptive_result(
             {**request.model_state, "evaluation": asdict(evaluation),
              "deterministic_project_passed": deterministic_pass,
              "pass_number": request.record.pass_number},
-            json.dumps({"route": "|".join(MODEL_ROUTE_VALUES),
-                        "reason": "string"}, separators=(",", ":"))))
+            registered_contract(PRACTITIONER_ROUTE).contract_json(),
+            contract_id=PRACTITIONER_ROUTE))
         selected = str(value.get("route"))
         if selected not in MODEL_ROUTE_VALUES:
             raise AdaptivePractitionerError(
@@ -424,6 +425,18 @@ def self_test() -> dict:
         "passed": _phase_demoted_diagnostics(services_for(
             "explore_branch", "accept"), 70, 100),
     }]
+    captured = []
+    capturing = services_for("continue", "accept")
+    inner_model = capturing.model
+    capturing.model = lambda request: (captured.append(request), inner_model(request))[1]
+    route_adaptive_result(AdaptiveRouteRequest(state, accepted_record, {}), capturing)
+    tests.append({
+        "test": "the_route_step_names_its_registered_contract",
+        "passed": bool(captured) and captured[0].contract_id == PRACTITIONER_ROUTE
+        and captured[0].output_contract
+        == registered_contract(PRACTITIONER_ROUTE).contract_json(),
+        "detail": "the packet names practitioner.route and shows its registered JSON",
+    })
     return {
         "record_type": "adaptive_practitioner_routing_test/v1",
         "tests": tests, "passed": sum(item["passed"] for item in tests),

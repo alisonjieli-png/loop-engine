@@ -20,6 +20,8 @@ from __future__ import annotations
 import hashlib
 
 from ..strings.prompt_fragments import INDEPENDENT_CRITERION_JUDGMENT_PROMPT
+from .contract_matching import CANONICAL_TEXT, match_contract
+from .response_contracts import INDEPENDENT_CRITERION_JUDGMENT, registered_contract
 
 JUDGMENT_COMPARISON = "criterion_judgment"
 JUDGMENT_RECORD_TYPE = "independent_criterion_judgment/v1"
@@ -65,8 +67,9 @@ def judgment_rubric_problem(case, criteria) -> str:
         return "a judged case covers exactly the one criterion its rubric names"
     if reference not in registered:
         return f"criterion_ref {reference!r} is not a registered criterion"
-    if expected["requirement"] != registered[reference]:
-        return "requirement must restate the registered criterion text exactly"
+    if not match_contract(CANONICAL_TEXT, registered[reference], expected["requirement"]).matched:
+        return ("requirement must restate the registered criterion text; only whitespace, "
+                "case, and quote differences are allowed")
     return ""
 
 
@@ -79,10 +82,7 @@ def judgment_request(task: str, case: dict, observed_text: str) -> dict:
         "requirement": case["expected"]["requirement"],
         "observed_deliverable": observed_text,
         "responsibility": INDEPENDENT_CRITERION_JUDGMENT_PROMPT,
-        "response_contract": {
-            "satisfied": "boolean",
-            "evidence": ["exact passage copied from observed_deliverable"],
-            "reason": "string"},
+        "response_contract": registered_contract(INDEPENDENT_CRITERION_JUDGMENT).schema_copy(),
     }
 
 
@@ -208,6 +208,10 @@ def self_test() -> dict:
     problems = [judgment_rubric_problem(item, criteria) for item in (added, other, extra, unknown)]
     check("a_rubric_cannot_add_a_requirement_or_judge_another_criterion",
           all(problems), str(problems))
+    restated = {**case, "expected": {**case["expected"],
+                "requirement": "  state WHEN the library closes and why. "}}
+    check("a_rubric_may_restate_the_criterion_with_other_whitespace_or_case",
+          judgment_rubric_problem(restated, criteria) == "")
     notice = ("Dear patrons,\n\nThe library will close at 6 pm on Friday  for scheduled "
               "maintenance.\nWe will reopen at 9 am on Monday with the usual hours.")
     request = judgment_request("Draft a closure notice.", case, notice)
@@ -216,6 +220,11 @@ def self_test() -> dict:
                            "observed_deliverable", "responsibility", "response_contract"}
           and request["requirement"] == criteria[0][1]
           and request["responsibility"] == INDEPENDENT_CRITERION_JUDGMENT_PROMPT)
+    check("the_judge_contract_is_the_registered_criterion_judgment_contract",
+          request["response_contract"]
+          == registered_contract(INDEPENDENT_CRITERION_JUDGMENT).schema
+          and request["response_contract"]
+          is not registered_contract(INDEPENDENT_CRITERION_JUDGMENT).schema)
     satisfied = {"satisfied": True, "reason": "The time, day, and reason are stated.",
                  "evidence": ["close at 6 pm on Friday for scheduled maintenance"]}
     grounded = ground_judgment(notice, satisfied)

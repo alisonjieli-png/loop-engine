@@ -7,6 +7,65 @@ All notable changes to this project are documented here. This project follows
 
 First public release.
 
+### Added on 2026-09-18
+
+- A model ontology. `core/model_ontology.py` owns closed vocabularies for
+  what a model is (generative text, judgment, classification, extraction,
+  embedding, reranking, vision, forecasting, tabular foundation, custom
+  trained), its determinism, placement, size class, provenance, input
+  modalities, output kinds, and qualification state, and the typed
+  `ModelProfile` a route or a tool declares. `ModelRoute.profile` is an
+  optional typed field. `CapabilityHandshake.model_use` and `model_profile`
+  declare whether a tool uses no model, calls a model service, or embeds a
+  small in-process model; `validate_tool_model_use` refuses a tool that
+  would load a service-sized model inside itself. No route declares a
+  profile yet, and no route of a non-text kind exists.
+- One model call boundary in front of the text seam.
+  `core/model_call_contract.py` owns `ModelInput` parts typed by modality,
+  `ModelCallRequest` with the purpose, model kind, named response contract,
+  suggested output, and determinism expectation, and `ModelCallRecord`,
+  which keeps digests and token counts and leaves unknown counts unknown.
+  A text-servable request becomes the existing text invocation; any other
+  kind is refused with `UnsupportedModelKind` naming the route it needs, so
+  no image or table is flattened into a prompt by accident.
+- Suggested outputs. `core/suggested_output.py` owns `SuggestedOutput`: the
+  shape a step asks for (scalar, list, ranked list, table, object), its
+  columns, cardinality, confidence scale, abstention rule, and the key it
+  lives under. `ModelStepRequest.suggested_output` renders the suggestion
+  into the packet's output contract, and an admitted answer outside the
+  suggested shape is recorded as the advisory diagnostic
+  `model.step.suggested_output_deviation`, never retried or failed. The
+  first user is `decide_next`, which asks for a ranked list of at most ten
+  candidates with an action kind and a confidence from 0 to 1.
+- A response contract registry. `core/response_contracts.py` names and
+  versions the JSON shapes the route, verify, criterion judgment, and
+  failure confirmation steps ask for, builds their enumerations from the
+  vocabularies that validate the answers, and renders the same JSON text
+  the former inline literals produced. `ModelStepRequest.contract_id` names
+  the contract; the packet's output contract, the
+  `llm_work_packet_assembled` record, and the `model.step.started` trace
+  event carry `output_contract_id`.
+- The solutions space record. `code_nodes/solutions_space.py` keeps every
+  published Solution Canvas for one task as a member with its graph digest,
+  status, verification report digest, applicability, cost, and evidence.
+  Adding a member never removes another, a member with the same graph
+  digest is the same member, supersession names a successor, and
+  `solutions_space_from_adaptive` projects a finished run's candidate
+  canvases, verifying only the accepted canvas when the run is solved and
+  holds a passed independent report. The run does not write the space yet.
+- Contract matching modes. `core/contract_matching.py` owns the five ways a
+  value is compared with a contract: exact, canonical (whitespace, case,
+  quotes, and key order), purpose (required keys present with compatible
+  types, extra keys allowed), semantic with blocking keys (the decisive
+  keys stay exact and the remaining text must be similar above a declared
+  threshold, measured deterministically), and model judged (decides
+  nothing and names the judgment contract a separate call must answer).
+  The criterion rubric now restates the registered criterion in canonical
+  text instead of byte-exact text; an added sentence is still refused.
+- Six terminology entries: SolutioningSpace, SolutionsSpace, ModelProfile,
+  ModelCallRequest, SuggestedOutput, and ResponseContract, with the
+  dictionary projection and rendered dictionary regenerated.
+
 ### Added on 2026-09-15
 
 - The independent verifier refuses a probe that infers the subject location.

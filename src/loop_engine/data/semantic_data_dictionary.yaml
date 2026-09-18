@@ -897,6 +897,206 @@ entries:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
+- term_id: core.term.solutioning_space
+  canonical_name: SolutioningSpace
+  primary_category: operation
+  definition: The space in which a Practitioner reasons, builds, checks, and repairs candidates for one
+    task before any solution is published; the model-led solve realizes it.
+  source_of_truth: loop_engine.core.adaptive_practitioner:run_adaptive_practitioner
+  source_symbol: loop_engine.core.adaptive_practitioner:run_adaptive_practitioner
+  public_or_internal: public
+  runtime_or_passive: runtime
+  authoritative_or_projection: authoritative
+  versioning: versioned at its source contract
+  related_terms:
+  - SolutionsSpace
+  - SolutionCanvas
+  difference_from_neighbors: The solutioning space is where the work happens; the solutions space holds
+    what that work published; a SolutionCanvas is one published member.
+  parameterization_decision: adaptive_practitioner_request_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: bounded by the owning Loop's run
+  legacy_aliases:
+  - practitioner space
+  - Practitioner solutioning space
+  migration: exact compatibility reader or alias only
+  examples:
+  - a model-led solve that reasons about a task, builds candidates, and verifies them
+  negative_examples:
+  - a published Solution Canvas
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.solutions_space
+  canonical_name: SolutionsSpace
+  primary_category: record
+  definition: The plural, append-only set of published solutions for one task, each a Solution Canvas
+    member with its own evidence, applicability, cost, and status.
+  source_of_truth: loop_engine.code_nodes.solutions_space:SolutionsSpaceRecord
+  source_symbol: loop_engine.code_nodes.solutions_space:SolutionsSpaceRecord
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms:
+  - SolutioningSpace
+  - SolutionCanvas
+  - SolutionPortfolio
+  difference_from_neighbors: A SolutionsSpace keeps every published solution for a task and never replaces
+    one with another; a SolutionPortfolio compares candidates inside one run; a SolutionCanvas is one
+    member.
+  parameterization_decision: solutions_space_member_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases:
+  - Solution Canvas space
+  - deliverable space
+  migration: exact compatibility reader or alias only
+  examples:
+  - two verified Solution Canvases for one invoice reconciliation task, one cheaper and one more general
+  negative_examples:
+  - the candidates a run is still comparing
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_profile
+  canonical_name: ModelProfile
+  primary_category: profile
+  definition: The declared ontology classification of one model behind a route or a tool, including kind,
+    determinism, placement, size class, provenance, modalities, output kinds, and qualification.
+  source_of_truth: loop_engine.core.model_ontology:ModelProfile
+  source_symbol: loop_engine.core.model_ontology:ModelProfile
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms:
+  - ModelRoute
+  - ModelCallRequest
+  difference_from_neighbors: A ModelProfile says what kind of model a route reaches and where it runs;
+    a ModelRoute says how to reach it; neither grants authority to call it.
+  parameterization_decision: model_profile_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: []
+  migration: exact compatibility reader or alias only
+  examples:
+  - a remote stochastic generative text model
+  - a small in-process classifier with a declared memory ceiling
+  negative_examples:
+  - a provider credential
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.model_call_request
+  canonical_name: ModelCallRequest
+  primary_category: request
+  definition: What one step asks of a model independent of the model's kind, with typed input parts, the
+    named response contract, the suggested output, and the determinism expectation.
+  source_of_truth: loop_engine.core.model_call_contract:ModelCallRequest
+  source_symbol: loop_engine.core.model_call_contract:ModelCallRequest
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms:
+  - ModelProfile
+  - SuggestedOutput
+  - ResponseContract
+  difference_from_neighbors: A ModelCallRequest is typed by model kind and input parts; the text invocation
+    request it can become carries only a prompt and system text.
+  parameterization_decision: model_call_request_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: []
+  migration: exact compatibility reader or alias only
+  examples:
+  - a judgment call over two labeled text parts with a ranked-list suggested output
+  negative_examples:
+  - a raw prompt string
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.suggested_output
+  canonical_name: SuggestedOutput
+  primary_category: contract
+  definition: The shape one model call is asked to answer in, rendered into the instruction, recorded
+    beside the call, and checked deterministically against the admitted value.
+  source_of_truth: loop_engine.core.suggested_output:SuggestedOutput
+  source_symbol: loop_engine.core.suggested_output:SuggestedOutput
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms:
+  - ResponseContract
+  - ModelCallRequest
+  difference_from_neighbors: A SuggestedOutput is advice about shape and never a task requirement; a ResponseContract
+    is the JSON shape admission validates.
+  parameterization_decision: suggested_output_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: []
+  migration: exact compatibility reader or alias only
+  examples:
+  - a ranked list of at most ten rows with a candidate and a confidence from 0 to 100
+  negative_examples:
+  - an acceptance criterion
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.response_contract
+  canonical_name: ResponseContract
+  primary_category: contract
+  definition: One named, versioned JSON shape for a model step's answer, registered so records can name
+    it and its enumerations come from the vocabularies that validate answers.
+  source_of_truth: loop_engine.core.response_contracts:ResponseContract
+  source_symbol: loop_engine.core.response_contracts:ResponseContract
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: projection
+  versioning: versioned at its source contract
+  related_terms:
+  - SuggestedOutput
+  - ModelCallRequest
+  difference_from_neighbors: A ResponseContract is the registered shape a step shows the model; the admission
+    contract on the same step is the validated schema and policy that admits an answer.
+  parameterization_decision: response_contract_fields
+  composition_decision: compose through typed contracts, profiles, strategies, and adapters; never create
+    another runtime
+  inheritance_decision: none
+  storage_authority: none
+  lifecycle: versioned passive contract
+  legacy_aliases: []
+  migration: exact compatibility reader or alias only
+  examples:
+  - practitioner.verify version 1.0.0
+  negative_examples:
+  - an inline schema literal inside a step
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
 - term_id: core.term.work_item_i_r
   canonical_name: WorkItemIR
   primary_category: record
@@ -2878,4 +3078,4 @@ entries:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
-source_digest: d43a1c70548987e7218cd966908561d248ab6a6264898a09356eb76a046f8e3a
+source_digest: 1dcea8730734f77ff798304fa1890ae19d7cc313f10c142617429af26aa18f15
