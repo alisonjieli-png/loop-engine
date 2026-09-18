@@ -282,6 +282,67 @@ def run_prompt_evidence_checks(check):
           in INDEPENDENT_PROBE_REVIEW_PROMPT
           and "one copied from the subject code or its output is not" in INDEPENDENT_PROBE_REVIEW_PROMPT
           and "Refuse tautological/hardcoded observations" in INDEPENDENT_PROBE_REVIEW_PROMPT)
+    # A live cell authored a probe that inferred the subject location from
+    # its own file path and failed at execution with a missing source file,
+    # after the subject work had already passed its own checks. Both prompts
+    # now state the exact container binding and refuse location inference.
+    check("probe_prompts_state_the_exact_subject_binding",
+          "/workspace/subject/<name>" in INDEPENDENT_PROBE_DESIGN_PROMPT
+          and "never infer their location from this probe file"
+          in INDEPENDENT_PROBE_DESIGN_PROMPT)
+    check("oracle_review_refuses_subject_location_inference",
+          "resolves subject files by inferring their location"
+          in INDEPENDENT_PROBE_REVIEW_PROMPT
+          and "declared subject/ binding" in INDEPENDENT_PROBE_REVIEW_PROMPT)
+
+
+def run_subject_binding_checks(check):
+    """A probe that infers the subject location is refused at plan time.
+
+    The September 15 flash cell SCM-001 authored a probe that resolved the
+    subject directory from its own file location and then joined subject
+    file names to that parent, so execution failed with a missing source
+    file after the subject report had already satisfied every criterion.
+    The plan validation refuses that shape before any execution spends a
+    sandbox run, and the diagnostic names the declared binding to repair.
+    """
+    misbound = _proposal()
+    misbound["files"][0]["content"] = (
+        "import sys\n"
+        "from pathlib import Path\n"
+        "subject_dir = Path(__file__).resolve().parent.parent\n"
+        "src = subject_dir / 'generate_report.py'\n"
+        "print(open(src).read())\n")
+    bound = deepcopy(misbound)
+    bound["files"][0]["content"] = (
+        "import json\n"
+        "print(open('subject/generate_report.py').read())\n")
+    repaired = deepcopy(misbound)
+    repaired["files"][0]["content"] = (
+        "import sys\n"
+        "sys.path.insert(0, 'subject')\n"
+        "import generate_report\n"
+        "print(generate_report.__file__)\n")
+    criteria = {"criterion:0": "The subject script text is observable."}
+    for name, plan in (("misbound", misbound), ("declared", bound), ("repaired", repaired)):
+        error, diagnostic = None, None
+        try:
+            validate_probe_plan(plan, criteria, materialized=True)
+        except InvalidProbePlan as exc:
+            error, diagnostic = exc, exc.diagnostic.to_dict()
+        if name == "misbound":
+            check("probe_inferring_the_subject_location_is_refused",
+                  error is not None
+                  and diagnostic.get("code") == "subject_location_inferred"
+                  and diagnostic.get("repairable") is True
+                  and "subject/<name>" in diagnostic.get("detail", ""),
+                  str(diagnostic)[:250])
+        elif name == "declared":
+            check("probe_using_the_declared_subject_binding_is_accepted",
+                  error is None, str(error)[:200])
+        else:
+            check("probe_resolving_through_the_subject_directory_is_accepted",
+                  error is None, str(error)[:200])
 
 
 def run_undeclared_output_checks(check):

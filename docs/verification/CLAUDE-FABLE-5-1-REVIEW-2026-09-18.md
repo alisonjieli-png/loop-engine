@@ -53,7 +53,7 @@ Repository on September 18, 11:07
 │   │   ├── 3 from this session (failed-check review, its checks, prompts)
 │   │   ├── 6 documents from the OpenCode session
 │   │   └── 4 artifact files from September 8 reviews
-│   └── stub-experiments-20260916/ (718 MB, untracked, not ignored)
+│   └── .loop-engine-dev/stub-experiments-20260916/ (718 MB, untracked, not ignored)
 └── Processes holding the worktree
     ├── codex gpt-5.6-sol --yolo (pid 64310, started September 14, idle since 12:04)
     ├── opencode --auto (pid 4085520, started September 15, idle since September 16 13:25)
@@ -160,7 +160,7 @@ OpenCode deliverables
 │   │   adaptable policies, reuse tiers, the two spaces)
 │   ├── docs/research/EXTERNAL-NOOA-OO-AGENTS-2026-09-16.md
 │   └── CHANGELOG "Added on 2026-09-15" and six ASTRA.md paragraphs
-├── Experiments (stub-experiments-20260916/, 718 MB, not a product boundary)
+├── Experiments (.loop-engine-dev/stub-experiments-20260916/, 718 MB, not a product boundary)
 │   ├── atomic Kaggle pipeline: one digest call decomposes a task, one
 │   │   OpenCode instance per component, assembled and gated
 │   ├── multi-harness proof of concept with a reasoned fallback selector
@@ -286,7 +286,7 @@ phase tuples (`BUDGET_PHASES` already exists in `supervision_policy.py`).
 
 ### 3. 718 MB of experiment output sits inside the checkout
 
-`stub-experiments-20260916/` holds 17 run folders and 5 diagnostic folders
+`.loop-engine-dev/stub-experiments-20260916/` holds 17 run folders and 5 diagnostic folders
 beside its scripts and README. It is untracked and not ignored, the root
 disk is at 92 percent, and the CodeGraph index walks the checkout. Its
 scripts read credentials only from environment variables and its logs hold
@@ -357,7 +357,7 @@ controls.
 ### 8. The campaign gates leaked their holdout
 
 Evidence: the OpenCode session's measurement (finding recorded in
-`stub-experiments-20260916/atomic-kaggle-pipeline/README.md` and in the
+`.loop-engine-dev/stub-experiments-20260916/atomic-kaggle-pipeline/README.md` and in the
 working tree's `ASTRA.md`). Every gate score recorded for the September 10
 campaign arms is in-sample. The gate in `devtools` still performs the leaked
 split. Fix the gate to hold out before staging, attach the correction to the

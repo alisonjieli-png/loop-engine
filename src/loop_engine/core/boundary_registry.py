@@ -133,6 +133,11 @@ BOUNDARIES = (
      "binding": "native_loop",
      "envelope": "core.independent_verification.run_independent_verification",
      "test": "independent_verification.self_test"},
+    {"boundary": "independent check failure review",
+     "crosses": "a failed independent check receives isolated classification, confirmation, and a discriminating revision",
+     "binding": "native_loop",
+     "envelope": "core.independent_failure_review.review_failed_independent_check",
+     "test": "independent_failure_review.self_test"},
     {"boundary": "host-owned capability invocation",
      "crosses": "an approved typed action reaches an explicitly registered host endpoint",
      "binding": "native_loop", "envelope": "core.host_runtime.invoke_host_operation",
@@ -397,6 +402,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "practitioner", "practitioner.code_execution@1.0.0",
         "starting"),
     "independent executable task verification": _exact(
+        "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
+    "independent check failure review": _exact(
         "practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
     "host-owned capability invocation": _exact(
         "intelligence", "intelligence.code.invoke@1.0.0", "retrieved_by"),

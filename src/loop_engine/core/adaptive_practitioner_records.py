@@ -28,6 +28,7 @@ from ..code_nodes.solution_model_port import (
     SolutionModelError,
 )
 from ..loop.kernel_runtime import current_kernel_owner
+from ..loop.loop_control import DETERMINISTIC
 from ..loop.supervision_policy import SupervisionPolicy
 from ..templates.intake import CapturedInstructionProvenance
 from ..templates.model import TaskFeedback
@@ -1376,6 +1377,15 @@ class AdaptivePractitionerRequest:
     mode: str = "non_deterministic"
     runs_dir: str = ""
     max_passes: "int | None" = None
+    #: Whether a model-led run may consult its fast path before the first
+    #: model call. The default ``False`` keeps the recorded policy: a
+    #: non-deterministic run starts with semantic orientation and its
+    #: deterministic attempt trace reads ``SKIPPED_LLM_LED``. A declared
+    #: ``True`` lets the same run try registered exact resolvers and any
+    #: qualified fast-path procedure first; a completed verified fast path
+    #: ends the run without a model call, and an incomplete one preserves
+    #: its trace as hybrid-repair evidence before orientation proceeds.
+    allow_fast_path_resolution: bool = False
     interaction_mode: str = "ask_when_material"
     allow_network_reads: bool = True
     allow_workspace_writes: bool = True
@@ -1464,6 +1474,13 @@ class AdaptivePractitionerRequest:
         if self.mode not in ("deterministic", "hybrid", "non_deterministic"):
             raise AdaptivePractitionerError(
                 "adaptive Practitioner mode is not registered")
+        if type(self.allow_fast_path_resolution) is not bool:
+            raise AdaptivePractitionerError(
+                "allow_fast_path_resolution must be an explicit Boolean")
+        if self.allow_fast_path_resolution and self.mode == DETERMINISTIC:
+            raise AdaptivePractitionerError(
+                "allow_fast_path_resolution applies to model-led runs; the "
+                "deterministic mode already runs exact resolution")
         if (self.max_passes is not None
                 and (not isinstance(self.max_passes, int)
                      or isinstance(self.max_passes, bool)
@@ -1762,6 +1779,9 @@ class AdaptiveRunServices:
     verification_records: list[dict] = field(default_factory=list)
     independent_verification_records: list[dict] = field(default_factory=list)
     independent_probe_cache: dict = field(default_factory=dict)
+    #: Reviews of failed independent checks with their decisions, so a failure
+    #: is reviewed once and a confirmed dispute informs the next check design.
+    independent_failure_reviews: list[dict] = field(default_factory=list)
     context_snapshots: list[dict] = field(default_factory=list)
     #: What this run drew on from the portfolio it was offered, counted
     #: per option and saved with the result. Evidence for judging the
@@ -1840,6 +1860,22 @@ class AdaptiveRunServices:
                 "reason": "facts projection failed; ask the runtime "
                           "before guessing paths or permissions",
             }
+
+    def model_calls_used(self) -> "int | None":
+        """The model calls the run's own session reports, or an absence."""
+        session = self.model_session
+        calls = getattr(session, "calls_used", None)
+        return calls if isinstance(calls, int) and calls >= 0 else None
+
+    def model_authority_max_model_calls(self) -> "int | None":
+        """The whole-run call ceiling the authority declared, or an absence."""
+        authority = getattr(self.model_session, "authority", None)
+        maximum = getattr(authority, "max_model_calls", None)
+        return maximum if isinstance(maximum, int) and maximum >= 1 else None
+
+    def services_request_effective_supervision(self) -> SupervisionPolicy:
+        """The effective supervision policy of the owning request."""
+        return self.request.effective_supervision
 
     def available_capabilities(self) -> tuple[dict, ...]:
         """Return only capabilities usable under this run's current authority.

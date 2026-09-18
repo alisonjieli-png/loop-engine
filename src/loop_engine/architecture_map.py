@@ -120,7 +120,7 @@ MODULE_MAP = {
         "ask_strategies", "context", "decision_schemas",
         "frame", "intelligence_strings", "interrogation",
         "knowledge", "knowledge_state", "notes",
-        "output_templates", "prompt_fragments",
+        "output_templates", "prompt_fragments", "verification_prompts",
         "question_engine", "solution_shaping",
     ),
     "code_nodes": (
@@ -161,6 +161,7 @@ MODULE_MAP = {
         "adaptive_practitioner_orientation",
         "adaptive_practitioner_orientation_repair", "task_materials",
         "source_profile", "independent_judgment",
+        "independent_failure_review", "independent_failure_review_checks",
         "adaptive_practitioner_prompting", "adaptive_practitioner_records",
         "adaptive_practitioner_result", "adaptive_practitioner_source",
         "adaptive_practitioner_recovery", "adaptive_practitioner_reuse",

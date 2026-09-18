@@ -135,6 +135,12 @@ class SolveRequest:
     #: Declared non-progress and unaccepted-pass limits for this run; None
     #: selects the repository default, recorded as undeclared.
     supervision: "SupervisionPolicy | None" = None
+    #: Whether a model-led solve may resolve through its fast path before
+    #: the first model call: registered exact resolvers and qualified
+    #: procedures run first, and a completed verified fast path finishes
+    #: with zero model calls. False keeps the recorded default: a
+    #: model-led run starts with semantic orientation.
+    allow_fast_path_resolution: bool = False
 
     def __post_init__(self) -> None:
         if self.supervision is not None and not isinstance(self.supervision, SupervisionPolicy):

@@ -68,6 +68,8 @@ def build_adaptive_request(
         stage_assistance=request.stage_assistance,
         independent_verification_policy=request.independent_verification_policy,
         supervision=getattr(request, "supervision", None),
+        allow_fast_path_resolution=bool(
+            getattr(request, "allow_fast_path_resolution", False)),
         host_runtime_manifest=(request.host_runtime.summary()
                                if request.host_runtime is not None else {}),
         **budget,

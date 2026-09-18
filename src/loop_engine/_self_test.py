@@ -207,6 +207,7 @@ def self_test() -> dict:
         "core.adaptive_practitioner_verification",
         "core.independent_verification",
         "core.independent_judgment",
+        "core.independent_failure_review",
         "core.host_runtime",
         "core.adaptive_host_verification",
         "core.autoconfigure",

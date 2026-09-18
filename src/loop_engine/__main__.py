@@ -253,6 +253,11 @@ def main(argv=None) -> int:
         "--unattended", action="store_true",
         help="do not pause for material answers; abstain instead of guessing")
     parser.add_argument(
+        "--allow-fast-path", action="store_true",
+        help="let a model-led solve apply its fast path first: registered "
+             "exact resolvers run before the first model call, and a "
+             "completed verified fast path finishes with zero model calls")
+    parser.add_argument(
         "--quickstart", action="store_true",
         help="use the LLM-first onboarding profile: one detected provider, "
              "LLM-first reasoning, and material clarification questions")

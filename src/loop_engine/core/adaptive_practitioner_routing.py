@@ -31,6 +31,7 @@ from .adaptive_practitioner_recovery import (
 from .adaptive_practitioner_result import latest_task_result, task_result_succeeded
 from .adaptive_practitioner_supervision import detect_stall
 from .adaptive_practitioner_validation import MODEL_ROUTE_VALUES, _short_text
+from ..loop.supervision_policy import BUDGET_PHASES, SupervisionPolicy
 from .adaptive_practitioner_verification import (
     AdaptiveEvaluationBindingRequest,
     selected_project_matches,
@@ -95,6 +96,7 @@ def route_adaptive_result(
             "final success still requires accepted verification.")
     evidence = _RouteEvidence(request, services, final_result, deterministic_pass)
     selected, reason, continuation = _guarded_route(evidence, selected, reason)
+    selected, reason = _budget_phase_route(evidence, selected, reason)
     stall = (None if selected in ("stop_success", "stop_unprofitable")
              else detect_stall(services, request.state))
     if stall is not None:
@@ -137,6 +139,50 @@ def route_adaptive_result(
         failures = failures + (reason,)
     return RouteDecision(selected, reason), request.state.derive(
         failures=failures, last_route=selected)
+
+
+def _budget_phase_route(
+        evidence: "_RouteEvidence", selected: str, reason: str) -> tuple:
+    """Demote exploration routes to consolidation inside a declared phase.
+
+    The supervision policy's declared budget-phase thresholds decide the
+    phase from the calls the run's own model session reports. Without a
+    declared policy the phase is ``explore`` and no route changes. In
+    ``conserve`` the run stops opening new branches and consolidates what
+    exists; in ``final_verify`` it presents the best available result for
+    verification instead of any new generation. Success and honest stops are
+    never demoted, and the demotion is recorded as a diagnostic.
+    """
+    request, services = evidence.request, evidence.services
+    policy = services.services_request_effective_supervision()
+    maximum = services.model_authority_max_model_calls()
+    explore, conserve = BUDGET_PHASES[0], BUDGET_PHASES[1]
+    phase = (policy.budget_phase(services.model_calls_used(), maximum)
+             if isinstance(policy, SupervisionPolicy) else explore)
+    if phase == explore or selected in (
+            "stop_success", "stop_unprofitable"):
+        return selected, reason
+    if selected in ("explore_branch", "continue", "retry", "soft_reset",
+                     "cold_restart"):
+        demoted = "repair" if phase == conserve else "reframe"
+        services.diagnostic("budget_phase_route_demoted", {
+            "phase": phase,
+            "model_selected_route": selected,
+            "demoted_route": demoted,
+            "calls_used": services.model_calls_used(),
+            "maximum_calls": maximum,
+            "reason": ("The remaining model-call authority is below the "
+                       "declared conserve threshold; consolidate existing "
+                       "work instead of opening new branches."
+                       if phase == conserve else
+                       "The remaining model-call authority is below the "
+                       "declared final-verification threshold; present the "
+                       "best available result for verification.")})
+        return demoted, (
+            "Budget phase " + phase + " demoted route " + selected +
+            " to " + demoted + "; remaining call authority is below the "
+            "declared threshold.")
+    return selected, reason
 
 
 def _guarded_route(
@@ -192,12 +238,57 @@ def _guarded_route(
     return selected, reason, vector_route.continuation_available
 
 
+def _phase_services(services, calls_used: int, maximum_calls: int):
+    """Fixture: a run whose declared phase policy and budget are known."""
+    from ..loop.supervision_policy import SupervisionPolicy
+    services.model_calls_used = lambda: calls_used
+    services.model_authority_max_model_calls = lambda: maximum_calls
+    services.services_request_effective_supervision = (
+        lambda: SupervisionPolicy(budget_phase_thresholds=(0.3, 0.1)))
+    return services
+
+
+def _evidence_for(services, calls_used: int, maximum_calls: int):
+    """Fixture: phase-gate evidence with a known budget and phase policy."""
+    from types import SimpleNamespace as _Namespace
+
+    from ..loop.kernel import EvaluationPacket, ProblemSpec
+
+    _phase_services(services, calls_used, maximum_calls)
+    state = PractitionerState(ProblemSpec("phase gate proof"))
+    request = AdaptiveRouteRequest(state, _Namespace(
+        evaluation=EvaluationPacket("accept"), pass_number=1), {})
+    return _RouteEvidence(request, services, None, True)
+
+
+def _phase_demoted_diagnostics(services, calls_used: int,
+                               maximum_calls: int) -> bool:
+    """Fixture: the demotion of a phase route is recorded, not silent."""
+    from types import SimpleNamespace as _Namespace
+
+    from ..loop.kernel import EvaluationPacket, ProblemSpec
+
+    recorded = []
+    services.diagnostic = lambda code, payload: recorded.append((code, payload))
+    _phase_services(services, calls_used, maximum_calls)
+    state = PractitionerState(ProblemSpec("phase diagnostic proof"))
+    record = _Namespace(
+        evaluation=EvaluationPacket("accept"), pass_number=1)
+    route_adaptive_result(
+        AdaptiveRouteRequest(state, record, {}), services)
+    return (bool(recorded)
+            and recorded[0][0] == "budget_phase_route_demoted"
+            and recorded[0][1]["phase"] == "conserve")
+
+
 def self_test() -> dict:
     """Test adaptive route integration without executing a task or provider."""
     from types import SimpleNamespace
     from unittest.mock import patch
 
     from ..loop.kernel import EvaluationPacket, ProblemSpec
+    from ..loop.supervision_policy import (
+        DEFAULT_SUPERVISION_POLICY, SupervisionPolicy)
 
     def services_for(route, verdict):
         return SimpleNamespace(
@@ -209,7 +300,11 @@ def self_test() -> dict:
             source_inspections=[], web_results=[], action_history=[],
             verification_records=[{"verdict": verdict}],
             active_recovery_directive=None, recovery_rounds=0,
-            supervision_findings=[], diagnostic=lambda *_args, **_kw: None)
+            supervision_findings=[], diagnostic=lambda *_args, **_kw: None,
+            model_calls_used=lambda: None,
+            model_authority_max_model_calls=lambda: None,
+            services_request_effective_supervision=lambda: (
+                DEFAULT_SUPERVISION_POLICY))
 
     state = PractitionerState(ProblemSpec("route selection proof"))
     accepted_record = SimpleNamespace(
@@ -292,6 +387,42 @@ def self_test() -> dict:
     }, {
         "test": "recovery_panel_stop_stands_when_no_safe_authorized_work_remains",
         "passed": panel_outcomes[False][0] == "stop_unprofitable",
+    }, {
+        # The declared budget phase demotes exploration routes but never a
+        # verified success or an honest stop, and a default policy with no
+        # declared thresholds changes nothing.
+        "test": "undeclared_budget_phase_leaves_every_route_unchanged",
+        "passed": route_adaptive_result(
+            AdaptiveRouteRequest(state, accepted_record, {}),
+            services_for("explore_branch", "accept"))[0].route
+        == "explore_branch",
+    }, {
+        "test": "conserve_phase_demotes_exploration_to_consolidation",
+        "passed": route_adaptive_result(
+            AdaptiveRouteRequest(state, accepted_record, {}),
+            _phase_services(services_for("explore_branch", "accept"), 70, 100)
+        )[0].route == "repair",
+    }, {
+        "test": "final_verify_phase_presents_existing_work_for_verification",
+        "passed": route_adaptive_result(
+            AdaptiveRouteRequest(state, accepted_record, {}),
+            _phase_services(services_for("continue", "accept"), 92, 100)
+        )[0].route == "reframe",
+    }, {
+        "test": "budget_phase_never_demotes_success_or_honest_stops",
+        "passed": all(
+            _budget_phase_route(_evidence_for(
+                services_for("stop_success", "accept"), 92, 100),
+                "stop_success", "verified")[0] == "stop_success"
+            and _budget_phase_route(_evidence_for(
+                services_for("stop_unprofitable", "repair"), 92, 100),
+                "stop_unprofitable", "honest stop")[0] == "stop_unprofitable"
+            for _ in (0,)),
+        "detail": "the phase gate leaves stop routes to the guard and binding",
+    }, {
+        "test": "phase_demotion_is_recorded_as_a_diagnostic",
+        "passed": _phase_demoted_diagnostics(services_for(
+            "explore_branch", "accept"), 70, 100),
     }]
     return {
         "record_type": "adaptive_practitioner_routing_test/v1",

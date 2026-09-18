@@ -52,13 +52,29 @@ def capture_oracle_review(services, owner, request, subject, proposal, *,
 
 
 def prior_oracle_feedback(services, subject):
-    """Load only an exact-subject rejected candidate from an earlier report.
+    """Load exact-subject feedback: a confirmed check dispute or a rejected candidate.
 
-    Returning feedback grants no retry. The parent must independently choose
-    another verification operation with remaining shared model authority.
-    Changed source, criteria, workspace or task identities do not match.
+    A failure review that confirmed an executed check was wrong comes first,
+    because it is the latest evidence about that exact subject. Returning
+    feedback grants no retry. The parent must independently choose another
+    verification operation with remaining shared model authority. Changed
+    source, criteria, workspace or task identities do not match.
     """
     expected = _digest(subject)
+    for review in reversed(getattr(services, "independent_failure_reviews", None) or ()):
+        if (isinstance(review, dict) and review.get("decision") == "revise_check"
+                and review.get("subject_digest") == expected
+                and isinstance(review.get("disputed_proposal"), dict)):
+            classification = review.get("classification") or {}
+            return {"record_type": "independent_oracle_review_feedback/v1",
+                "candidate_ref": deepcopy(review.get("review_ref")),
+                "subject_digest": expected, "trust": "untrusted_proposal_and_model_review",
+                "previous_proposal": deepcopy(review["disputed_proposal"]),
+                "previous_review": {"source": "confirmed_failure_review",
+                    "classification": classification.get("classification"),
+                    "findings": deepcopy(classification.get("findings", [])),
+                    "confirmation": deepcopy(review.get("confirmation"))},
+                "grants_task_acceptance": False, "grants_promotion": False}
     for report in reversed(services.independent_verification_records):
         if report.get("subject_digest") != expected:
             continue

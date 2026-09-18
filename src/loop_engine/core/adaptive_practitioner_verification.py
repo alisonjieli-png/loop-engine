@@ -40,6 +40,8 @@ from .independent_verification import (
     run_independent_verification,
     validate_independent_verification,
 )
+from .independent_failure_review import (
+    review_failed_independent_check, validate_check_revision)
 from .model_response_admission import (
     ModelResponseAdmissionPolicy,
     ModelResponseContract,
@@ -303,9 +305,13 @@ def _run_independent_checks(services, results, criteria, owner_loop):
             entry["error"] = "Project execution checks have not passed."
         else:
             try:
+                request = _independent_request(services, criteria, project)
                 entry["report"] = run_independent_verification(
-                    _independent_request(services, criteria, project),
-                    services, owner_loop)
+                    request, services, owner_loop)
+                # A failed check is reviewed before it forces repair: the review
+                # may name the repair, or replace a check confirmed to be wrong.
+                entry.update(review_failed_independent_check(
+                    request, services, owner_loop, entry["report"]))
             except Exception as exc:  # noqa: BLE001
                 entry["error"] = (
                     f"Independent verification was unavailable: "
@@ -349,6 +355,7 @@ def _require_independent_checks(record, results, services, owner_loop):
         validate_independent_verification(
             report, _independent_request(services, criteria, project),
             services, owner_loop)
+        validate_check_revision(report, services, owner_loop)
 
 
 def safe_result(result: ResultPacket) -> dict:

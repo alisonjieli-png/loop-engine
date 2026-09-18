@@ -443,7 +443,7 @@ small (a day), medium (a week), or large (more).
 | Id | Item | Owner boundary | Effort | Discriminating test |
 |---|---|---|---|---|
 | L1 | Land the working tree in order: batch 13, OpenCode mechanisms, documents; fix the two documentation defects and the seven hardcoding findings first | `main` | small | continuous integration green on each commit |
-| L2 | Move `stub-experiments-20260916` out of the checkout; add its location to the experiment README | repository | small | `git status` clean of it |
+| L2 | Move `.loop-engine-dev/stub-experiments-20260916` out of the checkout; add its location to the experiment README | repository | small | `git status` clean of it |
 | S1 | Declare the package dependency direction and add a conformance gate | `_conformance_scan.py`, `forbidden_paths.json` | medium | a new upward import fails conformance |
 | S2 | Move the model seam from `code_nodes` into `core` with compatibility imports | `solution_model_port.py` | medium | `core` no longer imports `code_nodes` for the seam |
 | S3 | Execute the recorded split plans for the records module and the runtime; move inline self-tests to checks modules | 27 exception modules | large | exception list shrinks, check count constant |

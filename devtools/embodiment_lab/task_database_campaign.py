@@ -158,6 +158,19 @@ def _work_limit(value):
     return value
 
 
+def _declared_supervision(configuration):
+    """Optional declared budget-phase thresholds become a supervision policy.
+
+    The configuration level stays general: absent or empty thresholds keep the
+    repository default policy with no phase routing, exactly as before.
+    """
+    thresholds = configuration.get('budget_phase_thresholds') or ()
+    if not thresholds:
+        return None
+    from loop_engine.loop.supervision_policy import SupervisionPolicy
+    return SupervisionPolicy(budget_phase_thresholds=tuple(thresholds))
+
+
 def _parse_work_limit(value):
     try:
         return _work_limit(None if value == 'unbounded' else int(value))
@@ -612,8 +625,10 @@ def run_trial(root, row, configuration, manifest, ordinal, *, services=CampaignT
             records.record('progress', 'latest', safe)
             records.refresh_export(cell / 'status.json', {**state, 'status': 'running', 'latest_progress': safe})
             print(canonical({'task': row['id'], **safe}), flush=True)
+        declared_supervision = _declared_supervision(configuration)
         outcome = solve_task(SolveRequest(intake, model_execution=authority, runs_dir=str(cell / 'runs'),
             interaction_mode='autonomous', practitioner_mode='non_deterministic', max_passes=pass_limit,
+            supervision=declared_supervision,
             allow_network_reads=False, allow_workspace_writes=True, allow_sandbox_commands=True,
             workspace_root=str(cell / 'workspace'), allow_source_materialization_to_model=True,
             allow_local_execution=False, quiet_model_io=True, progress=progress))

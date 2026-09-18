@@ -75,6 +75,9 @@ def _fixture():
         verification_records=[], stage_action_links=[],
         stage_execution_links=[], stage_outcome_links=[],
         stage_attribution_events=[], stage_evidence_degradations=[],
+        model_calls_used=lambda: None,
+        model_authority_max_model_calls=lambda: None,
+        services_request_effective_supervision=lambda: None,
         diagnostic=lambda code, detail: diagnostics.append((code, detail)))
     return services, owner, source, payload, action_id, events, diagnostics
 

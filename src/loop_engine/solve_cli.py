@@ -356,6 +356,8 @@ def run_solve(args) -> int:
                     args.allow_source_to_model,
                 verifier_path=getattr(args, "verifier", "") or "",
                 supervision=_supervision_policy_from_args(args),
+                allow_fast_path_resolution=bool(
+                    getattr(args, "allow_fast_path", False)),
                 extension_snapshot=
                     extension_application.snapshot.to_dict(),
                 quiet_model_io=bool(getattr(args, "quiet_model_io", False)),

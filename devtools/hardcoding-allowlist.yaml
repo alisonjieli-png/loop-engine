@@ -1849,6 +1849,24 @@ entries:
     classification: CLOSED_CONTROLLED_VOCABULARY
     created_on: 2026-09-14
     expires_on: 2027-09-14
+  - finding_id: hardcoding.516772c9c1721dc7557e3dfd
+    owner: loop_engine.strings.verification_prompts
+    rationale: >-
+      The governed prompt text of the independent failure-review classification call. It is a
+      versioned prompt resource kept beside the fragment registry, with one owner and no product
+      caller that composes it; the review Loop reads it as the responsibility of its call.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-18
+    expires_on: 2027-09-18
+  - finding_id: hardcoding.403843331e6dca2a42cedf2a
+    owner: loop_engine.strings.verification_prompts
+    rationale: >-
+      The governed prompt text of the independent failure-review confirmation call, the second
+      isolated call that must confirm a claim that a check is wrong. Same ownership and use as
+      the classification prompt above.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-18
+    expires_on: 2027-09-18
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

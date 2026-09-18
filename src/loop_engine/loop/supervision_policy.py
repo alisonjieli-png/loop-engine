@@ -40,13 +40,20 @@ class SupervisionPolicyError(ValueError):
 #: make no measurable progress. The last rung must be the honest stop.
 ESCALATION_RUNGS = ("soft_reset", "cold_restart", "stop_unprofitable")
 
+#: The budget phases a declared phase policy may route a run into, in the
+#: order their fractions decrease. ``explore`` is the default behavior with
+#: no declared thresholds. ``conserve`` demotes exploration routes to
+#: consolidating existing work. ``final_verify`` presents the best available
+#: result for verification instead of any new generation.
+BUDGET_PHASES = ("explore", "conserve", "final_verify")
+
 
 @dataclass(frozen=True)
 class SupervisionPolicy:
     """Typed non-progress and depth limits for one Loop and its kernel passes."""
 
     policy_id: str = "loop.supervision"
-    version: str = "1.2.0"
+    version: str = "1.3.0"
     identical_failures_before_stop: int = 3
     non_progress_passes_before_escalation: int = 3
     #: A Loop whose exit condition is ``accepted_success`` and that declares
@@ -63,6 +70,14 @@ class SupervisionPolicy:
     non_accepted_iterations_before_stop: int = 25
     escalation_ladder: tuple[str, ...] = ESCALATION_RUNGS
     spawn_depth_guard: int = 128
+    #: Declared budget-phase routing. When the whole-run model-call authority
+    #: declares a maximum, the remaining-call fraction routes the run:
+    #: at or below the first fraction the run conserves (exploration routes
+    #: are demoted to consolidating existing work), at or below the second it
+    #: presents the best available result for final verification. An empty
+    #: tuple keeps the previous behavior: a budget is spent without phases
+    #: until it is exhausted. Fractions are 0.0 < f < 1.0 and ordered.
+    budget_phase_thresholds: tuple[float, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.policy_id.strip() or not self.version.strip():
@@ -87,6 +102,15 @@ class SupervisionPolicy:
                 f"escalation_ladder must use distinct rungs from "
                 f"{ESCALATION_RUNGS}")
         object.__setattr__(self, "escalation_ladder", ladder)
+        phases = tuple(self.budget_phase_thresholds)
+        if len(phases) > 2 or any(
+                isinstance(item, bool) or not isinstance(item, (int, float))
+                or not 0.0 < float(item) < 1.0 for item in phases) or (
+                len(phases) == 2 and not float(phases[0]) > float(phases[1])):
+            raise SupervisionPolicyError(
+                "budget_phase_thresholds must be one or two strictly "
+                "descending fractions between 0 and 1")
+        object.__setattr__(self, "budget_phase_thresholds", phases)
 
     def rung_for(self, escalation_count: int) -> str:
         """The rung for the n-th consecutive escalation (1-based).
@@ -97,6 +121,27 @@ class SupervisionPolicy:
             raise SupervisionPolicyError("escalation_count starts at 1")
         index = min(escalation_count, len(self.escalation_ladder)) - 1
         return self.escalation_ladder[index]
+
+    def budget_phase(self, calls_used: "int | None",
+                     maximum_calls: "int | None") -> str:
+        """The declared phase for how much whole-run call authority remains.
+
+        Without declared thresholds, or without a declared maximum, the phase
+        is always ``explore``: no declared policy means no behavior change.
+        The fraction is computed from the calls the run's own model session
+        reports, before any route decision is offered.
+        """
+        phases = self.budget_phase_thresholds
+        if (not phases or not isinstance(maximum_calls, int)
+                or maximum_calls < 1 or not isinstance(calls_used, int)
+                or calls_used < 0):
+            return "explore"
+        remaining = max(0, maximum_calls - calls_used) / maximum_calls
+        if len(phases) >= 2 and remaining <= float(phases[1]):
+            return "final_verify"
+        if remaining <= float(phases[0]):
+            return "conserve"
+        return "explore"
 
     @classmethod
     def from_dict(cls, value) -> "SupervisionPolicy":
@@ -126,6 +171,7 @@ class SupervisionPolicy:
                 self.non_accepted_iterations_before_stop,
             "escalation_ladder": list(self.escalation_ladder),
             "spawn_depth_guard": self.spawn_depth_guard,
+            "budget_phase_thresholds": list(self.budget_phase_thresholds),
         }
 
 
@@ -223,6 +269,42 @@ def self_test() -> dict:
         and _refuses(lambda: SupervisionPolicy.from_dict({"escalation_ladder": "stop_unprofitable"}))
         and _refuses(lambda: SupervisionPolicy.from_dict(["loop.supervision"])),
         "detail": "an unrecognized field is refused instead of ignored",
+    }, {
+        "test": "budget_phase_without_declared_thresholds_is_explore",
+        "passed": (default.budget_phase_thresholds == ()
+                   and default.budget_phase(0, 10) == "explore"
+                   and default.budget_phase(9, 10) == "explore"),
+        "detail": "no declared policy means no behavior change",
+    }, {
+        "test": "declared_thresholds_route_the_three_phases",
+        "passed": (SupervisionPolicy(budget_phase_thresholds=(0.3, 0.1))
+                   .budget_phase(0, 100) == "explore"
+                   and SupervisionPolicy(budget_phase_thresholds=(0.3, 0.1))
+                   .budget_phase(70, 100) == "conserve"
+                   and SupervisionPolicy(budget_phase_thresholds=(0.3, 0.1))
+                   .budget_phase(92, 100) == "final_verify"),
+        "detail": "explore, conserve at the first fraction, final_verify below the second",
+    }, {
+        "test": "budget_phase_requires_a_declared_maximum_and_counted_calls",
+        "passed": (SupervisionPolicy(budget_phase_thresholds=(0.3, 0.1))
+                   .budget_phase(92, None) == "explore"
+                   and SupervisionPolicy(budget_phase_thresholds=(0.3, 0.1))
+                   .budget_phase(None, 100) == "explore"),
+        "detail": "unknown authority or unknown use is not a phase",
+    }, {
+        "test": "budget_phase_thresholds_fail_closed",
+        "passed": (_refuses(lambda: SupervisionPolicy(budget_phase_thresholds=(0.5, 0.7)))
+                   and _refuses(lambda: SupervisionPolicy(budget_phase_thresholds=(0.0, 0.1)))
+                   and _refuses(lambda: SupervisionPolicy(budget_phase_thresholds=(0.9, 0.9)))
+                   and _refuses(lambda: SupervisionPolicy(budget_phase_thresholds=(0.3, 0.1, 0.05)))
+                   and _refuses(lambda: SupervisionPolicy(budget_phase_thresholds=(0.5, True)))),
+        "detail": "non-fraction, unordered, equal, or extra thresholds are refused",
+    }, {
+        "test": "declared_budget_phase_thresholds_survive_the_round_trip",
+        "passed": (SupervisionPolicy.from_dict(
+            SupervisionPolicy(budget_phase_thresholds=(0.35, 0.15)).to_dict())
+            .budget_phase_thresholds == (0.35, 0.15)),
+        "detail": "a declared phase policy reaches the runtime",
     }]
     return {"module": "loop.supervision_policy",
             "passed": all(item["passed"] for item in tests),

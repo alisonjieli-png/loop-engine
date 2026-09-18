@@ -7,6 +7,51 @@ All notable changes to this project are documented here. This project follows
 
 First public release.
 
+### Added on 2026-09-15
+
+- The independent verifier refuses a probe that infers the subject location.
+  In the September 15 flash cell SCM-001, the subject report had already
+  satisfied every registered criterion and passed its own checks, but the
+  probe resolved the subject directory from its own file location and joined
+  the subject file names to that parent, so execution failed with a missing
+  source file and the verified-quality work ended `VERIFICATION_FAILED`.
+  The probe design and file-generation prompts now state the exact container
+  binding: one read-only working directory at `/workspace`, subject files at
+  exactly `/workspace/subject/<name>` (also `subject/<name>` relative to the
+  working directory), probe files under `checks/`. The oracle review is told
+  to refuse probe code that infers the subject location from the probe file,
+  and plan validation refuses that shape at plan time with a repairable
+  `subject_location_inferred` diagnostic naming the declared binding, before
+  any sandbox run spends a cycle.
+- A model-led solve may declare a fast path. The recorded policy skipped
+  the deterministic attempt in a model-led run entirely, so a task a
+  registered exact resolver could already complete still spent a full
+  reasoning loop on it, and no run could apply a habit before deliberate
+  reasoning. `AdaptivePractitionerRequest` and the public `SolveRequest`
+  take `allow_fast_path_resolution` (default false, so the recorded
+  `SKIPPED_LLM_LED` policy stands undeclared), exposed on the command line
+  as `--allow-fast-path`. With the allowance, registered exact resolvers
+  run before the first model call: a completed verified fast path finishes
+  the run with zero model calls, and an incomplete trace stays preserved as
+  hybrid-repair evidence before semantic orientation proceeds. The
+  allowance never applies to the deterministic mode, which already runs
+  exact resolution.
+- A supervision policy can declare budget-phase routing. In the September
+  14 matched rerun, ten cells spent their entire declared call authority
+  generating new candidates and ended `BUDGET_EXHAUSTED`, with earlier
+  passing work left unverified: a budget was a wall the run hit at full
+  speed. `SupervisionPolicy` now takes optional `budget_phase_thresholds`,
+  one or two strictly descending fractions of the whole-run call authority.
+  When the remaining-call fraction reaches the first threshold the phase is
+  `conserve` and exploration routes (`explore_branch`, `continue`, `retry`,
+  `soft_reset`, `cold_restart`) are demoted to consolidation; at the second
+  the phase is `final_verify` and the run presents its best available result
+  for verification instead of any new generation. The demotion is recorded
+  as a `budget_phase_route_demoted` diagnostic, never demotes a verified
+  success or an honest stop, and without a declared policy or without a
+  declared maximum the phase is `explore` and no behavior changes. The
+  default policy declares no thresholds.
+
 ### Changed on 2026-09-14
 
 - An unverified task-level outcome now returns a complete
@@ -142,6 +187,27 @@ First public release.
   from the task as hardcoded values that should have come from the subject's
   SQL model, and two AE-001 probes reimplemented that model in Python instead
   of running it.
+- A failed independent check is now reviewed before it forces repair. In the
+  September 14 rerun on `2aaa5d5`, an approved FIN-001 probe searched the
+  exception report with fixed patterns and failed a report that stated the
+  requested totals and its refusal to approve payment, on five later
+  attempts, because the retained check is reused and nothing asked whether
+  the check was wrong. An isolated review call now classifies the failure as
+  a correct failure, a wrong expectation, a check stricter than the task, an
+  environment defect, an ambiguous requirement, or unknown. Every finding must
+  quote evidence that appears in the failed cases, the probe source, or
+  excerpts of the authored and produced subject files, and supplied inputs
+  are never sent. A correct failure names the part of the work to repair. A
+  claim that the check is wrong needs a second isolated call that confirms it
+  with its own quotes. The revised check is designed with the disputed check
+  and both reviews as untrusted feedback, passes the normal oracle review, and
+  must fail on the same subject with its authored and produced files emptied
+  before it runs on the real subject; otherwise the original check and its
+  failure stand. Acceptance checks that discrimination again from the stored
+  records, and one failed report is reviewed once.
+- A criterion judgment response may carry additional fields. Grounding reads
+  only `satisfied`, `evidence`, and `reason`, so a judge that adds a note is
+  no longer failed for it.
 
 ### Fixed on 2026-09-14
 

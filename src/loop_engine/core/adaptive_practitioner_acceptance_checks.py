@@ -522,6 +522,49 @@ def run_checks() -> dict:
               deterministic["deterministic_attempt"]["status"])
 
     with tempfile.TemporaryDirectory() as root:
+        # A declared fast-path allowance lets a model-led run apply its
+        # habit first: the exact resolver runs before any model call, and
+        # a completed verified fast path finishes the run with none.
+        fast = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "Apply the registered exact transformation.",
+                mode="non_deterministic", runs_dir=root, max_passes=1,
+                allow_fast_path_resolution=True,
+                independent_verification_policy=IndependentVerificationPolicy(
+                    required=False)),
+            AdaptivePractitionerDependencies(
+                fixture_model_execution(FixtureModelExecutionRequest(
+                    answers=("never reached",), max_model_calls=1)),
+                deterministic_resolvers=(ExactResolver(),),
+                project_executor=_project_fixture))
+        check("declared_fast_path_resolves_before_the_first_model_call",
+              fast["solved"]
+              and fast["model_calls"] == 0
+              and fast["deterministic_attempt"]["status"] == "COMPLETED",
+              f"{fast['deterministic_attempt']['status']}; "
+              f"{fast['model_calls']} model calls")
+
+    with tempfile.TemporaryDirectory() as root:
+        # Without the allowance, the recorded policy stands: the same
+        # model-led run starts with semantic orientation and never
+        # consults the resolver, whatever the model answers.
+        unallowed = run_adaptive_practitioner(
+            AdaptivePractitionerRequest(
+                "Apply the registered exact transformation.",
+                mode="non_deterministic", runs_dir=root, max_passes=1,
+                independent_verification_policy=IndependentVerificationPolicy(
+                    required=False)),
+            AdaptivePractitionerDependencies(
+                fixture_model_execution(FixtureModelExecutionRequest(
+                    answers=("invalid",), max_model_calls=1)),
+                deterministic_resolvers=(ExactResolver(),),
+                project_executor=_project_fixture))
+        check("undeclared_fast_path_keeps_the_skipped_llm_led_policy",
+              unallowed["deterministic_attempt"]["status"] == "SKIPPED_LLM_LED"
+              and unallowed["model_calls"] == 1,
+              unallowed["deterministic_attempt"]["status"])
+
+    with tempfile.TemporaryDirectory() as root:
         hybrid = _run(
             "Build an unfamiliar verified artifact.",
             _success_answers(), root, mode="hybrid")

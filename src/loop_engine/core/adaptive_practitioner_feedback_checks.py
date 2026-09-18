@@ -87,7 +87,21 @@ def _feedback_scenario(*, verification_retry=False) -> list[dict]:
         second = [json.dumps(orientation), json.dumps({"actions": [_decision(
             "RETURN_RESULT", reason="Retry incomplete checking of the existing project.")]}),
             *first[5:]]
+    # A failed report is reviewed before repair is forced: one isolated call
+    # classifies the failure with grounded evidence. This probe observed the
+    # true doubling defect, so the honest classification is correct_failure
+    # with the implementation as the repair target. The quoted evidence must
+    # appear in the failed case, which observed [0, 3, -2] against the bad
+    # subject that returns its input unchanged.
+    failure_review = {
+        "classification": "correct_failure", "repair_target": "implementation",
+        "findings": [{"case_id": "integers", "classification": "correct_failure",
+                      "evidence": ["0, 3, -2"], "reason":
+                      "The subject returns the input unchanged instead of twice "
+                      "the input, so the observed values miss the expectation."}],
+        "notes": "The probe exercised the actual subject and observed the defect."}
     answers = (*first[:5], json.dumps(proposal), json.dumps(review),
+               json.dumps(failure_review),
                *first[5:], *second)
     observed_repair_state = []
     execution_records = []

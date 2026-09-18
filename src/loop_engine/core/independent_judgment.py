@@ -35,6 +35,20 @@ def _normalized(text: str) -> str:
     return " ".join(text.translate(_TYPOGRAPHIC_QUOTES).split())
 
 
+def grounded_quotes(texts, evidence):
+    """Return the quotes long enough to count, and those found in none of the texts.
+
+    Whitespace runs and typographic quotes are unified first, so a quote copied
+    across a line break or with curly quotes still matches its passage.
+    """
+    haystacks = [_normalized(text) for text in texts if isinstance(text, str)]
+    quotes = [item for item in evidence
+              if isinstance(item, str) and len(_normalized(item)) >= MINIMUM_QUOTE_CHARACTERS]
+    missing = [item for item in quotes
+               if not any(_normalized(item) in haystack for haystack in haystacks)]
+    return quotes, missing
+
+
 def judgment_rubric_problem(case, criteria) -> str:
     """Name what makes a judged case's rubric unusable, or return empty text.
 
@@ -81,7 +95,7 @@ def ground_judgment(observed_text: str, response) -> dict:
     record = {"record_type": JUDGMENT_RECORD_TYPE, "satisfied": None, "evidence": [],
               "missing_quotes": [], "reason": "", "grounded": False, "failure": ""}
     if (not isinstance(response, dict)
-            or set(response) != {"satisfied", "evidence", "reason"}
+            or not {"satisfied", "evidence", "reason"} <= set(response)
             or type(response["satisfied"]) is not bool
             or not isinstance(response["evidence"], list)
             or any(not isinstance(item, str) for item in response["evidence"])
@@ -89,10 +103,7 @@ def ground_judgment(observed_text: str, response) -> dict:
             or not isinstance(observed_text, str)):
         record["failure"] = "invalid_response"
         return record
-    haystack = _normalized(observed_text)
-    quotes = [item for item in response["evidence"]
-              if len(_normalized(item)) >= MINIMUM_QUOTE_CHARACTERS]
-    missing = [item for item in quotes if _normalized(item) not in haystack]
+    quotes, missing = grounded_quotes([observed_text], response["evidence"])
     record.update(satisfied=response["satisfied"], evidence=quotes,
                   missing_quotes=missing, reason=response["reason"][:1000])
     if not response["satisfied"]:
@@ -210,6 +221,9 @@ def self_test() -> dict:
     grounded = ground_judgment(notice, satisfied)
     check("a_satisfied_judgment_with_verbatim_evidence_passes",
           judgment_passed(grounded) and grounded["missing_quotes"] == [], str(grounded))
+    additional = ground_judgment(notice, {**satisfied, "notes": "An additional field."})
+    check("a_judgment_with_an_additional_field_still_grounds",
+          judgment_passed(additional), str(additional))
     typographic = ground_judgment(
         notice.replace("scheduled maintenance", "“scheduled” maintenance"), {
             "satisfied": True, "reason": "Stated.",

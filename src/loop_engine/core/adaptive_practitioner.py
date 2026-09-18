@@ -7,6 +7,8 @@ active model run, never from source branches in this module.
 """
 from __future__ import annotations
 
+from ..loop.loop_control import HYBRID, NON_DETERMINISTIC
+
 import hashlib
 import json
 import shutil
@@ -158,13 +160,23 @@ def _adaptive_impls(services: AdaptiveRunServices) -> dict:
             raise AdaptivePractitionerError("orientation has no active owner Loop")
         begin_scope(services, owner)
         if services.deterministic_attempt is None:
-            services.deterministic_attempt = (
-                DeterministicAttemptTrace(
-                    hashlib.sha256(services.request.task.encode()).hexdigest(),
-                    services.request.task, "SKIPPED_LLM_LED",
-                    diagnostics=("LLM-led spawned starts with semantic orientation",))
-                if services.request.mode == "non_deterministic" else
-                run_deterministic_attempt(services.request.task, services, owner))
+            # A model-led run may consult its fast path before the first
+            # model call, exactly as a person applies a habit before
+            # deliberate reasoning. Without the declared allowance the
+            # recorded policy stands: the trace reads SKIPPED_LLM_LED.
+            if (services.request.mode in (HYBRID, NON_DETERMINISTIC)
+                    and services.request.allow_fast_path_resolution):
+                services.deterministic_attempt = run_deterministic_attempt(
+                    services.request.task, services, owner)
+            else:
+                services.deterministic_attempt = (
+                    DeterministicAttemptTrace(
+                        hashlib.sha256(services.request.task.encode()).hexdigest(),
+                        services.request.task, "SKIPPED_LLM_LED",
+                        diagnostics=(
+                            "LLM-led spawned starts with semantic orientation",))
+                    if services.request.mode == "non_deterministic" else
+                    run_deterministic_attempt(services.request.task, services, owner))
         services.active_pass_number += 1
         services.publish("practitioner.step.started", step="orient",
                          state_version=state.version)
@@ -624,11 +636,19 @@ def run_adaptive_practitioner(
     from .task_materials import gather_run_materials
     gather_run_materials(services, owner, runs_dir)
     if request.mode == "non_deterministic":
-        services.deterministic_attempt = DeterministicAttemptTrace(
-            hashlib.sha256(request.task.encode()).hexdigest(), request.task,
-            "SKIPPED_LLM_LED",
-            diagnostics=(
-                "LLM-led mode starts with semantic orientation by policy",))
+        if request.allow_fast_path_resolution:
+            # The declared fast-path allowance lets a model-led run apply a
+            # habit first: exact resolvers run before any model call. A
+            # completed verified fast path finishes the run here; an
+            # incomplete trace stays as hybrid-repair evidence.
+            services.deterministic_attempt = run_deterministic_attempt(
+                request.task, services, owner)
+        else:
+            services.deterministic_attempt = DeterministicAttemptTrace(
+                hashlib.sha256(request.task.encode()).hexdigest(), request.task,
+                "SKIPPED_LLM_LED",
+                diagnostics=(
+                    "LLM-led mode starts with semantic orientation by policy",))
     else:
         services.deterministic_attempt = run_deterministic_attempt(
             request.task, services, owner)

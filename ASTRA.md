@@ -310,6 +310,19 @@ and [flexible cognitive and action composition](docs/architecture/FLEXIBLE-COGNI
 for the full proposal. These comments do not imply that every proposed
 composition or native control is currently installed.
 
+Advisory comment. The owner's September 16 direction asks for adaptive
+cognition: learned procedural control that executes familiar work fluently
+and reopens deliberation when circumstances change, and atomic harness
+instances small enough to fingerprint. Almost every named mechanism maps to
+an existing typed boundary, recorded with its qualification state in
+[the adaptive cognition direction](docs/architecture/ADAPTIVE-COGNITION-AND-ATOMIC-HARNESS-INSTANCES.md).
+The genuine gaps are a declared cognitive-control dimension, a negative
+transfer record, an attention or salience classification on interruption
+signals, a measured method-selection prior, and an assembled per-invocation
+fingerprint. None is implemented. Any experiment that measures them follows
+the benchmark evidence rules with a frozen population, exact denominators,
+recorded failures, and independent review before any claim.
+
 ## Suggestions and acceptance criteria
 
 | Suggestion | Evidence required before claiming it works |
@@ -525,6 +538,94 @@ model call judges it, and deterministic grounding passes the judgment only
 when its quoted passages appear in the printed deliverable. No live rerun has
 qualified it yet.
 
+Observed result. In the same rerun an approved probe failed a correct FIN-001
+report on five later attempts, because the retained check was reused and
+nothing asked whether it was wrong. A failed independent check is now reviewed
+as the decision record's review sequence describes. An isolated call
+classifies the failure with quoted evidence, a second isolated call must
+confirm any claim that the check is wrong, and a revised check must fail on
+the subject with its authored and produced files emptied before it runs.
+Confirmation on a different model route, and routing for environment defects
+and ambiguous requirements, are not implemented yet.
+
 Unresolved question. Whether a model step should wait and retry inside the run
 when the provider is unavailable and the recovery reasoning call cannot
 answer, and which declared authority would bound that wait.
+
+Observed result. In the September 14 matched rerun, ten of twenty-seven cells
+spent their entire declared call authority and ended `BUDGET_EXHAUSTED`,
+several with earlier passing work left unverified. A supervision policy can
+now declare budget-phase thresholds: at the first fraction of remaining call
+authority the route step demotes exploration routes to consolidation, and at
+the second it presents the best available result for verification. The
+demotion is recorded, never touches a verified success or an honest stop, and
+without declared thresholds nothing changes. No live rerun has qualified the
+phase routing yet; the next rerun should declare thresholds for its cells and
+compare the budget-exhausted outcome rate against the September 14 record.
+
+Observed result. The recorded model-led policy skipped the deterministic
+attempt entirely, so a task a registered exact resolver could already
+complete still spent a full reasoning loop. A model-led solve may now
+declare `allow_fast_path_resolution` (command line `--allow-fast-path`):
+registered exact resolvers run before the first model call, a completed
+verified fast path finishes with zero model calls, and an incomplete trace
+stays preserved as hybrid-repair evidence. The default policy is unchanged
+when the allowance is not declared. A live rerun has not qualified the
+declared fast path yet; the next rerun should give some cells the
+allowance and record how often the fast path resolves or informs the run.
+
+Observed result. In the September 15 proactive flash cell SCM-001, the
+subject report satisfied every registered criterion and passed its own
+checks, but the independent probe resolved the subject directory from its
+own file location and failed at execution with a missing source file, so
+the cell ended `VERIFICATION_FAILED` over correct work. The probe prompts
+now state the exact container binding (`/workspace`, subject files at
+`/workspace/subject/<name>`, probe files under `checks/`), the oracle
+review refuses location inference, and plan validation refuses that probe
+shape at plan time with a repairable diagnostic before any sandbox run.
+The same campaign also recorded a fresh budget-exhaustion cell and two
+further verification-failed cells; a rerun on the current working tree
+should carry declared budget-phase thresholds and the repaired probe
+prompts together.
+
+Advisory comment. The owner's September 16 direction asks that rules be
+adaptable: adjustable when too tight, with different rules for development
+versus production. Much of it exists: the failure review already questions a
+faulty check, module-size exceptions are scoped with recorded rationale,
+stage assistance runs shadow and advisory arms, and the supervision ladder
+is a preauthorized adaptation range. The recorded direction adds rule
+categories with change authority, lifecycle applicability profiles, an
+enforcement ladder of advise, warn, and block, a compact generalized
+policy-challenge record, and conditional defaults replacing over-rigid
+formulations. Its three first actions are classification, lifecycle
+declaration, and one challenge record, each through existing boundaries.
+Read
+[the adaptable policies direction](docs/architecture/ADAPTABLE-POLICIES-AND-LIFECYCLE-APPLICABILITY.md).
+None of it is implemented yet; none changes an invariant until the
+authoritative contract and its tests are revised.
+
+Advisory comment. The owner's September 16 direction asks for reuse tiers
+for input and output differences, suggested output formats, reuse-then-
+modify instead of token spend on every atomic step, multiple LSH blocks,
+hybrid retrieval, micro models for search, and embeddings or LoRA adapters
+as memory. The economics are right and the tiered fingerprint index already
+serves the qualified table; the recorded direction adds the output-side
+tiers, the reuse-rung policy, the micro-model escalation judge, blocking
+key families, validity windows, and the LoRA admission contract if adapter
+memory is ever built. Read
+[the reuse tiers direction](docs/architecture/REUSE-TIERS-AND-COST-ROUTING.md).
+Nothing in it is implemented yet; the admission ladder and the flywheel
+remain the only reuse authorities.
+
+Observed result. A September 16 review found the task-campaign gates leak
+their holdout: the gate shuffles the full training CSV and scores a 20
+percent subset, while the staged solution trains on the full CSV, so the
+"holdout" rows were in training. Measured on the passing atomic stub run:
+0.766 in-sample versus 0.613 honest. Every score recorded on those gates,
+including the September 10 campaign arms, was in-sample. The stub
+experiment now uses a corrected gate that performs the split itself and
+stages only the train side to the solution; honest scores for the atomic
+pipeline are 0.6065 on 20-newsgroups and 0.9804 on Kannada-MNIST, both
+above their floors. Campaign cells scored on the leaked gates keep their
+records with this correction attached; regrading them needs the corrected
+evaluation, not a silent edit.

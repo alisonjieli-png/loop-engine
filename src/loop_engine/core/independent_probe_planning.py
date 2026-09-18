@@ -110,6 +110,22 @@ def validate_probe_plan(value, criteria, *, materialized=False):
             fail("invalid_file_path", "independent probe files require unique paths under checks/")
         paths.add(file.path)
         typed_files.append(file)
+        # A live cell authored a probe that resolved subject files from this
+        # probe file's own location and failed at execution with a missing
+        # source file after the subject had already passed its checks. The
+        # declared container binding places every subject file at subject/
+        # relative to the working directory; inference from __file__ is the
+        # failing shape, so it is refused at plan time with the repair named.
+        content = item.get("content")
+        if isinstance(content, str) and "__file__" in content:
+            uses_declared_binding = "subject/" in content
+            infers_parent = ("parent" in content and "path" in content.lower())
+            if not uses_declared_binding and infers_parent:
+                fail("subject_location_inferred",
+                     "probe file infers the subject location from its own file "
+                     "path instead of the declared subject/ binding; read "
+                     "subject files as subject/<name> from the working "
+                     "directory", repairable=True)
     commands, ids, covered = [], set(), set()
     for case in cases:
         if not isinstance(case, dict) or set(case) - {"tolerance"} != {
