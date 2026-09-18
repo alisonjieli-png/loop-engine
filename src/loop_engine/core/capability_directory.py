@@ -498,12 +498,37 @@ def _get_endpoint(store):
     return _get
 
 
+@dataclass(frozen=True)
+class SurfaceRegistration:
+    """One surface a code intelligence package offers to a directory.
+
+    The package declares the handshake and endpoints; the directory registers
+    them as declared. This keeps the dependency direction from code nodes to
+    core: core never imports the package that owns the surface.
+    """
+    handshake: CapabilityHandshake
+    endpoints: tuple = ()
+    default_fallback: "tuple | None" = None
+
+    def __post_init__(self):
+        if not isinstance(self.handshake, CapabilityHandshake):
+            raise HandshakeError("a surface registration needs a CapabilityHandshake")
+        endpoints = tuple(self.endpoints)
+        if any(not isinstance(item, Endpoint) for item in endpoints):
+            raise HandshakeError("surface endpoints must be Endpoint records")
+        if any(item.operation not in self.handshake.operations for item in endpoints):
+            raise HandshakeError("every endpoint operation must be declared by the handshake")
+        object.__setattr__(self, "endpoints", endpoints)
+
+
 def default_directory(*, store=None,
-                      llm_invoke: "Callable | None" = None) -> CapabilityDirectory:
+                      llm_invoke: "Callable | None" = None,
+                      surfaces: "Sequence[SurfaceRegistration]" = ()) -> CapabilityDirectory:
     """A directory of the standard surfaces the practitioner has: the search DAG,
     the string bank, the contract + logic code-node registries, the LLM-call
     pipeline, and the model gateway.  ``store`` wires real search; ``llm_invoke``
-    is the string-rail fallback (a stub by default — no real model call here)."""
+    is the string-rail fallback (a stub by default — no real model call here).
+    ``surfaces`` adds typed registrations that code intelligence packages own."""
     d = CapabilityDirectory()
 
     def _llm(**kw):
@@ -560,6 +585,13 @@ def default_directory(*, store=None,
         "provider-neutral model routes (cloud-only for counted generation)",
         operations=("resolve",)),
         [Endpoint("resolve", _model_resolve)])
+
+    # surfaces supplied by code intelligence packages, registered as declared.
+    for registration in surfaces:
+        if not isinstance(registration, SurfaceRegistration):
+            raise HandshakeError("surfaces must be typed SurfaceRegistration records")
+        d.register(registration.handshake, registration.endpoints,
+                   default_fallback=registration.default_fallback)
     return d
 
 

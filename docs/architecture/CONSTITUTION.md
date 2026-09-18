@@ -328,6 +328,60 @@ Rationale: a check that the checked work can weaken is not evidence.
 
 Planned enforcement: `test_review_cannot_waive_authority_or_remove_discrimination`.
 
+### LE-FABRIC-001 (proposed)
+
+Every cognitive or act step MUST record an efficiency review before its
+model call: the input size, the output size, the alternatives considered
+with a confidence for each, and the chosen alternative with its reason. The
+review MAY be produced by a deterministic judge, a specialist, or a model,
+and the judge kind MUST be recorded.
+
+Rationale: the owner's September 18 direction asks at every step whether
+this is the most efficient way and how confident each alternative is; a
+review that is not recorded cannot train a cheaper judge later.
+
+Planned enforcement: `test_every_step_records_an_efficiency_review`.
+
+### LE-FABRIC-002 (proposed)
+
+A harness instance MUST receive a typed provisioning manifest naming the
+tools, plugins, context files, instruction files, contracts, hooks, lookups,
+intelligence access, external access, placement, and the exact input it is
+given, and the runtime MUST verify what the instance loaded against that
+manifest. Loading a file the manifest does not name is a defect.
+
+Rationale: a solutioning node is an independent harness given exactly what
+it needs; an unlisted input is an unrecorded influence on its result.
+
+Planned enforcement: `test_harness_instance_loads_only_its_manifest`.
+
+### LE-FABRIC-003 (proposed)
+
+A Loop that publishes a candidate output and continues working MUST keep
+every published output addressable by digest, and every consumer MUST record
+the exact output digest it used. A later, better alternative MUST NOT change
+a consumer's recorded input.
+
+Rationale: iterative publication is only safe when dependent work can name
+what it depended on.
+
+Planned enforcement: `test_consumers_name_the_published_output_they_used`.
+
+### LE-DATA-001 (proposed)
+
+Learnable records MUST be written to a versioned dataset store with a
+schema, a split manifest, and named exclusions. No learned heuristic MUST be
+adopted for routing, blocking, or thresholds until the declared minimum run
+count is recorded, except an exact fingerprint at the atomic level of a
+reason, build, or execute step. The minimum is a declared policy value,
+initially one million runs.
+
+Rationale: the owner's September 18 direction asks that the data be
+collected now and that heuristics wait for enough evidence; a threshold that
+lives in a policy record can be reviewed, one that lives in code cannot.
+
+Planned enforcement: `test_heuristic_adoption_waits_for_the_declared_run_count`.
+
 ## Documentation authority hierarchy
 
 ```text

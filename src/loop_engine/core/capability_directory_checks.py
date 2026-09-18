@@ -113,6 +113,23 @@ def run_checks() -> dict:
           "resource_search" in searchers and "string_bank" in searchers
           and validators == ["contract_registry"],
           f"search: {searchers}; validate: {validators}")
+    from .capability_directory import SurfaceRegistration
+    fixture_surface = SurfaceRegistration(
+        CapabilityHandshake("fixture_nodes", "code_node_registry",
+                            "fixture code nodes that validate", operations=("validate",),
+                            accepts=("code",)),
+        (Endpoint("validate", lambda **kw: {"ok": True, "echo": kw}),))
+    supplied = default_directory(surfaces=(fixture_surface,))
+    bad_registration = False
+    try:
+        SurfaceRegistration(fixture_surface.handshake, (Endpoint("run", lambda **kw: None),))
+    except HandshakeError:
+        bad_registration = True
+    check("supplied_surfaces_register_as_declared_and_undeclared_endpoints_are_refused",
+          supplied.discover("validate", surface_kind="code_node_registry")
+          == ["contract_registry", "fixture_nodes"]
+          and supplied.call("fixture_nodes", "validate", value=1).ok and bad_registration,
+          "a code intelligence package supplies its surface; core imports nothing from it")
 
     # 4. negotiate: a supported op is ok; an unsupported one names a fallback.
     ok_neg = d.negotiate("resource_search", ["search", "get"])

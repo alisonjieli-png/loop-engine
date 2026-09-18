@@ -701,3 +701,59 @@ Unresolved question. Whether `core` should keep importing `code_nodes` or
 the two should be re-layered, which steps beyond `decide_next` should carry
 suggested outputs, and where a hosted judgment service would keep its
 records without receiving private prompts.
+
+## The fabric direction and the roadmap, September 18
+
+Owner requirement, later on September 18. Ask at every step whether this is
+the most efficient way, whether the inputs or outputs are too big, which
+alternatives exist, and how confident each alternative is, and let cheap
+judges make those calls. Make every component, including the four
+intelligence layers, a Loop node. Launch solutioning nodes as independent
+harness instances given exactly the input they need, for a reasoning
+decision or a build or act step. Let a harness run once or iteratively:
+publish a solution that lets dependent nodes run, then keep refining and
+publishing better alternatives. Let the solutioning space enumerate every
+combination of inputs and configurations per node and run them repeatedly,
+with a model or reasoning step choosing the best set of nodes for both
+spaces, and a grid with optimization for parameterized solution nodes. Give
+every harness instance the core tools, plugins, context, instruction files,
+contracts, hooks, loops, and lookups it needs, ship core intelligence such as
+web research and intelligence layer queries with the project, offer external
+intelligence behind authentication as a paid feature, and run either locally
+or in the cloud with Kubernetes managing nodes and harness instances as
+containers. Collect the data for heuristics now in a versioned place fit for
+training specialized models, but adopt no heuristic before one million
+recorded runs, except an exact fingerprint at the atomic level. Keep a
+roadmap of tests, checkpoints, and tasks that a loop can walk one step at a
+time, and reach a live hosted proof of concept and a live hosted service.
+The owner also asked for a documented Y in every column of the feature
+matrix, a review of a brand beyond Loop Engine, prompt-element and
+response-style dimensions, a complete dimension inventory at every level,
+middleware abstractions for microservice hosting, and a catalog of
+pre-packaged detection and correction intelligence seeded by job
+descriptions.
+
+Proposal. The
+[fabric roadmap](docs/roadmap/FABRIC-ROADMAP-2026-09-18.md) and its
+machine-readable copy `docs/roadmap/roadmap.yaml` hold the requirements
+register (R-01 to R-35), the component tree, and the steps with their
+verification, adversarial check, evidence, and status. The
+[branding record](docs/research/BRANDING-OPTIONS-2026-09-18.md) recommends
+keeping Loop Engine as the runtime name and using the fabric idea as the
+category and tagline until the hosted proof of concept exists.
+
+Observed result. Text conformance landed as the first pre-packaged
+detection and correction family: seven operations with a confidence that is
+the weakest named signal, five exception catalog layers, apply, hold, and
+escalate thresholds, escalation requests bound to a question form and a
+registered contract, a resolver that supports only a typed task record, and
+a capability surface. The standalone export writes a package with tests, a
+manifest with a digest per file, a Dockerfile, and a Kubernetes Job, and
+verifies it in an interpreter that cannot import Loop Engine; example 26
+runs the whole path offline, and `loop-engine export` exposes it. Offline
+checks and mutants cover each rule. No live run has used the escalation
+path yet, and the confidence values are declared signals, not calibrations.
+
+Unresolved question. Which cloud account, payment provider, package index
+account, and frontier model key the owner authorizes for the hosted proof of
+concept, billing, publication, and unseen-task runs.

@@ -198,6 +198,14 @@ def core_forms() -> dict:
           "list"),
         F("second_order", "For {task}, if this succeeds, what new problem does "
           "it create next? Name the follow-on work it forces.", "list"),
+        F("disambiguate_value", "In column {column}, for {task}, the value "
+          "{value} has these candidate normal forms: {options}. Rank them best "
+          "first with a confidence from 0 to 1, or give a better form with its "
+          "reason. Abstain when none is defensible.", "ranking"),
+        F("efficiency_check", "Before {step} for {task}: is this the most "
+          "efficient way? Are the inputs too big, and are the outputs too big? "
+          "Name the alternative ways, with a confidence from 0 to 1 for each, "
+          "and say which is probably better and why.", "ranking"),
         F("analogy_probe", "For {task}, name a solved problem elsewhere with the "
           "same structure and say which part of its solution transfers.", "proposals"),
         F("constraint_inversion", "For {task}, which stated constraint is "
@@ -409,7 +417,8 @@ def self_test() -> dict:
     slot_values = {"task": "win the competition",
                    "options": "A;B;C", "candidate": "use xgboost",
                    "option": "use xgboost", "a": "xgb", "b": "mlp",
-                   "step": "locate the invoice total"}
+                   "step": "locate the invoice total",
+                   "column": "company_name", "value": "AA CAREERS"}
     v1 = multiply(forms, personas=("a skeptic", "an optimist"),
                   policies=("fully_informed", "goal_only"),
                   seeds=(0, 3), slot_values=slot_values,

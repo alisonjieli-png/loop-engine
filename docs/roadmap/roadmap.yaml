@@ -1,0 +1,306 @@
+# Machine-readable roadmap. A development loop reads this file, picks the first
+# step whose status is ready and whose dependencies are at least
+# offline_verified, builds it, runs its verification, records the evidence path,
+# and moves the status. Keep it in step with FABRIC-ROADMAP-2026-09-18.md.
+schema_version: roadmap/v1
+statuses: [proposed, ready, building, offline_verified, live_qualified, published, blocked, superseded]
+verification_aliases:
+  CONF: "python -m loop_engine --conformance"
+  SELF: "python -m loop_engine --self-test"
+  HARD: "PYTHONPATH=devtools/src:src python -m loop_engine_devtools.cli --hardcoding-audit --allowlist devtools/hardcoding-allowlist.yaml --baseline devtools/hardcoding-ci-baseline.json --fail-on-new high --json"
+  LINT: "documentation lint over docs, README.md, CHANGELOG.md, examples, case-studies, humanizer-context.md"
+  MUTANT: "a mutant script that removes the behavior and confirms the named check fails"
+steps:
+  - id: S-0.5
+    phase: 0
+    title: Text conformance, standalone export, example 26, export command
+    status: offline_verified
+    depends_on: []
+    verify: [CONF, HARD, LINT, SELF, MUTANT]
+    evidence: "batch 6 gate log and mutant log; commit recorded in CHANGELOG.md"
+  - id: S-1.1
+    phase: 1
+    title: Temporal fact graph in Context Intelligence
+    status: ready
+    depends_on: [S-0.5]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the validity check; the as-of check must fail"
+    evidence: ""
+  - id: S-1.2
+    phase: 1
+    title: Memory versioning with history, diff, and rollback
+    status: proposed
+    depends_on: [S-1.1]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the revision write; the history check must fail"
+    evidence: ""
+  - id: S-1.3
+    phase: 1
+    title: Shared memory scopes with writer identity
+    status: proposed
+    depends_on: [S-1.2]
+    verify: [SELF, MUTANT]
+    adversarial: "remove writer identity; the visibility check must fail"
+    evidence: ""
+  - id: S-1.4
+    phase: 1
+    title: Evaluation product command over a frozen suite
+    status: ready
+    depends_on: [S-0.5]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the denominator; the report check must fail"
+    evidence: ""
+  - id: S-1.5
+    phase: 1
+    title: Operation cost records wired into invocations and calls
+    status: proposed
+    depends_on: [S-1.4]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the emit; the cheapest-implementation query check must fail"
+    evidence: ""
+  - id: S-1.6
+    phase: 1
+    title: Model-versus-not decision record per operation
+    status: proposed
+    depends_on: [S-1.5]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the record; the escalation-path check must fail"
+    evidence: ""
+  - id: S-1.7
+    phase: 1
+    title: Runnable prompt and harness optimization command
+    status: proposed
+    depends_on: [S-1.4]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the acceptance gate; the improvement check must fail"
+    evidence: ""
+  - id: S-1.8
+    phase: 1
+    title: Specialist training from learnable call records
+    status: ready
+    depends_on: [S-0.5]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the held-out split; the accuracy check must fail"
+    evidence: ""
+  - id: S-1.9
+    phase: 1
+    title: Feature matrix regeneration with evidence links
+    status: proposed
+    depends_on: [S-1.1, S-1.2, S-1.3, S-1.4, S-1.5, S-1.6, S-1.7, S-1.8]
+    verify: [LINT]
+    adversarial: "a Loop Engine cell without an evidence link fails the matrix script"
+    evidence: ""
+  - id: S-1.10
+    phase: 1
+    title: Detection and correction node family with confidence
+    status: ready
+    depends_on: [S-0.5]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the confidence; the outcome check must fail"
+    evidence: ""
+  - id: S-1.11
+    phase: 1
+    title: Job-description-seeded intelligence pipeline and first seeds
+    status: proposed
+    depends_on: [S-1.10]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the candidate state; the check must fail"
+    evidence: ""
+  - id: S-2.6
+    phase: 2
+    title: Dimension inventory at every level
+    status: ready
+    depends_on: [S-0.5]
+    verify: [LINT]
+    adversarial: "a dimension without an owning boundary fails review"
+    evidence: ""
+  - id: S-2.7
+    phase: 2
+    title: Prompt element and response-style dimensions as grid axes
+    status: proposed
+    depends_on: [S-2.6]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the slot from the render digest; the check must fail"
+    evidence: ""
+  - id: S-2.8
+    phase: 2
+    title: Middleware and wrapper abstractions for microservice hosting
+    status: proposed
+    depends_on: [S-2.2]
+    verify: [SELF, MUTANT]
+    adversarial: "remove authority propagation; the check must fail"
+    evidence: ""
+  - id: S-2.9
+    phase: 2
+    title: Intelligence storage analysis and measurement
+    status: ready
+    depends_on: [S-0.5]
+    verify: [measured table with script and denominators]
+    adversarial: "a variation without a measured row is marked unmeasured, never recommended"
+    evidence: ""
+  - id: S-2.10
+    phase: 2
+    title: Intelligence access contract and no-direct-edit conformance rule
+    status: proposed
+    depends_on: [S-2.9]
+    verify: [CONF, SELF, MUTANT]
+    adversarial: "remove the scan; a planted direct write passes, so the check must fail"
+    evidence: ""
+  - id: S-2.11
+    phase: 2
+    title: Search characteristics sidecar and hybrid retrieval over two adapters
+    status: proposed
+    depends_on: [S-2.10]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the body reference; the large-body check must fail"
+    evidence: ""
+  - id: S-2.1
+    phase: 2
+    title: Step efficiency review record with a deterministic judge
+    status: ready
+    depends_on: [S-0.5]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the size check; the flagged-record check must fail"
+    evidence: ""
+  - id: S-2.2
+    phase: 2
+    title: Harness instance provisioning manifest verified against loaded files
+    status: proposed
+    depends_on: [S-2.1]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the load check; the unlisted-file check must fail"
+    evidence: ""
+  - id: S-2.3
+    phase: 2
+    title: Iterative publication with consumer output digests
+    status: proposed
+    depends_on: [S-2.2]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the consumer output digest; the check must fail"
+    evidence: ""
+  - id: S-2.4
+    phase: 2
+    title: Node grid over typed input parameters with separate counts
+    status: proposed
+    depends_on: [S-1.7]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the separate counts; the check must fail"
+    evidence: ""
+  - id: S-2.5
+    phase: 2
+    title: Versioned training data store and heuristic adoption policy
+    status: proposed
+    depends_on: [S-1.8]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the run-count threshold; the refusal check must fail"
+    evidence: ""
+  - id: S-3.1
+    phase: 3
+    title: Offline convergence run over a grid with deterministic graders
+    status: proposed
+    depends_on: [S-2.4]
+    verify: [SELF]
+    adversarial: "a broken grader must not report convergence"
+    evidence: ""
+  - id: S-3.2
+    phase: 3
+    title: Live convergence run on an authorized Ollama Cloud route
+    status: proposed
+    depends_on: [S-3.1]
+    verify: [recorded trials, physical calls, and costs]
+    adversarial: "a trial that ended on an outage must not count as evaluated"
+    evidence: ""
+  - id: S-3.3
+    phase: 3
+    title: Adversarial validation of claimed improvements
+    status: proposed
+    depends_on: [S-3.2]
+    verify: [refutations recorded beside claims]
+    adversarial: "a claim without a refutation attempt is not accepted"
+    evidence: ""
+  - id: S-3.4
+    phase: 3
+    title: Runnable optimizer proof on the live suite
+    status: proposed
+    depends_on: [S-3.2]
+    verify: [improvement over the seeded baseline with exact denominators]
+    adversarial: "same as S-1.7"
+    evidence: ""
+  - id: S-3.5
+    phase: 3
+    title: Unseen tasks on an authorized frontier model and Kaggle export
+    status: blocked
+    blocked_on: "a frontier model key the owner authorizes"
+    depends_on: [S-3.3]
+    verify: [frozen population, evaluator, failures, calls, costs, exported package verification]
+    adversarial: "an exported solution that imports loop_engine fails"
+    evidence: ""
+  - id: S-4.1
+    phase: 4
+    title: Worker image, Kubernetes manifests, placement policy
+    status: ready
+    depends_on: [S-0.5]
+    verify: [image builds, manifests validate, a Job runs example 26 in the container]
+    adversarial: "a manifest without resource limits fails validation"
+    evidence: ""
+  - id: S-4.2
+    phase: 4
+    title: Service software with tenants, keys, and metering
+    status: proposed
+    depends_on: [S-4.1]
+    verify: [SELF, MUTANT]
+    adversarial: "remove the key check; the refusal check must fail"
+    evidence: ""
+  - id: S-4.3
+    phase: 4
+    title: Packaging tiers and pricing draft
+    status: proposed
+    depends_on: [S-4.2]
+    verify: [LINT]
+    adversarial: "a tier that meters outcomes fails review"
+    evidence: ""
+  - id: S-4.4
+    phase: 4
+    title: Deployment to the owner's cloud account
+    status: blocked
+    blocked_on: "the owner's cloud account and region"
+    depends_on: [S-4.2]
+    verify: [a public health endpoint answers, a recorded run]
+    evidence: ""
+  - id: S-4.5
+    phase: 4
+    title: Billing with metered usage
+    status: blocked
+    blocked_on: "the owner's payment provider account and prices"
+    depends_on: [S-4.4]
+    verify: [a test-mode charge recorded]
+    evidence: ""
+  - id: S-4.6
+    phase: 4
+    title: Package index publication
+    status: blocked
+    blocked_on: "the owner's package index account"
+    depends_on: [S-0.5]
+    verify: [installable from the index in a clean environment]
+    evidence: ""
+  - id: S-5.1
+    phase: 5
+    title: Branding record
+    status: offline_verified
+    depends_on: []
+    verify: [LINT]
+    evidence: "docs/research/BRANDING-OPTIONS-2026-09-18.md"
+  - id: S-5.2
+    phase: 5
+    title: Business paths record
+    status: ready
+    depends_on: [S-5.1]
+    verify: [LINT]
+    evidence: ""
+  - id: S-5.3
+    phase: 5
+    title: Career research
+    status: proposed
+    depends_on: [S-5.2]
+    verify: [LINT]
+    evidence: ""

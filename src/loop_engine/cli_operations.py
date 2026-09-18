@@ -687,6 +687,80 @@ def _compile_gateway(args, key: str):
     return gateway, route.name
 
 
+def _export_spec_from_record(record: dict):
+    """A SolutionExportSpec from one JSON record; a conformance kind builds its files."""
+    from .code_nodes.solution_export import (EXPORT_KINDS, ContainerSpec, ExportedFile,
+                                             SolutionExportError, SolutionExportSpec,
+                                             text_conformance_export_spec)
+    kind = str(record.get("kind") or EXPORT_KINDS[0])
+    if kind not in EXPORT_KINDS:
+        raise SolutionExportError(f"export kind must be one of {EXPORT_KINDS}")
+    container = ContainerSpec(**(record.get("container") or {}))
+    if kind == EXPORT_KINDS[1]:
+        from .code_nodes.text_conformance import (ConformancePolicy, ConformanceRule,
+                                                  catalog_layer_from_file, load_packaged_catalogs,
+                                                  merge_layers)
+        layers = [load_packaged_catalogs()]
+        root = str(record.get("catalog_root") or ".")
+        for item in record.get("catalog_files") or ():
+            layers.append(catalog_layer_from_file(str(item), root))
+        rules = tuple(ConformanceRule.from_dict(item) for item in record.get("rules") or ())
+        spec = text_conformance_export_spec(
+            rules, ConformancePolicy.from_dict(record.get("policy") or {}), merge_layers(layers),
+            package_name=str(record.get("package_name") or "conformance_solution"),
+            version=str(record.get("version") or "0.1.0"), summary=str(record.get("summary") or ""),
+            solution_ref=str(record.get("solution_ref") or ""),
+            source_run_id=str(record.get("source_run_id") or ""))
+        return SolutionExportSpec(spec.package_name, spec.version, spec.summary, spec.files,
+                                  console_script=spec.console_script, tests=spec.tests,
+                                  container=ContainerSpec(**{**container.__dict__,
+                                                             "arguments": spec.container.arguments}),
+                                  solution_ref=spec.solution_ref, source_run_id=spec.source_run_id)
+    files = tuple(ExportedFile(str(item["path"]), str(item["content"]), bool(item.get("executable")))
+                  for item in record.get("files") or ())
+    tests = tuple(ExportedFile(str(item["path"]), str(item["content"]))
+                  for item in record.get("tests") or ())
+    return SolutionExportSpec(
+        str(record.get("package_name") or ""), str(record.get("version") or "0.1.0"),
+        str(record.get("summary") or ""), files,
+        console_script=str(record.get("console_script") or ""),
+        dependencies=tuple(record.get("dependencies") or ()),
+        python_requires=str(record.get("python_requires") or ">=3.10"), tests=tests,
+        container=container, solution_ref=str(record.get("solution_ref") or ""),
+        source_run_id=str(record.get("source_run_id") or ""),
+        isolation=str(record.get("isolation") or "stdlib_only"))
+
+
+def run_solution_export(args) -> int:
+    """``--export-solution SPEC --out DIR`` and ``--verify-export DIR``."""
+    from .code_nodes.solution_export import SolutionExportError, export_solution, verify_export
+    try:
+        if args.export_solution:
+            if not args.out:
+                raise SolutionExportError("--export-solution needs --out DIR")
+            record = json.loads(Path(args.export_solution).read_text("utf-8"))
+            if not isinstance(record, dict):
+                raise SolutionExportError("the export specification is one JSON object")
+            result = export_solution(_export_spec_from_record(record), args.out)
+            _emit_cli_result(args, result.to_dict(), [
+                f"exported {result.package_name} {result.version} to {result.target}",
+                f"files: {result.file_count}", f"manifest digest: {result.manifest_digest}",
+                "verify it with: loop-engine --verify-export " + result.target])
+            return 0
+        run_arguments = tuple(json.loads(args.run_arguments)) if args.run_arguments else None
+        verification = verify_export(args.verify_export, run_arguments=run_arguments)
+        _emit_cli_result(args, verification.to_dict(), [
+            f"{'passed' if verification.passed else 'FAILED'}: {args.verify_export}",
+            *(f"  {'ok' if item['passed'] else 'FAIL'} {item['check']}"
+              + (f": {item['detail']}" if item["detail"] and not item["passed"] else "")
+              for item in verification.checks)])
+        return 0 if verification.passed else 1
+    except (SolutionExportError, OSError, ValueError) as exc:
+        _emit_cli_result(args, {"record_type": "solution_export_error/v1", "error": str(exc)},
+                         [f"export error: {exc}"])
+        return 2
+
+
 def run_task_compile(args) -> int:
     from .templates.compiler import TaskCompileRequest, compile_task
     from .templates.intake import TaskIntakeError

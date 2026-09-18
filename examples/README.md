@@ -26,6 +26,7 @@ installation instructions before running them.
 | [23 drop-in extensions](23_drop_in_extensions/) | Discovers provider routes, capability candidates, skills, plugins, and intelligence from added files without calling or executing them. |
 | [24 managed records](24_managed_records/) | Queries and changes host-configured records through exact schema, revision, and approval checks. |
 | [25 host-owned work](25_host_runtime/) | Repairs staged source, checks generated counterexamples, reuses scoped failure evidence, and produces review-only exported-ticket results. |
+| [26 export a standalone solution](26_export_a_standalone_solution/) | Conforms a messy company file with a confidence per correction, then exports and verifies a package that runs without Loop Engine. |
 | [Downloadable tasks](tasks/) | Plain text tasks and matching sample inputs for the GitHub quickstart. |
 
 ## Models and intelligence

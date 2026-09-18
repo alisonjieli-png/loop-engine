@@ -202,6 +202,15 @@ def main(argv=None) -> int:
                         help=argparse.SUPPRESS)
     parser.add_argument("--task-build", action="store_true",
                         help=argparse.SUPPRESS)
+    parser.add_argument("--export-solution", metavar="SPEC", default="",
+                        help="write a standalone solution package from a JSON "
+                             "export specification into --out")
+    parser.add_argument("--verify-export", metavar="DIR", default="",
+                        help="verify an exported solution package in an "
+                             "isolated interpreter that cannot import loop_engine")
+    parser.add_argument("--run-arguments", default="",
+                        help="JSON list of arguments for the exported entry "
+                             "point during --verify-export")
     parser.add_argument(
         "--compile-provider",
         default="",
@@ -499,6 +508,12 @@ def main(argv=None) -> int:
         if len(raw_argv) < 2 or raw_argv[1] not in ("plan", "run"):
             parser.error("campaign requires plan or run")
         raw_argv[:2] = ["--campaign", raw_argv[1]]
+    elif raw_argv[:1] == ["export"]:
+        if len(raw_argv) < 3 or raw_argv[1] not in ("solution", "verify") \
+                or raw_argv[2].startswith("-"):
+            parser.error("export requires solution SPEC or verify DIR")
+        raw_argv[:3] = ["--export-solution" if raw_argv[1] == "solution"
+                        else "--verify-export", raw_argv[2]]
     elif raw_argv[:1] == ["settings"]:
         if len(raw_argv) < 2 or raw_argv[1] not in ("init", "show", "check"):
             parser.error("settings requires init, show, or check")
@@ -749,6 +764,9 @@ def main(argv=None) -> int:
     if args.task_build:
         from .adaptive_practitioner_cli import run_task_build
         return run_task_build(args)
+    if args.export_solution or args.verify_export:
+        from .cli_operations import run_solution_export
+        return run_solution_export(args)
     if args.task_compile:
         from .cli_operations import run_task_compile
         return run_task_compile(args)

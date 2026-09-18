@@ -26,6 +26,14 @@ request, suggested outputs, the response contract registry, and the
 solutions space record, listed in the [contracts index](../contracts/README.md)
 and described in the changelog under September 18.
 
+The plan a development loop walks is the
+[fabric roadmap](../roadmap/FABRIC-ROADMAP-2026-09-18.md) with its
+machine-readable copy `docs/roadmap/roadmap.yaml`: pick the first ready step
+whose dependencies are verified, build it at the boundary it names, run its
+verification on an exported tree, run its adversarial check, record the
+evidence, and move its status. The requirements register in that document
+lists every owner direction with its owning boundary and state.
+
 Before continuing after the September 12 account change, read the
 [discrete cognitive or act step Loop node complete explanation and session handoff](DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md)
 in full. Preserve the full phrase and the behavioral explanation. Do not

@@ -1,0 +1,127 @@
+# Packaged exception catalogs for text conformance.
+#
+# This is the first of several places an exception can live. The layers, in
+# precedence order from lowest to highest, are: this packaged file, a catalog
+# file in the task working folder, evidence learned from the column itself,
+# inline rule parameters, and recorded escalation answers. A later layer
+# overrides a mapping entry and extends a list. Every correction names the
+# catalog entry or signal that decided it, so a wrong entry is traceable.
+#
+# Values here are general business and personal-name conventions, not the
+# contents of any one dataset. Dataset-specific exceptions belong in the task
+# folder or in the learned evidence layer.
+catalog_id: loop_engine.text_conformance.packaged
+version: 1.0.0
+# Confidence parameters read by the case operation. A task folder catalog may
+# raise or lower them for a dataset whose conventions are known.
+case_absent_confidence: 0.92
+case_present_confidence: 0.95
+particle_confidence: 0.8
+short_token_confidence: 0.75
+short_word_confidence: 0.85
+null_sentinels: ["", "n/a", "na", "-", "--", "unknown", "none", "null", "nil", "?"]
+preserved_tokens: [LLC, LLP, LP, PLC, PLLC, PC, USA, US, UK, EU, UAE, UN, NYC, DC,
+                   IT, HR, AI, CEO, CFO, CTO, CPA, DBA, PO, VP, MD, PhD, ESQ,
+                   BV, NV, SA, AG, AB, KK, SRL, SARL, SAS, OY, AS, IBM, HVAC, R&D]
+minor_words: [a, an, and, as, at, but, by, for, in, nor, of, on, or, per, the, to,
+              vs, via, with, y, e, et, und, de, du, des, der, die, das, del, della,
+              di, da, la, le, les, los, las, el, en]
+lowercase_particles: [de, del, della, di, da, du, la, le, van, von, der, den, ter,
+                      ten, bin, ibn, al, el, y, e, zu, zum, zur, af, av, op, het]
+internal_capital_prefixes:
+  Mc: 0.97
+  Fitz: 0.9
+  Mac: 0.8
+apostrophe_prefixes: [O, D, L]
+surname_exceptions:
+  lapointe: LaPointe
+  larue: LaRue
+  lafleur: LaFleur
+  labelle: LaBelle
+  dubois: DuBois
+  dupont: DuPont
+  deangelo: DeAngelo
+  devito: DeVito
+  delgado: Delgado
+  macdonald: MacDonald
+  mackenzie: MacKenzie
+  macleod: MacLeod
+  macarthur: MacArthur
+  macy: Macy
+  mack: Mack
+  mace: Mace
+  machado: Machado
+  macias: Macias
+  macon: Macon
+  macready: MacReady
+  fitzgerald: Fitzgerald
+  fitzpatrick: Fitzpatrick
+  mcdonald: McDonald
+  mcdouglas: McDouglas
+legal_suffixes:
+  inc: Inc
+  incorporated: Inc
+  corp: Corp
+  corporation: Corp
+  llc: LLC
+  llp: LLP
+  lp: LP
+  pllc: PLLC
+  pc: PC
+  ltd: Ltd
+  limited: Ltd
+  co: Co
+  company: Co
+  plc: PLC
+  gmbh: GmbH
+  ag: AG
+  sa: SA
+  sas: SAS
+  sarl: SARL
+  srl: SRL
+  spa: SpA
+  bv: BV
+  nv: NV
+  ab: AB
+  as: AS
+  oy: Oy
+  kk: KK
+  pty: Pty
+  pte: Pte
+  cv: CV
+  ug: UG
+  kg: KG
+ambiguous_suffixes:
+  sa: 0.8
+  ag: 0.85
+  spa: 0.6
+  as: 0.5
+  co: 0.85
+  pc: 0.8
+  cv: 0.7
+  ab: 0.75
+  kk: 0.8
+  ug: 0.7
+  kg: 0.7
+suffix_long_forms:
+  Inc: Incorporated
+  Corp: Corporation
+  Ltd: Limited
+  Co: Company
+ascii_fold_map:
+  "ß": ss
+  "æ": ae
+  "Æ": Ae
+  "ø": o
+  "Ø": O
+  "ł": l
+  "Ł": L
+  "œ": oe
+  "Œ": Oe
+  "ð": d
+  "Ð": D
+  "þ": th
+  "Þ": Th
+  "đ": d
+  "Đ": D
+  "ı": i

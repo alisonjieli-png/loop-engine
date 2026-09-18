@@ -28,6 +28,8 @@ PRACTITIONER_ROUTE = "practitioner.route"
 PRACTITIONER_VERIFY = "practitioner.verify"
 INDEPENDENT_CRITERION_JUDGMENT = "independent.criterion_judgment"
 INDEPENDENT_FAILURE_CONFIRMATION = "independent.failure_confirmation"
+TEXT_CONFORMANCE_ESCALATION = "text_conformance.escalation_response"
+STEP_EFFICIENCY_REVIEW = "practitioner.step_efficiency_review"
 
 #: The evidence a failure review must quote; shared by its classification
 #: and confirmation calls so both are grounded the same way.
@@ -118,6 +120,23 @@ _REGISTRY = {contract.contract_id: contract for contract in (
                      "confirmation of a claimed check defect with quoted evidence",
                      {"confirmed": "boolean", "evidence": FAILURE_REVIEW_EVIDENCE_CONTRACT,
                       "reason": "string"}),
+    ResponseContract(TEXT_CONFORMANCE_ESCALATION, "1.0.0",
+                     "ranked normal forms for one low-confidence cell, or an abstention",
+                     {"rows": [{"candidate": "string", "confidence": 0, "reason": "string"}],
+                      "abstain": "boolean"},
+                     SuggestedOutput("ranked_list", columns=("candidate", "confidence"),
+                                     cardinality=3, confidence_scale="unit_interval",
+                                     abstention_allowed=True, path="rows",
+                                     notes="Best first; abstain when no candidate is defensible.")),
+    ResponseContract(STEP_EFFICIENCY_REVIEW, "1.0.0",
+                     "ranked alternative ways to perform one step, each with a confidence",
+                     {"rows": [{"alternative": "string", "confidence": 0, "reason": "string"}],
+                      "inputs_too_big": "boolean", "outputs_too_big": "boolean",
+                      "chosen_index": 0},
+                     SuggestedOutput("ranked_list", columns=("alternative", "confidence"),
+                                     cardinality=5, confidence_scale="unit_interval",
+                                     abstention_allowed=False, path="rows",
+                                     notes="Name the chosen row with chosen_index.")),
 )}
 
 
@@ -166,7 +185,7 @@ def self_test() -> dict:
           and rendered["action_vector"]["process_checks"][0]["status"].split("|")
           == list(PROCESS_CHECK_STATUSES))
     check("every_contract_has_a_unique_id_a_version_and_a_stable_digest",
-          len(set(contract_ids())) == len(contract_ids()) == 4
+          len(set(contract_ids())) == len(contract_ids()) == 6
           and all(record["version"].count(".") == 2 for record in registry_records())
           and verify.content_digest == registered_contract(PRACTITIONER_VERIFY).content_digest)
     judgment = registered_contract(INDEPENDENT_CRITERION_JUDGMENT)

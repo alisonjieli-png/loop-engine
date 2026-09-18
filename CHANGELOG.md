@@ -9,6 +9,38 @@ First public release.
 
 ### Added on 2026-09-18
 
+- Text conformance with a confidence per correction.
+  `code_nodes/text_conformance_operations.py` imports only the standard
+  library and owns seven operations (whitespace, Unicode, case with catalog
+  and evidence exceptions, legal suffixes, phones, emails, websites), each
+  returning the proposed value, a confidence that is the weakest named
+  signal, and the reasons. `code_nodes/text_conformance.py` owns the typed
+  layer: `ExceptionCatalogLayer` with five sources (packaged, task folder,
+  column evidence, inline, escalation answers) merged in precedence order,
+  `ConformanceRule`, `ConformancePolicy` with apply and escalate thresholds,
+  `CorrectionRecord`, `EscalationRequest` bound to the `disambiguate_value`
+  question form and the `text_conformance.escalation_response` contract,
+  `ConformanceReport` with an idempotence proof, `propose_rules` from column
+  profiles, the `TextConformanceResolver` that supports only a typed task
+  record, and the `text_conformance` capability surface. The packaged
+  catalogs live in `data/text_conformance_catalogs.yaml`.
+  `CapabilityDirectory.default_directory` accepts typed `SurfaceRegistration`
+  records so a code intelligence package registers its own surface and core
+  imports nothing from it; the dependency direction ratchet stays at its
+  baseline.
+- Standalone solution export. `code_nodes/solution_export.py` writes an
+  installable package (sources, console entry point, tests, manifest with a
+  digest per file, Dockerfile, Kubernetes Job) from a typed
+  `SolutionExportSpec`, refuses traversal, absolute paths, `loop_engine`
+  imports, and secret-shaped text, and verifies the export in an isolated
+  interpreter that cannot import `loop_engine`. The first exported solution
+  is text conformance; `loop-engine export solution SPEC --out DIR` and
+  `loop-engine export verify DIR` expose it, and example 26 runs the whole
+  path offline.
+- Two question forms, `disambiguate_value` and `efficiency_check`, and two
+  response contracts, `text_conformance.escalation_response` and
+  `practitioner.step_efficiency_review`, each with a ranked-list suggested
+  output and a unit-interval confidence.
 - A model ontology. `core/model_ontology.py` owns closed vocabularies for
   what a model is (generative text, judgment, classification, extraction,
   embedding, reranking, vision, forecasting, tabular foundation, custom

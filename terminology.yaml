@@ -3217,3 +3217,135 @@ semantic_terms:
   examples: ["Synthetic material is not applicable because exact observed data already satisfies the analysis."]
   negative_examples: ["Marking pro forma analysis complete while returning no pro forma material."]
   conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "code_nodes.term.exception_catalog_layer"
+  canonical_name: "ExceptionCatalogLayer"
+  primary_category: "record"
+  definition: "One source of text conformance exceptions (packaged, task folder, column evidence, inline, or escalation answers) with its provenance and digest, merged in precedence order."
+  source_of_truth: "loop_engine.code_nodes.text_conformance:ExceptionCatalogLayer"
+  source_symbol: "loop_engine.code_nodes.text_conformance:ExceptionCatalogLayer"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "exception_catalog_layer/v1"
+  related_terms: ["ConformanceRule","CorrectionRecord"]
+  difference_from_neighbors: "ExceptionCatalogLayer holds exceptions and their source; ConformanceRule names the operation and columns that read them."
+  parameterization_decision: "closed_source_vocabulary_and_open_catalog_kinds"
+  composition_decision: "layers merge in order; a later layer overrides a mapping entry and extends a list"
+  inheritance_decision: "none"
+  storage_authority: "packaged data file, task folder file, or run record"
+  lifecycle: "Immutable per layer; a changed catalog is a new layer digest."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["The column evidence layer records that ABC is always upper case in the mixed-case rows of one column."]
+  negative_examples: ["A run writing a learned casing into the packaged catalog file."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "code_nodes.term.conformance_rule"
+  canonical_name: "ConformanceRule"
+  primary_category: "record"
+  definition: "One text conformance operation over named columns with parameters and optional apply and escalate thresholds."
+  source_of_truth: "loop_engine.code_nodes.text_conformance:ConformanceRule"
+  source_symbol: "loop_engine.code_nodes.text_conformance:ConformanceRule"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "conformance_rule/v1"
+  related_terms: ["ConformancePolicy","CorrectionRecord","ExceptionCatalogLayer"]
+  difference_from_neighbors: "ConformanceRule names what to do to which columns; ConformancePolicy sets the thresholds and escalation order for the whole run."
+  parameterization_decision: "closed_operation_vocabulary_with_open_json_parameters"
+  composition_decision: "rules apply in declared order; whitespace and Unicode rules come first"
+  inheritance_decision: "none"
+  storage_authority: "task record, export rules file, or proposal record"
+  lifecycle: "Immutable once recorded; a changed rule is a new record."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["case_normalize over the name column with the packaged thresholds."]
+  negative_examples: ["A rule whose escalate threshold exceeds its apply threshold."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "code_nodes.term.correction_record"
+  canonical_name: "CorrectionRecord"
+  primary_category: "record"
+  definition: "One proposed or applied change to one cell with its confidence, the named reasons, and the outcome: applied, held, escalated, or unchanged."
+  source_of_truth: "loop_engine.code_nodes.text_conformance:CorrectionRecord"
+  source_symbol: "loop_engine.code_nodes.text_conformance:CorrectionRecord"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "correction_record/v1"
+  related_terms: ["EscalationRequest","ConformanceReport"]
+  difference_from_neighbors: "CorrectionRecord describes one cell decision; EscalationRequest hands a low-confidence cell to a model, research, or a person."
+  parameterization_decision: "closed_outcome_vocabulary_and_unit_interval_confidence"
+  composition_decision: "a run report counts correction records per rule and overall"
+  inheritance_decision: "none"
+  storage_authority: "conformance run record or export corrections file"
+  lifecycle: "Immutable for one run."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["AA CAREERS held at 0.75 because a two-letter token was kept upper without evidence."]
+  negative_examples: ["A correction applied below the apply threshold."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "code_nodes.term.escalation_request"
+  canonical_name: "EscalationRequest"
+  primary_category: "record"
+  definition: "A low-confidence cell with its candidates, reasons, ordered targets, question form, and registered response contract, performing no call itself."
+  source_of_truth: "loop_engine.code_nodes.text_conformance:EscalationRequest"
+  source_symbol: "loop_engine.code_nodes.text_conformance:EscalationRequest"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "escalation_request/v1"
+  related_terms: ["CorrectionRecord","SuggestedOutput","ResponseContract"]
+  difference_from_neighbors: "EscalationRequest is the typed next action for a hybrid Loop; a ModelCallRequest is the call that Loop may then make under its own authority."
+  parameterization_decision: "closed_target_vocabulary_and_registered_contract_identifier"
+  composition_decision: "built from a correction record and the run policy"
+  inheritance_decision: "none"
+  storage_authority: "conformance run record or export escalations file"
+  lifecycle: "Immutable for one run; an answer becomes evidence in the escalation answers layer."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["bad@ in the email column with one candidate at 0.3 and the disambiguate_value question."]
+  negative_examples: ["An escalation that calls a model inside the conformance run."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "code_nodes.term.solution_export_spec"
+  canonical_name: "SolutionExportSpec"
+  primary_category: "record"
+  definition: "Everything needed to write one standalone package: name, version, summary, files, console script, dependencies, tests, container settings, solution reference, and isolation mode."
+  source_of_truth: "loop_engine.code_nodes.solution_export:SolutionExportSpec"
+  source_symbol: "loop_engine.code_nodes.solution_export:SolutionExportSpec"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "solution_export/v1"
+  related_terms: ["ExportVerification","SolutionPackageManifest","SolutionsSpaceRecord"]
+  difference_from_neighbors: "SolutionExportSpec describes the package to write; SolutionPackageManifest digests what shipped; ExportVerification proves the package runs without Loop Engine."
+  parameterization_decision: "typed_files_and_closed_isolation_vocabulary"
+  composition_decision: "an export writes sources, tests, manifest, Dockerfile, and Job from one specification"
+  inheritance_decision: "none"
+  storage_authority: "export specification file or solutions space record"
+  lifecycle: "Immutable; the specification digest is recorded in the manifest."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["The company_conformance package with the operations module, rules, catalogs, and a Kubernetes Job."]
+  negative_examples: ["A specification whose files import loop_engine."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]
+- term_id: "code_nodes.term.export_verification"
+  canonical_name: "ExportVerification"
+  primary_category: "record"
+  definition: "The checks proving an exported package is complete and runs in an isolated interpreter that cannot import loop_engine, with each check named and its detail kept."
+  source_of_truth: "loop_engine.code_nodes.solution_export:ExportVerification"
+  source_symbol: "loop_engine.code_nodes.solution_export:ExportVerification"
+  public_or_internal: "public"
+  runtime_or_passive: "passive"
+  authoritative_or_projection: "authoritative"
+  versioning: "solution_export_verification/v1"
+  related_terms: ["SolutionExportSpec","IndependentVerificationReport"]
+  difference_from_neighbors: "ExportVerification proves standalone execution of a package; independent verification judges whether a task result is correct."
+  parameterization_decision: "fixed_check_sequence_with_optional_entry_point_run"
+  composition_decision: "manifest digests, import scan, isolated import, exported tests, entry point, expected artifacts"
+  inheritance_decision: "none"
+  storage_authority: "verification record next to the export"
+  lifecycle: "Immutable for one verification."
+  legacy_aliases: []
+  migration: "New on 2026-09-18."
+  examples: ["Six checks passed for company_conformance with loop_engine absent from the loaded modules."]
+  negative_examples: ["Reporting an export as runnable from file presence alone."]
+  conformance_rules: ["one_term_one_meaning","one_source_of_truth","no_authority_from_alias"]

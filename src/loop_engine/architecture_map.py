@@ -147,7 +147,9 @@ MODULE_MAP = {
         "solution_model_port",
         "solution_graph", "solution_graph_builder", "solution_graph_checks",
         "solution_graph_validation", "solution_records", "solutions_space",
+        "solution_export", "solution_export_checks",
         "string_foundry",
+        "text_conformance", "text_conformance_checks", "text_conformance_operations",
     ),
     "core": (
         "adaptive_practitioner", "adaptive_practitioner_acceptance_checks",
