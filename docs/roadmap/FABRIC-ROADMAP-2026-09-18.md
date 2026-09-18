@@ -286,6 +286,19 @@ Append one line per iteration: date, step, result, evidence path, commit.
   records index check, self-test of 5,131 checks, battery of 32 steps) and
   twenty-six killed mutants across the typed-decision, seeded generation,
   and layout scripts.
+- 2026-09-18, S-2.23 ready: the
+  [hosting and resource management record](../research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md)
+  reads the documented Kubernetes limits (110 pods per Kubernetes node,
+  5,000 nodes, 150,000 pods), pod overhead, quotas, Indexed Jobs,
+  autoscaling, and container checkpointing; Kueue, Argo Workflows, and
+  Volcano for queueing; Ray, Dask, Celery, and Temporal for placing many
+  small tasks on shared workers; gVisor, Kata, Firecracker, E2B, and Modal
+  for sandboxes; Linux detection and control (pressure stall information,
+  control groups, systemd scopes, signals, the freezer, CRIU) with a live
+  test of an unprivileged systemd scope on this machine; the budget chain
+  from currency to quotas; a four-shape decision table with every figure
+  labeled documented, measured, or estimate; and the administrator needs
+  against what exists. The measured placement study is the remaining work.
 - 2026-09-18, S-2.22 offline_verified: local resource detection and a
   supervisor for harness instances in `core/local_resources.py` (measured
   snapshot with unknown kept distinct from zero, instance ledger with an

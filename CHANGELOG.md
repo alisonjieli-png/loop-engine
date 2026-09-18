@@ -42,6 +42,18 @@ First public release.
   from the column's dominant pattern is flagged with the share margin,
   with nothing flagged when no dominant pattern exists. Seven mutants are
   killed.
+- The [hosting and resource management record](docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md)
+  answers where the engine runs and how nodes are bounded: the documented
+  Kubernetes limits, pod overhead, quotas, Indexed Jobs, autoscaling, and
+  container checkpointing; batch queueing with Kueue, Argo Workflows, and
+  Volcano; Ray, Dask, Celery, and Temporal for many small tasks on shared
+  workers; sandbox shapes and their documented overhead; Linux detection
+  and control with a live test of an unprivileged systemd scope on this
+  machine; the budget chain from currency to quotas; a four-shape
+  decision table (local processes with scopes, one pod per node, a
+  worker pool hosting many nodes, and a queue with quotas for thousands
+  of nodes) with every figure labeled documented, measured, or estimate;
+  and the administrator needs mapped to what exists. It decides nothing.
 - Local resource detection and a supervisor for harness instances (roadmap
   S-2.22), after the owner asked for local resource management.
   `core/local_resources.py` measures the machine (memory, pressure stall
