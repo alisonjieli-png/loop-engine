@@ -134,6 +134,14 @@ First public release.
   oracle reviews for CS-001 refused probes that searched the customer reply
   for literal phrases, as stricter than the task or looser than its criteria,
   so no check program could accept or reject the reply.
+- The independent verifier's review prompt states that an expected value
+  stated by the task or its criteria is independent evidence and that one
+  copied from the subject is not. The design prompt asks a probe to run the
+  subject's code, queries, or scripts instead of reimplementing their logic.
+  In the rerun on `2aaa5d5`, one AE-001 review refused expected rows taken
+  from the task as hardcoded values that should have come from the subject's
+  SQL model, and two AE-001 probes reimplemented that model in Python instead
+  of running it.
 
 ### Fixed on 2026-09-14
 
@@ -170,6 +178,15 @@ First public release.
   call got no reasoned recovery and no recovery call was made. Both now check
   the session contract that the authority already enforces: `invoke`,
   `results`, `calls_used`, and `accounting_uncertain`.
+- The independent verifier now names each undeclared file when it refuses a
+  subject, and says how to repair it. In the September 14 rerun on
+  `2aaa5d5`, DA-001's third attempt passed its checks, but its program wrote
+  `analysis.md`, the requested analysis, without declaring it as an expected
+  artifact. All eight verification attempts were refused before any model
+  call with "independent subject has undeclared dependency files", which named
+  no file, so the Practitioner could not tell what to declare. The refusal
+  still stands. It now names up to ten files and asks that each file the
+  project's commands write be declared as an expected artifact.
 - A malformed method assessment from the model no longer discards a finished
   run's outcome. The model-facing resolution contract listed every method
   identifier in the value position, and a live model returned that list, or a

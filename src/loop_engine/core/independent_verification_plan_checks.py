@@ -5,6 +5,7 @@ executes the existing verifier in Docker without a real model call.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 from copy import deepcopy
@@ -267,6 +268,55 @@ def run_recovery_record_checks(check):
                   and declined[0].get("selected") == list(selected)
                   and declined[0].get("reason") == "Offline recovery decision fixture.",
                   str(declined)[:300])
+
+
+def run_prompt_evidence_checks(check):
+    """Probes run the subject itself, and expectations stated by the task are independent."""
+    from ..strings.prompt_fragments import (
+        INDEPENDENT_PROBE_DESIGN_PROMPT, INDEPENDENT_PROBE_REVIEW_PROMPT)
+    check("probe_design_runs_the_subject_instead_of_reimplementing_it",
+          "Probe code must exercise the actual subject" in INDEPENDENT_PROBE_DESIGN_PROMPT
+          and "instead of reimplementing their logic" in INDEPENDENT_PROBE_DESIGN_PROMPT)
+    check("oracle_review_accepts_expectations_stated_by_the_task",
+          "An expected value stated by the task or its criteria is independent evidence"
+          in INDEPENDENT_PROBE_REVIEW_PROMPT
+          and "one copied from the subject code or its output is not" in INDEPENDENT_PROBE_REVIEW_PROMPT
+          and "Refuse tautological/hardcoded observations" in INDEPENDENT_PROBE_REVIEW_PROMPT)
+
+
+def run_undeclared_output_checks(check):
+    """An undeclared subject file is named, so the producer can declare it."""
+    body = "An output the project's commands wrote.\n"
+    for name, extra in (("one_output", ("analysis.md",)),
+                        ("two_outputs", ("reports/summary.txt", "analysis.md"))):
+        with tempfile.TemporaryDirectory(prefix="loop-independent-undeclared-") as folder:
+            services, owner = _services(Path(folder))
+            request = _subject(services, source=_GOOD_SOURCE)
+            root = Path(request.project["workspace_path"])
+            for relative in extra:
+                (root / relative).parent.mkdir(parents=True, exist_ok=True)
+                (root / relative).write_text(body, encoding="utf-8")
+            error = ""
+            try:
+                verification._freeze(request, services)
+            except ValueError as exc:
+                error = str(exc)
+            report = verification.run_independent_verification(request, services, owner)
+            if name == "one_output":
+                check("undeclared_subject_file_is_named_with_the_repair_to_make",
+                      "undeclared dependency files: analysis.md;" in error
+                      and "declare each file the project's commands write as an expected artifact" in error
+                      and report["status"] == "unavailable" and "analysis.md" in report["notes"]
+                      and report["model_calls_known_subtotal"] == 0, error)
+                continue
+            declared = deepcopy(request.project)
+            declared["artifacts"] = [{"path": relative, "digest": hashlib.sha256(body.encode()).hexdigest()}
+                                     for relative in extra]
+            subject, _inputs, _visible = verification._freeze(replace(request, project=declared), services)
+            check("every_undeclared_subject_file_is_named_and_a_declared_output_is_frozen",
+                  "undeclared dependency files: analysis.md, reports/summary.txt;" in error
+                  and {item["path"]: item["authored"] for item in subject["inventory"]}
+                  == {"utility.py": True, "analysis.md": False, "reports/summary.txt": False}, error)
 
 
 _NOTICE = ("Dear patrons,\n\nThe library will close at 6 pm on Friday for scheduled "

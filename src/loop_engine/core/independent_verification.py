@@ -170,12 +170,19 @@ def _freeze(request, services):
         raise ValueError("independent subject has no artifacts")
     # Refuse hidden executable/data additions, rather than evaluate a different
     # dependency closure. Python bytecode is not copied; the sandbox rebuilds it.
+    undeclared = []
     for path in root.rglob("*"):
         if path.is_symlink():
             raise ValueError("independent subject contains a symlink")
         if path.is_file() and "__pycache__" not in path.relative_to(root).parts:
             if path.relative_to(root).as_posix() not in entries:
-                raise ValueError("independent subject has undeclared dependency files")
+                undeclared.append(path.relative_to(root).as_posix())
+    if undeclared:
+        # Naming the files lets the producer declare an output its commands
+        # write, instead of repeating an attempt that cannot be verified.
+        raise ValueError("independent subject has undeclared dependency files: "
+                         + ", ".join(sorted(undeclared)[:10]) + "; declare each file the "
+                         "project's commands write as an expected artifact, or stop writing it")
     ceiling = supplied_input_ceiling_bytes(root)
     size = sum((root / name).stat().st_size for name in entries)
     if ceiling is not None and size > ceiling:

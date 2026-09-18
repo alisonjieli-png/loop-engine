@@ -244,8 +244,10 @@ class while the campaign session wraps that session; it now checks the
 session contract instead. The verifier can now judge a natural-language
 deliverable, such as a message or a report, against one registered criterion
 at a time: its probe prints the text, an isolated judge call decides, and the
-judgment passes only when every quoted passage appears in that text. The next
-target is a live rerun that qualifies these changes. The earlier targets remain: a task-owned evaluator
+judgment passes only when every quoted passage appears in that text. A refused
+subject now names each undeclared file, and the oracle review treats an
+expected value stated by the task as independent evidence. The next target is
+a live rerun that qualifies these changes. The earlier targets remain: a task-owned evaluator
 for campaign cells, the rest of the working folder (downloads as files, and
 Spawned Loops that share the folder and return their files), and restarting
 campaign cells after a provider wait.

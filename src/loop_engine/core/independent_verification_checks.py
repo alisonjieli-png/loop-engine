@@ -770,7 +770,7 @@ def run_checks() -> dict:
 
     from .independent_verification_plan_checks import (
         run_file_identity_checks, run_format_repair_checks, run_judgment_checks, run_plan_checks,
-        run_recovery_record_checks)
+        run_prompt_evidence_checks, run_recovery_record_checks, run_undeclared_output_checks)
 
     for label, group in (("comparison", _comparison_checks),
                          ("proposal", _proposal_checks),
@@ -784,7 +784,8 @@ def run_checks() -> dict:
                          ("file_envelope", _file_envelope_checks),
                          ("format_repair", run_format_repair_checks),
                          ("file_identity", run_file_identity_checks), ("recovery_record", run_recovery_record_checks),
-                         ("plan_feedback", run_plan_checks), ("criterion_judgment", run_judgment_checks)):
+                         ("plan_feedback", run_plan_checks), ("criterion_judgment", run_judgment_checks),
+                         ("undeclared_outputs", run_undeclared_output_checks), ("prompt_evidence", run_prompt_evidence_checks)):
         try:
             group(check)
         except Exception as exc:
