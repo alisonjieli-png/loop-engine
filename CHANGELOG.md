@@ -42,6 +42,22 @@ First public release.
   from the column's dominant pattern is flagged with the share margin,
   with nothing flagged when no dominant pattern exists. Seven mutants are
   killed.
+- Local resource detection and a supervisor for harness instances (roadmap
+  S-2.22), after the owner asked for local resource management.
+  `core/local_resources.py` measures the machine (memory, pressure stall
+  information, control group limits, load, processors) with unknown kept
+  distinct from zero, keeps an instance ledger with heartbeats, sampled
+  memory, states, and an append-only event log with a reason per
+  transition, admits a new instance only within a ceiling derived from the
+  machine unless a policy declares one and only above the memory reserve,
+  stops a stalled instance, pauses the largest instance under memory
+  pressure and resumes it when memory recovers, and sends every
+  operating-system effect through an injected controller that acts only on
+  an owned handle, so an instance without a handle is recorded and never
+  signaled. Eight mutants are killed. Cloud capacity within a client budget
+  (S-4.8), the cluster placement decision (S-2.23), and administrator
+  surfaces (S-4.9) are proposed; a research record on hosting shapes is in
+  progress.
 - Typed action decisions over an element table (roadmap S-2.20), after the
   owner pointed at Jev Ultrafast from browser-use. `core/typed_action_decision.py`
   renders an indexed table of controls as text lines, declares an action

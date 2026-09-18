@@ -916,12 +916,34 @@ answers the folder question: a folder path says where, a classification
 tree says what kind, a record file says what; every documentation folder
 now states its kind in its README under a conformance gate, and the
 records index lists every version of each dated record in one place. The
-matrix has seventy-five columns; the cells that stay absent are hosted
+matrix has seventy-six columns; the cells that stay absent are hosted
 cloud and public pricing, which need an operated endpoint and a price the
 owner sets. The first worker image is published as
 `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`,
 a public package pushed by the workflow on commit `855ab32` and run back
 from the registry with its `doctor` command.
+
+Owner requirement, later on September 18. Every node of the solutioning
+space may be its own harness instance, so a machine needs local resource
+detection and management: a supervisor that keeps the number of live
+instances within what the machine carries, detects stalled instances and
+clears them, pauses or hibernates a memory-heavy iterative instance and
+restarts it later, and logs every transition; the cloud needs the same plus
+spinning up capacity within a client's budget; system administrators and
+client administrators need a front end for it; and the hosting shape (one
+pod per node, many nodes per pod, thousands of nodes) needs research.
+
+Observed result. `core/local_resources` measures the machine with unknown
+kept distinct from zero, keeps an instance ledger with heartbeats and an
+append-only event log, admits a new instance only within a ceiling derived
+from the machine unless a policy declares one and only above the memory
+reserve, stops a stalled instance, pauses the largest instance under memory
+pressure and resumes it on recovery, and sends every operating-system
+effect through an injected controller that acts only on an owned handle.
+No live harness run has been supervised yet. Cloud capacity within a
+budget, the cluster placement decision, and the administrator surfaces are
+roadmap steps S-4.8, S-2.23, and S-4.9; the hosting research record is
+`docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md`.
 
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of

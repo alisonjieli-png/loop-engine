@@ -138,6 +138,38 @@ steps:
     verify: [SELF, MUTANT, a recorded browser task with exact denominators]
     adversarial: "a done decision accepted without the independent verifier must fail"
     evidence: "a live TypeSafe key and a browser reader are needed; the act adapter declares its effects"
+  - id: S-2.22
+    phase: 2
+    title: Local resource detection and a supervisor for harness instances
+    status: offline_verified
+    depends_on: [S-2.2]
+    verify: [SELF, MUTANT]
+    adversarial: "an instance above the derived ceiling must be refused; a stalled instance must be stopped through its owned handle; an instance without a handle must never be signaled"
+    evidence: "src/loop_engine/core/local_resources.py self_test (10 checks): measured snapshot (memory, pressure stall information, control groups, load), instance ledger with heartbeats and an append-only event log, admission against a ceiling derived from the machine, stall detection, pause on memory pressure and resume on recovery through an injected controller that signals only owned handles; eight killed mutants; no live harness run has been supervised yet"
+  - id: S-2.23
+    phase: 2
+    title: Cluster placement decision, one pod per node against a worker pool that hosts many nodes
+    status: proposed
+    depends_on: [S-2.22]
+    verify: [a measured placement study with the overhead per shape and exact denominators]
+    adversarial: "a placement claim without a measured overhead row is marked unmeasured, never recommended"
+    evidence: "docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md when written"
+  - id: S-4.8
+    phase: 4
+    title: Cloud capacity within a client budget, quotas, and spin-up policy
+    status: proposed
+    depends_on: [S-2.23, S-4.2]
+    verify: [SELF, MUTANT, a recorded scale-up that stops at the declared budget]
+    adversarial: "a scale-up beyond the client budget must be refused"
+    evidence: ""
+  - id: S-4.9
+    phase: 4
+    title: Administrator surfaces for system and client administrators
+    status: proposed
+    depends_on: [S-2.22, S-4.8]
+    verify: [browser audit of the resource, budget, node, and log views]
+    adversarial: "a client administrator must not see another tenant's nodes or logs"
+    evidence: ""
   - id: S-2.8
     phase: 2
     title: Middleware and wrapper abstractions for microservice hosting

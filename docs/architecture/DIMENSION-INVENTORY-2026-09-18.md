@@ -47,6 +47,8 @@ Levels of configuration
 | Placement of a node | host process, local container, cluster container | workspace backends, export Job manifest, placement policy (S-4.1) | represented for Docker; grid proposed |
 | External intelligence access | none, project-shipped only, external with authentication | capability handshakes (`locality`, `effects`, `auth_method`) | represented |
 | Secrets and credentials | reference names only | provider settings | represented |
+| Instance ceiling and memory reserve | a ceiling derived from the processors the machine reports or declared by policy; the memory reserve and resume fractions; the stall age; the pressure threshold | `core/local_resources` `ResourcePolicy` (S-2.22) | offline verified; no live run supervised |
+| Cloud capacity within a client budget | per-tenant quotas, a spin-up policy that stops at the budget | S-4.8 | proposed |
 
 ## Solutioning space level
 

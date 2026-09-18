@@ -66,6 +66,9 @@ rest are listed.
 | R-21 | Model calls under a model ontology with suggested outputs, recorded for later training. | 2026-09-18 | `core/model_ontology`, `core/model_call_contract`, `core/suggested_output` | published |
 | R-22 | Solutioning space and solutions space as two named spaces. | 2026-09-18 | `code_nodes/solutions_space`, spaces document | published |
 | R-23 | Persistence within declared authority at every component; giving up is not acceptable. | 2026-09-14 | supervision policy, failed-check review | published; live qualification continues |
+| R-37 | Local resource detection and management: a supervisor keeps the number of live harness instances within what the machine carries, detects stalled instances and clears them through owned handles, pauses or hibernates a memory-heavy iterative instance and restarts it later, and logs every transition. | 2026-09-18 | `core/local_resources` (S-2.22) | building |
+| R-38 | The same detection and management in the cloud, plus spinning up capacity within a client's budget and limits. | 2026-09-18 | quotas and spin-up policy (S-4.8), placement decision (S-2.23) | proposed; research recorded |
+| R-39 | System administrators and client administrators manage resources, budgets, nodes, stalled instances, and logs from a front end. | 2026-09-18 | administrator surfaces (S-4.9) | proposed |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -179,6 +182,8 @@ named check fails.
 | S-2.19 Docs root specifications | Move the specifications at the `docs` root into their kind folders with redirect stubs so the root holds only entry points. | `LINT`; every moved link resolves | A moved record without a redirect stub fails the link check | S-2.17 |
 | S-2.20 Typed action decisions over an element table | An indexed element table rendered as text lines, a declared action vocabulary with the browser vocabulary as the packaged default, a bounded request, admission under `typed_decision.action` that refuses an operation outside the vocabulary, a target outside the table, a typing operation without text, and a finishing operation with a target, and a decision that marks done or blocked as still needing independent verification. | `SELF`; eight killed mutants | A target outside the table or an operation outside the vocabulary must be refused | S-2.13 |
 | S-2.21 Browser harness adapter | A page reader that builds the element table, an act adapter with declared effects and adaptive waits, and a live TypeSafe route; a done decision is accepted only by the independent verifier. | A recorded browser task with exact denominators | A done decision accepted without the verifier must fail | S-2.20, S-2.2, a key the owner authorizes |
+| S-2.22 Local resource supervisor | `core/local_resources`: a measured snapshot (memory, pressure stall information, control group limits, load), an instance ledger with heartbeats and an append-only event log, admission against a ceiling derived from the machine, stall detection by heartbeat age, pause of the largest instance under memory pressure and resume on recovery, all through an injected controller that signals only owned handles. | `SELF`; mutants | An instance above the ceiling must be refused; a stalled instance must be stopped through its handle; an instance without a handle must never be signaled | S-2.2 |
+| S-2.23 Cluster placement decision | A measured study of one pod per node against a worker pool that hosts many nodes per pod, with the overhead per shape, the stall and hibernation mechanism per shape, and a queue with quotas for thousands of nodes. | Measured table with exact denominators | A placement claim without a measured overhead row is unmeasured, never recommended | S-2.22 |
 | S-2.11 Search characteristics sidecar and hybrid retrieval | Facets, digests, and optional embeddings stored beside body references; a large body stays in a file, an object store, or a package; hybrid (lexical plus vector) and iterative retrieval over the same records through the existing Retriever; the same query answered by DuckDB and by a server adapter with identical results on the fixture population. | `SELF`; two adapters return identical ranked identities for the fixture queries | Remove the body reference; the large-body check must fail | S-2.10 |
 
 ### Phase 3: proof of concept
@@ -201,6 +206,8 @@ named check fails.
 | S-4.4 Deployment | Deploy the service and the site to the owner's cloud account. | A public health endpoint answers; a recorded run | Blocked until the owner supplies the account | S-4.2 |
 | S-4.5 Billing | Payment provider integration with metered usage. | A test-mode charge recorded | Blocked until the owner supplies the account | S-4.4 |
 | S-4.6 Package index publication | Publish `loop-engine` and an exported solution to a package index. | Installable from the index in a clean environment | Blocked until the owner supplies the account | S-0.5 |
+| S-4.8 Cloud capacity within a client budget | Per-tenant quotas, a spin-up policy that stops at the declared budget, and the record of every scale decision. | A recorded scale-up that stops at the budget | A scale-up beyond the budget must be refused | S-2.23, S-4.2 |
+| S-4.9 Administrator surfaces | Resource state, budgets, node counts, stalled instances, pause and resume, and logs for system administrators and, per tenant, client administrators. | Browser audit of the views | A client administrator must not see another tenant's nodes or logs | S-2.22, S-4.8 |
 | S-4.7 Worker image publication | The publish workflow builds the digest-pinned image on every push to `main`, pushes it to the GitHub Container Registry under this repository as `main` and `sha-<commit>`, pulls it back by digest, runs `doctor`, and records the digest in the job summary. | The workflow run succeeds and the digest is recorded in this roadmap | A pushed image whose `doctor` command fails must fail the workflow | S-4.1 |
 
 ### Phase 5: business and brand
@@ -279,6 +286,15 @@ Append one line per iteration: date, step, result, evidence path, commit.
   records index check, self-test of 5,131 checks, battery of 32 steps) and
   twenty-six killed mutants across the typed-decision, seeded generation,
   and layout scripts.
+- 2026-09-18, S-2.22 offline_verified: local resource detection and a
+  supervisor for harness instances in `core/local_resources.py` (measured
+  snapshot with unknown kept distinct from zero, instance ledger with an
+  append-only event log, admission within a ceiling derived from the
+  machine, stall detection, pause under memory pressure and resume on
+  recovery through an injected controller that signals only owned
+  handles); eight killed mutants; no live harness run supervised yet.
+  R-37 to R-39 registered; S-2.23, S-4.8, and S-4.9 proposed; the hosting
+  and resource management research record is in progress.
 - 2026-09-18, S-2.20 offline_verified: typed action decisions over an
   element table in `core/typed_action_decision.py` after the owner pointed
   at Jev Ultrafast from browser-use (facts read from the repository the
