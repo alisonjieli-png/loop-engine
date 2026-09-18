@@ -212,9 +212,6 @@ What the report guarantees:
   typed decisions (`decide_possible_pairs`), with the answers recorded as
   decisions and call records, not applied as merges.
 
-Address component extraction and database copy are the remaining members
-of this family on the roadmap (S-1.10).
-
 ## Email recovery and malformed field detection
 
 Two more members of the family live in `code_nodes/field_recovery.py`.
@@ -240,3 +237,44 @@ the character pattern of every value, finds the column's dominant pattern,
 and flags the values that differ with a confidence equal to the share
 margin; when no pattern reaches the declared dominant share it flags
 nothing and says so.
+
+## Database copy with corrections and a dedupe proposal
+
+```python
+from loop_engine.code_nodes.database_copy import ColumnCorrection, TableLocation, copy_table
+from loop_engine.code_nodes.field_recovery import recover_email
+
+manifest = copy_table(
+    TableLocation("contacts.csv"), TableLocation("clean.sqlite", "contacts_clean"),
+    corrections=(ColumnCorrection("email", recover_email),),
+    proposal=proposal, identity_column="id")
+```
+
+The copy writes a new delimited file or a new SQLite table and refuses a
+target that exists or that is the source. Only a correction in the applied
+band changes a value; held and escalated values are copied unchanged and
+counted per column so a reviewer sees what was left alone. A dedupe
+proposal drops the merged identities and keeps the survivors. The manifest
+carries the source digest before and after the copy (they must match), the
+target digest, and the rows in, out, and dropped.
+
+## Address component extraction
+
+```python
+from loop_engine.code_nodes.address_components import extract_components
+
+parts = extract_components("12 N Main St Apt 4B, Springfield, IL 62704, USA")
+parts.components   # house_number, street, unit, city, region, postal_code, country
+parts.reasons      # what was recognized and what could not be placed
+parts.confidence   # the weakest named signal
+parts.key()        # a comparison key for duplicate detection
+```
+
+The standard library parser works from declared data: unit keywords and
+postal code patterns for the United States, Canada, and Britain. It finds
+the postal code before it judges the city, so a city ahead of a code is
+never called ambiguous, and it names every component it could not place.
+The optional `usaddress` and `libpostal` parsers enter through
+`extract_components(text, parser="usaddress")` or `parser="libpostal"` as
+adapters whose label maps are data; when the package is not installed the
+result says so (`available` is false) instead of guessing.

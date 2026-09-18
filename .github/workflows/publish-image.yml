@@ -37,6 +37,24 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+
+      - name: Pull the pinned base image with retries
+        # A transient token fetch failure at the registry must not fail the
+        # publication; the base image is pinned by digest in the Dockerfile.
+        run: |
+          BASE=$(sed -n 's/^FROM \(python:[^ ]*\).*/\1/p' Dockerfile | head -1)
+          echo "base image: $BASE"
+          for attempt in 1 2 3 4 5; do
+            if docker pull "$BASE"; then
+              exit 0
+            fi
+            echo "pull attempt $attempt failed; waiting before the next attempt"
+            sleep $((attempt * 20))
+          done
+          echo "the base image could not be pulled after five attempts"
+          exit 1
 
       - name: Build and push
         id: build

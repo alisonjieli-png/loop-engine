@@ -93,11 +93,11 @@ steps:
   - id: S-1.10
     phase: 1
     title: Detection and correction node family with confidence
-    status: building
+    status: offline_verified
     depends_on: [S-0.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the confidence; the outcome check must fail"
-    evidence: "code_nodes/duplicate_detection.py: fuzzy duplicates over names, addresses, emails, and phones with five blocking keys, a weakest-signal confidence, clusters from duplicate decisions only, a dedupe proposal, and possible pairs escalated as typed decisions (11 checks, 8 mutants); code_nodes/field_recovery.py: email recovery from declared tables under the apply, hold, and escalate bands and malformed field detection by dominant pattern margin (10 checks, 7 mutants); address component extraction with the optional usaddress and libpostal adapters and database copy remain to build"
+    evidence: "code_nodes/duplicate_detection.py: fuzzy duplicates over names, addresses, emails, and phones with five blocking keys, a weakest-signal confidence, clusters from duplicate decisions only, a dedupe proposal, and possible pairs escalated as typed decisions (11 checks, 8 mutants); code_nodes/field_recovery.py: email recovery from declared tables under the apply, hold, and escalate bands and malformed field detection by dominant pattern margin (10 checks, 7 mutants); code_nodes/database_copy.py: copy to a new delimited file or SQLite table with applied corrections and a dedupe proposal, never in place, with a manifest of digests and counts (6 checks, 6 mutants); code_nodes/address_components.py: house number, street, unit, city, region, postal code, and country from declared patterns with a weakest-signal confidence and optional usaddress and libpostal adapters that report unavailability (6 checks, 6 mutants); a live run has not consumed any member yet"
   - id: S-1.11
     phase: 1
     title: Job-description-seeded intelligence pipeline and first seeds
@@ -117,11 +117,11 @@ steps:
   - id: S-2.7
     phase: 2
     title: Prompt element and response-style dimensions as grid axes
-    status: proposed
+    status: offline_verified
     depends_on: [S-2.6]
     verify: [SELF, MUTANT]
     adversarial: "remove the slot from the render digest; the check must fail"
-    evidence: ""
+    evidence: "src/loop_engine/core/prompt_elements.py self_test (6 checks): two integer-range axes over 192 combinations, rendering of selected elements only, render digest per slot; five killed mutants; no live grid has measured the axes"
   - id: S-2.8
     phase: 2
     title: Middleware and wrapper abstractions for microservice hosting

@@ -882,8 +882,19 @@ conformance catalogs, five blocking keys, a confidence that is the weakest
 named field signal so a shared email with a different name is a possible
 pair for review and never a merge, clusters from duplicate decisions only,
 a dedupe proposal that touches no row, and possible pairs escalated as
-typed decisions. The conformance scan refuses a direct write to a
-packaged intelligence path outside the catalog adapters. The worker image
+typed decisions; email recovery and malformed field detection followed
+under the same apply, hold, and escalate bands, and database copy writes
+a new delimited file or SQLite table with applied corrections and the
+proposal's drops, never in place, with a manifest of digests and counts;
+address component extraction splits a line from declared patterns with a
+weakest-signal confidence and lets the optional usaddress and libpostal
+parsers in as adapters that report unavailability instead of guessing. No
+live run has consumed a member of the family yet. Prompt elements and
+response style are two declared grid axes over 192 combinations in
+`core/prompt_elements`, rendering only the selected elements with a style
+instruction from a data table and recording the changed slot in the render
+digest; no live grid has measured them. The conformance scan refuses a
+direct write to a packaged intelligence path outside the catalog adapters. The worker image
 pins its base by digest, builds locally, runs `doctor`, and
 is published to the GitHub Container Registry by a workflow on every push
 to `main`. Verification on a different route, the last attack that

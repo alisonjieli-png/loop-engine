@@ -53,14 +53,14 @@ rest are listed.
 | R-08 | Solution nodes with parameters get a grid and optimization (grid, Bayesian, evolutionary). | 2026-09-13, 2026-09-18 | `optimization` extra, `configuration-grid-search` guide | represented; runnable offline optimizer is S-3.4 |
 | R-09 | Every harness instance receives the core tools, plugins, context, instruction files, contracts, hooks, loops, and lookups it needs to reach core intelligence (web research, intelligence layer queries) shipped with the project. | 2026-09-18 | Core Architecture ports; `core/capability_directory` | partial; provisioning manifest is S-2.2 |
 | R-10 | External intelligence tools, plugins, and servers with authentication, as a paid feature. | 2026-09-18 | `core/custom_endpoint`, `core/mcp_adapter`, packaging tiers | represented; paywall tier is S-4.3 |
-| R-11 | Run locally with every node on the host, or in the cloud where Kubernetes manages nodes and harness instances as containers. | 2026-09-18 | `core/workspace_backends` (Docker), `code_nodes/solution_export` (Job manifest) | partial; placement policy and worker image are S-4.1 |
-| R-12 | A working proof of concept of convergence and optimization end to end. | 2026-09-18 | campaign runner, evaluation product | proposed; S-3.1 to S-3.5 |
-| R-13 | Research the business paths: own startup, partnering, joining a small startup for equity, and other options. | 2026-09-18 | research records | proposed; S-5.2 |
+| R-11 | Run locally with every node on the host, or in the cloud where Kubernetes manages nodes and harness instances as containers. | 2026-09-18 | `core/workspace_backends` (Docker), `code_nodes/solution_export` (Job manifest), the published worker image (S-4.1, S-4.7) | partial; the image is published and the manifests validate offline; a cluster run needs the owner's account |
+| R-12 | A working proof of concept of convergence and optimization end to end. | 2026-09-18 | evaluation product, configuration optimizer, node grid, convergence report | partial; offline convergence and noise injection landed (S-3.1, S-2.15); the live run is S-3.2 |
+| R-13 | Research the business paths: own startup, partnering, joining a small startup for equity, and other options. | 2026-09-18 | `docs/research/BUSINESS-PATHS-2026-09-18.md` | offline_verified; the owner decides (S-5.2) |
 | R-14 | Test with unseen tasks on a frontier model, then Kaggle tasks and hackathons, exporting solutions. | 2026-09-18 | campaigns, `solution_export` | blocked on a model key the owner authorizes; S-3.5 |
-| R-15 | No heuristic decisions before one million recorded runs, except an exact fingerprint at the atomic level for reason, build, or execute; the data must be collected now in a versioned location fit for training specialized models. | 2026-09-18 | `core/model_call_records`, `core/operation_cost_records`, `core/reuse_evidence`; training data store and heuristic adoption policy proposed | partial; S-2.5 |
+| R-15 | No heuristic decisions before one million recorded runs, except an exact fingerprint at the atomic level for reason, build, or execute; the data must be collected now in a versioned location fit for training specialized models. | 2026-09-18 | `core/model_call_records`, `core/operation_cost_records`, `core/reuse_evidence`, the training data store and `core/heuristic_adoption` | published (S-2.5); no live run feeds the store yet |
 | R-16 | A roadmap with tests, checkpoints, status updates, and tasks that a loop can walk. | 2026-09-18 | this document and `roadmap.yaml` | published |
 | R-17 | A live hosted proof of concept and a live hosted service that can charge. | 2026-09-18 | service software S-4.2, deployment S-4.4, billing S-4.5 | proposed; deployment and billing need owner accounts |
-| R-18 | A documented Y in every column of the feature matrix, with every capability the compared companies have. | 2026-09-18 | matrix gaps S-1.1 to S-1.9 | partial |
+| R-18 | A documented Y in every column of the feature matrix, with every capability the compared companies have. | 2026-09-18 | the six-table matrix (S-1.9) | partial; seventy-five columns with two partial cells (task working folder, meta-selection) and two absent cells that need the owner (hosted cloud, public pricing) |
 | R-19 | Consider a brand beyond Loop Engine, such as a frontier harness fabric. | 2026-09-18 | branding record S-5.1 | proposed |
 | R-20 | Every contract names its matching mode; exact everywhere is brittle. | 2026-09-18 | `core/contract_matching` | published; review of remaining exact comparisons open |
 | R-21 | Model calls under a model ontology with suggested outputs, recorded for later training. | 2026-09-18 | `core/model_ontology`, `core/model_call_contract`, `core/suggested_output` | published |
@@ -277,6 +277,12 @@ Append one line per iteration: date, step, result, evidence path, commit.
   records index check, self-test of 5,131 checks, battery of 32 steps) and
   twenty-six killed mutants across the typed-decision, seeded generation,
   and layout scripts.
+- 2026-09-18, S-2.7 offline_verified: prompt elements and response style
+  are two integer-range grid axes in `core/prompt_elements.py` that address
+  all 192 combinations exactly once, render only the selected elements
+  plus the style instruction from a data table, refuse a selected element
+  without text, and record the slot a cell changed in the render digest;
+  five killed mutants; no live grid has measured the axes yet.
 - 2026-09-18, S-1.10 building: duplicate detection landed as the second
   detection and correction family (`code_nodes/duplicate_detection.py`):
   names, addresses, emails, and phones keyed with the text conformance
@@ -290,7 +296,16 @@ Append one line per iteration: date, step, result, evidence path, commit.
   Email recovery and malformed field detection followed in
   `code_nodes/field_recovery.py` with declared repair tables, the same
   apply, hold, and escalate bands, and a dominant-pattern margin; seven
-  killed mutants. Address component extraction and database copy remain.
+  killed mutants. Database copy (`code_nodes/database_copy.py`) copies a
+  delimited file or SQLite table to a new target with applied corrections
+  and a dedupe proposal, never in place, with a manifest of digests and
+  counts; six killed mutants. Address component extraction
+  (`code_nodes/address_components.py`) splits a line into house number,
+  street, unit, city, region, postal code, and country from declared
+  patterns with a weakest-signal confidence, and the optional usaddress
+  and libpostal adapters report unavailability instead of guessing; six
+  killed mutants. S-1.10 is offline_verified; no live run has consumed a
+  member yet.
 - 2026-09-18, S-4.7 published: the first run of the publish workflow on
   commit `855ab32` pushed
   `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`

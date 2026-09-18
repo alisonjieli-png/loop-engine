@@ -42,6 +42,44 @@ First public release.
   from the column's dominant pattern is flagged with the share margin,
   with nothing flagged when no dominant pattern exists. Seven mutants are
   killed.
+- The publish workflow pulls the digest-pinned base image with up to five
+  retries before building, on the plain Docker driver, after one run
+  failed on a transient token fetch at the registry (connection reset)
+  with no change to the image; that run was rerun by hand.
+- Prompt elements and response style are declared, optimizable dimensions
+  (roadmap S-2.7). `core/prompt_elements.py` names six prompt elements
+  (task background, context background, atomic information, inputs and
+  outputs, expectations, format) and three response styles (concise, only
+  what was asked, full) as two integer-range grid axes that address every
+  one of the 192 combinations exactly once; rendering carries only the
+  selected elements in the declared order plus the style instruction from
+  a data table, refuses a selected element without text so a cell never
+  silently drops declared material, and the render digest records exactly
+  which slot a cell changed. Five mutants are killed. No live grid has
+  measured the axes yet.
+- Address component extraction completes the family
+  (`code_nodes/address_components.py`). One address line splits into
+  house number, street, unit, city, region, postal code, and country from
+  declared unit keywords and postal patterns for the United States,
+  Canada, and Britain, with the reasons for what could not be placed and
+  a confidence that is the weakest named signal; the postal code is found
+  before the city is judged so a city ahead of a code is never called
+  ambiguous; the optional usaddress and libpostal parsers enter as
+  adapters whose label maps are data and report unavailability instead of
+  guessing when the package is absent. Six mutants are killed. Every
+  mutant script now runs each mutant with a fresh bytecode cache, because
+  a same-size edit made within one second of the restore reused stale
+  bytecode and hid one address mutant until the cache was isolated; the
+  batch 11 and 12 mutant scripts were rerun the same way.
+- Database copy with corrections and a dedupe proposal completes the
+  data path of the family (`code_nodes/database_copy.py`). A delimited
+  file or a SQLite table is copied to a new target, refused when the
+  target exists or is the source; only a correction in the applied band
+  changes a value, held and escalated values are copied unchanged and
+  counted per column, a dedupe proposal drops the merged identities and
+  keeps the survivors, and the manifest carries the source digest before
+  and after the copy, the target digest, and the rows in, out, and
+  dropped. Six mutants are killed.
 - The first worker image is published:
   `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`
   (tags `main` and `sha-855ab32`, public package), pushed by the publish

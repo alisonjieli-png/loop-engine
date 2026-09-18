@@ -4257,4 +4257,140 @@ entries:
   - one_term_one_meaning
   - one_source_of_truth
   - no_authority_from_alias
-source_digest: 2089aef98b26b7f2b8b68b74cfc9c12a3302ffef7aa859af29fee9b4aa78a82d
+- term_id: code_nodes.term.copy_manifest
+  canonical_name: database copy manifest
+  primary_category: record
+  definition: 'The record of one copy of a table into a new target: the source and target locations with
+    their digests, the rows in, out, and dropped by a dedupe proposal, the count of applied, held, escalated,
+    and unchanged corrections per column, and the statement that nothing was copied in place.'
+  source_of_truth: loop_engine.code_nodes.database_copy:copy_table
+  source_symbol: loop_engine.code_nodes.database_copy:copy_table
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: database_copy_manifest/v1
+  related_terms:
+  - DedupeProposal
+  - RecoveryTables
+  - TableLocation
+  difference_from_neighbors: a copy manifest says what a copy did to a new target; a dedupe proposal says
+    what a merge would keep; neither touches the source.
+  parameterization_decision: typed_locations_column_corrections_and_an_optional_proposal
+  composition_decision: only a correction in the applied band changes a value; a target that exists or
+    is the source is refused; the source digest must not change during the copy
+  inheritance_decision: none
+  storage_authority: the caller's task folder beside the target
+  lifecycle: Immutable per copy.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - four rows in, three out, one dropped by the proposal, one email applied, one held, one escalated.
+  negative_examples:
+  - A copy that overwrote its target.
+  - A held value written as corrected.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: code_nodes.term.table_location
+  canonical_name: TableLocation
+  primary_category: record
+  definition: A delimited file, or a table inside a SQLite database file, named by path and table with
+    a one-character delimiter; the source or the target of a copy.
+  source_of_truth: loop_engine.code_nodes.database_copy:TableLocation
+  source_symbol: loop_engine.code_nodes.database_copy:TableLocation
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: database_copy module
+  related_terms:
+  - database copy manifest
+  difference_from_neighbors: a TableLocation names where rows live; a catalog store adapter serves intelligence
+    records through the store contract.
+  parameterization_decision: path_table_and_delimiter
+  composition_decision: a table name is a plain identifier; the kind follows from whether a table is named
+  inheritance_decision: none
+  storage_authority: the file system
+  lifecycle: Immutable.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - contacts.csv; copy.sqlite table contacts_clean.
+  negative_examples:
+  - A table name with a space or a quote.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: code_nodes.term.address_components
+  canonical_name: AddressComponents
+  primary_category: record
+  definition: The components found in one address line (house number, street, unit, city, region, postal
+    code, country) by a named parser, with the unmapped remainder, the reasons for what was recognized
+    or could not be placed, a confidence that is the weakest named signal, and whether the parser was
+    available.
+  source_of_truth: loop_engine.code_nodes.address_components:AddressComponents
+  source_symbol: loop_engine.code_nodes.address_components:AddressComponents
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: address_components/v1
+  related_terms:
+  - DuplicateReport
+  - RecoveryTables
+  difference_from_neighbors: AddressComponents splits one line without rewriting it; a correction changes
+    a value; a DuplicateReport compares rows.
+  parameterization_decision: declared_unit_keywords_postal_patterns_and_adapter_label_maps
+  composition_decision: the postal code is found before the city is judged; an optional parser reports
+    unavailability instead of guessing; an unknown parser is refused by name
+  inheritance_decision: none
+  storage_authority: the caller's task folder
+  lifecycle: Immutable per extraction.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - '12 N Main St Apt 4B, Springfield, IL 62704, USA: seven components at confidence 0.8.'
+  negative_examples:
+  - A country claimed from a postal pattern label.
+  - A parser that guesses when its package is absent.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+- term_id: core.term.prompt_element_selection
+  canonical_name: PromptElementSelection
+  primary_category: record
+  definition: Which of the six declared prompt elements a prompt carries and which of the three response
+    styles it asks for, addressed by two integer-range grid axes; rendering carries only the selected
+    elements in the declared order plus the style instruction from a data table, and the render digest
+    records exactly which slot a cell changed.
+  source_of_truth: loop_engine.core.prompt_elements:PromptElementSelection
+  source_symbol: loop_engine.core.prompt_elements:PromptElementSelection
+  public_or_internal: public
+  runtime_or_passive: passive
+  authoritative_or_projection: authoritative
+  versioning: prompt_element_selection/v1
+  related_terms:
+  - SuggestedOutput
+  - ConfigurationSpace
+  - StringFragment
+  difference_from_neighbors: PromptElementSelection decides which elements and style a prompt carries;
+    SuggestedOutput decides the answer shape; a StringFragment is the text of one element.
+  parameterization_decision: closed_element_and_style_vocabularies_as_two_integer_axes
+  composition_decision: a selected element without text is refused so a cell never silently drops declared
+    material; an element present but not selected is left out, which is the point of the axis
+  inheritance_decision: none
+  storage_authority: the configuration space that declares the axes
+  lifecycle: Immutable per cell.
+  legacy_aliases: []
+  migration: New on 2026-09-18.
+  examples:
+  - 'inputs_and_outputs and format only, concise: element set 40, style 0.'
+  negative_examples:
+  - A style that is not a row of the style table.
+  - A rendered prompt that carries an element the cell did not select.
+  conformance_rules:
+  - one_term_one_meaning
+  - one_source_of_truth
+  - no_authority_from_alias
+source_digest: 0b27ebf22fa227c43b6c79eecb9307f0a44067d5b0f5b73141abdaf5f5842d0b

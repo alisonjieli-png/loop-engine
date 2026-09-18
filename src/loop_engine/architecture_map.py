@@ -150,7 +150,7 @@ MODULE_MAP = {
         "solution_export", "solution_export_checks", "service_endpoints",
         "string_foundry",
         "text_conformance", "text_conformance_checks", "text_conformance_operations",
-        "duplicate_detection", "field_recovery",
+        "duplicate_detection", "field_recovery", "database_copy", "address_components",
     ),
     "core": (
         "adaptive_practitioner", "adaptive_practitioner_acceptance_checks",
@@ -265,6 +265,7 @@ MODULE_MAP = {
         "specialist_training", "operation_cost_capture",
         "evaluation_suite", "configuration_optimizer", "node_grid", "service_api",
         "seeded_generation", "typed_decision", "route_separation", "route_separation_checks",
+        "prompt_elements",
         "model_prompt_envelope",
         "model_gateway_accounting", "model_gateway_accounting_checks", "model_token_preflight",
         "model_output_recovery_checks", "model_output_allocation_checks",

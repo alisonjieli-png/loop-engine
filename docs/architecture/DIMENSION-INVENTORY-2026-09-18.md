@@ -104,8 +104,8 @@ above. Added here:
 
 | Dimension | Values | Owning boundary | State |
 |---|---|---|---|
-| Prompt elements | task background, context background, atomic information, inputs and outputs, expectations, format | prompt resource bundle slots (S-2.7) | slots represented; element vocabulary proposed |
-| Response style | full, concise, only what was asked, terse community styles | response-style slot (S-2.7) | proposed |
+| Prompt elements | task background, context background, atomic information, inputs and outputs, expectations, format | `core/prompt_elements` `PromptElementSelection` (S-2.7) | offline verified as a grid axis over 64 element sets; no live grid has measured it |
+| Response style | full, concise, only what was asked; terse community styles as further rows of the style table | `core/prompt_elements` style table (S-2.7) | offline verified as a grid axis over three styles; no live grid has measured it |
 | Block order and trust boundaries | system, constitution, role, objective, task, context, memory, evidence, constraints, examples, reasoning, output contract, verification | `StringFragment` block roles | represented |
 | Size and omission policy | per-slot limits, omission rules, render digest | prompt resource bundle | represented |
 | Response contract | the registered contracts and their matching modes | response contract registry, contract matching | represented |
