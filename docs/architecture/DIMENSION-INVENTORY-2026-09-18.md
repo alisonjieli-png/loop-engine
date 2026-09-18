@@ -49,6 +49,10 @@ Levels of configuration
 | Secrets and credentials | reference names only | provider settings | represented |
 | Instance ceiling and memory reserve | a ceiling derived from the processors the machine reports or declared by policy; the memory reserve and resume fractions; the stall age; the pressure threshold | `core/local_resources` `ResourcePolicy` (S-2.22) | offline verified; no live run supervised |
 | Cloud capacity within a client budget | per-tenant quotas, a spin-up policy that stops at the budget | S-4.8 | proposed |
+| Lifecycle action per instance | yield, freeze, checkpoint and release, cancel | `core/instance_hibernation` `ACTIONS` (S-2.24) | offline verified; no live harness hibernated |
+| Restoration fidelity per adapter | restart only, native session resume, application checkpoint, filesystem snapshot, process memory restore | `core/instance_hibernation` `FIDELITIES` (S-2.24) | offline verified; each adapter declares one |
+| Reservation headroom | the fraction of measured memory kept back for the operating system and for writing a checkpoint | `core/instance_hibernation` `ReservationLedger` (S-2.24) | offline verified |
+| Execution profile per workload class | direct execution, retained worker pool, process or sandbox per session, isolated sandbox, shared inference service, batch job | S-2.25 | proposed |
 
 ## Solutioning space level
 

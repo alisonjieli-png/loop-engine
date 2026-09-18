@@ -54,6 +54,28 @@ First public release.
   worker pool hosting many nodes, and a queue with quotas for thousands
   of nodes) with every figure labeled documented, measured, or estimate;
   and the administrator needs mapped to what exists. It decides nothing.
+- Hibernation, reservation, and progress-aware stalls complete the local
+  supervisor (roadmap S-2.24). `core/instance_hibernation.py` separates the
+  four actions a caller can ask of a running instance: yield and freeze stop
+  execution and keep the memory, checkpoint and release and cancel free it.
+  Capacity is reserved before an instance starts, counted against the next
+  admission so two starts in the same second cannot both see the same free
+  memory, held back by a headroom fraction for the operating system and for
+  writing a checkpoint when capacity runs short, and released only after the
+  controller confirms the worker stopped: a written checkpoint or a sent
+  signal is a request, not a confirmation, and an unconfirmed stop is
+  recorded as its own event while the reservation stands. The hibernation
+  protocol walks quiesce, write, verify, fence publication, confirm stopped,
+  release, and hibernated in order, and its report names the last step
+  reached rather than claiming the end. A checkpoint declares its
+  restoration fidelity (restart only, native session resume, application
+  checkpoint, filesystem snapshot, process memory restore) and cannot claim
+  more than the adapter performs; a resume takes capacity again before it
+  restarts and names the pending external effects that still need
+  reconciliation. A declared wait on an authorized model call is not a stall
+  until its own deadline passes, and a heartbeat that reports no progress
+  still stalls. The process tree controller signals only an owned group and
+  confirms it is gone. Eleven mutants are killed.
 - Local resource detection and a supervisor for harness instances (roadmap
   S-2.22), after the owner asked for local resource management.
   `core/local_resources.py` measures the machine (memory, pressure stall

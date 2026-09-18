@@ -69,6 +69,8 @@ rest are listed.
 | R-37 | Local resource detection and management: a supervisor keeps the number of live harness instances within what the machine carries, detects stalled instances and clears them through owned handles, pauses or hibernates a memory-heavy iterative instance and restarts it later, and logs every transition. | 2026-09-18 | `core/local_resources` (S-2.22) | building |
 | R-38 | The same detection and management in the cloud, plus spinning up capacity within a client's budget and limits. | 2026-09-18 | quotas and spin-up policy (S-4.8), placement decision (S-2.23) | proposed; research recorded |
 | R-39 | System administrators and client administrators manage resources, budgets, nodes, stalled instances, and logs from a front end. | 2026-09-18 | administrator surfaces (S-4.9) | proposed |
+| R-40 | A node that is frozen keeps its memory; only a verified checkpoint and a confirmed stop release capacity, and a node continues to exist when its harness does not. | 2026-09-18 | `core/instance_hibernation` (S-2.24) | offline_verified |
+| R-41 | Cost is reserved before work and reconciled afterwards, so a timeout never erases an outstanding liability. | 2026-09-18 | cost reservation ledger (S-4.10) | proposed |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -183,6 +185,9 @@ named check fails.
 | S-2.20 Typed action decisions over an element table | An indexed element table rendered as text lines, a declared action vocabulary with the browser vocabulary as the packaged default, a bounded request, admission under `typed_decision.action` that refuses an operation outside the vocabulary, a target outside the table, a typing operation without text, and a finishing operation with a target, and a decision that marks done or blocked as still needing independent verification. | `SELF`; eight killed mutants | A target outside the table or an operation outside the vocabulary must be refused | S-2.13 |
 | S-2.21 Browser harness adapter | A page reader that builds the element table, an act adapter with declared effects and adaptive waits, and a live TypeSafe route; a done decision is accepted only by the independent verifier. | A recorded browser task with exact denominators | A done decision accepted without the verifier must fail | S-2.20, S-2.2, a key the owner authorizes |
 | S-2.22 Local resource supervisor | `core/local_resources`: a measured snapshot (memory, pressure stall information, control group limits, load), an instance ledger with heartbeats and an append-only event log, admission against a ceiling derived from the machine, stall detection by heartbeat age, pause of the largest instance under memory pressure and resume on recovery, all through an injected controller that signals only owned handles. | `SELF`; mutants | An instance above the ceiling must be refused; a stalled instance must be stopped through its handle; an instance without a handle must never be signaled | S-2.2 |
+| S-2.24 Hibernation and reservation | Four declared actions (yield, freeze, checkpoint and release, cancel); capacity reserved before a start and released only on a confirmed stop; the ordered hibernation protocol with a checkpoint that declares its restoration fidelity; a resume that reserves again and names unresolved effects; progress-aware stall assessment; a controller that signals only an owned process group. | `SELF`; eleven killed mutants | A freeze must not report memory released; capacity must not be released on an unconfirmed stop; a declared wait must not count as a stall | S-2.22 |
+| S-2.25 Execution profiles | Direct execution, a retained worker pool, a process or sandbox per session, an isolated sandbox for untrusted work, a shared inference service, and a batch job, chosen per workload class instead of one shape for every node. | A measured comparison on one population | Two tenants must never share one writable environment | S-2.23 |
+| S-2.26 Orphan recovery and shared residency | Recovery when contact is lost, and residency accounting so hibernating one instance cannot evict a model another still uses. | `SELF`; mutants | Lost contact must not release capacity or let a stale attempt publish | S-2.24 |
 | S-2.23 Cluster placement decision | A measured study of one pod per node against a worker pool that hosts many nodes per pod, with the overhead per shape, the stall and hibernation mechanism per shape, and a queue with quotas for thousands of nodes. | Measured table with exact denominators | A placement claim without a measured overhead row is unmeasured, never recommended | S-2.22 |
 | S-2.11 Search characteristics sidecar and hybrid retrieval | Facets, digests, and optional embeddings stored beside body references; a large body stays in a file, an object store, or a package; hybrid (lexical plus vector) and iterative retrieval over the same records through the existing Retriever; the same query answered by DuckDB and by a server adapter with identical results on the fixture population. | `SELF`; two adapters return identical ranked identities for the fixture queries | Remove the body reference; the large-body check must fail | S-2.10 |
 
@@ -206,6 +211,7 @@ named check fails.
 | S-4.4 Deployment | Deploy the service and the site to the owner's cloud account. | A public health endpoint answers; a recorded run | Blocked until the owner supplies the account | S-4.2 |
 | S-4.5 Billing | Payment provider integration with metered usage. | A test-mode charge recorded | Blocked until the owner supplies the account | S-4.4 |
 | S-4.6 Package index publication | Publish `loop-engine` and an exported solution to a package index. | Installable from the index in a clean environment | Blocked until the owner supplies the account | S-0.5 |
+| S-4.10 Cost reservation ledger | Estimated execution, external calls, provisioning, and retained infrastructure reserved before work and reconciled against actual charges afterwards. | `SELF`; mutants | A timeout must not erase an outstanding liability | S-2.24 |
 | S-4.8 Cloud capacity within a client budget | Per-tenant quotas, a spin-up policy that stops at the declared budget, and the record of every scale decision. | A recorded scale-up that stops at the budget | A scale-up beyond the budget must be refused | S-2.23, S-4.2 |
 | S-4.9 Administrator surfaces | Resource state, budgets, node counts, stalled instances, pause and resume, and logs for system administrators and, per tenant, client administrators. | Browser audit of the views | A client administrator must not see another tenant's nodes or logs | S-2.22, S-4.8 |
 | S-4.7 Worker image publication | The publish workflow builds the digest-pinned image on every push to `main`, pushes it to the GitHub Container Registry under this repository as `main` and `sha-<commit>`, pulls it back by digest, runs `doctor`, and records the digest in the job summary. | The workflow run succeeds and the digest is recorded in this roadmap | A pushed image whose `doctor` command fails must fail the workflow | S-4.1 |
@@ -286,6 +292,18 @@ Append one line per iteration: date, step, result, evidence path, commit.
   records index check, self-test of 5,131 checks, battery of 32 steps) and
   twenty-six killed mutants across the typed-decision, seeded generation,
   and layout scripts.
+- 2026-09-18, S-2.24 offline_verified: hibernation, reservation, and
+  progress-aware stalls in `core/instance_hibernation.py`. A freeze keeps the
+  memory and says so; only a checkpoint and a confirmed stop release it.
+  Capacity is reserved before an instance starts and counted against the next
+  admission; an unconfirmed stop keeps the reservation and is recorded. The
+  protocol walks its steps in order and the report names the last one
+  reached. A checkpoint declares its restoration fidelity and cannot claim
+  more than the adapter performs. A declared wait on an authorized model call
+  is not a stall; a heartbeat without progress is. Eleven killed mutants; no
+  live harness has been hibernated yet. S-2.25 execution profiles, S-2.26
+  orphan recovery and shared model residency, and S-4.10 the cost reservation
+  ledger are proposed.
 - 2026-09-18, S-2.23 ready: the
   [hosting and resource management record](../research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md)
   reads the documented Kubernetes limits (110 pods per Kubernetes node,

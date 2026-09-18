@@ -23,7 +23,13 @@ STATES = ("running", "paused", "hibernated", "stopped", "stalled")
 LIVE_STATES = STATES[:2]
 INSTANCE_KINDS = ("harness_process", "in_process", "container")
 EVENT_KINDS = ("registered", "heartbeat", "admitted", "refused", "paused", "resumed", "hibernated",
-               "stalled", "stopped", "skipped_no_handle")
+               "stalled", "stopped", "skipped_no_handle",
+               # Added with the hibernation protocol; a reservation is released
+               # only after the worker is confirmed stopped, so the ledger keeps
+               # the unconfirmed case as its own event rather than a silent gap.
+               "reserved", "released", "checkpoint_written", "checkpoint_verified",
+               "publication_fenced", "stop_unconfirmed", "resumed_from_checkpoint",
+               "progress")
 PRESSURE_FILES = (("memory", "memory"), ("cpu", "cpu"), ("io", "io"))
 SNAPSHOT_RECORD_TYPE = "resource_snapshot/v1"
 LEDGER_RECORD_TYPE = "instance_ledger/v1"
@@ -210,6 +216,10 @@ class InstanceLedger:
         if kind not in EVENT_KINDS:
             raise LocalResourceError(f"event kind must be one of {EVENT_KINDS}")
         self.events.append({"kind": kind, "instance_id": instance_id, "at": at, "reason": reason, **extra})
+
+    def record_event(self, kind: str, instance_id: str, at: float, reason: str = "", **extra) -> None:
+        """Append one typed event; the public door for boundaries that extend the protocol."""
+        self._log(kind, instance_id, at, reason, **extra)
 
     def register(self, instance_id: str, kind: str, owner_loop_id: str, *, now: float,
                  handle: object = None, memory_bytes: "int | None" = None) -> InstanceRecord:

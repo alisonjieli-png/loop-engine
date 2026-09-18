@@ -146,6 +146,30 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "an instance above the derived ceiling must be refused; a stalled instance must be stopped through its owned handle; an instance without a handle must never be signaled"
     evidence: "src/loop_engine/core/local_resources.py self_test (10 checks): measured snapshot (memory, pressure stall information, control groups, load), instance ledger with heartbeats and an append-only event log, admission against a ceiling derived from the machine, stall detection, pause on memory pressure and resume on recovery through an injected controller that signals only owned handles; eight killed mutants; no live harness run has been supervised yet"
+  - id: S-2.24
+    phase: 2
+    title: Hibernation protocol, capacity reservation, and progress-aware stalls
+    status: offline_verified
+    depends_on: [S-2.22]
+    verify: [SELF, MUTANT]
+    adversarial: "a freeze must not report memory released; capacity must not be released on an unconfirmed stop; a declared wait must not count as a stall; a checkpoint must not claim a fidelity the adapter does not perform"
+    evidence: "src/loop_engine/core/instance_hibernation.py self_test (14 checks): four declared actions, reservations held before start and released only on a confirmed stop, the ordered hibernation protocol with the last step reached, checkpoint fidelity, resume that reserves again and names unresolved effects, progress-aware stalls, owned process groups; eleven killed mutants; no live harness has been hibernated yet"
+  - id: S-2.25
+    phase: 2
+    title: Execution profile per workload class instead of one shape for every node
+    status: proposed
+    depends_on: [S-2.23]
+    verify: [SELF, MUTANT, a measured comparison of the profiles on one population]
+    adversarial: "two tenants must never share one writable environment; a profile that batches nodes must keep them separately attributable in the graph"
+    evidence: "the decision table in docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md names the shapes; the profiles are direct execution, a retained worker pool, a process or sandbox per session, an isolated sandbox for untrusted work, a shared inference service, and a batch job"
+  - id: S-2.26
+    phase: 2
+    title: Orphan recovery and shared model residency
+    status: proposed
+    depends_on: [S-2.24]
+    verify: [SELF, MUTANT]
+    adversarial: "lost contact must not release capacity or let a stale attempt publish; hibernating one instance must not evict a model another instance still uses"
+    evidence: ""
   - id: S-2.23
     phase: 2
     title: Cluster placement decision, one pod per node against a worker pool that hosts many nodes
@@ -154,6 +178,14 @@ steps:
     verify: [a measured placement study with the overhead per shape and exact denominators]
     adversarial: "a placement claim without a measured overhead row is marked unmeasured, never recommended"
     evidence: "docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md: documented Kubernetes limits, batch queueing, distributed frameworks, sandboxing, Linux control, budget chain, a four-shape decision table with figures labeled documented, measured, or estimate, and the administrator needs; the measured study of the shapes is the remaining work"
+  - id: S-4.10
+    phase: 4
+    title: Cost reservation ledger before work, reconciled after
+    status: proposed
+    depends_on: [S-2.24]
+    verify: [SELF, MUTANT]
+    adversarial: "a timeout must not erase an outstanding liability; a retry must not double count a charge already reserved"
+    evidence: "the budget chain in docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md; this protects experiments before it protects billing"
   - id: S-4.8
     phase: 4
     title: Cloud capacity within a client budget, quotas, and spin-up policy

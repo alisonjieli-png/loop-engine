@@ -945,6 +945,24 @@ budget, the cluster placement decision, and the administrator surfaces are
 roadmap steps S-4.8, S-2.23, and S-4.9; the hosting research record is
 `docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md`.
 
+Observed result, later on September 18. An external review of the resource
+direction made one correction that mattered: freezing a process stops its
+execution and keeps its memory, so a pause is not a hibernation.
+`core/instance_hibernation` now separates the four actions a caller can
+ask of a running instance, reserves capacity before an instance starts
+and counts it against the next admission, releases capacity only after
+the controller confirms the worker stopped, walks the hibernation
+protocol in order and reports the last step reached rather than claiming
+the end, requires a checkpoint to declare the restoration fidelity its
+adapter actually performs, names the pending external effects a resume
+must reconcile, and treats a declared wait on an authorized model call as
+waiting rather than as a stall while a heartbeat without progress still
+stalls. No live harness has been hibernated yet. The review's remaining
+points are roadmap steps: execution profiles per workload class (S-2.25),
+orphan recovery and shared model residency (S-2.26), and a cost
+reservation ledger that protects experiments before it protects billing
+(S-4.10).
+
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of
 concept, billing, publication, and unseen-task runs.
