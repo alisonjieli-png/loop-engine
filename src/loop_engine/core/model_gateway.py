@@ -232,10 +232,19 @@ class ModelGatewayConfig:
     #: invocation to the next route. Off by default: a rejected or
     #: inconclusive answer ends the invocation on the route that produced it.
     allow_evaluator_route_failover: bool = False
+    #: Routes this invocation must not use, by name. Route separation for an
+    #: independent verifier excludes the routes the producer used; when the
+    #: exclusion leaves no permitted route the invocation ends with
+    #: no_eligible_route instead of quietly reusing the producer's route.
+    excluded_routes: tuple[str, ...] = ()
 
     def __post_init__(self):
         if self.output_allocation is not None and not isinstance(self.output_allocation, ModelOutputAllocation):
             raise ValueError("output allocation must be a typed Loop decision")
+        if type(self.excluded_routes) not in (tuple, list) or any(
+                not isinstance(item, str) or not item.strip() for item in self.excluded_routes):
+            raise ValueError("excluded_routes must be a sequence of route names")
+        object.__setattr__(self, "excluded_routes", tuple(self.excluded_routes))
         if type(self.allow_evaluator_route_failover) is not bool:
             raise ValueError("evaluator route failover permission must be Boolean")
         for name in ("max_route_attempts", "max_output_tokens", "max_total_tokens"):
@@ -850,6 +859,10 @@ class ModelGateway:
                             allocation.provider_id, allocation.model_id, allocation.route_name)]
         selected = [(route, attempt) for route, attempt in selected
                     if route.locality in config.allowed_localities]
+        if config.excluded_routes:
+            excluded = set(config.excluded_routes)
+            selected = [(route, attempt) for route, attempt in selected
+                        if route.name not in excluded]
         if not explicit:
             locality_order = {value: index for index, value in enumerate(
                 config.allowed_localities)}
@@ -907,9 +920,12 @@ class ModelGateway:
             getattr(parent, "loop_id", "") or "")
         routes = self._routes(request.config)
         if not routes:
+            excluded = request.config.excluded_routes
             return ModelGatewayResult(
                 ok=False, error_code="no_eligible_route",
-                error="no model route is permitted by this request and policy",
+                error=("no model route is permitted after route separation excluded "
+                       + ", ".join(excluded) if excluded
+                       else "no model route is permitted by this request and policy"),
                 semantic_call_id=semantic_call_id,
                 owner_loop_id=requested_owner_loop_id,
                 prompt_digest=request.prompt_digest,
@@ -1527,6 +1543,25 @@ def self_test() -> dict:
             allow_failover=False, max_route_attempts=1),
         output_contract="practitioner.route"))
     costed_records = cost_ledger.records
+    separated = gateway.invoke(ModelGatewayRequest(
+        "prove route separation refuses the producer's only route",
+        ModelGatewayConfig(route_names=("contract.unknown",), allow_failover=False,
+                           max_route_attempts=1, excluded_routes=("contract.unknown",))))
+    unrelated_exclusion = gateway._routes(ModelGatewayConfig(
+        route_names=("contract.unknown",), allow_failover=False, max_route_attempts=1,
+        excluded_routes=("some.other.route",)))
+    invalid_exclusion = False
+    try:
+        ModelGatewayConfig(excluded_routes=("", ))
+    except ValueError:
+        invalid_exclusion = True
+    check("route_separation_excludes_named_routes_and_never_reuses_an_excluded_one",
+          not separated.ok and separated.error_code == "no_eligible_route"
+          and "route separation excluded contract.unknown" in separated.error
+          and separated.physical_model_calls == 0 and not boundary.chat_attempted
+          and [route.name for route, _attempt in unrelated_exclusion] == ["contract.unknown"]
+          and invalid_exclusion,
+          f"error={separated.error!r}")
     check("a_gateway_with_a_cost_ledger_writes_one_cost_record_per_invocation",
           not costed.ok and len(costed_records) == 1
           and costed_records[0].operation_id == "model_call.practitioner.route"

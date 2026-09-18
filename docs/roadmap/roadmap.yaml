@@ -157,11 +157,11 @@ steps:
   - id: S-1.12
     phase: 1
     title: Adversarial validation and audit of every matrix feature
-    status: building
+    status: offline_verified
     depends_on: [S-0.5]
     verify: [each attack in the plan run and recorded; open attacks listed]
     adversarial: "an attack that succeeds keeps the feature at partial until its boundary changes"
-    evidence: "docs/architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md; four of five open attacks closed with checks and mutants; verification on a different route stays open"
+    evidence: "docs/architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md; all five attacks that succeeded are closed with checks and mutants, the last being verification on a different route (IndependentVerificationPolicy.separate_route, route_separation/v1, gateway excluded_routes); the next attacks come from live runs"
   - id: S-2.12
     phase: 2
     title: Component interface and intelligence flow documentation with inconsistencies
@@ -318,11 +318,11 @@ steps:
   - id: S-4.7
     phase: 4
     title: Worker image publication to the GitHub Container Registry
-    status: building
+    status: published
     depends_on: [S-4.1]
     verify: [the publish workflow pushes ghcr.io/alisonjieli-png/loop-engine:main and :sha-<commit>, pulls it back by digest, and runs doctor]
     adversarial: "a pushed image whose doctor command fails must fail the workflow"
-    evidence: ".github/workflows/publish-image.yml; the first published digest is recorded here after the run"
+    evidence: ".github/workflows/publish-image.yml; first run 35396801054 on commit 855ab32 published ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01 (tags main and sha-855ab32, package visibility public), pulled back by digest and doctor run in the workflow and again from the development host"
   - id: S-4.2
     phase: 4
     title: Service software with tenants, keys, and metering

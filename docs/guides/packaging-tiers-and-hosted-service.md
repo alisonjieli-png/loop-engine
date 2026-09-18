@@ -91,9 +91,12 @@ worker and a Job and validates them offline. The publish workflow
 `main`, pushes it to the GitHub Container Registry under this repository
 as `ghcr.io/alisonjieli-png/loop-engine:main` and `:sha-<commit>`, pulls it
 back by digest, runs `doctor`, and writes the digest to the job summary;
-a deployment manifest should pin that digest. Deployment to a cloud
-account, billing, and package index publication are blocked on accounts
-the owner supplies (S-4.4 to S-4.6).
+a deployment manifest should pin that digest. The first published image,
+from commit `855ab32` on 2026-09-18, is
+`ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`,
+and the package is public. Deployment to a cloud account, billing, and
+package index publication are blocked on accounts the owner supplies
+(S-4.4 to S-4.6).
 
 ## What this guide does not claim
 

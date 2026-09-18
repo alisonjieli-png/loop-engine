@@ -14,19 +14,16 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-from ..code_nodes.solution_model_port import (
-    FixtureModelExecutionRequest, fixture_model_execution,
-)
+from ..code_nodes.solution_model_port import (  # noqa: F401  (re-exported for the route checks)
+    FixtureModelExecutionRequest, ModelExecution, ModelInvocationRequest, fixture_model_execution)
 from ..loop.recursive_loop import Loop
 from . import independent_verification as verification
 from .context_artifacts import (
     ContextArtifactManager, ContextArtifactServices, ContextArtifactStore,
     ContextArtifactStoreSpec,
 )
-from .generated_project import (
-    GeneratedProjectCommand, GeneratedProjectFile, GeneratedProjectFileSpec,
-    GeneratedProjectManifest,
-)
+from .generated_project import (GeneratedProjectCommand, GeneratedProjectFile,
+                                GeneratedProjectFileSpec, GeneratedProjectManifest)
 from .runtime_observer import RuntimeObservationServices
 
 
@@ -768,6 +765,7 @@ def run_checks() -> dict:
     def check(name, passed, detail=""):
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
 
+    from .route_separation_checks import run_route_separation_checks
     from .independent_verification_plan_checks import (
         run_file_identity_checks, run_format_repair_checks, run_judgment_checks, run_plan_checks,
         run_prompt_evidence_checks, run_recovery_record_checks,
@@ -778,6 +776,7 @@ def run_checks() -> dict:
                          ("execution_policy", _execution_policy_checks),
                          ("freeze", _freeze_checks),
                          ("lifecycle", _lifecycle_checks),
+                         ("route_separation", run_route_separation_checks),
                          ("regression_scope", _regression_scope_checks),
                          ("unavailable", _unavailable_checks),
                          ("planned_files", _planned_file_checks),

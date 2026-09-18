@@ -119,6 +119,8 @@ above. Added here:
 | Determinism expectation | deterministic, seeded, stochastic | model call contract | represented |
 | Allocation and capacity | source-backed capacity, selected allowance | output allocation | represented |
 | Recording for learning | full record with digests, labeled by outcome | learnable call records | represented; not wired live |
+| Verifier route separation | off, or every verifier call excludes the routes the producer used | `IndependentVerificationPolicy.separate_route`, `ModelGatewayConfig.excluded_routes` | offline verified; needs two authorized routes to separate |
+| Typed decision route | a judgment profile with label and probability outputs behind the same call boundary | `core/typed_decision`, the `typed_decision.choice` contract | offline verified; no live provider route |
 
 ## Intelligence access level
 

@@ -34,6 +34,11 @@ from .model_response_admission import (
     ModelResponseAdmissionRequest, admit_model_response_as_loop,
 )
 from .independent_judgment import judge_observations, revalidated_judgments
+from .route_separation import (  # noqa: F401  (re-exported for the checks and the review)
+    INDEPENDENCE_SEPARATE_ROUTE, INDEPENDENCE_SHARED_ROUTE, RouteSeparatedSession,
+    independence_label, producer_routes as _producer_routes, require_route_separation,
+    route_separation_record, routes_used_since,
+)
 from .independent_probe_planning import (
     JSON_PROBE_COMPARISONS, PROBE_COMPARISONS, PROBE_TOLERANCE_FIELDS, InvalidProbePlan,
     validate_probe_plan)
@@ -52,20 +57,33 @@ def _digest(value) -> str:
 
 @dataclass(frozen=True)
 class IndependentVerificationPolicy:
-    """Acceptance strength, separate from interaction and spending authority."""
+    """Acceptance strength, separate from interaction and spending authority.
+
+    ``separate_route`` asks the verifier to confirm on a model route the
+    producer did not use: every verifier call excludes the routes recorded
+    on the shared session before verification began, and a run whose only
+    authorized route is the producer's ends with the verification
+    unavailable and the reason on record, never with a quiet reuse.
+    """
 
     required: bool = True
     maximum_plan_attempts: int = 2
+    separate_route: bool = False
 
     def __post_init__(self):
-        if type(self.required) is not bool:
-            raise TypeError("independent verification required must be a boolean")
+        if type(self.required) is not bool or type(self.separate_route) is not bool:
+            raise TypeError("independent verification required and separate_route must be Booleans")
         if type(self.maximum_plan_attempts) is not int or self.maximum_plan_attempts < 1:
             raise ValueError("independent plan attempts must be an explicit positive integer")
 
     def to_dict(self) -> dict:
         return {"record_type": "independent_verification_policy/v2",
-                "required": self.required, "maximum_plan_attempts": self.maximum_plan_attempts}
+                "required": self.required, "maximum_plan_attempts": self.maximum_plan_attempts,
+                "separate_route": self.separate_route}
+
+
+#: The separation pieces live in their own boundary; the names stay importable here.
+_route_separation = route_separation_record
 
 
 @dataclass(frozen=True)
@@ -682,6 +700,17 @@ def run_independent_verification(request, services, owner_loop) -> dict:
         identity=LoopRoleIdentity(LoopRole.PRACTITIONER, "practitioner.verifier"),
         relationship=LoopRelationship.spawned_by(owner_loop.loop_id))
     holder = {}
+    policy = getattr(getattr(services, "request", None), "independent_verification_policy", None)
+    separate = isinstance(policy, IndependentVerificationPolicy) and policy.separate_route
+    producer_session = services.model_session
+    producer_routes = _producer_routes(producer_session, owner_loop)
+    if separate and producer_session is not None:
+        # A shallow copy keeps every shared record list and store; only the
+        # session the verifier calls through changes, and it still charges
+        # the one underlying session.
+        import copy
+        services = copy.copy(services)
+        services.model_session = RouteSeparatedSession(producer_session, producer_routes)
 
     def handler(active, _step, _context):
         report = {"record_type": "independent_verification_report/v1",
@@ -690,10 +719,17 @@ def run_independent_verification(request, services, owner_loop) -> dict:
                   "task_digest": hashlib.sha256(request.task.encode()).hexdigest(),
                   "criteria_digest": _digest(request.criteria),
                   "notes": "Independent checks are incomplete.",
-                  "independence": "isolated_context_shared_model_separate_controller",
+                  "independence": INDEPENDENCE_SHARED_ROUTE,
                   "grants_promotion": False, "checks": [], "execution": {},
                   "probe_ref": None, "source_unchanged": False, "plan_attempts": [], "oracle_reviews": []}
         initial_calls = services.model_session.calls_used if services.model_session else 0
+        initial_results = len(services.model_session.results) if services.model_session else 0
+
+        def separation_record():
+            record = route_separation_record(
+                separate, producer_routes, routes_used_since(services.model_session, initial_results))
+            report["route_separation"] = record
+            report["independence"] = independence_label(record)
         try:
             if (services.request.allow_workspace_writes is not True
                     or services.request.allow_sandbox_commands is not True):
@@ -737,6 +773,7 @@ def run_independent_verification(request, services, owner_loop) -> dict:
             report["notes"] = "Independent checking was interrupted; outcome is unknown."
             report["model_calls_known_subtotal"] = (
                 services.model_session.calls_used - initial_calls if services.model_session else 0)
+            separation_record()
             _record(report, services, active)
             raise
         except Exception as exc:
@@ -744,6 +781,7 @@ def run_independent_verification(request, services, owner_loop) -> dict:
             report["notes"] = "Independent checking unavailable: " + str(exc)
         report["model_calls_known_subtotal"] = (
             services.model_session.calls_used - initial_calls if services.model_session else 0)
+        separation_record()
         holder["report"] = _record(report, services, active)
         # Producing a truthful negative/unknown observation completes this
         # responsibility. Only the parent owns semantic repair or another probe;
@@ -777,6 +815,7 @@ def validate_independent_verification(report, request, services, owner_loop) -> 
     if (_digest(subject) != report.get("subject_digest")
             or report.get("source_unchanged") is not True):
         raise ValueError("independent report evaluated a different source or contract")
+    require_route_separation(report)
     bundle = _load(services, report["probe_ref"])
     _validate_probe(bundle["proposal"], request.criteria)
     if (bundle["task_digest"] != subject["task_digest"]

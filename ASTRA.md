@@ -545,8 +545,11 @@ as the decision record's review sequence describes. An isolated call
 classifies the failure with quoted evidence, a second isolated call must
 confirm any claim that the check is wrong, and a revised check must fail on
 the subject with its authored and produced files emptied before it runs.
-Confirmation on a different model route, and routing for environment defects
-and ambiguous requirements, are not implemented yet.
+Routing for environment defects and ambiguous requirements is not implemented
+yet. Confirmation on a different model route landed later on September 18:
+when the verification policy declares `separate_route`, the verifier's calls
+exclude the routes the producer used and the confirmation of a claimed check
+defect excludes the classification call's route.
 
 Unresolved question. Whether a model step should wait and retry inside the run
 when the provider is unavailable and the recovery reasoning call cannot
@@ -877,7 +880,12 @@ route is declared. The conformance scan refuses a direct write to a
 packaged intelligence path outside the catalog adapters. The worker image
 pins its base by digest, builds locally, runs `doctor`, and
 is published to the GitHub Container Registry by a workflow on every push
-to `main`. The
+to `main`. Verification on a different route, the last attack that
+succeeded in the adversarial plan, is closed: a verification policy may
+declare `separate_route`, the gateway then refuses the producer's routes
+for every verifier call, the report records `route_separation/v1`, and a
+run whose only authorized route is the producer's ends with the
+verification unavailable and the reason on record, never a quiet reuse. The
 [layout and record kinds record](docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md)
 answers the folder question: a folder path says where, a classification
 tree says what kind, a record file says what; every documentation folder
@@ -885,8 +893,10 @@ now states its kind in its README under a conformance gate, and the
 records index lists every version of each dated record in one place. The
 matrix has seventy-four columns; the cells that stay absent are hosted
 cloud and public pricing, which need an operated endpoint and a price the
-owner sets, and verification on a different route, which is roadmap step
-S-3.3.
+owner sets. The first worker image is published as
+`ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`,
+a public package pushed by the workflow on commit `855ab32` and run back
+from the registry with its `doctor` command.
 
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of

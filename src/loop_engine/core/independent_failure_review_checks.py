@@ -243,6 +243,54 @@ def _rule_checks(check):
           and "the claim itself is not evidence" in INDEPENDENT_FAILURE_CONFIRMATION_PROMPT)
 
 
+def _separation_checks(check):
+    """A declared route separation confirms a claimed check defect on another route."""
+    import json
+    from .independent_verification_checks import ModelInvocationRequest
+    from .route_separation_checks import _two_route_execution
+    with tempfile.TemporaryDirectory(prefix="loop-failure-review-routes-") as folder:
+        services, owner = _services(Path(folder))
+        services.model_session = _two_route_execution(
+            ("producer answer", _plan(13), _SOURCE, _APPROVAL, _WRONG_EXPECTATION, _CONFIRMED,
+             _plan(12), _SOURCE, _APPROVAL), max_model_calls=9).start_session()
+        services.request.independent_verification_policy = (
+            verification.IndependentVerificationPolicy(separate_route=True))
+        services.model_session.invoke(ModelInvocationRequest("the producer's own call"), owner)
+        request = _subject(services, source=_GOOD_SOURCE)
+        executions = []
+        with patch.object(verification, "execute_generated_project", _executor(executions)):
+            first = verification.run_independent_verification(request, services, owner)
+            result = review.review_failed_independent_check(request, services, owner, first)
+        record = services.independent_failure_reviews[-1]
+        separation = (record.get("confirmation") or {}).get("route_separation") or {}
+        routes = [item.route for item in services.model_session.results]
+        revised = result.get("report") or {}
+        # Calls: 0 producer; 1 to 3 the separated verification; 4 the classification
+        # (the review itself is not separated from the producer); 5 the confirmation,
+        # separated from the classification's route; 6 to 8 the revision design.
+        check("a_declared_separation_confirms_a_claimed_check_defect_on_another_route",
+              first["status"] == "failed"
+              and (first.get("route_separation") or {}).get("achieved") is True
+              and routes[0] == "fixture.producer"
+              and routes[1:4] == ["fixture.verifier"] * 3
+              and routes[4] == "fixture.producer" and routes[5] == "fixture.verifier"
+              and separation.get("required") is True and separation.get("achieved") is True
+              and separation.get("producer_routes") == ["fixture.producer"]
+              and separation.get("verifier_routes") == ["fixture.verifier"]
+              and result.get("failure_review", {}).get("decision") == "revise_check",
+              json.dumps({"routes": routes, "separation": separation}))
+        # The revised verification reuses the admitted revision without a model
+        # call; its producer routes name only the producer's route, never the
+        # routes the verifier and the review used on the same session.
+        check("a_nested_revision_still_separates_from_the_producer_not_from_the_verifier",
+              revised.get("status") == "passed"
+              and (revised.get("route_separation") or {}).get("producer_routes") == ["fixture.producer"]
+              and (revised.get("route_separation") or {}).get("verifier_routes") == []
+              and (revised.get("route_separation") or {}).get("achieved") is True
+              and services.model_session.calls_used == 9,
+              json.dumps(revised.get("route_separation")))
+
+
 def _hook_checks(check):
     from ..loop.recursive_loop import Loop
     from . import adaptive_practitioner_verification as adaptive
@@ -288,7 +336,7 @@ def run_checks() -> dict:
 
     for label, group in (("revision", _revision_checks), ("decisions", _decision_checks),
                          ("authority", _authority_checks), ("rules", _rule_checks),
-                         ("hooks", _hook_checks)):
+                         ("separation", _separation_checks), ("hooks", _hook_checks)):
         try:
             group(check)
         except Exception as exc:

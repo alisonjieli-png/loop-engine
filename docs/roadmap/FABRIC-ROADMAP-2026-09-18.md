@@ -272,6 +272,27 @@ Append one line per iteration: date, step, result, evidence path, commit.
   mutants including the candidate token replaced by registered are killed;
   the conformance scan now refuses a direct write to a packaged
   intelligence path outside the catalog adapters (S-2.10 partial).
+- 2026-09-18, batch 11 published as commit `855ab32` after the gates
+  (conformance, hardcoding delta, documentation lint, tools tests with the
+  records index check, self-test of 5,131 checks, battery of 32 steps) and
+  twenty-six killed mutants across the typed-decision, seeded generation,
+  and layout scripts.
+- 2026-09-18, S-4.7 published: the first run of the publish workflow on
+  commit `855ab32` pushed
+  `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`
+  with the tags `main` and `sha-855ab32`, the package is public, and the
+  image was pulled back by digest and its `doctor` command run both in the
+  workflow and from the development host; the matrix cell for a published
+  image is now present.
+- 2026-09-18, S-1.12 offline_verified: the fifth and last attack closed.
+  The verification policy may declare `separate_route`; every verifier call
+  then excludes the routes the producer's own calls used through the
+  gateway's `excluded_routes`, the report records `route_separation/v1`, a
+  run whose only route is the producer's ends unavailable with the reason
+  on record, and the confirmation of a claimed check defect excludes the
+  classification call's route; nine killed mutants. Separation is off
+  unless declared, because a run with one authorized route cannot
+  separate.
 - 2026-09-18, S-5.2 offline_verified: the
   [business paths record](../research/BUSINESS-PATHS-2026-09-18.md) reads
   the latest funding or acquisition, partner programs, and open roles of

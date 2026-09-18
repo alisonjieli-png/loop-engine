@@ -19,6 +19,29 @@ First public release.
   [pre-packaged intelligence research](docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md)
   with verified package and occupation-database facts, and the
   [branding options](docs/research/BRANDING-OPTIONS-2026-09-18.md).
+- The first worker image is published:
+  `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`
+  (tags `main` and `sha-855ab32`, public package), pushed by the publish
+  workflow on commit `855ab32`, pulled back by digest and its `doctor`
+  command run in the workflow and from the development host. The feature
+  matrix marks the image as published; the cells that stay absent are
+  hosted cloud and public pricing.
+- Verification on a different model route is implemented, closing the last
+  open attack in the adversarial validation plan. `ModelGatewayConfig` and
+  `ModelInvocationRequest` gain `excluded_routes`; the gateway drops the
+  named routes from its plan and ends with `no_eligible_route` when nothing
+  remains, with accounting kept certain. `IndependentVerificationPolicy`
+  gains `separate_route` (off by default): the verifier's calls then run
+  through a `RouteSeparatedSession` that excludes the routes the producer's
+  own calls used, calls owned by verifier-profile Loops are not counted as
+  the producer's, the report records `route_separation/v1` with the
+  producer routes, the verifier routes, and whether separation was
+  achieved, its independence label says so, a report that required
+  separation and lacks it is refused at acceptance, and a run whose only
+  route is the producer's ends with the verification unavailable and the
+  reason on record. The failure review's confirmation of a claimed check
+  defect excludes the classification call's route under the same policy.
+  Nine mutants are killed.
 - The [business paths record](docs/research/BUSINESS-PATHS-2026-09-18.md)
   (roadmap S-5.2) reads the latest funding or acquisition, partner
   programs, and open roles of seventeen landscape companies with a source

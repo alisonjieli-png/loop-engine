@@ -39,7 +39,7 @@ roadmap status log with the commit.
 
 | Feature | Claim | Boundary | Attacks | Audit questions | Owner |
 |---|---|---|---|---|---|
-| Independent verification | A separate process judges the outcome; the producer's report is not the verdict. | `core/independent_verification` | Make the producer emit a passing report with no artifact: verification fails. Reuse a retained probe on a changed subject: the failed-check review must classify it. | Can the same model route that produced the work also verify it? (Yes today; confirmation on a different route is open.) | S-3.3 |
+| Independent verification | A separate process judges the outcome; the producer's report is not the verdict. | `core/independent_verification` | Make the producer emit a passing report with no artifact: verification fails. Reuse a retained probe on a changed subject: the failed-check review must classify it. Declare `separate_route` and give the verifier only the producer's route: the report is unavailable, never a quiet reuse. | Can the same model route that produced the work also verify it? (Only when the policy does not declare `separate_route`; the report states the routes either way.) | S-1.12 (closed), S-3.3 |
 | Evaluation product | A frozen population, deterministic graders, exact denominators. | `core/evaluation_suite` | Solver raises: counted as errored, never as a pass (mutant killed). Compare two reports over different populations: refused. Change a case after the report: digests differ. | Are model-judged graders offered? (No; deliberate.) | S-1.4 |
 | Per-implementation cost records | Every capability call writes one cost record; unknown counts stay unknown. | `core/operation_cost_capture`, `CapabilityDirectory` | Call through a directory without a ledger: no record, no crash. Report zero tokens without a provider count: refused by the record type. Remove the capture: the directory check fails (mutant killed). | Are model gateway calls captured as well as directory calls? (Directory yes; the gateway path is open.) | S-1.5 (published), S-1.12 open item |
 
@@ -85,7 +85,21 @@ follows each item.
   refuse a named writer and use the tenant; the check
   `memory_endpoints_bind_the_writer_to_the_authenticated_tenant_and_respect_scopes`.
 - Verification on a different model route from the producer is not
-  implemented (Independent verification). Open.
+  implemented (Independent verification). Closed: the verification policy
+  may declare `separate_route`; every verifier call then excludes the routes
+  the producer's own calls used, through the gateway's `excluded_routes`,
+  the report records `route_separation/v1` (producer routes, verifier
+  routes, achieved), a run whose only route is the producer's ends with the
+  verification unavailable and the reason on record, and the confirmation of
+  a claimed check defect excludes the classification call's route; the
+  checks `a_separated_verifier_confirms_on_a_route_the_producer_did_not_use`,
+  `a_run_whose_only_route_is_the_producers_records_unavailable_not_a_quiet_reuse`,
+  `an_unseparated_verifier_reports_the_shared_route_honestly`, and
+  `a_declared_separation_confirms_a_claimed_check_defect_on_another_route`
+  with nine killed mutants confirm it. Separation is off unless declared,
+  because a run with one authorized route cannot separate; with two routes
+  the confirmation separates from the classification, and a three-way
+  separation of producer, classification, and confirmation needs three.
 
-The open item stays an attack that succeeds and is recorded under S-1.12
-until its boundary changes.
+Every attack that succeeded when the plan was written is now closed; the
+next attacks come from live runs, which the offline checks do not replace.

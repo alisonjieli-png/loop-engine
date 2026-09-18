@@ -61,6 +61,10 @@ class ModelInvocationRequest:
     response_admission_policy: ModelResponseAdmissionPolicy | None = None
     harness_selection_scope: HarnessSelectionScope | None = None
     response_evaluation_ref: str = ''
+    #: Routes this invocation must not use, by name; an independent verifier
+    #: excludes the routes the producer used. The session merges them with
+    #: the authority's own exclusions and the gateway refuses to reuse one.
+    excluded_routes: tuple[str, ...] = ()
 
     @property
     def exact_input_digest(self) -> str:
@@ -84,6 +88,11 @@ class ModelInvocationRequest:
         if not isinstance(self.semantic_call_id, str):
             raise SolutionModelError(
                 "ModelInvocationRequest.semantic_call_id must be text")
+        if type(self.excluded_routes) not in (tuple, list) or any(
+                not isinstance(item, str) or not item.strip() for item in self.excluded_routes):
+            raise SolutionModelError(
+                "ModelInvocationRequest.excluded_routes must be a sequence of route names")
+        object.__setattr__(self, "excluded_routes", tuple(self.excluded_routes))
         if (self.semantic_call_id
                 and (self.semantic_call_id != self.semantic_call_id.strip()
                      or any(character.isspace()
@@ -351,6 +360,9 @@ class ModelExecutionSession:
             config = replace(config, allowed_models=(request.model,))
         if request.output_allocation is not None:
             config = replace(config, output_allocation=request.output_allocation)
+        if request.excluded_routes:
+            config = replace(config, excluded_routes=tuple(dict.fromkeys(
+                tuple(config.excluded_routes) + tuple(request.excluded_routes))))
         gateway_request = ModelGatewayRequest(
             prompt=request.prompt, config=config, system=request.system,
             temperature=request.temperature,
@@ -674,6 +686,27 @@ def self_test() -> dict:
           uncapped_authority.max_model_calls is None)
     session = authority.start_session()
     owner = Loop("fixture Solution owner")
+    separated_session = fixture_model_execution(FixtureModelExecutionRequest(
+        answers=("never reached",), max_model_calls=1)).start_session()
+    separation_error = None
+    try:
+        separated_session.invoke(ModelInvocationRequest(
+            "the producer's only route is excluded", excluded_routes=("fixture.route",)),
+            Loop("fixture route separation owner"))
+    except SolutionModelError as exc:
+        separation_error = exc
+    invalid_exclusion = False
+    try:
+        ModelInvocationRequest("x", excluded_routes=("", "fixture.route"))
+    except SolutionModelError:
+        invalid_exclusion = True
+    check("a_request_that_excludes_every_route_ends_with_no_eligible_route_and_certain_accounting",
+          separation_error is not None
+          and getattr(separation_error, "error_code", "") == "no_eligible_route"
+          and separated_session.calls_used == 0
+          and separated_session.accounting_uncertain is False
+          and invalid_exclusion,
+          str(separation_error)[:120])
     port = ModelInvocationPort(session, "hybrid", owner)
     first = port(ModelInvocationRequest(
         "one", semantic_call_id="semantic-call:solution-port-first"))

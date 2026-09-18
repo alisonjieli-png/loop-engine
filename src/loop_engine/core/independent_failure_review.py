@@ -257,6 +257,32 @@ def _summary(record):
             "notes": record.get("notes", "")}
 
 
+def _last_route(services) -> str:
+    """The route the most recent call on the shared session used, or empty text."""
+    results = getattr(getattr(services, "model_session", None), "results", None) or ()
+    return str(getattr(results[-1], "route", "") or "") if results else ""
+
+
+def _confirmation_services(services, classification_route: str):
+    """The services the confirmation call uses, and whether route separation was declared.
+
+    When the independent verification policy declares ``separate_route``, the
+    confirmation of a claimed check defect runs through the shared session with
+    the classification call's route excluded, so the second opinion cannot come
+    from the route that formed the first. Accounting stays on the one session.
+    """
+    policy = getattr(getattr(services, "request", None), "independent_verification_policy", None)
+    separate = (isinstance(policy, verification.IndependentVerificationPolicy)
+                and policy.separate_route)
+    if not separate or not classification_route or services.model_session is None:
+        return services, separate
+    import copy
+    confirming = copy.copy(services)
+    confirming.model_session = verification.RouteSeparatedSession(
+        services.model_session, (classification_route,))
+    return confirming, separate
+
+
 def _classify(request, services, active, report, record):
     bundle = verification._load(services, report["probe_ref"])
     packet, texts = _evidence(request, services, bundle, report)
@@ -271,16 +297,23 @@ def _classify(request, services, active, report, record):
                                            for item in failed],
                               "notes": "string"}})
     record["classification"] = {**ground_classification(value, failed, texts), "call": _refs(call)}
+    classification_route = _last_route(services)
     if claims_check_defect(record["classification"]):
         claim = {"classification": record["classification"]["classification"],
                  "findings": [{key: item[key] for key in ("case_id", "classification", "reason")}
                               for item in record["classification"]["findings"]],
                  "trust": "untrusted_model_claim"}
-        answer, confirm_call = verification._call(services, active, "failure_confirmation", {
+        confirming, separate = _confirmation_services(services, classification_route)
+        answer, confirm_call = verification._call(confirming, active, "failure_confirmation", {
             "record_type": "independent_failure_confirmation_request/v1", **packet, "claim": claim,
             "responsibility": INDEPENDENT_FAILURE_CONFIRMATION_PROMPT,
             "response_contract": registered_contract(INDEPENDENT_FAILURE_CONFIRMATION).schema_copy()})
-        record["confirmation"] = {**ground_confirmation(answer, texts), "call": _refs(confirm_call)}
+        confirmation_route = _last_route(services)
+        record["confirmation"] = {
+            **ground_confirmation(answer, texts), "call": _refs(confirm_call),
+            "route_separation": verification._route_separation(
+                separate, tuple(item for item in (classification_route,) if item),
+                tuple(item for item in (confirmation_route,) if item))}
     record["decision"] = review_decision(record["classification"], record["confirmation"])
     record["status"] = "reviewed"
     if record["decision"] == "revise_check":
