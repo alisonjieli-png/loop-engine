@@ -93,6 +93,11 @@ First public release.
   2026-09-18) against a declared baseline in `forbidden_paths.json`; the
   count is published, the gate fails if it rises, and the baseline may
   only be lowered.
+- Two research records: the SenseLab record with a source inspection of
+  the raia-live/amfs repository at b9547b4, and the competitive landscape
+  and monetization record comparing eighteen adjacent companies on
+  packaging, pricing, metering units, and their overlap with Loop Engine's
+  boundaries, with the metering units that fit Loop Engine's thesis.
 - Six terminology entries: SolutioningSpace, SolutionsSpace, ModelProfile,
   ModelCallRequest, SuggestedOutput, and ResponseContract, with the
   dictionary projection and rendered dictionary regenerated.
