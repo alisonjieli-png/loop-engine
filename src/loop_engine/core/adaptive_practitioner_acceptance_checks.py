@@ -556,6 +556,15 @@ def run_checks() -> dict:
               and deterministic["model_calls"] == 0
               and deterministic["run_history"]["chain_intact"],
               deterministic["deterministic_attempt"]["status"])
+        decision = deterministic["deterministic_attempt"]["outputs"].get("implementation_decision") or {}
+        check("the_fast_path_records_the_model_versus_not_decision_it_made",
+              decision.get("record_type") == "implementation_decision/v1"
+              and decision.get("chosen_id") == "test.exact_verified"
+              and decision.get("chosen_kind") == "deterministic_resolver"
+              and [item["implementation_id"] for item in decision.get("candidates", [])]
+              == ["test.exact_verified", "service_model:gateway"]
+              and "verified result before any model call" in decision.get("reason", ""),
+              json.dumps(decision)[:300])
 
     with tempfile.TemporaryDirectory() as root:
         # A declared fast-path allowance lets a model-led run apply its

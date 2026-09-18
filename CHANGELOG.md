@@ -19,6 +19,24 @@ First public release.
   [pre-packaged intelligence research](docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md)
   with verified package and occupation-database facts, and the
   [branding options](docs/research/BRANDING-OPTIONS-2026-09-18.md).
+- Four of the five open attacks in the adversarial validation plan are
+  closed. Reuse evidence now reaches retrieval: `Retriever` accepts reuse
+  evidence by record identity and adds a bounded ranking term (a fully
+  validated record overtakes one adjacent rank near the top, a discredited
+  record sinks last, nothing is removed), and `IntelligenceSearchRequest`
+  carries it. `ModelGateway` accepts a cost ledger and writes one operation
+  cost record per invocation with the physical model calls and
+  provider-reported tokens, unknown counts kept unknown. The fast path
+  records the model-versus-not decision it made as an
+  `implementation_decision` output on the deterministic attempt trace. The
+  hosted service gains `memory_write` and `memory_read` endpoints whose
+  writer is always the authenticated tenant, with declared shared scopes
+  and a private scope per tenant. The optimizer gains noise injection
+  (`optimize_with_noise` refuses a cell that loses held-out cases under a
+  whitespace, case, typographic quote, or extra token perturbation) and a
+  convergence report (`converge` runs seeded rounds and says whether the
+  best cell stabilized). The fifth attack, verification on a different
+  route from the producer, stays open.
 - The
   [feature component breakdown](docs/architecture/FEATURE-COMPONENT-BREAKDOWN-2026-09-18.md)
   maps the four intelligence layers to the modules that realize them and

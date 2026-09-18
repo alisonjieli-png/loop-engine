@@ -63,17 +63,29 @@ roadmap status log with the commit.
 
 ## Open items this plan adds to the roadmap
 
+Recorded when the plan was written; the state after the same day's batch
+follows each item.
+
 - Reuse evidence is computed but not consulted by the Retriever at
-  retrieval time (Outcome changes retrieval).
+  retrieval time (Outcome changes retrieval). Closed: `Retriever` takes
+  reuse evidence and adds a bounded ranking term; `IntelligenceSearchRequest`
+  carries it; the check `reuse_evidence_reranks_identical_records_without_removing_any`
+  and its mutants confirm it.
 - Cost capture covers directory calls; model gateway calls still need the
-  same record (Per-implementation cost records).
+  same record (Per-implementation cost records). Closed: `ModelGateway`
+  accepts a cost ledger and writes one record per invocation; the check
+  `a_gateway_with_a_cost_ledger_writes_one_cost_record_per_invocation`.
 - The implementation decision is written by conformance escalations but
   not consulted by the Practitioner's route step (Model versus non-model
-  choice).
+  choice). Closed at the point where the choice is made: the fast path
+  records the decision on every deterministic attempt trace; the check
+  `the_fast_path_records_the_model_versus_not_decision_it_made`.
 - The shared memory writer identity is a parameter; the service surface
-  must bind it to the authenticated tenant.
+  must bind it to the authenticated tenant. Closed: the memory endpoints
+  refuse a named writer and use the tenant; the check
+  `memory_endpoints_bind_the_writer_to_the_authenticated_tenant_and_respect_scopes`.
 - Verification on a different model route from the producer is not
-  implemented (Independent verification).
+  implemented (Independent verification). Open.
 
-Each becomes an attack that currently succeeds and is recorded as open
-under S-1.12 until its boundary changes.
+The open item stays an attack that succeeds and is recorded under S-1.12
+until its boundary changes.

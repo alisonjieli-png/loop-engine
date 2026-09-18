@@ -202,6 +202,108 @@ def optimize(space: ParameterSpace, train: EvaluationSuite, holdout: EvaluationS
                               baseline_cell, best.cell, reason, tuple(comparisons), exhaustive, policy.version)
 
 
+PERTURBATIONS = ("whitespace", "case", "typographic_quotes", "extra_token")
+CONVERGENCE_RECORD_TYPE = "convergence_report/v1"
+
+
+EXTRA_TOKENS = ("inc", "llc", "the", "and", "co")
+_PERTURBATION_FUNCTIONS = {
+    PERTURBATIONS[0]: lambda value, rng: "  " + "  ".join(value.split(" ")) + " \t",
+    PERTURBATIONS[1]: lambda value, rng: "".join(ch.upper() if rng.random() < 0.5 else ch.lower() for ch in value),
+    PERTURBATIONS[2]: lambda value, rng: value.replace("'", "’").replace('"', "”"),
+    PERTURBATIONS[3]: lambda value, rng: value + " " + rng.choice(EXTRA_TOKENS),
+}
+
+
+def perturb_text(value: str, kind: str, seed: int) -> str:
+    """One deterministic perturbation of a text input; non-text inputs pass through."""
+    if kind not in _PERTURBATION_FUNCTIONS:
+        raise OptimizerError(f"perturbation must be one of {PERTURBATIONS}")
+    return _PERTURBATION_FUNCTIONS[kind](value, random.Random(f"{kind}:{seed}:{value}"))
+
+
+def perturb_suite(suite: EvaluationSuite, kind: str, *, seed: int = 0) -> EvaluationSuite:
+    """The same cases with perturbed text inputs and unchanged expectations."""
+    from .evaluation_suite import EvaluationCase
+    cases = tuple(
+        EvaluationCase(case.case_id, perturb_text(case.input, kind, seed) if isinstance(case.input, str)
+                       else case.input, case.expected, case.grader, dict(case.grader_parameters), case.tags)
+        for case in suite.cases)
+    return EvaluationSuite(suite.suite_id, f"{suite.version}+{kind}", cases, f"{suite.description} ({kind} perturbed)")
+
+
+def optimize_with_noise(space: ParameterSpace, train: EvaluationSuite, holdout: EvaluationSuite, evaluate, *,
+                        perturbations: tuple[str, ...] = PERTURBATIONS[:2], seed: int = 0,
+                        strategy: str = STRATEGIES[0], limit: int | None = None,
+                        policy: AcceptancePolicy | None = None) -> OptimizationResult:
+    """Accept a cell only when it also holds its gain on every perturbed holdout suite.
+
+    A cell that wins on clean inputs and loses on noisy ones learned the noise
+    of the training set, not the task; it is refused with the perturbation
+    named, and the baseline stands.
+    """
+    if not perturbations:
+        raise OptimizerError("optimize_with_noise needs at least one perturbation")
+    clean = optimize(space, train, holdout, evaluate, strategy=strategy, seed=seed, limit=limit, policy=policy)
+    if not clean.accepted:
+        return clean
+    policy = policy or AcceptancePolicy()
+    noisy_checks = []
+    for kind in perturbations:
+        perturbed = perturb_suite(holdout, kind, seed=seed)
+        baseline_report = _report(evaluate, clean.baseline_cell, perturbed, "baseline")
+        candidate_report = _report(evaluate, clean.best_cell, perturbed, "candidate")
+        comparison = compare_reports(baseline_report, candidate_report)
+        noisy_checks.append({"perturbation": kind, "holdout_net": comparison["net"],
+                             "holds": -comparison["net"] <= policy.maximum_holdout_loss})
+    if all(item["holds"] for item in noisy_checks):
+        return OptimizationResult(clean.space_size, clean.strategy, clean.represented, clean.dispatched,
+                                  clean.evaluated, True, clean.baseline_cell, clean.best_cell,
+                                  clean.reason + "; the gain held on " + ", ".join(perturbations) + " perturbations",
+                                  (*clean.comparisons, *noisy_checks), clean.exhaustive, clean.policy_version)
+    failing = [item["perturbation"] for item in noisy_checks if not item["holds"]]
+    return OptimizationResult(clean.space_size, clean.strategy, clean.represented, clean.dispatched,
+                              clean.evaluated, False, clean.baseline_cell, clean.baseline_cell,
+                              f"cell refused: it lost held-out cases under {', '.join(failing)} perturbation, "
+                              "so its gain was not robust; the baseline stands",
+                              (*clean.comparisons, *noisy_checks), clean.exhaustive, clean.policy_version)
+
+
+def converge(space: ParameterSpace, train: EvaluationSuite, holdout: EvaluationSuite, evaluate, *,
+             rounds: int = 3, limit: int | None = None, strategy: "str | None" = None,
+             stable_rounds: int = 2, policy: AcceptancePolicy | None = None) -> dict:
+    """Repeated sampled rounds with different seeds; converged when the best cell stops changing.
+
+    The report keeps every round, the separate counts, and says whether the
+    best cell was the same for the last ``stable_rounds`` rounds. Without a
+    limit the space is enumerated exhaustively and reported as converged
+    after one round because there is nothing left to sample.
+    """
+    if type(rounds) is not int or rounds < 1 or type(stable_rounds) is not int or stable_rounds < 1:
+        raise OptimizerError("rounds and stable_rounds are positive integers")
+    if strategy is None:
+        strategy = STRATEGIES[0] if limit is None else STRATEGIES[1]
+    history = []
+    best_cells = []
+    for round_index in range(rounds):
+        result = optimize(space, train, holdout, evaluate, strategy=strategy, seed=round_index,
+                          limit=limit, policy=policy)
+        history.append({"round": round_index, "seed": round_index, "accepted": result.accepted,
+                        "best_cell": result.best_cell, "dispatched": result.dispatched,
+                        "evaluated": result.evaluated, "exhaustive": result.exhaustive})
+        best_cells.append(json.dumps(result.best_cell, sort_keys=True))
+        if result.exhaustive:
+            break
+    tail = best_cells[-stable_rounds:]
+    converged = (history[-1]["exhaustive"] or (len(best_cells) >= stable_rounds and len(set(tail)) == 1))
+    return {"record_type": CONVERGENCE_RECORD_TYPE, "rounds_run": len(history), "rounds_requested": rounds,
+            "strategy": strategy, "space_size": space.size, "converged": converged,
+            "best_cell": json.loads(best_cells[-1]), "stable_rounds": stable_rounds,
+            "dispatched": sum(item["dispatched"] for item in history),
+            "evaluated": sum(item["evaluated"] for item in history), "history": history,
+            "exhaustive": history[-1]["exhaustive"]}
+
+
 def _report(evaluate, cell: dict, suite: EvaluationSuite, role: str) -> EvaluationReport:
     report = evaluate(cell, suite, f"{role}:{hashlib.sha256(json.dumps(cell, sort_keys=True).encode()).hexdigest()[:12]}")
     if not isinstance(report, EvaluationReport):
@@ -263,6 +365,41 @@ def self_test() -> dict:
           not refused.accepted and refused.best_cell == {"modulus": 2}
           and any(item.get("train_net", 0) > 0 and item.get("holdout_net", 0) < 0 for item in refused.comparisons)
           and "baseline stands" in refused.reason)
+    text_cases = tuple(EvaluationCase(f"t{i}", f"{'ACME' if i % 2 == 0 else 'BETA'} {i}",
+                                      f"{'acme' if i % 2 == 0 else 'beta'} {i}", "canonical_text")
+                       for i in range(12))
+    text_suite = EvaluationSuite("fixture.text", "1.0.0", text_cases)
+    text_train, text_holdout = text_suite.split(0.3, salt="noise")
+    text_space = ParameterSpace((ParameterAxis("mode", ("prefix_only", "lower_clean_only")),))
+
+    def text_evaluate(cell, part, solver_id):
+        def solver(case):
+            if cell["mode"] == "prefix_only":
+                # the baseline handles one family robustly and fails the other
+                return case.input.lower() if case.input.lstrip().startswith("ACME") else "wrong"
+            # a memorizing candidate: correct on every clean input, broken by any noise
+            clean = case.input == case.input.strip() and "  " not in case.input and "\t" not in case.input
+            return case.input.lower() if clean else "noise"
+        return evaluate_suite(part, solver, solver_id=solver_id)
+
+    robust = optimize_with_noise(text_space, text_train, text_holdout, text_evaluate,
+                                 perturbations=("whitespace",))
+    check("a_cell_that_wins_only_on_clean_inputs_is_refused_by_noise_injection",
+          not robust.accepted and robust.best_cell == {"mode": "prefix_only"}
+          and "whitespace" in robust.reason and any(item.get("holds") is False for item in robust.comparisons)
+          and optimize(text_space, text_train, text_holdout, text_evaluate).accepted
+          and perturb_text("Acme Corp", "whitespace", 0) != "Acme Corp"
+          and perturb_text("Acme's", "typographic_quotes", 0) == "Acme’s"
+          and refuses(lambda: perturb_text("x", "gravity", 0))
+          and refuses(lambda: optimize_with_noise(text_space, text_train, text_holdout, text_evaluate, perturbations=())))
+    report = converge(space, train, holdout, evaluate, rounds=3, limit=3, strategy="stratified_sampling")
+    check("convergence_reports_rounds_counts_and_whether_the_best_cell_stabilized",
+          report["rounds_run"] == 3 and report["dispatched"] > 0 and isinstance(report["converged"], bool)
+          and report["best_cell"] in ({"modulus": 3, "offset": 0}, {"modulus": 2, "offset": 0})
+          and converge(space, train, holdout, evaluate, rounds=3)["rounds_run"] == 1
+          and converge(space, train, holdout, evaluate, rounds=3)["converged"] is True
+          and converge(space, train, holdout, evaluate, rounds=1, limit=1, stable_rounds=2)["converged"] is False
+          and refuses(lambda: converge(space, train, holdout, evaluate, rounds=0)))
     check("invalid_spaces_policies_and_populations_are_refused",
           refuses(lambda: ParameterAxis("a", ())) and refuses(lambda: ParameterAxis("a", (1, 1)))
           and refuses(lambda: ParameterSpace(())) and refuses(lambda: AcceptancePolicy(minimum_train_gain=0))

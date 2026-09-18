@@ -49,81 +49,329 @@ Each cell is Y (documented), N (not documented or documented as absent),
 P (partial, see the cell notes), or ? (unverified today). Every non-obvious
 cell names the page or fact it rests on. Letta was added to the chart.
 
-The intelligence layers band was added later on 2026-09-18 so that Context, Code, Runtime History and Solution, and User Feedback Intelligence are visible as areas; competitor cells in that band are marked unverified unless a note already supported them.
+The matrix is six tables, one per band, with fifty-two columns; the bands and the columns added after the first reading were introduced later on 2026-09-18, and a vendor cell in an added column is marked unverified unless an earlier note supported it.
 
-| Company | Context Intelligence | Code Intelligence | Runtime History and Solution Intelligence | User Feedback Intelligence | Persistent memory | Graph or temporal facts | Outcome changes retrieval | Memory versioning | Multi-agent shared memory | Procedures as instructions | Executable code reuse | Executes code or tools | Standalone solution export | Independent verification | Evaluation or simulation product | Per-implementation cost records | Model routing | Model versus non-model choice | Harness or prompt optimization | Trains or exports specialists | Open source core | Self-hosted option | Hosted cloud | Public pricing |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | N | N |
-| Mem0 | Y | N | ? | Y | Y | Y | N | N | Y | Y | N | N | N | N | P | N | N | N | N | N | Y | Y | Y | Y |
-| Zep and Graphiti | Y | N | ? | ? | Y | Y | N | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Supermemory | Y | N | ? | Y | Y | Y | P | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Cognee | Y | N | ? | ? | Y | Y | ? | N | P | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Honcho (Plastic Labs) | Y | N | ? | ? | Y | Y | N | N | Y | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| MemOS (MemTensor) | Y | N | P | P | Y | Y | P | N | Y | Y | N | P | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| Hindsight (Vectorize) | Y | N | ? | ? | Y | Y | N | N | Y | N | N | N | N | N | N | N | N | N | N | N | Y | Y | Y | Y |
-| SenseLab (AMFS) | Y | N | Y | ? | Y | Y | Y | Y | Y | N | N | N | N | N | P | N | N | N | N | Y | Y | Y | Y | Y |
-| Letta | Y | P | ? | ? | Y | N | N | Y | P | Y | P | Y | N | N | N | N | N | N | P | N | Y | Y | Y | Y |
-| Synth | P | P | Y | ? | N | N | N | N | N | N | P | Y | Y | Y | Y | N | N | N | Y | Y | Y | Y | Y | P |
-| Tellurio and Afnio | ? | N | ? | ? | N | N | N | N | N | N | N | Y | N | N | Y | N | N | N | Y | N | P | ? | Y | Y |
-| LangWatch | ? | N | Y | ? | N | N | N | N | N | N | N | P | N | P | Y | N | N | N | Y | Y | Y | Y | Y | Y |
-| Not Diamond | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | N | N | Y | N | ? | N | N | N | Y | Y |
-| TypeSafe (Jev) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y |
-| PrismML (Bonsai) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | N | Y | Y | N | N |
-| Osmosis (Gulp AI) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | N | P | N | N | N | N | Y | N | N | Y | N |
-| Adaptive ML (acquired by Datadog) | ? | ? | ? | ? | N | N | N | N | N | N | N | N | N | P | Y | N | N | N | N | Y | N | N | Y | N |
-| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | Y | ? | P | ? | ? | ? | ? | ? | ? | N | ? | Y | N |
-| TensorZero (archived) | N | N | Y | ? | N | N | N | N | N | N | N | N | N | N | Y | N | Y | N | Y | Y | Y | Y | N | N |
-| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+The matrix is six tables, one per band, with fifty-two columns. The intelligence layers band and the columns added after the first reading were introduced later on 2026-09-18; a vendor cell in an added column is marked unverified unless an earlier note supported it. Each table is followed by vendor counts.
 
-Column definitions:
+### Intelligence layers
 
-- Context Intelligence: Facts, instructions, personas, and forms kept as a served layer with identity and version.
-- Code Intelligence: Executable capabilities kept with identity, contract, tests, and digest, invoked without a model.
-- Runtime History and Solution Intelligence: What ran, what it cost, and what was verified, kept for later runs to search and compare.
-- User Feedback Intelligence: What people said and decided, kept and applied at run time.
+| Company | Context Intelligence served as records | Temporal validity on facts | Seeded generation by role or domain | Code Intelligence with contracts | Candidate to qualified admission | Runtime History with cost and verification | Training data from records | User Feedback applied at run time |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | N | Y | Y | Y | Y | Y |
+| Mem0 | Y | ? | ? | N | ? | ? | P | Y |
+| Zep and Graphiti | Y | Y | ? | N | ? | ? | ? | ? |
+| Supermemory | Y | Y | ? | N | ? | ? | ? | Y |
+| Cognee | Y | P | ? | N | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | Y | ? | ? | N | ? | ? | ? | ? |
+| MemOS (MemTensor) | Y | ? | ? | N | ? | P | ? | P |
+| Hindsight (Vectorize) | Y | ? | ? | N | ? | ? | ? | ? |
+| SenseLab (AMFS) | Y | ? | ? | N | ? | Y | Y | ? |
+| Letta | Y | N | ? | P | ? | ? | ? | ? |
+| Synth | P | ? | ? | P | ? | Y | Y | ? |
+| Tellurio and Afnio | ? | ? | ? | N | ? | ? | ? | ? |
+| LangWatch | ? | ? | ? | N | ? | Y | Y | ? |
+| Not Diamond | ? | ? | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | ? | ? | ? | ? | ? | ? | ? | ? |
+| PrismML (Bonsai) | ? | ? | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | ? | ? | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | ? | ? | ? | ? | ? | ? | ? | P |
+| Distyl | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | ? | ? | N | ? | Y | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? |
+
+Vendor counts for intelligence layers (Loop Engine and the unverified pair excluded):
+
+| Feature | Y | P | N | ? |
+|---|:-:|:-:|:-:|:-:|
+| Context Intelligence served as records | 9 | 1 | 1 | 8 |
+| Temporal validity on facts | 2 | 1 | 1 | 15 |
+| Seeded generation by role or domain | 0 | 0 | 0 | 19 |
+| Code Intelligence with contracts | 0 | 2 | 11 | 6 |
+| Candidate to qualified admission | 0 | 0 | 0 | 19 |
+| Runtime History with cost and verification | 4 | 1 | 0 | 14 |
+| Training data from records | 3 | 1 | 0 | 15 |
+| User Feedback applied at run time | 2 | 2 | 0 | 15 |
+
+### Memory
+
+| Company | Persistent memory | Graph or temporal facts | Outcome changes retrieval | Memory versioning | Multi-agent shared memory | Working memory with eviction | Episodic memory | Semantic claims with contradictions | Procedural memory | One store contract, many adapters | Namespaces and tenancy |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y | Y |
+| Mem0 | Y | Y | N | N | Y | ? | ? | ? | Y | ? | ? |
+| Zep and Graphiti | Y | Y | N | N | P | ? | ? | ? | ? | ? | P |
+| Supermemory | Y | Y | P | N | P | ? | ? | ? | ? | ? | Y |
+| Cognee | Y | Y | ? | N | P | ? | ? | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | Y | Y | N | N | Y | ? | ? | ? | ? | ? | ? |
+| MemOS (MemTensor) | Y | Y | P | N | Y | ? | ? | ? | Y | ? | ? |
+| Hindsight (Vectorize) | Y | Y | N | N | Y | ? | ? | ? | ? | ? | ? |
+| SenseLab (AMFS) | Y | Y | Y | Y | Y | ? | ? | ? | ? | ? | ? |
+| Letta | Y | N | N | Y | P | ? | ? | ? | ? | ? | ? |
+| Synth | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| Tellurio and Afnio | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| LangWatch | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| Not Diamond | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| TypeSafe (Jev) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| PrismML (Bonsai) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | N | N | N | N | ? | ? | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+
+Vendor counts for memory (Loop Engine and the unverified pair excluded):
+
+| Feature | Y | P | N | ? |
+|---|:-:|:-:|:-:|:-:|
+| Persistent memory | 9 | 0 | 9 | 1 |
+| Graph or temporal facts | 8 | 0 | 10 | 1 |
+| Outcome changes retrieval | 1 | 2 | 14 | 2 |
+| Memory versioning | 2 | 0 | 16 | 1 |
+| Multi-agent shared memory | 5 | 4 | 9 | 1 |
+| Working memory with eviction | 0 | 0 | 0 | 19 |
+| Episodic memory | 0 | 0 | 0 | 19 |
+| Semantic claims with contradictions | 0 | 0 | 0 | 19 |
+| Procedural memory | 2 | 0 | 0 | 17 |
+| One store contract, many adapters | 0 | 0 | 0 | 19 |
+| Namespaces and tenancy | 1 | 1 | 0 | 17 |
+
+### Procedures
+
+| Company | Procedures as instructions | Executable code reuse | Executes code or tools | Sandbox with declared effects | Standalone solution export | Container and Job export | Model Context Protocol tools | Native harness adapters | Plugin and skill admission |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y |
+| Mem0 | Y | N | N | ? | N | ? | ? | ? | ? |
+| Zep and Graphiti | N | N | N | ? | N | ? | ? | ? | ? |
+| Supermemory | N | N | N | ? | N | ? | ? | ? | ? |
+| Cognee | N | N | N | ? | N | ? | ? | ? | ? |
+| Honcho (Plastic Labs) | N | N | N | ? | N | ? | ? | ? | ? |
+| MemOS (MemTensor) | Y | N | P | ? | N | ? | ? | ? | ? |
+| Hindsight (Vectorize) | N | N | N | ? | N | ? | ? | ? | ? |
+| SenseLab (AMFS) | N | N | N | ? | N | ? | ? | ? | ? |
+| Letta | Y | P | Y | Y | N | ? | ? | ? | ? |
+| Synth | N | P | Y | Y | Y | ? | ? | ? | ? |
+| Tellurio and Afnio | N | N | Y | ? | N | ? | ? | ? | ? |
+| LangWatch | N | N | P | ? | N | ? | ? | ? | ? |
+| Not Diamond | N | N | N | ? | N | ? | ? | ? | ? |
+| TypeSafe (Jev) | N | N | N | ? | N | ? | ? | ? | ? |
+| PrismML (Bonsai) | N | N | N | ? | N | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | N | N | ? | N | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | N | ? | N | ? | ? | ? | ? |
+| Distyl | ? | ? | Y | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | N | N | ? | N | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+
+Vendor counts for procedures (Loop Engine and the unverified pair excluded):
+
+| Feature | Y | P | N | ? |
+|---|:-:|:-:|:-:|:-:|
+| Procedures as instructions | 3 | 0 | 15 | 1 |
+| Executable code reuse | 0 | 2 | 16 | 1 |
+| Executes code or tools | 4 | 2 | 13 | 0 |
+| Sandbox with declared effects | 2 | 0 | 0 | 17 |
+| Standalone solution export | 1 | 0 | 17 | 1 |
+| Container and Job export | 0 | 0 | 0 | 19 |
+| Model Context Protocol tools | 0 | 0 | 0 | 19 |
+| Native harness adapters | 0 | 0 | 0 | 19 |
+| Plugin and skill admission | 0 | 0 | 0 | 19 |
+
+### Assurance
+
+| Company | Independent verification | Failed-check review | Evaluation or simulation product | Registered deterministic graders | Per-implementation cost records | Adversarial checks and mutants in the repository | Conformance gates on every commit | Secret-free records by contract |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y |
+| Mem0 | N | ? | P | ? | N | ? | ? | ? |
+| Zep and Graphiti | N | ? | N | ? | N | ? | ? | ? |
+| Supermemory | N | ? | N | ? | N | ? | ? | ? |
+| Cognee | N | ? | N | ? | N | ? | ? | ? |
+| Honcho (Plastic Labs) | N | ? | N | ? | N | ? | ? | ? |
+| MemOS (MemTensor) | N | ? | N | ? | N | ? | ? | ? |
+| Hindsight (Vectorize) | N | ? | N | ? | N | ? | ? | ? |
+| SenseLab (AMFS) | N | ? | P | ? | N | ? | ? | ? |
+| Letta | N | ? | N | ? | N | ? | ? | ? |
+| Synth | Y | ? | Y | Y | N | ? | ? | ? |
+| Tellurio and Afnio | N | ? | Y | ? | N | ? | ? | ? |
+| LangWatch | P | ? | Y | Y | N | ? | ? | ? |
+| Not Diamond | N | ? | N | ? | N | ? | ? | ? |
+| TypeSafe (Jev) | N | ? | N | ? | N | ? | ? | ? |
+| PrismML (Bonsai) | N | ? | N | ? | N | ? | ? | ? |
+| Osmosis (Gulp AI) | N | ? | P | ? | N | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | P | ? | Y | Y | N | ? | ? | ? |
+| Distyl | P | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | N | ? | Y | ? | N | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? |
+
+Vendor counts for assurance (Loop Engine and the unverified pair excluded):
+
+| Feature | Y | P | N | ? |
+|---|:-:|:-:|:-:|:-:|
+| Independent verification | 1 | 3 | 15 | 0 |
+| Failed-check review | 0 | 0 | 0 | 19 |
+| Evaluation or simulation product | 5 | 3 | 10 | 1 |
+| Registered deterministic graders | 3 | 0 | 0 | 16 |
+| Per-implementation cost records | 0 | 0 | 18 | 1 |
+| Adversarial checks and mutants in the repository | 0 | 0 | 0 | 19 |
+| Conformance gates on every commit | 0 | 0 | 0 | 19 |
+| Secret-free records by contract | 0 | 0 | 0 | 19 |
+
+### Selection
+
+| Company | Model routing | Model versus non-model choice | Harness or prompt optimization | Exhaustive grid with honest coverage | Explorative or evolutionary search | Noise injection robustness | Train gain and holdout loss acceptance | Trains or exports specialists | Heuristic adoption policy | Typed-decision model route |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | Y | Y | Y | Y | Y | Y | Y | N |
+| Mem0 | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| Zep and Graphiti | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| Supermemory | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| Cognee | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| Honcho (Plastic Labs) | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| MemOS (MemTensor) | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| Hindsight (Vectorize) | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| SenseLab (AMFS) | N | N | N | ? | ? | ? | ? | Y | ? | ? |
+| Letta | N | N | P | ? | ? | ? | ? | N | ? | ? |
+| Synth | N | N | Y | ? | Y | ? | ? | Y | ? | ? |
+| Tellurio and Afnio | N | N | Y | ? | ? | ? | ? | N | ? | ? |
+| LangWatch | N | N | Y | ? | P | ? | ? | Y | ? | ? |
+| Not Diamond | Y | N | ? | ? | ? | ? | ? | N | ? | ? |
+| TypeSafe (Jev) | N | N | N | ? | ? | ? | ? | N | ? | Y |
+| PrismML (Bonsai) | N | N | N | ? | ? | ? | ? | N | ? | ? |
+| Osmosis (Gulp AI) | N | N | N | ? | ? | ? | ? | Y | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | N | ? | ? | ? | ? | Y | ? | ? |
+| Distyl | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+| TensorZero (archived) | Y | N | Y | ? | ? | ? | ? | Y | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? | ? | ? |
+
+Vendor counts for selection (Loop Engine and the unverified pair excluded):
+
+| Feature | Y | P | N | ? |
+|---|:-:|:-:|:-:|:-:|
+| Model routing | 2 | 0 | 16 | 1 |
+| Model versus non-model choice | 0 | 0 | 18 | 1 |
+| Harness or prompt optimization | 4 | 1 | 12 | 2 |
+| Exhaustive grid with honest coverage | 0 | 0 | 0 | 19 |
+| Explorative or evolutionary search | 1 | 1 | 0 | 17 |
+| Noise injection robustness | 0 | 0 | 0 | 19 |
+| Train gain and holdout loss acceptance | 0 | 0 | 0 | 19 |
+| Trains or exports specialists | 6 | 0 | 12 | 1 |
+| Heuristic adoption policy | 0 | 0 | 0 | 19 |
+| Typed-decision model route | 1 | 0 | 0 | 18 |
+
+### Business
+
+| Company | Open source core | Self-hosted option | Hosted cloud | Public pricing | Metered units documented | Never-metered list | Tenant keys stored as digests | Container image published |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| Loop Engine (this repository) | Y | Y | N | N | Y | Y | Y | N |
+| Mem0 | Y | Y | Y | Y | Y | ? | ? | ? |
+| Zep and Graphiti | Y | Y | Y | Y | Y | ? | ? | ? |
+| Supermemory | Y | Y | Y | Y | Y | ? | ? | ? |
+| Cognee | Y | Y | Y | Y | Y | ? | ? | ? |
+| Honcho (Plastic Labs) | Y | Y | Y | Y | Y | ? | ? | ? |
+| MemOS (MemTensor) | Y | Y | Y | Y | Y | ? | ? | ? |
+| Hindsight (Vectorize) | Y | Y | Y | Y | Y | ? | ? | ? |
+| SenseLab (AMFS) | Y | Y | Y | Y | Y | Y | ? | ? |
+| Letta | Y | Y | Y | Y | Y | ? | ? | ? |
+| Synth | Y | Y | Y | P | ? | ? | ? | ? |
+| Tellurio and Afnio | P | ? | Y | Y | Y | ? | ? | ? |
+| LangWatch | Y | Y | Y | Y | Y | ? | ? | ? |
+| Not Diamond | N | N | Y | Y | Y | ? | ? | ? |
+| TypeSafe (Jev) | N | N | Y | Y | Y | ? | ? | ? |
+| PrismML (Bonsai) | Y | Y | N | N | ? | ? | ? | ? |
+| Osmosis (Gulp AI) | N | N | Y | N | ? | ? | ? | ? |
+| Adaptive ML (acquired by Datadog) | N | N | Y | N | ? | ? | ? | ? |
+| Distyl | N | ? | Y | N | ? | ? | ? | ? |
+| TensorZero (archived) | Y | Y | N | N | ? | ? | ? | ? |
+| Overmind, Lemma | ? | ? | ? | ? | ? | ? | ? | ? |
+
+Vendor counts for business (Loop Engine and the unverified pair excluded):
+
+| Feature | Y | P | N | ? |
+|---|:-:|:-:|:-:|:-:|
+| Open source core | 13 | 1 | 5 | 0 |
+| Self-hosted option | 13 | 0 | 4 | 2 |
+| Hosted cloud | 17 | 0 | 2 | 0 |
+| Public pricing | 13 | 1 | 5 | 0 |
+| Metered units documented | 13 | 0 | 0 | 6 |
+| Never-metered list | 1 | 0 | 0 | 18 |
+| Tenant keys stored as digests | 0 | 0 | 0 | 19 |
+| Container image published | 0 | 0 | 0 | 19 |
+
+### Column definitions
+
+- Context Intelligence served as records: Facts, instructions, personas, and forms kept and served with an identity.
+- Temporal validity on facts: A fact carries the interval over which it held, and queries respect it.
+- Seeded generation by role or domain: Questions, facts, and code seeds generated from occupations or domains and staged as candidates.
+- Code Intelligence with contracts: Executable capabilities kept with identity, typed contract, tests, and digest, invoked without a model.
+- Candidate to qualified admission: New capabilities stay candidates until an independent process qualifies them.
+- Runtime History with cost and verification: What ran, what it cost, and what was independently verified, kept for later runs.
+- Training data from records: Datasets or exports derived from recorded runs, with splits and exclusions.
+- User Feedback applied at run time: What people said or decided is kept and consulted by later runs.
 - Persistent memory: Keeps facts or entries across sessions.
 - Graph or temporal facts: Relationships between entries, or validity times on facts.
 - Outcome changes retrieval: A task outcome changes what is retrieved or how much it is trusted.
 - Memory versioning: Branch, merge, or roll back the memory itself.
 - Multi-agent shared memory: Several agents read and write one governed store.
+- Working memory with eviction: A bounded run-time store with capacity, pinning, and recorded eviction.
+- Episodic memory: What happened in a run: goal, acceptance, failure classes.
+- Semantic claims with contradictions: Claims with subject, predicate, object, confidence, and contradiction handling.
+- Procedural memory: Reusable procedures kept with purpose and applicability.
+- One store contract, many adapters: The same read and write contract over in-memory, file, embedded database, and server database backends.
+- Namespaces and tenancy: Records separated by namespace or tenant with access rules.
 - Procedures as instructions: Stores step-by-step procedures or skills that a model reads at run time.
 - Executable code reuse: Stores code, tools, or resolvers that later run without a model interpreting them.
 - Executes code or tools: Runs code or tools itself, in a workspace or sandbox.
+- Sandbox with declared effects: Execution confined to a declared sandbox with effect approval, resource limits, and no raw-host fallback.
 - Standalone solution export: Emits a runnable package that works without the platform.
+- Container and Job export: The exported solution ships with a container recipe and a cluster job manifest.
+- Model Context Protocol tools: External tools reached through the protocol as adapters with a handshake.
+- Native harness adapters: Other coding harnesses run a step under the platform's authority.
+- Plugin and skill admission: Plugins and skills are discovered, admitted, and versioned before use.
 - Independent verification: A separate process checks the task outcome; the producer's report is not the verdict.
+- Failed-check review: A failed check is classified and confirmed before the work or the check changes.
 - Evaluation or simulation product: Evaluators, scenarios, or simulations offered as a feature.
+- Registered deterministic graders: Named graders with exact denominators, an error never counted as a pass.
 - Per-implementation cost records: Records what each implementation of an operation cost and which was cheapest.
+- Adversarial checks and mutants in the repository: Each check is shown to fail when its behavior is removed.
+- Conformance gates on every commit: Architecture, hardcoding, documentation, and self-test gates run on an exported tree.
+- Secret-free records by contract: Learning, metering, and cost records carry digests and sizes, never bodies or keys.
 - Model routing: Chooses among models per request.
 - Model versus non-model choice: Decides whether a model call is needed at all, by cost and evidence.
 - Harness or prompt optimization: Automatically tunes prompts, context, or harness settings.
+- Exhaustive grid with honest coverage: A finite declared grid enumerated fully, with sampling never reported as exhaustive.
+- Explorative or evolutionary search: Seeded sampling, evolutionary, or novelty strategies over a configuration space.
+- Noise injection robustness: A candidate must hold its gain on a perturbed suite.
+- Train gain and holdout loss acceptance: A candidate replaces the baseline only with a training gain and no held-out loss.
 - Trains or exports specialists: Fine-tunes a model or exports training data from records.
+- Heuristic adoption policy: A declared run count gates any learned heuristic beyond an exact atomic fingerprint.
+- Typed-decision model route: A model that returns typed decisions with confidence serves behind the same call boundary.
 - Open source core: The engine is published under an open license.
 - Self-hosted option: Runs on the customer's machines.
 - Hosted cloud: A hosted service is sold.
 - Public pricing: Prices are published.
+- Metered units documented: The units a customer pays for are named.
+- Never-metered list: What a customer never pays for is named.
+- Tenant keys stored as digests: Service keys are kept only as digests and checked before any work.
+- Container image published: A built, digest-pinned image is published for deployment.
 
-Cell notes:
+### Cell notes
 
-- Loop Engine (this repository): Context Intelligence: catalog adapters, the string bank, packaged data files, temporal facts, shared scopes; served through intelligence_layers and retrieval; Code Intelligence: capability directory surfaces, reusable capability records, registered resolvers, the text conformance family, specialists; Runtime History and Solution Intelligence: run history, solutions space, model call and operation cost records, reuse evidence, evaluation reports, dataset versions; User Feedback Intelligence: the advice store, typed task feedback slots, approvals, reviewed candidates; Graph or temporal facts: core/temporal_facts: typed triples with validity intervals, supersession, as-of, neighbors, paths (commit 67d5d8f); Outcome changes retrieval: reuse evidence and the failed-check review, offline only; Memory versioning: catalog/versioning: immutable revisions, history, diff, rollback in the same store (commit 67d5d8f); Multi-agent shared memory: core/shared_memory_scopes: signed writes, membership and visibility filtered reads, stale-write refusal (commit 67d5d8f); Executable code reuse: qualified reusable capabilities and registered resolvers; live reuse not yet measured; Executes code or tools: generated projects run in a confined workspace or sandbox; Standalone solution export: code_nodes/solution_export: package with tests, manifest, Dockerfile, Job, verified in an interpreter that cannot import loop_engine (commit fcca293); Evaluation or simulation product: core/evaluation_suite and loop-engine evaluate: frozen suites, registered graders, exact denominators, case-level comparison; no simulation product; Per-implementation cost records: core/operation_cost_capture wired into every capability directory call; cheapest verified implementation query; Model versus non-model choice: core/implementation_choice: a decision record per operation from ledger evidence or the declared fallback order; written for every conformance escalation; Harness or prompt optimization: core/configuration_optimizer and loop-engine optimize: declared parameter space, acceptance only when train gains and holdout does not lose; offline graders only; Trains or exports specialists: core/specialist_training: naive Bayes specialist from recorded rows with a run-level split, exported as JSON weights, candidate resolver; no fine-tuning; Open source core: MIT; Hosted cloud: service software and container in progress; no public hosted endpoint is operated; Public pricing: packaging tiers drafted in the landscape record; no prices published.
-- Mem0: Context Intelligence: memories and procedural memory as entries; User Feedback Intelligence: Feedback Mechanism captures user signals; Graph or temporal facts: Graph Memory page; Outcome changes retrieval: Feedback Mechanism captures user signals, not outcome confidence; Multi-agent shared memory: Team Task Agent cookbook; Procedures as instructions: Memory Types: procedural_memory; Evaluation or simulation product: Memory Evaluation benchmarks memory quality, not task outcomes; Trains or exports specialists: Memory Export exports memories, not training sets; Open source core: Apache 2.0, 65,589 stars.
-- Zep and Graphiti: Graph or temporal facts: Fact Invalidation stores when a fact became invalid; Multi-agent shared memory: per-user graphs; shared provenance not documented; Open source core: Graphiti Apache 2.0, 30,986 stars.
-- Supermemory: Context Intelligence: memories with relationships and temporal truth; User Feedback Intelligence: Review Inferred Memories: approve or decline; Graph or temporal facts: Graph memory: relationships, temporal truth, forgetting; Outcome changes retrieval: Review Inferred Memories: approve or decline, not task outcomes; Multi-agent shared memory: multi-tenancy and container tags; provenance not documented; Open source core: MIT, 30,159 stars.
-- Cognee: Graph or temporal facts: induced ontologies; bi-temporal facts in the enterprise tier; Outcome changes retrieval: feedback-informed retrieval claimed by the vendor; not found in the documentation index; Executable code reuse: indexes code as a data source; does not run or reuse it; Open source core: Apache 2.0, 30,809 stars.
-- Honcho (Plastic Labs): Graph or temporal facts: Peer Representations and Directional Representations; Outcome changes retrieval: search filters change queries, not trust from outcomes; Multi-agent shared memory: multi-peer memory with an Evidence page for reasoning origins; Open source core: AGPL-3.0, 7,244 stars; Public pricing: ingestion $2 per million tokens; reasoning $0.001 to $0.50 per query.
-- MemOS (MemTensor): Runtime History and Solution Intelligence: Tool Calling records tool decisions and results; User Feedback Intelligence: feedback exists; no verification; Graph or temporal facts: Neo4j and PolarDB graph modules; Outcome changes retrieval: feedback exists; no verification; Multi-agent shared memory: Group Chat; Procedures as instructions: Self-Evolving: distills reusable structured methods; Executable code reuse: a distilled skill is rendered into the prompt as an invocation guide; Executes code or tools: Tool Calling records tool decisions and results; the agent runs them; Open source core: Apache 2.0, 11,455 stars.
-- Hindsight (Vectorize): Graph or temporal facts: entities, relationships, graph search; Multi-agent shared memory: shared memory banks; Executable code reuse: its tools are retain, recall, reflect over memory, not reusable task code; Open source core: MIT, 23,894 stars.
-- SenseLab (AMFS): Runtime History and Solution Intelligence: outcomes reconcile the read set; the evidence posterior; Outcome changes retrieval: evidence posterior in evidence.py; action priors; Memory versioning: branches, merge, rollback in the paid edition; Multi-agent shared memory: rooms in the paid edition; Evaluation or simulation product: a preregistered benchmark harness in the repository; not a product; Trains or exports specialists: training export and Managed Models, paid; Open source core: Apache 2.0 core, 76 stars.
-- Letta: Code Intelligence: skills may carry scripts; the model chooses to invoke them; Memory versioning: git-versioned memory filesystem; Multi-agent shared memory: team organizations and agent sharing; Procedures as instructions: Skills: folders of instructions, scripts, and assets; Executable code reuse: skills may carry scripts and Mods are trusted local code, but the model chooses to invoke them; Executes code or tools: cloud sandboxes and tool execution billed per second; Harness or prompt optimization: harness customization by hand, not automatic; Open source core: Apache 2.0, 24,786 stars.
-- Synth: Context Intelligence: projects bind repos and reusable knowledge; Code Intelligence: no capability library; Runtime History and Solution Intelligence: immutable traces with verifiers and rubrics; Executable code reuse: projects bind repos and reusable knowledge; no capability library; Executes code or tools: container pools; Standalone solution export: Repo Review and PR returns a pull request; Independent verification: Evaluation Standards: verifiers, rubrics, rewards over immutable traces; Harness or prompt optimization: GEPA and GELO optimizers; Trains or exports specialists: supervised fine-tuning from the workshop; Open source core: software development kit MIT, 82 stars; Public pricing: $10 workshop allowance; no price list.
-- Tellurio and Afnio: Executes code or tools: the software development kit runs the workflow it optimizes; Harness or prompt optimization: auto-tunes harness and prompts; Open source core: claimed open source; repository not found today; Public pricing: $50 per user; $1 per optimize hour.
-- LangWatch: Runtime History and Solution Intelligence: traces of tool calls and workflow nodes with evaluators; Executes code or tools: tracks tool calls; workflow nodes; Independent verification: evaluators and scenario tests; not independent of the configuration; Harness or prompt optimization: Automatic Prompt Optimization; DSPy with scenarios as the metric; Trains or exports specialists: Finetuning Agents with GRPO guide; Open source core: Apache 2.0 open core, 4,814 stars.
-- Not Diamond: Model routing: $0.05 per million tokens routed; Harness or prompt optimization: prompt optimization mentioned by the vendor; not verified today; Open source core: Python software development kit archived 2025-12-11.
-- TypeSafe (Jev): Public pricing: $0.042 per million input tokens, output free; text only; no open weights.
+- Loop Engine (this repository): Context Intelligence served as records: catalog adapters, the string bank, packaged data files; served through intelligence_layers and retrieval; Temporal validity on facts: core/temporal_facts: validity intervals, supersession, as-of queries (commit 67d5d8f); Seeded generation by role or domain: roadmap S-1.11 proposed; O*NET and ESCO verified as seeds; Code Intelligence with contracts: capability directory surfaces, reusable capability records, registered resolvers, the text conformance family; Candidate to qualified admission: the reusable capability flywheel: opportunity, assessment, candidate, generalization, admission; Runtime History with cost and verification: run history, operation cost records, independent verification reports, solutions space; Training data from records: learnable call records with a run-level split; dataset versions in the training data store (commit b1fbcdc); User Feedback applied at run time: the advice store, typed task feedback slots, approvals, reviewed candidates; Graph or temporal facts: core/temporal_facts: typed triples with validity intervals, supersession, as-of, neighbors, paths (commit 67d5d8f); Outcome changes retrieval: reuse evidence with a bounded ranking term in core/retrieval: a validated record overtakes one adjacent rank, a discredited record sinks last, nothing is removed (batch 10); Memory versioning: catalog/versioning: immutable revisions, history, diff, rollback in the same store (commit 67d5d8f); Multi-agent shared memory: core/shared_memory_scopes: signed writes, membership and visibility filtered reads, stale-write refusal (commit 67d5d8f); the hosted memory endpoints bind the writer to the authenticated tenant (batch 10); Working memory with eviction: memory/working: compartments, capacity, pinning, eviction and compaction history; Episodic memory: memory/episodic records with run identity, acceptance, and failure classes; Semantic claims with contradictions: memory/semantic and strings/knowledge_state: claims, unknowns, contradictions; Procedural memory: memory/procedural, question forms, ask strategies; One store contract, many adapters: catalog/protocol with in-memory, packaged JSONL, SQLite, DuckDB, and composite adapters; server adapter planned (S-2.11); Namespaces and tenancy: catalog namespaces, shared memory scopes, service tenants; Executable code reuse: qualified reusable capabilities and registered resolvers; live reuse not yet measured; Executes code or tools: generated projects run in a confined workspace or sandbox; Sandbox with declared effects: workspace backends with Docker resource limits and effect approval; no raw-host fallback; Standalone solution export: code_nodes/solution_export: package with tests and a manifest, verified in an interpreter that cannot import loop_engine (commit fcca293); Container and Job export: the export writes a Dockerfile and a Kubernetes Job; example 28 validates the worker manifests; Model Context Protocol tools: core/mcp_adapter and core/mcp_sdk_transport as adapters used by Loops; Native harness adapters: OpenCode, Codex, Pi, and other registered recipes run a step under the owning Loop; Plugin and skill admission: extension discovery, skill admission, plugin handshakes; nothing runs from file presence; Failed-check review: core/independent_failure_review: classification with quoted evidence and a second confirmation call; Evaluation or simulation product: core/evaluation_suite and loop-engine evaluate: frozen suites, exact denominators, case-level comparison; no simulation product (commit f8a2ec1); Registered deterministic graders: exact, canonical text, JSON equality, numeric tolerance, set overlap, regular expression; Per-implementation cost records: core/operation_cost_capture wired into every capability directory call and every model gateway invocation; cheapest verified implementation query (commit b1fbcdc, batch 10); Adversarial checks and mutants in the repository: every batch ships a mutant script; a surviving mutant blocks the commit; Conformance gates on every commit: conformance, hardcoding delta, documentation lint, self-test, and an example battery on an exported tree; Secret-free records by contract: learning records, metering records, and cost records carry digests and counts; secret-shaped text is refused; Model versus non-model choice: core/implementation_choice: a decision record per operation from ledger evidence or the declared fallback order (commit b1fbcdc); the fast path records the decision it made on every deterministic attempt (batch 10); Harness or prompt optimization: core/configuration_optimizer and loop-engine optimize; offline graders only (commit f8a2ec1); Exhaustive grid with honest coverage: exact enumeration with the exhaustive flag set only when every cell was evaluated; node grid stage counts; Explorative or evolutionary search: seeded stratified sampling; the campaign vocabulary names beam, successive halving, evolutionary, and novelty strategies (represented, not qualified); Noise injection robustness: core/configuration_optimizer optimize_with_noise: a cell must hold its gain under whitespace, case, typographic quote, and extra token perturbations of the held-out suite; converge reports honest stability (batch 10); Train gain and holdout loss acceptance: AcceptancePolicy: minimum train gain and maximum holdout loss; a memorizing cell is refused; Trains or exports specialists: core/specialist_training: naive Bayes specialist from recorded rows with a run-level split, exported as JSON weights, candidate resolver; no fine-tuning; Heuristic adoption policy: core/heuristic_adoption: one million runs by default; an exact atomic fingerprint is the only exception; Typed-decision model route: roadmap S-2.13 proposed; the model ontology and call boundary admit it; Hosted cloud: service software and container recipes exist; no public hosted endpoint is operated; Public pricing: packaging tiers drafted; no prices published; Metered units documented: verified completions, avoided model calls, optimize hours, judgment depth; Never-metered list: outcome and verification records, reading own history, exports, refusals; Tenant keys stored as digests: core/service_api: SHA-256 digests compared in constant time before any work; Container image published: Dockerfile in the repository; no image built or pinned yet; Open source core: MIT.
+- Mem0: Context Intelligence served as records: memories and procedural memory as entries; Training data from records: Memory Export exports memories, not training sets; User Feedback applied at run time: Feedback Mechanism captures user signals; Graph or temporal facts: Graph Memory page; Outcome changes retrieval: Feedback Mechanism captures user signals, not outcome confidence; Multi-agent shared memory: Team Task Agent cookbook; Procedures as instructions: Memory Types: procedural_memory; Procedural memory: Memory Types: procedural_memory; Evaluation or simulation product: Memory Evaluation benchmarks memory quality, not task outcomes; Trains or exports specialists: Memory Export exports memories, not training sets; Metered units documented: add and retrieval requests; Open source core: Apache 2.0, 65,589 stars.
+- Zep and Graphiti: Temporal validity on facts: Fact Invalidation stores when a fact became invalid; Graph or temporal facts: Fact Invalidation stores when a fact became invalid; Multi-agent shared memory: per-user graphs; shared provenance not documented; Namespaces and tenancy: per-user graphs; Metered units documented: credits; Open source core: Graphiti Apache 2.0, 30,986 stars.
+- Supermemory: Context Intelligence served as records: memories with relationships and temporal truth; Temporal validity on facts: Graph memory: relationships, temporal truth, forgetting; User Feedback applied at run time: Review Inferred Memories: approve or decline; Graph or temporal facts: Graph memory: relationships, temporal truth, forgetting; Outcome changes retrieval: Review Inferred Memories: approve or decline, not task outcomes; Multi-agent shared memory: multi-tenancy and container tags; provenance not documented; Namespaces and tenancy: multi-tenancy and container tags; Metered units documented: ingested tokens; Open source core: MIT, 30,159 stars.
+- Cognee: Temporal validity on facts: bi-temporal facts in the enterprise tier; Graph or temporal facts: induced ontologies; bi-temporal facts in the enterprise tier; Executable code reuse: indexes code as a data source; does not run or reuse it; Outcome changes retrieval: feedback-informed retrieval claimed by the vendor; not found in the documentation index; Metered units documented: tokens plus workspaces; Open source core: Apache 2.0, 30,809 stars.
+- Honcho (Plastic Labs): Graph or temporal facts: Peer Representations and Directional Representations; Outcome changes retrieval: search filters change queries, not trust from outcomes; Multi-agent shared memory: multi-peer memory with an Evidence page for reasoning origins; Metered units documented: ingestion tokens and reasoning queries by depth; Open source core: AGPL-3.0, 7,244 stars; Public pricing: ingestion $2 per million tokens; reasoning $0.001 to $0.50 per query.
+- MemOS (MemTensor): Runtime History with cost and verification: Tool Calling records tool decisions and results; User Feedback applied at run time: feedback exists; no verification; Graph or temporal facts: Neo4j and PolarDB graph modules; Outcome changes retrieval: feedback exists; no verification; Multi-agent shared memory: Group Chat; Procedures as instructions: Self-Evolving: distills reusable structured methods; Procedural memory: Self-Evolving: distills reusable structured methods; Executable code reuse: a distilled skill is rendered into the prompt as an invocation guide; Executes code or tools: Tool Calling records tool decisions and results; the agent runs them; Metered units documented: adds, searches, and tokens; Open source core: Apache 2.0, 11,455 stars.
+- Hindsight (Vectorize): Graph or temporal facts: entities, relationships, graph search; Multi-agent shared memory: shared memory banks; Executable code reuse: its tools are retain, recall, reflect over memory, not reusable task code; Metered units documented: retain and recall per million tokens; reflect per call; Open source core: MIT, 23,894 stars.
+- SenseLab (AMFS): Runtime History with cost and verification: outcomes reconcile the read set; the evidence posterior; Training data from records: training export and Managed Models, paid; Outcome changes retrieval: evidence posterior in evidence.py; action priors; Memory versioning: branches, merge, rollback in the paid edition; Multi-agent shared memory: rooms in the paid edition; Evaluation or simulation product: a preregistered benchmark harness in the repository; not a product; Trains or exports specialists: training export and Managed Models, paid; Metered units documented: operations: reads 1, writes 2; Never-metered list: outcomes are free; Open source core: Apache 2.0 core, 76 stars.
+- Letta: Code Intelligence with contracts: skills may carry scripts; the model chooses to invoke them; Memory versioning: git-versioned memory filesystem; Multi-agent shared memory: team organizations and agent sharing; Procedures as instructions: Skills: folders of instructions, scripts, and assets; Executable code reuse: skills may carry scripts and Mods are trusted local code, but the model chooses to invoke them; Executes code or tools: cloud sandboxes and tool execution billed per second; Sandbox with declared effects: cloud sandboxes billed per second of tool execution; Harness or prompt optimization: harness customization by hand, not automatic; Metered units documented: per agent per month plus seconds of tool execution; Open source core: Apache 2.0, 24,786 stars.
+- Synth: Context Intelligence served as records: projects bind repos and reusable knowledge; Code Intelligence with contracts: no capability library; Runtime History with cost and verification: immutable traces with verifiers and rubrics; Training data from records: supervised fine-tuning from the workshop; Executable code reuse: projects bind repos and reusable knowledge; no capability library; Executes code or tools: container pools; Sandbox with declared effects: container pools; Standalone solution export: Repo Review and PR returns a pull request; Independent verification: Evaluation Standards: verifiers, rubrics, rewards over immutable traces; Registered deterministic graders: verifiers and rubrics over immutable traces; Harness or prompt optimization: GEPA and GELO optimizers; Explorative or evolutionary search: GEPA is an evolutionary prompt optimizer; Trains or exports specialists: supervised fine-tuning from the workshop; Open source core: software development kit MIT, 82 stars; Public pricing: $10 workshop allowance; no price list.
+- Tellurio and Afnio: Executes code or tools: the software development kit runs the workflow it optimizes; Harness or prompt optimization: auto-tunes harness and prompts; Open source core: claimed open source; repository not found today; Metered units documented: users and optimize hours; Public pricing: $50 per user; $1 per optimize hour.
+- LangWatch: Runtime History with cost and verification: traces of tool calls and workflow nodes with evaluators; Training data from records: Finetuning Agents with GRPO guide; Executes code or tools: tracks tool calls; workflow nodes; Independent verification: evaluators and scenario tests; not independent of the configuration; Registered deterministic graders: evaluators and scenario tests; Harness or prompt optimization: Automatic Prompt Optimization; DSPy with scenarios as the metric; Explorative or evolutionary search: DSPy optimizers; Trains or exports specialists: Finetuning Agents with GRPO guide; Metered units documented: seats plus events; Open source core: Apache 2.0 open core, 4,814 stars.
+- Not Diamond: Model routing: $0.05 per million tokens routed; Harness or prompt optimization: prompt optimization mentioned by the vendor; not verified today; Metered units documented: tokens routed; Open source core: Python software development kit archived 2025-12-11.
+- TypeSafe (Jev): Typed-decision model route: Jev returns typed decisions with probabilities and confidence; Metered units documented: input tokens; output free; Public pricing: $0.042 per million input tokens, output free; text only; no open weights.
 - PrismML (Bonsai): Open source core: Apache 2.0 weights on the model hub; Self-hosted option: runs on a laptop with its runtime.
 - Osmosis (Gulp AI): Evaluation or simulation product: evaluation integration for retraining cycles; Trains or exports specialists: forward-deployed reinforcement learning post-training.
-- Adaptive ML (acquired by Datadog): Independent verification: custom judges and A/B testing, configured by the customer; Trains or exports specialists: ADAPT, EVALUATE, SERVE.
+- Adaptive ML (acquired by Datadog): User Feedback applied at run time: custom judges configured by the customer; Independent verification: custom judges and A/B testing, configured by the customer; Registered deterministic graders: custom judges; Trains or exports specialists: ADAPT, EVALUATE, SERVE.
 - Distyl: Executes code or tools: composable routines with policy-aware execution; Independent verification: built-in auditability claimed; Hosted cloud: services-led deployments; the platform page was not reachable today.
-- TensorZero (archived): Runtime History and Solution Intelligence: a gateway that stores inference data for optimization; Model routing: gateway; Open source core: Apache 2.0, archived 2026-06-11; no longer maintained.
+- TensorZero (archived): Runtime History with cost and verification: a gateway that stores inference data for optimization; Model routing: gateway; Open source core: Apache 2.0, archived 2026-06-11; no longer maintained.
 - Overmind, Lemma: Persistent memory: sites unreachable at any resolvable domain today.
 
 ## Comparison chart

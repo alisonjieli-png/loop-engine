@@ -97,9 +97,62 @@ def evaluate_handler(tenant, payload: dict, ledger, clock) -> dict:
             "report": report, "metered": {"optimize_hour": round(hours, 9)}}
 
 
-def default_handlers() -> dict:
+def memory_handlers(store=None, scopes=()) -> dict:
+    """Shared memory endpoints bound to the authenticated tenant.
+
+    The writer identity is always the tenant that authenticated; a request
+    cannot name another writer. A tenant may write only to a scope that
+    lists it as a member, and reads are filtered by the scope's membership
+    and visibility. Without a declared scope the tenant has a private scope
+    over its own namespace.
+    """
+    from ..catalog.query import IntelligenceQuery
+    from ..catalog.stores.in_memory import EphemeralRecordStore
+    from ..core.shared_memory_scopes import SharedMemory, SharedMemoryError, SharedMemoryScope
+    memory = SharedMemory(store if store is not None else EphemeralRecordStore())
+    declared = {scope.scope_id: scope for scope in scopes}
+
+    def scope_for(tenant, payload: dict) -> SharedMemoryScope:
+        scope_id = str(payload.get("scope_id") or f"tenant.{tenant.tenant_id}")
+        if scope_id in declared:
+            return declared[scope_id]
+        if scope_id != f"tenant.{tenant.tenant_id}":
+            raise ServiceError(f"scope {scope_id!r} is not declared for this deployment")
+        return SharedMemoryScope(scope_id, tenant.namespace, (tenant.tenant_id,))
+
+    def write(tenant, payload: dict, ledger, clock) -> dict:
+        if "writer_id" in payload:
+            raise ServiceError("the writer is the authenticated tenant; a request cannot name one")
+        scope = scope_for(tenant, payload)
+        record = payload.get("record")
+        if not isinstance(record, dict):
+            raise ServiceError("a memory write carries one record object")
+        try:
+            written = memory.write(scope, tenant.tenant_id, record,
+                                   written_at=str(payload.get("written_at") or f"{clock():.3f}"),
+                                   expected_version=payload.get("expected_version"))
+        except SharedMemoryError as exc:
+            raise ServiceError(str(exc)) from exc
+        return {"record_type": "service_memory_write_response/v1", "tenant_id": tenant.tenant_id,
+                "write": written.to_dict()}
+
+    def read(tenant, payload: dict, ledger, clock) -> dict:
+        scope = scope_for(tenant, payload)
+        query = IntelligenceQuery(artifact_kinds=tuple(payload.get("artifact_kinds") or ()),
+                                  limit=payload.get("limit"))
+        try:
+            records = memory.read(scope, tenant.tenant_id, query=query)
+        except SharedMemoryError as exc:
+            raise ServiceError(str(exc)) from exc
+        return {"record_type": "service_memory_read_response/v1", "tenant_id": tenant.tenant_id,
+                "scope_id": scope.scope_id, "records": records}
+
+    return {"memory_write": write, "memory_read": read}
+
+
+def default_handlers(store=None, scopes=()) -> dict:
     """The handlers the service dispatches to, keyed by endpoint."""
-    return {"conform": conform_handler, "evaluate": evaluate_handler}
+    return {"conform": conform_handler, "evaluate": evaluate_handler, **memory_handlers(store, scopes)}
 
 
 def self_test() -> dict:
@@ -142,6 +195,34 @@ def self_test() -> dict:
           and body["metered"]["optimize_hour"] > 0
           and application.ledger.usage("acme")["totals"]["optimize_hour"] > 0
           and application.handle("POST", "/v1/evaluate", key, b"{}")[0] == 422)
+    from ..core.shared_memory_scopes import SharedMemoryScope
+    other, other_key = new_tenant("beta", "tenant:beta")
+    shared_scope = SharedMemoryScope("project.shared", "project:shared", ("acme", "beta"))
+    application = ServiceApplication((tenant, other), handlers=default_handlers(scopes=(shared_scope,)),
+                                     clock=lambda: 2000.0 + next(ticks))
+    note = {"record_id": "shared.note.1", "record_version": "1.0.0", "intelligence_layer": "context",
+            "source_collection": "learned", "artifact_kind": "note", "lifecycle": "active",
+            "attributes": {}, "payload": {"text": "the schema has twelve columns"}}
+    status, body = application.handle("POST", "/v1/memory_write", key,
+                                      json.dumps({"scope_id": "project.shared", "record": note}).encode("utf-8"))
+    forged = application.handle("POST", "/v1/memory_write", key,
+                                json.dumps({"scope_id": "project.shared", "writer_id": "beta",
+                                            "record": {**note, "record_id": "shared.note.2"}}).encode("utf-8"))
+    undeclared = application.handle("POST", "/v1/memory_write", key,
+                                    json.dumps({"scope_id": "someone.else", "record": note}).encode("utf-8"))
+    seen = application.handle("POST", "/v1/memory_read", other_key,
+                              json.dumps({"scope_id": "project.shared"}).encode("utf-8"))
+    private = application.handle("POST", "/v1/memory_write", other_key,
+                                 json.dumps({"record": {**note, "record_id": "beta.private"}}).encode("utf-8"))
+    peek = application.handle("POST", "/v1/memory_read", key,
+                              json.dumps({"scope_id": "tenant.beta"}).encode("utf-8"))
+    check("memory_endpoints_bind_the_writer_to_the_authenticated_tenant_and_respect_scopes",
+          status == 200 and body["write"]["writer_id"] == "acme"
+          and forged[0] == 422 and "authenticated tenant" in forged[1]["error"]
+          and undeclared[0] == 422
+          and seen[0] == 200 and [item["writer_id"] for item in seen[1]["records"]] == ["acme"]
+          and private[0] == 200 and private[1]["write"]["writer_id"] == "beta"
+          and peek[0] == 422)
     recorded, recorded_id = solver_from_spec({"kind": "recorded", "outputs": {"c1": "x"}})
     cell_solver, cell_id = solver_from_spec({**solver, "policy": {"apply_at_or_above": 0.9}},
                                             {"apply_at_or_above": 0.7, "short_token_confidence": 0.9})

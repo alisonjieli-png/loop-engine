@@ -44,7 +44,7 @@ from __future__ import annotations
 import os
 import re
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .context_classification import (CONTEXT_HIERARCHY_FIELDS,
                                      CONTEXT_THINKING_STYLES,
@@ -443,10 +443,15 @@ class IntelligenceSearchRequest:
     top_n: "int | None" = None
     filter: object | None = None
     include_candidates: bool = False
+    #: Reuse evidence by record identity (the ``ReuseEvidence.to_dict`` form):
+    #: a verified outcome then changes the ranking, never the candidate set.
+    reuse_evidence: dict = field(default_factory=dict)
 
     def __post_init__(self):
         if type(self.include_candidates) is not bool:
             raise TypeError('candidate review selection must be an explicit Boolean')
+        if not isinstance(self.reuse_evidence, dict):
+            raise TypeError('reuse evidence must be a mapping from record identity to evidence')
 
 
 @dataclass(frozen=True)
@@ -472,6 +477,7 @@ def query_intelligence(
     need = request.need
     normalized = normalize_layer_records(request.layer_records)
     combined, identities, unqueried, excluded = [], {}, [], []
+    evidence: dict = {}
     for layer in LAYERS:
         recs = []
         for record in normalized.get(layer) or ():
@@ -504,13 +510,15 @@ def query_intelligence(
             wrapped = classified_record(layer, record, record_id=wrapped_id)
             combined.append(wrapped)
             identities[wrapped_id] = (record, wrapped.body["classification"])
+            if record.record_id in request.reuse_evidence:
+                evidence[wrapped_id] = request.reuse_evidence[record.record_id]
     requested = (max(1, len(combined)) if request.top_n is None else
                  max(request.top_n, request.top_n * max(
                      1, len(LAYERS) - len(unqueried))))
     from ..loop.encapsulate import as_loop
     search_run = as_loop(
         f"search four intelligence layers for {need[:80]}",
-        lambda: Retriever(combined).search(
+        lambda: Retriever(combined, reuse_evidence=evidence).search(
             need, mode=request.mode, flt=request.filter, top_n=requested)
         if combined else {"hits": []},
         kind="callable", ledger=selected_context.ledger,
@@ -645,6 +653,19 @@ def self_test() -> dict:
           and out["hits"][0]["layer"] == "code_intelligence"
           and out["hits"][0]["record_id"] == "n.dedupe",
           f"top: {out['hits'][0]['record_id'] if out['hits'] else 'none'}")
+    twin_packs = {**packs, "code_intelligence": [
+        *code, StoreRecord("n.dedupe2", "node", "deterministic duplicate row remover",
+                           body={}, tags=("dedupe",))]}
+    plain_twins = query_intelligence(IntelligenceSearchRequest("duplicate row remover", twin_packs))
+    discredited = query_intelligence(IntelligenceSearchRequest(
+        "duplicate row remover", twin_packs,
+        reuse_evidence={plain_twins["hits"][0]["record_id"]: {"label": "discredited", "posterior": 0.1}}))
+    check("reuse_evidence_reaches_the_retriever_through_the_search_request",
+          len(plain_twins["hits"]) == 2 and len(discredited["hits"]) == 2
+          and discredited["hits"][-1]["record_id"] == plain_twins["hits"][0]["record_id"]
+          and discredited["hits"][-1].get("reuse_label") == "discredited"
+          and "reuse_label" not in discredited["hits"][0],
+          "a discredited record is still returned, ranked last, never removed")
     typed_refs = query_intelligence_refs(IntelligenceSearchRequest(
         "statistician persona", packs))
     from ..loop.recursive_loop import LoopLedger

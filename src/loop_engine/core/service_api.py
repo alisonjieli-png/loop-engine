@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 METERING_UNITS = ("verified_completion", "avoided_model_call", "optimize_hour", "judgment_depth")
-ENDPOINTS = ("health", "conform", "evaluate", "usage")
+ENDPOINTS = ("health", "conform", "evaluate", "usage", "memory_write", "memory_read")
 KEY_HEADER = "X-Loop-Engine-Key"
 TENANT_RECORD_TYPE = "service_tenant/v1"
 METERING_RECORD_TYPE = "metering_record/v1"

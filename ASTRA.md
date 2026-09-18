@@ -840,6 +840,22 @@ contracts the engine already declares and enters as a route with a
 judgment profile behind the model call boundary, with five pieces of work
 listed and none of the vendor's speed claims assumed.
 
+Observed result. Four of the five attacks that succeeded when the
+adversarial plan was written are closed the same day with checks and
+mutants: reuse evidence reaches retrieval as a bounded ranking term that
+never removes or promotes a record; the model gateway writes one operation
+cost record per invocation; the fast path records the model-versus-not
+decision it made on every deterministic attempt; and the hosted service
+binds the shared-memory writer to the authenticated tenant. Noise
+injection refuses a cell that wins only on clean inputs, and the
+convergence report claims stability only when the best cell repeats or the
+enumeration was exhaustive. Verification on a different route from the
+producer stays open. The feature matrix is now six tables with fifty-two
+columns; competitor cells in added columns are unverified unless an earlier
+note supported them, and the Loop Engine row states its own gaps: seeded
+generation, noise injection, a typed-decision route, hosted operation,
+pricing, and a published image.
+
 Unresolved question. Which cloud account, payment provider, package index
 account, and frontier model key the owner authorizes for the hosted proof of
 concept, billing, publication, and unseen-task runs.

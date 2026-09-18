@@ -100,6 +100,35 @@ def record_search_text(record) -> str:
     return " ".join(str(part) for part in parts if part)[:12000]
 
 
+#: The largest ranking change reuse evidence can make: comparable to moving a
+#: hit a few positions in reciprocal-rank fusion, never past a strong match.
+REUSE_TERM_SCALE = 0.02
+#: A discredited record sinks below every untested record.
+REUSE_DISCREDITED_TERM = -0.1
+
+
+def reuse_ranking_term(evidence: "dict | None") -> float:
+    """The ranking term one reuse evidence record contributes.
+
+    ``evidence`` is the dictionary form of ``ReuseEvidence.to_dict`` (its
+    ``label`` and ``posterior``). Untested or absent evidence contributes
+    nothing; validated and contested records move by the posterior's
+    distance from one half, scaled; a discredited record sinks.
+    """
+    if not evidence:
+        return 0.0
+    label = str(evidence.get("label", ""))
+    if label == "discredited":
+        return REUSE_DISCREDITED_TERM
+    if label in ("", "untested"):
+        return 0.0
+    try:
+        posterior = float(evidence.get("posterior", 0.5))
+    except (TypeError, ValueError):
+        return 0.0
+    return REUSE_TERM_SCALE * (max(0.0, min(1.0, posterior)) - 0.5)
+
+
 def simhash64(text: str) -> str:
     """Stable 64-bit lexical locality hash for optional blocking."""
     weights = [0] * 64
@@ -319,9 +348,15 @@ class Retriever:
 
     def __init__(self, records, *, lexical_backend: str = "fts5",
                  vector_backend: str = "hash",
-                 vector_model: "str | None" = None):
+                 vector_model: "str | None" = None,
+                 reuse_evidence: "dict | None" = None):
         from .store_serve import SolverStore
         self._records = list(records)
+        # Verified outcomes change what a record is worth: a bounded ranking
+        # term from the reuse evidence posterior, keyed by record identity.
+        # Evidence never removes a hit and never promotes a record; a
+        # discredited record sinks below untested ones, a validated one rises.
+        self._reuse = dict(reuse_evidence or {})
         self._by_id = {r.record_id: r for r in self._records}
         if lexical_backend == "fts5":
             self._lex = SqliteFtsBackend(self._records)
@@ -380,7 +415,9 @@ class Retriever:
         hits = []
         from .facets import FacetFilter, facet_match
         f = flt or FacetFilter()
-        for rid, e in sorted(fused.items(), key=lambda t: -t[1]["rrf"]):
+        for rid, e in fused.items():
+            e["evidence"] = reuse_ranking_term(self._reuse.get(rid))
+        for rid, e in sorted(fused.items(), key=lambda t: -(t[1]["rrf"] + t[1]["evidence"])):
             rec = self._by_id[rid]
             facets = dict((rec.body or {}).get("facets") or {})
             score_bonus = 0
@@ -388,11 +425,15 @@ class Retriever:
                 ok, score_bonus, _why = facet_match(facets, f)
                 if not ok:
                     continue
-            hits.append({"record_id": rid, "title": rec.title,
-                         "kind": rec.kind, "facets": facets,
-                         "lsh64": simhash64(record_search_text(rec)),
-                         "modes": sorted(set(e["modes"])),
-                         "rrf": round(e["rrf"] + 0.01 * score_bonus, 5)})
+            hit = {"record_id": rid, "title": rec.title,
+                   "kind": rec.kind, "facets": facets,
+                   "lsh64": simhash64(record_search_text(rec)),
+                   "modes": sorted(set(e["modes"])),
+                   "rrf": round(e["rrf"] + 0.01 * score_bonus, 5)}
+            if rid in self._reuse:
+                hit["reuse_label"] = str(self._reuse[rid].get("label", ""))
+                hit["reuse_term"] = round(e["evidence"], 5)
+            hits.append(hit)
             if top_n is not None and len(hits) >= top_n:
                 break
         return {"record_type": "retrieval/v1", "query": query,
@@ -660,6 +701,22 @@ def self_test() -> dict:
     tw = tournament_as_loop(["store", "fts5"], records, tq, ledger=_lgT)
     steps_t = [e.get("step") for e in _lgT.events
                if e.get("event") == "run_step"]
+    twins = [StoreRecord("twin.a", "question", "invoice total extraction", {"text": "locate the invoice total"}),
+             StoreRecord("twin.b", "question", "invoice total extraction", {"text": "locate the invoice total"}),
+             StoreRecord("twin.c", "question", "invoice total extraction", {"text": "locate the invoice total"})]
+    evidence = {"twin.b": {"label": "validated", "posterior": 1.0},
+                "twin.c": {"label": "discredited", "posterior": 0.1}}
+    ranked = Retriever(twins, reuse_evidence=evidence).search("invoice total", mode="lexical")["hits"]
+    plain = Retriever(twins).search("invoice total", mode="lexical")["hits"]
+    check("reuse_evidence_reranks_identical_records_without_removing_any",
+          [hit["record_id"] for hit in ranked] == ["twin.b", "twin.a", "twin.c"]
+          and len(plain) == 3 and ranked[0]["reuse_label"] == "validated"
+          and ranked[2]["reuse_term"] == REUSE_DISCREDITED_TERM
+          and "reuse_label" not in ranked[1]
+          and reuse_ranking_term({"label": "untested", "posterior": 0.9}) == 0.0
+          and reuse_ranking_term(None) == 0.0
+          and abs(reuse_ranking_term({"label": "contested", "posterior": 0.25}) + 0.005) < 1e-9,
+          "a fully validated record overtakes one adjacent rank at the top and a discredited one sinks last")
     check("tournaments_run_as_hypothesis_experiment_loops",
           set(tw["scores"]) == {"store", "fts5"} and tw["ranking"]
           and tw["model_calls"] == 0 and tw["stopped"] == "done"

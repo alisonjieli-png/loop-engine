@@ -157,11 +157,11 @@ steps:
   - id: S-1.12
     phase: 1
     title: Adversarial validation and audit of every matrix feature
-    status: ready
+    status: building
     depends_on: [S-0.5]
     verify: [each attack in the plan run and recorded; open attacks listed]
     adversarial: "an attack that succeeds keeps the feature at partial until its boundary changes"
-    evidence: "docs/architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md"
+    evidence: "docs/architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md; four of five open attacks closed with checks and mutants; verification on a different route stays open"
   - id: S-2.12
     phase: 2
     title: Component interface and intelligence flow documentation with inconsistencies
@@ -189,11 +189,11 @@ steps:
   - id: S-2.15
     phase: 2
     title: Noise injection and explorative optimization over the evaluation product
-    status: proposed
+    status: building
     depends_on: [S-1.7]
     verify: [SELF, MUTANT]
     adversarial: "a cell that wins only on clean inputs must be refused when the perturbed suite loses"
-    evidence: ""
+    evidence: "core/configuration_optimizer.py optimize_with_noise and perturb_suite; the memorizing cell is refused under whitespace perturbation"
   - id: S-2.13
     phase: 2
     title: Typed-decision model route (a Jev-class judge) behind the model call boundary
@@ -245,11 +245,11 @@ steps:
   - id: S-3.1
     phase: 3
     title: Offline convergence run over a grid with deterministic graders
-    status: proposed
+    status: building
     depends_on: [S-2.4]
     verify: [SELF]
     adversarial: "a broken grader must not report convergence"
-    evidence: ""
+    evidence: "core/configuration_optimizer.py converge: seeded rounds with separate counts; stability claimed only when the best cell repeats or the enumeration was exhaustive"
   - id: S-3.2
     phase: 3
     title: Live convergence run on an authorized Ollama Cloud route

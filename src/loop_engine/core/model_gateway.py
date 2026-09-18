@@ -804,12 +804,16 @@ class ModelGateway:
 
     def __init__(self, *, providers: "Sequence[ProviderSpec] | None" = None,
                  routes: "Sequence[ModelRoute] | None" = None,
-                 policy: "RoutePolicy | None" = None, token_bound_resolver=None):
+                 policy: "RoutePolicy | None" = None, token_bound_resolver=None,
+                 cost_ledger=None, run_id: str = ""):
         specs = tuple(providers or builtin_provider_specs())
         self.providers = {spec.provider_id: spec for spec in specs}
         self.registry = RouteRegistry(routes)
         self.policy = policy or RoutePolicy()
         self.token_bound_resolver = token_bound_resolver
+        #: When present, every invocation writes one operation cost record.
+        self.cost_ledger = cost_ledger
+        self.run_id = run_id
 
     def _routes(self, config: ModelGatewayConfig
                 ) -> list[tuple[ModelRoute, ModelRouteAttemptSpec]]:
@@ -859,6 +863,34 @@ class ModelGateway:
                validate: "Callable[[str], bool] | None" = None,
                ledger=None, parent=None) -> ModelGatewayResult:
         """Run one route at a time; every provider attempt is a model loop.
+
+        When the gateway carries a cost ledger, every invocation writes one
+        operation cost record: the execution phase timed, the physical model
+        calls and provider-reported tokens copied, unknown counts kept
+        unknown, and the outcome failed when the invocation did not succeed
+        and unknown otherwise, since verification is a separate step.
+        """
+        if self.cost_ledger is None:
+            return self._invoke_uncaptured(request, validate=validate, ledger=ledger, parent=parent)
+        from .operation_cost_capture import OperationCostCapture
+        capture = OperationCostCapture(self.cost_ledger,
+                                       f"model_call.{request.output_contract or 'text'}",
+                                       "model_gateway", self.run_id or "unknown-run")
+        capture.phase("execution")
+        try:
+            result = self._invoke_uncaptured(request, validate=validate, ledger=ledger, parent=parent)
+        except Exception:
+            capture.end("failed")
+            raise
+        capture.end("unknown" if result.ok else "failed",
+                    model_calls=result.physical_model_calls,
+                    input_tokens=result.input_tokens, output_tokens=result.output_tokens)
+        return result
+
+    def _invoke_uncaptured(self, request: ModelGatewayRequest, *,
+                           validate: "Callable[[str], bool] | None" = None,
+                           ledger=None, parent=None) -> ModelGatewayResult:
+        """The routing body of ``invoke``; see it for the identity rules.
 
         One logical semantic-call identity is allocated before routing. Every
         physical attempt made for this invocation carries that same identity,
@@ -1479,6 +1511,31 @@ def self_test() -> dict:
         ModelGatewayConfig(
             route_names=("contract.unknown",),
             allow_failover=False, max_route_attempts=1)))
+    from .operation_cost_records import OperationCostLedger
+    cost_ledger = OperationCostLedger()
+    costed_gateway = ModelGateway(
+        providers=(ProviderSpec(
+            "contract_only", RefusalBoundary(), "non_executable_contract",
+            "env:CONTRACT_ONLY_KEY"),),
+        routes=(ModelRoute(
+            "contract.unknown", "contract_only", "unknown-model"),),
+        cost_ledger=cost_ledger, run_id="run-cost")
+    costed = costed_gateway.invoke(ModelGatewayRequest(
+        "prove refusal before provider use",
+        ModelGatewayConfig(
+            route_names=("contract.unknown",),
+            allow_failover=False, max_route_attempts=1),
+        output_contract="practitioner.route"))
+    costed_records = cost_ledger.records
+    check("a_gateway_with_a_cost_ledger_writes_one_cost_record_per_invocation",
+          not costed.ok and len(costed_records) == 1
+          and costed_records[0].operation_id == "model_call.practitioner.route"
+          and costed_records[0].implementation_id == "model_gateway"
+          and costed_records[0].outcome == "failed"
+          and costed_records[0].run_id == "run-cost"
+          and costed_records[0].input_tokens is None
+          and dict(costed_records[0].phase_ms)["execution"] is not None,
+          "the execution phase is timed; a refused invocation is a failed record with unknown tokens")
     check("unknown_output_capability_refuses_before_provider_use",
           not refused.ok
           and refused.error_code == "unknown_model_output_limit"

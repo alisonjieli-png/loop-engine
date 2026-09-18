@@ -248,6 +248,17 @@ Append one line per iteration: date, step, result, evidence path, commit.
 - 2026-09-18, S-2.1, S-2.5, S-1.5, S-1.6, S-1.8, published as commit
   `b1fbcdc` after the batch 8 gates (battery of 30 steps) and eighteen
   killed mutants.
+- 2026-09-18, S-1.12 building: four of the five attacks that succeeded
+  are closed with checks and mutants (reuse evidence reaches retrieval as
+  a bounded ranking term; the gateway writes a cost record per invocation;
+  the fast path records its model-versus-not decision; the service binds
+  the memory writer to the authenticated tenant); verification on a
+  different route from the producer stays open. S-2.15 and S-3.1 building:
+  noise injection refuses a memorizing cell, and the convergence report
+  runs seeded rounds with honest stability.
+- 2026-09-18, the feature matrix became six tables with fifty-two columns,
+  one table per band, with vendor counts per table; competitor cells in
+  added columns are unverified unless an earlier note supported them.
 - 2026-09-18, S-1.12 ready and S-2.12 offline_verified: the
   [per-feature adversarial validation plan](../architecture/FEATURE-ADVERSARIAL-VALIDATION-PLAN-2026-09-18.md)
   lists the attacks and audit questions for all twenty features and five
