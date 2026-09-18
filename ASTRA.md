@@ -674,8 +674,8 @@ needs the flexible modes (purpose, semantic with blocking keys, judged).
 The matching modes already exist; applying strict modes to solution ports
 and flexible modes to solutioning-space comparisons is the intended use.
 
-Observed result, later on September 18. Eighteen adjacent companies were
-compared on packaging and pricing from their own pages in the
+Observed result, later on September 18. Nineteen adjacent companies were
+compared on packaging, pricing, and a binary feature matrix from their own pages in the
 [competitive landscape and monetization record](docs/research/COMPETITIVE-LANDSCAPE-AND-MONETIZATION-2026-09-18.md).
 No memory vendor executes, verifies, or keeps executable capability; the
 metering units that fit Loop Engine's thesis are verified completions,
