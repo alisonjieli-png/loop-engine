@@ -93,11 +93,11 @@ steps:
   - id: S-1.10
     phase: 1
     title: Detection and correction node family with confidence
-    status: ready
+    status: building
     depends_on: [S-0.5]
     verify: [SELF, MUTANT]
     adversarial: "remove the confidence; the outcome check must fail"
-    evidence: ""
+    evidence: "code_nodes/duplicate_detection.py: fuzzy duplicates over names, addresses, emails, and phones with five blocking keys, a weakest-signal confidence, clusters from duplicate decisions only, a dedupe proposal, and possible pairs escalated as typed decisions (11 checks, 8 mutants); code_nodes/field_recovery.py: email recovery from declared tables under the apply, hold, and escalate bands and malformed field detection by dominant pattern margin (10 checks, 7 mutants); address component extraction with the optional usaddress and libpostal adapters and database copy remain to build"
   - id: S-1.11
     phase: 1
     title: Job-description-seeded intelligence pipeline and first seeds

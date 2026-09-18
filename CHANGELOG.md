@@ -19,6 +19,29 @@ First public release.
   [pre-packaged intelligence research](docs/research/PREPACKAGED-INTELLIGENCE-AND-DIMENSIONS-2026-09-18.md)
   with verified package and occupation-database facts, and the
   [branding options](docs/research/BRANDING-OPTIONS-2026-09-18.md).
+- Duplicate detection landed as the second pre-packaged detection and
+  correction family (roadmap S-1.10). `code_nodes/duplicate_detection.py`
+  keys names, addresses, emails, and phones with the text conformance
+  catalogs and a declared abbreviation table, compares rows only inside
+  blocks from five declared blocking keys, records a block above the size
+  ceiling as skipped rather than silently dropping it, gives every pair
+  named signals per field and a confidence that is the weakest named
+  signal (a shared email with a different name is a possible pair for
+  review, never a merge), builds clusters from duplicate decisions only,
+  proposes a dedupe that names the survivor and the merged identities
+  without touching a row, and escalates possible pairs as typed decisions
+  through the typed-decision route. Eight mutants are killed.
+- Email recovery and malformed field detection joined the family
+  (`code_nodes/field_recovery.py`). Spelled-out separators, punctuation
+  slips, and declared domain typos are repaired from data tables a caller
+  can replace, each correction names its reasons and carries the weakest
+  named confidence under the same apply, hold, and escalate bands as text
+  conformance, a plausible typo that is also a real domain is held rather
+  than applied, an ambiguous or unrecoverable address is escalated and
+  left unchanged, and a value whose induced character pattern differs
+  from the column's dominant pattern is flagged with the share margin,
+  with nothing flagged when no dominant pattern exists. Seven mutants are
+  killed.
 - The first worker image is published:
   `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`
   (tags `main` and `sha-855ab32`, public package), pushed by the publish

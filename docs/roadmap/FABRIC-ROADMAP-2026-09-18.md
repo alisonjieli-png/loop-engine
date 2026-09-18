@@ -277,6 +277,20 @@ Append one line per iteration: date, step, result, evidence path, commit.
   records index check, self-test of 5,131 checks, battery of 32 steps) and
   twenty-six killed mutants across the typed-decision, seeded generation,
   and layout scripts.
+- 2026-09-18, S-1.10 building: duplicate detection landed as the second
+  detection and correction family (`code_nodes/duplicate_detection.py`):
+  names, addresses, emails, and phones keyed with the text conformance
+  catalogs, five blocking keys so rows are never compared all against all
+  by accident, a block above the size ceiling recorded as skipped, a
+  confidence that is the weakest named field signal so a shared email with
+  a different name is a possible pair for review and never a merge,
+  clusters from duplicate decisions only, a dedupe proposal that names
+  survivors and merged identities, and possible pairs escalated as typed
+  decisions through the typed-decision route; eight killed mutants.
+  Email recovery and malformed field detection followed in
+  `code_nodes/field_recovery.py` with declared repair tables, the same
+  apply, hold, and escalate bands, and a dominant-pattern margin; seven
+  killed mutants. Address component extraction and database copy remain.
 - 2026-09-18, S-4.7 published: the first run of the publish workflow on
   commit `855ab32` pushed
   `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`

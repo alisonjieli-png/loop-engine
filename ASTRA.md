@@ -876,7 +876,13 @@ admission under the `typed_decision.choice` contract that refuses wrong
 candidate sets and rows that do not sum to one, a route refused without a
 judgment profile, an in-process specialist judge, an endpoint judge over an
 injected transport, and a suite with exact denominators; no live provider
-route is declared. The conformance scan refuses a direct write to a
+route is declared. Duplicate detection landed as the second detection and
+correction family: names, addresses, emails, and phones keyed with the
+conformance catalogs, five blocking keys, a confidence that is the weakest
+named field signal so a shared email with a different name is a possible
+pair for review and never a merge, clusters from duplicate decisions only,
+a dedupe proposal that touches no row, and possible pairs escalated as
+typed decisions. The conformance scan refuses a direct write to a
 packaged intelligence path outside the catalog adapters. The worker image
 pins its base by digest, builds locally, runs `doctor`, and
 is published to the GitHub Container Registry by a workflow on every push
@@ -891,7 +897,7 @@ answers the folder question: a folder path says where, a classification
 tree says what kind, a record file says what; every documentation folder
 now states its kind in its README under a conformance gate, and the
 records index lists every version of each dated record in one place. The
-matrix has seventy-four columns; the cells that stay absent are hosted
+matrix has seventy-five columns; the cells that stay absent are hosted
 cloud and public pricing, which need an operated endpoint and a price the
 owner sets. The first worker image is published as
 `ghcr.io/alisonjieli-png/loop-engine@sha256:5e97636b9e0e4d2301d4d0f7489dfe58a7c4b4e9760f91be0802039ef4002d01`,

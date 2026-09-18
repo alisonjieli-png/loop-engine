@@ -177,3 +177,66 @@ Python profiler remains available.
 - Phone normalization uses a declared default country code and national
   length; it is not a full numbering-plan library.
 - ASCII folding is lossy and stays off unless a rule asks for it.
+
+## Duplicate detection
+
+The second detection and correction family finds fuzzy duplicates over
+names, addresses, emails, and phones. It keys each field with the same
+catalogs text conformance uses (legal suffixes, email shape) and a declared
+table of address abbreviations, compares rows only inside blocks formed by
+declared blocking keys, and gives every compared pair named signals per
+field and a confidence that is the weakest named signal.
+
+```python
+from loop_engine.code_nodes.duplicate_detection import (
+    DuplicateFieldSpec, DuplicatePolicy, dedupe, find_duplicates, summarize)
+from loop_engine.code_nodes.text_conformance import load_packaged_catalogs, merge_layers
+
+catalogs = merge_layers((load_packaged_catalogs(),))
+fields = DuplicateFieldSpec(name="company", address="address", email="email", phone="phone", identity="id")
+report = find_duplicates(rows, fields, DuplicatePolicy(), catalogs=catalogs)
+print(summarize(report))
+proposal = dedupe(rows, report, strategy="keep_first")
+```
+
+What the report guarantees:
+
+- A pair is a duplicate only when every compared field agrees strongly; a
+  shared email with a different name is a possible pair for review, never
+  a merge, because the confidence is the weakest named signal.
+- Clusters follow duplicate decisions only, and a dedupe is a proposal that
+  names the survivor and the merged identities; no row is deleted.
+- A block above the declared size ceiling is recorded as skipped, so a
+  report never claims to have compared what it did not.
+- Possible pairs can be sent to a judge behind the model call boundary as
+  typed decisions (`decide_possible_pairs`), with the answers recorded as
+  decisions and call records, not applied as merges.
+
+Address component extraction and database copy are the remaining members
+of this family on the roadmap (S-1.10).
+
+## Email recovery and malformed field detection
+
+Two more members of the family live in `code_nodes/field_recovery.py`.
+
+```python
+from loop_engine.code_nodes.field_recovery import detect_malformed, recover_column, recover_email
+
+recover_email("John.Smith at Example dot com")   # john.smith@example.com, applied
+recover_email("maria@gmail.co")                  # gmail.com suggested, held for review
+recover_email("ana@example.com; bo@example.com") # unchanged, escalated
+report = recover_column(column_values)           # exact counts per outcome
+flags = detect_malformed(["2026-09-18", "2026-09-19", "18/09/2026"])
+```
+
+Email recovery repairs spelled-out separators, punctuation slips around the
+separator and the dots, and typed domains from declared tables that a
+caller can replace with `RecoveryTables`. Every correction names its
+reasons and carries the weakest named confidence, so the same apply, hold,
+and escalate bands as text conformance decide what happens: a plausible
+typo that is also a real domain is held, and an ambiguous or unrecoverable
+address is escalated and left unchanged. Malformed field detection induces
+the character pattern of every value, finds the column's dominant pattern,
+and flags the values that differ with a confidence equal to the share
+margin; when no pattern reaches the declared dominant share it flags
+nothing and says so.

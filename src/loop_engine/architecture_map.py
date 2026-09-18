@@ -150,6 +150,7 @@ MODULE_MAP = {
         "solution_export", "solution_export_checks", "service_endpoints",
         "string_foundry",
         "text_conformance", "text_conformance_checks", "text_conformance_operations",
+        "duplicate_detection", "field_recovery",
     ),
     "core": (
         "adaptive_practitioner", "adaptive_practitioner_acceptance_checks",
