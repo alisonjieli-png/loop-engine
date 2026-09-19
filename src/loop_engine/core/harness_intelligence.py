@@ -44,6 +44,7 @@ import hashlib
 from dataclasses import dataclass, field
 
 from .facets import EFFECTS
+from .intelligence_tagging import EMPTY_TAGS, TagSet
 
 RECORD_TYPE = "harness_intelligence_item/v1"
 CATALOGUE_RECORD_TYPE = "harness_intelligence_offer/v1"
@@ -83,8 +84,16 @@ class HarnessIntelligenceItem:
     styles: tuple[str, ...] = ()
     default_exposure: str = EXPOSURES[0]
     availability: str = AVAILABILITY[0]
+    #: The dimensions this item is filed under: role, domain, geography,
+    #: language, sensitivity, authentication, lifecycle. An item that declares
+    #: nothing is general and is offered to every request.
+    tags: TagSet = EMPTY_TAGS
 
     def __post_init__(self) -> None:
+        if not isinstance(self.tags, TagSet):
+            raise HarnessIntelligenceError(
+                "tags must be a typed tag set; use the empty one to declare that an "
+                "item is general rather than untagged")
         if not self.identity.strip() or not self.purpose.strip():
             raise HarnessIntelligenceError("an item needs an identity and a purpose")
         if self.kind not in KINDS:
@@ -125,7 +134,8 @@ class HarnessIntelligenceItem:
                 "source_layer": self.source_layer, "source_ref": self.source_ref,
                 "size_bytes": self.size_bytes, "license": self.license_name,
                 "declared_effects": list(self.declared_effects),
-                "styles": list(self.styles), "exposure": chosen,
+                "styles": list(self.styles), "tags": self.tags.to_dict(),
+                "exposure": chosen,
                 "availability": self.availability, "body_included": False}
 
     def suits(self, style: str) -> bool:
@@ -155,7 +165,7 @@ class HarnessIntelligenceCatalogue:
 
 
 def offer(catalogue: HarnessIntelligenceCatalogue, *, style: str = "",
-          authority_effects=(), kinds=(), exposure: str = "") -> dict:
+          authority_effects=(), kinds=(), exposure: str = "", tags=None) -> dict:
     """What this instance may be given, as references with the withheld named.
 
     An item that declares an effect the step does not hold is not offered at
@@ -173,9 +183,16 @@ def offer(catalogue: HarnessIntelligenceCatalogue, *, style: str = "",
     bad = [kind for kind in wanted if kind not in KINDS]
     if bad:
         raise HarnessIntelligenceError(f"{bad} is not drawn from {KINDS}")
+    request = tags if tags is not None else EMPTY_TAGS
+    if not isinstance(request, TagSet):
+        raise HarnessIntelligenceError("a tag request must be a typed tag set")
     offered, withheld = [], []
     for item in sorted(catalogue.items.values(), key=lambda entry: entry.identity):
         if wanted and item.kind not in wanted:
+            continue
+        if not item.tags.matches(request):
+            withheld.append({"identity": item.identity,
+                             "reason": "filed under other tags"})
             continue
         if style and not item.suits(style):
             withheld.append({"identity": item.identity, "reason": "another harness"})
@@ -188,6 +205,7 @@ def offer(catalogue: HarnessIntelligenceCatalogue, *, style: str = "",
         offered.append(item.reference(exposure))
     return {"record_type": CATALOGUE_RECORD_TYPE, "style": style,
             "authority_effects": list(held), "requested_kinds": list(wanted),
+            "requested_tags": request.to_dict(),
             "offered": offered, "withheld": withheld,
             "offered_bytes": sum(row["size_bytes"] for row in offered),
             "exposed_bytes": sum(row["size_bytes"] for row in offered
@@ -208,6 +226,7 @@ class HarnessIntelligenceDraft:
     styles: tuple[str, ...] = ()
     default_exposure: str = EXPOSURES[0]
     availability: str = AVAILABILITY[0]
+    tags: TagSet = EMPTY_TAGS
 
 
 def item_from_body(draft: HarnessIntelligenceDraft, body: str) -> HarnessIntelligenceItem:
@@ -219,7 +238,7 @@ def item_from_body(draft: HarnessIntelligenceDraft, body: str) -> HarnessIntelli
         draft.identity, draft.kind, draft.purpose, hashlib.sha256(encoded).hexdigest(),
         draft.source_layer, draft.source_ref, len(encoded), draft.license_name,
         tuple(draft.declared_effects), tuple(draft.styles), draft.default_exposure,
-        draft.availability)
+        draft.availability, draft.tags)
 
 
 def self_test() -> dict:
@@ -304,10 +323,36 @@ def self_test() -> dict:
               HarnessIntelligenceDraft("skill.clean_supplier_names", "skill", "p",
                                        "context_intelligence", "ref"),
               "different body"))))
+    from .intelligence_tagging import TagSet as _TagSet
+    tagged = item_from_body(HarnessIntelligenceDraft(
+        "skill.nurse_intake_de", "skill", "Intake questions for a nurse, in German",
+        "context_intelligence", "ctx.skill.nurse_intake_de", "MIT",
+        tags=_TagSet({"role": ("nurse",), "language": ("de",),
+                      "data_sensitivity": ("regulated",)})),
+        "# Intake\n\nAsk in German.\n")
+    catalogue.register(tagged)
+    for_nurse = offer(catalogue, authority_effects=(),
+                      tags=_TagSet({"role": ("nurse",), "language": ("de",)}))
+    for_analyst = offer(catalogue, authority_effects=(),
+                        tags=_TagSet({"role": ("data analyst",)}))
+    check("an_item_filed_under_tags_is_offered_only_to_a_request_those_tags_satisfy",
+          "skill.nurse_intake_de" in [row["identity"] for row in for_nurse["offered"]]
+          and "skill.nurse_intake_de" in [row["identity"] for row in for_analyst["withheld"]]
+          and {row["identity"]: row["reason"] for row in for_analyst["withheld"]}[
+              "skill.nurse_intake_de"] == "filed under other tags"
+          and for_nurse["requested_tags"]["role"] == ["nurse"]
+          and for_nurse["offered"][0]["tags"]["record_type"] == "intelligence_tags/v1"
+          and "skill.clean_supplier_names" in [
+              row["identity"] for row in offer(
+                  catalogue, style="claude_code", authority_effects=())["offered"]]
+          and refuses(lambda: offer(catalogue, authority_effects=(), tags={"role": ("x",)}))
+          and refuses(lambda: HarnessIntelligenceItem(
+              "x", "skill", "p", "0" * 64, "context_intelligence", "ref", tags={"role": ()})),
+          str([row["identity"] for row in for_nurse["offered"]]))
     kinds_only = offer(catalogue, authority_effects=("reads_fs", "writes_fs"),
                        kinds=("skill",))
     check("a_step_can_ask_for_one_kind_and_gets_only_that_kind",
-          [row["kind"] for row in kinds_only["offered"]] == ["skill"]
+          set(row["kind"] for row in kinds_only["offered"]) == {"skill"}
           and kinds_only["requested_kinds"] == ["skill"],
           str(len(kinds_only["offered"])))
     passed = sum(item["passed"] for item in tests)

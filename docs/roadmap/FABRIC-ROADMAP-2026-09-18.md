@@ -81,6 +81,9 @@ rest are listed.
 | R-49 | An outside service is recorded with its operator, its typed contract, the credential the host holds by name, the three authorities a call needs, its price with the source it was read from, and its qualification state; the credential value never appears. | 2026-09-18 | `core/external_service_intelligence` (S-2.34) | offline_verified |
 | R-50 | The folder a module lives in carries its family, so no directory holds hundreds of unrelated files. | 2026-09-18 | the core folder tranches (S-3.7) | proposed |
 | R-51 | The first paid surface is provisioning: what an instance can be given is listed and manifested for free with digests, and reading a body is the metered unit. A refusal is never metered and a body that no longer matches its digest is never served. | 2026-09-18 | `core/provisioning_server` (S-4.12) | offline_verified |
+| R-52 | One atomic node becomes one provisioned folder: the instruction file in the name that harness reads, the assignment as typed fields, and a record of what was offered, withheld, and exposed. A reason node holds no write authority and a plan is provisioned whole or not at all. | 2026-09-18 | `core/node_provisioning` (S-2.37) | offline_verified |
+| R-53 | Intelligence is filed on declared dimensions, closed where a wrong value is a policy error, so what suits a role, language, region, or sensitivity can be found and the combinations holding nothing specific can be named and generated. | 2026-09-18 | `core/intelligence_tagging` (S-2.35) | offline_verified |
+| R-54 | The host authenticates once and leases that credential to every instance that needs it. A lease carries a scope, an expiry, and a use ceiling, never the value, and revoking the credential stops every lease at once. | 2026-09-18 | `core/credential_leases` (S-2.36) | offline_verified |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -201,6 +204,9 @@ named check fails.
 | S-4.12 Paid provisioning surface | Four operations over the harness catalogue: discover, list, manifest, read. Listing and manifests are free and carry digests and sizes; a body read is the one metered unit; a body is checked against its recorded digest before it leaves; the transport is injected rather than opened here. | `SELF`; mutants | A metadata tenant must never receive a body; a changed body must not be served; a refusal must never be metered | S-2.32 |
 | S-2.34 External service capabilities | What an outside service can do for a run, with network, spending, and external change as three separate authorities, a credential named and never carried, a price that must name its source, and a qualification only a different reviewer can grant. | `SELF`; mutants | A credential value in a name field must be refused; a candidate must never be offered as qualified | S-2.10 |
 | S-3.7 Folders that carry the family | Move one name family at a time out of the flat core folder into the subpackage its name already implies, with the architecture map, the folded self-test list, and every string that names a module moving in the same commit. | The full gate chain between tranches | A module named by a string must move with its file; a tranche that also changes behavior must be split | none |
+| S-2.35 Tag dimensions | Seven dimensions, closed where a wrong value is a policy error and open where a list cannot be finished; alternatives within a dimension, requirements across them; coverage separates what a caller receives from what was written for that exact combination. | `SELF`; mutants | A general record must never count as covering a specific combination | S-2.32 |
+| S-2.36 Shared authentication | One authentication held by the host, leased to each instance with a scope, an expiry, and a use ceiling; the value resolves at the point of use and never enters a folder; revoking the credential stops every lease. | `SELF`; mutants | A lease must never carry the value; a revoked lease must resolve nothing | S-2.28 |
+| S-2.37 Node provisioning | One atomic node to one folder: instruction file, typed assignment, and the record of what was offered, withheld, and exposed; reason and build hold different authority; a plan is provisioned whole or not at all. | `SELF`; thirteen killed mutants | A reason node must never hold write authority; a half provisioned plan must be rolled back | S-2.32 |
 | S-2.32 Harness Intelligence | One catalogue of what an instance can be given, in four kinds: reusable code, a skill, a tool, and an instruction file. Every item is a reference carrying a digest, a size, a license, and declared effects; an offer names what it withheld and why; where a body physically is and how much of it a model sees are separate fields. | `SELF`; seven killed mutants | An item without a digest must be refused; an item declaring an effect the step lacks must never be offered; a reference must never carry a body | S-2.28 |
 | S-2.33 Four layer search in a run | The search a step performs reaches all four populations instead of packaged Context Intelligence alone, returns references with the layer named, and takes the reuse evidence the run holds as a ranking term. | `SELF`; six killed mutants | A catalog that is not a mapping of layers must be refused; evidence must reorder without removing; the search must make no model call | S-2.10 |
 | S-2.29 Harness capability profile | Register each harness with its instruction discovery order, precedence rule, documented ceiling, effective settings, and a probe that observes what the instance loaded; an unobservable probe reports unknown. | `SELF`; mutants | Support recorded from a file name alone must be refused | S-2.28 |
@@ -554,6 +560,21 @@ Append one line per iteration: date, step, result, evidence path, commit.
   a source, and a qualification only a different reviewer can grant. What is
   still missing is not software: an operated endpoint, a price, and a payment
   provider.
+
+- 2026-09-18, S-2.35, S-2.36, S-2.37, offline_verified: the first release
+  shape is one harness instance per atomic node, given exactly the files it
+  needs. The spine for that now exists offline. A plan's slices become nodes
+  only when each declares whether it reasons or builds, because those hold
+  different authority; each node gets a folder with its instruction file, its
+  assignment as typed fields, and a record separating what was offered from
+  what was actually exposed to a model. Intelligence is filed on seven
+  dimensions so the material for a role, a language, a region, or a
+  sensitivity can be found, and so the combinations holding nothing specific
+  can be listed and generated rather than guessed at. One authentication is
+  held by the host and leased to every instance, which removes the worst
+  consequence of one instance per node: a person being asked to approve the
+  same access once per instance. Eighteen mutants, no survivors; three of them
+  found checks that passed for the wrong reason.
 
 ## Unresolved questions for the owner
 

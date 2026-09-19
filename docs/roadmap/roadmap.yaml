@@ -379,6 +379,30 @@ steps:
     verify: [SELF, MUTANT, "the full gate chain between tranches"]
     adversarial: "a module named by a string rather than an import must move in the same commit; the architecture map must not describe a tree that no longer exists; a tranche that also changes behavior must be split"
     evidence: "docs/architecture/FOLDER-DEPTH-AND-THE-FLAT-CORE-2026-09-18.md: 354 files sit directly in core against 43 in the next largest folder, depth is three segments for 510 of 579 files, and the twelve largest name families in core are already the folders they should live in; the largest family is named by 128 import statements and 113 string references, which is why this moves a family at a time"
+  - id: S-2.37
+    phase: 2
+    title: One atomic node provisioned into one harness folder
+    status: offline_verified
+    depends_on: [S-2.32]
+    verify: [SELF, MUTANT]
+    adversarial: "a reason node must never hold write authority; a slice without a declared kind must be refused rather than guessed; a plan that fails partway must leave nothing behind; a record must never claim to carry bodies"
+    evidence: "core/node_provisioning: reason and build with different authority ceilings, the instruction file plus a typed assignment plus a provisioning record in every folder, offered and exposed bytes counted separately, and a plan provisioned whole or rolled back; thirteen killed mutants"
+  - id: S-2.35
+    phase: 2
+    title: Tag dimensions for intelligence, so it can be found and its gaps named
+    status: offline_verified
+    depends_on: [S-2.32]
+    verify: [SELF, MUTANT]
+    adversarial: "a closed dimension must refuse an unknown value; a record general on a dimension must match any request on it; a general record must never count as covering a specific combination; an untagged row must be refused rather than treated as general"
+    evidence: "core/intelligence_tagging: seven declared dimensions with sensitivity, authentication, and lifecycle closed and role, domain, geography, and language open; values within a dimension are alternatives and dimensions are requirements; the combination space is enumerated and coverage reports items and specific items separately, so the empty cells name exactly what to generate; wired into the harness catalogue, which withholds an item filed under other tags"
+  - id: S-2.36
+    phase: 2
+    title: One authentication shared across every harness instance, by lease
+    status: offline_verified
+    depends_on: [S-2.28]
+    verify: [SELF, MUTANT]
+    adversarial: "a lease record must never carry the value; an expired, spent, or revoked lease must resolve nothing; revoking a credential must stop every lease on it at once; a second live lease for one instance and a lease beyond the declared ceiling must be refused"
+    evidence: "core/credential_leases: the host authenticates once and holds the credential, each instance is issued a lease with a scope, an expiry, and a use ceiling, the value is resolved at the point of use through the host's own resolver and never stored or written into a folder, and authentications, leases, and resolutions are counted separately so sharing is shown rather than claimed"
   - id: S-2.32
     phase: 2
     title: Harness Intelligence, one catalogue of what a harness instance can be given
