@@ -21,6 +21,9 @@ from .harness_execution_contracts import (
 )
 
 
+from pathlib import Path
+
+
 def run_checks() -> dict:
     """Run offline contracts with local injected adapters only."""
     tests = []
@@ -607,6 +610,7 @@ def _gateway_binding_checks(check, rejects):
         ContextArtifactStore,
         ContextArtifactStoreSpec,
     )
+    from .instance_instructions_checks import instruction_file_checks
     from .model_capabilities import ModelOutputAllocation, ModelOutputCapability
     from .model_gateway import ModelGatewayRequest
     from .ollama_client import ChatResult
@@ -741,6 +745,8 @@ def _gateway_binding_checks(check, rejects):
                 return HarnessRunResult(current.request_id, current.harness_id, "completed", output="fallback answer",
                     model_calls=(call,), provider_id=current.provider_id, model_id=current.model_id,
                     adapter_version="fixture/v1")
+
+        instruction_file_checks(check, request, parent, services)
 
         fallback_result = invoke(FallbackAdapter(), multi)
         check("explicit_fallback_keeps_actual_calls_and_primary_result_identity",

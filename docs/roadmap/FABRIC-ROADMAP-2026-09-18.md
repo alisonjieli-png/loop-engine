@@ -72,6 +72,10 @@ rest are listed.
 | R-40 | A node that is frozen keeps its memory; only a verified checkpoint and a confirmed stop release capacity, and a node continues to exist when its harness does not. | 2026-09-18 | `core/instance_hibernation` (S-2.24) | offline_verified |
 | R-41 | Cost is reserved before work and reconciled afterwards, so a timeout never erases an outstanding liability. | 2026-09-18 | cost reservation ledger (S-4.10) | proposed |
 | R-42 | Public skill repositories can enter as candidate Context Intelligence with their provenance, commit, and license recorded, while their scripts pass the code admission ladder separately. | 2026-09-18 | `core/skill_registry`, the skill pack importer (S-2.27) | partial; discovery and the admission record exist, the importer and the license refusal do not |
+| R-43 | Every harness instance is started with an instruction file the engine composed from typed fields, in the name that harness reads, naming only the authority the step already holds, with a digest that can be recomputed after the run. | 2026-09-18 | `core/instance_instructions` (S-2.28) | offline_verified |
+| R-44 | A harness is registered with a tested capability profile, not with a file name: its instruction discovery, precedence, documented ceiling, effective settings, and an observable confirmation that the instance loaded what it was given. | 2026-09-18 | harness capability profile (S-2.29) | proposed |
+| R-45 | Capabilities travel as portable packages in the published plugin layout, carrying their skills and server declarations together, with a digest on every file and a license recorded; the engine adds its own qualification rather than redefining the package. | 2026-09-18 | portable capability package (S-2.30) | proposed |
+| R-46 | What was offered, fetched, exposed to the model, used, and verified are five separate facts about one provisioning set, and a record never promotes one into another. | 2026-09-18 | provisioning set record (S-2.31) | proposed |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -189,6 +193,10 @@ named check fails.
 | S-2.24 Hibernation and reservation | Four declared actions (yield, freeze, checkpoint and release, cancel); capacity reserved before a start and released only on a confirmed stop; the ordered hibernation protocol with a checkpoint that declares its restoration fidelity; a resume that reserves again and names unresolved effects; progress-aware stall assessment; a controller that signals only an owned process group. | `SELF`; eleven killed mutants | A freeze must not report memory released; capacity must not be released on an unconfirmed stop; a declared wait must not count as a stall | S-2.22 |
 | S-2.27 Skill pack importer | Read SKILL.md front matter and body from a named repository and commit into candidate records through the store contract, with the license recorded and a refusal when none is stated; scripts and hooks take the separate code admission path. | `SELF`; mutants | A source without a license must be refused; a script must never become active through discovery | S-2.10 |
 | S-2.25 Execution profiles | Direct execution, a retained worker pool, a process or sandbox per session, an isolated sandbox for untrusted work, a shared inference service, and a batch job, chosen per workload class instead of one shape for every node. | A measured comparison on one population | Two tenants must never share one writable environment | S-2.23 |
+| S-2.29 Harness capability profile | Register each harness with its instruction discovery order, precedence rule, documented ceiling, effective settings, and a probe that observes what the instance loaded; an unobservable probe reports unknown. | `SELF`; mutants | Support recorded from a file name alone must be refused | S-2.28 |
+| S-2.30 Portable capability package | Write and read capability bundles in the published plugin layout so a skill and its server declaration travel together, with a digest per file, the license recorded, and scripts taking the separate code admission path. | `SELF`; mutants | A digest mismatch must fail the import; a script must never activate through discovery | S-2.2 |
+| S-2.31 Provisioning set record | One record per instance holding five separate facts: offered, fetched, exposed to the model, used, verified; plus whether a change needs a restart before it is active. | `SELF`; mutants | Installed must never be recorded as read, and exposed must never be recorded as used | S-2.2 |
+| S-2.28 Instance instruction file | One file per harness instance in the standard name, with the names a particular harness also reads carried as data; composed from typed fields so no free text becomes an instruction; a section that names an effect the step does not hold refuses the dispatch; a digest in a trailing marker that verification recomputes. | `SELF`; thirteen killed mutants | A file the engine did not write must be left alone; a name that leaves the folder must be refused; verification must not trust the marker it reads | S-2.1 |
 | S-2.26 Orphan recovery and shared residency | Recovery when contact is lost, and residency accounting so hibernating one instance cannot evict a model another still uses. | `SELF`; mutants | Lost contact must not release capacity or let a stale attempt publish | S-2.24 |
 | S-2.23 Cluster placement decision | A measured study of one pod per node against a worker pool that hosts many nodes per pod, with the overhead per shape, the stall and hibernation mechanism per shape, and a queue with quotas for thousands of nodes. | Measured table with exact denominators | A placement claim without a measured overhead row is unmeasured, never recommended | S-2.22 |
 | S-2.11 Search characteristics sidecar and hybrid retrieval | Facets, digests, and optional embeddings stored beside body references; a large body stays in a file, an object store, or a package; hybrid (lexical plus vector) and iterative retrieval over the same records through the existing Retriever; the same query answered by DuckDB and by a server adapter with identical results on the fixture population. | `SELF`; two adapters return identical ranked identities for the fixture queries | Remove the body reference; the large-body check must fail | S-2.10 |
@@ -477,6 +485,35 @@ Append one line per iteration: date, step, result, evidence path, commit.
   written for every text conformance escalation, and specialist training
   with a run-level split all pass their module checks; gates and mutants
   pending.
+
+- 2026-09-18, S-2.28, offline_verified: every harness instance is now given
+  one instruction file before its adapter runs. The file name is the one that
+  has settled across harnesses, the second name a particular harness reads is
+  carried as data rather than as a branch, and the body is composed from typed
+  fields, so a model cannot write its own instructions. A section that names an
+  effect the step does not hold refuses the dispatch by name, a file the engine
+  did not write is left alone, and the digest in the trailing marker is
+  recomputed by verification rather than trusted. The semantic harness
+  dispatch installs a writer that declares the two effects a step folder
+  actually grants. Thirteen mutants, no survivors; one of them found a check
+  that asserted a refusal without asserting the refusal was seen, which was
+  corrected rather than weakened.
+
+- 2026-09-18, S-2.2, S-2.29, S-2.30, S-2.31, proposed: twelve harnesses, the
+  skills format, the protocol, the plugin and bundle formats, and the container
+  lock file were read from their own pages and recorded in
+  `docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md`. Four findings
+  shape the provisioning work. The two most used formats, the instruction file
+  and the file system skill, carry no digest, no signature, and no version
+  field. No vendor neutral format states what an instance is allowed to do; the
+  one candidate field is marked experimental by its own specification and one
+  major harness omits it. Precedence has five different documented resolutions,
+  and documented ceilings range from six thousand characters to eighty thousand
+  with truncation that at least two vendors document as silent. Only one vendor
+  documents any observable signal that a file was loaded. The skills extension
+  to the Model Context Protocol, final on 2026-09-13, is the only format read
+  that makes digest verification mandatory and binds an approval to the exact
+  set of files, and it is the contract to model admission and pinning on.
 
 ## Unresolved questions for the owner
 

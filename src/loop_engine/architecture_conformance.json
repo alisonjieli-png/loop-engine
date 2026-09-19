@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 574,
+ "files_scanned": 577,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "docs_folders_without_a_charter_readme": 0,
@@ -367,7 +367,7 @@
    {
     "rule": "dependency_direction",
     "file": "core/external_harness_checks.py",
-    "line": 603,
+    "line": 606,
     "detail": "core imports code_nodes; the declared direction is code_nodes -> core (core is the lower layer in the architecture map, yet it imports code_nodes in 38 modules (73 import statements, 52 of them inside functions); the seam every Practitioner step uses to reach a model lives in code_nodes/solution_model_port.py)"
    },
    {

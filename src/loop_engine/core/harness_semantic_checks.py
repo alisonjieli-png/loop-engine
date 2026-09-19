@@ -245,5 +245,22 @@ def run_checks():
         except HarnessProcessError:
             order_refused = True
         check('the_same_order_refuses_without_the_allowance', order_refused)
+    from .harness_semantic import SEMANTIC_INSTANCE_EFFECTS, SEMANTIC_INSTANCE_REPORTING
+    from .instance_instructions import (
+        AssignmentBriefing, compose, sections_for_assignment)
+    # A semantic instance never holds a key and never dials a provider: the engine
+    # makes every model call for it through the relay it owns. An instruction file
+    # that says otherwise would teach the instance to try.
+    instance_file = compose(sections_for_assignment(AssignmentBriefing(
+        goal='Resolve one canonical semantic step', mode='non_deterministic',
+        effects=SEMANTIC_INSTANCE_EFFECTS, working_folder='/step-folder',
+        reporting=SEMANTIC_INSTANCE_REPORTING, model_calls_authorized=True)),
+        authority_effects=SEMANTIC_INSTANCE_EFFECTS, style='host_gateway')
+    withheld = ('network', 'reads_secret', 'spawns_process')
+    check('semantic_harness_instances_declare_only_the_effects_they_hold',
+          not [effect for effect in withheld if effect in instance_file.effects]
+          and not [effect for effect in withheld if effect in instance_file.body]
+          and 'Finishing a response is not acceptance' in instance_file.body,
+          ', '.join(instance_file.effects))
     return {'tests': tests, 'passed': sum(t['passed'] for t in tests),
             'total': len(tests), 'all_passed': all(t['passed'] for t in tests)}

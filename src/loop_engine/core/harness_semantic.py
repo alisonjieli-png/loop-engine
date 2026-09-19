@@ -20,12 +20,25 @@ from .external_harness import (
     HarnessServices, ModelOutputLimit, run_external_harness,
 )
 from .harness_execution_contracts import HarnessExecutionCapabilities
+from .instance_instructions import InstanceInstructionWriter
 from .harness_fallback import (
     ALTERNATIVES_EXHAUSTED, FAILURE_NOT_PERMITTED_BY_POLICY, RESPONSE_EVALUATION_INCONCLUSIVE,
     UNEXPECTED_EFFECTS_REQUIRE_RECONCILIATION,
     HarnessFallbackPolicy, HarnessFailureKind, HarnessRecoveryObservation, assess_harness_attempt,
 )
 from .harness_response_evaluation import PASSED, REJECTED
+
+#: A semantic harness instance is confined to the step folder the engine makes
+#: for it. It reads and writes there, and every model call leaves through the
+#: relay the engine owns rather than through the instance. Those are the only
+#: effects its instruction file may name.
+SEMANTIC_INSTANCE_EFFECTS = ("reads_fs", "writes_fs")
+#: What the instance is told about reporting. Completion is not acceptance.
+SEMANTIC_INSTANCE_REPORTING = (
+    "Return the response the packet's contract names. Finishing a response is not "
+    "acceptance: the owning Loop checks the work and decides whether the assignment "
+    "is done.")
+
 from .model_gateway import (
     EVALUATOR_VERDICT_ERRORS, ModelGateway, ModelGatewayRequest, ModelGatewayResult,
 )
@@ -365,6 +378,9 @@ class HarnessSemanticBinding:
             adapter, harness_request, parent=parent,
             services=HarnessServices(
                 artifact_store=manager,
+                instruction_writer=InstanceInstructionWriter(
+                    str(work), SEMANTIC_INSTANCE_EFFECTS,
+                    reporting=SEMANTIC_INSTANCE_REPORTING),
                 runtime_binding=HarnessRuntimeBinding(
                     primary.provider, primary.model, 'client', client,
                     'gateway-request:' + request.request_digest, limit)))

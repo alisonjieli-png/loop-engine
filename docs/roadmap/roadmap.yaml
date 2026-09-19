@@ -330,14 +330,55 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "remove the size check; the flagged-record check must fail"
     evidence: "src/loop_engine/core/step_efficiency_review.py self_test"
+  - id: S-2.28
+    phase: 2
+    title: One instruction file per harness instance, in the name every harness reads
+    status: offline_verified
+    depends_on:
+    - S-2.1
+    verify:
+    - SELF
+    - MUTANT
+    adversarial: a section naming an effect the step does not hold must refuse the
+      dispatch before the instance starts; a file the engine did not write must be
+      left alone; verification must recompute the digest rather than trust the marker
+    evidence: 'core/instance_instructions with core/instance_instructions_checks: the
+      standard file name with per-style aliases as data, composition from typed fields
+      only, a digest in a trailing marker, and a writer installed on the semantic harness
+      dispatch so every instance is given its file before the adapter runs; thirteen
+      killed mutants'
   - id: S-2.2
     phase: 2
     title: Harness instance provisioning manifest verified against loaded files
     status: proposed
-    depends_on: [S-2.1]
+    depends_on: [S-2.1, S-2.28]
     verify: [SELF, MUTANT]
     adversarial: "remove the load check; the unlisted-file check must fail"
-    evidence: ""
+    evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md names what the manifest must carry that no published format provides: a digest on every item including instruction files, one pin over the whole set rather than per item, a typed statement of authority, and a confirmation that the instance loaded what it was given. The skills extension to the Model Context Protocol, final on 2026-09-13, is the closest published contract and is the one to model admission and pinning on"
+  - id: S-2.29
+    phase: 2
+    title: Harness capability profile with a confirmation that the instance loaded what it was given
+    status: proposed
+    depends_on: [S-2.28]
+    verify: [SELF, MUTANT]
+    adversarial: "a profile that records support from a file name alone must be refused; a probe that cannot observe loading must report unknown rather than loaded"
+    evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md: five different precedence rules across twelve harnesses, documented ceilings from six thousand characters to eighty thousand with silent truncation in at least two, and only one vendor documenting any observable signal that a file was loaded"
+  - id: S-2.30
+    phase: 2
+    title: Portable capability package, written and read in the published plugin layout
+    status: proposed
+    depends_on: [S-2.2]
+    verify: [SELF, MUTANT]
+    adversarial: "a package without a license must be refused; a script inside a package must never become active through discovery; a digest mismatch must fail the import rather than warn"
+    evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md: one published plugin manifest carries skills, commands, agents, hooks, and server declarations in a single artifact, and its marketplace format enforces a digest for archive sources; no format read carries a signature"
+  - id: S-2.31
+    phase: 2
+    title: Provisioning set record, separating what was offered, fetched, exposed to the model, used, and verified
+    status: proposed
+    depends_on: [S-2.2]
+    verify: [SELF, MUTANT]
+    adversarial: "an item that was installed must never be recorded as read; an item exposed to the model must never be recorded as used; a package that needs a restart must be reported as pending rather than active"
+    evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md: no published format records what an instance actually loaded, and physical availability and model exposure are different properties that no format separates"
   - id: S-2.3
     phase: 2
     title: Iterative publication with consumer output digests

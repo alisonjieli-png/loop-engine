@@ -291,6 +291,9 @@ class HarnessRunResult:
     prompt_resource_digest: str = ""
     prompt_slot_schema_digest: str = ""
     prompt_render_digest: str = ""
+    #: Digest of the instruction file the instance was given, empty when the
+    #: owning Loop installed no writer. The instructions themselves stay on disk.
+    instruction_file_digest: str = ""
     capability_evaluation: dict = field(default_factory=dict)
     outcome_vector: OutcomeVector = field(default_factory=OutcomeVector)
     #: Bounded "<Type>: <message>" of the exception behind an adapter
@@ -498,6 +501,9 @@ class HarnessServices:
     runtime_binding: "HarnessRuntimeBinding | None" = None
     artifact_store: "ContextArtifactManager | None" = None
     model_output_resolver: object = None
+    #: Writes one instruction file into the instance folder before dispatch.
+    #: The owning Loop installs it and declares the effects the instance holds.
+    instruction_writer: object = None
 
     def __post_init__(self) -> None:
         if (self.runtime_binding is not None
@@ -505,6 +511,10 @@ class HarnessServices:
                                    HarnessRuntimeBinding)):
             raise HarnessError(
                 "runtime_binding must be a HarnessRuntimeBinding")
+        if self.instruction_writer is not None and not callable(
+                getattr(self.instruction_writer, "write_for", None)):
+            raise HarnessError(
+                "an instruction writer must offer write_for(request)")
         if self.artifact_store is not None:
             from .context_artifacts import ContextArtifactManager
             if not isinstance(self.artifact_store, ContextArtifactManager):
@@ -512,71 +522,9 @@ class HarnessServices:
                     "artifact_store must be a ContextArtifactManager")
 
 
-class ModelOutputResolver(Protocol):
-    def resolve(self, request: HarnessRunRequest) -> "ModelOutputLimit | None": ...
-
-
-@dataclass(frozen=True)
-class StaticModelOutputResolver:
-    """Resolve exact model maxima from reviewed capability records."""
-
-    limits: tuple[ModelOutputLimit, ...]
-
-    def resolve(self, request: HarnessRunRequest) -> "ModelOutputLimit | None":
-        for limit in self.limits:
-            provider_matches = limit.provider_id == request.provider_id
-            model_matches = limit.model_id == request.model_id
-            route_matches = (not limit.route_id
-                             or limit.route_id in request.model_routes)
-            if provider_matches and model_matches and route_matches:
-                return limit
-        return None
-
-
-def _validate_output_limit_binding(
-        request: HarnessRunRequest, limit: ModelOutputLimit) -> None:
-    _validate_output_limit_binding_fields(
-        request.provider_id, request.model_id, limit)
-    if limit.route_id and limit.route_id not in request.model_routes:
-        raise HarnessError(
-            "model output maximum route does not match the request")
-    if (limit.route_id and request.authorized_model_identities
-            and HarnessModelIdentity(limit.provider_id, limit.model_id, limit.route_id)
-            not in request.authorized_model_identities):
-        raise HarnessError("model output capacity route is outside the authorized identities")
-    if request.budget.output_allocation is not None:
-        _validate_allocation_capacity(request.budget.output_allocation, limit)
-
-
-def _validate_output_limit_binding_fields(
-        provider_id: str, model_id: str, limit: ModelOutputLimit) -> None:
-    if limit.provider_id != provider_id:
-        raise HarnessError(
-            "model output maximum provider does not match the request")
-    if limit.model_id != model_id:
-        raise HarnessError(
-            "model output maximum model does not match the request")
-
-
-def resolve_harness_output_limit(
-        request: HarnessRunRequest,
-        services: "HarnessServices | None" = None) -> HarnessRunRequest:
-    """Resolve the exact provider maximum before creating the run identity."""
-    if request.budget.output_limit is not None:
-        _validate_output_limit_binding(request, request.budget.output_limit)
-        return request
-    active = services or HarnessServices()
-    resolver = active.model_output_resolver
-    if resolver is None or not callable(getattr(resolver, "resolve", None)):
-        raise HarnessError(
-            "external harness needs a typed model output capability resolver")
-    limit = resolver.resolve(request)
-    if limit is None:
-        raise HarnessError(
-            "no exact provider output maximum matches this model and route")
-    _validate_output_limit_binding(request, limit)
-    return replace(
-        request, budget=replace(request.budget, output_limit=limit))
+from .harness_output_limit_binding import (  # noqa: F401  (kept exported here)
+    ModelOutputResolver, StaticModelOutputResolver, _validate_output_limit_binding,
+    _validate_output_limit_binding_fields, resolve_harness_output_limit)
 
 
 class ExternalHarnessAdapter(Protocol):
@@ -657,6 +605,21 @@ def run_external_harness(
             adapter_version=info.adapter_version,
             provider_id=request.provider_id, model_id=request.model_id)
     request = resolve_harness_output_limit(request, active_services)
+    instructions = None
+    if active_services.instruction_writer is not None:
+        from .instance_instructions import InstanceInstructionError
+        try:
+            instructions = active_services.instruction_writer.write_for(request)
+        except InstanceInstructionError as exc:
+            # Instructions that describe authority the step does not hold teach the
+            # instance to try. Refuse before the instance starts, not after.
+            return HarnessRunResult(
+                request.request_id, request.harness_id, "refused",
+                error_code="instance_instructions_refused",
+                error="the instance instruction file could not be composed",
+                underlying_error=str(exc)[:200],
+                adapter_version=info.adapter_version,
+                provider_id=request.provider_id, model_id=request.model_id)
 
     config = LoopConfig(
         framework="custom", custom_steps=("run_external_harness",),
@@ -788,6 +751,8 @@ def run_external_harness(
         error_code="missing_adapter_result", adapter_version=info.adapter_version,
         provider_id=request.provider_id, model_id=request.model_id)
     result.loop_id = loop.loop_id
+    if instructions:
+        result.instruction_file_digest = instructions["digest"]
     return result
 def self_test() -> dict:
     """Run focused offline checks without a package or provider call."""

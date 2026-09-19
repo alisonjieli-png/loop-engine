@@ -226,6 +226,8 @@ MODULE_MAP = {
         "harness_model_authority", "harness_process", "harness_process_relay",
         "harness_process_checks", "harness_confinement",
         "harness_configuration", "harness_semantic", "harness_semantic_checks",
+        "instance_instructions", "instance_instructions_checks",
+        "harness_output_limit_binding",
         "harness_fallback", "harness_fallback_checks", "harness_layering",
         "harness_layering_space", "harness_layering_availability",
         "harness_layering_availability_checks",
