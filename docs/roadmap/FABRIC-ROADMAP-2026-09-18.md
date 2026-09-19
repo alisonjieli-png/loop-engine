@@ -208,6 +208,7 @@ named check fails.
 | S-4.12 Paid provisioning surface | Four operations over the harness catalogue: discover, list, manifest, read. Listing and manifests are free and carry digests and sizes; a body read is the one metered unit; a body is checked against its recorded digest before it leaves; the transport is injected rather than opened here. | `SELF`; mutants | A metadata tenant must never receive a body; a changed body must not be served; a refusal must never be metered | S-2.32 |
 | S-2.34 External service capabilities | What an outside service can do for a run, with network, spending, and external change as three separate authorities, a credential named and never carried, a price that must name its source, and a qualification only a different reviewer can grant. | `SELF`; mutants | A credential value in a name field must be refused; a candidate must never be offered as qualified | S-2.10 |
 | S-3.7 Folders that carry the family | Move one name family at a time out of the flat core folder into the subpackage its name already implies, with the architecture map, the folded self-test list, and every string that names a module moving in the same commit. | The full gate chain between tranches | A module named by a string must move with its file; a tranche that also changes behavior must be split | none |
+| S-2.40 Spawned node provisioning | The folder a spawned node already receives is filled before the node starts: its instruction file, its typed assignment, and the record of what it was offered; the kind follows the authority the run granted rather than an objective sentence. | `SELF`; nine killed mutants | A blocking rule must refuse before the folder is filled; a run with no catalogue must be unchanged | S-2.37, S-2.39 |
 | S-2.39 Guardrail intelligence | The recorded enforcement ladder as records a run can carry, search, and serve: four levels with none that permits, five evaluation points, categories whose level is fixed at blocking, an unavailable rule that refuses or escalates by prior declaration, and a review that examines a firing without changing the rule. | `SELF`; fifteen killed mutants | A protected category must not become a warning; a narrow scope must not loosen a wide one | S-2.35, S-2.37 |
 | S-2.38 Capability need queue | The empty combinations of a coverage report become typed needs, each carrying its combination, its acceptance, and where to look first; a need becomes a build node whose objective states how the result will be judged. | `SELF`; ten killed mutants | A need without acceptance must be refused; a need must never claim to be a capability | S-2.35, S-2.37 |
 | S-2.35 Tag dimensions | Seven dimensions, closed where a wrong value is a policy error and open where a list cannot be finished; alternatives within a dimension, requirements across them; coverage separates what a caller receives from what was written for that exact combination. | `SELF`; mutants | A general record must never count as covering a specific combination | S-2.32 |
@@ -598,6 +599,18 @@ Append one line per iteration: date, step, result, evidence path, commit.
   three of the four published metering units cannot be observed when the
   customer runs execution, and telemetry a client reports is evidence about
   what a client says happened.
+
+- 2026-09-19, S-2.40, offline_verified: the provisioning spine was a
+  subsystem no run reached. One seam closed that. A run already breaks a task
+  into spawned subproblems, orders them by their dependencies, and forks a
+  workspace folder for each one; that folder now receives the instruction file
+  in the name its harness reads, the assignment as typed fields, and the
+  record of what was offered, withheld, and exposed to a model, with the
+  provisioning recorded on the owning ledger. The kind is derived from the
+  authority the run already granted rather than from an objective sentence: a
+  node authorized to write its workspace builds, and one that was not reasons.
+  Five modules moved onto the run path together, and the import closure grew
+  from 344 to 349 of 585.
 
 ## Unresolved questions for the owner
 

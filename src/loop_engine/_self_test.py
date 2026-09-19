@@ -129,7 +129,7 @@ def self_test() -> dict:
         "core.harness_semantic", "core.instance_instructions", "core.harness_intelligence",
         "core.external_service_intelligence", "core.provisioning_server",
         "core.node_provisioning", "core.intelligence_tagging",
-        "core.credential_leases", "core.capability_needs", "core.guardrail_intelligence",
+        "core.credential_leases", "core.capability_needs", "core.guardrail_intelligence", "core.spawned_provisioning",
         "core.harness_output_limit_binding",
         "core.harness_fallback", "core.harness_layering", "core.harness_layering_space",
         "core.harness_layering_availability",

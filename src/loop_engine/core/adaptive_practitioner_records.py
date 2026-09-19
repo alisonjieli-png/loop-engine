@@ -1645,6 +1645,12 @@ class AdaptivePractitionerDependencies:
     #: record. It changes the order of the references a search returns and
     #: never changes which records are considered.
     reuse_evidence: object | None = field(default=None, repr=False, compare=False)
+    #: What a spawned node may be given before it starts. Without one, a spawned
+    #: node's folder is left exactly as it is today.
+    harness_catalogue: object | None = field(default=None, repr=False, compare=False)
+    #: The rules evaluated before a node is provisioned and rendered into the
+    #: refusals its instructions carry.
+    guardrails: object | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if self.host_runtime is not None:
@@ -1680,6 +1686,14 @@ class AdaptivePractitionerDependencies:
             raise AdaptivePractitionerError(
                 "intelligence_catalog must be a mapping of layer name to records, "
                 "or a callable that builds one")
+        if self.harness_catalogue is not None and not hasattr(
+                self.harness_catalogue, "items"):
+            raise AdaptivePractitionerError(
+                "harness_catalogue must be a catalogue of registered items")
+        if self.guardrails is not None and not callable(
+                getattr(self.guardrails, "applicable", None)):
+            raise AdaptivePractitionerError(
+                "guardrails must offer applicable(tags, point)")
         if self.reuse_evidence is not None and not isinstance(self.reuse_evidence, dict):
             raise AdaptivePractitionerError(
                 "reuse_evidence must be a mapping from record identity to evidence")

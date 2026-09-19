@@ -243,6 +243,30 @@ def run_spawned_tasks(state, plan, services, implementations):
         spawned_service = None
         try:
             spawned_service = fork_services(services, spec)
+            # The node's folder is filled before it starts: its instruction file,
+            # its typed assignment, and the record of what it was offered. A
+            # blocking guardrail refuses here rather than after work begins.
+            from .spawned_provisioning import provision_spawned
+            provisioned = provision_spawned(
+                spawned_service,
+                node_id=(assignment.task_id if assignment is not None
+                         else f"spawned-{index + 1}"),
+                objective=spec.objective,
+                output_contract_refs=(
+                    (assignment.output_contract.bound_contract_ref,)
+                    if assignment is not None and assignment.output_contract else ()),
+                dependency_ids=(tuple(assignment.depends_on)
+                                if assignment is not None else ()))
+            if provisioned["provisioned"]:
+                owner.ledger.record(
+                    loop_id=owner.loop_id, event="custom",
+                    custom_kind="spawned_node_provisioned",
+                    node_id=provisioned["node_id"], kind=provisioned["kind"],
+                    instruction_digest=provisioned["instruction_digest"],
+                    files_written=provisioned["files_written"],
+                    offered=len(provisioned["offered"]),
+                    withheld=len(provisioned["withheld"]),
+                    exposed_bytes=provisioned["exposed_bytes"])
             calls_before = services.model_session.calls_used
 
             def prepare(active):

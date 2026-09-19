@@ -411,6 +411,14 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "a reason node must never hold write authority; a slice without a declared kind must be refused rather than guessed; a plan that fails partway must leave nothing behind; a record must never claim to carry bodies"
     evidence: "core/node_provisioning: reason and build with different authority ceilings, the instruction file plus a typed assignment plus a provisioning record in every folder, offered and exposed bytes counted separately, and a plan provisioned whole or rolled back; thirteen killed mutants"
+  - id: S-2.40
+    phase: 2
+    title: A spawned node's folder is filled before the node starts
+    status: offline_verified
+    depends_on: [S-2.37, S-2.39]
+    verify: [SELF, MUTANT]
+    adversarial: "the kind must follow the authority the run already granted rather than an objective sentence; a blocking rule must refuse before the folder is filled; a run with no catalogue must be unchanged and say so; declared tags must reach the offer rather than only the helper"
+    evidence: "core/spawned_provisioning is called from core/adaptive_practitioner_scope, which already forks a workspace for every spawned node. The folder now receives the instruction file, the typed assignment, and the record of what was offered, withheld, and exposed, and the provisioning is recorded on the owning ledger. One seam moved five modules onto the run path: spawned_provisioning, node_provisioning, harness_intelligence, guardrail_intelligence, and intelligence_tagging; the import closure of a run grew from 344 to 349 of 585 modules; nine killed mutants"
   - id: S-2.39
     phase: 2
     title: Guardrails as records a run carries, evaluated at declared points
