@@ -35,7 +35,7 @@ import time
 from dataclasses import dataclass, field
 
 from .harness_intelligence import (HarnessIntelligenceCatalogue,
-                                   HarnessIntelligenceError, offer)
+                                   HarnessIntelligenceError, offer, visibility)
 from .service_api import ServiceError, key_digest
 
 SERVER_RECORD_TYPE = "provisioning_server/v1"
@@ -154,17 +154,21 @@ class ProvisioningServer:
                 "metered": False}
 
     def _item(self, request: ProvisioningRequest):
+        """One item by identity, at the cost of one item rather than the catalogue."""
         if not request.identity.strip():
             raise ProvisioningError("name the item")
-        offered = self._offered(request)
-        for row in offered["offered"]:
-            if row["identity"] == request.identity:
-                return self.catalogue.items[request.identity]
-        for row in offered["withheld"]:
-            if row["identity"] == request.identity:
-                raise ProvisioningError(
-                    f"{request.identity!r} is withheld: {row['reason']}")
-        raise ProvisioningError(f"no item named {request.identity!r}")
+        item = self.catalogue.items.get(request.identity)
+        if item is None:
+            raise ProvisioningError(f"no item named {request.identity!r}")
+        try:
+            reason = visibility(item, style=request.style,
+                                authority_effects=request.authority_effects,
+                                kinds=request.kinds)
+        except HarnessIntelligenceError as exc:
+            raise ProvisioningError(str(exc)) from None
+        if reason:
+            raise ProvisioningError(f"{request.identity!r} is withheld: {reason}")
+        return item
 
     def _manifest(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
         item = self._item(request)
@@ -301,6 +305,21 @@ def self_test() -> dict:
           and refuses(lambda: ProvisioningTenant("x", "short", "bodies"))
           and refuses(lambda: ProvisioningTenant("x", key_digest("k"), "everything"))
           and meter.total("builder") == 1.0)
+    # Asking about one item is answered by looking at that item, so the fast path
+    # and the list must never disagree about why something is withheld.
+    listed_reasons = {row["identity"]: row["reason"] for row in
+                      server.handle(ProvisioningRequest("list", "paid-key"))["withheld"]}
+    by_name = ""
+    try:
+        server.handle(ProvisioningRequest("manifest", "paid-key",
+                                          identity="tool.database_copy"))
+    except ProvisioningError as exc:
+        by_name = str(exc)
+    check("asking_about_one_item_gives_the_same_reason_the_list_gives",
+          "tool.database_copy" in listed_reasons
+          and listed_reasons["tool.database_copy"] in by_name
+          and "reads_fs" in by_name,
+          by_name[:90])
     bodiless = ProvisioningServer(catalogue, (paid_tenant,))
     check("a_server_with_no_body_reader_serves_manifests_and_says_so_rather_than_failing_oddly",
           bodiless.handle(ProvisioningRequest(

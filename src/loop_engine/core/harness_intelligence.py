@@ -62,6 +62,12 @@ AVAILABILITY = ("remote", "cached", "mounted", "installed", "connected")
 CODE_SOURCE_LAYER = "code_intelligence"
 #: A digest is 64 hexadecimal characters.
 DIGEST_LENGTH = 64
+#: Why an item is not offered. Declared once, because both the list and the
+#: single item path must give the same answer to the same question.
+WITHHELD_ANOTHER_KIND = "another kind"
+WITHHELD_OTHER_TAGS = "filed under other tags"
+WITHHELD_ANOTHER_HARNESS = "another harness"
+WITHHOLDING_REASONS = (WITHHELD_ANOTHER_KIND, WITHHELD_OTHER_TAGS, WITHHELD_ANOTHER_HARNESS)
 
 
 class HarnessIntelligenceError(ValueError):
@@ -164,6 +170,31 @@ class HarnessIntelligenceCatalogue:
                      if any(item.kind == kind for item in self.items.values()))
 
 
+def visibility(item: HarnessIntelligenceItem, *, style: str = "", authority_effects=(),
+               kinds=(), tags=None) -> str:
+    """Empty when this item may be offered, otherwise the reason it is withheld.
+
+    One authority for the rule, so asking about one item costs the same as
+    asking about one item. Building the whole offer to answer a question about
+    a single identity is how a catalogue of fifty thousand becomes slow at the
+    moment it becomes useful.
+    """
+    if kinds and item.kind not in kinds:
+        return WITHHELD_ANOTHER_KIND
+    request = tags if tags is not None else EMPTY_TAGS
+    if not isinstance(request, TagSet):
+        raise HarnessIntelligenceError("a tag request must be a typed tag set")
+    if not item.tags.matches(request):
+        return WITHHELD_OTHER_TAGS
+    if style and not item.suits(style):
+        return WITHHELD_ANOTHER_HARNESS
+    beyond = [effect for effect in item.declared_effects
+              if effect not in tuple(authority_effects)]
+    if beyond:
+        return f"declares {beyond}, which this step does not hold"
+    return ""
+
+
 def offer(catalogue: HarnessIntelligenceCatalogue, *, style: str = "",
           authority_effects=(), kinds=(), exposure: str = "", tags=None) -> dict:
     """What this instance may be given, as references with the withheld named.
@@ -188,19 +219,12 @@ def offer(catalogue: HarnessIntelligenceCatalogue, *, style: str = "",
         raise HarnessIntelligenceError("a tag request must be a typed tag set")
     offered, withheld = [], []
     for item in sorted(catalogue.items.values(), key=lambda entry: entry.identity):
-        if wanted and item.kind not in wanted:
+        reason = visibility(item, style=style, authority_effects=held, kinds=wanted,
+                            tags=request)
+        if reason == WITHHELD_ANOTHER_KIND:
             continue
-        if not item.tags.matches(request):
-            withheld.append({"identity": item.identity,
-                             "reason": "filed under other tags"})
-            continue
-        if style and not item.suits(style):
-            withheld.append({"identity": item.identity, "reason": "another harness"})
-            continue
-        beyond = [effect for effect in item.declared_effects if effect not in held]
-        if beyond:
-            withheld.append({"identity": item.identity,
-                             "reason": f"declares {beyond}, which this step does not hold"})
+        if reason:
+            withheld.append({"identity": item.identity, "reason": reason})
             continue
         offered.append(item.reference(exposure))
     return {"record_type": CATALOGUE_RECORD_TYPE, "style": style,
