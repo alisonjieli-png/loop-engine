@@ -229,6 +229,7 @@ def self_test() -> dict:
         "core.reuse_evidence", "core.model_call_records", "core.operation_cost_records",
         "code_nodes.text_conformance", "code_nodes.solution_export", "code_nodes.duplicate_detection",
         "code_nodes.field_recovery", "code_nodes.database_copy", "code_nodes.address_components",
+        "code_nodes.data_quality_surfaces", "core.registered_capability_call",
         "core.temporal_facts", "core.shared_memory_scopes", "catalog.versioning",
         "core.step_efficiency_review", "core.heuristic_adoption", "core.implementation_choice",
         "core.specialist_training", "core.operation_cost_capture",

@@ -33,6 +33,10 @@ from .web_search import (
 from .adaptive_practitioner_orientation_capabilities import (
     environment_describe_operation, intelligence_search_operation)
 from .workspace_read import workspace_read_operation
+from .registered_capability_call import (
+    CAPABILITY_REF as CAPABILITY_CALL_REF,
+    RESULT_RECORD_TYPE as CAPABILITY_CALL_RECORD_TYPE,
+    registered_capability_operation)
 from .adaptive_practitioner_source import (
     source_inspection_operation, source_profile_operation)
 from .adaptive_practitioner_project import (
@@ -232,6 +236,12 @@ def execute_adaptive_capability(
         input_value = arguments
         input_role = "next_action_decision/v1"
         output_role = "source_inspection_result/v1"
+    elif plan.handle == CAPABILITY_CALL_REF:
+        operation = lambda _value, _params: registered_capability_operation(
+            arguments, services)
+        input_value = arguments
+        input_role = "next_action_decision/v1"
+        output_role = CAPABILITY_CALL_RECORD_TYPE
     elif plan.handle == "core.web.search":
         operation = lambda _value, _params: _search_operation(
             arguments, services, owner)

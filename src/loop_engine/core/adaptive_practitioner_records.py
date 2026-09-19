@@ -122,6 +122,24 @@ ADAPTIVE_CAPABILITIES = (
         "effects": ["reads_fs"],
     },
     {
+        "capability_ref": "core.capability.call",
+        "purpose": (
+            "USE THIS WHEN the work matches a capability this engine already "
+            "ships -- conforming text columns, finding duplicate records, "
+            "recovering spoiled contact values, splitting address lines -- "
+            "because a registered capability runs exactly and costs no model "
+            "call. Name the surface and the operation you need; the reply "
+            "lists every surface this run has, so ask once with a surface you "
+            "saw there. A surface that writes files is not callable here."),
+        "arguments": {
+            "surface": "the registered surface name, for example text_conformance",
+            "operation": "one operation that surface declares, for example run",
+            "arguments": "optional mapping forwarded to the surface unchanged",
+        },
+        "required_permissions": [],
+        "effects": ["pure"],
+    },
+    {
         "capability_ref": "core.web.search",
         "purpose": (
             "Search public web sources and return ranked candidates. Search "
@@ -1613,6 +1631,11 @@ class AdaptivePractitionerDependencies:
         default=None, repr=False, compare=False)
     extension_snapshot: dict = field(default_factory=dict)
     host_runtime: object | None = field(default=None, repr=False, compare=False)
+    #: The capability directory this run may call registered code surfaces
+    #: through. It is injected because core never imports the packages that
+    #: own those surfaces; a run without one simply has no registered
+    #: capabilities, and the handle says so rather than inventing any.
+    capability_directory: object | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if self.host_runtime is not None:
@@ -1637,6 +1660,11 @@ class AdaptivePractitionerDependencies:
                 or not callable(self.web_searcher)):
             raise AdaptivePractitionerError(
                 "adaptive capability executors must be callable")
+        if self.capability_directory is not None and not all(
+                callable(getattr(self.capability_directory, name, None))
+                for name in ("available", "handshake", "call")):
+            raise AdaptivePractitionerError(
+                "capability_directory must offer available, handshake, and call")
         if self.progress is not None and not callable(self.progress):
             raise AdaptivePractitionerError("progress must be callable")
         if (self.reuse_observation_port is not None

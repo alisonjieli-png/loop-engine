@@ -514,6 +514,19 @@ def _action_vectors(adaptive: dict) -> tuple[dict, ...]:
     return tuple(output)
 
 
+def solve_capability_directory():
+    """The registered code capabilities a solve run may call.
+
+    Built here, on the side of the boundary that owns the surfaces, so
+    that core never imports a code node package to reach them. A surface
+    added to the family becomes available to every run through this one
+    function, and nothing is executed by building the directory.
+    """
+    from ..core.capability_directory import default_directory
+    from .data_quality_surfaces import family_surfaces
+    return default_directory(surfaces=family_surfaces())
+
+
 def _product_result(adaptive: dict, solved: bool) -> dict:
     from ..core.adaptive_practitioner_result import (
         best_available_task_result, latest_task_result)
@@ -619,7 +632,8 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             project_executor=(request.project_executor
                               or execute_generated_project),
             extension_snapshot=request.extension_snapshot,
-            host_runtime=request.host_runtime))
+            host_runtime=request.host_runtime,
+            capability_directory=solve_capability_directory()))
     solved = bool(adaptive.get("solved"))
     product = _product_result(adaptive, solved)
     selected = adaptive.get("selected_solution_canvas") or {}
