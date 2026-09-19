@@ -54,6 +54,25 @@ First public release.
   worker pool hosting many nodes, and a queue with quotas for thousands
   of nodes) with every figure labeled documented, measured, or estimate;
   and the administrator needs mapped to what exists. It decides nothing.
+- The [live route probe record](docs/verification/LIVE-ROUTE-PROBE-2026-09-18.md)
+  reports a failed live trial and a folder rehearsal. A problem folder with
+  an instruction file and a defective supplier file was accepted by the
+  intake and reached orientation; a deterministic run ended
+  `CAPABILITY_GAP` naming the missing model route instead of inventing a
+  result. The one authorized live route answered a single probe call with
+  a usage limit, so no live qualification is possible until the allowance
+  is restored or a second route is authorized. A strict total token
+  ceiling refused before dispatch at every value because no token bound
+  resolver is installed, which is roadmap step S-4.11.
+- The [skill repositories record](docs/research/SKILL-REPOSITORIES-AS-CONTEXT-INTELLIGENCE-2026-09-18.md)
+  answers whether public skill repositories can enter as Context
+  Intelligence. Eight of the twelve shared entries resolved, two stayed
+  unresolved rather than guessed, and every resolution is marked inferred
+  because all twelve short links are dead. The Markdown bodies are
+  Context Intelligence staged as candidates with provenance, commit, and
+  license; the scripts six of the eight carry are Code Intelligence behind
+  the admission ladder; one repository states no license, which is no
+  permission to redistribute. The importer is S-2.27, proposed.
 - Hibernation, reservation, and progress-aware stalls complete the local
   supervisor (roadmap S-2.24). `core/instance_hibernation.py` separates the
   four actions a caller can ask of a running instance: yield and freeze stop

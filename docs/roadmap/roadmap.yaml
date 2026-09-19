@@ -170,6 +170,14 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "lost contact must not release capacity or let a stale attempt publish; hibernating one instance must not evict a model another instance still uses"
     evidence: ""
+  - id: S-2.27
+    phase: 2
+    title: Skill pack importer from public repositories into candidate Context Intelligence
+    status: proposed
+    depends_on: [S-2.10]
+    verify: [SELF, MUTANT]
+    adversarial: "a source without a license must be refused; a script must never become active through discovery; a skill whose front matter name does not match its folder must be reported, not silently renamed"
+    evidence: "docs/research/SKILL-REPOSITORIES-AS-CONTEXT-INTELLIGENCE-2026-09-18.md: eight repositories read, none declaring allowed-tools, six carrying executable scripts, one with no license at all and one split across two licenses; core/skill_registry already keeps discovery candidate-only and digest-bound"
   - id: S-2.23
     phase: 2
     title: Cluster placement decision, one pod per node against a worker pool that hosts many nodes
@@ -178,6 +186,14 @@ steps:
     verify: [a measured placement study with the overhead per shape and exact denominators]
     adversarial: "a placement claim without a measured overhead row is marked unmeasured, never recommended"
     evidence: "docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md: documented Kubernetes limits, batch queueing, distributed frameworks, sandboxing, Linux control, budget chain, a four-shape decision table with figures labeled documented, measured, or estimate, and the administrator needs; the measured study of the shapes is the remaining work"
+  - id: S-4.11
+    phase: 4
+    title: A usable total token ceiling, or an honest refusal that names what it needs
+    status: ready
+    depends_on: []
+    verify: [SELF, MUTANT, a probe with a strict ceiling either dispatches or names the missing resolver]
+    adversarial: "a declared control that always refuses must not be presented as available"
+    evidence: "docs/verification/LIVE-ROUTE-PROBE-2026-09-18.md: --max-total-tokens refused before dispatch with token_bound_unavailable at every value because the gateway token bound resolver is never installed; only --allow-unbounded-total-tokens dispatches"
   - id: S-4.10
     phase: 4
     title: Cost reservation ledger before work, reconciled after

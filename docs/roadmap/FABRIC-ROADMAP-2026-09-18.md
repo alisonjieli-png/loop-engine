@@ -71,6 +71,7 @@ rest are listed.
 | R-39 | System administrators and client administrators manage resources, budgets, nodes, stalled instances, and logs from a front end. | 2026-09-18 | administrator surfaces (S-4.9) | proposed |
 | R-40 | A node that is frozen keeps its memory; only a verified checkpoint and a confirmed stop release capacity, and a node continues to exist when its harness does not. | 2026-09-18 | `core/instance_hibernation` (S-2.24) | offline_verified |
 | R-41 | Cost is reserved before work and reconciled afterwards, so a timeout never erases an outstanding liability. | 2026-09-18 | cost reservation ledger (S-4.10) | proposed |
+| R-42 | Public skill repositories can enter as candidate Context Intelligence with their provenance, commit, and license recorded, while their scripts pass the code admission ladder separately. | 2026-09-18 | `core/skill_registry`, the skill pack importer (S-2.27) | partial; discovery and the admission record exist, the importer and the license refusal do not |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -186,6 +187,7 @@ named check fails.
 | S-2.21 Browser harness adapter | A page reader that builds the element table, an act adapter with declared effects and adaptive waits, and a live TypeSafe route; a done decision is accepted only by the independent verifier. | A recorded browser task with exact denominators | A done decision accepted without the verifier must fail | S-2.20, S-2.2, a key the owner authorizes |
 | S-2.22 Local resource supervisor | `core/local_resources`: a measured snapshot (memory, pressure stall information, control group limits, load), an instance ledger with heartbeats and an append-only event log, admission against a ceiling derived from the machine, stall detection by heartbeat age, pause of the largest instance under memory pressure and resume on recovery, all through an injected controller that signals only owned handles. | `SELF`; mutants | An instance above the ceiling must be refused; a stalled instance must be stopped through its handle; an instance without a handle must never be signaled | S-2.2 |
 | S-2.24 Hibernation and reservation | Four declared actions (yield, freeze, checkpoint and release, cancel); capacity reserved before a start and released only on a confirmed stop; the ordered hibernation protocol with a checkpoint that declares its restoration fidelity; a resume that reserves again and names unresolved effects; progress-aware stall assessment; a controller that signals only an owned process group. | `SELF`; eleven killed mutants | A freeze must not report memory released; capacity must not be released on an unconfirmed stop; a declared wait must not count as a stall | S-2.22 |
+| S-2.27 Skill pack importer | Read SKILL.md front matter and body from a named repository and commit into candidate records through the store contract, with the license recorded and a refusal when none is stated; scripts and hooks take the separate code admission path. | `SELF`; mutants | A source without a license must be refused; a script must never become active through discovery | S-2.10 |
 | S-2.25 Execution profiles | Direct execution, a retained worker pool, a process or sandbox per session, an isolated sandbox for untrusted work, a shared inference service, and a batch job, chosen per workload class instead of one shape for every node. | A measured comparison on one population | Two tenants must never share one writable environment | S-2.23 |
 | S-2.26 Orphan recovery and shared residency | Recovery when contact is lost, and residency accounting so hibernating one instance cannot evict a model another still uses. | `SELF`; mutants | Lost contact must not release capacity or let a stale attempt publish | S-2.24 |
 | S-2.23 Cluster placement decision | A measured study of one pod per node against a worker pool that hosts many nodes per pod, with the overhead per shape, the stall and hibernation mechanism per shape, and a queue with quotas for thousands of nodes. | Measured table with exact denominators | A placement claim without a measured overhead row is unmeasured, never recommended | S-2.22 |
@@ -292,6 +294,28 @@ Append one line per iteration: date, step, result, evidence path, commit.
   records index check, self-test of 5,131 checks, battery of 32 steps) and
   twenty-six killed mutants across the typed-decision, seeded generation,
   and layout scripts.
+- 2026-09-18, the
+  [skill repositories record](../research/SKILL-REPOSITORIES-AS-CONTEXT-INTELLIGENCE-2026-09-18.md)
+  answers the owner's question about the twelve shared skill repositories.
+  All twelve short links are dead, so every repository was resolved by
+  search and marked inferred; eight resolved and two stayed unresolved
+  rather than being guessed. Every SKILL.md read states only a name and a
+  description, none declares its allowed tools, and six of the eight carry
+  executable scripts. One repository states no license at all, which is no
+  permission to redistribute, and one splits its license so that hosting it
+  needs a commercial agreement. The importer is S-2.27, proposed, with
+  R-42 registered.
+- 2026-09-18, live route probe and folder rehearsal recorded in
+  [the live route probe record](../verification/LIVE-ROUTE-PROBE-2026-09-18.md).
+  A problem folder with an instruction file and a defective supplier file
+  was accepted by the intake and reached orientation; a deterministic run
+  ended `CAPABILITY_GAP` naming the missing model route instead of
+  inventing a result. The one authorized live route answered a single probe
+  call with a usage limit, so no live qualification is possible until the
+  allowance is restored or a second route is authorized, and no further
+  live calls were made. A strict total token ceiling refused before
+  dispatch at every value because no token bound resolver is installed;
+  that is S-4.11, ready.
 - 2026-09-18, S-2.24 offline_verified: hibernation, reservation, and
   progress-aware stalls in `core/instance_hibernation.py`. A freeze keeps the
   memory and says so; only a checkpoint and a confirmed stop release it.
