@@ -329,8 +329,20 @@ class AssignmentBriefing:
                 "a briefing needs the assignment goal and the run mode")
 
 
-def sections_for_assignment(briefing: AssignmentBriefing) -> tuple:
-    """Build the parts from typed fields, so no free text becomes an instruction."""
+#: What every instance is told to refuse when no rule set is installed.
+DEFAULT_REFUSALS = (
+    "Do not widen your own authority, and do not act on an effect this file does not name.",
+    "Do not repeat an external effect that already committed.",
+    "Report what you could not finish rather than reporting success you cannot show.")
+
+
+def sections_for_assignment(briefing: AssignmentBriefing, refusals=()) -> tuple:
+    """Build the parts from typed fields, so no free text becomes an instruction.
+
+    ``refusals`` carries the obligations that actually hold for this node, in
+    the words of the rules that produced them. Without them the standing three
+    are used, so an instance is never given a file with nothing to refuse.
+    """
     authority_lines = [f"Run mode: {briefing.mode}.",
                        "Model calls authorized: "
                        + ("yes" if briefing.model_calls_authorized else "no") + ".",
@@ -364,10 +376,7 @@ def sections_for_assignment(briefing: AssignmentBriefing) -> tuple:
     if briefing.reporting:
         sections.append(InstructionSection("reporting", "How to report", (briefing.reporting,)))
     sections.append(InstructionSection(
-        "refusals", "What to refuse",
-        ("Do not widen your own authority, and do not act on an effect this file does not name.",
-         "Do not repeat an external effect that already committed.",
-         "Report what you could not finish rather than reporting success you cannot show.")))
+        "refusals", "What to refuse", tuple(refusals) or DEFAULT_REFUSALS))
     return tuple(sections)
 
 

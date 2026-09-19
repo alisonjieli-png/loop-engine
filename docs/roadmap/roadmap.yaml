@@ -411,6 +411,14 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "a reason node must never hold write authority; a slice without a declared kind must be refused rather than guessed; a plan that fails partway must leave nothing behind; a record must never claim to carry bodies"
     evidence: "core/node_provisioning: reason and build with different authority ceilings, the instruction file plus a typed assignment plus a provisioning record in every folder, offered and exposed bytes counted separately, and a plan provisioned whole or rolled back; thirteen killed mutants"
+  - id: S-2.39
+    phase: 2
+    title: Guardrails as records a run carries, evaluated at declared points
+    status: offline_verified
+    depends_on: [S-2.35, S-2.37]
+    verify: [SELF, MUTANT]
+    adversarial: "a protected category must not be softened to a warning; a narrower scope must not lower the level of a wider one on the same obligation; a rule whose judge is absent must do what it declared rather than passing; a guardrail must never grant anything"
+    evidence: "core/guardrail_intelligence implements the enforcement ladder recorded in the adaptable policies direction: four levels with no permitting level, five evaluation points, deterministic and model judged rules, protected categories fixed at blocking, an unavailable rule that refuses or escalates by prior declaration, and a review that records a firing without changing the rule. Wired into core/node_provisioning, where a blocking rule refuses the node before a file is written and the instruction file's refusals become the obligations that actually apply; fifteen killed mutants"
   - id: S-2.38
     phase: 2
     title: A queue of exact capability gaps, each one precise enough to build against

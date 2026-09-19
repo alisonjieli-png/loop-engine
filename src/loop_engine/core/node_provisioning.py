@@ -105,6 +105,7 @@ class ProvisionedInstance:
     withheld: tuple[dict, ...] = ()
     offered_bytes: int = 0
     exposed_bytes: int = 0
+    guardrails: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {"record_type": RECORD_TYPE, "node_id": self.node_id, "kind": self.kind,
@@ -114,6 +115,7 @@ class ProvisionedInstance:
                 "withheld": [dict(row) for row in self.withheld],
                 "offered_bytes": self.offered_bytes,
                 "exposed_bytes": self.exposed_bytes,
+                "guardrails": dict(self.guardrails),
                 "bodies_included": False}
 
 
@@ -127,7 +129,7 @@ def _reporting_for(assignment: NodeAssignment) -> str:
 
 
 def provision(assignment: NodeAssignment, *, catalogue: HarnessIntelligenceCatalogue,
-              root, reporting: str = "") -> ProvisionedInstance:
+              root, reporting: str = "", guardrails=None, tags=None) -> ProvisionedInstance:
     """Write one node's folder and return the record of what was placed in it.
 
     Nothing is executed. The folder holds the instruction file in the name the
@@ -141,9 +143,29 @@ def provision(assignment: NodeAssignment, *, catalogue: HarnessIntelligenceCatal
     if not folder.is_dir():
         raise NodeProvisioningError(
             f"the node folder {folder} does not exist, so nothing is provisioned")
+    from .guardrail_intelligence import (GuardrailSet, POINTS, evaluate, refusal_lines)
+    from .intelligence_tagging import EMPTY_TAGS
+    request = tags if tags is not None else EMPTY_TAGS
+    refusals, guardrail_record = (), {}
+    if guardrails is not None:
+        if not isinstance(guardrails, GuardrailSet):
+            raise NodeProvisioningError("guardrails must be a typed guardrail set")
+        applicable = guardrails.applicable(request, POINTS[0])
+        guardrail_record = evaluate(
+            applicable,
+            {"node_id": assignment.node_id, "kind": assignment.kind,
+             "effects": list(assignment.effects),
+             "output_contract_refs": list(assignment.output_contract_refs),
+             "objective_present": bool(assignment.objective)},
+            tags=request, point=POINTS[0])
+        if guardrail_record["blocked"]:
+            raise NodeProvisioningError(
+                f"node {assignment.node_id!r} is blocked before provisioning by "
+                f"{guardrail_record['blocked_by']}; nothing is written")
+        refusals = refusal_lines(guardrails.applicable(request, POINTS[2]))
     available = offer(catalogue, style=assignment.harness_style,
                       authority_effects=assignment.effects,
-                      kinds=KIND_ITEM_KINDS[assignment.kind])
+                      kinds=KIND_ITEM_KINDS[assignment.kind], tags=request)
     surfaces = tuple(row["identity"] for row in available["offered"])
     try:
         composed = compose(
@@ -154,7 +176,7 @@ def provision(assignment: NodeAssignment, *, catalogue: HarnessIntelligenceCatal
                 tools=tuple(assignment.required_capabilities),
                 working_folder=str(folder),
                 reporting=reporting or _reporting_for(assignment),
-                model_calls_authorized=assignment.model_calls_authorized)),
+                model_calls_authorized=assignment.model_calls_authorized), refusals),
             authority_effects=assignment.effects,
             style=assignment.harness_style)
     except InstanceInstructionError as exc:
@@ -168,7 +190,7 @@ def provision(assignment: NodeAssignment, *, catalogue: HarnessIntelligenceCatal
         assignment.node_id, assignment.kind, str(folder), composed.digest,
         tuple(written["written"]), tuple(available["offered"]),
         tuple(available["withheld"]), available["offered_bytes"],
-        available["exposed_bytes"])
+        available["exposed_bytes"], guardrail_record)
     (folder / PROVISIONING_FILE).write_text(
         json.dumps(record.to_dict(), indent=1, sort_keys=True), "utf-8")
     return record
@@ -354,6 +376,45 @@ def self_test() -> dict:
                   NodeAssignment("n3", "reason", "Decide", effects=("reads_fs",)),
                   catalogue=catalogue, root=Path(folder) / "absent"))
               and refuses(lambda: provision("not a node", catalogue=catalogue, root=folder)))
+
+    from .guardrail_intelligence import Guardrail, GuardrailSet
+    from .intelligence_tagging import TagSet
+    rules = GuardrailSet()
+    rules.register(Guardrail(
+        "guard.regulated_needs_a_contract", "Regulated work states its output contract",
+        "data_handling", "block", "before_provisioning",
+        "provision regulated work without an output contract",
+        applies_to=TagSet({"data_sensitivity": ("regulated",)}),
+        evidence_required=("output_contract_refs",)))
+    rules.register(Guardrail(
+        "guard.no_secret_in_output", "Keep credentials out of anything written",
+        "secret", "block", "before_effect",
+        "write a credential value into an output or a record"))
+    regulated = TagSet({"data_sensitivity": ("regulated",)})
+    with tempfile.TemporaryDirectory() as folder:
+        guarded = provision(
+            NodeAssignment("n4", "build", "Correct the patient list", ("artifact/v1",),
+                           (), (), ("reads_fs", "writes_fs")),
+            catalogue=catalogue, root=folder, guardrails=rules, tags=regulated)
+        body = (Path(folder) / STANDARD_FILE).read_text("utf-8")
+        record_written = json.loads((Path(folder) / PROVISIONING_FILE).read_text("utf-8"))
+        check("an_instance_is_told_to_refuse_in_the_words_of_the_rules_that_apply_to_it",
+              "You must not: write a credential value into an output or a record" in body
+              and "Do not widen your own authority" not in body
+              and record_written["guardrails"]["evaluated"] == 1
+              and record_written["guardrails"]["blocked"] is False,
+              str(record_written["guardrails"]["evaluated"]))
+    with tempfile.TemporaryDirectory() as folder:
+        blocked = refuses(lambda: provision(
+            NodeAssignment("n5", "build", "Correct the patient list", (), (), (),
+                           ("reads_fs", "writes_fs")),
+            catalogue=catalogue, root=folder, guardrails=rules, tags=regulated))
+        check("a_blocking_rule_refuses_the_node_before_a_single_file_is_written",
+              blocked and not list(Path(folder).iterdir())
+              and refuses(lambda: provision(
+                  NodeAssignment("n6", "reason", "Decide", ("decision/v1",), (), (),
+                                 ("reads_fs",)),
+                  catalogue=catalogue, root=folder, guardrails="not a set")))
 
     class _Slice:
         def __init__(self, task_id, objective):
