@@ -355,6 +355,14 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "remove the load check; the unlisted-file check must fail"
     evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md names what the manifest must carry that no published format provides: a digest on every item including instruction files, one pin over the whole set rather than per item, a typed statement of authority, and a confirmation that the instance loaded what it was given. The skills extension to the Model Context Protocol, final on 2026-09-13, is the closest published contract and is the one to model admission and pinning on"
+  - id: S-4.12
+    phase: 4
+    title: The first paid surface serves what goes into a harness instance
+    status: offline_verified
+    depends_on: [S-2.32]
+    verify: [SELF, MUTANT]
+    adversarial: "a metadata tenant must never receive a body; a body that no longer matches its recorded digest must not be served; a refusal must never be metered; an unknown key must be refused in constant time"
+    evidence: "core/provisioning_server: four operations over one catalogue, listing and manifests free with digests and sizes, a body read as the one metered unit, every body checked against its recorded digest before it leaves, and the never metered list stated in every discovery answer. The transport is injected, so no socket is opened here. An operated endpoint, a price, and a payment provider remain owner decisions"
   - id: S-2.34
     phase: 2
     title: External service capabilities, recorded without their credentials

@@ -80,6 +80,7 @@ rest are listed.
 | R-48 | A run searches all four intelligence layers, returns typed references with the layer named, and loads a body only after selection. | 2026-09-18 | `core/adaptive_practitioner_orientation_capabilities`, `code_nodes/solve_runtime` (S-2.33) | offline_verified |
 | R-49 | An outside service is recorded with its operator, its typed contract, the credential the host holds by name, the three authorities a call needs, its price with the source it was read from, and its qualification state; the credential value never appears. | 2026-09-18 | `core/external_service_intelligence` (S-2.34) | offline_verified |
 | R-50 | The folder a module lives in carries its family, so no directory holds hundreds of unrelated files. | 2026-09-18 | the core folder tranches (S-3.7) | proposed |
+| R-51 | The first paid surface is provisioning: what an instance can be given is listed and manifested for free with digests, and reading a body is the metered unit. A refusal is never metered and a body that no longer matches its digest is never served. | 2026-09-18 | `core/provisioning_server` (S-4.12) | offline_verified |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -197,6 +198,7 @@ named check fails.
 | S-2.24 Hibernation and reservation | Four declared actions (yield, freeze, checkpoint and release, cancel); capacity reserved before a start and released only on a confirmed stop; the ordered hibernation protocol with a checkpoint that declares its restoration fidelity; a resume that reserves again and names unresolved effects; progress-aware stall assessment; a controller that signals only an owned process group. | `SELF`; eleven killed mutants | A freeze must not report memory released; capacity must not be released on an unconfirmed stop; a declared wait must not count as a stall | S-2.22 |
 | S-2.27 Skill pack importer | Read SKILL.md front matter and body from a named repository and commit into candidate records through the store contract, with the license recorded and a refusal when none is stated; scripts and hooks take the separate code admission path. | `SELF`; mutants | A source without a license must be refused; a script must never become active through discovery | S-2.10 |
 | S-2.25 Execution profiles | Direct execution, a retained worker pool, a process or sandbox per session, an isolated sandbox for untrusted work, a shared inference service, and a batch job, chosen per workload class instead of one shape for every node. | A measured comparison on one population | Two tenants must never share one writable environment | S-2.23 |
+| S-4.12 Paid provisioning surface | Four operations over the harness catalogue: discover, list, manifest, read. Listing and manifests are free and carry digests and sizes; a body read is the one metered unit; a body is checked against its recorded digest before it leaves; the transport is injected rather than opened here. | `SELF`; mutants | A metadata tenant must never receive a body; a changed body must not be served; a refusal must never be metered | S-2.32 |
 | S-2.34 External service capabilities | What an outside service can do for a run, with network, spending, and external change as three separate authorities, a credential named and never carried, a price that must name its source, and a qualification only a different reviewer can grant. | `SELF`; mutants | A credential value in a name field must be refused; a candidate must never be offered as qualified | S-2.10 |
 | S-3.7 Folders that carry the family | Move one name family at a time out of the flat core folder into the subpackage its name already implies, with the architecture map, the folded self-test list, and every string that names a module moving in the same commit. | The full gate chain between tranches | A module named by a string must move with its file; a tranche that also changes behavior must be split | none |
 | S-2.32 Harness Intelligence | One catalogue of what an instance can be given, in four kinds: reusable code, a skill, a tool, and an instruction file. Every item is a reference carrying a digest, a size, a license, and declared effects; an offer names what it withheld and why; where a body physically is and how much of it a model sees are separate fields. | `SELF`; seven killed mutants | An item without a digest must be refused; an item declaring an effect the step lacks must never be offered; a reference must never carry a body | S-2.28 |
@@ -536,6 +538,22 @@ Append one line per iteration: date, step, result, evidence path, commit.
   `core/harness_intelligence` holds what an instance can be given as
   references with digests, licenses, sizes, and declared effects. Thirteen
   mutants, no survivors.
+
+- 2026-09-18, S-2.34, S-4.12, offline_verified: the owner's direction is to
+  keep every way of running in parallel and configurable while the first
+  version concentrates on setting these up, and to put a provisioning service
+  behind a paid line so a caller can obtain everything that goes into a
+  harness instance. The surface for that now exists offline. Listing what is
+  available and asking for one item's manifest are free, because a caller
+  needs identities, purposes, digests, sizes, and licenses to decide; reading
+  a body is the metered unit, because that is the part with cost behind it. A
+  refusal is never metered, an unknown key is compared in constant time, and a
+  body that no longer matches its recorded digest is refused rather than
+  served with a warning. Beside it, external services are recorded with their
+  operator, contract, credential name, three separate authorities, price with
+  a source, and a qualification only a different reviewer can grant. What is
+  still missing is not software: an operated endpoint, a price, and a payment
+  provider.
 
 ## Unresolved questions for the owner
 
