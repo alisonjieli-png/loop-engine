@@ -83,6 +83,10 @@ def intelligence_search_operation(
     if kinds:
         records = tuple(record for record in records if record.kind in kinds)
 
+    catalog = _installed_catalog(services)
+    if catalog is not None and not kinds:
+        return _four_layer_search(query, catalog, services, owner)
+
     def _search() -> dict:
         return SolverStore(core_records=records).search(query, top_n=20)
 
@@ -105,6 +109,62 @@ def intelligence_search_operation(
         "source_scope": source_scope,
         "intelligence_layers": ["context_intelligence"],
         "requested_kinds": list(kinds),
+        "hit_count": len(rows),
+        "hits": rows,
+    }
+
+
+def _installed_catalog(services: AdaptiveRunServices):
+    """The four layer populations this run was given, built now if it was given a builder."""
+    installed = getattr(services.dependencies, "intelligence_catalog", None)
+    if installed is None:
+        return None
+    catalog = installed() if callable(installed) else installed
+    if not isinstance(catalog, dict) or not catalog:
+        raise AdaptivePractitionerError(
+            "the installed intelligence catalog is not a mapping of layer name to records")
+    return catalog
+
+
+def _four_layer_search(query: str, catalog: dict, services: AdaptiveRunServices,
+                       owner) -> dict:
+    """Search every installed layer and return typed references, never bodies.
+
+    A body is loaded after selection and a permission check, so the rows here
+    carry identity, layer, classification, and digest and nothing else. Reuse
+    evidence the run was given reorders those references; it never removes a
+    record and never adds one.
+    """
+    from .intelligence_layers import (IntelligenceSearchContext,
+                                      IntelligenceSearchRequest, query_intelligence)
+    evidence = dict(getattr(services.dependencies, "reuse_evidence", None) or {})
+    result = query_intelligence(
+        IntelligenceSearchRequest(query, catalog, mode="lexical", top_n=20,
+                                  reuse_evidence=evidence),
+        IntelligenceSearchContext(parent=owner))
+    query_loop = dict(result.get("query_loop") or {})
+    if query_loop.get("model_calls") not in (0, None):
+        raise AdaptivePractitionerError(
+            "an intelligence search must not make a model call")
+    rows = []
+    for hit in result.get("hits", ())[:20]:
+        rows.append({
+            "record_id": str(hit.get("record_id", "")),
+            "layer": str(hit.get("layer", "")),
+            "kind": str(hit.get("classification", "") or hit.get("kind", "")),
+            "title": str(hit.get("title", ""))[:160],
+            "version": str(hit.get("version", "")),
+            "payload_digest": str(hit.get("payload_digest", "")),
+            "prior_not_proof": True,
+        })
+    searched_layers = [layer for layer in catalog if catalog[layer]]
+    return {
+        "record_type": "intelligence_search_result/v1",
+        "query": query,
+        "source_scope": "installed_four_layer_catalog",
+        "intelligence_layers": searched_layers,
+        "requested_kinds": [],
+        "reuse_evidence_records": len(evidence),
         "hit_count": len(rows),
         "hits": rows,
     }
@@ -241,6 +301,75 @@ def self_test() -> dict:
         ambiguous_refused = True
     check("ambiguous_portfolio_record_identities_refuse", ambiguous_refused)
 
+    # A run given the four layer populations searches all of them, and reuse
+    # evidence reorders what comes back without changing which records are
+    # considered. The fixture is small and typed so the check is about the
+    # wiring, not about any particular record in the repository.
+    from .store_serve import StoreRecord as _StoreRecord
+
+    def _layer_record(identity, text):
+        return _StoreRecord(identity, "context", identity,
+                            body={"title": text, "text": text, "version": "1.0.0",
+                                  "payload_digest": "d" * 64},
+                            tags=("fixture",), source="fixture")
+
+    catalog = {
+        "context_intelligence": (_layer_record("ctx.alpha", "invoice totals reconcile"),),
+        "code_intelligence": (_layer_record("code.alpha", "invoice totals parser"),),
+        "runtime_history_solution_intelligence": (
+            _layer_record("run.alpha", "invoice totals run"),),
+        "user_feedback_intelligence": (),
+    }
+    layered_services = SimpleNamespace(
+        request=services.request,
+        dependencies=SimpleNamespace(
+            model_execution=None, deterministic_resolvers=(), context_portfolio=None,
+            intelligence_catalog=catalog, reuse_evidence=None))
+    layered = intelligence_search_operation({"query": "invoice totals"}, layered_services, None)
+    layers_hit = {row["layer"] for row in layered["hits"]}
+    check("a_run_with_the_four_layer_catalog_searches_every_populated_layer_and_returns_references",
+          layered["source_scope"] == "installed_four_layer_catalog"
+          and len(layers_hit) == 3
+          and "user_feedback_intelligence" not in layered["intelligence_layers"]
+          and all(row["prior_not_proof"] is True for row in layered["hits"])
+          and all("body" not in row and "text" not in row for row in layered["hits"])
+          and layered["reuse_evidence_records"] == 0)
+    plain_order = [row["record_id"] for row in layered["hits"]]
+    discredited = plain_order[0]
+    evidence_services = SimpleNamespace(
+        request=services.request,
+        dependencies=SimpleNamespace(
+            model_execution=None, deterministic_resolvers=(), context_portfolio=None,
+            intelligence_catalog=lambda: catalog,
+            reuse_evidence={discredited: {"label": "discredited", "posterior": 0.1}}))
+    reordered = intelligence_search_operation(
+        {"query": "invoice totals"}, evidence_services, None)
+    reordered_ids = [row["record_id"] for row in reordered["hits"]]
+    check("reuse_evidence_reorders_the_references_and_removes_none",
+          sorted(reordered_ids) == sorted(plain_order)
+          and reordered_ids[-1] == discredited and plain_order[-1] != discredited
+          and reordered["reuse_evidence_records"] == 1)
+    refused_catalog = False
+    try:
+        intelligence_search_operation(
+            {"query": "invoice totals"},
+            SimpleNamespace(request=services.request, dependencies=SimpleNamespace(
+                model_execution=None, deterministic_resolvers=(), context_portfolio=None,
+                intelligence_catalog=lambda: ["not a mapping"], reuse_evidence=None)),
+            None)
+    except AdaptivePractitionerError:
+        refused_catalog = True
+    packaged_services = SimpleNamespace(
+        request=services.request,
+        dependencies=SimpleNamespace(
+            model_execution=None, deterministic_resolvers=(), context_portfolio=None,
+            intelligence_catalog=None, reuse_evidence=None))
+    packaged = intelligence_search_operation(
+        {"query": "data quality"}, packaged_services, None)
+    check("a_catalog_that_is_not_a_mapping_is_refused_and_a_run_without_one_still_searches_context",
+          refused_catalog
+          and packaged["source_scope"] == "packaged_context_catalogue"
+          and packaged["intelligence_layers"] == ["context_intelligence"])
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "orientation_capabilities_test/v1",
             "tests": tests, "passed": passed, "total": len(tests),

@@ -76,6 +76,8 @@ rest are listed.
 | R-44 | A harness is registered with a tested capability profile, not with a file name: its instruction discovery, precedence, documented ceiling, effective settings, and an observable confirmation that the instance loaded what it was given. | 2026-09-18 | harness capability profile (S-2.29) | proposed |
 | R-45 | Capabilities travel as portable packages in the published plugin layout, carrying their skills and server declarations together, with a digest on every file and a license recorded; the engine adds its own qualification rather than redefining the package. | 2026-09-18 | portable capability package (S-2.30) | proposed |
 | R-46 | What was offered, fetched, exposed to the model, used, and verified are five separate facts about one provisioning set, and a record never promotes one into another. | 2026-09-18 | provisioning set record (S-2.31) | proposed |
+| R-47 | What a harness instance can be given is catalogued in one place as references with a digest, a size, a license, and declared effects, and never as a second copy of the record that holds the body. | 2026-09-18 | `core/harness_intelligence` (S-2.32) | offline_verified |
+| R-48 | A run searches all four intelligence layers, returns typed references with the layer named, and loads a body only after selection. | 2026-09-18 | `core/adaptive_practitioner_orientation_capabilities`, `code_nodes/solve_runtime` (S-2.33) | offline_verified |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -193,6 +195,8 @@ named check fails.
 | S-2.24 Hibernation and reservation | Four declared actions (yield, freeze, checkpoint and release, cancel); capacity reserved before a start and released only on a confirmed stop; the ordered hibernation protocol with a checkpoint that declares its restoration fidelity; a resume that reserves again and names unresolved effects; progress-aware stall assessment; a controller that signals only an owned process group. | `SELF`; eleven killed mutants | A freeze must not report memory released; capacity must not be released on an unconfirmed stop; a declared wait must not count as a stall | S-2.22 |
 | S-2.27 Skill pack importer | Read SKILL.md front matter and body from a named repository and commit into candidate records through the store contract, with the license recorded and a refusal when none is stated; scripts and hooks take the separate code admission path. | `SELF`; mutants | A source without a license must be refused; a script must never become active through discovery | S-2.10 |
 | S-2.25 Execution profiles | Direct execution, a retained worker pool, a process or sandbox per session, an isolated sandbox for untrusted work, a shared inference service, and a batch job, chosen per workload class instead of one shape for every node. | A measured comparison on one population | Two tenants must never share one writable environment | S-2.23 |
+| S-2.32 Harness Intelligence | One catalogue of what an instance can be given, in four kinds: reusable code, a skill, a tool, and an instruction file. Every item is a reference carrying a digest, a size, a license, and declared effects; an offer names what it withheld and why; where a body physically is and how much of it a model sees are separate fields. | `SELF`; seven killed mutants | An item without a digest must be refused; an item declaring an effect the step lacks must never be offered; a reference must never carry a body | S-2.28 |
+| S-2.33 Four layer search in a run | The search a step performs reaches all four populations instead of packaged Context Intelligence alone, returns references with the layer named, and takes the reuse evidence the run holds as a ranking term. | `SELF`; six killed mutants | A catalog that is not a mapping of layers must be refused; evidence must reorder without removing; the search must make no model call | S-2.10 |
 | S-2.29 Harness capability profile | Register each harness with its instruction discovery order, precedence rule, documented ceiling, effective settings, and a probe that observes what the instance loaded; an unobservable probe reports unknown. | `SELF`; mutants | Support recorded from a file name alone must be refused | S-2.28 |
 | S-2.30 Portable capability package | Write and read capability bundles in the published plugin layout so a skill and its server declaration travel together, with a digest per file, the license recorded, and scripts taking the separate code admission path. | `SELF`; mutants | A digest mismatch must fail the import; a script must never activate through discovery | S-2.2 |
 | S-2.31 Provisioning set record | One record per instance holding five separate facts: offered, fetched, exposed to the model, used, verified; plus whether a change needs a restart before it is active. | `SELF`; mutants | Installed must never be recorded as read, and exposed must never be recorded as used | S-2.2 |
@@ -515,9 +519,30 @@ Append one line per iteration: date, step, result, evidence path, commit.
   that makes digest verification mandatory and binds an approval to the exact
   set of files, and it is the contract to model admission and pinning on.
 
+- 2026-09-18, S-2.32, S-2.33, offline_verified: before this step, a
+  measurement found that no caller on the run path reached the four layer
+  query at all. A solve searched packaged Context Intelligence alone, which is
+  one layer of four, through one capability. The search now reaches every
+  installed layer, returns typed references with the layer named and no body,
+  and takes the reuse evidence the run holds as a ranking term that reorders
+  without removing. The catalog is installed as a builder, so a run that never
+  searches pays nothing for it, and `solve_dependencies` makes what a run
+  receives observable without running a whole solve, which is how the wiring
+  itself is checked rather than the function behind it. Beside it,
+  `core/harness_intelligence` holds what an instance can be given as
+  references with digests, licenses, sizes, and declared effects. Thirteen
+  mutants, no survivors.
+
 ## Unresolved questions for the owner
 
 - Which cloud account and region host the proof of concept and the service.
 - Which payment provider and which introductory prices.
 - Which frontier model key is authorized for the unseen-task runs.
 - Whether the product name changes, and to what.
+- Whether Harness Intelligence becomes a fifth queryable layer beside the
+  four, or stays a component that references them. The repository rule today
+  is that a source format does not define a layer, and the layer vocabulary
+  is closed and read by conformance, record identities, routing records, and
+  query contracts, so adding a name is a wide change. The argument for it is
+  that what can be handed to a harness instance is a purpose rather than a
+  format, and purposes are what the other four layers are organized by.

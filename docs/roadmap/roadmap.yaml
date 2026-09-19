@@ -355,6 +355,22 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "remove the load check; the unlisted-file check must fail"
     evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md names what the manifest must carry that no published format provides: a digest on every item including instruction files, one pin over the whole set rather than per item, a typed statement of authority, and a confirmation that the instance loaded what it was given. The skills extension to the Model Context Protocol, final on 2026-09-13, is the closest published contract and is the one to model admission and pinning on"
+  - id: S-2.32
+    phase: 2
+    title: Harness Intelligence, one catalogue of what a harness instance can be given
+    status: offline_verified
+    depends_on: [S-2.28]
+    verify: [SELF, MUTANT]
+    adversarial: "an item without a digest must be refused; an item that declares an effect the step does not hold must never be offered; a reference must never carry the body; reusable code must keep its identity in Code Intelligence"
+    evidence: "core/harness_intelligence: four kinds (reusable code, skill, tool, instruction file), every item a reference with a digest, a size, a license, and declared effects rather than a copy; an offer names what was withheld and why; physical availability and model exposure are separate fields; seven killed mutants. Whether this becomes a fifth queryable layer in the closed layer vocabulary is an owner decision recorded in ASTRA.md"
+  - id: S-2.33
+    phase: 2
+    title: A run searches all four intelligence layers rather than one
+    status: offline_verified
+    depends_on: [S-2.10]
+    verify: [SELF, MUTANT]
+    adversarial: "a catalog that is not a mapping of layers must be refused by name; reuse evidence must reorder without removing; a search must make no model call; a run without a catalog must still search packaged Context Intelligence"
+    evidence: "core/adaptive_practitioner_orientation_capabilities searches the installed four layer catalog and returns typed references with the layer named and no body; code_nodes/solve_runtime installs the catalog as a builder through solve_dependencies, so a run that never searches pays nothing; a measurement before this step found that no run path caller reached query_intelligence at all; six killed mutants"
   - id: S-2.29
     phase: 2
     title: Harness capability profile with a confirmation that the instance loaded what it was given

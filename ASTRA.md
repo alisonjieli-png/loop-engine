@@ -705,6 +705,57 @@ the two should be re-layered, which steps beyond `decide_next` should carry
 suggested outputs, and where a hosted judgment service would keep its
 records without receiving private prompts.
 
+## Harness standards and harness intelligence, September 18
+
+Owner requirement. Coding harnesses have settled on a shared instruction file
+name, so that file is something to hand to each individual harness instance.
+The owner asked for research into the wider set of harness standards, for the
+intelligence layers to model what can be placed into a harness, and for each
+instance to start with basic information plus instructions for obtaining
+context, plugins, tools, contracts, and code. The owner then asked for a fifth
+harness intelligence component, divided into reusable code, skills, tools, and
+Markdown files meant for harnesses, sitting beside the four layers with some
+overlap allowed.
+
+Observed result. Twelve harnesses, the skills format, the Model Context
+Protocol, the plugin and bundle formats, and the container lock file were read
+from their own pages and recorded in
+[the harness provisioning standards record](docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md).
+Four findings shape the work. The two most used formats, the instruction file
+and the file system skill, carry no digest, no signature, and no version
+field. No vendor neutral format states what an instance is allowed to do; the
+one candidate field is marked experimental by its own specification and a
+major harness omits it. Precedence has five different documented resolutions
+and documented ceilings range from six thousand characters to eighty thousand,
+with truncation that at least two vendors document as silent. Only one vendor
+documents any observable signal that a file was loaded. The skills extension
+to the Model Context Protocol, final on 2026-09-13, is the only format read
+that makes digest verification mandatory and binds an approval to an exact set
+of files, so it is the contract to model admission and pinning on.
+
+Observed result. `core/instance_instructions` composes one instruction file
+for each harness instance before its adapter runs, from typed fields, refusing
+any section that names an effect the step does not hold, refusing a file over
+the ceiling that harness documents, leaving a file the engine did not write
+alone, and carrying a digest that verification recomputes.
+`core/harness_intelligence` holds what an instance can be given in the four
+kinds the owner named, as references with a digest, a size, a license, and
+declared effects rather than as copies, with physical availability and model
+exposure kept as separate fields. Neither has run against a live harness.
+
+Unresolved question for the owner. Whether Harness Intelligence becomes a
+fifth queryable layer beside the four, or stays a component that references
+them. This file records the argument on both sides rather than deciding it.
+Against: the repository rule today is that a source format does not define a
+layer, and the layer vocabulary is closed and read by conformance, record
+identities, routing records, and query contracts, so adding a name is a wide
+change that needs its own review, and an item that also lives in Code
+Intelligence would hold two identities unless it only points. For: what can be
+handed to a harness instance is a purpose, not a format, and purpose is what
+the other four layers are organized by. The component as built can be promoted
+by declaring one more layer name; it was written so that the decision stays
+open.
+
 ## The fabric direction and the roadmap, September 18
 
 Owner requirement, later on September 18. Ask at every step whether this is

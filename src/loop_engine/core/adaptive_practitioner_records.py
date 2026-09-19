@@ -1636,6 +1636,15 @@ class AdaptivePractitionerDependencies:
     #: own those surfaces; a run without one simply has no registered
     #: capabilities, and the handle says so rather than inventing any.
     capability_directory: object | None = field(default=None, repr=False, compare=False)
+    #: The four layer populations this run may search, as a mapping of layer
+    #: name to records, or a callable that builds one when a step first asks.
+    #: Without it a search reaches packaged Context Intelligence alone, which
+    #: is one layer of four and says so in its result.
+    intelligence_catalog: object | None = field(default=None, repr=False, compare=False)
+    #: Reuse evidence by record identity, in the dictionary form of the typed
+    #: record. It changes the order of the references a search returns and
+    #: never changes which records are considered.
+    reuse_evidence: object | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if self.host_runtime is not None:
@@ -1665,6 +1674,15 @@ class AdaptivePractitionerDependencies:
                 for name in ("available", "handshake", "call")):
             raise AdaptivePractitionerError(
                 "capability_directory must offer available, handshake, and call")
+        if (self.intelligence_catalog is not None
+                and not callable(self.intelligence_catalog)
+                and not isinstance(self.intelligence_catalog, dict)):
+            raise AdaptivePractitionerError(
+                "intelligence_catalog must be a mapping of layer name to records, "
+                "or a callable that builds one")
+        if self.reuse_evidence is not None and not isinstance(self.reuse_evidence, dict):
+            raise AdaptivePractitionerError(
+                "reuse_evidence must be a mapping from record identity to evidence")
         if self.progress is not None and not callable(self.progress):
             raise AdaptivePractitionerError("progress must be callable")
         if (self.reuse_observation_port is not None

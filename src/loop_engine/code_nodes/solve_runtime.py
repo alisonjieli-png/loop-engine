@@ -527,6 +527,37 @@ def solve_capability_directory():
     return default_directory(surfaces=family_surfaces())
 
 
+def solve_dependencies(request, resolvers) -> AdaptivePractitionerDependencies:
+    """Everything a solve run is given, in one place a check can inspect.
+
+    Built here rather than inline at the call so that what a run actually
+    receives is observable without running a whole solve. A dependency that
+    is missing here is missing from every run.
+    """
+    return AdaptivePractitionerDependencies(
+        model_execution=request.model_execution,
+        deterministic_resolvers=resolvers,
+        progress=request.progress,
+        reuse_observation_port=request.reuse_observation_port,
+        project_executor=(request.project_executor or execute_generated_project),
+        extension_snapshot=request.extension_snapshot,
+        host_runtime=request.host_runtime,
+        capability_directory=solve_capability_directory(),
+        intelligence_catalog=solve_intelligence_catalog())
+
+
+def solve_intelligence_catalog():
+    """The four layer populations a solve run may search.
+
+    Returned as a builder rather than a built catalog so a run that never
+    searches pays nothing for it, and so the populations are read when the
+    step asks rather than when the run starts. Candidates stay out: a search
+    ranks what has been admitted, and promotion is a separate decision.
+    """
+    from ..core.intelligence_layers import build_intelligence_catalog
+    return build_intelligence_catalog
+
+
 def _product_result(adaptive: dict, solved: bool) -> dict:
     from ..core.adaptive_practitioner_result import (
         best_available_task_result, latest_task_result)
@@ -623,17 +654,7 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
         SolveAdaptationRequest(request, mode, region_evidence, tuned_budget)
     )
     adaptive = run_adaptive_practitioner(
-        adaptive_request,
-        AdaptivePractitionerDependencies(
-            model_execution=request.model_execution,
-            deterministic_resolvers=resolvers,
-            progress=request.progress,
-            reuse_observation_port=request.reuse_observation_port,
-            project_executor=(request.project_executor
-                              or execute_generated_project),
-            extension_snapshot=request.extension_snapshot,
-            host_runtime=request.host_runtime,
-            capability_directory=solve_capability_directory()))
+        adaptive_request, solve_dependencies(request, resolvers))
     solved = bool(adaptive.get("solved"))
     product = _product_result(adaptive, solved)
     selected = adaptive.get("selected_solution_canvas") or {}

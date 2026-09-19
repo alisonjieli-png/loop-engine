@@ -279,7 +279,8 @@ def self_test() -> dict:
     from types import SimpleNamespace
     from ..core.registered_capability_call import (
         registered_capabilities, registered_capability_operation)
-    from .solve_runtime import solve_capability_directory
+    from .solve_runtime import (solve_capability_directory, solve_dependencies,
+                                solve_intelligence_catalog)
     run_directory = solve_capability_directory()
     run_services = SimpleNamespace(
         dependencies=SimpleNamespace(capability_directory=run_directory))
@@ -287,6 +288,21 @@ def self_test() -> dict:
         {"surface": "text_conformance", "operation": "validate",
          "arguments": {"rows": rows, "columns": ["company"]}}, run_services)
     listed = {row["surface"]: row for row in registered_capabilities(run_directory)}
+    from ..core.intelligence_layers import LAYERS
+    catalog_builder = solve_intelligence_catalog()
+    run_catalog = catalog_builder()
+    from types import SimpleNamespace as _Namespace
+    installed = solve_dependencies(
+        _Namespace(model_execution=None, progress=None, reuse_observation_port=None,
+                   project_executor=None, extension_snapshot={}, host_runtime=None), ())
+    check("a_solve_run_is_given_the_four_layer_catalog_as_a_builder_it_pays_for_only_when_asked",
+          installed.intelligence_catalog is not None
+          and installed.capability_directory is not None
+          and callable(catalog_builder) and set(run_catalog) == set(LAYERS)
+          and sum(len(records) for records in run_catalog.values()) > 0
+          and any("data_quality_surfaces" in str(getattr(record, "record_id", ""))
+                  for record in run_catalog["code_intelligence"]),
+          str({name: len(records) for name, records in run_catalog.items()}))
     check("a_solve_run_reaches_the_family_through_the_one_capability_handle",
           through_handle["ok"] and "profiles" in through_handle["value"]
           and set(names) <= set(listed)
