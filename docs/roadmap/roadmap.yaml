@@ -185,7 +185,7 @@ steps:
     depends_on: [S-2.22]
     verify: [a measured placement study with the overhead per shape and exact denominators]
     adversarial: "a placement claim without a measured overhead row is marked unmeasured, never recommended"
-    evidence: "docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md: documented Kubernetes limits, batch queueing, distributed frameworks, sandboxing, Linux control, budget chain, a four-shape decision table with figures labeled documented, measured, or estimate, and the administrator needs; the measured study of the shapes is the remaining work"
+    evidence: "docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md: documented Kubernetes limits, batch queueing, distributed frameworks, sandboxing, Linux control, budget chain, a four-shape decision table with figures labeled documented, measured, or estimate, and the administrator needs; one shape comparison is now measured on this machine (ten runs each: a container from the published image starts and exits in a median 230.4 milliseconds against 10.4 for a process, about twenty-two times); the cluster half needs a cluster, and no Kubernetes tooling is installed on this host"
   - id: S-4.11
     phase: 4
     title: A usable total token ceiling, or an honest refusal that names what it needs

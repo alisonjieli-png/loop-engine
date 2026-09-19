@@ -54,6 +54,13 @@ First public release.
   worker pool hosting many nodes, and a queue with quotas for thousands
   of nodes) with every figure labeled documented, measured, or estimate;
   and the administrator needs mapped to what exists. It decides nothing.
+- The hosting record gains a measurement instead of an estimate for the
+  shape comparison: on this machine a container from the published worker
+  image starts and exits in a median 230.4 milliseconds over ten runs,
+  against 10.4 milliseconds for a process. A node whose useful work is
+  under a second pays more than a fifth of a second for its own container,
+  which is what decides the short-node case between one pod per node and a
+  worker pool. The cluster half of the study still needs a cluster.
 - A strict total token ceiling now refuses with a code that names its cause
   and a remedy that names an existing control (roadmap S-4.11). An absent
   resolver raises `token_bound_resolver_not_installed`, kept apart from the

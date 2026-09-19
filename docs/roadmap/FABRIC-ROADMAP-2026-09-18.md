@@ -305,6 +305,12 @@ Append one line per iteration: date, step, result, evidence path, commit.
   permission to redistribute, and one splits its license so that hosting it
   needs a commercial agreement. The importer is S-2.27, proposed, with
   R-42 registered.
+- 2026-09-18, S-2.23 part measured: on this machine a container from the
+  published worker image starts and exits in a median 230.4 milliseconds
+  over ten runs, against 10.4 milliseconds for a process, about
+  twenty-two times. That decides the short-node case between one pod per
+  node and a worker pool. The cluster half of the study still needs a
+  cluster, and no Kubernetes tooling is installed on this host.
 - 2026-09-18, S-4.11 offline_verified: the strict total token ceiling now
   refuses with a code that names its cause and a remedy that names an
   existing control. An absent resolver is `token_bound_resolver_not_installed`,

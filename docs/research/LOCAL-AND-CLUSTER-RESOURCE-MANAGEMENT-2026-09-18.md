@@ -973,6 +973,30 @@ machine), or estimate (this record's arithmetic or assumption).
 | C. One cluster, a worker pool hosting many solutioning nodes per pod | A process inside a long-lived worker pod; the pod's memory limit bounds the sum | Slots per worker (the framework pattern: Ray logical resources, Dask threads, Celery pool size, Temporal slots) plus the supervisor's ceiling inside the pod; the Horizontal Pod Autoscaler or KEDA scales worker pods by queue depth; Cluster Autoscaler or Karpenter adds machines | In-pool heartbeats (the existing supervisor) plus a framework timeout (Celery time limits, Temporal heartbeat and Start-To-Close timeouts) | `SIGSTOP` inside the pod works today; `cgroup.freeze` per solutioning node needs a writable control group subtree inside the container, which was not verified | CRIU inside a container needs privileges that were not verified; prefer the application-level checkpoint | Measured: a process (10 to 17 MiB for the in-process Practitioner) rather than a pod; no scheduling latency beyond dispatch; estimate: the pod itself is paid once per worker | A memory spike in one solutioning node can push the whole pod over `memory.max`, and the kernel kills one process in the group (or all, with `memory.oom.group`); Dask's pause at 80 percent and Ray's monitor at 95 percent are the reference patterns to copy inside the pool |
 | D. Thousands of solutioning nodes | A queue with quotas (Kueue ClusterQueue per tenant with cohorts and preemption, or KEDA ScaledJob) feeding a worker pool per tenant (shape C), with a Job per exported solution (shape B) and Indexed Jobs for batches | Kueue quotas and `StopPolicy`; documented ceilings 150,000 pods per cluster, 110 per Kubernetes node, 5,000 Kubernetes nodes; Indexed Job parallelism up to 10^5 | Temporal-style heartbeat and Start-To-Close timeouts inside the pool; probes per pod for exported solutions | Kueue `Hold` or `HoldAndDrain` per queue; Job suspend (deletes pods); in-pool pause | Application-level checkpoint; a sandbox provider's pause where sandboxes are external | Inferred: 3,000 simultaneous pods need at least 28 machines; a pool of 3,000 processes at 17 MiB each needs about 51 GiB before their work, so memory per solutioning node dominates the count, not the processor count | Whether one controller can hold the informer caches for that many pods (Argo documents that its controller cannot scale horizontally and is memory bound by its caches); which system owns the queue position that a client administrator sees |
 
+### Measured on this machine on 2026-09-18
+
+Ten runs of each, wall clock from the command starting to the command
+exiting, on the development host with the published worker image already
+pulled, so no image pull is included.
+
+| What starts | Runs | Median | Lowest | Highest |
+|---|---|---|---|---|
+| One container from the published worker image, interpreter starting and exiting | 10 | 230.4 milliseconds | 222.6 | 250.1 |
+| One process, interpreter starting and exiting | 10 | 10.4 milliseconds | 9.8 | 11.2 |
+| One process that also imports the engine package root | 10 | 10.6 milliseconds | 10.2 | 11.2 |
+
+Every run exited zero. On this machine a container start costs about
+twenty-two times a process start. The third row imports the package root
+only, which is a light import; it is not the cost of loading a Practitioner
+with its intelligence.
+
+What this measurement decides and what it does not. It supports the choice
+between shape B and shape C when nodes are short: a node whose useful work
+is under a second pays more than a fifth of a second for its own container,
+while a process in a pool pays about a hundredth. It says nothing about
+scheduling latency in a cluster, image pull on a cold machine, or the
+memory a container holds, and it was taken on one machine with one image.
+
 Which figures are documented limits: 110 pods per Kubernetes node, 5,000
 Kubernetes nodes, 150,000 pods, and 300,000 containers; the 5 second pod
 startup service level objective at the 99th percentile; the Kata with
@@ -982,7 +1006,8 @@ seconds per GiB pause and 1 second resume; Indexed Job parallelism of at
 most 10^5; the probe, grace period, back-off, and eviction defaults; the
 Dask and Ray memory thresholds; the Temporal slot defaults. Which figures
 are measurements on this machine: the process start times and memory
-figures, and the scope test. Which figures are estimates: the memory of an
+figures, the scope test, and the container against process start comparison
+in the section above. Which figures are estimates: the memory of an
 external harness process, the pod bookkeeping cost, the pod creation rate,
 and the arithmetic for 3,000 nodes.
 
