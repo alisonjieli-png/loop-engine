@@ -355,6 +355,22 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "remove the load check; the unlisted-file check must fail"
     evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md names what the manifest must carry that no published format provides: a digest on every item including instruction files, one pin over the whole set rather than per item, a typed statement of authority, and a confirmation that the instance loaded what it was given. The skills extension to the Model Context Protocol, final on 2026-09-13, is the closest published contract and is the one to model admission and pinning on"
+  - id: S-2.34
+    phase: 2
+    title: External service capabilities, recorded without their credentials
+    status: offline_verified
+    depends_on: [S-2.10]
+    verify: [SELF, MUTANT]
+    adversarial: "an entry that carries a credential value rather than its name must be refused; an entry that spends without a price and its source must be refused; a candidate must never be offered as qualified; a step without spend authority must never be offered a service that spends"
+    evidence: "core/external_service_intelligence: network, spending, and external mutation as three separate authorities; a credential named and never carried, with both the repository secret patterns and an opaque token rule refusing a value in the name field; a price refused without the source it was read from; qualification only by a reviewer who is not the producer, naming what was checked; discovery reaches nothing"
+  - id: S-3.7
+    phase: 3
+    title: Mirror the name families in core into folders, one tranche at a time
+    status: ready
+    depends_on: []
+    verify: [SELF, MUTANT, "the full gate chain between tranches"]
+    adversarial: "a module named by a string rather than an import must move in the same commit; the architecture map must not describe a tree that no longer exists; a tranche that also changes behavior must be split"
+    evidence: "docs/architecture/FOLDER-DEPTH-AND-THE-FLAT-CORE-2026-09-18.md: 354 files sit directly in core against 43 in the next largest folder, depth is three segments for 510 of 579 files, and the twelve largest name families in core are already the folders they should live in; the largest family is named by 128 import statements and 113 string references, which is why this moves a family at a time"
   - id: S-2.32
     phase: 2
     title: Harness Intelligence, one catalogue of what a harness instance can be given
