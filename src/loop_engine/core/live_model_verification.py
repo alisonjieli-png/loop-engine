@@ -24,6 +24,7 @@ except ModuleNotFoundError:  # Python 3.10 package dependency
     import tomli as tomllib
 
 from .model_capabilities import UnknownModelOutputLimit
+from .model_token_preflight import failure_remedy
 
 
 ALLOWED_BUILTIN_LIVE_PROVIDERS = ("ollama_cloud", "mistral")
@@ -385,6 +386,7 @@ def run_live_model_verification(request: LiveModelVerificationRequest) -> dict:
         "prompt_sha256": _sha256(plan.prompt.encode("utf-8")),
         "output_sha256": output_digest,
         "failure_code": "" if accepted else result.error_code,
+        "failure_remedy": "" if accepted else failure_remedy(result.error_code),
         "failure_detail_sha256": (
             "" if accepted else _sha256(result.error.encode("utf-8"))),
         "secret_policy": "raw prompt, raw output, credentials, and provider "
@@ -469,9 +471,11 @@ def self_test() -> dict:
             strict = run_live_model_verification(replace(
                 authorized, max_total_tokens=100,
                 evidence_path=str(Path(directory) / "strict.json")))
-            check("strict_probe_still_requires_a_qualified_token_bound",
+            check("strict_probe_names_the_missing_resolver_and_the_control_that_works",
                   strict["status"] == "failed" and adapter.calls == 0
-                  and strict["failure_code"] == "token_bound_unavailable")
+                  and strict["failure_code"] == "token_bound_resolver_not_installed"
+                  and strict["failure_remedy"].startswith("declare an unbounded total"),
+                  strict.get("failure_remedy", "")[:80])
             uncapped = replace(
                 authorized, allow_unbounded_total_tokens=True,
                 evidence_path=str(Path(directory) / "call-only.json"))

@@ -305,6 +305,15 @@ Append one line per iteration: date, step, result, evidence path, commit.
   permission to redistribute, and one splits its license so that hosting it
   needs a commercial agreement. The importer is S-2.27, proposed, with
   R-42 registered.
+- 2026-09-18, S-4.11 offline_verified: the strict total token ceiling now
+  refuses with a code that names its cause and a remedy that names an
+  existing control. An absent resolver is `token_bound_resolver_not_installed`,
+  kept apart from the resolver that returned nothing, every failure code
+  carries a remedy, the live probe record shows it, and the command help
+  states that a strict ceiling needs an installed resolver. A rerun of the
+  strict probe refused with zero dispatch and printed the remedy. Five
+  killed mutants. Installing a qualified resolver for the Ollama route is
+  still open.
 - 2026-09-18, live route probe and folder rehearsal recorded in
   [the live route probe record](../verification/LIVE-ROUTE-PROBE-2026-09-18.md).
   A problem folder with an instruction file and a defective supplier file

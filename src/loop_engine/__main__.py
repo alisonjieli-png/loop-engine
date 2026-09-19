@@ -471,7 +471,13 @@ def main(argv=None) -> int:
     parser.add_argument("--max-model-calls", type=int,
                         help="optional physical model-call ceiling")
     parser.add_argument("--max-total-tokens", type=int,
-                        help="optional provider-reported token ceiling")
+                        help="optional provider-reported token ceiling; it is "
+                             "reserved before dispatch, so it needs a token bound "
+                             "resolver installed on the gateway for the route. "
+                             "Without one the call is refused before any dispatch "
+                             "with token_bound_resolver_not_installed; use "
+                             "--allow-unbounded-total-tokens with a call ceiling "
+                             "instead")
     parser.add_argument("--allow-unbounded-total-tokens", action="store_true",
                         help="explicitly allow the single models probe without a total-token ceiling")
     parser.add_argument("--watch", action="store_true",

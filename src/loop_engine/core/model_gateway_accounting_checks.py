@@ -332,7 +332,8 @@ def _reservation_checks() -> list[dict]:
         "no qualified bound", ModelGatewayConfig(
             route_names=routes, max_route_attempts=1, max_total_tokens=32)))
     check("strict_token_budget_without_host_bound_refuses_before_dispatch",
-          missing.error_code == "token_bound_unavailable"
+          missing.error_code == "token_bound_resolver_not_installed"
+          and "install a resolver" in missing.attempts[0].error
           and fixture.calls == missing.physical_model_calls == 0)
 
     class StaleBound:

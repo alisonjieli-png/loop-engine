@@ -30,6 +30,10 @@ class TokenBoundFailureCode(str, Enum):
     UNAVAILABLE = "token_bound_unavailable"
     INVALID = "token_bound_invalid"
     INSUFFICIENT = "token_budget_insufficient_preflight"
+    #: No resolver at all was installed for this run. This is a configuration
+    #: absence, not a provider refusal, and it is kept apart from UNAVAILABLE
+    #: so an operator can tell the two causes apart from the code alone.
+    NOT_INSTALLED = "token_bound_resolver_not_installed"
 
 
 _FAILURE_MESSAGES = {
@@ -39,7 +43,34 @@ _FAILURE_MESSAGES = {
         "the token-bound contract or its exact request binding is invalid",
     TokenBoundFailureCode.INSUFFICIENT:
         "the complete token reservation exceeds the remaining budget",
+    TokenBoundFailureCode.NOT_INSTALLED:
+        "no qualified token bound resolver is installed, so a strict total "
+        "token ceiling cannot be reserved before dispatch; authorize an "
+        "unbounded total with a physical call ceiling, or install a resolver "
+        "for this route",
 }
+
+#: What an operator can do about each failure, for the surfaces that show a
+#: refusal to a person. The text names a control that exists; it never invents
+#: a bound and never carries provider or prompt text.
+FAILURE_REMEDIES = {
+    TokenBoundFailureCode.NOT_INSTALLED.value:
+        "declare an unbounded total with a physical call ceiling, or install a "
+        "token bound resolver on the gateway for this route",
+    TokenBoundFailureCode.UNAVAILABLE.value:
+        "the installed resolver returned no bound for this exact request; "
+        "check the resolver's coverage of this provider, model, and route",
+    TokenBoundFailureCode.INVALID.value:
+        "the resolver returned a bound that does not bind this exact request; "
+        "check the provider, model, route, and output maximum it names",
+    TokenBoundFailureCode.INSUFFICIENT.value:
+        "raise the total token ceiling, or lower the requested output maximum",
+}
+
+
+def failure_remedy(code: str) -> str:
+    """What an operator can do about one refusal code, or empty text."""
+    return FAILURE_REMEDIES.get(code, "")
 
 
 class TokenBoundError(ValueError):
@@ -195,7 +226,7 @@ def prepare_token_reservation(
     expected_identity = _identity(request)
     expected_output = request.maximum_output_tokens
     if resolver is None:
-        raise TokenBoundError(TokenBoundFailureCode.UNAVAILABLE)
+        raise TokenBoundError(TokenBoundFailureCode.NOT_INSTALLED)
     try:
         resolve = getattr(resolver, "resolve", None)
         if not callable(resolve):
@@ -271,11 +302,27 @@ def self_test() -> dict:
           prepare_token_reservation(
               request, Resolver(replace(bound, maximum_input_tokens=0)),
               10).maximum_total_tokens == 10)
-    for name, value in (("absent_resolver", None), ("missing_method", object()),
-                        ("unknown_bound", Resolver(None))):
+    for name, value in (("missing_method", object()), ("unknown_bound", Resolver(None))):
         check(name + "_fails_closed", failure(
             lambda value=value: prepare_token_reservation(request, value, 100),
             TokenBoundFailureCode.UNAVAILABLE))
+    absent = None
+    try:
+        prepare_token_reservation(request, None, 100)
+    except TokenBoundError as exc:
+        absent = exc
+    check("an_absent_resolver_is_a_configuration_absence_not_a_provider_refusal",
+          absent is not None
+          and absent.code == TokenBoundFailureCode.NOT_INSTALLED.value
+          and absent.code != TokenBoundFailureCode.UNAVAILABLE.value
+          and "install a resolver" in str(absent)
+          and failure_remedy(absent.code).startswith("declare an unbounded total")
+          and failure_remedy(TokenBoundFailureCode.UNAVAILABLE.value)
+          != failure_remedy(absent.code)
+          and failure_remedy("not_a_code") == "")
+    check("every_failure_code_carries_a_remedy_that_names_an_existing_control",
+          set(FAILURE_REMEDIES) == {item.value for item in TokenBoundFailureCode}
+          and all(text and "invent" not in text for text in FAILURE_REMEDIES.values()))
     check("untyped_bound_fails_closed", failure(
         lambda: prepare_token_reservation(request, Resolver({"tokens": 16}), 100),
         TokenBoundFailureCode.INVALID))

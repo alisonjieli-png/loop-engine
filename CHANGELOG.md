@@ -54,6 +54,16 @@ First public release.
   worker pool hosting many nodes, and a queue with quotas for thousands
   of nodes) with every figure labeled documented, measured, or estimate;
   and the administrator needs mapped to what exists. It decides nothing.
+- A strict total token ceiling now refuses with a code that names its cause
+  and a remedy that names an existing control (roadmap S-4.11). An absent
+  resolver raises `token_bound_resolver_not_installed`, kept apart from the
+  resolver that returned no bound, so a configuration absence is no longer
+  reported as a provider refusal. Every failure code carries a remedy, the
+  live probe record carries it beside the code, and the command help states
+  that the ceiling is reserved before dispatch and needs an installed
+  resolver. A rerun of the strict probe refused with zero dispatch and
+  printed the remedy. Five mutants are killed. Installing a qualified
+  resolver for the authorized route stays open work.
 - The [live route probe record](docs/verification/LIVE-ROUTE-PROBE-2026-09-18.md)
   reports a failed live trial and a folder rehearsal. A problem folder with
   an instruction file and a defective supplier file was accepted by the

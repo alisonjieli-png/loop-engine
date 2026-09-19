@@ -189,11 +189,11 @@ steps:
   - id: S-4.11
     phase: 4
     title: A usable total token ceiling, or an honest refusal that names what it needs
-    status: ready
+    status: offline_verified
     depends_on: []
     verify: [SELF, MUTANT, a probe with a strict ceiling either dispatches or names the missing resolver]
     adversarial: "a declared control that always refuses must not be presented as available"
-    evidence: "docs/verification/LIVE-ROUTE-PROBE-2026-09-18.md: --max-total-tokens refused before dispatch with token_bound_unavailable at every value because the gateway token bound resolver is never installed; only --allow-unbounded-total-tokens dispatches"
+    evidence: "the refusal now names its cause and its remedy: token_bound_resolver_not_installed is a separate code from token_bound_unavailable, every failure code carries a remedy that names an existing control, the live probe record carries failure_remedy, and the command help states that a strict ceiling needs an installed resolver; src/loop_engine/core/model_token_preflight.py self_test (30 checks), live_model_verification self_test (20), model_gateway_accounting_checks (33), five killed mutants; rerun of the strict probe refused with zero dispatch and named the remedy. Installing a qualified resolver for the Ollama route stays open work"
   - id: S-4.10
     phase: 4
     title: Cost reservation ledger before work, reconciled after

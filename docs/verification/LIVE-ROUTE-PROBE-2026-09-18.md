@@ -34,10 +34,14 @@ were made after that answer.
 
 Observed. A strict total-token ceiling is unusable on this path today. The
 gateway takes a `token_bound_resolver` and nothing installs one, so
-`--max-total-tokens` refuses before dispatch with `token_bound_unavailable`
-whatever the number. The only live path is the explicit
-`--allow-unbounded-total-tokens` authorization bounded by a call count. That
-is a real gap between a declared control and a usable one.
+`--max-total-tokens` refuses before dispatch whatever the number. The only
+live path is the explicit `--allow-unbounded-total-tokens` authorization
+bounded by a call count. That is a real gap between a declared control and a
+usable one. At the time of this trial the refusal carried the code
+`token_bound_unavailable`, which did not separate an absent resolver from a
+resolver that answered nothing; step 2 below records what changed the same
+day, and the current code for this case is
+`token_bound_resolver_not_installed`.
 
 Inferred. Because the probe never dispatched in the strict case and the
 provider answered immediately in the unbounded case, the usage limit is a
@@ -64,8 +68,13 @@ orientation, and orientation needs a model route with allowance.
 
 1. Restore the Ollama Cloud allowance, or authorize a second route, so a
    matched live rerun can qualify the changes since commit `d3bda30`.
-2. Install a qualified token bound resolver, or state in the command help
-   that a strict total ceiling needs one, so the declared control is either
-   usable or honestly described (roadmap S-4.11).
+2. Done the same day for the honest half of roadmap step S-4.11: an absent
+   resolver now raises `token_bound_resolver_not_installed`, a code kept
+   apart from the resolver that returned no bound; every failure code
+   carries a remedy naming an existing control; the probe record shows the
+   remedy beside the code; and the command help states that the ceiling is
+   reserved before dispatch and needs an installed resolver. A rerun of the
+   strict probe refused with zero dispatch and printed the remedy.
+   Installing a qualified resolver for the authorized route stays open.
 3. Run the folder rehearsal again with a live route and record the outcome
    beside this record.

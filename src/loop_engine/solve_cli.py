@@ -104,7 +104,7 @@ def _solve_progress(event: dict) -> None:
 #: of safety without removing any control.
 #: max_total_tokens is deliberately ABSENT.  Setting it makes the runtime
 #: demand a pre-dispatch token resolver, and the Ollama route supplies none:
-#: model_token_preflight.py:196 raises token_bound_unavailable when
+#: prepare_token_reservation raises token_bound_resolver_not_installed when
 #: ``resolver is None``, so the very first model call dies and the run reports
 #: PROVIDER_UNAVAILABLE with zero calls made.  Verified 2026-09-05 by
 #: bisection: --max-passes and --max-model-calls both run clean; adding
