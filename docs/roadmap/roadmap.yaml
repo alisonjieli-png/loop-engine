@@ -355,6 +355,30 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "remove the load check; the unlisted-file check must fail"
     evidence: "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md names what the manifest must carry that no published format provides: a digest on every item including instruction files, one pin over the whole set rather than per item, a typed statement of authority, and a confirmation that the instance loaded what it was given. The skills extension to the Model Context Protocol, final on 2026-09-13, is the closest published contract and is the one to model admission and pinning on"
+  - id: S-4.13
+    phase: 4
+    title: First release hosts serving and deterministic work, not customer harnesses
+    status: ready
+    depends_on: [S-4.12]
+    verify: ["a deployed instance answering the four provisioning operations", "a deterministic family run end to end on supplied data", MUTANT]
+    adversarial: "a completion the service did not run must never be metered as a verified completion; client reported telemetry must never be counted as independent verification; an unfiltered listing must not be the default way to ask"
+    evidence: "docs/architecture/HOSTING-SHAPE-AND-THE-FIRST-RELEASE-2026-09-18.md: the serving side holds 20,000 capabilities in 65 megabytes and answers a manifest in 6 microseconds, one body is 2.8 kilobytes against a 240 kilobyte unfiltered listing of 500, the detection and correction families resolve with no model call, and execution already sits behind an adapter registry so hosted execution stays a later configuration"
+  - id: S-4.14
+    phase: 4
+    title: Measure occupancy and egress from one instrumented deployment before choosing a host
+    status: ready
+    depends_on: [S-4.13]
+    verify: ["measured billable occupancy from a real protocol client", "measured egress from a representative month of delivery"]
+    adversarial: "a platform recommendation without a measured duty cycle is an opinion; a price table is not a measurement"
+    evidence: "the two numbers that decide between request billed compute, an always running instance, a managed server, and dedicated hardware are the occupancy a real client produces and the egress delivery produces; neither exists yet and both are cheap to obtain"
+  - id: S-4.15
+    phase: 4
+    title: Honest units for a release the customer executes
+    status: ready
+    depends_on: [S-4.13]
+    verify: [SELF, MUTANT]
+    adversarial: "a verified completion must be refused as a unit when the service neither ran nor verified the work; a client reported record must carry that label wherever it is read"
+    evidence: "docs/architecture/HOSTING-SHAPE-AND-THE-FIRST-RELEASE-2026-09-18.md: bodies read and deterministic completions are observed directly and can be metered; verified completions, avoided model calls, and optimize hours are not observable when the customer runs execution"
   - id: S-4.12
     phase: 4
     title: The first paid surface serves what goes into a harness instance
@@ -387,6 +411,14 @@ steps:
     verify: [SELF, MUTANT]
     adversarial: "a reason node must never hold write authority; a slice without a declared kind must be refused rather than guessed; a plan that fails partway must leave nothing behind; a record must never claim to carry bodies"
     evidence: "core/node_provisioning: reason and build with different authority ceilings, the instruction file plus a typed assignment plus a provisioning record in every folder, offered and exposed bytes counted separately, and a plan provisioned whole or rolled back; thirteen killed mutants"
+  - id: S-2.38
+    phase: 2
+    title: A queue of exact capability gaps, each one precise enough to build against
+    status: offline_verified
+    depends_on: [S-2.35, S-2.37]
+    verify: [SELF, MUTANT]
+    adversarial: "a need without acceptance must be refused, because a builder that cannot know when it is finished decides for itself; a need must never claim to be a capability; the combinations nothing serves must come before the ones something already serves"
+    evidence: "core/capability_needs: five declared origins, a need that carries the combination it fills, what would count as satisfying it, and where to look before building; the empty cells of a coverage report become the queue; a need becomes a build node whose objective carries its acceptance, so the instance is told how it will be judged; ten killed mutants"
   - id: S-2.35
     phase: 2
     title: Tag dimensions for intelligence, so it can be found and its gaps named

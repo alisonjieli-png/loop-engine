@@ -84,6 +84,9 @@ rest are listed.
 | R-52 | One atomic node becomes one provisioned folder: the instruction file in the name that harness reads, the assignment as typed fields, and a record of what was offered, withheld, and exposed. A reason node holds no write authority and a plan is provisioned whole or not at all. | 2026-09-18 | `core/node_provisioning` (S-2.37) | offline_verified |
 | R-53 | Intelligence is filed on declared dimensions, closed where a wrong value is a policy error, so what suits a role, language, region, or sensitivity can be found and the combinations holding nothing specific can be named and generated. | 2026-09-18 | `core/intelligence_tagging` (S-2.35) | offline_verified |
 | R-54 | The host authenticates once and leases that credential to every instance that needs it. A lease carries a scope, an expiry, and a use ceiling, never the value, and revoking the credential stops every lease at once. | 2026-09-18 | `core/credential_leases` (S-2.36) | offline_verified |
+| R-55 | The first release hosts serving and deterministic work and leaves customer harness execution on the customer's machine, so no untrusted code runs here and no model allowance is required to demonstrate it. | 2026-09-18 | the hosting shape record (S-4.13) | ready |
+| R-56 | A unit is metered only when the service observed it. A completion the service neither ran nor verified is never sold as a verified completion, and client reported telemetry carries that label wherever it is read. | 2026-09-18 | honest units (S-4.15) | ready |
+| R-57 | Capabilities are generated against exact stated gaps, each carrying what would satisfy it, never in bulk against a guess. | 2026-09-19 | `core/capability_needs` (S-2.38) | offline_verified |
 | R-24 | One task working folder shared with Spawned Loops. | 2026-09-14 | source inventory, materials folder | partial |
 | R-25 | Adaptable policies with lifecycle applicability. | 2026-09-16 | adaptable policies direction | proposed |
 | R-26 | Reuse tiers and cost routing. | 2026-09-16 | reuse tiers direction, `core/reuse_evidence` | partial |
@@ -204,6 +207,7 @@ named check fails.
 | S-4.12 Paid provisioning surface | Four operations over the harness catalogue: discover, list, manifest, read. Listing and manifests are free and carry digests and sizes; a body read is the one metered unit; a body is checked against its recorded digest before it leaves; the transport is injected rather than opened here. | `SELF`; mutants | A metadata tenant must never receive a body; a changed body must not be served; a refusal must never be metered | S-2.32 |
 | S-2.34 External service capabilities | What an outside service can do for a run, with network, spending, and external change as three separate authorities, a credential named and never carried, a price that must name its source, and a qualification only a different reviewer can grant. | `SELF`; mutants | A credential value in a name field must be refused; a candidate must never be offered as qualified | S-2.10 |
 | S-3.7 Folders that carry the family | Move one name family at a time out of the flat core folder into the subpackage its name already implies, with the architecture map, the folded self-test list, and every string that names a module moving in the same commit. | The full gate chain between tranches | A module named by a string must move with its file; a tranche that also changes behavior must be split | none |
+| S-2.38 Capability need queue | The empty combinations of a coverage report become typed needs, each carrying its combination, its acceptance, and where to look first; a need becomes a build node whose objective states how the result will be judged. | `SELF`; ten killed mutants | A need without acceptance must be refused; a need must never claim to be a capability | S-2.35, S-2.37 |
 | S-2.35 Tag dimensions | Seven dimensions, closed where a wrong value is a policy error and open where a list cannot be finished; alternatives within a dimension, requirements across them; coverage separates what a caller receives from what was written for that exact combination. | `SELF`; mutants | A general record must never count as covering a specific combination | S-2.32 |
 | S-2.36 Shared authentication | One authentication held by the host, leased to each instance with a scope, an expiry, and a use ceiling; the value resolves at the point of use and never enters a folder; revoking the credential stops every lease. | `SELF`; mutants | A lease must never carry the value; a revoked lease must resolve nothing | S-2.28 |
 | S-2.37 Node provisioning | One atomic node to one folder: instruction file, typed assignment, and the record of what was offered, withheld, and exposed; reason and build hold different authority; a plan is provisioned whole or not at all. | `SELF`; thirteen killed mutants | A reason node must never hold write authority; a half provisioned plan must be rolled back | S-2.32 |
@@ -576,12 +580,32 @@ Append one line per iteration: date, step, result, evidence path, commit.
   same access once per instance. Eighteen mutants, no survivors; three of them
   found checks that passed for the wrong reason.
 
+- 2026-09-18, S-4.13, S-4.14, S-4.15, ready: two hosting proposals both began
+  by asking which platform should run harness instances. The prior question is
+  whether the first release hosts execution at all, and the measurements say
+  it should not. The serving side holds twenty thousand capabilities in
+  sixty five megabytes and answers a manifest in six microseconds, which is
+  below the smallest tier any platform sells, so the platform choice is not an
+  architectural one at this size. Transfer is the distinguishing cost: an
+  unfiltered listing of five hundred references is four hundred times the
+  manifest a caller wanted, which is an interface decision rather than a
+  hosting one. The detection and correction families resolve with no model
+  call, so a release built on provisioning and deterministic correction can be
+  demonstrated today while the one authorized model route is answering with a
+  usage limit. Two consequences were recorded that neither proposal drew:
+  three of the four published metering units cannot be observed when the
+  customer runs execution, and telemetry a client reports is evidence about
+  what a client says happened.
+
 ## Unresolved questions for the owner
 
 - Which cloud account and region host the proof of concept and the service.
 - Which payment provider and which introductory prices.
 - Which frontier model key is authorized for the unseen-task runs.
 - Whether the product name changes, and to what.
+- Whether the first release is the serving and deterministic shape, which
+  needs no model allowance and no untrusted execution, with hosted execution
+  following when a customer asks for it and chooses the backend.
 - Whether Harness Intelligence becomes a fifth queryable layer beside the
   four, or stays a component that references them. The repository rule today
   is that a source format does not define a layer, and the layer vocabulary
