@@ -1,16 +1,19 @@
-/* Real browser + HTTP + durable-domain checks. Providers are local fixtures. */
+/* Real browser + HTTP + durable-domain checks. Providers are local fixtures.
+   Removed-guard controls change the served page script in memory only, never a source file. */
 import {chromium} from "../showcase/node_modules/playwright-core/index.mjs";
 import {spawn} from "node:child_process";
 import {createInterface} from "node:readline";
 import {existsSync,readFileSync,writeFileSync} from "node:fs";
-import {createHash} from "node:crypto";
+import {createHash,randomBytes} from "node:crypto";
 import {resolve} from "node:path";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
+/* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
+const recipeRecord=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/client-recipes.json"),"utf8"));
 const program=`from contextlib import ExitStack
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -53,10 +56,59 @@ const checks=[],errors=[],network=[]; let browser;
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
 const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.identity_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
+const endpointMark="{{ENDPOINT}}",mutants=[];
+const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
+const withEndpoint=(value,endpoint)=>value===endpointMark?endpoint:Array.isArray(value)?value.map(item=>withEndpoint(item,endpoint)):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,withEndpoint(item,endpoint)])):value;
+const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(key=>[key,ordered(value[key])])):value;
+const sameValue=(left,right)=>JSON.stringify(ordered(left))===JSON.stringify(ordered(right));
+const textLeaves=(value,key="",found=[])=>{if(typeof value==="string")found.push([key,value]);else if(value&&typeof value==="object")for(const [name,item] of Object.entries(value))textLeaves(item,Array.isArray(value)?key:name,found);return found;};
+const readToml=text=>{const result={};let table=result;for(const line of text.split("\n")){if(!line.trim())continue;const header=line.match(/^\[([A-Za-z0-9_.-]+)\]$/);if(header){table=result;for(const part of header[1].split("."))table=table[part]??={};continue;}const entry=line.match(/^([A-Za-z0-9_-]+) = (.+)$/);if(!entry)throw new Error("Unreadable configuration line");table[entry[1]]=JSON.parse(entry[2]);}return result;};
+// Key-shaped text: a long unbroken run of key characters, a shorter run that mixes letters and digits, or a bearer value that is not an environment reference.
+const keyShaped=text=>/[A-Za-z0-9_-]{32,}/.test(text)||(text.match(/[A-Za-z0-9_-]{20,}/g)||[]).some(run=>/\d/.test(run)&&/[A-Za-z]/.test(run))||/\bbearer\s+(?![{$])\S/i.test(text);
+const changedRecipe=(id,change)=>{const record=structuredClone(recipeRecord);change(record.recipes.find(recipe=>recipe.id===id),record);return record;};
+async function openConnect(context,base,{served,mutation}={}){
+  const page=await context.newPage(),state={applied:false,errors:[],policy:""};
+  page.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
+  await page.addInitScript(()=>{window.policyViolations=[];addEventListener("securitypolicyviolation",event=>window.policyViolations.push(event.violatedDirective));});
+  if(served)await page.route("**/assets/client-recipes.json",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(served)}));
+  if(mutation)await page.route("**/assets/service.js",async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
+  state.policy=(await page.goto(base+"/connect")).headers()["content-security-policy"]||"";
+  await page.waitForFunction(()=>!document.querySelector("#client-choice").disabled||document.querySelector("#setup-message").textContent!=="");
+  return {page,state};
+}
+async function checkShownRecipe(page,base,record,recipe,note){
+  const endpoint=base+"/mcp",variable=record.credential_variable,id=recipe.id,content=selector=>page.locator(selector).evaluate(node=>node.textContent);
+  await page.selectOption("#client-choice",id);
+  const shown=await content("#client-configuration"),expected=withEndpoint(recipe.configuration,endpoint);
+  let parsed=null;try{parsed=recipe.format==="toml"?readToml(shown):JSON.parse(shown);}catch(_){}
+  note("recipe_renders_"+id,parsed!==null&&sameValue(parsed,expected)&&(recipe.format!=="json"||shown===JSON.stringify(expected,null,2))&&await content("#configuration-location")===recipe.configuration_location&&await content("#client-configuration-note")===recipe.configuration_note&&await content("#client-version-note")===recipe.version_note&&await page.locator("#client-choice option:checked").innerText()===recipe.name);
+  const view=await page.locator('[data-view="setup"]').innerText(),scrub=text=>text.replaceAll(endpoint,"").replaceAll(variable,"");
+  note("recipe_contains_no_key_"+id,shown.includes(variable)&&!keyShaped(scrub(shown))&&!keyShaped(scrub(view))&&!secrets.some(secret=>view.includes(secret)||shown.includes(secret)));
+  const addresses=shown.match(/[a-z][a-z0-9+.-]*:\/\/[^\s"']+/gi)||[],targets=textLeaves(parsed||{}).filter(([key])=>key==="url").map(([,text])=>text);
+  note("recipe_uses_current_origin_"+id,targets.length===1&&targets[0]===endpoint&&!shown.includes("{{")&&addresses.every(address=>address===endpoint||address===recipe.configuration.$schema),{addresses:addresses.length});
+  await page.evaluate(()=>navigator.clipboard.writeText("nothing copied yet"));
+  await page.click("#copy-configuration");
+  await page.waitForFunction(()=>document.querySelector("#copy-configuration").textContent==="Configuration copied"||document.querySelector("#setup-message").textContent.includes("Clipboard unavailable"));
+  const copied=await page.evaluate(()=>navigator.clipboard.readText());
+  note("recipe_copy_matches_displayed_text_"+id,copied===shown&&copied===await content("#client-configuration")&&shown.length>0,{copied_length:copied.length,shown_length:shown.length});
+  note("recipe_states_how_to_check_and_revoke_"+id,recipe.verification_command.length>0&&await content("#client-verify-command")===recipe.verification_command&&await content("#client-verify-note")===recipe.verification_note&&/revoke/i.test(record.revocation_note)&&await content("#client-revoke-note")===record.revocation_note&&await content("#client-removal-note")===recipe.removal_note&&await page.locator("#client-revoke-note").isVisible()&&await page.locator("#client-removal-note").isVisible());
+  note("recipe_cites_its_source_"+id,recipe.source_url.startsWith("https://")&&await page.locator("#client-source").getAttribute("href")===recipe.source_url&&(await page.locator("#client-source").getAttribute("rel")).includes("noopener"));
+  note("connect_view_uses_plain_words_"+id,!internalTerms.test(view));
+  return view;
+}
+/* A known-wrong record must be refused before anything from it is displayed. A page without the rule shows it, and the ordinary recipe checks then fail. */
+async function checkRefusedRecord(context,base,note,wrong,mutation){
+  const {page,state}=await openConnect(context,base,{served:wrong.served,mutation});
+  const refusal=await page.locator("#setup-message").evaluate(node=>node.dataset.refusal||""),closed=await page.locator("#client-choice").isDisabled()&&await page.locator("#copy-configuration").isDisabled();
+  note(wrong.name,closed&&refusal===wrong.reason&&!(await page.content()).includes(wrong.planted)&&await page.locator("#client-revoke-note").evaluate(node=>node.textContent)===recipeRecord.revocation_note,{refusal,closed});
+  if(!closed)await checkShownRecipe(page,base,wrong.served,wrong.served.recipes.find(recipe=>recipe.id===wrong.id),note);
+  await page.close();return state;
+}
+const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
 try {
   browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
   const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:"reduce"});
-  await context.route("**/*",route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}});
+  await context.route("**/*",localOnly);
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
@@ -111,6 +163,86 @@ try {
   await page.selectOption("#client-choice","opencode");
   const recipe=JSON.parse(await page.locator("#client-configuration").innerText());
   check("client_selection_changes_real_secret_free_configuration",recipe.mcp.baltor.url===fixture.base+"/mcp"&&recipe.mcp.baltor.oauth===false&&recipe.mcp.baltor.headers.Authorization==="Bearer {env:BALTOR_SERVICE_TOKEN}");
+  /* Connection recipes: every reviewed recipe, the known-wrong records, the serving origins and the removed-guard controls. */
+  const recipeContext=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
+  await recipeContext.grantPermissions(["clipboard-read","clipboard-write"]);await recipeContext.route("**/*",localOnly);
+  const variable=recipeRecord.credential_variable,plantedKey="le_"+randomBytes(32).toString("base64url"),otherOrigin=fixture.billing_base+"/mcp";
+  check("no_key_check_separates_keys_from_variable_references",keyShaped(fixture.token)&&keyShaped("Bearer "+plantedKey)&&keyShaped("Bearer secret")&&!keyShaped("Bearer {env:"+variable+"}")&&!keyShaped("Bearer ${"+variable+"}")&&!keyShaped(variable));
+  const {page:recipePage,state:recipeState}=await openConnect(recipeContext,fixture.base);
+  check("connect_view_offers_the_three_reviewed_recipes",recipeRecord.recipes.length===3&&["codex","opencode","claude-code"].every(id=>recipeRecord.recipes.some(item=>item.id===id))&&JSON.stringify(await recipePage.locator("#client-choice option").evaluateAll(items=>items.map(item=>item.value)))===JSON.stringify(recipeRecord.recipes.map(item=>item.id)));
+  const namedVariables=new Set();
+  for(const item of recipeRecord.recipes)for(const word of (await checkShownRecipe(recipePage,fixture.base,recipeRecord,item,check)).match(/\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b/g)||[])namedVariables.add(word);
+  check("every_recipe_and_the_token_instructions_name_one_variable",namedVariables.size===1&&namedVariables.has(variable)&&recipeRecord.recipes.every(item=>textLeaves(item.configuration).some(([,text])=>text.includes(variable))),{names:[...namedVariables]});
+  const entryNames=(value,parent="",found=[])=>{if(value&&typeof value==="object"&&!Array.isArray(value)){if(typeof value.url==="string")found.push(parent);for(const [name,item] of Object.entries(value))entryNames(item,name,found);}return found;};
+  check("every_recipe_names_the_same_server_entry",recipeRecord.recipes.every(item=>JSON.stringify(entryNames(item.configuration))===JSON.stringify(["baltor"])&&item.removal_note.includes("baltor")&&item.removal_note.includes(variable)));
+  await recipePage.selectOption("#client-choice","claude-code");
+  const claude=JSON.parse(await recipePage.locator("#client-configuration").innerText()).mcpServers.baltor;
+  check("claude_code_recipe_is_a_project_file_with_an_environment_reference",claude.type==="http"&&claude.url===fixture.base+"/mcp"&&JSON.stringify(claude.headers)===JSON.stringify({Authorization:"Bearer ${"+variable+"}"})&&(await recipePage.locator("#configuration-location").innerText()).includes(".mcp.json")&&await recipePage.locator("#client-verify-command").innerText()==="claude mcp list");
+  await recipePage.screenshot({path:output.replace(/\.json$/,"-connect-claude-code.png"),fullPage:true});
+  await recipePage.selectOption("#client-choice","codex");
+  const codexText=await recipePage.locator("#client-configuration").innerText();
+  check("codex_recipe_is_a_table_that_names_the_variable",codexText.startsWith("[mcp_servers.baltor]\n")&&codexText.includes('bearer_token_env_var = "'+variable+'"')&&codexText.includes('url = "'+fixture.base+'/mcp"'));
+  check("copying_a_recipe_stores_nothing_in_the_browser",await recipePage.evaluate(()=>localStorage.length===0&&sessionStorage.length===0&&document.cookie==="")&&(await recipeContext.cookies()).length===0);
+  const connectMarkup=await (await recipePage.request.get(fixture.base+"/connect")).text();
+  check("connect_page_keeps_inline_code_forbidden",["default-src 'none'","script-src 'self'","style-src 'self'"].every(part=>recipeState.policy.includes(part))&&!recipeState.policy.includes("unsafe-inline")&&!/<style[\s>]|\sstyle\s*=|<script(?![^>]*\ssrc=)[^>]*>|\son[a-z]+\s*=/i.test(connectMarkup)&&await recipePage.evaluate(()=>window.policyViolations.length)===0,{policy:recipeState.policy});
+  const fits=[];
+  for(const item of recipeRecord.recipes){
+    await recipePage.selectOption("#client-choice",item.id);await recipePage.setViewportSize({width:320,height:1000});
+    fits.push(await recipePage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    await recipePage.evaluate(()=>document.documentElement.style.fontSize="200%");
+    fits.push(await recipePage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+    await recipePage.evaluate(()=>document.documentElement.style.fontSize="");await recipePage.setViewportSize({width:1440,height:1000});
+  }
+  check("every_recipe_fits_a_small_screen_and_enlarged_text",fits.length===2*recipeRecord.recipes.length&&fits.every(Boolean),{fits});
+  await recipePage.goto(fixture.base+"/");
+  check("homepage_and_footer_use_plain_words",!internalTerms.test(await recipePage.locator('[data-view="home"]').innerText())&&!internalTerms.test(await recipePage.locator("footer").innerText()));
+  await recipePage.close();
+  const wrongCredentials=[
+    {name:"recipe_with_embedded_key_is_refused_before_display",id:"claude-code",reason:"credential_rule",planted:plantedKey,served:changedRecipe("claude-code",item=>{item.configuration.mcpServers.baltor.headers.Authorization="Bearer "+plantedKey;})},
+    {name:"recipe_with_key_in_place_of_the_variable_name_is_refused",id:"codex",reason:"credential_rule",planted:plantedKey,served:changedRecipe("codex",item=>{item.configuration.mcp_servers.baltor.bearer_token_env_var=plantedKey;})},
+    {name:"recipe_with_key_as_a_default_value_is_refused",id:"claude-code",reason:"credential_rule",planted:plantedKey,served:changedRecipe("claude-code",item=>{item.configuration.mcpServers.baltor.headers.Authorization="Bearer ${"+variable+":-"+plantedKey+"}";})},
+    {name:"recipe_with_key_in_a_command_is_refused",id:"opencode",reason:"credential_rule",planted:plantedKey,served:changedRecipe("opencode",item=>{item.verification_command=variable+"="+plantedKey+" "+item.verification_command;})},
+    {name:"recipe_with_short_literal_bearer_value_is_refused",id:"opencode",reason:"credential_rule",planted:"Bearer secret",served:changedRecipe("opencode",item=>{item.configuration.mcp.baltor.headers.Authorization="Bearer secret";})},
+  ];
+  const wrongAddresses=[
+    {name:"recipe_with_fixed_address_is_refused_before_display",id:"codex",reason:"address_rule",planted:otherOrigin,served:changedRecipe("codex",item=>{item.configuration.mcp_servers.baltor.url=otherOrigin;})},
+    {name:"recipe_with_unknown_placeholder_is_refused",id:"claude-code",reason:"address_rule",planted:"{{ORIGIN}}",served:changedRecipe("claude-code",item=>{item.configuration.mcpServers.baltor.url="{{ORIGIN}}/mcp";})},
+  ];
+  const unsupportedRecords=[
+    {name:"older_recipe_record_version_is_refused",id:"codex",reason:"unsupported_record",planted:"website_client_recipes/v1",served:changedRecipe("codex",(_,record)=>{record.record_type="website_client_recipes/v1";})},
+    {name:"recipe_without_revocation_steps_is_refused",id:"claude-code",reason:"unsupported_record",planted:"claude mcp list",served:changedRecipe("claude-code",item=>{delete item.removal_note;})},
+    {name:"recipe_that_cannot_be_written_as_a_table_is_refused",id:"codex",reason:"unsupported_record",planted:"enabled = null",served:changedRecipe("codex",item=>{item.configuration.mcp_servers.baltor.enabled=null;})},
+  ];
+  for(const wrong of [...wrongCredentials,...wrongAddresses,...unsupportedRecords])await checkRefusedRecord(recipeContext,fixture.base,check,wrong);
+  const wrongShown=JSON.stringify(withEndpoint(wrongCredentials[0].served.recipes.find(item=>item.id==="claude-code").configuration,fixture.base+"/mcp"),null,2);
+  check("no_key_check_fails_for_a_recipe_with_an_embedded_key",keyShaped(wrongShown.replaceAll(fixture.base+"/mcp","").replaceAll(variable,""))&&wrongShown.includes(plantedKey));
+  const followed=[];
+  for(const origin of [fixture.billing_base,fixture.account_base]){
+    const {page:other}=await openConnect(recipeContext,origin);
+    for(const item of recipeRecord.recipes){
+      await other.selectOption("#client-choice",item.id);
+      const text=await other.locator("#client-configuration").evaluate(node=>node.textContent),value=item.format==="toml"?readToml(text):JSON.parse(text),targets=textLeaves(value).filter(([key])=>key==="url");
+      followed.push(targets.length===1&&targets[0][1]===origin+"/mcp"&&!text.includes(fixture.base));
+    }
+    await other.close();
+  }
+  check("recipes_follow_the_origin_that_serves_the_page",followed.length===2*recipeRecord.recipes.length&&followed.every(Boolean),{origins:3,followed});
+  /* Removed-guard controls. The served script is changed in memory only. Each control must make its named checks fail. */
+  const refusedWithout=wrongRecords=>async(note,mutation)=>{const states=[];for(const wrong of wrongRecords)states.push(await checkRefusedRecord(recipeContext,fixture.base,note,wrong,mutation));return states;};
+  const controls=[
+    {name:"remove_recipe_credential_rule",find:'return "credential_rule";',required:[...wrongCredentials.map(wrong=>wrong.name),"recipe_contains_no_key_claude-code","recipe_contains_no_key_codex","recipe_contains_no_key_opencode"],run:refusedWithout(wrongCredentials)},
+    {name:"remove_recipe_address_rule",find:'return "address_rule";',required:[...wrongAddresses.map(wrong=>wrong.name),"recipe_uses_current_origin_codex","recipe_uses_current_origin_claude-code"],run:refusedWithout(wrongAddresses)},
+    {name:"accept_unsupported_recipe_records",find:'return "unsupported_record";',required:[...unsupportedRecords.map(wrong=>wrong.name),"recipe_states_how_to_check_and_revoke_claude-code"],run:refusedWithout(unsupportedRecords)},
+    {name:"copy_other_text_than_shown",find:'writeText($("client-configuration").textContent)',replacement:'writeText("")',required:recipeRecord.recipes.map(item=>"recipe_copy_matches_displayed_text_"+item.id),run:async(note,mutation)=>{const {page:changed,state}=await openConnect(recipeContext,fixture.base,{mutation});for(const item of recipeRecord.recipes)await checkShownRecipe(changed,fixture.base,recipeRecord,item,note);await changed.close();return [state];}},
+  ];
+  for(const control of controls){
+    const failed=new Set();let applied=false,problem="";
+    try{const states=await control.run((name,passed)=>{if(passed!==true)failed.add(name);},{find:control.find,replacement:control.replacement??"void 0;"});applied=states.length>0&&states.every(state=>state.applied);}catch(error){problem=safeError(error);}
+    const detected=applied&&!problem&&control.required.every(name=>failed.has(name));
+    mutants.push({name:control.name,applied,detected,required_checks:control.required,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
+  await recipeContext.close();
   await page.locator('[data-view="setup"] a[data-after-login]').click();
   await page.fill("#access-token","WRONG_LOCAL_TEST_KEY"); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-message").textContent.includes("refused"));
   check("wrong_key_does_not_enter_the_workspace",await page.locator("#query").isDisabled()&&await page.locator("#access-token").inputValue()==="");
@@ -250,5 +382,5 @@ finally{
   await new Promise(resolve=>{if(child.exitCode!==null)return resolve();const timer=setTimeout(()=>{child.kill("SIGTERM");resolve();},5000);child.once("exit",()=>{clearTimeout(timer);resolve();});}); lines.close();
 }
 const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','architecture-story.js','architecture.css','client-recipes.json'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
-const result={record_type:"service_workspace_browser_checks/v1",scope:"real browser and loopback service; provider fixtures only",external_provider_calls:0,checks,passed:checks.filter(x=>x.passed).length,total:checks.length,all_passed:checks.every(x=>x.passed),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
-writeFileSync(output,JSON.stringify(result,null,2)+"\n",{flag:"wx"}); console.log(JSON.stringify({passed:result.passed,total:result.total,all_passed:result.all_passed,failures:checks.filter(x=>!x.passed),output})); process.exitCode=result.all_passed?0:1;
+const result={record_type:"service_workspace_browser_checks/v1",scope:"real browser and loopback service; provider fixtures only",external_provider_calls:0,checks,passed:checks.filter(x=>x.passed).length,total:checks.length,mutants,mutants_detected:mutants.filter(x=>x.detected).length,all_passed:checks.every(x=>x.passed)&&mutants.every(x=>x.detected),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
+writeFileSync(output,JSON.stringify(result,null,2)+"\n",{flag:"wx"}); console.log(JSON.stringify({passed:result.passed,total:result.total,mutants_detected:result.mutants_detected,mutants:mutants.length,all_passed:result.all_passed,failures:checks.filter(x=>!x.passed),output})); process.exitCode=result.all_passed?0:1;

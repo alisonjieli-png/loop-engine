@@ -285,19 +285,61 @@
   $("copy-endpoint").addEventListener("click", async () => { try { await navigator.clipboard.writeText($("protocol-url").value); $("copy-endpoint").textContent = "Endpoint copied"; } catch (_) { $("protocol-url").select(); $("copy-endpoint").textContent = "Select and copy the endpoint"; } });
   $("protocol-url").value = location.origin + "/mcp";
   $("setup-endpoint").textContent = location.origin + "/mcp";
+  // A connection recipe is reviewed data that a person copies into a client. It may name the environment
+  // variable that holds the service token. It may never carry a token, and the only address it may use is
+  // the origin that served this page. A record that breaks a rule is refused as a whole and nothing from it is shown.
+  const recipeRecordType = "website_client_recipes/v2", endpointPlaceholder = "{{ENDPOINT}}";
+  const recipeTextFields = ["id", "name", "configuration_location", "configuration_note", "verification_command", "verification_note", "version_note", "removal_note", "source_url"];
+  const recipeStrings = (value, key = "", found = []) => {
+    if (typeof value === "string") found.push({key, text:value, named:false});
+    else if (value && typeof value === "object") for (const [name, item] of Object.entries(value)) {
+      if (!Array.isArray(value)) found.push({key:name, text:name, named:true});
+      recipeStrings(item, Array.isArray(value) ? key : name, found);
+    }
+    return found;
+  };
+  const tokenShaped = text => /[A-Za-z0-9_-]{32,}/.test(text) || (text.match(/[A-Za-z0-9_-]{20,}/g) || []).some(run => /[0-9]/.test(run) && /[A-Za-z]/.test(run));
+  const tomlReady = value => Array.isArray(value) ? value.every(item => typeof item !== "object" && tomlReady(item))
+    : value !== null && typeof value === "object" ? Object.values(value).every(tomlReady) : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
+  function recipeRefusal(record) {
+    const variable = record?.credential_variable;
+    if (record?.record_type !== recipeRecordType || typeof variable !== "string" || !/^[A-Z][A-Z0-9_]{2,63}$/.test(variable) || typeof record.revocation_note !== "string" || !record.revocation_note
+      || !Array.isArray(record.recipes) || !record.recipes.length || new Set(record.recipes.map(recipe => recipe?.id)).size !== record.recipes.length) return "unsupported_record";
+    const references = [variable, "Bearer {env:" + variable + "}", "Bearer ${" + variable + "}"];
+    for (const recipe of record.recipes) {
+      if (!recipe || recipeTextFields.some(field => typeof recipe[field] !== "string" || !recipe[field]) || !["toml", "json"].includes(recipe.format) || !recipe.source_url.startsWith("https://")
+        || !recipe.configuration || typeof recipe.configuration !== "object" || Array.isArray(recipe.configuration) || (recipe.format === "toml" && !tomlReady(recipe.configuration))) return "unsupported_record";
+      const values = recipeStrings(recipe.configuration).filter(item => !item.named);
+      const credentialProblem = recipeStrings([record.revocation_note, recipe]).some(item => tokenShaped(item.text.replaceAll(variable, "")))
+        || !values.some(item => item.text.includes(variable))
+        || values.some(item => (item.text.includes(variable) || /\bbearer\b/i.test(item.text) || /^authorization$/i.test(item.key)) && !references.includes(item.text));
+      if (credentialProblem) return "credential_rule";
+      const addressProblem = values.filter(item => item.text === endpointPlaceholder).length !== 1
+        || values.some(item => item.text !== endpointPlaceholder && (item.text.includes("{{") || (item.text.includes("://") && !(item.key === "$schema" && item.text.startsWith("https://")))));
+      if (addressProblem) return "address_rule";
+    }
+    return "";
+  }
+  const tomlKey = key => /^[A-Za-z0-9_-]+$/.test(key) ? key : JSON.stringify(key);
+  const tomlText = (table, path = []) => {
+    const entries = Object.entries(table), isTable = item => item && typeof item === "object" && !Array.isArray(item);
+    const own = entries.filter(([, item]) => !isTable(item)).map(([key, item]) => tomlKey(key) + " = " + JSON.stringify(item));
+    const blocks = own.length ? [(path.length ? "[" + path.map(tomlKey).join(".") + "]\n" : "") + own.join("\n")] : [];
+    return blocks.concat(entries.filter(([, item]) => isTable(item)).map(([key, item]) => tomlText(item, [...path, key]))).join("\n\n");
+  };
   function renderRecipe() {
     const selected = recipes?.recipes.find(item => item.id === $("client-choice").value);
     if (!selected) return;
-    const configuration = JSON.parse(JSON.stringify(selected.configuration).replaceAll("{{ENDPOINT}}", location.origin + "/mcp"));
-    let content;
-    if (selected.format === "toml") {
-      content = "[mcp_servers.baltor]\n" + Object.entries(configuration.mcp_servers.baltor).map(([key,value]) => key + " = " + JSON.stringify(value)).join("\n");
-    } else content = JSON.stringify(configuration, null, 2);
-    $("client-configuration").textContent = content; $("configuration-location").textContent = selected.configuration_location;
+    const endpoint = location.origin + "/mcp";
+    const fill = value => value === endpointPlaceholder ? endpoint : Array.isArray(value) ? value.map(fill) : value && typeof value === "object" ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, fill(item)])) : value;
+    const configuration = fill(selected.configuration);
+    $("client-configuration").textContent = selected.format === "toml" ? tomlText(configuration) : JSON.stringify(configuration, null, 2);
+    $("configuration-location").textContent = selected.configuration_location; $("client-configuration-note").textContent = selected.configuration_note;
     $("client-verify-command").textContent = selected.verification_command; $("client-verify-note").textContent = selected.verification_note;
     $("client-version-note").textContent = selected.version_note;
+    $("client-revoke-note").textContent = recipes.revocation_note; $("client-removal-note").textContent = selected.removal_note;
     $("client-source").href = selected.source_url; $("client-source").textContent = selected.source_url;
-    $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets";
+    $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets"; message("setup-message", "");
   }
   $("client-choice").addEventListener("change", renderRecipe);
   $("copy-configuration").addEventListener("click", async () => {
@@ -305,11 +347,17 @@
     catch (_) { message("setup-message", "Clipboard unavailable. Select and copy the configuration text."); }
   });
   request("/assets/client-recipes.json", null, false, false, {raw:true}).then(value => {
-    if (value.record_type !== "website_client_recipes/v1" || !Array.isArray(value.recipes) || !value.recipes.length) throw new Error("Unknown configuration format");
+    const refusal = recipeRefusal(value);
+    if (refusal) throw Object.assign(new Error("Connection recipes refused"), {refusal});
     recipes = value; $("client-choice").replaceChildren();
     for (const recipe of value.recipes) { const option = element("option", recipe.name); option.value = recipe.id; $("client-choice").append(option); }
     $("client-choice").disabled = false; renderRecipe();
-  }).catch(() => message("setup-message", "Client recipes could not be loaded. Use the setup guide; do not guess a configuration.", true));
+  }).catch(error => {
+    recipes = null; $("setup-message").dataset.refusal = error.refusal || "unavailable";
+    $("client-choice").replaceChildren(element("option", "Recipes unavailable")); $("client-choice").disabled = true; $("copy-configuration").disabled = true;
+    $("client-configuration").textContent = "No configuration is shown."; $("client-version-note").textContent = "";
+    message("setup-message", error.refusal ? "The connection recipes did not pass their safety check, so none is shown. Use the setup guide; do not guess a configuration." : "Client recipes could not be loaded. Use the setup guide; do not guess a configuration.", true);
+  });
   $("test-protocol").addEventListener("click", async () => {
     if (connectionBusy || !token || !capabilities) return;
     connectionBusy = true; const epoch = generation, version = capabilities.protocol.versions[0];
