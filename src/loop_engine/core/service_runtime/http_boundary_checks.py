@@ -1,4 +1,4 @@
-"""Boundary counterexamples for HTTP limits, host setup and signed billing.
+"""Boundary counterexamples for HTTP limits, host setup, licence policy and signed billing.
 
 These checks use temporary artifacts and loopback listeners. Identity and
 billing signatures are local fixtures; no hosted identity, payment account,
@@ -25,6 +25,7 @@ def _request(operation="list", **fields):
 
 def run_checks(check, root):
     _host_setup(check, root / "host")
+    _licence_policy(check, root / "licences")
     _limits(check, root / "limits")
     _key_endpoint(check, root / "keys")
     _billing(check, root / "billing")
@@ -87,6 +88,140 @@ def _host_setup(check, root):
     else:
         refused = False
     check("host_review_is_bound_to_exact_bytes_not_only_an_item_name", refused)
+
+
+def _licence_policy(check, root):
+    """The host serves an item only when it accepts the exact licence that the item declares."""
+    from unittest.mock import patch
+    from ..harness_intelligence import HarnessIntelligenceCatalogue, HarnessIntelligenceDraft, item_from_body
+    from .http_entrypoint import (DEFAULT_ACCEPTED_LICENSES, HOST_CONFIGURATION_VERSION, LICENSE_POLICY_KEY,
+        LICENSE_POLICY_VERSION, MANIFEST_VERSION, HostLicensePolicy, configure_host, load_host_application,
+        load_host_manifest)
+    from .records import TenantKeyIssue, ServiceRuntimeError
+    root.mkdir()
+    artifacts = root / "artifacts"
+    artifacts.mkdir()
+    body = "Pinned body that is served only under an accepted licence"
+    (artifacts / "body.txt").write_text(body)
+    numbers = iter(range(10_000))
+
+    def row(identity, license_name, body_path="body.txt"):
+        item = item_from_body(HarnessIntelligenceDraft(identity, "skill", "Licence policy fixture",
+            "context_intelligence", "context:licence/v1", license_name), body)
+        return {"reference": item.reference(), "body_path": body_path, "approval_ref": "host-review:fixture",
+                "grants": [{"tenant_id": "host", "body_allowed": True, "metering": "required"}]}
+
+    def manifest(*rows):
+        path = root / f"manifest-{next(numbers)}.json"
+        path.write_text(json.dumps({"record_type": MANIFEST_VERSION, "artifact_root": str(artifacts), "items": list(rows)}))
+        return str(path)
+
+    def host(manifest_path, **settings):
+        path = root / f"host-{next(numbers)}.json"
+        path.write_text(json.dumps({"record_type": HOST_CONFIGURATION_VERSION,
+            "runtime": {"database_path": str(path.with_suffix(".db")), "writes_authorized": True},
+            "http": asdict(ServiceHttpConfiguration("http://127.0.0.1:8000", ("127.0.0.1:8000",), allow_loopback_http=True)),
+            "authentication": {"modes": ["host_key"]}, "manifest_path": manifest_path,
+            "tenants": [{"tenant_id": "host", "namespace": "host",
+                "operator_entitlement": {"valid_until": int(time.time()) + 3600, "evidence_ref": "local-host-test"}}],
+            **settings}))
+        return path
+
+    def outcome(action):
+        """Return an empty code and text with the produced value, or the stable code and text of a refusal."""
+        try:
+            return "", "", action()
+        except ServiceRuntimeError as error:
+            return error.code, str(error), None
+        except Exception as error:  # noqa: BLE001 - an untyped failure is never a stable refusal
+            return "untyped_" + type(error).__name__, str(error), None
+
+    def loaded(manifest_path, **options):
+        return outcome(lambda: sorted(load_host_manifest(manifest_path, **options)[0].items))
+
+    def started(configuration_path):
+        return outcome(lambda: load_host_application(str(configuration_path)))
+
+    def served(configuration_path, identity):
+        def read():
+            configure_host(str(configuration_path))
+            application = load_host_application(str(configuration_path))[0]
+            issued = application.runtime.issue_key(TenantKeyIssue("host", "licence-policy-acceptance"))
+            return application.provisioning.invoke(issued.key, "read", identity=identity, request_id="licence-policy")["body"]
+        return outcome(read)
+
+    def refused(result, code, identity=""):
+        return result[0] == code and identity in result[1] and result[2] is None
+
+    accepted = manifest(row("skill.licensed", "MIT"))
+    check("item_with_an_accepted_licence_loads_under_the_default_host_policy",
+          loaded(accepted) == ("", "", ["skill.licensed"]))
+    for name, code, values in (
+            ("item_without_a_licence_is_refused_and_the_refusal_names_it", "item_license_missing", ("", "   ", None, 7)),
+            ("item_with_an_unknown_licence_is_refused_and_the_refusal_names_it", "item_license_unknown",
+             ("unknown", "UNKNOWN", "NOASSERTION", "NONE")),
+            ("item_whose_licence_needs_review_is_refused_and_the_refusal_names_it", "item_license_needs_review",
+             ("pending_review", "needs_review", "Needs Review")),
+            ("default_host_policy_refuses_a_licence_that_it_does_not_list", "item_license_not_accepted",
+             ("Apache-2.0", "GPL-3.0-only"))):
+        check(name, all(refused(loaded(manifest(row("skill.refused", value))), code, "skill.refused") for value in values))
+    check("default_host_policy_accepts_only_the_licence_of_this_repository",
+          DEFAULT_ACCEPTED_LICENSES == ("MIT",) and HostLicensePolicy().accepted_licenses == ("MIT",))
+    registered, register = [], HarnessIntelligenceCatalogue.register
+    def recording(catalogue, item):
+        registered.append(item.identity)
+        return register(catalogue, item)
+    # The refused row names a body that does not exist. The licence decides
+    # first, so the loader never looks for that body.
+    mixed = manifest(row("skill.licensed", "MIT"), row("skill.unlicensed", "", "never-opened.txt"))
+    with patch.object(HarnessIntelligenceCatalogue, "register", recording):
+        result = loaded(mixed)
+    check("refused_item_is_never_registered_and_stops_the_whole_manifest",
+          refused(result, "item_license_missing", "skill.unlicensed") and "skill.unlicensed" not in registered)
+    stopped = host(mixed)
+    check("host_with_one_unlicensed_item_neither_starts_nor_writes_tenant_state",
+          refused(outcome(lambda: configure_host(str(stopped))), "item_license_missing", "skill.unlicensed")
+          and refused(started(stopped), "item_license_missing", "skill.unlicensed")
+          and not stopped.with_suffix(".db").exists())
+    wider = manifest(row("skill.licensed", "MIT"), row("skill.apache", "Apache-2.0"))
+    current = {"record_type": LICENSE_POLICY_VERSION, "accepted_licenses": ["MIT", "Apache-2.0"]}
+    listed = host(wider, **{LICENSE_POLICY_KEY: current})
+    check("host_that_lists_an_extra_licence_identifier_serves_that_item",
+          served(listed, "skill.apache") == ("", "", body) and listed.with_suffix(".db").exists())
+    check("same_manifest_is_refused_by_a_host_that_keeps_the_default_policy",
+          refused(served(host(wider), "skill.apache"), "item_license_not_accepted", "skill.apache"))
+    exact = HostLicensePolicy(("Apache-2.0",))
+    check("licence_names_are_compared_exactly_and_a_host_list_replaces_the_default",
+          exact.refusal("Apache-2.0") == "" and HostLicensePolicy(()).refusal("MIT") == "item_license_not_accepted"
+          and all(exact.refusal(value) == "item_license_not_accepted" for value in (
+              "apache-2.0", "APACHE-2.0", "Apache-2.0 ", " Apache-2.0", "Apache 2.0", "Apache-2.0+", "MIT"))
+          and all(refused(loaded(manifest(row("skill.variant", value))), "item_license_not_accepted", "skill.variant")
+                  for value in ("mit", "Mit", "MIT ", "MIT License")))
+    check("host_policy_cannot_list_a_missing_unknown_or_review_state_as_an_accepted_licence",
+          all(refused(outcome(lambda names=names: HostLicensePolicy(names)), "invalid_license_policy") for names in (
+              ("MIT", "unknown"), ("Unknown",), ("NOASSERTION",), ("pending_review",), ("needs-review",), ("",),
+              (" MIT",), ("MIT", "MIT"), (7,), "MIT", None))
+          and refused(outcome(lambda: HostLicensePolicy(("MIT",), "service_host_license_policy/v0")), "unsupported_license_policy")
+          and all(refused(loaded(accepted, license_policy=untyped), "invalid_license_policy")
+                  for untyped in ({"accepted_licenses": ["MIT"]}, ("MIT",), None)))
+    absent = str(root / "absent-manifest.json")
+    check("licence_policy_with_an_unknown_key_or_unsupported_version_is_refused_before_the_manifest_is_read",
+          all(refused(started(host(absent, **{LICENSE_POLICY_KEY: value})), "unsupported_license_policy") for value in (
+              None, [], {}, ["MIT"], {"accepted_licenses": ["MIT"]}, {**current, "accept_unknown": True},
+              {**current, "record_type": "service_host_license_policy/v2"}))
+          and refused(started(host(absent, **{LICENSE_POLICY_KEY: {**current, "accepted_licenses": ["MIT", "unknown"]}})),
+                      "invalid_license_policy")
+          and refused(started(host(absent, **{LICENSE_POLICY_KEY: current})), "invalid_configuration"))
+    check("unknown_host_configuration_key_is_still_refused_beside_the_licence_policy",
+          all(refused(started(host(accepted, **{key: current})), "unsupported_host_configuration")
+              for key in ("licence_policy", "license_policies", "accepted_licenses"))
+          and started(host(accepted, **{LICENSE_POLICY_KEY: current}))[0] == "")
+    # Known-wrong control: remove the licence guard locally. Every manifest that
+    # was refused above must now load, which shows that those checks detect a
+    # missing guard and do not pass for another reason.
+    with patch.object(HostLicensePolicy, "refusal", lambda policy, license_name: ""):
+        unguarded = [loaded(manifest(row("skill.refused", value)))[2] for value in ("", "unknown", "pending_review", "Apache-2.0")]
+    check("removed_licence_guard_is_detected", unguarded == [["skill.refused"]] * 4)
 
 
 def _limits(check, root):
