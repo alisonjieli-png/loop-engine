@@ -7,6 +7,15 @@ from programming language and runtime. The options below cover both, plus
 configuration and integration contracts. They do not rename the repository,
 add a runtime, or approve publication.
 
+Decision recorded on September 20, 2026: the owner selected Baltor as the
+public brand. Loop Engine remains the repository, the Python package and the
+technical name. The
+[names table](product-style-guide.md#names-and-where-they-may-appear) records
+where each name may appear. Where this document calls Baltor a candidate
+brand, read it as the option that the owner chose. The copy candidates, the
+product positions and the technical options below remain explorations that
+need owner approval.
+
 ## Recommended direction
 
 Use Baltor as a candidate public brand and explain the product as an
@@ -69,7 +78,7 @@ account and billing evidence as well.
 | Model | The selected reasoning or generation provider, under an exact route and authority. |
 | Native harness | The existing process that manages its model interaction, tools and context. |
 | Loop Engine | The current runtime and contracts governing assignments, authority, records and acceptance. |
-| Baltor | Candidate public product brand, not a new runtime class or intelligence layer. |
+| Baltor | The public product brand, selected by the owner. It is not a new runtime class or intelligence layer. |
 | Self-improvement | Proposed changes evaluated and independently accepted, not automatic truth or guaranteed continuous gains. |
 
 Anthropic describes a harness through environment preparation, persistent
@@ -131,7 +140,8 @@ Baltor as a candidate public brand; an intelligence and control layer as the
 product explanation; Loop Engine as the existing runtime; Python domain code;
 TypeScript for the website and JavaScript-native adapters; versioned JSON for
 interchange; optional validated YAML for authoring; local customer execution.
-The owner still chooses the public brand. Live integrations and learning gains
+The owner chose Baltor as the public brand. The other parts of this
+combination still need owner approval. Live integrations and learning gains
 remain separately qualified behavior.
 
 ## Wording to avoid for the present release

@@ -7,10 +7,23 @@ not authorize a commit, push, provider call, deployment, or repeated effect.
 
 ## Current context route
 
+Start with the [takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md). It
+records the verified live state, the repairs of September 20, the open
+findings, the private beta definition and the working cycle for changes,
+tests, checkpoints and releases.
+
 The [September 20 development checkpoint](DEVELOPMENT-CHECKPOINT-2026-09-20.md)
-records the current pilot, website direction, evidence, remaining work and
-handoff. It is also embedded in the single development HTML. Recheck its
-source and deployment facts before acting.
+and the [Fable 5.1 handoff](FABLE-5-1-HANDOFF-2026-09-20.md) remain valid as
+dated snapshots of the previous developer session. The development checkpoint
+records the pilot, website direction, evidence, remaining work and handoff at
+that time. It is also embedded in the single development HTML. Recheck source
+and deployment facts before acting.
+
+The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section states once what runs and where. Baltor is the public brand, and Loop
+Engine is the repository, the Python package and the technical name. The
+[names table](../guides/product-style-guide.md#names-and-where-they-may-appear)
+says where each name may appear.
 
 1. Read the [continuation plan](../roadmap/CONTINUATION-AND-LAUNCH.md) and its
    [generated status](../roadmap/CONTINUATION-STATUS.md). These separate the

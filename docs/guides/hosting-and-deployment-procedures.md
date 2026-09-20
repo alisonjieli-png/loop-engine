@@ -1,9 +1,29 @@
 # Hosting and deployment procedures
 
 Kind: operating guide. The owner requested preparation for all major hosting
-families and an extensible path for additional providers. No preferred vendor
-is selected. These procedures are documented preparation, not claims that the
-service or every provider profile has been deployed and qualified.
+families and an extensible path for additional providers. These procedures are
+documented preparation, not claims that every provider profile has been
+deployed and qualified.
+
+## Current host
+
+The private pilot runs on Fly.io. The owner selected Fly.io for the pilot. The
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section records the Machine, the hostnames, the storage and the release. Read
+that section for the facts. This guide does not repeat them.
+
+Only the [Fly.io Machines](#flyio-machines) profile has been deployed. Every
+other profile in this guide is documented preparation. The owner requested
+preparation for all major hosting families, so the procedures for other
+providers remain. No provider is excluded for a later release.
+
+An earlier version of this guide said that no preferred vendor was selected.
+The [hosting shape research](../architecture/HOSTING-SHAPE-AND-THE-FIRST-RELEASE-2026-09-18.md)
+of September 18 and 19, 2026 recommended DigitalOcean App Platform first. That
+recommendation was not adopted. Both statements were corrected or annotated on
+September 20, 2026. The research remains a dated record of what was read.
+
+## First hosted workload
 
 The first hosted workload is the website, subscriber dashboard, payment event
 handling, and intelligence service. Customers run their harnesses. Optional
@@ -32,10 +52,15 @@ chosen provider permits. Keep their credentials, payment events, record
 namespaces, and test data separate. Deploy the same built image between
 environments; do not rebuild it silently during promotion.
 
-The repository already contains an engine image and offline Kubernetes
-examples. The new subscription service, durable deployment wiring, and
-provider-specific manifests still need implementation under step S-6.13.
-Do not deploy the current `doctor` default and call it the product.
+The repository contains two images. The worker image from `Dockerfile` keeps
+its default `doctor` command. The service image from `Dockerfile.service`
+starts the product service with `loop-engine service serve`. The repository
+also contains the Fly profile `fly.toml` and offline Kubernetes examples.
+Definitions for the other providers, and durable deployment wiring beyond the
+single SQLite volume, still need implementation under step S-6.13. Do not
+deploy the worker image's `doctor` default and call it the product. The
+[two service commands](../architecture/MVP-CLIENT-SERVER.md#two-service-commands)
+table says which command is the product service.
 
 ## Shared routine
 
@@ -100,6 +125,10 @@ cost limits, and required checks. This is not a deployment of the full Python
 engine into an Edge Function.
 
 ## Fly.io Machines
+
+This is the deployed profile of the private pilot. The
+[launch setup runbook](launch-setup-runbook.md#prepared-fly-access-on-the-development-workstation)
+holds the prepared access and the exact settings.
 
 Prepare `fly.toml` with the exact image, application command, port, health
 checks, resources, scale bounds, and storage references. Deploy an approved

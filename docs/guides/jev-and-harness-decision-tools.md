@@ -191,12 +191,19 @@ client configuration:
 
 ```bash
 codex mcp add loop-decisions -- loop-engine decisions serve --config /absolute/path/decisions.json
-codex mcp add loop-intelligence --url https://YOUR_SERVICE_HOST/mcp --bearer-token-env-var LOOP_ENGINE_ACCESS_TOKEN
+codex mcp add baltor --url https://YOUR_SERVICE_HOST/mcp --bearer-token-env-var BALTOR_SERVICE_TOKEN
 ```
 
 The second command connects the intelligence service, using a separate scoped
 service token. Do not substitute the Jev key. Reconnect and inspect the tool
 inventory. Registration alone does not prove native tool use.
+
+The entry name `baltor` and the variable `BALTOR_SERVICE_TOKEN` match the
+settings that the Connect page of the website offers. Both names exist only on
+the customer's machine. The service does not read them. An earlier version of
+this guide used the entry name `loop-intelligence` and the variable
+`LOOP_ENGINE_ACCESS_TOKEN`. They were aligned with the website on September
+20, 2026.
 [Official connection documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
 
 ### OpenCode
@@ -227,12 +234,12 @@ intelligence service:
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "mcp": {"servers": {"loop-intelligence": {
+  "mcp": {"servers": {"baltor": {
     "type": "remote",
     "url": "https://YOUR_SERVICE_HOST/mcp",
     "oauth": false,
     "protocol": "legacy",
-    "headers": {"Authorization": "Bearer {env:LOOP_ENGINE_ACCESS_TOKEN}"}
+    "headers": {"Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}"}
   }}}
 }
 ```

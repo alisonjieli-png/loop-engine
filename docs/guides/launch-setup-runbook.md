@@ -7,6 +7,11 @@ by reading it.
 
 ## Current private pilot
 
+The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section of the client and server map is the single short statement of what
+runs and where. This section adds the detail that the owner and the operator
+need.
+
 The diagnostic service runs at <https://baltor-pilot.fly.dev/app>. One Fly
 Machine in `iad` has one shared processor, 2 GB of memory and a 1 GB encrypted
 persistent volume. The owner delegated the selection of reasonable limits:
@@ -396,7 +401,7 @@ differ; the approved process must have a documented way to resolve it.
 
 | Name or value | Place | Use |
 |---|---|---|
-| `LOOP_ENGINE_ACCESS_TOKEN` | Customer's local client secret environment | Scoped access to the intelligence service |
+| `BALTOR_SERVICE_TOKEN` | Customer's local client secret environment | Scoped access to the intelligence service. This is the variable that the Connect page of the website offers. An earlier version of this table named it `LOOP_ENGINE_ACCESS_TOKEN`. |
 | `TYPESAFE_API_KEY` | Local decision-service process or approved credential host | Optional Jev calls |
 | `OLLAMA_API_KEY`, `OPENROUTER_API_KEY`, `MISTRAL_API_KEY` | The selected local provider adapter | Only the provider the user chooses |
 | `STRIPE_TEST_SECRET_KEY` | Hosted service's secret environment | Approved Stripe test operations |

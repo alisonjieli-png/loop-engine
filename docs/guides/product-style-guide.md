@@ -32,6 +32,48 @@ copyable configuration. Avoid hype, decorative slogans, invented performance
 claims, em dashes, and en dashes. Artificial general intelligence remains a
 research ambition.
 
+## Names and where they may appear
+
+Baltor is the public brand. Loop Engine is the repository, the Python package
+and the technical name. This table is the single reference for where each
+name and word may appear. It renames nothing. The three restricted pages are
+the homepage, How it works and their shared footer.
+
+| Name or word | Kind | What it names | May appear | Must not appear | Status |
+|---|---|---|---|---|---|
+| Baltor | Public brand | The product, the website and the hosted service as a customer sees them. | Every page that a customer reads, including the three restricted pages. Email from the service. Copied client settings, where the entry is named `baltor` and the credential variable is `BALTOR_SERVICE_TOKEN`. Technical documentation when it describes the product. | In place of a code identifier, a package name, a record type, a contract field or the repository name. | Decided by the owner. |
+| Loop Engine | Technical name | The repository, the engine, the Python distribution and command `loop-engine`, and the Python import `loop_engine`. | Technical documentation, the Documentation view of the website, GitHub, the README, source code and command output. | The three restricted pages. | Decided by the owner. |
+| Building with Loops | README title | The title of the public README. | The README. | Anywhere as a product name. | Decided by the owner. |
+| task, each step, information, tools, model, checks, results, reusable solution | Public words | The work as a customer describes it. | Every page. The three restricted pages use only these words for the work. | In technical documentation, in place of an exact runtime term. | Decided by the owner. |
+| Loop, Loop node, discrete cognitive or act step Loop node, runtime classification, role profile, Practitioner, Intelligence, Solution, run mode, step profile | Technical words | The exact runtime terms with their complete definitions. | Technical documentation, the Documentation view of the website, GitHub and source code. Keep the full phrase "discrete cognitive or act step Loop node" together with its complete behavioral explanation. | The three restricted pages. | Decided by the owner. |
+| agent, harness, prompt cycle | Technical words | The customer's own tools and how they call a model. | Technical documentation, connection guidance and GitHub. | The homepage and How it works. | Decided by the owner. The [public content direction](public-website-content-and-domain.md#current-positioning-and-presentation) records it. |
+| `le_` | Customer-visible technical identifier: key prefix | The first characters of every client key that the service issues. | Issued keys, and technical documentation that explains them. | The three restricted pages. | Open owner decision. Do not rename it. |
+| `loop-engine-intelligence` | Customer-visible technical identifier: protocol server name | The server name that a Model Context Protocol client shows after it connects. | The protocol handshake and technical documentation. | The three restricted pages. | Open owner decision. Do not rename it. |
+| `X-Loop-Engine-Record-Type` | Customer-visible technical identifier: response header | The header on a downloaded body that names its record type. A browser client can read it. | Service responses and technical documentation. | The three restricted pages. | Open owner decision. Do not rename it. |
+| `loop-engine` | Customer-visible technical identifier: command and package name | The command that a customer types and the package that a customer installs. | Installation and setup instructions, the Documentation view of the website and technical documentation. | The three restricted pages. | Open owner decision. Do not rename it. |
+
+### Open owner decision: identifiers that carry the engine name
+
+Four identifiers in the table are visible to a customer and still carry the
+engine name. The key prefix `le_` is set in
+`src/loop_engine/core/service_runtime/runtime.py` and `access.py`. The
+protocol server name `loop-engine-intelligence` and the response header
+`X-Loop-Engine-Record-Type` are set in
+`src/loop_engine/core/service_runtime/http.py`. The command `loop-engine` is
+the Python distribution name. The older worker command `loop-engine serve api`
+also reads the request header `X-Loop-Engine-Key`. It is not the product
+service.
+
+The owner has not decided whether these identifiers stay as they are or
+receive Baltor names. Until the owner decides, do not rename them and do not
+hide them. A rename is a contract change, not a copy change. Issued keys
+already begin with `le_`. A client can display or store the server name. A
+browser client reads the header by its name. Installation instructions depend
+on the command. A rename therefore needs a new explicit version, updated
+callers and checks in the same change, and an explicit refusal of the old
+form where the [version policy](../architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md)
+requires one.
+
 ## Page structure
 
 The public website should have a clear explanation, examples, catalogue

@@ -18,7 +18,11 @@ The first-release guides are [hosting procedures](hosting-and-deployment-procedu
 [owner actions](launch-owner-checklist.md),
 [product style](product-style-guide.md), and
 [harness service onboarding](harness-service-onboarding.md). Their planned
-service paths are labeled separately from commands available today.
+service paths are labeled separately from commands available today. The
+hosting procedures name the [current host](hosting-and-deployment-procedures.md#current-host).
+The product style guide holds the
+[names table](product-style-guide.md#names-and-where-they-may-appear) for
+Baltor, Loop Engine, the public words and the technical words.
 
 The [launch setup runbook](launch-setup-runbook.md) lists the account, hosting,
 identity, storage, payment and secret-reference work for the owner. The
@@ -39,4 +43,6 @@ separates customer pages from the internal engineering report. The
 [launch benefit guide](launch-benefits-and-evidence.md) records the overnight,
 token-efficiency and expert-context drafts with their required evidence. The
 [frontier harness wording](frontier-harness-positioning.md) is a copy
-exploration, not an approved rebrand or capability claim.
+exploration, not approved copy or a capability claim. It does not rename the
+repository. The owner's selection of Baltor as the public brand is recorded in
+the names table.

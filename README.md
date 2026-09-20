@@ -16,6 +16,34 @@ its files, commands, repository, and acceptance gates; the Loop reasons over
 the available capabilities and their observations. This interface is not a
 claim that arbitrary unseen tasks are already solved.
 
+## Baltor and the hosted intelligence service
+
+Baltor is the public brand of this project. Loop Engine remains the name of
+the repository, the Python package, the `loop-engine` command and the runtime
+that this README describes. The public website is <https://baltor.ai>.
+
+The product has two parts. The local engine in this repository runs on your
+machine with your own harness and your own models. The hosted intelligence
+service gives each step of a task the information, skills, tools and reusable
+code that the step is permitted to load. It serves them through an
+authenticated Model Context Protocol endpoint. The service does not run
+customer tasks and does not call a model.
+
+Current behavior: a private pilot of the service runs for invited testing.
+Access uses keys that the operator issues. Public registration, browser
+sign-in and payments are switched off. The pilot catalogue holds one
+diagnostic record. The service accepts Model Context Protocol version
+`2025-11-25` only.
+
+Planned behavior: a private beta with personal accounts, personal client keys
+and a reviewed starter catalogue, and subscriptions after that. None of this
+is available yet.
+
+You can run the same service on your own machine without a cloud account.
+Follow the [local intelligence service example](examples/29_intelligence_service/README.md).
+The [client and server map](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
+records what is deployed.
+
 ## Solve with human-like loops
 
 Download the first example task and run the LLM-first quickstart profile. The

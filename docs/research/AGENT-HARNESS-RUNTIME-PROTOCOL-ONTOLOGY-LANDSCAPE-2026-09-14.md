@@ -4,6 +4,13 @@ Status: research record, September 14, 2026. Nothing in this record is
 implemented in Loop Engine unless a sentence says so. Every build item is a
 proposal until an implementation and its discriminating test exist.
 
+Note added on September 20, 2026. The text below is unchanged. It describes
+Model Context Protocol revision `2026-07-28` and proposes an adapter profile
+for it. That proposal is not implemented. The Loop Engine service accepts
+exactly `2025-11-25` and refuses `2026-07-28`. The current fact is stated
+once, in
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment).
+
 ## How this record was produced
 
 The owner shared a research synthesis that described a converging stack of

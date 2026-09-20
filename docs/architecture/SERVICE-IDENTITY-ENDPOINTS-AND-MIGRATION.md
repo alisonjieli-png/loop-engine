@@ -67,10 +67,20 @@ create separate Machines or databases. Keep browser requests same-origin where
 possible. Reserve a future service hostname only when it removes a verified
 migration or client-compatibility problem.
 
-The current public address is <https://baltor-pilot.fly.dev>. The intended pilot
-hostname is <https://app.baltor.ai>, with `/mcp` on the same origin. The custom
-hostname still needs its domain records and certificate. Do not advertise it
-as working before that check passes.
+The pilot answers on `baltor.ai`, `www.baltor.ai`, `app.baltor.ai` and
+`baltor-pilot.fly.dev`. Each hostname has its domain records and a valid
+certificate, and each origin serves `/mcp`. The
+[current deployment](MVP-CLIENT-SERVER.md#current-deployment) section records
+these facts once.
+
+The remaining work is the identity migration, not the certificate. The host
+configuration still names the Fly hostname as the canonical protocol resource
+and account origin. Do not move that canonical origin, a callback address or a
+token audience to `app.baltor.ai` before the
+[domain migration procedure](#domain-migration-procedure) has been run and
+checked. An earlier version of this paragraph said that `app.baltor.ai` still
+needed its domain records and certificate. It was corrected on September 20,
+2026, after the records and the valid certificate were observed.
 
 ## What changes and what remains stable
 
