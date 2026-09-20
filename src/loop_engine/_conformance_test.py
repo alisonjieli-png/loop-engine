@@ -51,6 +51,10 @@ def self_test() -> dict:
             legacy_reachable.append(legacy)
     check("conformance_obsolete_flat_module_paths_are_dead", not legacy_reachable,
           f"still importable at the old root: {legacy_reachable}")
+    check("governed_learning_uses_current_owning_modules_without_repository_facade",
+          importlib.util.find_spec(f"{PACKAGE}.memory.storage.repository") is None
+          and importlib.util.find_spec(f"{PACKAGE}.memory.storage.learning_cycle") is not None
+          and importlib.util.find_spec(f"{PACKAGE}.memory.storage.learning_records") is not None)
 
     import loop_engine as public_package
     retired_decision_names = {
@@ -97,6 +101,125 @@ def self_test() -> dict:
               "test": "fixture failure", "detail": "bounded failure detail"}]
           and concise["all_passed"] is False,
           "folded demo output is captured; the failing test remains visible")
+
+    from unittest.mock import patch
+    from types import SimpleNamespace
+    from ._self_test import _module_test_records, _result_counts, self_test as aggregate_tests
+    invalid_reports = (None, {}, {"all_passed": True}, {"real_check": True},
+                       {"real_check": False}, {"tests": []},
+                       {"tests": "not records"}, {"tests": [{"test": "x", "passed": "false"}]},
+                       {"tests": [{"test": "x", "passed": 1}]},
+                       {"tests": [{"passed": True}]},
+                       {"tests": [{"test": "x", "passed": None}]},
+                       {"tests": [{"test": "x", "passed": True, "not_tested": True}]})
+    refused_reports = 0
+    for report in invalid_reports:
+        try:
+            _module_test_records("fixture", report)
+        except ValueError:
+            refused_reports += 1
+    check("module_reports_refuse_empty_unrecognized_and_non_boolean_results",
+          refused_reports == len(invalid_reports))
+    unavailable = {"test": "optional control", "passed": True, "not_tested": True,
+                   "outcome": "NOT_APPLICABLE", "missing_optional_dependencies": ["duckdb"],
+                   "detail": "fixture optional backend is unavailable"}
+    normalized = _module_test_records("fixture", {"tests": [
+        {"test": "executed", "passed": True, "owner_module": "forged.owner"}, unavailable]})
+    counted = _result_counts(normalized)
+    optional_summary = _concise_self_test_summary({"tests": normalized, **counted}, 0)
+    check("optional_adapters_are_not_counted_as_passed_or_failed_and_keep_their_reason",
+          normalized[1]["passed"] is None and counted == {
+              "passed": 1, "total": 1, "not_tested": 1,
+              "reported_checks": 2, "all_passed": True}
+          and optional_summary["failures"] == []
+          and optional_summary["not_tested_checks"][0]["detail"] == unavailable["detail"]
+          and optional_summary["not_tested_checks"][0]["missing_optional_dependencies"] == ["duckdb"]
+          and _result_counts([])["all_passed"] is False)
+    check("folded_test_ownership_is_engine_assigned_for_executed_and_unavailable_checks",
+          all(item["owner_module"] == "loop_engine.fixture" for item in normalized)
+          and unavailable.get("owner_module") is None)
+    with patch.object(importlib, "import_module", return_value=SimpleNamespace(
+            self_test=lambda: {"tests": []})), \
+            patch.object(importlib.util, "find_spec", return_value=object()):
+        empty_aggregate = aggregate_tests()
+    check("empty_submodule_suites_cannot_make_the_full_aggregate_succeed",
+          empty_aggregate["all_passed"] is False
+          and any(item.get("error_type") == "ValueError" and item["passed"] is False
+                  for item in empty_aggregate["tests"]))
+    check("aggregate_failures_and_top_level_checks_have_exact_owners",
+          empty_aggregate["record_type"] == "loop_engine_self_test/v2"
+          and all(str(item.get("owner_module", "")).startswith("loop_engine.")
+                  for item in empty_aggregate["tests"])
+          and all(item["owner_module"] == "loop_engine._self_test"
+                  for item in empty_aggregate["tests"][:2])
+          and any(item.get("error_type") == "ValueError"
+                  and item["owner_module"] == "loop_engine.architecture_map"
+                  for item in empty_aggregate["tests"]))
+    with patch.object(importlib, "import_module", return_value=SimpleNamespace(
+            self_test=lambda: {"tests": [{"test": "fixture", "passed": True,
+                                         "owner_module": "forged.owner"}]})), \
+            patch.object(importlib.util, "find_spec", return_value=None):
+        unavailable_aggregate = aggregate_tests()
+    unavailable_rows = [item for item in unavailable_aggregate["tests"] if item.get("not_tested")]
+    check("engine_detected_unavailable_adapters_keep_owner_reason_and_exact_denominator",
+          unavailable_aggregate["all_passed"] is True
+          and unavailable_aggregate["not_tested"] == len(unavailable_rows) > 0
+          and unavailable_aggregate["reported_checks"]
+              == unavailable_aggregate["total"] + len(unavailable_rows)
+          and all(item["passed"] is None and item["missing_optional_dependencies"]
+                  and item["detail"] and item["owner_module"].startswith("loop_engine.")
+                  for item in unavailable_rows)
+          and all(item["owner_module"] != "forged.owner"
+                  for item in unavailable_aggregate["tests"]))
+
+    import ast
+    import os
+    from . import _conformance_scan as scanner
+    registration = ast.parse('def self_test():\n    _FOLDED_SUBMODULE_TESTS = ["core.wrapper"]\n')
+    definitions = {
+        "_self_test.py": registration,
+        "architecture_map.py": ast.parse('def self_test(): return {"tests": []}'),
+        "core/nested/missing.py": ast.parse('def self_test(): return {"tests": []}'),
+        "core/never_run.py": ast.parse('def self_test(): return {"tests": []}'),
+        "core/wrapper.py": ast.parse(
+            'def self_test():\n    from .nested.delegate import self_test as checks\n    return checks()\n'),
+        "core/nested/delegate.py": ast.parse('def self_test(): return {"tests": []}'),
+        "core/invalid_facade.py": ast.parse(
+            'def self_test():\n    from ...bad import self_test as checks\n    return checks()\n'),
+    }
+    registration.body.append(ast.Expr(value=ast.Constant(value="core.never_run")))
+    root = os.path.abspath("conformance-memory-fixture")
+    with patch.object(scanner, "_py_files", return_value=list(definitions)), \
+            patch.object(scanner, "_source_tree", side_effect=lambda path:
+                         definitions[os.path.relpath(path, root).replace(os.sep, "/")]), \
+            patch.object(scanner.os.path, "exists", return_value=True):
+        collection = scanner.scan_uncollected_self_tests(root, {})
+    check("collection_checks_root_nested_and_quoted_names_but_follows_actual_suite_facades",
+          {item["file"] for item in collection} == {
+              "architecture_map.py", "core/nested/missing.py", "core/never_run.py",
+              "core/invalid_facade.py"})
+    duplicate_refused = False
+    try:
+        scanner._registered_test_modules(ast.parse(
+            '_FOLDED_SUBMODULE_TESTS = ["core.one", "core.one"]'))
+    except ValueError:
+        duplicate_refused = True
+    check("suite_registration_refuses_duplicate_module_invocation", duplicate_refused)
+    import_cases = (
+        ("core/example.py", "from ..code_nodes.solution_records import SolutionCandidate", 1),
+        ("core/example.py", "import loop_engine.code_nodes.solution_records as records", 1),
+        ("core/example.py", "from loop_engine import code_nodes", 1),
+        ("core/nested/example.py", "from ...code_nodes import solution_records", 1),
+        ("core/example.py", "from ..loop import loop_contract", 0),
+    )
+    directions = []
+    for relative, source, expected in import_cases:
+        with patch.object(scanner, "_py_files", return_value=[relative]), \
+                patch.object(scanner, "_source_tree", return_value=ast.parse(source)):
+            findings = scanner.scan_dependency_direction(root, {
+                "dependency_direction_ratchet": {"core -> code_nodes": {}}})
+        directions.append(len(findings) == expected)
+    check("dependency_ratchet_resolves_absolute_alias_and_nested_relative_imports", all(directions))
 
     # Recursive loops: parent → spawned → nested_spawned_loop return and integrate.
     def spawning(loop, step, context):

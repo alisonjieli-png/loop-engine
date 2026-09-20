@@ -68,8 +68,11 @@ class TenantRecord:
     def from_dict(cls, value: dict) -> "TenantRecord":
         if value.get("record_type") != TENANT_RECORD_TYPE:
             raise ServiceError("not a service tenant record")
+        endpoints = value.get("endpoints", ENDPOINTS)
+        if not isinstance(endpoints, (list, tuple)):
+            raise ServiceError("endpoints must be a list or tuple, including an explicit empty set")
         return cls(str(value["tenant_id"]), str(value["key_digest"]), str(value["namespace"]),
-                   tuple(value.get("endpoints") or ENDPOINTS))
+                   tuple(endpoints))
 
 
 def new_tenant(tenant_id: str, namespace: str, endpoints: tuple[str, ...] = ENDPOINTS) -> tuple[TenantRecord, str]:
@@ -275,6 +278,21 @@ def self_test() -> dict:
           and TenantRecord.from_dict(tenant.to_dict()) == tenant
           and refuses(lambda: TenantRecord("t", "short", "ns"))
           and refuses(lambda: TenantRecord("t", "0" * 64, "ns", ("oracle",))))
+    denied = TenantRecord("denied", key_digest("denied-fixture-key"), "tenant:denied", ())
+    restored = TenantRecord.from_dict(denied.to_dict())
+    denied_application = ServiceApplication((restored,))
+    omitted = tenant.to_dict()
+    omitted.pop("endpoints")
+    check("tenant_roundtrip_preserves_empty_endpoint_permissions_without_defaulting_them",
+          restored.endpoints == ()
+          and all(denied_application.handle("POST", "/v1/" + endpoint,
+                                           "denied-fixture-key", b"{}")[0] == 403
+                  for endpoint in ENDPOINTS)
+          and TenantRecord.from_dict(omitted).endpoints == ENDPOINTS)
+    check("serialized_endpoint_permissions_refuse_null_strings_and_unknown_values",
+          all(refuses(lambda value=value: TenantRecord.from_dict(
+              {**tenant.to_dict(), "endpoints": value}))
+              for value in (None, "health", {}, ["unknown"])))
     ticks = iter(range(100))
 
     def echo_conform(tenant, payload, ledger, clock):

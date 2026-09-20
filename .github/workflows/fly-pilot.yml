@@ -1,0 +1,164 @@
+name: Baltor Fly pilot
+
+# No push or pull-request deployment. The pilot environment defaults to off.
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Read-only access check, or an explicitly enabled deployment
+        type: choice
+        options: [verify_access, deploy]
+        default: verify_access
+      app_confirmation:
+        description: For deployment, repeat the approved FLY_APP name
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: baltor-fly-pilot
+  cancel-in-progress: false
+
+jobs:
+  pilot:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: pilot
+    timeout-minutes: 30
+    env:
+      OPERATION: ${{ inputs.operation }}
+      APP_CONFIRMATION: ${{ inputs.app_confirmation }}
+      FLY_ORG: ${{ vars.FLY_ORG }}
+      FLY_APP: ${{ vars.FLY_APP }}
+      FLY_PRIMARY_REGION: ${{ vars.FLY_PRIMARY_REGION }}
+      FLY_DEPLOY_ENABLED: ${{ vars.FLY_DEPLOY_ENABLED }}
+      FLY_SERVICE_CONFIGURED: ${{ vars.FLY_SERVICE_CONFIGURED }}
+      FLY_APPROVED_MONTHLY_USD: ${{ vars.FLY_APPROVED_MONTHLY_USD }}
+      FLY_DEPLOYMENT_APPROVAL_REF: ${{ vars.FLY_DEPLOYMENT_APPROVAL_REF }}
+
+    steps:
+      - name: Require explicit deployment settings
+        id: authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "${GITHUB_REF}" == refs/heads/main ]] || exit 1
+          [[ "${FLY_ORG}" =~ ^[a-z0-9][a-z0-9-]{0,62}$ ]] || exit 1
+          case "${OPERATION}" in
+            verify_access) exit 0 ;;
+            deploy) ;;
+            *) exit 1 ;;
+          esac
+          [[ "${FLY_DEPLOY_ENABLED}" == true ]] || { echo "Pilot deployment is disabled."; exit 1; }
+          [[ "${FLY_SERVICE_CONFIGURED}" == true ]] || { echo "Host setup and restore qualification are missing."; exit 1; }
+          [[ "${FLY_APP}" =~ ^[a-z0-9][a-z0-9-]{0,62}$ ]] || exit 1
+          [[ "${FLY_PRIMARY_REGION}" =~ ^[a-z]{3}$ ]] || exit 1
+          [[ "${APP_CONFIRMATION}" == "${FLY_APP}" ]] || exit 1
+          [[ "${FLY_APPROVED_MONTHLY_USD}" =~ ^[1-9][0-9]*(\.[0-9]{1,2})?$ ]] || exit 1
+          [[ "${FLY_DEPLOYMENT_APPROVAL_REF}" =~ ^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,199}$ ]] || exit 1
+          echo "Declared allowance recorded. This is not a provider-enforced billing cap."
+
+      - name: Require successful checks for this exact main revision
+        if: inputs.operation == 'deploy'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          [[ "${current}" == "${GITHUB_SHA}" ]] || exit 1
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/runs?branch=main&head_sha=${GITHUB_SHA}&status=success&per_page=100" \
+            | jq -e --arg sha "${GITHUB_SHA}" --arg repo "${GITHUB_REPOSITORY}" \
+              'any(.workflow_runs[]; .head_sha == $sha and .head_branch == "main" and .conclusion == "success" and .head_repository.full_name == $repo and (.event == "push" or .event == "workflow_dispatch"))' >/dev/null
+
+      - name: Check out the approved source
+        if: inputs.operation == 'deploy'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Install the checked Fly command-line release
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 700 "${RUNNER_TEMP}/fly-bin"
+          curl --fail --silent --show-error --location --proto '=https' --tlsv1.2 \
+            https://github.com/superfly/flyctl/releases/download/v0.4.104/flyctl_0.4.104_Linux_x86_64.tar.gz \
+            --output "${RUNNER_TEMP}/fly-bin/flyctl.tar.gz"
+          printf '%s  %s\n' 4023d2a4f5e76198197f80bde74271184b200b9034bb16d799acba373714bfbc "${RUNNER_TEMP}/fly-bin/flyctl.tar.gz" | sha256sum --check --status
+          tar -xzf "${RUNNER_TEMP}/fly-bin/flyctl.tar.gz" -C "${RUNNER_TEMP}/fly-bin" flyctl
+          echo "${RUNNER_TEMP}/fly-bin" >> "${GITHUB_PATH}"
+
+      - name: Verify access without creating resources
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          flyctl orgs list --json | jq -e --arg org "${FLY_ORG}" 'has($org)' >/dev/null
+          flyctl apps list --org "${FLY_ORG}" --quiet
+
+      - name: Require an existing single-Machine storage target
+        if: inputs.operation == 'deploy'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          flyctl apps list --org "${FLY_ORG}" --quiet | grep -Fx -- "${FLY_APP}" >/dev/null
+          flyctl machine list --app "${FLY_APP}" --json | jq -e 'type == "array" and length <= 1' >/dev/null
+          flyctl volumes list --app "${FLY_APP}" --json \
+            | jq -e --arg region "${FLY_PRIMARY_REGION}" \
+              'type == "array" and length == 1 and .[0].name == "loop_engine_service" and .[0].region == $region and .[0].state == "created"' >/dev/null
+          flyctl config validate --app "${FLY_APP}" --config fly.toml --strict
+
+      - name: Build and test the service image without provider access
+        if: inputs.operation == 'deploy'
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="loop-engine-service:${GITHUB_SHA}"
+          docker build --file Dockerfile.service --tag "${image}" .
+          python3 tools/check_fly_service_container.py --image "${image}" \
+            --output "${RUNNER_TEMP}/fly-service-check.json"
+
+      - name: Refuse a stale deployment after the build
+        if: inputs.operation == 'deploy'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')"
+          [[ "${current}" == "${GITHUB_SHA}" ]] || exit 1
+
+      - name: Publish and deploy the exact tested image
+        if: inputs.operation == 'deploy'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          DOCKER_CONFIG: ${{ runner.temp }}/fly-docker-auth
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -d -m 700 "${DOCKER_CONFIG}"
+          flyctl auth docker
+          image="registry.fly.io/${FLY_APP}:${GITHUB_SHA}"
+          docker tag "loop-engine-service:${GITHUB_SHA}" "${image}"
+          docker push "${image}"
+          exact="$(docker image inspect "${image}" --format '{{index .RepoDigests 0}}')"
+          [[ "${exact}" =~ ^registry\.fly\.io/${FLY_APP}@sha256:[0-9a-f]{64}$ ]] || exit 1
+          flyctl deploy --app "${FLY_APP}" --primary-region "${FLY_PRIMARY_REGION}" \
+            --config fly.toml --image "${exact}" --ha=false --strategy immediate \
+            --max-concurrent 1 --deploy-retries 0 --no-public-ips --wait-timeout 5m --yes
+          curl --fail --silent --show-error --max-time 20 \
+            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e '.result.healthy == true and .result.readiness_checked == false' >/dev/null
+          echo "Service liveness passed. This does not qualify customer onboarding or payments."
+
+      - name: Remove registry login from the temporary runner
+        if: always() && inputs.operation == 'deploy'
+        env:
+          DOCKER_CONFIG: ${{ runner.temp }}/fly-docker-auth
+        run: docker logout registry.fly.io

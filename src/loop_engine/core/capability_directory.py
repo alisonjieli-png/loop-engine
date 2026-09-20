@@ -14,10 +14,12 @@ inside ``loop.capability_loops``.
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass, field, asdict
+import math
+from dataclasses import dataclass, field, fields, asdict
 from typing import Callable, Sequence
 
-from .capability_invocation import CapabilityInvocationPolicy, capability_handshake_digest
+from .capability_invocation import (
+    CAPABILITY_PROTOCOL_VERSION, CapabilityInvocationPolicy, capability_handshake_digest)
 from .model_ontology import ModelProfile, TOOL_MODEL_USES, validate_tool_model_use
 
 SURFACE_KINDS = ("string_store", "code_node_registry", "static_component")
@@ -42,7 +44,7 @@ class CapabilityHandshake:
     embeddings: bool = False           # deterministic no-embedding search always works
     accepts: tuple = ()                # asset kinds it takes (string / code node)
     returns: tuple = ()
-    protocol_version: str = "1.0.0"
+    protocol_version: str = CAPABILITY_PROTOCOL_VERSION
     health: str = "ok"
     input_schema: str = "any"
     output_schema: str = "any"
@@ -68,6 +70,23 @@ class CapabilityHandshake:
     model_profile: "ModelProfile | None" = None
 
     def __post_init__(self):
+        for descriptor in fields(self):
+            if descriptor.type == str.__name__ and not isinstance(getattr(self, descriptor.name), str):
+                raise ValueError(f"{descriptor.name} must be text")
+        for name in ("surface", "protocol_version", "input_schema", "output_schema"):
+            value = getattr(self, name)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(f"{name} must be a non-empty text identity")
+        for name in ("operations", "query_fields", "ranking", "accepts", "returns", "effects", "data_egress"):
+            values = getattr(self, name)
+            if not isinstance(values, (tuple, list)) or any(
+                    not isinstance(value, str) or not value.strip() for value in values):
+                raise ValueError(f"{name} must be a sequence of non-empty text")
+            object.__setattr__(self, name, tuple(values))
+        if len(set(self.operations)) != len(self.operations):
+            raise ValueError("handshake operations must be distinct")
+        if type(self.embeddings) is not bool:
+            raise ValueError("embeddings must be an explicit Boolean")
         if self.surface_kind not in SURFACE_KINDS:
             raise ValueError(f"surface_kind must be one of {SURFACE_KINDS}")
         bad = [o for o in self.operations if o not in OPERATIONS]
@@ -80,8 +99,12 @@ class CapabilityHandshake:
             raise ValueError(f"cost_class must be one of {COST_CLASSES}")
         if any(effect not in EFFECTS for effect in self.effects):
             raise ValueError(f"effects must be drawn from {EFFECTS}")
-        if self.timeout_seconds < 0 or self.max_response_bytes < 0:
-            raise ValueError("timeout and response-size limits cannot be negative")
+        if "pure" in self.effects and len(self.effects) != 1:
+            raise ValueError("pure excludes every other effect")
+        if (type(self.timeout_seconds) not in (int, float) or not math.isfinite(self.timeout_seconds)
+                or self.timeout_seconds < 0 or type(self.max_response_bytes) is not int
+                or self.max_response_bytes < 0):
+            raise ValueError("timeout and response-size limits must be finite non-negative numbers of the declared type")
         validate_tool_model_use(self.model_use, self.model_profile)
 
     def supports(self, operation: str) -> bool:
@@ -103,11 +126,26 @@ class CallResult:
     fallback_layer: str = ""            # one of FALLBACK_LAYERS when a fallback ran
 
 
-@dataclass
+@dataclass(frozen=True)
 class Endpoint:
     operation: str
     fn: Callable
     fallback: "tuple | None" = None     # (surface, operation) if this one fails
+
+    def __post_init__(self):
+        if self.operation not in OPERATIONS or not callable(self.fn):
+            raise HandshakeError("an endpoint needs a registered operation and a callable")
+        if self.fallback is not None:
+            object.__setattr__(self, "fallback", _fallback_target(self.fallback))
+
+
+def _fallback_target(value):
+    """Validate a declared fallback target without selecting or invoking it."""
+    if (not isinstance(value, (tuple, list)) or len(value) != 2
+            or not isinstance(value[0], str) or not value[0].strip()
+            or value[1] not in OPERATIONS):
+        raise HandshakeError("a fallback needs a surface and a registered operation")
+    return tuple(value)
 
 
 @dataclass
@@ -202,14 +240,29 @@ class CapabilityDirectory:
                  endpoints: "Sequence[Endpoint]" = (), *,
                  default_fallback: "tuple | None" = None,
                  replace: bool = False) -> None:
+        if type(replace) is not bool or not isinstance(handshake, CapabilityHandshake):
+            raise HandshakeError("registration needs a typed handshake and Boolean replacement policy")
+        handshake.__post_init__()
+        endpoints = tuple(endpoints)
+        if any(not isinstance(endpoint, Endpoint) or endpoint.operation not in handshake.operations
+               for endpoint in endpoints):
+            raise HandshakeError("every endpoint must be typed and declared by the handshake")
+        operations = [endpoint.operation for endpoint in endpoints]
+        if len(operations) != len(set(operations)):
+            raise HandshakeError("a surface cannot register duplicate endpoint operations")
+        for endpoint in endpoints:
+            endpoint.__post_init__()
+        fallback = _fallback_target(default_fallback) if default_fallback is not None else None
         if handshake.surface in self._hs and not replace:
             raise HandshakeError(
                 f"surface {handshake.surface!r} is already registered")
+        self._ep = {key: value for key, value in self._ep.items() if key[0] != handshake.surface}
+        self._default_fallback.pop(handshake.surface, None)
         self._hs[handshake.surface] = handshake
         for ep in endpoints:
             self._ep[(handshake.surface, ep.operation)] = ep
-        if default_fallback:
-            self._default_fallback[handshake.surface] = default_fallback
+        if fallback is not None:
+            self._default_fallback[handshake.surface] = fallback
 
     def available(self) -> list:
         return list(self._hs.values())
@@ -270,17 +323,25 @@ class CapabilityDirectory:
     # --- negotiation: does a surface support what a task needs? -------------
 
     def negotiate(self, surface: str,
-                  required_ops: "Sequence[str]") -> dict:
+                  required_ops: "Sequence[str]", *,
+                  policy: CapabilityInvocationPolicy | None = None) -> dict:
         """Check a surface supports the required operations; name the fallback for
         any it does not — the practitioner negotiates before it commits."""
         h = self.handshake(surface)
+        policy = CapabilityInvocationPolicy() if policy is None else policy
+        if type(policy) is not CapabilityInvocationPolicy:
+            raise HandshakeError("negotiation needs a typed invocation policy")
+        policy.__post_init__()
+        version_supported = h.protocol_version in policy.supported_protocol_versions
         missing = [o for o in required_ops if not h.supports(o)]
         fallbacks = {}
         for o in missing:
             fb = self._fallback_for(surface, o)
             if fb:
                 fallbacks[o] = fb
-        return {"surface": surface, "ok": not missing, "missing": missing,
+        return {"surface": surface, "ok": not missing and version_supported, "missing": missing,
+                "protocol_version": h.protocol_version, "version_supported": version_supported,
+                "supported_protocol_versions": list(policy.supported_protocol_versions),
                 "fallbacks": fallbacks}
 
     # --- standardized call, with declared fallback --------------------------
@@ -303,6 +364,7 @@ class CapabilityDirectory:
 
     def call(self, surface: str, operation: str, *, ledger=None,
              policy: CapabilityInvocationPolicy | None = None,
+             _visited: frozenset = frozenset(),
              **kwargs) -> CallResult:
         """Invoke a bound callable; optional policy pins identity and blocks fallback.
         Ledger events retain start, completion, failure, and fallback identity.
@@ -310,13 +372,13 @@ class CapabilityDirectory:
         operation cost record: the execution phase timed, the outcome failed
         when the call did not succeed and unknown otherwise, counts unknown."""
         if self.cost_ledger is None:
-            return self._call(surface, operation, ledger=ledger, policy=policy, **kwargs)
+            return self._call(surface, operation, ledger=ledger, policy=policy, _visited=_visited, **kwargs)
         from .operation_cost_capture import OperationCostCapture
         capture = OperationCostCapture(self.cost_ledger, f"{surface}.{operation}", surface,
                                        self.run_id or "unknown-run")
         capture.phase("execution")
         try:
-            result = self._call(surface, operation, ledger=ledger, policy=policy, **kwargs)
+            result = self._call(surface, operation, ledger=ledger, policy=policy, _visited=_visited, **kwargs)
         except Exception:
             capture.end("failed")
             raise
@@ -325,7 +387,11 @@ class CapabilityDirectory:
 
     def _call(self, surface: str, operation: str, *, ledger=None,
               policy: CapabilityInvocationPolicy | None = None,
+              _visited: frozenset = frozenset(),
               **kwargs) -> CallResult:
+        if (surface, operation) in _visited:
+            raise HandshakeError("capability fallback cycle refused before repeated execution")
+        visited = _visited | {(surface, operation)}
         if policy is not None and type(policy) is not CapabilityInvocationPolicy:
             raise TypeError("capability invocation policy must use its typed contract")
         policy = CapabilityInvocationPolicy() if policy is None else policy
@@ -339,12 +405,19 @@ class CapabilityDirectory:
                               reason="no such surface")
             raise HandshakeError(f"no surface {surface!r}")
         ep = self._ep.get((surface, operation))
+        handshake = self._hs[surface]
+        if ep is not None and not handshake.supports(operation):
+            raise HandshakeError("the registered handshake does not admit this endpoint")
         function = ep.fn if ep is not None else None
-        allow_fallback = policy.bind(self._hs[surface], function)
+        allow_fallback = policy.bind(handshake, function)
+        fallback_policy = CapabilityInvocationPolicy(
+            allow_fallback=allow_fallback,
+            supported_protocol_versions=policy.supported_protocol_versions)
         if ep is None:
             fb = self._fallback_for(surface, operation) if allow_fallback else None
             if fb:
-                r = self.call(fb[0], fb[1], ledger=ledger, **kwargs)
+                r = self.call(fb[0], fb[1], ledger=ledger, policy=fallback_policy,
+                              _visited=visited, **kwargs)
                 return CallResult(surface, operation, r.ok, r.value, True,
                                   f"unsupported → fallback {fb[0]}.{fb[1]}",
                                   self._fallback_layer(surface, operation,
@@ -376,7 +449,8 @@ class CapabilityDirectory:
         except Exception as e:
             fb = (ep.fallback or self._default_fallback.get(surface)) if allow_fallback else None
             if fb:
-                r = self.call(fb[0], fb[1], ledger=ledger, **kwargs)
+                r = self.call(fb[0], fb[1], ledger=ledger, policy=fallback_policy,
+                              _visited=visited, **kwargs)
                 return CallResult(surface, operation, r.ok, r.value, True,
                                   f"error → fallback {fb[0]}.{fb[1]}: {e}",
                                   self._fallback_layer(surface, operation,
@@ -404,7 +478,7 @@ class CapabilityDirectory:
                 modes.update(h.ranking)
                 modes.update(("exact_id", "metadata"))
         sid = "snap." + hashlib.sha256(
-            "|".join(sorted(h.surface + h.protocol_version for h in avail))
+            "|".join(sorted(capability_handshake_digest(h) for h in self._hs.values()))
             .encode()).hexdigest()[:10]
         by = lambda k: tuple(h.surface for h in avail if h.surface_kind == k)
         snap = CapabilitySnapshot(
@@ -545,24 +619,23 @@ class SurfaceRegistration:
 
 
 def default_directory(*, store=None,
-                      llm_invoke: "Callable | None" = None,
                       surfaces: "Sequence[SurfaceRegistration]" = ()) -> CapabilityDirectory:
     """A directory of the standard surfaces the practitioner has: the search DAG,
     the string bank, the contract + logic code-node registries, the LLM-call
-    pipeline, and the model gateway.  ``store`` wires real search; ``llm_invoke``
-    is the string-rail fallback (a stub by default — no real model call here).
+    pipeline declaration, and the model gateway. ``store`` wires real search.
+    Actual model execution uses its governed model-call boundary, never an
+    arbitrary callback registered as a pure operation by this constructor.
     ``surfaces`` adds typed registrations that code intelligence packages own."""
     d = CapabilityDirectory()
 
     def _llm(**kw):
-        return (llm_invoke(**kw) if llm_invoke
-                else {"asked_model": True,
-                      "note": "would call the LLM-call pipeline (string rail)"})
+        return {"ok": False, "error_code": "model_executor_unavailable",
+                "asked_model": False}
 
     # the LLM-call pipeline — the ultimate string-rail fallback.
     d.register(CapabilityHandshake(
         "llm_pipeline", "static_component",
-        "the LLM-call pipeline: ReasoningRequest → prompt assembly → invocation",
+        "model execution is unavailable here; use the governed model-call boundary",
         operations=("invoke",), accepts=("string",), returns=("string",)),
         [Endpoint("invoke", _llm)])
 

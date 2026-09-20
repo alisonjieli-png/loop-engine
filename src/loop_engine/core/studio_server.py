@@ -681,12 +681,15 @@ def self_test() -> dict:
             stream.write("ok")
         from .run_history import bind_product_outcome
         bind_product_outcome(_RUNS, "studio-self-test-fixture", {
-            "record_type": "solve_outcome/v3",
+            "record_type": "solve_outcome/v6",
             "run_id": "studio-self-test-fixture",
             "terminal_code": "COMPLETED_VERIFIED",
             "status": "COMPLETED_VERIFIED", "solved": True,
             "summary": "Verified Studio fixture.", "failure_code": "",
             "verification": {"passed": True},
+            "questions": [], "stage_vectors": [], "action_vectors": [],
+            "model_calls": 0, "model_call_accounting_complete": True,
+            "model_calls_known_subtotal": 0,
             "artifacts": [{"path": fixture_artifact,
                            "media_type": "text/plain", "byte_count": 2,
                            "digest": hashlib.sha256(b"ok").hexdigest(),

@@ -307,11 +307,14 @@ def self_test() -> dict:
     with tempfile.TemporaryDirectory() as saved_root:
         ch.save(saved_root)
         bind_product_outcome(saved_root, "playback-saved", {
-            "record_type": "solve_outcome/v4", "run_id": "playback-saved",
+            "record_type": "solve_outcome/v6", "run_id": "playback-saved",
             "terminal_code": "COMPLETED_VERIFIED",
             "status": "COMPLETED_VERIFIED", "solved": True,
             "summary": "Playback product.", "failure_code": "",
             "verification": {"passed": True},
+            "stage_vectors": [], "action_vectors": [],
+            "model_calls": None, "model_call_accounting_complete": False,
+            "model_calls_known_subtotal": 1,
             "artifacts": [{"path": "/tmp/result.txt"}],
             "workspace": "/tmp", "limitations": [], "questions": [{
                 "record_type": "material_question/v1",

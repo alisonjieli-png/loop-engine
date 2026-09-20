@@ -46,10 +46,16 @@ SOURCE_KINDS = (
 CODE_ASSET_LIFECYCLE = (
     "draft", "candidate", "validated", "registered", "deprecated",
     "quarantined", "rejected", "superseded", "retired")
+QUALIFICATION_VERSION = "code_asset_qualification/v2"
+SPEC_RECORD_TYPE = "code_asset_spec/v2"
 
 
 class CodeAssetAdmissionError(ValueError):
     """An exact Code Intelligence admission invariant failed."""
+
+    def __init__(self, message: str, *, code: str = "code_asset_admission_refused"):
+        super().__init__(message)
+        self.code = code
 
 
 def _canonical(value: object) -> str:
@@ -185,8 +191,12 @@ class CodeAssetSpec:
     lifecycle: str = "candidate"
     admission_ref: str = ""
     metadata: dict = field(default_factory=dict)
+    qualification_version: str = QUALIFICATION_VERSION
 
     def __post_init__(self):
+        if self.qualification_version != QUALIFICATION_VERSION:
+            raise CodeAssetAdmissionError("unsupported Code asset qualification version; independent requalification is required",
+                                          code="requalification_required")
         if self.asset_kind not in CODE_ASSET_KINDS:
             raise ValueError(f"asset_kind must be one of {CODE_ASSET_KINDS}")
         if self.source_kind not in SOURCE_KINDS:
@@ -239,6 +249,7 @@ class CodeAssetSpec:
                 "lifecycle": self.lifecycle,
                 "admission_ref": self.admission_ref,
                 "metadata": dict(self.metadata)}
+        body["qualification_version"] = self.qualification_version
         return hashlib.sha256(
             json.dumps(body, sort_keys=True).encode()).hexdigest()
 
@@ -260,7 +271,7 @@ class CodeAssetSpec:
     @property
     def qualification_digest(self) -> str:
         """Stable executable identity unaffected by lifecycle transitions."""
-        return _sha256({
+        body = {
             "asset_id": self.asset_id,
             "version": self.version,
             "body_digest": self.body_ref.digest,
@@ -270,11 +281,14 @@ class CodeAssetSpec:
             "contract_digest": self.contract_digest,
             "effect_digest": self.effect_digest,
             "load_strategy": self.load_strategy,
-        })
+        }
+        body["qualification_version"] = self.qualification_version
+        body["data_refs"] = [_reference_dict(ref) for ref in self.data_refs]
+        return _sha256(body)
 
     def to_dict(self) -> dict:
-        return {
-            "record_type": "code_asset_spec/v1",
+        value = {
+            "record_type": SPEC_RECORD_TYPE,
             "asset_id": self.asset_id,
             "name": self.name,
             "description": self.description,
@@ -300,12 +314,19 @@ class CodeAssetSpec:
             "card_digest": self.card_digest,
             "qualification_digest": self.qualification_digest,
         }
+        value["qualification_version"] = self.qualification_version
+        return value
 
     @classmethod
     def from_dict(cls, value: Mapping[str, object]) -> "CodeAssetSpec":
         body = dict(value)
-        if body.pop("record_type", "") != "code_asset_spec/v1":
-            raise ValueError("CodeAssetSpec record type is unsupported")
+        record_type = body.pop("record_type", "")
+        if record_type != SPEC_RECORD_TYPE:
+            raise CodeAssetAdmissionError("unsupported Code asset record version",
+                                          code="unsupported_code_asset_version")
+        if body.get("qualification_version") != QUALIFICATION_VERSION:
+            raise CodeAssetAdmissionError("independent Code requalification is required",
+                                          code="requalification_required")
         expected_card = str(body.pop("card_digest", ""))
         expected_qualification = str(body.pop("qualification_digest", ""))
         payload = body.get("body_ref")
@@ -338,12 +359,12 @@ class CodeAssetAdmissionRecord:
     verifier_id: str
     evidence_refs: tuple[str, ...]
     evidence_digest: str
-    schema_version: str = "code_asset_admission/v1"
+    schema_version: str = "code_asset_admission/v2"
 
     def __post_init__(self) -> None:
-        if self.schema_version != "code_asset_admission/v1":
+        if self.schema_version != "code_asset_admission/v2":
             raise CodeAssetAdmissionError(
-                "unsupported Code asset admission schema")
+                "unsupported Code asset admission schema", code="unsupported_admission_version")
         for label, value in (
                 ("admission_id", self.admission_id),
                 ("asset_id", self.asset_id),
@@ -399,6 +420,9 @@ class CodeAssetAdmissionRecord:
     def from_dict(cls, value: Mapping[str, object]
                   ) -> "CodeAssetAdmissionRecord":
         body = dict(value)
+        if body.get("schema_version") != "code_asset_admission/v2":
+            raise CodeAssetAdmissionError("unsupported Code asset admission schema",
+                                          code="unsupported_admission_version")
         expected = str(body.pop("record_digest", ""))
         body["evidence_refs"] = tuple(body.get("evidence_refs") or ())
         record = cls(**body)
@@ -417,6 +441,19 @@ def admit_code_asset(
     if not isinstance(admission, CodeAssetAdmissionRecord):
         raise CodeAssetAdmissionError(
             "admission requires CodeAssetAdmissionRecord")
+    if (spec.qualification_version != QUALIFICATION_VERSION
+            or admission.schema_version != "code_asset_admission/v2"):
+        raise CodeAssetAdmissionError("stale Code qualification evidence requires independent requalification",
+                                      code="requalification_required")
+    if spec.body_ref.immutable is not True:
+        raise CodeAssetAdmissionError("Code admission requires an immutable source body")
+    for reference in spec.data_refs:
+        try:
+            data_ref = ExternalBodyRef(**_reference_dict(reference))
+        except (TypeError, ValueError) as exc:
+            raise CodeAssetAdmissionError("Code data references require exact typed body identities") from exc
+        if data_ref.immutable is not True:
+            raise CodeAssetAdmissionError("Code data references must be immutable")
     expected = (
         spec.asset_id, spec.version, spec.qualification_digest,
         spec.body_ref.digest, spec.dependency_digest, spec.contract_digest,
@@ -461,6 +498,7 @@ def code_asset_record(spec: CodeAssetSpec):
         "body_inline": False, "entrypoints": list(spec.entrypoints),
         "input_contract": spec.input_contract,
         "output_contract": spec.output_contract,
+        "supported_modes": list(spec.modes),
         "dependencies": list(spec.dependencies),
         "data_refs": [_reference_dict(ref) for ref in spec.data_refs],
         "file_count": spec.file_count, "line_count": spec.line_count,
@@ -498,7 +536,8 @@ def code_asset_capsule(spec: CodeAssetSpec):
         output_contract="code_asset_ref",
         effects=tuple(spec.effects),
         cost_class="metered" if "network" in spec.effects else "free",
-        maturity=spec.lifecycle, version=spec.version)
+        maturity=spec.lifecycle, version=spec.version,
+        qualification_digest=spec.qualification_digest)
     return IntelligenceItemPackage(
         item_id=spec.asset_id, layer="code_intelligence",
         handshake=handshake,
@@ -568,6 +607,7 @@ class CodeRefExecutionRequest:
     entrypoint: str = ""
     bind: object | None = None
     inputs: object | None = None
+    authority: object | None = None
 
 
 @dataclass(frozen=True)
@@ -578,14 +618,49 @@ class CodeRefExecutionContext:
     parent: object | None = None
 
 
+def _admitted_entrypoint(request: CodeRefExecutionRequest) -> str:
+    """Resolve active authority before any executable body is materialized."""
+    from ..loop.loop_capsule import IntelligenceItemRef
+    from .reusable_capability_flywheel import CapabilityAuthority
+    if not isinstance(request, CodeRefExecutionRequest):
+        raise CodeAssetAdmissionError("Code execution requires its typed request")
+    ref = request.ref
+    if (not isinstance(ref, IntelligenceItemRef)
+            or ref.handshake.layer != "code_intelligence"
+            or ref.handshake.maturity != "registered"):
+        raise CodeAssetAdmissionError("only an active registered Code reference may execute")
+    if not isinstance(request.authority, CapabilityAuthority):
+        raise CodeAssetAdmissionError("authoritative Code admission is unavailable")
+    try:
+        spec = request.authority.active_spec(ref.handshake.item_id, ref.handshake.version)
+    except CodeAssetAdmissionError:
+        raise
+    except (KeyError, TypeError, ValueError, RuntimeError) as exc:
+        raise CodeAssetAdmissionError("the exact active Code admission is unavailable") from exc
+    if "deterministic" not in spec.modes or set(spec.effects) - {"pure"}:
+        raise CodeAssetAdmissionError(
+            "the direct callable executor is unavailable for model-led or effectful assets")
+    if not isinstance(spec.license, str) or spec.license.strip().casefold() in ("", "unknown"):
+        raise CodeAssetAdmissionError("Code execution requires a known admitted license state")
+    expected = code_asset_capsule(spec).to_ref()
+    if (ref.item_ref != expected.item_ref or ref.handshake != expected.handshake
+            or ref.payload_ref != expected.payload_ref
+            or ref.payload_digest != expected.payload_digest or ref.digest != expected.digest):
+        raise CodeAssetAdmissionError("selected Code reference differs from its authoritative admission")
+    entrypoint = request.entrypoint or (spec.entrypoints[0] if len(spec.entrypoints) == 1 else "")
+    if not entrypoint or entrypoint not in spec.entrypoints:
+        raise CodeAssetAdmissionError("name one exact admitted Code entrypoint")
+    return entrypoint
+
+
 def execute_code_ref(
         request: CodeRefExecutionRequest,
         context: CodeRefExecutionContext | None = None):
-    """Materialize a selected Code ref, then execute it in a component loop."""
+    """Execute one exactly admitted pure callable in the installed deterministic runner."""
     from ..loop.loop_capsule import (
-        IntelligenceLoadContext, IntelligenceLoadRequest,
-        load_intelligence_ref)
+        IntelligenceLoadContext, IntelligenceLoadRequest, load_intelligence_ref)
     from ..loop.encapsulate import as_component_loop
+    entrypoint = _admitted_entrypoint(request)
     selected_context = context or CodeRefExecutionContext()
     loaded = load_intelligence_ref(
         IntelligenceLoadRequest(request.ref, request.resolver),
@@ -594,9 +669,9 @@ def execute_code_ref(
     payload = loaded["value"]
     operation = payload
     if not callable(operation) and request.bind is not None:
-        operation = request.bind(payload, request.entrypoint)
+        operation = request.bind(payload, entrypoint)
     elif not callable(operation) and isinstance(payload, dict):
-        operation = payload.get(request.entrypoint)
+        operation = payload.get(entrypoint)
     if not callable(operation):
         raise TypeError("the selected Code asset did not resolve the entrypoint")
     executed = as_component_loop(
@@ -629,131 +704,5 @@ def code_template_records() -> list:
 
 
 def self_test() -> dict:
-    from ..loop.recursive_loop import LoopLedger
-    million_line_ref = ExternalBodyRef(
-        "git+https://github.com/example/large-worker.git@0123456789abcdef",
-        digest="a" * 64, size_bytes=180_000_000,
-        media_type="application/vnd.git.repository")
-    spec = spec_from_template(
-        "worker_system", asset_id="code.large_worker", name="Large worker",
-        description=("Forty-file worker with preflight, execution, postflight, "
-                     "diagnostics, logging, and configuration subsystems."),
-        source_kind="github", body_ref=million_line_ref,
-        entrypoints=("worker.preflight", "worker.run", "worker.postflight",
-                     "worker.diagnostics", "worker.log", "worker.configure"),
-        input_contract="work_packet",
-        output_contract="work_result",
-        data_refs=(ExternalBodyRef(
-            "s3://example-bucket/worker-fixtures.parquet", "d" * 64,
-            size_bytes=9_000_000_000,
-            media_type="application/vnd.apache.parquet"),),
-        file_count=40, line_count=1_000_000,
-        license="Apache-2.0", lifecycle="registered",
-        admission_ref="promotion:test-worker-v1",
-        metadata={"subsystems": ["preflight", "execute", "postflight",
-                                 "diagnostics", "logging", "configuration"],
-                  "subsystem_entrypoints": {
-                      "preflight": ["worker.preflight"],
-                      "execute": ["worker.run"],
-                      "postflight": ["worker.postflight"],
-                      "diagnostics": ["worker.diagnostics"],
-                      "logging": ["worker.log"],
-                      "configuration": ["worker.configure"]}})
-    record = code_asset_record(spec)
-    capsule = code_asset_capsule(spec)
-    ref = capsule.to_ref(score=0.9, source="code_intelligence")
-    lazy_before = not capsule.materialised
-    ledger = LoopLedger()
-    from ..loop.loop_capsule import MaterializedPayload
-    cache = MaterializationCache(
-        lambda payload_ref, payload_digest: MaterializedPayload(
-            {"worker.run": lambda value: value + 1}, payload_digest,
-            local_ref="/cache/large-worker"))
-    resolver = lambda payload_ref: cache(payload_ref, million_line_ref.digest)
-    out = execute_code_ref(CodeRefExecutionRequest(
-        ref, resolver, entrypoint="worker.run", inputs=41),
-        CodeRefExecutionContext(ledger=ledger))
-    out_again = execute_code_ref(CodeRefExecutionRequest(
-        ref, resolver, entrypoint="worker.run", inputs=9),
-        CodeRefExecutionContext(ledger=ledger))
-    records = code_template_records()
-    subsystems = subsystem_records(spec)
-    bad_digest = False
-    try:
-        execute_code_ref(CodeRefExecutionRequest(
-            ref, lambda payload_ref: MaterializedPayload(
-                {"worker.run": lambda value: value}, "b" * 64),
-            entrypoint="worker.run", inputs=1))
-    except ValueError:
-        bad_digest = True
-    self_admission = False
-    try:
-        spec_from_template(
-            "pure_function", asset_id="code.unreviewed", name="Unreviewed",
-            description="unreviewed", source_kind="local_path",
-            body_ref=ExternalBodyRef("path:fn.py", "c" * 64),
-            lifecycle="registered")
-    except ValueError:
-        self_admission = True
-    admission = CodeAssetAdmissionRecord(
-        "admission-large-worker", spec.asset_id, spec.version,
-        spec.qualification_digest, spec.body_ref.digest,
-        spec.dependency_digest, spec.contract_digest, spec.effect_digest,
-        "producer-loop", "verifier-loop", ("suite:large-worker",),
-        _sha256({"suite": "large-worker", "passed": True}))
-    admission_candidate = replace(
-        spec, lifecycle="candidate", admission_ref="")
-    registered = admit_code_asset(admission_candidate, admission)
-    changed_proof_refused = False
-    try:
-        admit_code_asset(
-            admission_candidate,
-            replace(admission, body_digest="b" * 64))
-    except CodeAssetAdmissionError:
-        changed_proof_refused = True
-    tests = [
-        {"test": "large_system_search_card_contains_no_large_body",
-         "passed": record.body["body_inline"] is False
-         and record.body["file_count"] == 40
-         and record.body["line_count"] == 1_000_000
-         and "source" not in record.body.get("metadata", {})
-         and len(json.dumps(record.to_dict())) < 5000},
-        {"test": "large_code_is_lazy_then_executes_through_two_loops",
-         "passed": lazy_before and out["value"] == 42
-         and out_again["value"] == 10 and cache.calls == 1
-         and out["materialization"]["local_ref"] == "/cache/large-worker"
-         and out["materialization"]["model_calls"] == 0
-         and out["execution"]["model_calls"] == 0
-         and len(ledger.loops()) >= 2},
-        {"test": "code_templates_cover_packages_repositories_and_workers",
-         "passed": len(records) == len(CODE_INTELLIGENCE_TEMPLATES) >= 16
-         and {record.body["template_id"] for record in records}
-         >= {"pypi_package", "github_repository", "template_repository",
-             "large_framework", "worker_system", "llm_harness",
-             "command_line_tool", "core_plugin",
-             "agent_skill_bundle", "workflow", "notebook"}},
-        {"test": "large_framework_is_split_into_searchable_subsystem_cards",
-         "passed": len(subsystems) == 6
-         and all(record.body["body_inline"] is False for record in subsystems)
-         and all(record.body["entrypoints"] for record in subsystems)
-         and {record.body["facets"]["subcategory"] for record in subsystems}
-         >= {"preflight", "postflight", "diagnostics", "logging"}},
-        {"test": "payload_digest_and_admission_fail_closed",
-         "passed": bad_digest and self_admission},
-        {"test": "independent_admission_binds_exact_executable_identity",
-         "passed": registered.lifecycle == "registered"
-         and registered.admission_ref == admission.admission_id
-         and registered.body_ref.digest == spec.body_ref.digest
-         and registered.qualification_digest == spec.qualification_digest},
-        {"test": "changed_artifact_cannot_reuse_prior_admission",
-         "passed": changed_proof_refused},
-        {"test": "large_datasets_remain_separate_digest_bound_references",
-         "passed": record.body["data_refs"][0]["uri"].startswith("s3://")
-         and record.body["data_refs"][0]["digest"] == "d" * 64
-         and record.body["data_refs"][0]["size_bytes"] == 9_000_000_000
-         and "worker-fixtures" not in json.dumps(record.body.get(
-             "metadata", {}))},
-    ]
-    passed = sum(1 for test in tests if test["passed"])
-    return {"tests": tests, "passed": passed, "total": len(tests),
-            "all_passed": passed == len(tests)}
+    from .code_intelligence_asset_checks import run_checks
+    return run_checks()

@@ -1,0 +1,231 @@
+{
+  "record_type": "hosting_decision_snapshot/v1",
+  "checked_at": "2026-09-19",
+  "title": "Fly.io for compute. Supabase for data and identity.",
+  "recommendation": "Use the platform you already know: Fly.io for the Python website and service, Supabase for PostgreSQL, authentication and private file storage, and Stripe for subscriptions. Customers run their harnesses and supply their model endpoints. No model-hosting hardware is required.",
+  "status": "Fly release 7 serves the website at https://baltor.ai, https://www.baltor.ai and https://app.baltor.ai. Cloudflare's Free zone is active and Namecheap's nameserver change is confirmed. Valid certificates cover all three names. The service still uses SQLite and files on one persistent volume. Account integration code is deployed but public registration is disabled. The Resend sender exists with its exact DNS records; verification and real mail delivery remain separate checks. Supabase authentication-settings access is still missing. Customer signup, shared storage, billing and complete native task execution are not qualified. This is not a qualified paid release. GitHub automatic deployment and live customer charging remain disabled.",
+  "assumptions": "Small private pilot, light service traffic, one primary region and no hosted customer harnesses. Start with one service Machine. A second Machine is an option only after shared-state and multi-instance tests pass. Prices are USD planning examples, not a quote or spending approval.",
+  "stack": [
+    {
+      "part": "General compute and background work",
+      "choice": "Fly Machines",
+      "why": "Reuse your existing Fly.io experience. Run the Python service as a container; add a separate worker only when indexing or maintenance needs it.",
+      "initial": "One shared CPU, 2 GB RAM, one primary region, one replica. Measure memory and latency before sizing changes.",
+      "source": "https://fly.io/docs/machines/"
+    },
+    {
+      "part": "Metadata, permissions, usage and retrieval index",
+      "choice": "Supabase PostgreSQL",
+      "why": "One managed relational store with transactions, full-text search and pgvector. Keep authoritative metadata distinct from rebuildable search projections.",
+      "initial": "One development project. Use Pro for an active paid pilot after approval; begin with the included Micro compute profile and measure it.",
+      "source": "https://supabase.com/pricing"
+    },
+    {
+      "part": "Lexical, typo-tolerant and semantic search",
+      "choice": "PostgreSQL full-text search + pg_trgm + pgvector",
+      "why": "Combine lexical and dense candidates, apply permission and compatibility filters, and fuse ranks. Native PostgreSQL text ranking is not BM25.",
+      "initial": "One declared embedding space and a measured hybrid profile. Embedding generation, ranking, reindexing and permission checks are engineering work, not automatic Supabase features.",
+      "source": "https://supabase.com/docs/guides/ai/hybrid-search"
+    },
+    {
+      "part": "Sign-in and client authorization",
+      "choice": "Supabase Auth",
+      "why": "Use an identity provider rather than implementing password storage. The service still owns tenant bindings, subscription access and authorization.",
+      "initial": "One sign-in method. Protocol consent, token audience, scopes and revocation need integration tests with an actual supported client.",
+      "source": "https://supabase.com/docs/guides/auth/oauth-server/mcp-authentication"
+    },
+    {
+      "part": "Files and bundles",
+      "choice": "Supabase private Storage bucket",
+      "why": "Keep large Markdown files, packages and artifacts outside the metadata database. Return typed references first, then authorize a selected download.",
+      "initial": "One private bucket named loop-engine-intelligence-dev. No public bucket and no private customer uploads during setup.",
+      "source": "https://supabase.com/docs/guides/storage/buckets/fundamentals"
+    },
+    {
+      "part": "Website and Model Context Protocol endpoint",
+      "choice": "The same Python service on Fly.io",
+      "why": "The current website is packaged with the serving application. Keeping one origin avoids an unnecessary frontend deployment and authentication boundary.",
+      "initial": "Use the Fly-provided hostname for qualification, then app.baltor.ai if you approve it. A Vercel frontend can be added later if the product needs one.",
+      "source": "https://fly.io/docs/apps/"
+    },
+    {
+      "part": "Subscriptions",
+      "choice": "Stripe sandbox first",
+      "why": "Test checkout, webhooks, reconciliation and revocation before accepting real payments.",
+      "initial": "No live charges. A successful checkout return must not grant access by itself.",
+      "source": "https://docs.stripe.com/billing/subscriptions/webhooks"
+    }
+  ],
+  "costs": [
+    {
+      "item": "One Fly Machine: shared-cpu-1x, 2 GB, iad",
+      "monthly": "About $10.70",
+      "conditions": "Continuously running, regional price example. Additional Machines are billed separately.",
+      "source": "https://fly.io/docs/about/pricing/"
+    },
+    {
+      "item": "Supabase Pro with one Micro project",
+      "monthly": "From $25",
+      "conditions": "The plan includes $10 in compute credits, enough for one Micro project. Additional projects and larger compute add cost.",
+      "source": "https://supabase.com/pricing"
+    },
+    {
+      "item": "One-Machine base total",
+      "monthly": "About $35.70",
+      "conditions": "Compute example plus one Supabase Pro project. Not an all-inclusive bill.",
+      "source": "https://fly.io/docs/about/pricing/"
+    },
+    {
+      "item": "Two-Machine base total, after scaling qualification",
+      "monthly": "About $46.40",
+      "conditions": "Two $10.70 Machines plus $25 Supabase. This is not permission to replicate the current SQLite deployment.",
+      "source": "https://fly.io/docs/about/pricing/"
+    },
+    {
+      "item": "Selected pilot infrastructure allowance",
+      "monthly": "$50",
+      "conditions": "Owner-delegated limit, not a hard provider cap. Up to $10 setup separately; no model spending or live customer charges. The current Supabase project uses the quoted free profile, not Pro.",
+      "source": "https://supabase.com/docs/guides/platform/cost-control"
+    },
+    {
+      "item": "Resend Free for pilot authentication mail",
+      "monthly": "$0",
+      "conditions": "Pricing snapshot from September 19: 3,000 emails per month and at most 100 per day. Management authorization is prepared; the sender domain and real delivery remain unverified.",
+      "source": "https://resend.com/pricing"
+    },
+    {
+      "item": "Temporary Fly volume if the SQLite profile is used",
+      "monthly": "$0.15 per provisioned GB",
+      "conditions": "Volumes remain billable when the Machine stops. Snapshots have separate charges; a volume is not a shared database or a complete backup plan.",
+      "source": "https://fly.io/docs/about/pricing/"
+    }
+  ],
+  "alternatives": [
+    {
+      "choice": "Fly.io + Supabase",
+      "fit": "Preferred for you",
+      "tradeoff": "Fits your experience and keeps ordinary compute separate from managed data and identity. Engineering must own deployment, health checks, restore tests and sizing.",
+      "source": "https://fly.io/docs/apps/"
+    },
+    {
+      "choice": "Render + Supabase",
+      "fit": "Managed alternative",
+      "tradeoff": "A 1 CPU / 2 GB web service is $25/month. Workspace fees are separate: Hobby is $0 plus compute; Pro is $25 plus compute. I originally preferred its predictable fixed-size service, not because we measured it as superior to Fly.io.",
+      "source": "https://render.com/pricing"
+    },
+    {
+      "choice": "Railway + Supabase",
+      "fit": "Usage-based alternative",
+      "tradeoff": "Pro has a $20 monthly minimum including $20 of usage, then additional resource usage. Convenient container deployment; memory and sustained CPU make the bill variable.",
+      "source": "https://railway.com/pricing"
+    },
+    {
+      "choice": "Vercel",
+      "fit": "Optional frontend later",
+      "tradeoff": "Useful for a separate frontend, but not required by this packaged Python site. Its free Hobby plan is for personal, non-commercial use; do not assume it covers a paid product.",
+      "source": "https://vercel.com/docs/plans/hobby"
+    },
+    {
+      "choice": "Dedicated Elasticsearch or Qdrant service",
+      "fit": "Add only after a measured retrieval need",
+      "tradeoff": "Keep the backend replaceable. Add a dedicated index when relevance, feature requirements, corpus size or latency justify another service, not because every retrieval project needs one.",
+      "source": "https://supabase.com/docs/guides/ai/hybrid-search"
+    }
+  ],
+  "regions": "The selected pilot locations are Fly iad and Supabase us-east-1. Both resources exist. There is no regional failover deployment. Customer residency requirements still need review before admitting private production data; choosing a region alone does not establish compliance.",
+  "region_sources": [
+    "https://fly.io/docs/reference/regions/",
+    "https://supabase.com/docs/guides/platform/regions"
+  ],
+  "do_now": [
+    {
+      "title": "1. Open the live pilot",
+      "url": "https://baltor-pilot.fly.dev/",
+      "steps": [
+        "Fly account access and the single-Machine deployment are ready. Do not repeat account or organization setup.",
+        "Use /login for email-free pilot access and /admin for test-token management. The administrator key is in the workstation keyring; the embedded runbook has its copy command.",
+        "The selected limits remain iad, $50/month infrastructure and up to $10 setup, with no model spending or live charges."
+      ],
+      "send": "Only a problem you observe or a change to the selected limits.",
+      "wait": "Public registration and paid access remain separate release work."
+    },
+    {
+      "title": "2. Keep the prepared Supabase project",
+      "url": "https://supabase.com/dashboard/project/qfzxmjznlwiopgvfgtsw",
+      "steps": [
+        "The Baltor organization is connected and baltor-pilot is healthy in us-east-1. Do not create a second project.",
+        "The quoted project profile is free. Do not upgrade merely to authorize engineering access.",
+        "Database, storage and key access are prepared. Engineering owns schema, indexes, private-bucket creation and runtime binding. Authentication-settings management still needs a separate permitted grant."
+      ],
+      "send": "Approve only an exact missing authentication-settings grant when engineering requests it. The owner-confirmed Site URL and callback do not need repeated manual entry.",
+      "wait": "Creating a project does not migrate the current SQLite service or qualify customer sign-in."
+    },
+    {
+      "title": "3. Resend is connected; engineering completes the sender",
+      "url": "https://resend.com/domains",
+      "steps": [
+        "The account, sending credential and separate management authorization are prepared. The auth.baltor.ai sender exists and verification has started; do not repeat signup or sender creation.",
+        "Exact sender records are installed in Cloudflare. The intended sender is accounts@auth.baltor.ai, with authentication-message tracking disabled.",
+        "Engineering configures the permitted DNS and identity settings, then tests confirmation and recovery. A connection is not proof of delivery."
+      ],
+      "send": "Controlled test-recipient labels when testing is ready; no repeated key transfer.",
+      "wait": "Public email signup stays closed until delivery, recovery and abuse controls are verified."
+    },
+    {
+      "title": "4. Domain setup is engineering owned",
+      "url": "https://dash.cloudflare.com/",
+      "steps": [
+        "Cloudflare write authorization works. The baltor.ai Free zone is active with the selected website, certificate and sender records.",
+        "Namecheap accepted dana.ns.cloudflare.com and nile.ns.cloudflare.com; the registry publishes those servers. The owner confirms no existing mail or forwarding.",
+        "The app, root and www addresses have valid Fly certificates and explicit host permissions. Engineering verifies customer access and sender delivery separately."
+      ],
+      "send": "No manual domain action or repeated authorization is needed.",
+      "wait": "Do not recreate the zone or repeat the nameserver change. Engineering owns remaining integration and verification."
+    },
+    {
+      "title": "5. Keep Stripe in test mode",
+      "url": "https://dashboard.stripe.com/",
+      "steps": [
+        "The newly approved Baltor sandbox account acct_1UHZ9KCCxLfArYED is reachable with the runtime test credential. Do not use the older operator account or repeat key transfer.",
+        "Engineering owns test product, Price, customer, portal and webhook setup, plus replay, cancellation and reconciliation checks.",
+        "Live charging remains disabled. A completed checkout redirect cannot grant access without verified subscription state."
+      ],
+      "send": "Only business constraints or a later public-pricing decision.",
+      "wait": "Engineering qualifies checkout, webhook replay, reconciliation, cancellation and revocation before any live charge."
+    },
+    {
+      "title": "6. Exercise the administrator dashboard",
+      "url": "https://baltor-pilot.fly.dev/admin",
+      "steps": [
+        "Sign in using the owner administrator token, not a model-provider key.",
+        "Create a labeled test token with the smallest needed scope and a short expiry. The configured limit is 20 active tokens, 24 hours by default and seven days maximum.",
+        "Use pilot-owner for the diagnostic example or pilot-boundary for isolation tests. Tokens on one tenant share its material and usage; they do not create new private workspaces. Revoke test tokens after use."
+      ],
+      "send": "Any failed step or unclear message. Never include a token value in a screenshot or report.",
+      "wait": "This tests private pilot access, not public email registration or paid launch."
+    }
+  ],
+  "engineering": [
+    "Implement and test PostgreSQL against the existing catalogue contract, including atomic read-set writes, idempotency, revocation and uncertain-commit recovery. Do not create two competing authoritative tenant stores.",
+    "Build the retrieval projection with metadata filters, full-text search, typo handling and a versioned embedding space. PostgreSQL full-text ranking, pgvector and optional reranking must remain separate configurable stages.",
+    "Connect the private bucket to exact artifact references. Authorize each selected body before issuing a short-lived delivery grant; a signed link can remain usable until its expiry.",
+    "Complete website signup, subject-to-tenant binding, protocol consent, intended audience and scope validation. Authentication alone does not prove paid access.",
+    "Prepare a Fly deployment with an explicit Machine count, bounded resources, health checks, secrets, restart behavior and no automatic model-server launch. Keep one region initially.",
+    "Qualify backup restoration, rollback, secret rotation, failed payment and client reconnection. Model Context Protocol transport is stateless, but durable application state still needs the shared database before multi-instance serving."
+  ],
+  "wait_for": [
+    "Do not deploy the current worker Dockerfile as a website; its default command is doctor.",
+    "Do not start multiple copies of the current SQLite service on separate Fly volumes. Volumes are local, not automatically replicated shared storage.",
+    "Do not disable token audience checks or make the bucket public to get a client connected.",
+    "Do not create Fly Managed Postgres as well as Supabase Postgres for this same initial authority store.",
+    "Do not buy GPU compute, LangGraph hosting, several embedding services or a separate search cluster for the initial pilot.",
+    "Do not activate live Stripe charges or change domain records until the exact release and endpoint have been tested."
+  ],
+  "connection_note": "Supabase documents direct connections for persistent backends with IPv6, including Fly.io. Use a bounded application-side pool and verified TLS. If the actual route is IPv4-only, use the dashboard's session-pooler connection string. Do not guess a pooler hostname, and do not use transaction pooling for session features such as LISTEN/NOTIFY.",
+  "connection_source": "https://supabase.com/docs/guides/database/connecting-to-postgres",
+  "cost_note": "Fly volumes and some stopped-Machine storage continue billing. Supabase's Spend Cap covers selected usage categories, not every charge, compute upgrade or add-on. Configure small resource limits and inspect both providers' invoices; neither this allowance nor a browser checkbox is a hard spending cap.",
+  "cost_sources": [
+    "https://fly.io/docs/about/billing/",
+    "https://supabase.com/docs/guides/platform/cost-control"
+  ]
+}

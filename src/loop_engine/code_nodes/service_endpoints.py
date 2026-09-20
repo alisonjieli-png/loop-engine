@@ -15,14 +15,50 @@ is metered by its wall-clock hours.
 """
 from __future__ import annotations
 
+from dataclasses import dataclass
+from functools import partial
+from pathlib import Path, PureWindowsPath
+
 from ..core.evaluation_suite import EvaluationSuite, EvaluationSuiteError, evaluate_suite
 from ..core.service_api import METERING_UNITS, MeteringRecord, ServiceError
 
 SOLVER_KINDS = ("text_conformance", "recorded")
 
 
-def solver_from_spec(spec: dict, cell: dict | None = None):
+@dataclass(frozen=True)
+class ServiceCatalogScope:
+    """One tenant's catalog directory, configured by the server before requests arrive."""
+
+    tenant_id: str
+    root: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.tenant_id, str) or not self.tenant_id.strip():
+            raise ServiceError("a catalog scope needs a tenant identifier")
+        root = Path(self.root)
+        if not root.is_absolute() or not root.is_dir():
+            raise ServiceError("a server catalog root must be an existing absolute directory")
+        object.__setattr__(self, "root", str(root.resolve()))
+
+    def load(self, reference: str):
+        """Load a relative catalog reference through the existing confined reader."""
+        if not isinstance(reference, str) or not reference.strip():
+            raise ServiceError("a catalog reference must be a non-empty relative path")
+        path = Path(reference)
+        if path.is_absolute() or PureWindowsPath(reference).drive or "\\" in reference \
+                or ".." in path.parts:
+            raise ServiceError("a hosted catalog reference must be relative without traversal")
+        from .text_conformance import catalog_layer_from_file
+        try:
+            return catalog_layer_from_file(reference, self.root)
+        except OSError as exc:
+            raise ServiceError("the requested catalog is unavailable in the tenant scope") from exc
+
+
+def solver_from_spec(spec: dict, cell: dict | None = None, *, catalog_loader=None):
     """A solver callable and its identifier; a cell overrides policy and catalog values."""
+    if not isinstance(spec, dict):
+        raise EvaluationSuiteError("a solver specification must be a mapping")
     kind = str(spec.get("kind") or "")
     if kind not in SOLVER_KINDS:
         raise EvaluationSuiteError(f"solver kind must be one of {SOLVER_KINDS}")
@@ -48,7 +84,8 @@ def solver_from_spec(spec: dict, cell: dict | None = None):
     layers = [load_packaged_catalogs()]
     root = str(spec.get("catalog_root") or ".")
     for item in spec.get("catalog_files") or ():
-        layers.append(catalog_layer_from_file(str(item), root))
+        layers.append(catalog_loader(item) if catalog_loader is not None
+                      else catalog_layer_from_file(str(item), root))
     if catalog_overrides:
         layers.append(ExceptionCatalogLayer("cell", CATALOG_SOURCES[3], catalog_overrides))
     catalogs = merge_layers(layers)
@@ -85,10 +122,25 @@ def conform_handler(tenant, payload: dict, ledger, clock) -> dict:
             "metered": {"avoided_model_call": avoided}}
 
 
-def evaluate_handler(tenant, payload: dict, ledger, clock) -> dict:
+def evaluate_handler(tenant, payload: dict, ledger, clock, *, catalog_scopes=()) -> dict:
     """Score a suite with a solver specification; meter the wall-clock hours."""
     suite = EvaluationSuite.from_dict(payload.get("suite") or {})
-    solver, solver_id = solver_from_spec(payload.get("solver") or {})
+    specification = payload.get("solver") or {}
+    if not isinstance(specification, dict):
+        raise ServiceError("a solver specification must be a mapping")
+    if "catalog_root" in specification:
+        raise ServiceError("hosted catalog roots are configured by the server, not by requests")
+    references = specification.get("catalog_files", ())
+    if not isinstance(references, (list, tuple)):
+        raise ServiceError("catalog_files must be a list of relative catalog references")
+
+    def load_catalog(reference):
+        scope = next((item for item in catalog_scopes if item.tenant_id == tenant.tenant_id), None)
+        if scope is None:
+            raise ServiceError("this tenant has no server-configured catalog scope")
+        return scope.load(reference)
+
+    solver, solver_id = solver_from_spec(specification, catalog_loader=load_catalog)
     started = clock()
     report = evaluate_suite(suite, solver, solver_id=solver_id).to_dict()
     hours = max(0.0, clock() - started) / 3600.0
@@ -150,14 +202,22 @@ def memory_handlers(store=None, scopes=()) -> dict:
     return {"memory_write": write, "memory_read": read}
 
 
-def default_handlers(store=None, scopes=()) -> dict:
+def default_handlers(store=None, scopes=(), *, catalog_scopes=()) -> dict:
     """The handlers the service dispatches to, keyed by endpoint."""
-    return {"conform": conform_handler, "evaluate": evaluate_handler, **memory_handlers(store, scopes)}
+    configured = tuple(catalog_scopes)
+    if any(not isinstance(item, ServiceCatalogScope) for item in configured):
+        raise ServiceError("catalog scopes must be typed ServiceCatalogScope records")
+    if len({item.tenant_id for item in configured}) != len(configured):
+        raise ServiceError("each tenant may have only one configured catalog scope")
+    return {"conform": conform_handler,
+            "evaluate": partial(evaluate_handler, catalog_scopes=configured),
+            **memory_handlers(store, scopes)}
 
 
 def self_test() -> dict:
     """The real handlers run through the service surface, meter honestly, and refuse bad payloads."""
     import json
+    import tempfile
     from ..core.service_api import ServiceApplication, new_tenant
     results = []
 
@@ -229,6 +289,50 @@ def self_test() -> dict:
     check("solvers_are_built_from_specifications_and_cells_override_policy_and_catalog_values",
           recorded_id == "recorded@1" and cell_id == "text_conformance@0.7/0.6"
           and cell_solver(type("Case", (), {"input": "AA CAREERS", "case_id": "c"})()) == "AA Careers")
+    with tempfile.TemporaryDirectory(prefix="loop-service-catalog-") as folder:
+        root = Path(folder)
+        tenant_root = root / "acme"
+        tenant_root.mkdir()
+        (tenant_root / "catalog.json").write_text(
+            json.dumps({"preserved_tokens": ["ACME"]}), "utf-8")
+        (tenant_root / "x").write_text("{}", "utf-8")
+        (root / "outside.json").write_text("{}", "utf-8")
+        (tenant_root / "outside-link.json").symlink_to(root / "outside.json")
+        configured = ServiceCatalogScope("acme", str(tenant_root))
+        scoped = ServiceApplication((tenant, other), handlers=default_handlers(
+            catalog_scopes=(configured,)))
+        request_solver = {**solver, "catalog_files": ["catalog.json"]}
+        request_suite = {**suite, "cases": [
+            {"case_id": "a", "input": "ACME", "expected": "ACME"}]}
+
+        def evaluate_with(app, credential, specification):
+            return app.handle("POST", "/v1/evaluate", credential,
+                              json.dumps({"suite": request_suite, "solver": specification}).encode())
+
+        accepted = evaluate_with(scoped, key, request_solver)
+        local, _ = solver_from_spec({**request_solver, "catalog_root": str(tenant_root)})
+        check("hosted_catalogs_use_server_configured_tenant_roots_and_local_file_specs_still_work",
+              accepted[0] == 200 and accepted[1]["report"]["passed"] == 1
+              and local(type("Case", (), {"input": "ACME", "case_id": "a"})()) == "ACME")
+        blocked = [evaluate_with(scoped, key, {**request_solver, "catalog_files": [reference]})[0]
+                   for reference in (str(root / "outside.json"), "../outside.json",
+                                     "outside-link.json", "C:\\outside.json", "missing.json", 1)]
+        check("hosted_catalogs_refuse_outside_absolute_traversal_symlink_and_invalid_references",
+              blocked == [422] * 6)
+        unconfigured = ServiceApplication((tenant,), handlers=default_handlers())
+        check("catalog_requests_cannot_choose_a_root_or_borrow_another_tenants_scope",
+              evaluate_with(scoped, key, {**request_solver, "catalog_root": str(root)})[0] == 422
+              and evaluate_with(scoped, other_key, request_solver)[0] == 422
+              and evaluate_with(unconfigured, key, request_solver)[0] == 422
+              and evaluate_with(scoped, key, {**request_solver, "catalog_files": "x"})[0] == 422)
+        invalid_scopes = 0
+        for configuration in ((configured, configured), ("not a scope",)):
+            try:
+                default_handlers(catalog_scopes=configuration)
+            except ServiceError:
+                invalid_scopes += 1
+        check("catalog_scope_configuration_refuses_duplicate_tenant_grants_and_untyped_values",
+              invalid_scopes == 2)
     passed = sum(item["passed"] for item in results)
     return {"record_type": "service_endpoints_test/v1", "tests": results, "passed": passed,
             "total": len(results), "all_passed": passed == len(results)}

@@ -172,7 +172,7 @@ def run_checks() -> dict:
     # passes, so a campaign's ceiling is a configuration level; the outcome
     # names the policy that applied, declared or the repository default.
     from ..loop.supervision_policy import SupervisionPolicy
-    from .adaptive_practitioner_records import AdaptivePractitionerError
+    from .adaptive_practitioner_validation import AdaptivePractitionerError
     declared_policy = SupervisionPolicy(unaccepted_passes_before_stop=2,
                                         non_progress_passes_before_escalation=2)
     with tempfile.TemporaryDirectory() as root:

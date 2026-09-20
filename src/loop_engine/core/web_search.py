@@ -40,11 +40,12 @@ class WebSearchRequest:
     maximum_results: "int | None" = None
 
     def __post_init__(self) -> None:
-        if not self.query.strip():
+        if not isinstance(self.query, str) or not self.query.strip():
             raise WebSearchError("web search query must be non-empty")
-        if not self.purpose.strip():
+        if not isinstance(self.purpose, str) or not self.purpose.strip():
             raise WebSearchError("web search purpose must be non-empty")
-        if self.maximum_results is not None and self.maximum_results < 1:
+        if self.maximum_results is not None and (
+                type(self.maximum_results) is not int or self.maximum_results < 1):
             raise WebSearchError(
                 "maximum_results must be positive when provided")
 
@@ -58,15 +59,29 @@ class WebSearchAuthority:
     credential_env: str = "OLLAMA_API_KEY"
 
     def __post_init__(self) -> None:
-        if not self.actor_id.strip():
+        if not isinstance(self.actor_id, str) or not self.actor_id.strip():
             raise WebSearchError("web search authority needs actor_id")
-        if (not self.credential_env.isidentifier()
+        if type(self.allow_network_reads) is not bool:
+            raise WebSearchError("web search authority must use an explicit Boolean")
+        if (not isinstance(self.credential_env, str) or not self.credential_env.isidentifier()
                 or self.credential_env.upper() != self.credential_env):
             raise WebSearchError(
                 "web search credential_env must be an uppercase identifier")
 
 
 WebSearchTransport = Callable[[WebSearchRequest, str], dict]
+
+
+def web_search_configured(authority: WebSearchAuthority) -> bool:
+    """Inspect the declared credential reference without returning its value.
+
+    This metadata check reads no files, probes no provider, and grants no
+    effect. Configuration presence does not establish provider readiness.
+    """
+    if not isinstance(authority, WebSearchAuthority):
+        raise WebSearchError("configuration inspection needs typed search authority")
+    credential = os.environ.get(authority.credential_env)
+    return isinstance(credential, str) and bool(credential.strip())
 
 
 @dataclass(frozen=True)
@@ -271,6 +286,28 @@ def self_test() -> dict:
         "passed": strict,
         "detail": "unexpected response fields are rejected",
     })
+    from unittest.mock import patch
+    authority = WebSearchAuthority("fixture", False, "LOOP_ENGINE_SEARCH_FIXTURE_CREDENTIAL")
+    with patch.dict(os.environ, {authority.credential_env: "fixture-present"}):
+        present = web_search_configured(authority)
+    with patch.dict(os.environ, {authority.credential_env: "   "}):
+        absent = not web_search_configured(authority)
+    tests.append({"test": "configuration_presence_is_metadata_not_a_network_grant",
+                  "passed": present is True and absent and authority.allow_network_reads is False})
+    refused = 0
+    for action in (
+        lambda: WebSearchAuthority("fixture", "false"),
+        lambda: WebSearchAuthority("fixture", 1),
+        lambda: WebSearchRequest("query", "purpose", True),
+        lambda: WebSearchRequest("query", "purpose", 1.5),
+        lambda: web_search_configured({"credential_env": authority.credential_env}),
+    ):
+        try:
+            action()
+        except WebSearchError:
+            refused += 1
+    tests.append({"test": "ambiguous_search_authority_counts_and_configuration_refuse",
+                  "passed": refused == 5})
     passed = sum(item["passed"] for item in tests)
     return {
         "record_type": "web_search_test/v1",

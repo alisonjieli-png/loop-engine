@@ -24,7 +24,7 @@ python examples/28_containerized_worker/run.py
 ```
 
 The output lists, for the Dockerfile, whether there is one base image,
-whether it is digest-pinned (a warning until you pin it), whether the image
+whether it is digest-pinned (required by the check), whether the image
 runs as a non-root user, whether the entry point is `loop-engine`, and
 whether any secret-shaped text is present. For each manifest it lists the
 kind and version, the non-root security context, resource requests and

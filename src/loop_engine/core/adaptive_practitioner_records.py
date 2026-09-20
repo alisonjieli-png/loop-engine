@@ -15,8 +15,8 @@ from __future__ import annotations
 
 import hashlib
 from itertools import count
+from copy import deepcopy
 import json
-import os
 import time
 from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
@@ -37,11 +37,20 @@ from .adaptive_practitioner_prompting import (
     assemble_work_packet,
     serialize_work_packet,
 )
-from .adaptive_practitioner_validation import _short_strings, _short_text
+from .adaptive_practitioner_validation import AdaptivePractitionerError, _short_strings, _short_text
+from .practitioner_runtime.capabilities import (
+    ADAPTIVE_CAPABILITIES, CAPABILITY_DIRECTORY, OPERATOR_VERIFIER, WEB_SEARCH_CREDENTIALS)
+from .practitioner_runtime.provisioning import HarnessProvisioningConfiguration
+from .practitioner_runtime.observations import (
+    _stage_for, _stage_degraded, _stage_event, _observe_stage, _grade_stage,
+    _record_stage_execution, _observed_response_shape,
+    _record_stage_packet_exposure, _record_stage_assistance_decision,
+)
 from .suggested_output import SuggestedOutput
 from .context_artifacts import ContextArtifactManager
 from .choice import ParameterSpec
 from .model_capabilities import ModelOutputAllocation, ModelOutputCapability
+from .model_call_records import STARTED as MODEL_STEP_STARTED
 from .context_budget import ContextBudgetPolicy, bound_state_view
 from .context_pack_manifest import build_context_pack_manifest
 from .convergence import CACHE_ASSIST, ConvergenceMeasure, experiment_arm
@@ -85,191 +94,12 @@ from .stage_evidence_records import (
 from .stage_fingerprint import SemanticStageFingerprint
 from .stage_store import StageObservation, StageStore
 from .web_fetch import fetch_web_resource
-from .web_search import search_web
+from .web_search import WebSearchAuthority, search_web, web_search_configured
 
 if TYPE_CHECKING:
     from .action_fence import ActionFenceLedger
 
 ADAPTIVE_PRACTITIONER_RECORD_TYPE = "adaptive_practitioner_run/v1"
-ADAPTIVE_CAPABILITIES = (
-    {
-        "capability_ref": "core.source.inspect",
-        "purpose": (
-            "USE THIS FIRST whenever local sources were supplied: this runtime refuses to generate a project until supplied sources have been selected here. Inspect supplied local source manifests and selected text bodies "
-            "before deciding how to solve or repair the task."),
-        "arguments": {
-            "paths": "optional exact relative source paths",
-            "query": "optional lexical query for source selection",
-            "include_contents": "false for manifest only, true for bodies",
-        },
-        "required_permissions": ["source_read"],
-        "effects": ["reads_fs"],
-    },
-    {
-        "capability_ref": "core.workspace.read",
-        "purpose": (
-            "USE THIS WHEN a command failed, a test failed, or a verification rejected your work -- read back what you ACTUALLY wrote before repairing, because repairing a file you have not looked at is guessing. Read back a file this run produced, with interpreter line "
-            "numbers, so generated code can be repaired from what it "
-            "actually says rather than from memory of what was intended. "
-            "Reads only inside this run's workspace; supplied input files "
-            "stay with core.source.inspect."),
-        "arguments": {
-            "path": ("optional workspace-relative path; omit it to list "
-                     "every file this run has produced"),
-            "first_line": "optional 1-based line to start from",
-        },
-        "required_permissions": ["workspace_write"],
-        "effects": ["reads_fs"],
-    },
-    {
-        "capability_ref": "core.capability.call",
-        "purpose": (
-            "USE THIS WHEN the work matches a capability this engine already "
-            "ships -- conforming text columns, finding duplicate records, "
-            "recovering spoiled contact values, splitting address lines -- "
-            "because a registered capability runs exactly and costs no model "
-            "call. Name the surface and the operation you need; the reply "
-            "lists every surface this run has, so ask once with a surface you "
-            "saw there. A surface that writes files is not callable here."),
-        "arguments": {
-            "surface": "the registered surface name, for example text_conformance",
-            "operation": "one operation that surface declares, for example run",
-            "arguments": "optional mapping forwarded to the surface unchanged",
-        },
-        "required_permissions": [],
-        "effects": ["pure"],
-    },
-    {
-        "capability_ref": "core.web.search",
-        "purpose": (
-            "Search public web sources and return ranked candidates. Search "
-            "results are not evidence until a selected URL is fetched."),
-        "arguments": {
-            "query": "one search query",
-            "purpose": "why candidate sources are needed",
-            "maximum_results": "optional positive integer owner limit",
-        },
-        "required_permissions": ["network_read"],
-        "effects": ["network_read"],
-    },
-    {
-        "capability_ref": "core.web.get",
-        "purpose": "Read one public HTTPS resource and retain its exact body.",
-        "arguments": {
-            "url": "public HTTPS URL",
-            "purpose": "why this source is needed",
-            "maximum_bytes": "optional positive integer",
-        },
-        "required_permissions": ["network_read"],
-        "effects": ["network_read"],
-    },
-    {
-        "capability_ref": "core.generated_project",
-        "purpose": (
-            "Create files, execute Python commands in a confined Docker "
-            "workspace, run tests, and verify expected artifacts. Put every "
-            "source file you want in 'files' with its real content; do not "
-            "author one script that writes the others as embedded strings "
-            "(that nests source inside a string and corrupts quotes and "
-            "escapes). A path in 'files' must not also appear in "
-            "'expected_artifacts', which must name at least one file a "
-            "command actually WRITES TO DISK. `python3 -m unittest` writes to "
-            "stdout and creates NO file, so do not declare its output: add a "
-            "command that writes a real file (for example a runner that calls "
-            "your module and writes a small result or summary file) and "
-            "declare THAT path. Declaring a file nothing writes fails the "
-            "run even when the code is correct. An expected artifact may name an "
-            "engine-owned 'constraint' check -- 'schedule/v1' (task ordering, "
-            "durations, dependencies, cycles) or 'json_collection/v1' -- "
-            "which is the only verification here you did not author."),
-        "arguments": {
-            "constraint": "optional engine-owned check named per expected "
-                          "artifact: 'schedule/v1' or 'json_collection/v1'",
-        },
-        "required_permissions": ["workspace_write", "sandbox_command"],
-        "effects": ["writes_fs", "spawns_process"],
-    },
-    {
-        "capability_ref": "core.verify.differential",
-        "purpose": (
-            "USE THIS WHEN your own tests pass but you are not certain the code is right, or when you have produced more than one implementation -- it is the only check here you did not author. Verify a produced module WITHOUT any expected value you supply. "
-            "Prefer this over asserting hand-computed constants: your code is "
-            "more reliable than your arithmetic, so an assertion you compute "
-            "by hand is the weakest link in your own work. Two oracles. "
-            "'differential' runs two or more independently written "
-            "implementations of the same contract over the same inputs and "
-            "reports any input where they disagree; agreement is the "
-            "evidence and no constant is consulted. 'metamorphic' asserts "
-            "relations between calls that hold by construction, such as "
-            "f(\'PT60S\') == f(\'PT1M\'), without knowing either answer. "
-            "Each candidate runs in its own process. A verdict of "
-            "UNVERIFIED means the oracle could not decide and is never "
-            "success."),
-        "arguments": {
-            "oracle": "'differential' (default) or 'metamorphic'",
-            "implementations": "differential: two or more workspace-relative "
-                               "paths to modules implementing the same "
-                               "contract",
-            "implementation": "metamorphic: one workspace-relative module path",
-            "entry_point": "required; the function name to call in each module",
-            "arguments": "differential: list of inputs to pass, one per call",
-            "relations": "metamorphic: list of [left, right] input pairs whose "
-                         "results must be equal",
-        },
-        "required_permissions": ["workspace_write", "sandbox_command"],
-        "effects": ["reads_fs", "spawns_process"],
-    },
-    {
-        "capability_ref": "core.source.profile",
-        "purpose": (
-            "USE THIS BEFORE designing around data you have not measured: it reports shape, columns and sample rows without spending a model call on reading the file. Profile selected text sources deterministically: line counts, "
-            "column structure for CSV and JSON shapes, key fields, and "
-            "sample rows, without sending any content to a model."),
-        "arguments": {
-            "paths": "optional exact relative source paths; omit to profile "
-                     "every supplied source",
-            "maximum_sample_bytes": "optional positive integer owner limit",
-        },
-        "required_permissions": ["source_read"],
-        "effects": ["reads_fs"],
-    },
-    {
-        "capability_ref": "core.environment.describe",
-        "purpose": (
-            "USE THIS BEFORE assuming a package, tool or sandbox capability exists -- one call here is cheaper than a failed pass. Describe the current runtime environment deterministically: "
-            "available execution capabilities, sandbox availability, "
-            "configured providers without secrets, and task authority "
-            "grants. Effect-free discovery for orientation."),
-        "arguments": {},
-        "required_permissions": [],
-        "effects": [],
-    },
-    {
-        "capability_ref": "core.verifier.execute",
-        "purpose": (
-            "Run the operator-declared verifier script against the run's "
-            "current artifacts and return its score and output as an "
-            "observation for replanning. The score never accepts the task "
-            "by itself; acceptance stays with verification. Only the "
-            "explicit declared path ever runs."),
-        "arguments": {},
-        "required_permissions": ["workspace_write", "sandbox_command"],
-        "effects": ["spawns_process"],
-    },
-    {
-        "capability_ref": "core.intelligence.search",
-        "purpose": (
-            "Search the supplied Practitioner Context Intelligence portfolio "
-            "or the packaged context catalogue through existing retrieval. "
-            "Results are references and candidates, never authority."),
-        "arguments": {
-            "query": "one retrieval query",
-            "kinds": "optional list of record kinds to filter",
-        },
-        "required_permissions": [],
-        "effects": [],
-    },
-)
 NEXT_ACTION_KINDS = (
     "ASK_USER", "REQUEST_AUTHORITY", "RETRIEVE_INTELLIGENCE",
     "RECALL_MEMORY", "RESEARCH_SOURCE", "REUSE_CAPABILITY",
@@ -486,478 +316,6 @@ def _recovery_history_refs(services, failure: dict) -> tuple[str, ...]:
             refs.append(prefix + str(failure[name]))
     return tuple(dict.fromkeys(
         item for item in refs if isinstance(item, str) and item.strip()))
-
-
-def _stage_for(services, request) -> SemanticStageFingerprint | None:
-    """Name the cognitive situation of one model step.
-
-    Built from what the step already carries — its responsibility, the
-    orientation in force, and what remains open — so that naming a stage
-    costs nothing and cannot fail a run. A step whose situation cannot be
-    described is simply not named.
-    """
-    try:
-        orientation = None
-        if services.orientation_by_version:
-            orientation = services.orientation_by_version[
-                max(services.orientation_by_version)]
-        return SemanticStageFingerprint(
-            semantic_responsibility=request.objective[:200]
-            or request.step_id,
-            cognitive_phase=request.step_id,
-            ultimate_horizon=getattr(orientation, "ultimate_goal", "")[:200],
-            medium_horizon=getattr(orientation, "desired_state", "")[:200],
-            near_horizon=getattr(orientation, "immediate_goal", "")[:200],
-            micro_horizon=request.objective[:200],
-            unknowns=tuple(getattr(orientation, "unknowns", ()) or ())[:8],
-            knowns=tuple(getattr(orientation, "knowns", ()) or ())[:8],
-            consumer="practitioner",
-            task_ref=services.run_id,
-            branch_depth=len(services.project_attempts))
-    except Exception as exc:                            # noqa: BLE001
-        _stage_degraded(
-            services, "build_stage_fingerprint", exc,
-            procedure_step=str(getattr(request, "step_id", "")))
-        return None
-
-
-def _stage_degraded(services, operation: str, exc: BaseException,
-                    **fields) -> None:
-    """Keep stage instrumentation failure visible without failing the task."""
-    record = {
-        "record_type": "stage_evidence_degraded/v1",
-        "operation": operation,
-        "error_type": type(exc).__name__,
-        "error": str(exc)[:300],
-        **fields,
-    }
-    sink = getattr(services, "stage_evidence_degradations", None)
-    if isinstance(sink, list):
-        sink.append(record)
-    try:
-        services.diagnostic("stage_evidence_degraded", record)
-    except Exception:                                   # noqa: BLE001
-        try:
-            services.publish(
-                "practitioner.diagnostic",
-                diagnostic_code="stage_evidence_degraded",
-                diagnostic_detail=json.dumps(record, sort_keys=True))
-        except Exception:                               # noqa: BLE001
-            # The bounded in-memory record above remains readable in the
-            # product result even when both event sinks are unavailable.
-            return
-
-
-def _stage_event(services, custom_kind: str, observation, **fields) -> None:
-    """Append one exact stage fact to the owning Loop ledger."""
-    owner = current_kernel_owner()
-    if owner is None:
-        raise AdaptivePractitionerError(
-            f"{custom_kind} has no active Practitioner Loop owner")
-    owner.ledger.record(
-        loop_id=owner.loop_id, event="custom", custom_kind=custom_kind,
-        stage_occurrence_id=observation.occurrence_id,
-        stage_observation_ref=observation.observation_ref,
-        semantic_call_id=observation.semantic_call_id,
-        owner_loop_id=observation.owner_loop_id,
-        semantic_stage_signature=observation.digest,
-        pass_number=observation.pass_number,
-        **fields)
-
-
-def _observe_stage(services, stage) -> StageObservation | None:
-    """Record this stage, if there is one, and ask what the record advises.
-
-    Returns the observation so its outcome can be graded when this step's
-    own result is known, rather than inheriting whatever the run does.
-
-    The advice is written down and not followed. Below the evidence floor
-    the ladder declines to advise at all, and even above it the
-    recommendation is a hypothesis about a stage shape rather than a fact
-    about this stage. Recording it now is what makes checking it possible
-    later; acting on it now would make the check impossible, because the
-    record would only ever confirm what it already said.
-    """
-    if not hasattr(stage, "digest"):
-        # A situation that could not be described is simply not observed.
-        return None
-    try:
-        prior_status = services.prior_stages.to_dict()
-        if (prior_status.get("degraded")
-                and not services.prior_stage_degradation_reported):
-            services.prior_stage_degradation_reported = True
-            _stage_degraded(
-                services, "load_prior_stages",
-                RuntimeError(str(prior_status.get("last_storage_error")
-                                 or "stored stage evidence is degraded")),
-                write_failures=prior_status.get("write_failures", 0),
-                read_failures=prior_status.get("read_failures", 0),
-                unreadable_rows=prior_status.get("unreadable_rows", 0))
-        # One occurrence of this region, identified so that independent
-        # occurrences can fall on both sides while retries of this one
-        # cannot drift between them.
-        owner = current_kernel_owner()
-        if owner is None:
-            raise AdaptivePractitionerError(
-                "stage occurrence has no active Practitioner Loop owner")
-        material = json.dumps({
-            "run_id": services.run_id,
-            "owner_loop_id": owner.loop_id,
-            "pass_number": int(
-                getattr(services, "active_pass_number", 0) or 0),
-            "position": len(services.stage_store.observations),
-            "semantic_signature": stage.digest,
-        }, sort_keys=True, separators=(",", ":"))
-        occurrence = "stage-occurrence:sha256:" + hashlib.sha256(
-            material.encode("utf-8")).hexdigest()
-        semantic_call_id = "semantic-stage-" + hashlib.sha256(
-            (occurrence + "\0" + stage.digest).encode("utf-8")
-        ).hexdigest()[:48]
-        binding = services.request.stage_assistance
-        assigned_arm = experiment_arm(CACHE_ASSIST, stage.digest, occurrence)
-        priors = []
-        typed_candidates = ()
-        typed_materials = ()
-        retrieval_performed = False
-        if binding.mode == ADVISORY_MODE:
-            typed_candidates = tuple(
-                item for item in binding.candidates
-                if item.semantic_signature == stage.digest)
-            candidate_refs = {item.candidate_ref for item in typed_candidates}
-            typed_materials = tuple(
-                item for item in binding.materials
-                if item.candidate_ref in candidate_refs
-                and item.semantic_signature == stage.digest
-            )
-            retrieval_performed = True
-        elif binding.mode == SHADOW_MODE:
-            # What earlier runs did with stages of this shape. Shadow lookups
-            # are measured and never added to the prompt.
-            for match in services.prior_stages.lookup(
-                    stage, exclude_run=services.run_id):
-                if match.found_by == "shape":
-                    priors = list(match.observations)
-                    break
-            retrieval_performed = True
-        # Fresh performs no stage-prior query. Zero returned after a query is
-        # not the same evidence as proving no query occurred.
-        ladder = ladder_from_observations(priors)
-        prior_refs = (tuple(item.candidate_ref for item in typed_candidates)
-                      if typed_candidates else
-                      tuple(item.observation_ref for item in priors))
-        if binding.mode == SHADOW_MODE and ladder.observations:
-            services.stage_ladders[occurrence] = ladder.to_dict()
-        exposure_applied = bool(typed_candidates)
-        services.stage_arms[occurrence] = {
-            "experiment": CACHE_ASSIST,
-            "cognitive_phase": stage.cognitive_phase,
-            "assigned_arm": (
-                binding.mode if binding.mode != SHADOW_MODE else assigned_arm),
-            "exposure_applied": exposure_applied,
-            "retrieval_performed": retrieval_performed,
-            "retrieved_prior_refs": list(prior_refs),
-            "exposed_prior_refs": (
-                list(prior_refs) if exposure_applied else []),
-            "exposed_material_refs": [
-                item.material_ref for item in typed_materials
-            ],
-            "exposed_material_digests": [
-                item.content_digest for item in typed_materials
-            ],
-            "semantic_signature": stage.digest,
-            "experiment_ref": binding.experiment_ref,
-            "trial_ref": binding.trial_ref,
-            "source_state_digest": binding.source_state_digest,
-            "control_manifest_ref": (
-                binding.control_manifest.manifest_ref
-                if binding.control_manifest is not None else ""),
-            "control_manifest_digest": (
-                binding.control_manifest.content_digest
-                if binding.control_manifest is not None else ""),
-            "control_set_digest": (
-                binding.control_manifest.control_set_digest
-                if binding.control_manifest is not None else ""),
-            "control_evidence_class": (
-                binding.control_manifest.evidence_class
-                if binding.control_manifest is not None else "unrecorded"),
-        }
-        observation = services.stage_store.add(
-            stage, run_id=services.run_id,
-            occurrence_id=occurrence,
-            semantic_call_id=semantic_call_id,
-            owner_loop_id=owner.loop_id,
-            pass_number=int(getattr(services, "active_pass_number", 0) or 0))
-        _stage_event(
-            services, "stage_occurrence_opened", observation,
-            stage_fingerprint=stage.to_dict())
-        _stage_event(
-            services, "stage_retrieval_snapshot", observation,
-            experiment=CACHE_ASSIST,
-            assigned_arm=services.stage_arms[occurrence]["assigned_arm"],
-            experiment_ref=binding.experiment_ref,
-            trial_ref=binding.trial_ref,
-            source_state_digest=binding.source_state_digest,
-            control_manifest_ref=services.stage_arms[occurrence][
-                "control_manifest_ref"],
-            control_manifest_digest=services.stage_arms[occurrence][
-                "control_manifest_digest"],
-            control_set_digest=services.stage_arms[occurrence][
-                "control_set_digest"],
-            control_evidence_class=services.stage_arms[occurrence][
-                "control_evidence_class"],
-            retrieval_performed=retrieval_performed,
-            retrieved_prior_refs=prior_refs,
-            prior_not_proof=True)
-        return observation
-    except Exception as exc:                            # noqa: BLE001
-        _stage_degraded(
-            services, "open_stage_occurrence", exc,
-            semantic_signature=str(getattr(stage, "digest", "")))
-    return None
-
-
-def _grade_stage(services, observation, **signals):
-    """Record what this step's own result says about the stage.
-
-    Stage-local, and deliberately separate from the run's fate: whether this
-    step's answer satisfied its own contract is known here and now, and a
-    run that later fails for unrelated reasons does not make it untrue.
-
-    Swallows its own failures. Grading is instrumentation, and instrumentation
-    that can end a run changes the thing it is measuring.
-    """
-    if observation is None:
-        return None
-    try:
-        updated = services.stage_store.observe(observation, **signals)
-        services._graded_stage = updated
-        _stage_event(
-            services, "stage_local_outcome_observed", updated,
-            observed_signals=dict(signals),
-            outcome=updated.outcome.to_dict())
-        return updated
-    except Exception as exc:                            # noqa: BLE001
-        _stage_degraded(
-            services, "record_stage_outcome", exc,
-            stage_occurrence_id=str(
-                getattr(observation, "occurrence_id", "")),
-            observed_signal_names=sorted(signals))
-        return observation
-
-
-def _record_stage_execution(services, observation, results):
-    """Join the real gateway results and attempts to the exact stage."""
-    if observation is None:
-        return None
-    try:
-        rows = tuple(results or ())
-        foreign = sorted({
-            str(getattr(item, "semantic_call_id", "") or "")
-            for item in rows
-            if str(getattr(item, "semantic_call_id", "") or "")
-            != observation.semantic_call_id})
-        foreign_owners = sorted({
-            str(getattr(item, "owner_loop_id", "") or "")
-            for item in rows
-            if str(getattr(item, "owner_loop_id", "") or "")
-            != observation.owner_loop_id})
-        physical = tuple(
-            attempt for item in rows
-            for attempt in tuple(getattr(item, "attempts", ()) or ())
-            if str(getattr(attempt, "loop_id", "") or ""))
-        attempt_mismatch = any(
-            str(getattr(attempt, "semantic_call_id", "") or "")
-            != observation.semantic_call_id
-            or str(getattr(attempt, "owner_loop_id", "") or "")
-            != observation.owner_loop_id
-            for attempt in physical)
-        if foreign or foreign_owners or attempt_mismatch:
-            raise AdaptivePractitionerError(
-                "model execution identity differs from its stage occurrence")
-        updated = services.stage_store.record_execution(observation, rows)
-        services._graded_stage = updated
-        _stage_event(
-            services, "stage_model_execution_observed", updated,
-            gateway_calls=updated.gateway_calls,
-            physical_model_calls=updated.model_calls,
-            model_route=updated.model_route,
-            model_routes=updated.model_routes,
-            model_provider=updated.model_provider,
-            model_name=updated.model_name,
-            model_attempt_loop_ids=updated.model_attempt_loop_ids,
-            elapsed_seconds=updated.elapsed_seconds,
-            input_tokens=updated.input_tokens,
-            output_tokens=updated.output_tokens,
-            usage_complete=(updated.input_tokens is not None
-                            and updated.output_tokens is not None))
-        return updated
-    except Exception as exc:                            # noqa: BLE001
-        _stage_degraded(
-            services, "join_stage_model_execution", exc,
-            stage_occurrence_id=str(
-                getattr(observation, "occurrence_id", "")))
-        return observation
-
-
-def _observed_response_shape(value: object) -> str:
-    """Describe the returned topology, not the input stage shape."""
-    if isinstance(value, dict):
-        keys = ",".join(sorted(str(key) for key in value)[:32])
-        return f"record[{keys}]"
-    if isinstance(value, list):
-        return "typed_list"
-    if isinstance(value, tuple):
-        return "tuple"
-    if value is None:
-        return "none"
-    return type(value).__name__
-
-
-def _record_stage_packet_exposure(
-        services, observation, snapshot: dict, blocks, template_candidates,
-        *, packet_digest: str, gateway_result, format_attempt: int,
-        transport_attempt: int):
-    """Record exposure only after an exact physical provider attempt exists."""
-    if observation is None:
-        return None
-    try:
-        facts = services.stage_arms[observation.occurrence_id]
-        facts.pop("active_exposure", None)
-        exposure = physical_exposure(
-            observation, snapshot, packet_digest=packet_digest,
-            gateway_result=gateway_result, format_attempt=format_attempt,
-            transport_attempt=transport_attempt)
-        if exposure is None:
-            return None
-        _stage_event(
-            services, "stage_assistance_exposure", observation,
-            experiment=CACHE_ASSIST,
-            experiment_ref=facts.get("experiment_ref", ""),
-            trial_ref=facts.get("trial_ref", ""),
-            control_manifest_ref=facts.get("control_manifest_ref", ""),
-            control_manifest_digest=facts.get("control_manifest_digest", ""),
-            control_set_digest=facts.get("control_set_digest", ""),
-            control_evidence_class=facts.get("control_evidence_class", ""),
-            assigned_arm=facts.get("assigned_arm", ""),
-            exposure_applied=bool(facts.get("exposure_applied")),
-            retrieval_performed=bool(facts.get("retrieval_performed")),
-            retrieved_prior_refs=tuple(
-                facts.get("retrieved_prior_refs", ())),
-            exposed_prior_refs=tuple(facts.get("exposed_prior_refs", ())),
-            **exposure,
-            context_block_ids=tuple(item.block_id for item in blocks),
-            baseline_template_ids=tuple(
-                str(item.get("template_id") or "")
-                for item in template_candidates
-                if item.get("template_id")),
-            stage_prior_context_present=bool(
-                facts.get("exposed_material_refs")),
-            stage_prior_prompt_material_present=bool(
-                facts.get("exposed_material_refs")),
-            exposed_material_refs=tuple(
-                facts.get("exposed_material_refs", ())),
-            exposed_material_digests=tuple(
-                facts.get("exposed_material_digests", ())),
-            prior_not_proof=True)
-        facts["active_exposure"] = exposure
-        return exposure
-    except Exception as exc:                            # noqa: BLE001
-        _stage_degraded(
-            services, "record_stage_exposure", exc,
-            stage_occurrence_id=str(
-                getattr(observation, "occurrence_id", "")))
-        return None
-
-
-def _record_stage_assistance_decision(
-        services, observation, raw_decision: object, *,
-        admitted_response_digest: str, admission_loop_id: str,
-        semantic_payload_digest: str):
-    """Validate and record the model's use or rejection of exposed priors."""
-    if observation is None:
-        return
-    facts = services.stage_arms.get(observation.occurrence_id, {})
-    mode = services.request.stage_assistance.mode
-    if mode not in ASSISTANCE_MODES:
-        return None
-    if raw_decision is None:
-        try:
-            _stage_event(
-                services, "stage_assistance_decision_missing", observation,
-                experiment_ref=facts.get("experiment_ref", ""),
-                trial_ref=facts.get("trial_ref", ""), assigned_arm=mode,
-                reason="the active experiment requested a model decision")
-        except Exception as exc:                        # noqa: BLE001
-            _stage_degraded(
-                services, "record_missing_assistance_decision", exc,
-                stage_occurrence_id=observation.occurrence_id)
-        raise AdaptivePractitionerError(
-            "active stage assistance requires an exact model decision")
-    try:
-        exposure = facts.get("active_exposure")
-        validated = validate_decision(
-            raw_decision, mode=mode,
-            exposed_refs=facts.get("exposed_prior_refs", ()),
-            exposure=exposure)
-        disposition = validated["disposition"]
-        selected = validated["selected_prior_refs"]
-        reason = validated["reason"]
-        record = {
-            "record_type": "stage_assistance_decision_observed/v1",
-            "stage_occurrence_id": observation.occurrence_id,
-            "experiment_ref": facts.get("experiment_ref", ""),
-            "trial_ref": facts.get("trial_ref", ""),
-            "control_manifest_ref": facts.get("control_manifest_ref", ""),
-            "control_manifest_digest": facts.get(
-                "control_manifest_digest", ""),
-            "control_set_digest": facts.get("control_set_digest", ""),
-            "control_evidence_class": facts.get(
-                "control_evidence_class", ""),
-            "assigned_arm": mode,
-            "exposure_ref": exposure["exposure_ref"],
-            "packet_digest": exposure["packet_digest"],
-            "prompt_digest": exposure["prompt_digest"],
-            "prompt_assembly_id": exposure["prompt_assembly_id"],
-            "gateway_request_digest": exposure["gateway_request_digest"],
-            "provider_request_digests": list(
-                exposure["provider_request_digests"]),
-            "physical_attempt_loop_ids": list(
-                exposure["physical_attempt_loop_ids"]),
-            "admitted_response_digest": admitted_response_digest,
-            "admission_loop_id": admission_loop_id,
-            "semantic_payload_digest": semantic_payload_digest,
-            "disposition": disposition,
-            "selected_prior_refs": list(selected),
-            "reason": reason[:500],
-        }
-        services.stage_assistance_decisions.append(record)
-        _stage_event(
-            services, "stage_assistance_decision", observation,
-            **{key: value for key, value in record.items()
-               if key not in ("record_type", "stage_occurrence_id")})
-        return record
-    except Exception as exc:
-        try:
-            _stage_event(
-                services, "stage_assistance_decision_rejected", observation,
-                experiment_ref=facts.get("experiment_ref", ""),
-                trial_ref=facts.get("trial_ref", ""),
-                assigned_arm=mode,
-                error_type=type(exc).__name__, error=str(exc)[:300])
-        except Exception as event_exc:                  # noqa: BLE001
-            _stage_degraded(
-                services, "record_rejected_assistance_decision", event_exc,
-                stage_occurrence_id=observation.occurrence_id)
-        if isinstance(exc, AdaptivePractitionerError):
-            raise
-        if isinstance(exc, StageAssistanceRuntimeRecordError):
-            raise AdaptivePractitionerError(str(exc)) from exc
-        raise AdaptivePractitionerError(
-            f"stage assistance decision validation failed: {exc}") from exc
-
-
-class AdaptivePractitionerError(ValueError):
-    """The adaptive Practitioner could not satisfy a typed runtime contract."""
 
 
 # STAGE_ASSISTANCE_MODES is owned by the control manifest and re-exported here.
@@ -1440,8 +798,15 @@ class AdaptivePractitionerRequest:
     verifier_path: str = ""
     capture_recovery_learning: bool = False
     diagnose_unchanged_evidence: bool = False
+    harness_provisioning_digest: str = ""
 
     def __post_init__(self) -> None:
+        if (not isinstance(self.harness_provisioning_digest, str)
+                or (self.harness_provisioning_digest and (
+                    len(self.harness_provisioning_digest) != 64
+                    or any(character not in "0123456789abcdef"
+                           for character in self.harness_provisioning_digest)))):
+            raise AdaptivePractitionerError("harness provisioning needs an exact configuration digest")
         if type(self.capture_recovery_learning) is not bool:
             raise TypeError('recovery learning capture must be explicitly enabled or disabled')
         if type(self.diagnose_unchanged_evidence) is not bool:
@@ -1600,6 +965,7 @@ class AdaptivePractitionerRequest:
             "context_budget": asdict(self.context_budget),
             "prior_region_evidence": self.prior_region_evidence,
             "host_runtime_manifest": self.host_runtime_manifest,
+            "harness_provisioning_digest": self.harness_provisioning_digest,
         }
         if self.instruction_provenance is not None:
             value["instruction_provenance"] = self.instruction_provenance.to_dict()
@@ -1645,12 +1011,8 @@ class AdaptivePractitionerDependencies:
     #: record. It changes the order of the references a search returns and
     #: never changes which records are considered.
     reuse_evidence: object | None = field(default=None, repr=False, compare=False)
-    #: What a spawned node may be given before it starts. Without one, a spawned
-    #: node's folder is left exactly as it is today.
-    harness_catalogue: object | None = field(default=None, repr=False, compare=False)
-    #: The rules evaluated before a node is provisioned and rendered into the
-    #: refusals its instructions carry.
-    guardrails: object | None = field(default=None, repr=False, compare=False)
+    harness_provisioning: HarnessProvisioningConfiguration | None = field(
+        default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if self.host_runtime is not None:
@@ -1686,14 +1048,9 @@ class AdaptivePractitionerDependencies:
             raise AdaptivePractitionerError(
                 "intelligence_catalog must be a mapping of layer name to records, "
                 "or a callable that builds one")
-        if self.harness_catalogue is not None and not hasattr(
-                self.harness_catalogue, "items"):
-            raise AdaptivePractitionerError(
-                "harness_catalogue must be a catalogue of registered items")
-        if self.guardrails is not None and not callable(
-                getattr(self.guardrails, "applicable", None)):
-            raise AdaptivePractitionerError(
-                "guardrails must offer applicable(tags, point)")
+        if self.harness_provisioning is not None and not isinstance(
+                self.harness_provisioning, HarnessProvisioningConfiguration):
+            raise AdaptivePractitionerError("harness provisioning must use its immutable configuration")
         if self.reuse_evidence is not None and not isinstance(self.reuse_evidence, dict):
             raise AdaptivePractitionerError(
                 "reuse_evidence must be a mapping from record identity to evidence")
@@ -1947,14 +1304,9 @@ class AdaptiveRunServices:
     def available_capabilities(self) -> tuple[dict, ...]:
         """Return only capabilities usable under this run's current authority.
 
-        Availability is DERIVED from each entry's declared
-        ``required_permissions`` rather than restated in a per-ref chain.  The
-        chain this replaced named five refs and ended ``else False``, so every
-        capability added to the catalogue afterwards was silently dropped:
-        core.source.profile, core.environment.describe and
-        core.intelligence.search were each in the catalogue, dispatchable, and
-        never once offered to a model.  Deriving from the declared contract
-        removes that drift class instead of adding a sixth branch to it.
+        Required permissions and installed bindings are separate descriptor
+        fields. Returned descriptions are detached from the source catalog.
+        Discovery grants no effect or independent qualification.
         """
         granted = set()
         if (self.request.allow_source_materialization_to_model
@@ -1966,37 +1318,21 @@ class AdaptiveRunServices:
             granted.add("network_read")
         if self.request.allow_sandbox_commands:
             granted.add("sandbox_command")
+        installed = set()
+        if self.request.allow_network_reads and web_search_configured(
+                WebSearchAuthority(self.run_id, self.request.allow_network_reads)):
+            installed.add(WEB_SEARCH_CREDENTIALS)
+        if (self.request.allow_workspace_writes and self.request.allow_sandbox_commands
+                and bool(self.request.verifier_path.strip())):
+            installed.add(OPERATOR_VERIFIER)
+        if getattr(self.dependencies, "capability_directory", None) is not None:
+            installed.add(CAPABILITY_DIRECTORY)
         available = []
         for item in ADAPTIVE_CAPABILITIES:
-            ref = item["capability_ref"]
-            usable = (
-                bool(self.request.source_refs)
-                and self.request.allow_source_materialization_to_model
-                if ref in ("core.source.inspect", "core.source.profile") else
-                self.request.allow_network_reads
-                if ref == "core.web.get" else
-                self.request.allow_network_reads
-                and bool(os.environ.get("OLLAMA_API_KEY", "").strip())
-                if ref == "core.web.search" else
-                self.request.allow_workspace_writes
-                and self.request.allow_sandbox_commands
-                if ref == "core.generated_project" else
-                # The verifier runs only the explicit operator-declared
-                # path: no declaration, no capability. Its output is an
-                # observation for replanning, never acceptance.
-                self.request.allow_workspace_writes
-                and self.request.allow_sandbox_commands
-                and bool(self.request.verifier_path.strip())
-                if ref == "core.verifier.execute" else
-                # Available whenever the run may write a workspace, because
-                # a run that can produce a file must be able to read it back.
-                # Withholding this is what left a live run repairing code it
-                # could not see for twenty passes.
-                self.request.allow_workspace_writes
-                if ref == "core.workspace.read" else
-                ref in ("core.environment.describe", "core.intelligence.search"))
+            usable = (set(item["required_permissions"]) <= granted
+                      and set(item.get("required_bindings", ())) <= installed)
             if usable:
-                available.append(item)
+                available.append(deepcopy(item))
         host = getattr(self.dependencies, "host_runtime", None)
         if host is not None:
             if host.summary() != self.request.host_runtime_manifest:
@@ -2006,10 +1342,10 @@ class AdaptiveRunServices:
                 if descriptor["capability_ref"] in known:
                     raise AdaptivePractitionerError("host capability conflicts with a built-in capability")
                 known.add(descriptor["capability_ref"])
-                available.append(descriptor)
+                available.append(deepcopy(descriptor))
         return tuple(available)
 
-    def publish(self, event_type: str, **fields) -> None:
+    def publish(self, event_type: str, **fields) -> dict:
         self.progress_sequence = next(self.progress_sequence_source)
         owner = current_kernel_owner()
         loop_count = 0
@@ -2028,15 +1364,18 @@ class AdaptiveRunServices:
             "loop_count": loop_count,
             "model_calls_completed": model_calls,
             "model_call_number": (
-                model_calls + 1 if event_type == "model.step.started" else 0),
+                model_calls + 1 if event_type == MODEL_STEP_STARTED else 0),
             "source_inspections_completed": len(self.source_inspections),
             "project_attempts_completed": len(self.project_attempts),
             "elapsed_seconds": round(
                 time.monotonic() - self.started_monotonic, 3),
             **fields,
         }
+        if event_type == MODEL_STEP_STARTED:
+            event["model_call_occurrence_id"] = f"{self.run_id}:model-step:{self.progress_sequence}"
         if self.dependencies.progress is not None:
-            self.dependencies.progress(event)
+            self.dependencies.progress(deepcopy(event))
+        return event
 
     def grade_current_stage(self, **signals):
         """Attach exact consumer observations to the current semantic stage."""
@@ -2776,13 +2115,14 @@ class AdaptiveRunServices:
                     "format_attempt": format_attempt,
                     "transport_attempt": transport_attempt,
                     "prompt_digest": snapshot["prompt_digest"],
-                    "prompt_bytes": len(assembled.prompt),
+                    "prompt_bytes": len(assembled.prompt.encode("utf-8")),
                     "output_schema_digest": request.output_contract_digest,
                     "output_contract_id": request.contract_id,
                 }
                 if not self.request.quiet_model_io:
                     trace_event["prompt_text"] = assembled.prompt
-                self.publish("model.step.started", **trace_event)
+                call_event = self.publish("model.step.started", **trace_event)
+                call_occurrence_id = call_event["model_call_occurrence_id"]
                 if self.route_health_ledger is None:
                     from .route_health import RouteHealthLedger
                     self.route_health_ledger = RouteHealthLedger()
@@ -2836,6 +2176,7 @@ class AdaptiveRunServices:
                         if failures:
                             response_guard_failure = failures[-1]
                             self.publish('model.step.response_rejected', step=request.step_id,
+                                model_call_occurrence_id=call_occurrence_id,
                                 format_attempt=format_attempt, transport_attempt=transport_attempt,
                                 failure_code=response_guard_failure.failure_code,
                                 response_digest=response_guard_failure.raw_digest)
@@ -2857,6 +2198,7 @@ class AdaptiveRunServices:
                                 schema_errors=tuple('evaluation_finding:' + code
                                                     for code in verdict.finding_codes))
                             self.publish('model.step.response_rejected', step=request.step_id,
+                                model_call_occurrence_id=call_occurrence_id,
                                 format_attempt=format_attempt, transport_attempt=transport_attempt,
                                 failure_code=error_code, response_digest=verdict.response_digest,
                                 evaluation_contract_ref=verdict.contract_ref,
@@ -2864,6 +2206,7 @@ class AdaptiveRunServices:
                             break
                     self.publish(
                         "model.step.transport_failed", step=request.step_id,
+                        model_call_occurrence_id=call_occurrence_id,
                         format_attempt=format_attempt,
                         transport_attempt=transport_attempt,
                         error_code=error_code,
@@ -2907,6 +2250,7 @@ class AdaptiveRunServices:
                     # learning records rather than turned into a retry.
                     self.publish(
                         "model.step.suggested_output_deviation",
+                        model_call_occurrence_id=call_occurrence_id,
                         step=request.step_id, format_attempt=format_attempt,
                         transport_attempt=transport_attempt,
                         suggested_output_digest=request.suggested_output.content_digest,
@@ -2960,11 +2304,12 @@ class AdaptiveRunServices:
                     value, default=str, sort_keys=True)
                 completed_event = {
                     "step": request.step_id,
+                    "model_call_occurrence_id": call_occurrence_id,
                     "format_attempt": format_attempt,
                     "transport_attempt": transport_attempt,
                     "output_digest": admitted.raw_digest,
                     "admitted_strategy": admitted.strategy,
-                    "output_bytes": len(_preview),
+                    "output_bytes": len(_preview.encode("utf-8")),
                 }
                 completed_event["output_preview"] = (
                     _preview if not self.request.quiet_model_io

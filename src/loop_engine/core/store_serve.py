@@ -210,6 +210,20 @@ class SolverStore:
                  "maturity": str((r.body or {}).get("maturity") or r.tier),
                  "version": str((r.body or {}).get("version") or "1.0.0")}
                 for s, r in selected_scores]
+        from ..loop.loop_capsule import inline_intelligence_value, inline_payload_digest
+        for hit, (_score, record) in zip(hits, selected_scores):
+            body = dict(record.body or {})
+            hit["input_contract"] = str(body.get("input_contract") or "unit_request")
+            hit["supported_modes"] = list(body.get("supported_modes") or ())
+            hit["qualification_digest"] = str(body.get("qualification_digest") or "")
+            if not hit["payload_ref"] or hit["payload_ref"].startswith("content://"):
+                # The caller supplies the layer when constructing its typed
+                # reference. Pin each possible value projection without
+                # inferring that layer from titles, tags, or record kinds.
+                hit["inline_payload_digests"] = {
+                    layer: inline_payload_digest(inline_intelligence_value(record.title, body, layer))
+                    for layer in ("context_intelligence", "code_intelligence",
+                                  "runtime_history_solution_intelligence", "user_feedback_intelligence")}
         stages.append({"stage": "rank", "returned": len(hits)})
         return {"record_type": "store_search/v1", "query": query,
                 "hits": hits, "stages": stages,

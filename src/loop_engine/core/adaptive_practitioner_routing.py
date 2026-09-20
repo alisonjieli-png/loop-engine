@@ -20,7 +20,6 @@ from .action_vector_routing import (
 )
 from .adaptive_host_verification import require_host_checks
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError,
     AdaptiveRunServices,
     ModelStepRequest,
 )
@@ -30,7 +29,7 @@ from .adaptive_practitioner_recovery import (
 )
 from .adaptive_practitioner_result import latest_task_result, task_result_succeeded
 from .adaptive_practitioner_supervision import detect_stall
-from .adaptive_practitioner_validation import MODEL_ROUTE_VALUES, _short_text
+from .adaptive_practitioner_validation import AdaptivePractitionerError, MODEL_ROUTE_VALUES, _short_text
 from .response_contracts import PRACTITIONER_ROUTE, registered_contract
 from ..loop.supervision_policy import BUDGET_PHASES, SupervisionPolicy
 from .adaptive_practitioner_verification import (

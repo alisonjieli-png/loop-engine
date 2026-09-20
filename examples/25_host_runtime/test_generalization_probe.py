@@ -148,8 +148,12 @@ def prior_run(root, task, source, *, manifest=None, source_binding=True):
     value = ({'kind': 'execution_observation', 'source_digest': hashlib.sha256(source.encode()).hexdigest()}
              if source_binding else {'kind': 'unverified_partial_candidate'})
     probe.write_json(task_root / 'outcome.json', {
-        'record_type': 'solve_outcome/v5', 'status': 'COMPLETED_VERIFIED',
-        'run_id': 'authored-prior-fixture', 'result': {'value': value}})
+        'record_type': 'solve_outcome/v6', 'status': 'COMPLETED_VERIFIED',
+        'terminal_code': 'COMPLETED_VERIFIED', 'solved': True,
+        'run_id': 'authored-prior-fixture', 'result': {'value': value},
+        'verification': {}, 'artifacts': [], 'questions': [],
+        'stage_vectors': [], 'action_vectors': [], 'model_calls': None,
+        'model_call_accounting_complete': False, 'model_calls_known_subtotal': None})
     report = {'record_type': 'generalization_probe_report/v1',
               'population_digest': probe.digest(population),
               'outcomes': [{'task_id': task.task_id, 'task_digest': probe.digest(old),

@@ -576,7 +576,7 @@ def invoke_capability_as_loop(
             executed = execute_code_ref(
                 CodeRefExecutionRequest(
                     ref, request.materializer, request.entrypoint,
-                    request.binder, request.inputs),
+                    request.binder, request.inputs, authority=authority),
                 CodeRefExecutionContext(ledger, parent))
             value = executed["value"]
             model_calls = int(

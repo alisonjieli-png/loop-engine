@@ -350,6 +350,25 @@ def scan_cross_component_imports(root: str, rules: dict) -> list:
     return v
 
 
+def _resolved_imports(relative: str, node) -> tuple[str, ...]:
+    """Resolve import spellings from the importing module's actual package."""
+    from .architecture_map import PACKAGE
+    if isinstance(node, ast.Import):
+        return tuple(alias.name for alias in node.names)
+    if not isinstance(node, ast.ImportFrom):
+        return ()
+    if node.level:
+        package = [PACKAGE, *relative.replace(os.sep, "/").split("/")[:-1]]
+        if node.level > len(package):
+            return ()
+        parts = package[:len(package) - node.level + 1]
+        parts.extend((node.module or "").split(".") if node.module else ())
+        module = ".".join(parts)
+    else:
+        module = node.module or ""
+    return (module, *(f"{module}.{alias.name}" for alias in node.names))
+
+
 def scan_dependency_direction(root: str, rules: dict) -> list:
     """A declared dependency direction is a RATCHET: every import that goes
     against it is counted against a baseline that may only fall.
@@ -370,12 +389,9 @@ def scan_dependency_direction(root: str, rules: dict) -> list:
             if tree is None:
                 continue
             for node in ast.walk(tree):
-                if not isinstance(node, ast.ImportFrom):
-                    continue
-                module = node.module or ""
-                relative = node.level == 2 and (module == target or module.startswith(target + "."))
-                absolute = module == f"{PACKAGE}.{target}" or module.startswith(f"{PACKAGE}.{target}.")
-                if relative or absolute:
+                target_module = f"{PACKAGE}.{target.replace('/', '.')}"
+                if any(name == target_module or name.startswith(target_module + ".")
+                       for name in _resolved_imports(norm, node)):
                     v.append({"rule": "dependency_direction", "file": norm,
                               "line": node.lineno,
                               "detail": f"{source} imports {target}; the declared direction "
@@ -650,6 +666,53 @@ def scan_direct_resource_access(root: str, rules: dict) -> list:
     return v
 
 
+def _registered_test_modules(tree) -> tuple[str, ...]:
+    """Read the suite's actual literal registration, not unrelated strings."""
+    declarations = [node for node in ast.walk(tree) if isinstance(node, ast.Assign)
+                    and any(isinstance(target, ast.Name)
+                            and target.id == "_FOLDED_SUBMODULE_TESTS" for target in node.targets)]
+    if not declarations:
+        return ()
+    if len(declarations) != 1:
+        raise ValueError("the suite must have one explicit module registration")
+    value = ast.literal_eval(declarations[0].value)
+    if not isinstance(value, (list, tuple)) or any(
+            not isinstance(name, str) or not re.fullmatch(r"[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*", name)
+            for name in value):
+        raise ValueError("the module registration must contain explicit module names")
+    if len(set(value)) != len(value):
+        raise ValueError("the module registration contains duplicate modules")
+    return tuple(value)
+
+
+def _test_delegate(relative: str, tree) -> str:
+    """Recognize a thin self_test facade that only imports and returns another suite."""
+    from .architecture_map import PACKAGE
+    functions = [node for node in tree.body
+                 if isinstance(node, ast.FunctionDef) and node.name == "self_test"]
+    if len(functions) != 1:
+        return ""
+    body = functions[0].body
+    if body and isinstance(body[0], ast.Expr) and isinstance(body[0].value, ast.Constant) \
+            and isinstance(body[0].value.value, str):
+        body = body[1:]
+    if not body or not isinstance(body[-1], ast.Return) \
+            or any(not isinstance(node, ast.ImportFrom) for node in body[:-1]):
+        return ""
+    call = body[-1].value
+    if not isinstance(call, ast.Call) or not isinstance(call.func, ast.Name) or call.args or call.keywords:
+        return ""
+    for node in body[:-1]:
+        for alias in node.names:
+            if alias.name == "self_test" and (alias.asname or alias.name) == call.func.id:
+                resolved = _resolved_imports(relative, node)
+                if not resolved:
+                    return ""
+                module = resolved[0]
+                return module[len(PACKAGE) + 1:] if module.startswith(PACKAGE + ".") else ""
+    return ""
+
+
 def scan_uncollected_self_tests(root: str, rules: dict) -> list:
     """The suite never silently shrinks.
 
@@ -659,36 +722,43 @@ def scan_uncollected_self_tests(root: str, rules: dict) -> list:
     to rot, because nothing fails. Every module with a self_test must be
     collected, or carry a declared exception with a reason.
     """
-    import ast as _ast
     exceptions = set(rules.get("suite_collection_exceptions", {}))
     suite = os.path.join(root, "_self_test.py")
     # No suite file means nothing is collected — every self_test is
     # uncollected, which is exactly what the planted canary asserts.
-    src = _source_text(suite) if os.path.exists(suite) else ""
-    collected = set(re.findall(
-        r'"((?:loop|strings|code_nodes|core|ontology|catalog|memory|generation|templates)\.[a-z_]+)"', src))
-    collected |= {f"{a}.{b}" for a, b in
-                  re.findall(r"from \.(\w+)\.(\w+) import", src)}
     v = []
-    from .architecture_map import ROOT_MODULES
+    try:
+        suite_tree = _source_tree(suite) if os.path.exists(suite) else ast.Module(body=[], type_ignores=[])
+        if suite_tree is None:
+            raise ValueError("the suite cannot be parsed")
+        collected = set(_registered_test_modules(suite_tree))
+    except (ValueError, TypeError, SyntaxError) as exc:
+        collected = set()
+        v.append({"rule": "uncollected_self_test", "file": "_self_test.py", "line": 1,
+                  "detail": f"invalid suite registration: {exc}"})
+    definitions, delegates = {}, {}
     for rel in _py_files(root):
-        parts = rel.replace(os.sep, "/").split("/")
-        if parts[-1] == "__init__.py" or len(parts) > 2:
-            continue
-        if len(parts) == 1:
-            # root plumbing is driven directly by the suite, not folded
-            if parts[0][:-3] in ROOT_MODULES:
-                continue
-            name = parts[0][:-3]
-        else:
-            name = f"{parts[0]}.{parts[1][:-3]}"
-        if name in collected or rel.replace(os.sep, "/") in exceptions:
+        relative = rel.replace(os.sep, "/")
+        if relative == "_self_test.py":
             continue
         tree = _source_tree(os.path.join(root, rel))
         if tree is None:
             continue
-        if any(isinstance(n, _ast.FunctionDef) and n.name == "self_test"
+        name = relative[:-3].replace("/", ".")
+        if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name == "self_test"
                for n in tree.body):
+            definitions[name] = relative
+            delegates[name] = _test_delegate(relative, tree)
+    pending = list(collected)
+    while pending:
+        target = delegates.get(pending.pop())
+        if target and target not in collected:
+            collected.add(target)
+            pending.append(target)
+    for name, rel in definitions.items():
+        # A pure compatibility facade adds no checks when its exact delegate
+        # is already collected. Calling it as well would duplicate the suite.
+        if name not in collected and rel not in exceptions and delegates.get(name) not in collected:
             v.append({"rule": "uncollected_self_test", "file": rel, "line": 1,
                       "detail": f"{name} defines self_test() but the suite "
                                 "does not collect it — add it to "

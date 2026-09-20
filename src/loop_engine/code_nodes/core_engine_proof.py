@@ -218,7 +218,7 @@ def solve_proof(root: str) -> CoreProofResult:
 
 def learning_cycle_proof() -> CoreProofResult:
     """Run the independently governed two-run learning and transfer checks."""
-    from ..memory.storage.repository import self_test as learning_self_test
+    from ..memory.storage.learning_cycle_checks import self_test as learning_self_test
 
     report = learning_self_test()
     failures = [item for item in report["tests"] if not item["passed"]]

@@ -35,7 +35,8 @@ import hashlib
 import json
 
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError, ModelStepRequest)
+    ModelStepRequest)
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .adaptive_practitioner_source import (
     inspectable_source_files, project_input_path, source_profile_operation)
 from .runtime_capacity import model_evidence_bytes, paths_within_allowance

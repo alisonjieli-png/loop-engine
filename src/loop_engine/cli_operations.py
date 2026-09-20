@@ -733,7 +733,7 @@ def _export_spec_from_record(record: dict):
 
 def run_solution_export(args) -> int:
     """``--export-solution SPEC --out DIR`` and ``--verify-export DIR``."""
-    from .code_nodes.solution_export import SolutionExportError, export_solution, verify_export
+    from .code_nodes.solution_export import ExportVerificationPolicy, SolutionExportError, export_solution, verify_export
     try:
         if args.export_solution:
             if not args.out:
@@ -748,7 +748,10 @@ def run_solution_export(args) -> int:
                 "verify it with: loop-engine --verify-export " + result.target])
             return 0
         run_arguments = tuple(json.loads(args.run_arguments)) if args.run_arguments else None
-        verification = verify_export(args.verify_export, run_arguments=run_arguments)
+        policy = ExportVerificationPolicy(
+            allow_local_execution=bool(args.allow_local_execution),
+            expected_manifest_digest=str(args.export_manifest_digest))
+        verification = verify_export(args.verify_export, run_arguments=run_arguments, policy=policy)
         _emit_cli_result(args, verification.to_dict(), [
             f"{'passed' if verification.passed else 'FAILED'}: {args.verify_export}",
             *(f"  {'ok' if item['passed'] else 'FAIL'} {item['check']}"
@@ -922,7 +925,8 @@ def run_learn(args) -> int:
     from .memory.model.memory_type import (MemoryIdentity, MemoryLifecycle,
                                            MemoryScope, MemoryType)
     from .memory.semantic.record import SemanticMemoryRecord
-    from .memory.storage.repository import CandidateJournal, LearningPolicy
+    from .memory.storage.learning_cycle import CandidateJournal
+    from .memory.storage.learning_records import LearningPolicy
 
     if not args.lesson.strip():
         print(json.dumps({"record_type": "learning_candidate_failure/v1",
@@ -962,8 +966,9 @@ def run_learn(args) -> int:
 
 def run_candidate_action(args) -> int:
     from .memory.model.memory_type import MemoryType
-    from .memory.storage.repository import (
-        CandidateJournal, LearningDecision, LearningPolicy,
+    from .memory.storage.learning_cycle import CandidateJournal
+    from .memory.storage.learning_records import (
+        LearningDecision, LearningPolicy,
         LearningRecordRef, LearningTransitionResult)
     if not all((args.candidate_id, args.candidate_version,
                 args.candidate_digest, args.decision_reason, args.evidence)):
@@ -1021,7 +1026,8 @@ def run_five_step_demo(args) -> int:
     from .memory.model.memory_type import (MemoryIdentity, MemoryLifecycle,
                                            MemoryScope, MemoryType)
     from .memory.semantic.record import SemanticMemoryRecord
-    from .memory.storage.repository import CandidateJournal, LearningPolicy
+    from .memory.storage.learning_cycle import CandidateJournal
+    from .memory.storage.learning_records import LearningPolicy
     from .templates.intake import TaskIntakeRequest, intake_task
 
     settings = load_runtime_settings(args.settings_file or None).settings

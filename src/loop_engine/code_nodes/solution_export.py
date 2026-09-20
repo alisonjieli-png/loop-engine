@@ -16,6 +16,7 @@ from __future__ import annotations
 import hashlib
 import inspect
 import json
+import math
 import os
 import re
 import subprocess
@@ -23,9 +24,11 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from ..strings.solution_export_templates import TEXT_CONFORMANCE_TEMPLATES
+
 EXPORT_RECORD_TYPE = "solution_export/v1"
-MANIFEST_RECORD_TYPE = "solution_export_manifest/v1"
-VERIFICATION_RECORD_TYPE = "solution_export_verification/v1"
+MANIFEST_RECORD_TYPE = "solution_export_manifest/v2"
+VERIFICATION_RECORD_TYPE = "solution_export_verification/v2"
 ISOLATION_MODES = ("stdlib_only", "site_packages")
 #: The kinds an export specification record may declare: typed files, or a
 #: conformance rule set that builds its own files.
@@ -57,9 +60,9 @@ def _digest(value) -> str:
 
 
 def _clean_relative(path: str, *, prefix: str) -> str:
-    if not path or path.startswith("/") or "\\" in path or ".." in Path(path).parts \
-            or any(not part or part.startswith(".") and part not in (".", "..") and False
-                   for part in Path(path).parts):
+    if (not isinstance(path, str) or not path or path in (".", "..")
+            or path.startswith("/") or "\\" in path or ".." in Path(path).parts
+            or any(ord(character) < 32 for character in path)):
         raise SolutionExportError(f"{prefix}: path must be relative without traversal: {path!r}")
     if Path(path).is_absolute() or re.match(r"^[A-Za-z]:", path):
         raise SolutionExportError(f"{prefix}: absolute path refused: {path!r}")
@@ -100,11 +103,17 @@ class ContainerSpec:
     arguments: tuple[str, ...] = ()
 
     def __post_init__(self):
-        if not self.base_image.strip() or " " in self.base_image:
+        if not isinstance(self.base_image, str) or not self.base_image.strip() \
+                or any(character.isspace() for character in self.base_image):
             raise SolutionExportError("container base_image must be one image reference")
         if self.image_digest and not re.fullmatch(r"sha256:[0-9a-f]{64}", self.image_digest):
             raise SolutionExportError("image_digest must be sha256:<64 hex> when given")
-        object.__setattr__(self, "arguments", tuple(self.arguments))
+        arguments = tuple(self.arguments)
+        if any(not isinstance(argument, str) for argument in arguments):
+            raise SolutionExportError("container arguments must be text")
+        if any(not isinstance(value, str) or not value.strip() for value in (self.cpu, self.memory)):
+            raise SolutionExportError("container resource quantities must be declared text")
+        object.__setattr__(self, "arguments", arguments)
 
     @property
     def pinned(self) -> bool:
@@ -156,9 +165,16 @@ class SolutionExportSpec:
     @property
     def digest(self) -> str:
         return _digest({"package_name": self.package_name, "version": self.version,
-                        "files": {item.path: _digest_bytes(item.content.encode("utf-8"))
+                        "summary": self.summary, "python_requires": self.python_requires,
+                        "isolation": self.isolation, "solution_ref": self.solution_ref,
+                        "source_run_id": self.source_run_id,
+                        "container": {name: getattr(self.container, name)
+                                      for name in self.container.__dataclass_fields__},
+                        "files": {item.path: {"digest": _digest_bytes(item.content.encode("utf-8")),
+                                              "executable": item.executable}
                                   for item in self.files},
-                        "tests": {item.path: _digest_bytes(item.content.encode("utf-8"))
+                        "tests": {item.path: {"digest": _digest_bytes(item.content.encode("utf-8")),
+                                              "executable": item.executable}
                                   for item in self.tests},
                         "console_script": self.console_script,
                         "dependencies": list(self.dependencies)})
@@ -286,7 +302,10 @@ def export_solution(spec: SolutionExportSpec, target: str) -> ExportRecord:
                 "console_script": spec.console_script, "spec_digest": spec.digest,
                 "container": {"base_image": spec.container.base_image,
                               "image_digest": spec.container.image_digest,
-                              "pinned": spec.container.pinned},
+                              "pinned": spec.container.pinned,
+                              "cpu": spec.container.cpu, "memory": spec.container.memory,
+                              "arguments": list(spec.container.arguments)},
+                "python_requires": spec.python_requires,
                 "files": dict(sorted(written.items()))}
     manifest["manifest_digest"] = _digest(manifest)
     (root / "MANIFEST.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", "utf-8")
@@ -306,7 +325,28 @@ class ExportVerification:
                 "checks": list(self.checks), "manifest_digest": self.manifest_digest}
 
 
+@dataclass(frozen=True)
+class ExportVerificationPolicy:
+    """Explicit host-execution authority bound to one reviewed export manifest.
+
+    Interpreter isolation does not sandbox files, network, or subprocesses.
+    Only a caller that trusts this exact export may authorize local execution.
+    Untrusted generated exports require a separately qualified sandbox path.
+    """
+
+    allow_local_execution: bool = False
+    expected_manifest_digest: str = ""
+
+    def __post_init__(self):
+        if type(self.allow_local_execution) is not bool:
+            raise SolutionExportError("local execution authority must be a boolean")
+        if self.allow_local_execution and not re.fullmatch(r"[0-9a-f]{64}", self.expected_manifest_digest):
+            raise SolutionExportError("local execution needs the exact reviewed manifest digest")
+
+
 def _isolated_python(isolation: str) -> list[str]:
+    if isolation not in ISOLATION_MODES:
+        raise SolutionExportError("unsupported interpreter isolation mode")
     flags = ["-I", "-S"] if isolation == ISOLATION_MODES[0] else ["-I"]
     return [sys.executable, *flags]
 
@@ -319,42 +359,113 @@ def isolation_environment() -> dict:
 
 
 def _run_isolated(root: Path, isolation: str, code: str, timeout: float) -> subprocess.CompletedProcess:
-    return subprocess.run([*_isolated_python(isolation), "-c", code], cwd=str(root),
+    return subprocess.run([*_isolated_python(isolation), "-c",
+                           "import sys; sys.dont_write_bytecode = True; " + code], cwd=str(root),
                           env=isolation_environment(), capture_output=True, text=True, timeout=timeout)
 
 
+def _export_file(root: Path, relative: str) -> Path:
+    """Resolve a declared path without following an untrusted symbolic link."""
+    safe = _clean_relative(relative, prefix="export verification")
+    if safe in (".", ""):
+        raise SolutionExportError("an exported path must name a file")
+    target = root / safe
+    cursor = target
+    while cursor != root:
+        if cursor.is_symlink():
+            raise SolutionExportError(f"symbolic link refused in exported path {relative!r}")
+        cursor = cursor.parent
+    if root not in target.resolve().parents:
+        raise SolutionExportError("exported path escapes the package directory")
+    return target
+
+
 def verify_export(target: str, *, run_arguments: tuple[str, ...] | None = None,
-                  expected_artifacts: tuple[str, ...] = (), timeout: float = 120.0) -> ExportVerification:
+                  expected_artifacts: tuple[str, ...] = (), timeout: float = 120.0,
+                  policy: ExportVerificationPolicy | None = None) -> ExportVerification:
     """Prove the export is complete, clean, and runs without Loop Engine.
 
     Checks: the manifest digests match the files on disk; no file imports
     ``loop_engine``; the package imports in an isolated interpreter that
     cannot see the site packages; the tests pass there; and, when arguments
     are given, the entry point runs and produces every expected artifact.
+    Execution additionally requires exact trusted-local authority. Without it
+    only static checks run and full verification remains incomplete.
     """
     root = Path(target)
+    if root.is_symlink() or not root.is_dir():
+        raise SolutionExportError("verification needs an existing directory, not a symbolic link")
+    root = root.resolve()
+    if type(timeout) not in (int, float) or not math.isfinite(timeout) or timeout <= 0:
+        raise SolutionExportError("verification timeout must be finite and positive")
+    for item in expected_artifacts:
+        _export_file(root, item)
+    policy = policy or ExportVerificationPolicy()
+    if not isinstance(policy, ExportVerificationPolicy):
+        raise SolutionExportError("verification policy must be a typed ExportVerificationPolicy")
     checks: list[dict] = []
 
     def check(name: str, passed: bool, detail: str = "") -> None:
         checks.append({"check": name, "passed": bool(passed), "detail": detail[:2000]})
 
-    manifest_path = root / "MANIFEST.json"
+    manifest_path = _export_file(root, "MANIFEST.json")
     if not manifest_path.is_file():
         raise SolutionExportError("MANIFEST.json is missing; not an export")
-    manifest = json.loads(manifest_path.read_text("utf-8"))
+    try:
+        manifest = json.loads(manifest_path.read_text("utf-8"))
+    except (OSError, ValueError) as exc:
+        raise SolutionExportError("the export manifest is unreadable or invalid") from exc
+    if not isinstance(manifest, dict) or manifest.get("record_type") != MANIFEST_RECORD_TYPE:
+        raise SolutionExportError("unsupported export manifest")
     package = str(manifest.get("package_name") or "")
-    isolation = str(manifest.get("isolation") or ISOLATION_MODES[0])
+    isolation = str(manifest.get("isolation") or "")
+    if not _PACKAGE_NAME.fullmatch(package) or isolation not in ISOLATION_MODES:
+        raise SolutionExportError("invalid package identifier or interpreter isolation mode")
+    files = manifest.get("files")
+    if not isinstance(files, dict) or not files:
+        raise SolutionExportError("the manifest must declare its files")
+    for relative, digest in files.items():
+        if not isinstance(relative, str) or not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise SolutionExportError("manifest files require a relative path and a SHA-256 digest")
+        _export_file(root, relative)
+    expected_digest = _digest({key: value for key, value in manifest.items() if key != "manifest_digest"})
+    check("manifest_identity_is_verified", manifest.get("manifest_digest") == expected_digest)
     mismatched = [path for path, digest in manifest.get("files", {}).items()
-                  if not (root / path).is_file() or _digest_bytes((root / path).read_bytes()) != digest]
+                  if not _export_file(root, path).is_file()
+                  or _digest_bytes(_export_file(root, path).read_bytes()) != digest]
     check("manifest_digests_match_files", not mismatched, ", ".join(mismatched))
     offending = []
     for path in manifest.get("files", {}):
-        if path.endswith(".py"):
+        if path.endswith(".py") and path not in mismatched:
             try:
-                _check_content(path, (root / path).read_text("utf-8"))
+                _check_content(path, _export_file(root, path).read_text("utf-8"))
             except SolutionExportError as exc:
                 offending.append(str(exc))
     check("no_loop_engine_import_and_no_secret_shape", not offending, "; ".join(offending))
+    executable_paths = []
+    for directory in ("src", "tests"):
+        base = _export_file(root, directory)
+        if not base.exists():
+            continue
+        if not base.is_dir():
+            raise SolutionExportError("an execution source directory must be a directory")
+        for path in base.rglob("*"):
+            relative = path.relative_to(root).as_posix()
+            _export_file(root, relative)
+            if path.is_file():
+                executable_paths.append(relative)
+    undeclared = [relative for relative in executable_paths if relative not in files]
+    cached = [path.relative_to(root).as_posix() for path in root.rglob("*.pyc")]
+    check("executable_sources_are_declared", not undeclared and not cached,
+          ", ".join(undeclared + cached))
+    if not all(item["passed"] for item in checks):
+        return ExportVerification(False, tuple(checks), str(manifest.get("manifest_digest") or ""))
+    check("exact_local_execution_authority", policy.allow_local_execution
+          and policy.expected_manifest_digest == expected_digest,
+          "A trusted export needs explicit local execution authority bound to its manifest; "
+          "interpreter isolation is not an operating-system sandbox.")
+    if not checks[-1]["passed"]:
+        return ExportVerification(False, tuple(checks), expected_digest)
     imported = _run_isolated(root, isolation,
                              f"import sys; sys.path.insert(0, 'src'); import {package}; "
                              f"assert 'loop_engine' not in sys.modules; print('ok')", timeout)
@@ -384,119 +495,6 @@ def verify_export(target: str, *, run_arguments: tuple[str, ...] | None = None,
 # The first exported solution: text conformance
 # ---------------------------------------------------------------------------
 
-_SOLUTION_SOURCE = '''"""Standalone text conformance solution exported from Loop Engine."""
-from __future__ import annotations
-
-import argparse
-import csv
-import json
-import sys
-from pathlib import Path
-
-from . import operations
-
-HERE = Path(__file__).resolve().parent
-
-
-def load_configuration() -> tuple[list, dict, dict]:
-    rules = json.loads((HERE / "rules.json").read_text("utf-8"))
-    return rules["rules"], rules["policy"], json.loads((HERE / "catalogs.json").read_text("utf-8"))
-
-
-def conform_rows(rows, rules, policy, catalogs, *, learn_evidence: bool = True):
-    """Two passes: learn column evidence, then apply the rules row by row."""
-    rows = list(rows)
-    columns = sorted({column for rule in rules for column in rule["columns"]})
-    evidence = operations.learn_column_evidence(rows, columns) if learn_evidence else {}
-    for index, row in enumerate(rows):
-        output, corrections = operations.apply_rules_to_row(row, rules, catalogs, policy, evidence)
-        yield str(row.get("row_ref") or index), output, corrections
-
-
-def run(input_path: str, output_dir: str, *, learn_evidence: bool = True) -> dict:
-    rules, policy, catalogs = load_configuration()
-    out = Path(output_dir)
-    out.mkdir(parents=True, exist_ok=True)
-    corrections_all = []
-    with open(input_path, "r", encoding="utf-8", newline="") as source:
-        reader = csv.DictReader(source)
-        rows = list(reader)
-        fieldnames = list(reader.fieldnames or [])
-    with open(out / "conformed.csv", "w", encoding="utf-8", newline="") as target, \\
-            open(out / "corrections.jsonl", "w", encoding="utf-8") as corrections_file, \\
-            open(out / "escalations.jsonl", "w", encoding="utf-8") as escalations_file:
-        writer = csv.DictWriter(target, fieldnames=fieldnames)
-        writer.writeheader()
-        for row_ref, output, corrections in conform_rows(rows, rules, policy, catalogs,
-                                                         learn_evidence=learn_evidence):
-            writer.writerow({key: output.get(key, "") for key in fieldnames})
-            for item in corrections:
-                record = {"row_ref": row_ref, **item}
-                corrections_file.write(json.dumps(record, sort_keys=True) + "\\n")
-                corrections_all.append(record)
-                if item["outcome"] == "escalated" or (policy.get("escalate_held") and item["outcome"] == "held"):
-                    escalations_file.write(json.dumps(record, sort_keys=True) + "\\n")
-    report = {"record_type": "conformance_report/v1", "rows": len(rows),
-              **operations.summarize(corrections_all, rules)}
-    (out / "report.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\\n", "utf-8")
-    return report
-
-
-def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description="Conform text columns with a confidence per correction.")
-    parser.add_argument("--input", required=True, help="CSV file to conform")
-    parser.add_argument("--output-dir", required=True, help="directory for conformed.csv, corrections.jsonl, escalations.jsonl, report.json")
-    parser.add_argument("--no-column-evidence", action="store_true", help="skip the first pass that learns casings from the column")
-    args = parser.parse_args(argv)
-    report = run(args.input, args.output_dir, learn_evidence=not args.no_column_evidence)
-    print(json.dumps(report["overall"], sort_keys=True))
-    return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-'''
-
-_MAIN_SOURCE = '''from .solution import main
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-'''
-
-_TEST_SOURCE = '''import json
-import tempfile
-import unittest
-from pathlib import Path
-
-from {package} import operations, solution
-
-
-class ConformanceTest(unittest.TestCase):
-    def test_rules_apply_hold_and_escalate(self):
-        rules, policy, catalogs = solution.load_configuration()
-        with tempfile.TemporaryDirectory() as folder:
-            source = Path(folder) / "in.csv"
-            source.write_text("{header}\\n{row_confident}\\n{row_low}\\n", "utf-8")
-            report = solution.run(str(source), folder)
-            self.assertEqual(report["rows"], 2)
-            self.assertGreaterEqual(report["overall"]["applied"], 1)
-            lines = (Path(folder) / "conformed.csv").read_text("utf-8").splitlines()
-            self.assertEqual(len(lines), 3)
-            self.assertTrue((Path(folder) / "report.json").is_file())
-
-    def test_operations_are_deterministic(self):
-        rules, policy, catalogs = solution.load_configuration()
-        first = operations.apply_operation("case_normalize", "ACME CORPORATION", {{}}, catalogs)
-        second = operations.apply_operation("case_normalize", "ACME CORPORATION", {{}}, catalogs)
-        self.assertEqual(first, second)
-        self.assertTrue(first["changed"])
-
-
-if __name__ == "__main__":
-    unittest.main()
-'''
-
-
 @dataclass(frozen=True)
 class ExportSample:
     """The header and two rows the exported test file conforms: one confident, one held."""
@@ -524,15 +522,15 @@ def text_conformance_export_spec(rules, policy, catalogs: dict, *, package_name:
         ExportedFile("__init__.py", f'"""{summary or "Exported text conformance solution."}"""\n'
                                     f'__version__ = "{version}"\n'),
         ExportedFile("operations.py", source),
-        ExportedFile("solution.py", _SOLUTION_SOURCE),
-        ExportedFile("__main__.py", _MAIN_SOURCE),
+        ExportedFile("solution.py", TEXT_CONFORMANCE_TEMPLATES.solution),
+        ExportedFile("__main__.py", TEXT_CONFORMANCE_TEMPLATES.entry_point),
         ExportedFile("rules.json", json.dumps({"record_type": "conformance_rule_set/v1",
                                                "rules": rule_records, "policy": policy_record},
                                               indent=2, sort_keys=True) + "\n"),
         ExportedFile("catalogs.json", json.dumps(catalogs, indent=2, sort_keys=True,
                                                  ensure_ascii=False) + "\n"),
     )
-    tests = (ExportedFile("test_solution.py", _TEST_SOURCE.format(
+    tests = (ExportedFile("test_solution.py", TEXT_CONFORMANCE_TEMPLATES.tests.format(
         package=package_name, header=sample_header, row_confident=sample_rows[0],
         row_low=sample_rows[1])),)
     return SolutionExportSpec(package_name, version, summary or "Text conformance with a confidence per correction.",

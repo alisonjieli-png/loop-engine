@@ -5,13 +5,11 @@ instance. This module is the step between those two facts: it takes one node,
 decides what that node may be given, writes the folder the instance starts in,
 and returns a record of exactly what was placed there.
 
-TWO KINDS, AND THE DIFFERENCE HAS TEETH
-A node either reasons or builds. The difference is not a label on a prompt: a
-reason node reads and returns an answer, so it holds no authority to write,
-and a build node writes inside its own folder and nowhere else. A node that
-asks for more than its kind allows is refused by name before a folder exists,
-because a folder that grants more than the kind is how a reasoning step
-quietly becomes a writing one.
+PURPOSE IS SEPARATE FROM AUTHORITY
+Reasoning and building describe the assignment's primary deliverable. A
+reasoning assignment may need an authorized experiment; a building assignment
+may only prepare a proposal. Neither purpose grants or forbids an effect.
+The caller supplies exact effects after checking the owning Loop's authority.
 
 WHAT GOES IN THE FOLDER
 The instruction file in the name that harness reads, the assignment as typed
@@ -31,28 +29,27 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from ..loop.loop_control import DETERMINISTIC, MODES
+
 from .harness_intelligence import HarnessIntelligenceCatalogue, offer
+from .facets import EFFECTS
 from .instance_instructions import (AssignmentBriefing, InstanceInstructionError,
                                     compose, sections_for_assignment, write)
 
-RECORD_TYPE = "provisioned_node/v1"
+RECORD_TYPE = "provisioned_node/v2"
 ASSIGNMENT_FILE = "task.json"
 PROVISIONING_FILE = "provisioning.json"
-#: A node reasons or builds. Nothing else.
+#: Primary deliverable categories, not runtime types or permission grants.
 NODE_KINDS = ("reason", "build")
-#: What each kind may be given, as declared data rather than a branch.
-KIND_ITEM_KINDS = {
-    "reason": ("instruction_file", "skill"),
-    "build": ("instruction_file", "skill", "tool", "reusable_code"),
-}
-#: The most authority each kind may hold. A reason node does not write.
-KIND_CEILING = {"reason": ("reads_fs",), "build": ("reads_fs", "writes_fs")}
+REASON, BUILD = NODE_KINDS
+#: Resource eligibility follows exact selection and effects, not purpose.
+ASSIGNMENT_ITEM_KINDS = ("instruction_file", "skill", "tool", "reusable_code")
 #: Folders every instance gets, empty, so it never has to invent a location.
 FOLDERS = ("contracts", "artifacts")
 
 
 class NodeProvisioningError(ValueError):
-    """The node names an unknown kind, or asks for more authority than its kind holds."""
+    """An assignment has an invalid purpose, effect declaration or confined path."""
 
 
 @dataclass(frozen=True)
@@ -67,29 +64,44 @@ class NodeAssignment:
     required_capabilities: tuple[str, ...] = ()
     effects: tuple[str, ...] = ()
     harness_style: str = ""
-    model_calls_authorized: bool = True
+    model_calls_authorized: bool = False
+    mode: str = DETERMINISTIC
 
     def __post_init__(self) -> None:
+        if any(not isinstance(getattr(self, name), str) for name in ("node_id", "kind", "objective", "harness_style")):
+            raise NodeProvisioningError("assignment identifiers, kind, objective, and harness style must be text")
+        if type(self.model_calls_authorized) is not bool:
+            raise NodeProvisioningError("model call authority must be an explicit boolean")
+        if self.mode not in MODES:
+            raise NodeProvisioningError("assignment mode must be a current Loop run mode")
+        for name in ("output_contract_refs", "dependency_ids", "required_capabilities", "effects"):
+            value = getattr(self, name)
+            if not isinstance(value, (list, tuple)) or any(not isinstance(item, str) for item in value):
+                raise NodeProvisioningError(f"{name} must be a sequence of text values")
+            object.__setattr__(self, name, tuple(value))
         if not self.node_id.strip() or not self.objective.strip():
             raise NodeProvisioningError("a node needs an identifier and an objective")
+        if (self.node_id in (".", "..") or "/" in self.node_id
+                or "\\" in self.node_id or ":" in self.node_id
+                or any(ord(character) < 32 for character in self.node_id)):
+            raise NodeProvisioningError("a node identifier must be one plain path component")
         if self.kind not in NODE_KINDS:
             raise NodeProvisioningError(f"kind must be one of {NODE_KINDS}")
-        ceiling = KIND_CEILING[self.kind]
-        beyond = [effect for effect in self.effects if effect not in ceiling]
-        if beyond:
+        if (any(effect not in EFFECTS for effect in self.effects)
+                or len(set(self.effects)) != len(self.effects)
+                or ("pure" in self.effects and len(self.effects) != 1)):
             raise NodeProvisioningError(
-                f"node {self.node_id!r} is a {self.kind} node, which holds {list(ceiling)}; "
-                f"it cannot also hold {beyond}. Make it a build node, or narrow the work")
+                "assignment effects must be distinct declared effects; pure excludes other effects")
 
     def to_dict(self) -> dict:
-        return {"record_type": "node_assignment/v1", "node_id": self.node_id,
+        return {"record_type": "node_assignment/v3", "node_id": self.node_id,
                 "kind": self.kind, "objective": self.objective,
                 "output_contract_refs": list(self.output_contract_refs),
                 "dependency_ids": list(self.dependency_ids),
                 "required_capabilities": list(self.required_capabilities),
                 "effects": list(self.effects),
                 "harness_style": self.harness_style,
-                "model_calls_authorized": self.model_calls_authorized}
+                "model_calls_authorized": self.model_calls_authorized, "mode": self.mode}
 
 
 @dataclass(frozen=True)
@@ -106,9 +118,10 @@ class ProvisionedInstance:
     offered_bytes: int = 0
     exposed_bytes: int = 0
     guardrails: dict = field(default_factory=dict)
+    mode: str = "deterministic"
 
     def to_dict(self) -> dict:
-        return {"record_type": RECORD_TYPE, "node_id": self.node_id, "kind": self.kind,
+        return {"record_type": RECORD_TYPE, "node_id": self.node_id, "kind": self.kind, "mode": self.mode,
                 "folder": self.folder, "instruction_digest": self.instruction_digest,
                 "files_written": list(self.files_written),
                 "offered": [dict(row) for row in self.offered],
@@ -140,9 +153,20 @@ def provision(assignment: NodeAssignment, *, catalogue: HarnessIntelligenceCatal
     if not isinstance(assignment, NodeAssignment):
         raise NodeProvisioningError("a typed node assignment is required")
     folder = Path(root)
-    if not folder.is_dir():
+    if folder.is_symlink() or not folder.is_dir():
         raise NodeProvisioningError(
-            f"the node folder {folder} does not exist, so nothing is provisioned")
+            f"the node folder {folder} must be an existing directory, not a symbolic link")
+    folder = folder.resolve()
+    # Reserve metadata names against unsafe overwrite before any instruction
+    # file is written. Exclusive creation below also rejects a later collision.
+    for name in (ASSIGNMENT_FILE, PROVISIONING_FILE):
+        target = folder / name
+        if target.exists() or target.is_symlink():
+            raise NodeProvisioningError(f"{name} already exists; provisioning does not overwrite it")
+    for name in FOLDERS:
+        target = folder / name
+        if target.is_symlink() or (target.exists() and not target.is_dir()):
+            raise NodeProvisioningError(f"{name} must be a confined directory")
     from .guardrail_intelligence import (GuardrailSet, POINTS, evaluate, refusal_lines)
     from .intelligence_tagging import EMPTY_TAGS
     request = tags if tags is not None else EMPTY_TAGS
@@ -158,19 +182,20 @@ def provision(assignment: NodeAssignment, *, catalogue: HarnessIntelligenceCatal
              "output_contract_refs": list(assignment.output_contract_refs),
              "objective_present": bool(assignment.objective)},
             tags=request, point=POINTS[0])
-        if guardrail_record["blocked"]:
+        unresolved = guardrail_record["blocked_by"] + guardrail_record["escalated_by"]
+        if unresolved:
             raise NodeProvisioningError(
                 f"node {assignment.node_id!r} is blocked before provisioning by "
-                f"{guardrail_record['blocked_by']}; nothing is written")
+                f"{unresolved}; a completed decision is required before anything is written")
         refusals = refusal_lines(guardrails.applicable(request, POINTS[2]))
     available = offer(catalogue, style=assignment.harness_style,
                       authority_effects=assignment.effects,
-                      kinds=KIND_ITEM_KINDS[assignment.kind], tags=request)
+                      kinds=ASSIGNMENT_ITEM_KINDS, tags=request)
     surfaces = tuple(row["identity"] for row in available["offered"])
     try:
         composed = compose(
             sections_for_assignment(AssignmentBriefing(
-                goal=assignment.objective, mode="non_deterministic",
+                goal=assignment.objective, mode=assignment.mode,
                 contract_id=", ".join(assignment.output_contract_refs),
                 effects=tuple(assignment.effects), surfaces=surfaces,
                 tools=tuple(assignment.required_capabilities),
@@ -184,15 +209,21 @@ def provision(assignment: NodeAssignment, *, catalogue: HarnessIntelligenceCatal
     written = write(composed, folder)
     for name in FOLDERS:
         (folder / name).mkdir(exist_ok=True)
-    (folder / ASSIGNMENT_FILE).write_text(
-        json.dumps(assignment.to_dict(), indent=1, sort_keys=True), "utf-8")
+    try:
+        with (folder / ASSIGNMENT_FILE).open("x", encoding="utf-8") as stream:
+            json.dump(assignment.to_dict(), stream, indent=1, sort_keys=True)
+    except OSError as exc:
+        raise NodeProvisioningError("the assignment write was not committed; existing work is preserved") from exc
     record = ProvisionedInstance(
         assignment.node_id, assignment.kind, str(folder), composed.digest,
         tuple(written["written"]), tuple(available["offered"]),
         tuple(available["withheld"]), available["offered_bytes"],
-        available["exposed_bytes"], guardrail_record)
-    (folder / PROVISIONING_FILE).write_text(
-        json.dumps(record.to_dict(), indent=1, sort_keys=True), "utf-8")
+        available["exposed_bytes"], guardrail_record, mode=assignment.mode)
+    try:
+        with (folder / PROVISIONING_FILE).open("x", encoding="utf-8") as stream:
+            json.dump(record.to_dict(), stream, indent=1, sort_keys=True)
+    except OSError as exc:
+        raise NodeProvisioningError("the provisioning record was not committed; inspect partial work before retry") from exc
     return record
 
 
@@ -204,9 +235,12 @@ def provision_plan(assignments, *, catalogue: HarnessIntelligenceCatalogue,
     than a plan not provisioned, because the half that exists looks ready.
     """
     base = Path(root)
-    if not base.is_dir():
+    if base.is_symlink() or not base.is_dir():
         raise NodeProvisioningError(f"{base} does not exist")
+    base = base.resolve()
     prepared = tuple(assignments)
+    if any(not isinstance(item, NodeAssignment) for item in prepared):
+        raise NodeProvisioningError("a plan contains only typed node assignments")
     identities = [item.node_id for item in prepared]
     if len(set(identities)) != len(identities):
         raise NodeProvisioningError("node identifiers must be unique within one plan")
@@ -234,9 +268,8 @@ def provision_plan(assignments, *, catalogue: HarnessIntelligenceCatalogue,
 def assignments_from_plan(plan, *, kinds, effects=(), harness_style: str = "") -> tuple:
     """Turn the task slices of a compiled plan into node assignments.
 
-    ``kinds`` names the kind of every slice by its identifier. A slice without
-    a declared kind is refused rather than guessed, because whether a step
-    reasons or builds decides the authority it is given.
+    ``kinds`` names the primary deliverable of each slice. ``effects`` is the
+    caller's explicit shared grant; purpose never creates that grant.
     """
     slices = tuple(getattr(plan, "task_slices", ()) or ())
     if not slices:
@@ -245,11 +278,11 @@ def assignments_from_plan(plan, *, kinds, effects=(), harness_style: str = "") -
     if missing:
         raise NodeProvisioningError(
             f"these slices declare no kind: {missing}; a step that reasons and a step "
-            "that builds hold different authority, so the kind is declared, never guessed")
+            "that builds have different deliverables, so the kind is declared, never guessed")
     out = []
     for item in slices:
         kind = kinds[item.task_id]
-        allowed = tuple(effect for effect in effects if effect in KIND_CEILING.get(kind, ()))
+        allowed = tuple(effects)
         out.append(NodeAssignment(
             item.task_id, kind, item.objective,
             tuple(item.output_contract_refs), tuple(item.dependency_ids),
@@ -258,7 +291,7 @@ def assignments_from_plan(plan, *, kinds, effects=(), harness_style: str = "") -
 
 
 def self_test() -> dict:
-    """A reason node cannot write, a build node gets more, and the folder says what it got."""
+    """Purpose, explicit authority, confinement, and exact resource offers."""
     import tempfile
     from .harness_intelligence import HarnessIntelligenceDraft, item_from_body
     from .instance_instructions import STANDARD_FILE
@@ -291,11 +324,41 @@ def self_test() -> dict:
         declared_effects=("reads_fs", "writes_fs")),
         "{}"))
 
-    check("a_reason_node_cannot_hold_write_authority_and_an_unknown_kind_is_refused",
-          refuses(lambda: NodeAssignment("n1", "reason", "Decide", effects=("writes_fs",)))
+    check("purpose_does_not_grant_authority_and_explicit_effects_are_validated",
+          NodeAssignment("n1", "reason", "Run an authorized experiment", effects=("writes_fs",)).effects == ("writes_fs",)
+          and NodeAssignment("n1", "build", "Propose an artifact").effects == ()
+          and refuses(lambda: NodeAssignment("n1", "reason", "Decide", effects=("invented",)))
+          and refuses(lambda: NodeAssignment("n1", "reason", "Decide", effects=("pure", "writes_fs")))
           and refuses(lambda: NodeAssignment("n1", "think", "Decide"))
           and refuses(lambda: NodeAssignment("", "reason", "Decide"))
           and NodeAssignment("n1", "reason", "Decide", effects=("reads_fs",)).kind == "reason")
+    check("an_assignment_identifier_cannot_escape_its_plan_folder",
+          all(refuses(lambda identity=identity: NodeAssignment(identity, "reason", "Decide"))
+              for identity in ("../escaped", "/absolute", "a/b", "a\\b", "..", "C:outside")))
+    mutable_effects = ["reads_fs"]
+    frozen_assignment = NodeAssignment("immutable", "reason", "Decide", effects=mutable_effects)
+    mutable_effects.append("writes_fs")
+    check("assignment_authority_is_detached_from_mutable_caller_values",
+          frozen_assignment.effects == ("reads_fs",)
+          and frozen_assignment.model_calls_authorized is False
+          and refuses(lambda: NodeAssignment("invalid", "reason", "Decide", model_calls_authorized="false")))
+    with tempfile.TemporaryDirectory() as folder:
+        outside = Path(folder) / "outside.txt"
+        outside.write_text("unchanged", "utf-8")
+        instance = Path(folder) / "instance"
+        instance.mkdir()
+        (instance / ASSIGNMENT_FILE).symlink_to(outside)
+        refused = refuses(lambda: provision(NodeAssignment("n1", "reason", "Decide"),
+                                            catalogue=catalogue, root=instance))
+        check("metadata_symlinks_refuse_before_any_instruction_write",
+              refused and outside.read_text("utf-8") == "unchanged"
+              and not (instance / STANDARD_FILE).exists())
+        (instance / ASSIGNMENT_FILE).unlink()
+        (instance / "contracts").symlink_to(Path(folder), target_is_directory=True)
+        check("a_resource_directory_cannot_be_a_symbolic_link",
+              refuses(lambda: provision(NodeAssignment("n1", "reason", "Decide"),
+                                         catalogue=catalogue, root=instance))
+              and not (instance / STANDARD_FILE).exists())
 
     with tempfile.TemporaryDirectory() as folder:
         reason_node = NodeAssignment(
@@ -316,10 +379,10 @@ def self_test() -> dict:
               and (Path(folder) / "contracts").is_dir()
               and (Path(folder) / "artifacts").is_dir(),
               str(placed.files_written))
-        check("a_reason_node_is_offered_reading_material_and_never_the_writing_tool",
-              offered_ids == ["skill.read_the_source"]
-              and [row["identity"] for row in placed.withheld] == []
-              and "capability.clean_names" not in body
+        check("a_reason_assignment_can_use_code_but_ungranted_writes_are_withheld",
+              offered_ids == ["capability.clean_names", "skill.read_the_source"]
+              and [row["identity"] for row in placed.withheld] == ["tool.write_report"]
+              and "capability.clean_names" in body
               and placed.exposed_bytes == 0 and placed.offered_bytes > 0,
               str(offered_ids))
 
@@ -380,6 +443,17 @@ def self_test() -> dict:
     from .guardrail_intelligence import Guardrail, GuardrailSet
     from .intelligence_tagging import TagSet
     rules = GuardrailSet()
+    pending_rules = GuardrailSet()
+    pending_rules.register(Guardrail(
+        "guard.pending_permission", "Confirm permission", "permission", "block",
+        "before_provisioning", "the permission decision must be established",
+        judge="model_judged", on_unavailable="escalate"))
+    with tempfile.TemporaryDirectory() as folder:
+        check("an_unresolved_escalation_cannot_allow_provisioning",
+              refuses(lambda: provision(NodeAssignment("n1", "reason", "Decide"),
+                                         catalogue=catalogue, root=folder,
+                                         guardrails=pending_rules))
+              and not list(Path(folder).iterdir()))
     rules.register(Guardrail(
         "guard.regulated_needs_a_contract", "Regulated work states its output contract",
         "data_handling", "block", "before_provisioning",
@@ -431,7 +505,7 @@ def self_test() -> dict:
         effects=("reads_fs", "writes_fs"))
     check("slices_become_nodes_only_when_each_one_declares_whether_it_reasons_or_builds",
           [item.kind for item in from_plan] == ["reason", "build"]
-          and from_plan[0].effects == ("reads_fs",)
+          and from_plan[0].effects == ("reads_fs", "writes_fs")
           and from_plan[1].effects == ("reads_fs", "writes_fs")
           and refuses(lambda: assignments_from_plan(_Plan(), kinds={"task_1": "reason"}))
           and refuses(lambda: assignments_from_plan(

@@ -15,6 +15,10 @@ def _jsonl(path: Path, records) -> None:
 
 
 def main() -> int:
+    import sys
+    if "--repository-wide" in sys.argv:
+        from architecture_audit import main as audit_main
+        return audit_main([arg for arg in sys.argv[1:] if arg != "--repository-wide"])
     repository = Path(__file__).resolve().parents[1]
     package = repository / "src" / "loop_engine"
     output = repository / "artifacts" / "architecture"

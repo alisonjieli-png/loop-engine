@@ -30,7 +30,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 
-from .adaptive_practitioner_records import AdaptivePractitionerError
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 
 #: Closed vocabulary. ``argument_not_admitted`` carries admitted values;
 #: ``repeated_identical_failure`` is written only by the action fence.

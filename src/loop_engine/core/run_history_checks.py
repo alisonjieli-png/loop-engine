@@ -21,6 +21,7 @@ from .event_vocabulary import (
     to_canonical_events)
 from .product_outcome_store import (
     PRODUCT_OUTCOME_FILENAME,
+    ProductOutcomeRef,
     bind_product_outcome,
     load_saved_run_bundle)
 from .run_history import (
@@ -39,6 +40,13 @@ def self_test() -> dict:
 
     def check(name, ok, note=""):
         results.append({"name": name, "passed": bool(ok), "note": note})
+
+    def refuses_product_outcome(action):
+        try:
+            action()
+        except RunHistoryIntegrityError:
+            return True
+        return False
 
     from ..loop.recursive_loop import Loop, LoopConfig, StepOutcome, default_handler
 
@@ -125,17 +133,41 @@ def self_test() -> dict:
               "@last resolves only complete manifest plus event-log folders")
 
         outcome = {
-            "record_type": "solve_outcome/v3", "run_id": "run_rt",
+            "record_type": "solve_outcome/v6", "run_id": "run_rt",
             "terminal_code": "COMPLETED_VERIFIED",
             "status": "COMPLETED_VERIFIED", "solved": True,
             "summary": "Verified fixture.", "failure_code": "",
             "verification": {"passed": True}, "artifacts": [],
             "workspace": "", "limitations": [], "selected_canvas": {},
+            "questions": [], "stage_vectors": [], "action_vectors": [],
+            "model_calls": 1, "model_call_accounting_complete": True,
+            "model_calls_known_subtotal": 1,
         }
+        unsupported_versions = tuple(f"solve_outcome/v{version}" for version in (1, 2, 3, 4, 5, 7))
+        check("saved_product_outcomes_refuse_unsupported_versions_before_writes",
+              all(refuses_product_outcome(lambda version=version: bind_product_outcome(
+                  tmp, "run_rt", {**outcome, "record_type": version}))
+                  for version in (*unsupported_versions, "", "unrecognized/v6"))
+              and not os.path.exists(os.path.join(tmp, "run_rt", PRODUCT_OUTCOME_FILENAME)))
+        required_fields = ("questions", "model_calls", "model_call_accounting_complete",
+                           "model_calls_known_subtotal", "stage_vectors", "action_vectors")
+        check("current_saved_product_outcomes_require_all_current_fields",
+              all(refuses_product_outcome(lambda missing=missing: bind_product_outcome(
+                  tmp, "run_rt", {key: value for key, value in outcome.items() if key != missing}))
+                  for missing in required_fields)
+              and not os.path.exists(os.path.join(tmp, "run_rt", PRODUCT_OUTCOME_FILENAME)))
+        check("product_outcome_references_refuse_old_versions_and_truthy_non_booleans",
+              all(refuses_product_outcome(lambda version=version: ProductOutcomeRef(
+                  PRODUCT_OUTCOME_FILENAME, "a" * 64, version, "COMPLETED_VERIFIED", True))
+                  for version in unsupported_versions)
+              and all(refuses_product_outcome(lambda value=value: ProductOutcomeRef(
+                  PRODUCT_OUTCOME_FILENAME, "a" * 64, "solve_outcome/v6", "COMPLETED_VERIFIED", value))
+                  for value in ("false", 0, 1, None)))
         outcome_ref = bind_product_outcome(tmp, "run_rt", outcome)
         bound = load_saved_run_bundle(tmp, "run_rt")
         check("product_outcome_is_digest_bound_to_the_saved_run",
               bound.outcome["terminal_code"] == "COMPLETED_VERIFIED"
+              and bound.outcome["record_type"] == "solve_outcome/v6"
               and bound.outcome_ref == outcome_ref
               and verify_saved_run(tmp, "run_rt")[
                   "product_outcome_bound"] is True,
@@ -159,6 +191,16 @@ def self_test() -> dict:
 
         manifest_path = os.path.join(tmp, "run_rt", "manifest.json")
         manifest = json.load(open(manifest_path))
+        non_boolean_manifest = {**manifest, "product_outcome": {
+            **manifest["product_outcome"], "solved": "true"}}
+        with open(manifest_path, "w") as stream:
+            json.dump(non_boolean_manifest, stream)
+        refused_non_boolean = refuses_product_outcome(
+            lambda: load_saved_run_bundle(tmp, "run_rt"))
+        with open(manifest_path, "w") as stream:
+            json.dump(manifest, stream)
+        check("loaded_product_outcome_reference_does_not_coerce_boolean_authority",
+              refused_non_boolean)
         changed_manifest = {**manifest, "head_digest": "0" * 64}
         with open(manifest_path, "w") as stream:
             json.dump(changed_manifest, stream)

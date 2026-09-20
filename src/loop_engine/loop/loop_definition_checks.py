@@ -5,7 +5,7 @@ services, role conflicts, strict starts, and semantic executor refusal.
 """
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import fields, replace
 import hashlib
 import json
 
@@ -13,12 +13,13 @@ from .loop_contract import LoopContract
 from .loop_definition import (LoopDefinition, LoopDefinitionError,
                               LoopStartRequest)
 from .loop_role import LoopRelationship, LoopRole, LoopRoleIdentity
-from .recursive_loop import (Loop, LoopConfig, LoopExecutorUnavailableError,
+from .recursive_loop import (Loop, LoopConfig, LoopError, LoopExecutorUnavailableError,
                              LoopLedger, StepOutcome)
 from .runtime_context import (IntelligenceSearchRetrievalPort,
                               InternalRuntimeBinding,
                               InternalRuntimeMechanics,
                               LoopRuntimeContext)
+from .supervision_policy import SupervisionPolicy
 
 
 def _definition(*, profile_id="practitioner.reference_nine_step",
@@ -201,6 +202,89 @@ def self_test() -> dict:
           == frozenset(definition.required_capabilities)
           and spawned.runtime_context.internal.permissions
           == tuple(definition.permissions))
+
+    semantic_context = LoopRuntimeContext(internal=InternalRuntimeMechanics(
+        executor_modes=("hybrid",)))
+    empty_context = semantic_context.derive()
+    check("empty_context_derivation_does_not_add_an_executor",
+          empty_context.internal.executor_modes == ()
+          and not empty_context.available_capabilities
+          and not empty_context.internal.permissions)
+    permitted_context = semantic_context.derive(executor_modes=("hybrid",))
+    executor_widening_refused = False
+    try:
+        semantic_context.derive(executor_modes=("deterministic",))
+    except ValueError:
+        executor_widening_refused = True
+    check("context_derivation_preserves_only_requested_available_executors",
+          permitted_context.internal.executor_modes == ("hybrid",)
+          and executor_widening_refused)
+
+    compatible_context = LoopRuntimeContext.compatibility(
+        capabilities=definition.required_capabilities,
+        permissions=("read_selected", "write_selected"),
+        executor_modes=definition.installed_executor_modes)
+    compatible_parent = Loop(LoopStartRequest(
+        "compatible authority", definition, LoopRelationship.starting(),
+        compatible_context, LoopLedger()))
+    permitted_definition = replace(definition, permissions=("read_selected",))
+    permitted_spawn = compatible_parent.spawn(
+        "read the selected input", definition=permitted_definition)
+    check("compatibility_spawn_preserves_a_narrower_permission_grant",
+          permitted_spawn.runtime_context.internal.permissions == ("read_selected",)
+          and permitted_spawn.runtime_context.internal.compatibility_composition)
+    before_refusal = compatible_parent.ledger.loops()
+    permission_widening_refused = False
+    try:
+        compatible_parent.spawn(
+            "ungranted operation", definition=replace(
+                definition, permissions=("ungranted_permission",)))
+    except LoopError as exc:
+        permission_widening_refused = "missing permissions" in str(exc)
+    check("compatibility_spawn_refuses_permissions_absent_from_its_owner",
+          permission_widening_refused
+          and compatible_parent.ledger.loops() == before_refusal)
+
+    restricted_parent = Loop("restrict only modes", LoopConfig(
+        allowable_modes=("deterministic",), preferred_modes=("deterministic",),
+        delegated_modes=("deterministic",)))
+    requested_config = LoopConfig(
+        framework="custom", custom_steps=("first", "second", "third"),
+        allowable_modes=("deterministic", "hybrid"),
+        preferred_modes=("hybrid", "deterministic"),
+        delegated_modes=("deterministic", "hybrid"),
+        logical_kind="search_improvement", replay_guarantee="evidence_equivalent",
+        max_depth=4, max_iterations=8, max_model_calls=3,
+        supervision=SupervisionPolicy(policy_id="loop.supervision.spawn_check",
+                                      identical_failures_before_stop=2),
+        output_type="multiple", max_outputs=2)
+    requested_values = {item.name: getattr(requested_config, item.name)
+                        for item in fields(requested_config)}
+    multi_contract = LoopContract(
+        "emit two values", "code_only", output_roles=("result",),
+        output_type="multiple", max_outputs=2, role="practitioner")
+    try:
+        restricted = restricted_parent.spawn(
+            "preserve independent configuration", requested_config,
+            contract=multi_contract)
+        mode_fields = {"allowable_modes", "preferred_modes", "delegated_modes",
+                       "llm_thinking_power"}
+        configuration_preserved = all(
+            getattr(restricted.config, name) == value
+            for name, value in requested_values.items() if name not in mode_fields)
+        result = restricted.run(handler=lambda loop, step, context: StepOutcome(
+            output=step, mode="deterministic", confidence=0.9, emit_output=True))
+        quota_preserved = result.stopped == "quota" and len(result.outputs) == 2
+        modes_restricted = (restricted.config.allowable_modes == ("deterministic",)
+                            and restricted.config.delegated_modes == ("deterministic",)
+                            and restricted.config.llm_thinking_power == "")
+    except (LoopError, ValueError):
+        configuration_preserved = quota_preserved = modes_restricted = False
+    check("spawn_mode_restriction_preserves_every_independent_config_field",
+          configuration_preserved and modes_restricted
+          and all(getattr(requested_config, name) == value
+                  for name, value in requested_values.items()))
+    check("spawn_mode_restriction_preserves_executed_output_quota", quota_preserved)
 
     passed = sum(1 for test in tests if test["passed"])
     return {"record_type": "loop_definition_checks/v1", "tests": tests,

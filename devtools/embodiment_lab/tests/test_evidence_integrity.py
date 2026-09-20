@@ -69,9 +69,14 @@ class EvidenceIntegrityChecks(unittest.TestCase):
         self.assertFalse(invalid['accounting_complete'])
 
     def test_full_outcome_or_exact_public_projection_only(self):
-        outcome = {'status': 'NO_PROGRESS', 'run_history': {'run_id': 'test'},
-                   'task_accepted': False}
-        reference = ProductOutcomeRef('outcome.json', 'a' * 64, 'solve_outcome/v5', 'NO_PROGRESS', False)
+        outcome = {'record_type': 'solve_outcome/v6', 'run_id': 'test',
+                   'status': 'NO_PROGRESS', 'terminal_code': 'NO_PROGRESS',
+                   'run_history': {'run_id': 'test'}, 'solved': False,
+                   'task_accepted': False, 'artifacts': [], 'verification': {},
+                   'questions': [], 'stage_vectors': [], 'action_vectors': [],
+                   'model_calls': None, 'model_call_accounting_complete': False,
+                   'model_calls_known_subtotal': None}
+        reference = ProductOutcomeRef('outcome.json', 'a' * 64, 'solve_outcome/v6', 'NO_PROGRESS', False)
         bundle = SavedRunBundle(RunHistory('test'), outcome, reference)
         public = deepcopy(outcome)
         public['run_history'].update(product_outcome_bound=True,
@@ -79,7 +84,9 @@ class EvidenceIntegrityChecks(unittest.TestCase):
             product_outcome=reference.to_dict())
         self.assertTrue(matches_bound_product_outcome(outcome, bundle))
         self.assertTrue(matches_bound_product_outcome(public, bundle))
-        for path, value in (('task_accepted', True), ('status', 'COMPLETED_VERIFIED'), ('extra', 'unbound')):
+        for path, value in (('task_accepted', True), ('status', 'COMPLETED_VERIFIED'), ('extra', 'unbound'),
+                            ('stage_vectors', [{'unbound': True}]), ('action_vectors', [{'unbound': True}]),
+                            ('model_calls', 0)):
             changed = deepcopy(public)
             changed[path] = value
             self.assertFalse(matches_bound_product_outcome(changed, bundle))

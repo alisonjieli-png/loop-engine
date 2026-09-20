@@ -24,9 +24,10 @@ from ..code_nodes.solution_model_port import SolutionModelError
 from .adaptive_practitioner_orientation import (
     OrientationConflict, orientation_policy_conflicts)
 from .adaptive_practitioner_records import (
-    _unnamed_fields, AMBIGUITY_STATES, AdaptivePractitionerError,
+    _unnamed_fields, AMBIGUITY_STATES,
     AdaptiveRunServices, ModelResponseRepairStalled, ModelStepRequest,
     TaskOrientationResult)
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .semantic_decision import note_decision
 
 #: The step objective names this step's work. The record's immediate goal

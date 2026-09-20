@@ -31,6 +31,16 @@ if mode == "flood":
 if mode == "binary":
     os.write(1, b"\\xff" * 20000)
     sys.exit()
+if mode == "instructions":
+    material = pathlib.Path("/work/AGENTS.md")
+    if material.read_text() != "fixture instruction":
+        sys.exit(7)
+    try:
+        material.write_text("changed")
+    except OSError:
+        pass
+    else:
+        sys.exit(8)
 base = sys.argv[sys.argv.index("--openai-api-base") + 1]
 model = sys.argv[sys.argv.index("--model") + 1].removeprefix("openai/")
 task = pathlib.Path(sys.argv[sys.argv.index("--message-file") + 1]).read_text()
@@ -101,6 +111,13 @@ def qualification_checks():
         full = request()
         full = replace(full, output_allowance=None)
         check("absent_allocation_uses_full_declared_capacity", full.output_allowance == 64)
+        import hashlib
+        from .instance_instructions import InstructionMaterial
+        material = InstructionMaterial("AGENTS.md", "fixture instruction",
+                                       hashlib.sha256(b"fixture instruction").hexdigest())
+        supplied = run_harness_process(request("instructions", instruction_material=(material,)), broker)
+        check("instructions_reach_the_actual_native_working_directory_as_read_only_files",
+              supplied.ok and supplied.instruction_manifest == ((material.name, material.digest),))
 
         calls = len(received)
         wrong = run_harness_process(request("bad-model"), broker)

@@ -45,7 +45,7 @@ class ScanOutcomeChecks(unittest.TestCase):
 
     def test_outcome_doc_without_a_count_gets_the_fallback_sum(self):
         text = "progress line\n" + _gateway(2, 4) + "\n" + json.dumps({
-            "record_type": "solve_outcome/v5", "terminal_code": "ACCEPTED",
+            "record_type": "solve_outcome/v6", "terminal_code": "ACCEPTED",
             "model_calls": None})
         outcome = task_campaign._scan_outcome(text)
         self.assertEqual(outcome["terminal_code"], "ACCEPTED")
@@ -54,7 +54,7 @@ class ScanOutcomeChecks(unittest.TestCase):
 
     def test_outcome_doc_with_its_own_count_is_kept(self):
         text = _gateway(1, 2) + "\n" + json.dumps({
-            "record_type": "solve_outcome/v5", "terminal_code": "ACCEPTED",
+            "record_type": "solve_outcome/v6", "terminal_code": "ACCEPTED",
             "model_calls": 7})
         outcome = task_campaign._scan_outcome(text)
         self.assertEqual(outcome["model_calls"], 7)

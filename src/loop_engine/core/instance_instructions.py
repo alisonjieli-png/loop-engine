@@ -252,6 +252,30 @@ def _engine_written(path: Path) -> bool:
         return False
 
 
+def _file_body(composed: InstructionFile, name: str) -> str:
+    if name == composed.files[0] or composed.alias_mode not in ALIAS_BODIES:
+        return composed.text()
+    return (ALIAS_BODIES[composed.alias_mode]
+            + f"\n{MARKER_PREFIX}{RECORD_TYPE} digest {composed.digest} -->\n")
+
+
+@dataclass(frozen=True)
+class InstructionMaterial:
+    """One exact instruction file carried into the actual native workspace."""
+
+    name: str
+    body: str = field(repr=False)
+    digest: str
+
+    def __post_init__(self):
+        if (not isinstance(self.name, str) or self.name in ("", ".", "..")
+                or "/" in self.name or "\\" in self.name
+                or not isinstance(self.body, str)):
+            raise InstanceInstructionError("instruction material needs a plain file name and text")
+        if hashlib.sha256(self.body.encode("utf-8")).hexdigest() != self.digest:
+            raise InstanceInstructionError("instruction material digest does not match its body")
+
+
 def write(composed: InstructionFile, working_folder) -> dict:
     """Write the instruction files into one instance folder and report what was written."""
     root = Path(working_folder)
@@ -268,13 +292,7 @@ def write(composed: InstructionFile, working_folder) -> dict:
                 "compose into a folder the engine owns")
     for name in composed.files:
         target = _confined(root, name)
-        if name == standard:
-            payload = composed.text()
-        elif composed.alias_mode in ALIAS_BODIES:
-            payload = (ALIAS_BODIES[composed.alias_mode]
-                       + f"\n{MARKER_PREFIX}{RECORD_TYPE} digest {composed.digest} -->\n")
-        else:
-            payload = composed.text()
+        payload = _file_body(composed, name)
         target.write_text(payload, "utf-8")
         written.append(name)
     record = composed.record()
@@ -388,25 +406,37 @@ class InstanceInstructionWriter:
     authority_effects: tuple[str, ...] = ()
     surfaces: tuple[str, ...] = ()
     reporting: str = ""
+    visible_root: str = ""
 
-    def write_for(self, request, style: str = "") -> dict:
-        """Compose from one typed harness request and write into the instance folder.
-
-        A request without its goal or its run mode is refused by the briefing,
-        which owns that rule; this method does not repeat it.
-        """
-        composed = compose(
+    def compose_for(self, request, style: str = "") -> InstructionFile:
+        """Compose the exact same content for writing and later materialization."""
+        return compose(
             sections_for_assignment(AssignmentBriefing(
                 goal=request.goal, mode=request.mode,
                 contract_id=getattr(getattr(request, "contract", None), "contract_id", ""),
                 effects=tuple(self.authority_effects), surfaces=tuple(self.surfaces),
                 tools=tuple(getattr(request, "tool_refs", ()) or ()),
                 skills=tuple(getattr(request, "skill_refs", ()) or ()),
-                working_folder=self.root, reporting=self.reporting,
+                working_folder=self.visible_root or self.root, reporting=self.reporting,
                 model_calls_authorized=bool(getattr(request, "authorize_model_calls", False)))),
             authority_effects=self.authority_effects,
             style=style or getattr(request, "harness_id", ""))
-        return write(composed, self.root)
+    def write_for(self, request, style: str = "") -> dict:
+        """Write a request's declared instruction files at the host staging path."""
+        return write(self.compose_for(request, style), self.root)
+
+    def material_for(self, request, style: str = "") -> tuple[InstructionMaterial, ...]:
+        """Revalidate every complete file before transferring it into a sandbox."""
+        composed = self.compose_for(request, style)
+        material = []
+        for name in composed.files:
+            path = _confined(Path(self.root), name)
+            expected = _file_body(composed, name)
+            if not path.is_file() or path.read_text("utf-8") != expected:
+                raise InstanceInstructionError("staged instruction material changed before execution")
+            material.append(InstructionMaterial(
+                name, expected, hashlib.sha256(expected.encode("utf-8")).hexdigest()))
+        return tuple(material)
 
 
 def self_test() -> dict:

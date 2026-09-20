@@ -78,4 +78,7 @@ def self_test():
     results["forge_no_finish_refused"] = not extract_remaining_output("forgecode", framed.split("Finished")[0], (result,))
     results["forge_multiple_frames_refused"] = not extract_remaining_output("forgecode", framed + framed, (result,))
     results["forge_extra_candidate_text_refused"] = not extract_remaining_output("forgecode", framed.replace(result, result + "extra"), (result,))
-    return results
+    tests = [{"test": name, "passed": passed} for name, passed in results.items()]
+    passed = sum(item["passed"] is True for item in tests)
+    return {"record_type": "harness_remaining_recipe_checks/v1", "tests": tests,
+            "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}

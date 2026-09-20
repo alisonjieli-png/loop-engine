@@ -1,331 +1,549 @@
-"""Serving what goes into a harness instance, to tenants, behind a paid line.
+"""Tenant-scoped, reviewed harness intelligence disclosure.
 
-A harness instance needs instructions, skills, tools, and code before it can
-work. Loop Engine holds those as records with digests, licenses, and declared
-effects. This module is the surface that hands them out: a caller asks what is
-available, asks for one item's manifest, and asks for a body. Nothing else.
+Catalogue metadata is not disclosure authority. A host installs exact tenant
+grants and a versioned read-only qualification resolver. Unknown or unapproved
+items are absent from all responses, including discovery counts. Explicit host
+review of a local catalogue is supported but is not independent qualification.
 
-WHAT IS FREE AND WHAT IS PAID
-Listing what exists is free, and so is a manifest: a caller can always see
-identities, purposes, digests, sizes, and licenses, which is what is needed to
-decide whether an item is worth having. Reading a body is the paid line,
-because that is the part with the cost behind it. A refusal is never metered,
-and neither is anything a tenant already owns.
-
-INTEGRITY IS NOT OPTIONAL HERE
-Every item is served with the digest of its body, and the body is checked
-against that digest before it leaves. The formats these travel in carry no
-digest of their own, so a caller that trusts a file name trusts nothing. A
-caller that checks the digest it was given has something a changed file cannot
-pass. This mirrors the one published provisioning format that makes
-verification mandatory rather than advisory.
-
-WHAT THIS IS NOT
-It is not a transport. There is no socket here and no protocol framing: the
-module speaks in typed request and result records, so an adapter can put it
-behind whichever protocol a deployment wants without this module knowing.
-It is also not an authorization system of its own; a tenant's entitlement and
-the effects a caller holds both arrive with the request and are enforced, not
-invented.
+Body reads verify bytes before asking an installed meter for an exact committed
+acknowledgment. Unknown commitment never becomes success. The reference meter
+is volatile and idempotent within its lifetime. Durable billing and all-layer
+admission remain host integrations, not new stores in this module.
 """
 from __future__ import annotations
 
 import hashlib
+import hmac
+import json
+import threading
 import time
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
+from types import MappingProxyType
 
-from .harness_intelligence import (HarnessIntelligenceCatalogue,
-                                   HarnessIntelligenceError, offer, visibility)
+from .facets import EFFECTS
+from .harness_intelligence import (KINDS, SOURCE_LAYERS, HarnessIntelligenceCatalogue,
+                                   HarnessIntelligenceError, HarnessIntelligenceItem,
+                                   visibility)
 from .service_api import ServiceError, key_digest
 
-SERVER_RECORD_TYPE = "provisioning_server/v1"
-DISCOVER_RECORD_TYPE = "provisioning_discover/v1"
-LIST_RECORD_TYPE = "provisioning_list/v1"
-MANIFEST_RECORD_TYPE = "provisioning_manifest/v1"
-BODY_RECORD_TYPE = "provisioning_body/v1"
-REFUSAL_RECORD_TYPE = "provisioning_refusal/v1"
-#: What a caller may ask for.
+SERVER_RECORD_TYPE = "provisioning_server/v2"
+REQUEST_RECORD_TYPE = "provisioning_request/v2"
+DISCOVER_RECORD_TYPE = "provisioning_discover/v2"
+LIST_RECORD_TYPE = "provisioning_list/v2"
+MANIFEST_RECORD_TYPE = "provisioning_manifest/v2"
+BODY_RECORD_TYPE = "provisioning_body/v2"
+REFUSAL_RECORD_TYPE = "provisioning_refusal/v2"
+BINDING_RECORD_TYPE = "provisioning_item_binding/v1"
+POLICY_RECORD_TYPE = "provisioning_access_policy/v1"
+GRANT_RECORD_TYPE = "provisioning_grant/v1"
+QUALIFICATION_RECORD_TYPE = "provisioning_qualification/v1"
+RESOLVER_RECORD_TYPE = "provisioning_qualification_resolver/v1"
+METER_REQUEST_RECORD_TYPE = "provisioning_meter_request/v1"
+METER_ACKNOWLEDGMENT_RECORD_TYPE = "provisioning_meter_acknowledgment/v1"
 OPERATIONS = ("discover", "list", "manifest", "read")
-#: What a tenant is entitled to. Listing and manifests are free at both levels.
 ENTITLEMENTS = ("metadata", "bodies")
-#: The unit a read is metered in. Nothing else here is metered.
 METERED_UNIT = "provisioned_item"
-#: Stated to every caller, so what is never charged for is never a surprise.
-NEVER_METERED = ("listing what exists", "a manifest with digests and sizes",
-                 "a refusal of any kind", "reading the tenant's own usage")
+METERING_POLICIES = ("required", "unmetered")
+QUALIFICATION_STATUSES = ("approved", "refused", "unknown")
+QUALIFICATION_APPROVED, QUALIFICATION_REFUSED, QUALIFICATION_UNKNOWN = QUALIFICATION_STATUSES
+QUALIFICATION_BASES = ("host_attested", "authoritative")
+METER_DURABILITY = ("volatile", "durable", "unknown")
+NEVER_METERED = ("listing authorized items", "a manifest with digests and sizes",
+                 "a refusal before metering", "reading the tenant's own usage")
 
 
 class ProvisioningError(ServiceError):
-    """The request names an unknown operation, an unknown item, or asks beyond its entitlement."""
+    """Typed refusal, without revealing an unauthorized item's existence."""
+
+    def __init__(self, message: str, code: str = "invalid_request") -> None:
+        super().__init__(message)
+        self.code = code
+
+
+def _version(actual: str, expected: str) -> None:
+    if actual != expected:
+        raise ProvisioningError("unsupported provisioning contract version", "unsupported_version")
+
+
+def _name(value: str, label: str) -> None:
+    if not isinstance(value, str) or not value.strip():
+        raise ProvisioningError(f"{label} requires a nonempty string")
+
+
+def _digest(value: str) -> None:
+    if (not isinstance(value, str) or len(value) != 64
+            or any(character not in "0123456789abcdef" for character in value)):
+        raise ProvisioningError("an exact lowercase SHA-256 digest is required")
+
+
+def _hash(value: object) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":"),
+                                     allow_nan=False).encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
+class ProvisioningItemBinding:
+    """Exact source identity and complete disclosed catalogue descriptor."""
+
+    identity: str
+    source_layer: str
+    source_ref: str
+    body_digest: str
+    descriptor_digest: str
+    record_type: str = BINDING_RECORD_TYPE
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, BINDING_RECORD_TYPE)
+        _name(self.identity, "item identity")
+        _name(self.source_ref, "source reference")
+        if self.source_layer not in SOURCE_LAYERS:
+            raise ProvisioningError("unsupported intelligence source layer")
+        _digest(self.body_digest)
+        _digest(self.descriptor_digest)
+
+    @classmethod
+    def from_item(cls, item: HarnessIntelligenceItem) -> "ProvisioningItemBinding":
+        if not isinstance(item, HarnessIntelligenceItem):
+            raise ProvisioningError("a typed catalogue item is required")
+        return cls(item.identity, item.source_layer, item.source_ref,
+                   item.digest, _hash(item.reference()))
+
+
+@dataclass(frozen=True)
+class ProvisioningQualification:
+    """Exact resolver decision, never approval inferred from catalogue tags."""
+
+    binding: ProvisioningItemBinding
+    status: str
+    basis: str
+    approval_ref: str = ""
+    record_type: str = QUALIFICATION_RECORD_TYPE
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, QUALIFICATION_RECORD_TYPE)
+        if not isinstance(self.binding, ProvisioningItemBinding):
+            raise ProvisioningError("qualification requires an exact item binding")
+        if self.status not in QUALIFICATION_STATUSES or self.basis not in QUALIFICATION_BASES:
+            raise ProvisioningError("qualification status or basis is unsupported")
+        if self.status == QUALIFICATION_APPROVED:
+            _name(self.approval_ref, "approval evidence reference")
+
+
+@dataclass(frozen=True)
+class ProvisioningQualificationResolver:
+    """Trusted host metadata-only adapter: no body, network, model, or meter effects.
+
+    A Python callback cannot be proved effect-free here. The host must uphold
+    this contract and resolve exact source evidence when claiming authoritative
+    qualification. Refusal never falls back to host attestation automatically.
+    """
+
+    resolver_id: str
+    resolve: object = field(repr=False)
+    read_only: bool = True
+    record_type: str = RESOLVER_RECORD_TYPE
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, RESOLVER_RECORD_TYPE)
+        _name(self.resolver_id, "qualification resolver identity")
+        if not callable(self.resolve) or self.read_only is not True:
+            raise ProvisioningError("a read-only qualification resolver is required")
+
+
+@dataclass(frozen=True)
+class ProvisioningGrant:
+    """Host permission to disclose one exact item to one tenant."""
+
+    tenant_id: str
+    binding: ProvisioningItemBinding
+    body_allowed: bool = False
+    metering: str = "required"
+    record_type: str = GRANT_RECORD_TYPE
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, GRANT_RECORD_TYPE)
+        _name(self.tenant_id, "tenant identity")
+        if not isinstance(self.binding, ProvisioningItemBinding):
+            raise ProvisioningError("a grant requires an exact item binding")
+        if type(self.body_allowed) is not bool or self.metering not in METERING_POLICIES:
+            raise ProvisioningError("a grant requires explicit body and metering policies")
+
+
+@dataclass(frozen=True)
+class ProvisioningAccessPolicy:
+    """Immutable host configuration, not a second qualification database."""
+
+    grants: tuple[ProvisioningGrant, ...] = ()
+    qualification_resolver: ProvisioningQualificationResolver | None = None
+    record_type: str = POLICY_RECORD_TYPE
+    _grant_index: object = field(init=False, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, POLICY_RECORD_TYPE)
+        object.__setattr__(self, "grants", tuple(self.grants))
+        if any(not isinstance(grant, ProvisioningGrant) for grant in self.grants):
+            raise ProvisioningError("policy grants must be typed")
+        keys = [(grant.tenant_id, grant.binding.identity) for grant in self.grants]
+        if len(keys) != len(set(keys)):
+            raise ProvisioningError("only one exact grant per tenant and item is permitted")
+        object.__setattr__(self, "_grant_index", MappingProxyType(dict(zip(keys, self.grants))))
+        if (self.qualification_resolver is not None and not isinstance(
+                self.qualification_resolver, ProvisioningQualificationResolver)):
+            raise ProvisioningError("qualification resolver must be typed")
 
 
 @dataclass(frozen=True)
 class ProvisioningTenant:
-    """One paying caller: its identity, the digest of its key, and its entitlement."""
+    """Host-installed identity, key digest, and maximum subscription tier."""
 
     tenant_id: str
-    key_digest: str
+    key_digest: str = field(repr=False)
     entitlement: str = ENTITLEMENTS[0]
 
     def __post_init__(self) -> None:
-        if not self.tenant_id.strip():
-            raise ProvisioningError("a tenant needs an identifier")
-        if len(self.key_digest) != 64 or any(
-                character not in "0123456789abcdef" for character in self.key_digest):
-            raise ProvisioningError(
-                "key_digest is the digest of the key, never the key")
+        _name(self.tenant_id, "tenant identity")
+        _digest(self.key_digest)
         if self.entitlement not in ENTITLEMENTS:
-            raise ProvisioningError(f"entitlement must be one of {ENTITLEMENTS}")
+            raise ProvisioningError("unsupported entitlement")
+
+
+@dataclass(frozen=True)
+class ProvisioningTenantResolver:
+    """Host-installed current tenant lookup, never request-provided authority."""
+
+    resolver_id: str
+    resolve: object = field(repr=False)
+    record_type: str = "provisioning_tenant_resolver/v1"
+
+    def __post_init__(self):
+        _version(self.record_type, "provisioning_tenant_resolver/v1")
+        _name(self.resolver_id, "tenant resolver identity")
+        if not callable(self.resolve):
+            raise ProvisioningError("tenant resolver must be callable")
 
 
 @dataclass(frozen=True)
 class ProvisioningRequest:
-    """One typed ask. The key arrives here and is never stored or recorded."""
+    """Current request; effects are a filter, never a disclosure grant."""
 
     operation: str
-    key: str
+    key: str = field(repr=False)
     identity: str = ""
     style: str = ""
     authority_effects: tuple[str, ...] = ()
     kinds: tuple[str, ...] = ()
+    request_id: str = ""
+    record_type: str = REQUEST_RECORD_TYPE
 
     def __post_init__(self) -> None:
+        _version(self.record_type, REQUEST_RECORD_TYPE)
         if self.operation not in OPERATIONS:
-            raise ProvisioningError(f"operation must be one of {OPERATIONS}")
-        if not self.key.strip():
-            raise ProvisioningError("a request carries the caller's key")
+            raise ProvisioningError("unsupported provisioning operation")
+        _name(self.key, "caller key")
+        for name in ("identity", "style", "request_id"):
+            if not isinstance(getattr(self, name), str):
+                raise ProvisioningError(f"{name} must be a string")
+        for name, allowed in (("authority_effects", EFFECTS), ("kinds", KINDS)):
+            values = getattr(self, name)
+            if isinstance(values, str):
+                raise ProvisioningError(f"{name} requires an explicit sequence")
+            values = tuple(values)
+            if any(value not in allowed for value in values):
+                raise ProvisioningError(f"unsupported {name}")
+            object.__setattr__(self, name, values)
 
 
-@dataclass
+@dataclass(frozen=True)
+class ProvisioningMeterRequest:
+    """One charge identity; the host meter must make retries idempotent."""
+
+    tenant_id: str
+    request_id: str
+    binding: ProvisioningItemBinding
+    unit: str = METERED_UNIT
+    quantity: float = 1.0
+    record_type: str = METER_REQUEST_RECORD_TYPE
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, METER_REQUEST_RECORD_TYPE)
+        _name(self.tenant_id, "tenant identity")
+        _name(self.request_id, "metering request identity")
+        if not isinstance(self.binding, ProvisioningItemBinding):
+            raise ProvisioningError("metering requires an exact item binding")
+        if self.unit != METERED_UNIT or type(self.quantity) not in (int, float) or self.quantity != 1:
+            raise ProvisioningError("one body read meters exactly one provisioned item")
+
+
+@dataclass(frozen=True)
+class ProvisioningMeterAcknowledgment:
+    """Only committed=True and an exact acknowledgment establish a charge."""
+
+    request: ProvisioningMeterRequest
+    committed: bool | None
+    acknowledgment_ref: str = ""
+    durability: str = "unknown"
+    record_type: str = METER_ACKNOWLEDGMENT_RECORD_TYPE
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, METER_ACKNOWLEDGMENT_RECORD_TYPE)
+        if not isinstance(self.request, ProvisioningMeterRequest):
+            raise ProvisioningError("acknowledgment requires its exact request")
+        if self.committed is not None and type(self.committed) is not bool:
+            raise ProvisioningError("commitment must be an exact boolean or unknown")
+        if self.durability not in METER_DURABILITY:
+            raise ProvisioningError("unsupported meter durability")
+        if self.committed is True:
+            _name(self.acknowledgment_ref, "meter acknowledgment")
+
+
+@dataclass(frozen=True)
 class ProvisioningServer:
-    """Answers four questions over one catalogue, meters one of them."""
+    """Four operations, with host-only policy replacement for revocation."""
 
     catalogue: HarnessIntelligenceCatalogue
     tenants: tuple[ProvisioningTenant, ...] = ()
-    body_reader: object = None
-    meter: object = None
+    body_reader: object = field(default=None, repr=False)
+    meter: object = field(default=None, repr=False)
     server_id: str = "loop-engine-provisioning"
+    access_policy: ProvisioningAccessPolicy = field(default_factory=ProvisioningAccessPolicy)
+    record_type: str = SERVER_RECORD_TYPE
+    tenant_resolver: ProvisioningTenantResolver | None = field(default=None, repr=False)
+    _lock: object = field(default_factory=threading.RLock, init=False, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        _version(self.record_type, SERVER_RECORD_TYPE)
+        _name(self.server_id, "server identity")
+        if not isinstance(self.catalogue, HarnessIntelligenceCatalogue):
+            raise ProvisioningError("a typed catalogue is required")
+        object.__setattr__(self, "tenants", tuple(self.tenants))
+        if any(not isinstance(tenant, ProvisioningTenant) for tenant in self.tenants):
+            raise ProvisioningError("tenants must be typed")
+        if (len({tenant.tenant_id for tenant in self.tenants}) != len(self.tenants)
+                or len({tenant.key_digest for tenant in self.tenants}) != len(self.tenants)):
+            raise ProvisioningError("tenant identities and key digests must be unique")
+        self._validate_policy(self.access_policy)
+        if self.tenant_resolver is not None and not isinstance(self.tenant_resolver, ProvisioningTenantResolver):
+            raise ProvisioningError("tenant resolver must be typed")
+
+    def _validate_policy(self, policy: ProvisioningAccessPolicy) -> None:
+        if not isinstance(policy, ProvisioningAccessPolicy):
+            raise ProvisioningError("a typed host access policy is required")
+        tenants = {tenant.tenant_id for tenant in self.tenants}
+        if any(grant.tenant_id not in tenants for grant in policy.grants):
+            raise ProvisioningError("a grant names an unconfigured tenant")
+
+    def replace_access_policy(self, policy: ProvisioningAccessPolicy) -> None:
+        """Host configuration only. Replacement serializes with active requests."""
+        self._validate_policy(policy)
+        with self._lock:
+            object.__setattr__(self, "access_policy", policy)
 
     def tenant_for(self, key: str) -> ProvisioningTenant:
-        """The tenant this key belongs to, compared by digest in constant time."""
-        import hmac
+        if self.tenant_resolver is not None:
+            try:
+                tenant = self.tenant_resolver.resolve(key)
+            except Exception:
+                raise ProvisioningError("authentication failed", "unauthorized") from None
+            if not isinstance(tenant, ProvisioningTenant) or not hmac.compare_digest(tenant.key_digest, key_digest(key)):
+                raise ProvisioningError("authentication failed", "unauthorized")
+            return tenant
         supplied = key_digest(key)
         for tenant in self.tenants:
             if hmac.compare_digest(supplied, tenant.key_digest):
                 return tenant
-        raise ProvisioningError("no tenant matches this key")
+        raise ProvisioningError("authentication failed", "unauthorized")
 
     def handle(self, request: ProvisioningRequest) -> dict:
-        """Authenticate, answer, and meter a body read and nothing else."""
         if not isinstance(request, ProvisioningRequest):
             raise ProvisioningError("a typed request is required")
-        tenant = self.tenant_for(request.key)
-        if request.operation == OPERATIONS[0]:
-            return self._discover(tenant)
-        if request.operation == OPERATIONS[1]:
-            return self._list(tenant, request)
-        if request.operation == OPERATIONS[2]:
-            return self._manifest(tenant, request)
-        return self._read(tenant, request)
+        _version(request.record_type, REQUEST_RECORD_TYPE)
+        with self._lock:
+            tenant = self.tenant_for(request.key)
+            if request.operation == "discover":
+                return self._discover(tenant, request)
+            if request.operation == "list":
+                return self._list(tenant, request)
+            if request.operation == "manifest":
+                return self._manifest(tenant, request)
+            return self._read(tenant, request)
 
-    def _discover(self, tenant: ProvisioningTenant) -> dict:
-        return {"record_type": DISCOVER_RECORD_TYPE, "server_id": self.server_id,
-                "operations": list(OPERATIONS), "kinds": list(self.catalogue.kinds_held()),
-                "tenant_id": tenant.tenant_id, "entitlement": tenant.entitlement,
-                "items_held": len(self.catalogue.items),
-                "metered_unit": METERED_UNIT,
-                "metered": "reading a body",
-                "never_metered": list(NEVER_METERED),
-                "bodies_available": tenant.entitlement == ENTITLEMENTS[1]}
-
-    def _offered(self, request: ProvisioningRequest) -> dict:
+    def _approved(self, tenant: ProvisioningTenant, item: HarnessIntelligenceItem):
+        binding = ProvisioningItemBinding.from_item(item)
+        policy = self.access_policy
+        grant = policy._grant_index.get((tenant.tenant_id, binding.identity))
+        resolver = policy.qualification_resolver
+        if grant is None or grant.binding != binding or resolver is None:
+            return None
         try:
-            return offer(self.catalogue, style=request.style,
-                         authority_effects=request.authority_effects,
-                         kinds=request.kinds)
+            decision = resolver.resolve(binding)
+        except Exception:  # a failed host resolver establishes no authority
+            return None
+        if (not isinstance(decision, ProvisioningQualification)
+                or decision.record_type != QUALIFICATION_RECORD_TYPE
+                or decision.binding != binding or decision.status != QUALIFICATION_APPROVED
+                or not decision.approval_ref.strip()
+                or self.access_policy is not policy
+                or self.catalogue.items.get(item.identity) != item
+                or ProvisioningItemBinding.from_item(item) != binding):
+            return None
+        return grant, decision
+
+    def _visible(self, item: HarnessIntelligenceItem, request: ProvisioningRequest) -> str:
+        try:
+            return visibility(item, style=request.style,
+                              authority_effects=request.authority_effects, kinds=request.kinds)
         except HarnessIntelligenceError as exc:
             raise ProvisioningError(str(exc)) from None
+
+    def _offered(self, tenant: ProvisioningTenant, request: ProvisioningRequest):
+        offered, withheld = [], []
+        for item in tuple(self.catalogue.items.values()):
+            approval = self._approved(tenant, item)
+            if approval is None:
+                continue
+            reason = self._visible(item, request)
+            if reason:
+                withheld.append({"identity": item.identity, "reason": reason})
+            else:
+                grant, decision = approval
+                offered.append({**item.reference(), "qualification_basis": decision.basis,
+                                "metering_policy": grant.metering,
+                                "body_allowed": grant.body_allowed
+                                and tenant.entitlement == ENTITLEMENTS[1]})
+        return offered, withheld
+
+    def _discover(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
+        offered, _ = self._offered(tenant, request)
+        return {"record_type": DISCOVER_RECORD_TYPE, "server_id": self.server_id,
+                "operations": list(OPERATIONS),
+                "kinds": [kind for kind in KINDS if any(item["kind"] == kind for item in offered)],
+                "tenant_id": tenant.tenant_id, "entitlement": tenant.entitlement,
+                "items_held": len(offered), "metered_unit": METERED_UNIT,
+                "metered": False, "never_metered": list(NEVER_METERED),
+                "bodies_available": callable(self.body_reader) and any(
+                    item["body_allowed"] and (item["metering_policy"] == "unmetered"
+                                              or callable(self.meter)) for item in offered)}
 
     def _list(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
-        offered = self._offered(request)
+        offered, withheld = self._offered(tenant, request)
         return {"record_type": LIST_RECORD_TYPE, "tenant_id": tenant.tenant_id,
-                "entitlement": tenant.entitlement,
-                "items": offered["offered"], "withheld": offered["withheld"],
-                "metered": False}
+                "entitlement": tenant.entitlement, "items": offered,
+                "withheld": withheld, "metered": False}
 
-    def _item(self, request: ProvisioningRequest):
-        """One item by identity, at the cost of one item rather than the catalogue."""
-        if not request.identity.strip():
-            raise ProvisioningError("name the item")
+    def _item(self, tenant: ProvisioningTenant, request: ProvisioningRequest):
         item = self.catalogue.items.get(request.identity)
-        if item is None:
-            raise ProvisioningError(f"no item named {request.identity!r}")
-        try:
-            reason = visibility(item, style=request.style,
-                                authority_effects=request.authority_effects,
-                                kinds=request.kinds)
-        except HarnessIntelligenceError as exc:
-            raise ProvisioningError(str(exc)) from None
+        approval = self._approved(tenant, item) if item is not None else None
+        if approval is None:
+            raise ProvisioningError("item is unavailable to this tenant", "item_unavailable")
+        reason = self._visible(item, request)
         if reason:
-            raise ProvisioningError(f"{request.identity!r} is withheld: {reason}")
-        return item
+            raise ProvisioningError(f"item is withheld: {reason}", "item_withheld")
+        return item, *approval
 
     def _manifest(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
-        item = self._item(request)
+        item, grant, decision = self._item(tenant, request)
         return {"record_type": MANIFEST_RECORD_TYPE, "tenant_id": tenant.tenant_id,
-                "identity": item.identity, "kind": item.kind, "purpose": item.purpose,
-                "digest": item.digest, "size_bytes": item.size_bytes,
-                "license": item.license_name, "source_layer": item.source_layer,
-                "source_ref": item.source_ref,
-                "declared_effects": list(item.declared_effects),
+                **{key: value for key, value in item.reference().items() if key != "record_type"},
+                "qualification_basis": decision.basis,
+                "metering_policy": grant.metering,
+                "body_allowed": grant.body_allowed and tenant.entitlement == ENTITLEMENTS[1],
                 "verify_before_use": True, "metered": False}
 
+    def _recheck(self, tenant, request, binding, grant, decision) -> None:
+        if self.tenant_for(request.key) != tenant:
+            raise ProvisioningError("tenant authority changed", "unauthorized")
+        current, current_grant, current_decision = self._item(tenant, request)
+        if (ProvisioningItemBinding.from_item(current) != binding
+                or current_grant != grant or current_decision != decision):
+            raise ProvisioningError("disclosure authority changed", "item_unavailable")
+
     def _read(self, tenant: ProvisioningTenant, request: ProvisioningRequest) -> dict:
-        item = self._item(request)
-        if tenant.entitlement != ENTITLEMENTS[1]:
-            raise ProvisioningError(
-                f"tenant {tenant.tenant_id!r} holds the {tenant.entitlement!r} entitlement, so it "
-                f"can see {request.identity!r} and its digest but cannot read its body")
+        item, grant, decision = self._item(tenant, request)
+        if tenant.entitlement != ENTITLEMENTS[1] or grant.body_allowed is not True:
+            raise ProvisioningError("body disclosure is not authorized", "body_forbidden")
         if not callable(self.body_reader):
-            raise ProvisioningError(
-                "this server holds no body reader, so it can serve manifests and not bodies")
-        body = self.body_reader(item)
+            raise ProvisioningError("body reader is unavailable", "body_reader_unavailable")
+        binding = ProvisioningItemBinding.from_item(item)
+        meter_request = None
+        if grant.metering == "required":
+            if not callable(self.meter):
+                raise ProvisioningError("required meter is unavailable", "meter_unavailable")
+            meter_request = ProvisioningMeterRequest(tenant.tenant_id, request.request_id, binding)
+        try:
+            body = self.body_reader(item)
+        except Exception:
+            raise ProvisioningError("body reader failed", "body_reader_unavailable") from None
         if not isinstance(body, str):
-            raise ProvisioningError("a body is text")
-        measured = hashlib.sha256(body.encode("utf-8")).hexdigest()
-        if measured != item.digest:
-            raise ProvisioningError(
-                f"{item.identity!r} reads back with digest {measured[:12]} against the recorded "
-                f"{item.digest[:12]}; the body changed since it was registered, so it is not served")
-        if callable(self.meter):
-            self.meter(tenant.tenant_id, METERED_UNIT, 1.0, item.identity)
+            raise ProvisioningError("body reader did not return text", "body_integrity_failed")
+        encoded = body.encode("utf-8")
+        if hashlib.sha256(encoded).hexdigest() != item.digest or len(encoded) != item.size_bytes:
+            raise ProvisioningError("body does not match the exact item", "body_integrity_failed")
+        self._recheck(tenant, request, binding, grant, decision)
+        acknowledgment = None
+        if meter_request is not None:
+            try:
+                acknowledgment = self.meter(meter_request)
+            except Exception:
+                raise ProvisioningError("meter commitment is unknown; retry the same request identity",
+                                        "meter_commit_unknown") from None
+            if (not isinstance(acknowledgment, ProvisioningMeterAcknowledgment)
+                    or acknowledgment.record_type != METER_ACKNOWLEDGMENT_RECORD_TYPE
+                    or acknowledgment.request != meter_request
+                    or acknowledgment.committed is not True
+                    or not acknowledgment.acknowledgment_ref.strip()):
+                raise ProvisioningError(
+                    "meter commitment is not established; retry the same request identity",
+                    "meter_commit_unknown")
+            self._recheck(tenant, request, binding, grant, decision)
         return {"record_type": BODY_RECORD_TYPE, "tenant_id": tenant.tenant_id,
                 "identity": item.identity, "digest": item.digest,
                 "size_bytes": item.size_bytes, "body": body,
-                "metered": True, "metered_unit": METERED_UNIT}
+                "qualification_basis": decision.basis,
+                "metered": acknowledgment is not None,
+                "metered_unit": METERED_UNIT if acknowledgment is not None else None,
+                "metering_acknowledgment": asdict(acknowledgment) if acknowledgment else None}
 
 
 @dataclass
 class RecordedMeter:
-    """A meter that keeps one row per charged read, for a usage answer."""
+    """Volatile meter; exact retries reuse an acknowledgment without charging twice."""
 
-    rows: list = field(default_factory=list)
+    _rows: list = field(default_factory=list, init=False, repr=False)
+    _acknowledgments: dict = field(default_factory=dict, init=False, repr=False)
+    _lock: object = field(default_factory=threading.RLock, init=False, repr=False)
 
-    def __call__(self, tenant_id: str, unit: str, quantity: float, reference: str) -> None:
-        self.rows.append({"tenant_id": tenant_id, "unit": unit, "quantity": quantity,
-                          "record_ref": reference, "at": time.time()})
+    @property
+    def rows(self) -> list[dict]:
+        with self._lock:
+            return [dict(row) for row in self._rows]
+
+    def __call__(self, request: ProvisioningMeterRequest) -> ProvisioningMeterAcknowledgment:
+        if not isinstance(request, ProvisioningMeterRequest):
+            raise ProvisioningError("meter requires a typed request")
+        with self._lock:
+            identity = (request.tenant_id, request.request_id)
+            existing = self._acknowledgments.get(identity)
+            if existing is not None:
+                if existing.request != request:
+                    raise ProvisioningError("meter request identity was reused for another effect",
+                                            "meter_request_conflict")
+                return existing
+            acknowledgment = ProvisioningMeterAcknowledgment(
+                request, True, "volatile:" + _hash(asdict(request)), "volatile")
+            self._rows.append({"tenant_id": request.tenant_id, "unit": request.unit,
+                               "quantity": request.quantity, "request_id": request.request_id,
+                               "record_ref": request.binding.identity,
+                               "body_digest": request.binding.body_digest,
+                               "acknowledgment_ref": acknowledgment.acknowledgment_ref, "at": time.time()})
+            self._acknowledgments[identity] = acknowledgment
+            return acknowledgment
 
     def total(self, tenant_id: str) -> float:
-        return sum(row["quantity"] for row in self.rows if row["tenant_id"] == tenant_id)
+        with self._lock:
+            return sum(row["quantity"] for row in self._rows if row["tenant_id"] == tenant_id)
 
 
 def self_test() -> dict:
-    """Listing is free, a body is paid, a changed body is refused, a refusal is never metered."""
-    from .harness_intelligence import HarnessIntelligenceDraft, item_from_body
-    tests = []
-
-    def check(name, passed, detail=""):
-        tests.append({"test": name, "passed": bool(passed), "detail": detail})
-
-    def refuses(action):
-        try:
-            action()
-        except ProvisioningError:
-            return True
-        except Exception:  # noqa: BLE001 - a crash is not a typed refusal
-            return False
-        return False
-
-    bodies = {
-        "skill.clean_supplier_names": "# Clean supplier names\n\nUse the family.\n",
-        "tool.database_copy": "{\"target\": \"new\"}",
-    }
-    catalogue = HarnessIntelligenceCatalogue()
-    catalogue.register(item_from_body(HarnessIntelligenceDraft(
-        "skill.clean_supplier_names", "skill", "Clean a supplier column",
-        "context_intelligence", "ctx.skill.clean_supplier_names", "MIT"),
-        bodies["skill.clean_supplier_names"]))
-    catalogue.register(item_from_body(HarnessIntelligenceDraft(
-        "tool.database_copy", "tool", "Copy a database with corrections",
-        "code_intelligence", "code.capability.database_copy",
-        declared_effects=("reads_fs", "writes_fs")),
-        bodies["tool.database_copy"]))
-    meter = RecordedMeter()
-    free_tenant = ProvisioningTenant("reader", key_digest("free-key"), "metadata")
-    paid_tenant = ProvisioningTenant("builder", key_digest("paid-key"), "bodies")
-    server = ProvisioningServer(catalogue, (free_tenant, paid_tenant),
-                                body_reader=lambda item: bodies[item.identity],
-                                meter=meter)
-    found = server.handle(ProvisioningRequest("discover", "free-key"))
-    check("discovery_names_the_entitlement_the_metered_unit_and_what_is_never_metered",
-          found["entitlement"] == "metadata" and found["bodies_available"] is False
-          and found["metered_unit"] == METERED_UNIT
-          and "a refusal of any kind" in found["never_metered"]
-          and found["items_held"] == 2 and set(found["kinds"]) == {"skill", "tool"},
-          str(found["kinds"]))
-    listed = server.handle(ProvisioningRequest(
-        "list", "free-key", authority_effects=("reads_fs", "writes_fs")))
-    manifest = server.handle(ProvisioningRequest(
-        "manifest", "free-key", identity="skill.clean_supplier_names"))
-    check("listing_and_a_manifest_are_free_and_carry_digests_without_bodies",
-          listed["metered"] is False and manifest["metered"] is False
-          and len(listed["items"]) == 2
-          and all("body" not in row for row in listed["items"])
-          and manifest["digest"] == catalogue.items[
-              "skill.clean_supplier_names"].digest
-          and manifest["verify_before_use"] is True and meter.total("reader") == 0,
-          manifest["digest"][:12])
-    check("a_metadata_tenant_is_refused_a_body_by_name_and_is_not_metered",
-          refuses(lambda: server.handle(ProvisioningRequest(
-              "read", "free-key", identity="skill.clean_supplier_names")))
-          and meter.total("reader") == 0)
-    served = server.handle(ProvisioningRequest(
-        "read", "paid-key", identity="skill.clean_supplier_names"))
-    check("a_paid_tenant_reads_a_body_with_its_digest_and_is_metered_once",
-          served["body"] == bodies["skill.clean_supplier_names"]
-          and served["digest"] == hashlib.sha256(
-              served["body"].encode("utf-8")).hexdigest()
-          and served["metered"] is True and meter.total("builder") == 1.0
-          and meter.rows[0]["record_ref"] == "skill.clean_supplier_names",
-          str(meter.total("builder")))
-    changed = ProvisioningServer(catalogue, (paid_tenant,),
-                                 body_reader=lambda item: "something else entirely",
-                                 meter=meter)
-    check("a_body_that_no_longer_matches_its_recorded_digest_is_not_served",
-          refuses(lambda: changed.handle(ProvisioningRequest(
-              "read", "paid-key", identity="skill.clean_supplier_names")))
-          and meter.total("builder") == 1.0)
-    check("an_unknown_key_an_unknown_item_and_a_withheld_item_are_refused_and_never_metered",
-          refuses(lambda: server.handle(ProvisioningRequest("discover", "wrong-key")))
-          and refuses(lambda: server.handle(ProvisioningRequest(
-              "manifest", "paid-key", identity="absent")))
-          and refuses(lambda: server.handle(ProvisioningRequest(
-              "read", "paid-key", identity="tool.database_copy")))
-          and refuses(lambda: ProvisioningRequest("invent", "paid-key"))
-          and refuses(lambda: ProvisioningTenant("x", "short", "bodies"))
-          and refuses(lambda: ProvisioningTenant("x", key_digest("k"), "everything"))
-          and meter.total("builder") == 1.0)
-    # Asking about one item is answered by looking at that item, so the fast path
-    # and the list must never disagree about why something is withheld.
-    listed_reasons = {row["identity"]: row["reason"] for row in
-                      server.handle(ProvisioningRequest("list", "paid-key"))["withheld"]}
-    by_name = ""
-    try:
-        server.handle(ProvisioningRequest("manifest", "paid-key",
-                                          identity="tool.database_copy"))
-    except ProvisioningError as exc:
-        by_name = str(exc)
-    check("asking_about_one_item_gives_the_same_reason_the_list_gives",
-          "tool.database_copy" in listed_reasons
-          and listed_reasons["tool.database_copy"] in by_name
-          and "reads_fs" in by_name,
-          by_name[:90])
-    bodiless = ProvisioningServer(catalogue, (paid_tenant,))
-    check("a_server_with_no_body_reader_serves_manifests_and_says_so_rather_than_failing_oddly",
-          bodiless.handle(ProvisioningRequest(
-              "manifest", "paid-key", identity="skill.clean_supplier_names"))["digest"]
-          and refuses(lambda: bodiless.handle(ProvisioningRequest(
-              "read", "paid-key", identity="skill.clean_supplier_names"))))
-    passed = sum(item["passed"] for item in tests)
-    return {"record_type": "provisioning_server_test/v1", "tests": tests,
-            "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}
+    """Collected public-path checks remain owned by this component."""
+    from .provisioning_server_checks import self_test as run
+    return run()

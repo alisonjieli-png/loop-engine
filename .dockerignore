@@ -1,5 +1,12 @@
 .git
 .venv
+.loop-engine-dev
+.env
+.env.*
+**/.env
+**/.env.*
+src/loop_engine/evidence/runs
+src/loop_engine/evidence/studio
 __pycache__
 *.pyc
 artifacts

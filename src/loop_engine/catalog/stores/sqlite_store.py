@@ -9,10 +9,12 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
+from copy import deepcopy
 from pathlib import Path
 
 from ..capabilities import StoreCapabilities
-from ..protocol import PreconditionFailed, StoreError, UnsupportedOperationError
+from ..protocol import (ATOMIC_BATCH_OPERATION, ATOMIC_BATCH_VERSION, CatalogBatchAcknowledgment,
+                        CatalogWriteBatch, PreconditionFailed, StoreError, UnsupportedOperationError)
 from ..query import (
     IntelligenceQuery,
     iter_query_records,
@@ -83,7 +85,8 @@ class SQLiteRecordStore:
             adapter_kind="embedded_database", engine="sqlite",
             operations={"get": True, "query": True, "stream": True,
                         "write": not self._read_only, "export": True,
-                        "import": not self._read_only},
+                        "import": not self._read_only,
+                        ATOMIC_BATCH_OPERATION: not self._read_only},
             query_capabilities={"projection": False, "filter": True,
                                "join": False, "aggregation": False,
                                "relationship_traversal": False,
@@ -95,6 +98,8 @@ class SQLiteRecordStore:
                           "snapshot_scope": "statement",
                           "atomic_preconditions": not self._read_only,
                           "atomic_import": not self._read_only,
+                          "atomic_batch_version": ATOMIC_BATCH_VERSION,
+                          "atomic_read_set": not self._read_only,
                           "atomic_scope": "one_database",
                           "writer_topology": "serialized_single_writer",
                           "journal_mode_last_observed": self._journal_mode,
@@ -152,6 +157,7 @@ class SQLiteRecordStore:
         if self._read_only:
             raise UnsupportedOperationError("SQLite store is read-only")
         values = _record_values(record)
+        precondition = deepcopy(precondition)
         if precondition is not None and not (
                 isinstance(precondition, dict)
                 and ((set(precondition) == {"exists"}
@@ -159,12 +165,16 @@ class SQLiteRecordStore:
                      or (set(precondition) == {"record_version"}
                          and isinstance(precondition["record_version"], str)))):
             raise StoreError("unsupported record precondition")
+        if (precondition is not None and "record_version" in precondition
+                and (not isinstance(values[1], str) or not values[1]
+                     or values[1] == precondition["record_version"])):
+            raise StoreError("a guarded update must use a new record_version")
         try:
             self._begin_write()
             if precondition is not None:
                 current = self._con.execute(
                     "SELECT record_version FROM records WHERE record_id = ?",
-                    (record["record_id"],)).fetchone()
+                    (values[0],)).fetchone()
                 if (("exists" in precondition and current is not None)
                         or ("record_version" in precondition
                             and (current is None or current[0]
@@ -177,7 +187,7 @@ class SQLiteRecordStore:
             if isinstance(exc, StoreError):
                 raise
             raise StoreError("SQLite record write failed") from exc
-        return {"record_id": record["record_id"], "stored": True}
+        return {"record_id": values[0], "stored": True}
 
     def _write_values(self, values: tuple) -> None:
         self._con.execute(
@@ -189,6 +199,33 @@ class SQLiteRecordStore:
             "artifact_kind=excluded.artifact_kind, lifecycle=excluded.lifecycle, "
             "namespace=excluded.namespace, attributes=excluded.attributes, "
             "payload=excluded.payload", values)
+
+    def apply_batch(self, request: CatalogWriteBatch) -> CatalogBatchAcknowledgment:
+        """Check the complete read set and commit all writes in one transaction."""
+        if self._read_only:
+            raise UnsupportedOperationError("SQLite store is read-only")
+        if not isinstance(request, CatalogWriteBatch):
+            raise StoreError("a typed atomic batch request is required")
+        request.__post_init__()
+        values = tuple(_record_values(row) for row in request.records)
+        try:
+            self._begin_write()
+            for expected in request.preconditions:
+                held = self._con.execute("SELECT record_version FROM records WHERE record_id = ?",
+                                         (expected.record_id,)).fetchone()
+                if ((expected.must_not_exist and held is not None)
+                        or (not expected.must_not_exist and
+                            (held is None or held[0] != expected.record_version))):
+                    raise PreconditionFailed("atomic batch read-set precondition failed")
+            for row in values:
+                self._write_values(row)
+            self._con.commit()
+        except (sqlite3.Error, StoreError) as exc:
+            self._con.rollback()
+            if isinstance(exc, StoreError):
+                raise
+            raise StoreError("SQLite atomic batch write failed") from exc
+        return CatalogBatchAcknowledgment(request.digest, True)
 
     def _begin_write(self) -> None:
         # Acquiring the transaction refreshes SQLite's cached file mode and
@@ -321,6 +358,13 @@ def self_test() -> dict:
             check("ambiguous_precondition_is_refused", False)
         except StoreError:
             check("ambiguous_precondition_is_refused", True)
+        try:
+            store.put(dict(created, payload={"changed": True}),
+                      precondition={"record_version": "1"})
+            check("guarded_updates_cannot_reuse_the_expected_version", False)
+        except StoreError:
+            check("guarded_updates_cannot_reuse_the_expected_version",
+                  store.get("new")["payload"] == created["payload"])
 
         store.put(dict(record, record_id="foreign", namespace="other",
                        attributes={"selected": True}))

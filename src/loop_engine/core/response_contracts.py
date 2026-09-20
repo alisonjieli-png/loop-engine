@@ -31,6 +31,7 @@ INDEPENDENT_FAILURE_CONFIRMATION = "independent.failure_confirmation"
 TEXT_CONFORMANCE_ESCALATION = "text_conformance.escalation_response"
 STEP_EFFICIENCY_REVIEW = "practitioner.step_efficiency_review"
 TYPED_DECISION = "typed_decision.choice"
+TYPED_DECISION_BATCH = "typed_decision.batch"
 #: The most candidates one typed decision may weigh; a wider choice is split.
 TYPED_DECISION_MAX_CANDIDATES = 10
 #: One operation from a declared vocabulary and one target row of an element
@@ -166,6 +167,11 @@ _REGISTRY = {contract.contract_id: contract for contract in (
                                      notes="Name one declared operation and, when it needs one, "
                                            "the index of one table row; abstain when no action "
                                            "is defensible.")),
+    ResponseContract(TYPED_DECISION_BATCH, "1.0.0",
+                     "one typed answer per declared question; admission checks exact question identities and distributions",
+                     {"answers": {"question_id": "declared choice, score or boolean probability answer"},
+                      "task_accepted": False},
+                     SuggestedOutput("object", notes="Typed judgments do not establish independent task acceptance.")),
 )}
 
 
@@ -214,7 +220,8 @@ def self_test() -> dict:
           and rendered["action_vector"]["process_checks"][0]["status"].split("|")
           == list(PROCESS_CHECK_STATUSES))
     check("every_contract_has_a_unique_id_a_version_and_a_stable_digest",
-          len(set(contract_ids())) == len(contract_ids()) == 8
+          len(set(contract_ids())) == len(contract_ids()) == 9
+          and TYPED_DECISION_BATCH in contract_ids()
           and all(record["version"].count(".") == 2 for record in registry_records())
           and verify.content_digest == registered_contract(PRACTITIONER_VERIFY).content_digest)
     judgment = registered_contract(INDEPENDENT_CRITERION_JUDGMENT)

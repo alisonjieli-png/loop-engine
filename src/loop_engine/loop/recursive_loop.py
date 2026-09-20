@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import weakref
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from ..loop.kernel import KERNEL_NODES
 from .loop_contract import (MULTIPLE_OUTPUT, OUTPUT_TYPES, SINGLE_OUTPUT, LoopContract,
@@ -793,26 +793,17 @@ class Loop(metaclass=_LoopMeta):
             if set(delegated) != set(config.delegated_modes):
                 delegated_clamped_from = tuple(config.delegated_modes)
             if clamped_from or delegated_clamped_from:
-                config = LoopConfig(
-                    framework=config.framework,
-                    logical_kind=config.logical_kind,
-                    replay_guarantee=config.replay_guarantee,
+                config = replace(
+                    config,
                     allowable_modes=allowed,
                     preferred_modes=tuple(m for m in config.preferred_modes
                                           if m in allowed) or allowed,
                     delegated_modes=delegated,
-                    power=config.power,
                     llm_thinking_power=(
                         config.llm_thinking_power if any(
                             mode in allowed for mode in
                             ("hybrid", "non_deterministic")) else ""),
-                    custom_steps=config.custom_steps,
-                    max_depth=config.max_depth,
-                    max_iterations=config.max_iterations,
-                    max_model_calls=config.max_model_calls,
-                    loop_condition=config.loop_condition,
-                    exit_condition=config.exit_condition,
-                    success_confidence_min=config.success_confidence_min)
+                )
         selected_relationship = relationship or LoopRelationship.spawned_by(
             self.loop_id)
         semantic_spawn = (
@@ -853,21 +844,24 @@ class Loop(metaclass=_LoopMeta):
                 "exceed this Loop's delegated_modes "
                 f"{self.config.delegated_modes}")
 
-        if self.runtime_context.internal.compatibility_composition:
-            spawned_context = LoopRuntimeContext.compatibility(
-                capabilities=definition.required_capabilities,
-                permissions=definition.permissions,
-                executor_modes=definition.installed_executor_modes)
-        else:
-            try:
+        try:
+            if self.runtime_context.internal.compatibility_composition:
+                # Compatibility can supply historical service declarations,
+                # but a requested definition cannot grant new permissions.
+                self.runtime_context.require(permissions=definition.permissions)
+                spawned_context = LoopRuntimeContext.compatibility(
+                    capabilities=definition.required_capabilities,
+                    permissions=definition.permissions,
+                    executor_modes=definition.installed_executor_modes)
+            else:
                 spawned_context = self.runtime_context.derive(
                     capabilities=definition.required_capabilities,
                     permissions=definition.permissions,
                     executor_modes=definition.installed_executor_modes)
-            except ValueError as exc:
-                raise LoopError(
-                    f"spawning context cannot grant the requested Loop: "
-                    f"{exc}") from exc
+        except ValueError as exc:
+            raise LoopError(
+                f"spawning context cannot grant the requested Loop: "
+                f"{exc}") from exc
         try:
             start_request = LoopStartRequest(
                 goal, definition, selected_relationship,

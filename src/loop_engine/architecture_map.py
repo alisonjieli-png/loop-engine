@@ -37,12 +37,27 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
                 "backend_isolation", "structure_review",
                 "runtime_ontology_check", "scheduling", "campaign",
                 "parallel_runner", "cli_operations", "parameter_boundary",
-                "solve_cli", "cli_help", "run_history_cli", "record_cli", "kaggle_report",
+                "solve_cli", "cli_help", "run_history_cli", "record_cli", "service_cli", "decision_cli", "kaggle_report",
                 "parameter_boundary_checks", "semantic_conformance",
                 "semantic_freedom_conformance")
 
+# Existing ontology-only namespaces are physical packages, not a tenth runtime
+# group. The old serialized-record reader is tracked pre-launch cleanup.
+ONTOLOGY_NAMESPACE_MODULES = ("node.__init__", "node.loop_node.__init__")
+
 #: module -> subpackage.  "steps" and "regimes" are subpackages riding in loop/.
 MODULE_MAP = {
+    "core.decisions": ("__init__", "contracts", "contract_checks", "credentials", "configuration", "gateway",
+                       "http_transport", "wire", "jev", "jev_checks", "system_one", "system_one_checks"),
+    "core.service_runtime": (
+        "__init__", "records", "storage", "runtime", "runtime_checks", "provisioning",
+        "billing", "billing_records", "billing_checks", "stripe_provider",
+        "billing_effects", "stripe_sessions", "stripe_session_checks", "stripe_session_transport_checks",
+        "http", "http_auth", "http_entrypoint", "http_checks", "http_boundary_checks",
+        "http_test_fixtures", "access", "access_checks",
+        "browser_identity", "browser_identity_checks",
+    ),
+    "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "ontology": (
         "artifacts", "catalog", "folders", "loop_definition_record",
         "loop_node", "node", "ontology_checks", "records",
@@ -76,7 +91,7 @@ MODULE_MAP = {
         "lifecycle",
     ),
     "memory.storage": (
-        "store", "repository", "learning_cycle", "learning_cycle_checks",
+        "store", "learning_cycle", "learning_cycle_checks",
         "learning_records",
     ),
     "generation": (
@@ -114,16 +129,17 @@ MODULE_MAP = {
         "reactive_contracts", "reactive_outputs",
         "recursive_loop", "service_loop_envelope", "supervision_policy",
         "checklist_loop", "loop_handoff",
-        "spawned_practitioner",
+        "spawned_practitioner", "spawned_deadline", "spawned_deadline_checks",
     ),
     "strings": (
-        "ask_strategies", "context", "decision_schemas",
+        "ask_strategies", "context", "decision_schemas", "capability_resources",
         "frame", "intelligence_strings", "interrogation",
         "knowledge", "knowledge_state", "notes",
-        "output_templates", "prompt_fragments", "verification_prompts",
+        "output_templates", "prompt_fragments", "verification_prompts", "solution_export_templates",
         "question_engine", "solution_shaping",
     ),
     "code_nodes": (
+        "decision_tools", "decision_tool_checks", "decision_gateway_checks",
         "ascii_views", "ascii_views_checks",
         "blueprint", "campaign_runner", "capture", "context_seed",
         "core_engine_proof",
@@ -140,13 +156,14 @@ MODULE_MAP = {
         "runtime_contracts", "self_improvement_loop",
         "smoke_ladder",
         "solve_learned_memory",
-        "solve_region_evidence", "solve_request_adaptation", "solve_runtime",
+        "solve_region_evidence", "solve_request_adaptation", "solve_runtime", "solve_provisioning_checks",
         "solve_mode_checks", "solve_terminal", "solve_terminal_checks",
         "architecture_diagram", "architecture_diagram_text",
         "solution_canvas", "solution_canvas_checks", "solution_compiler",
         "solution_model_port",
         "solution_graph", "solution_graph_builder", "solution_graph_checks",
-        "solution_graph_validation", "solution_records", "solutions_space",
+        "solution_graph_validation", "solution_graph_execution", "solution_operation_identity",
+        "solution_records", "solutions_space",
         "solution_export", "solution_export_checks", "service_endpoints",
         "string_foundry",
         "text_conformance", "text_conformance_checks", "text_conformance_operations",
@@ -216,7 +233,7 @@ MODULE_MAP = {
         "self_tuning",
         "context_catalog",
         "context_classification", "context_ontology",
-        "code_intelligence_assets", "event_vocabulary", "duckdb_catalog",
+        "code_intelligence_assets", "code_intelligence_asset_checks", "event_vocabulary", "duckdb_catalog",
         "artifact_constraints",
         "independent_evidence",
         "differential_verification", "differential_drivers",
@@ -227,9 +244,10 @@ MODULE_MAP = {
         "harness_process_checks", "harness_confinement",
         "harness_configuration", "harness_semantic", "harness_semantic_checks",
         "instance_instructions", "instance_instructions_checks",
-        "harness_intelligence", "external_service_intelligence", "provisioning_server",
+        "harness_intelligence", "external_service_intelligence", "provisioning_server", "provisioning_server_checks",
+        "provisioning_mcp", "provisioning_mcp_checks",
         "node_provisioning", "intelligence_tagging", "credential_leases",
-        "capability_needs", "guardrail_intelligence", "spawned_provisioning",
+        "capability_needs", "guardrail_intelligence", "spawned_provisioning", "spawned_provisioning_checks", "model_call_collection",
         "harness_output_limit_binding",
         "harness_fallback", "harness_fallback_checks", "harness_layering",
         "harness_layering_space", "harness_layering_availability",
@@ -275,6 +293,7 @@ MODULE_MAP = {
         "registered_capability_call",
         "model_prompt_envelope",
         "model_gateway_accounting", "model_gateway_accounting_checks", "model_token_preflight",
+        "retrieval_backends", "retrieval_backend_checks",
         "model_output_recovery_checks", "model_output_allocation_checks",
         "route_health",
         "model_response_admission", "model_response_admission_checks",
@@ -340,20 +359,46 @@ MODULE_MAP = {
     ),
 }
 
-_FLAT = {m: s for s, mods in MODULE_MAP.items() for m in mods}
+_QUALIFIED = {f"{package}.{module}": package
+              for package, modules in MODULE_MAP.items() for module in modules}
+_QUALIFIED.update({module: "ontology" for module in ONTOLOGY_NAMESPACE_MODULES})
 
 
 def subpackage_of(module: str) -> str:
-    """Which of the four abstractions owns this module ("" for root plumbing)."""
+    """Resolve an exact module or an unambiguous short name; never guess an owner."""
     if module in ROOT_MODULES:
         return ""
-    return _FLAT[module]
+    if module in _QUALIFIED:
+        return _QUALIFIED[module]
+    matches = [package for package, modules in MODULE_MAP.items() if module in modules]
+    if len(matches) != 1:
+        raise ValueError("module name must identify exactly one mapped owner")
+    return matches[0]
 
 
 def module_path(module: str) -> str:
-    """Full import path for a bare module name, via the map."""
+    """Full import path for an exact or unambiguous mapped module."""
     sub = subpackage_of(module)
+    if module in _QUALIFIED:
+        return f"{PACKAGE}.{module}"
     return f"{PACKAGE}.{sub}.{module}" if sub else f"{PACKAGE}.{module}"
+
+
+def _coverage(package_root: str, modules: dict, root_modules: tuple) -> dict:
+    """Compare complete module paths, including nested folders, without imports."""
+    declared = {module.replace(".", "/") + ".py" for module in root_modules}
+    for package, names in modules.items():
+        folder = package.replace(".", "/")
+        declared.update(f"{folder}/{name}.py" for name in names)
+        # Package initialization is plumbing inside an explicitly mapped folder.
+        declared.add(folder + "/__init__.py")
+    on_disk = set()
+    for folder, directories, files in os.walk(package_root, followlinks=False):
+        directories[:] = [name for name in directories if name != "__pycache__"]
+        for name in files:
+            if name.endswith(".py"):
+                on_disk.add(os.path.relpath(os.path.join(folder, name), package_root).replace(os.sep, "/"))
+    return {"unmapped": sorted(on_disk - declared), "missing": sorted(declared - on_disk)}
 
 
 def render_map() -> str:
@@ -390,16 +435,41 @@ def self_test() -> dict:
     for s in SUBPACKAGES:
         files = sorted(f[:-3] for f in os.listdir(os.path.join(here, s))
                        if f.endswith(".py") and f != "__init__.py")
-        unmapped = [m for m in files if m not in _FLAT or _FLAT[m] != s]
+        unmapped = [m for m in files if m not in MODULE_MAP[s]]
         check(f"every_module_in_{s}_is_mapped_there", not unmapped,
               f"unmapped/misfiled: {unmapped}")
     # 2. every mapped module exists on disk where the map says.
     missing = []
-    for m, s in _FLAT.items():
-        target = os.path.join(here, s.replace(".", os.sep), m)
-        if not (os.path.exists(target + ".py") or os.path.isdir(target)):
-            missing.append(f"{s}/{m}")
+    for package, modules in MODULE_MAP.items():
+        for module in modules:
+            target = os.path.join(here, package.replace(".", os.sep), module)
+            if not os.path.isfile(target + ".py"):
+                missing.append(f"{package}/{module}")
     check("every_mapped_module_exists_on_disk", not missing, str(missing))
+    complete = _coverage(here, MODULE_MAP, ROOT_MODULES + ONTOLOGY_NAMESPACE_MODULES)
+    check("every_nested_module_has_an_exact_mapped_path", not complete["unmapped"], str(complete))
+    check("every_declared_module_and_package_path_exists", not complete["missing"], str(complete["missing"]))
+    check("qualified_names_preserve_distinct_modules_with_the_same_filename",
+          module_path("core.service_runtime.records") == f"{PACKAGE}.core.service_runtime.records"
+          and module_path("ontology.records") == f"{PACKAGE}.ontology.records")
+    ambiguous_refused = False
+    try:
+        subpackage_of("records")
+    except ValueError:
+        ambiguous_refused = True
+    check("ambiguous_short_module_names_are_refused", ambiguous_refused)
+    import tempfile
+    from pathlib import Path
+    with tempfile.TemporaryDirectory(prefix="architecture-map-") as temporary:
+        fixture = Path(temporary)
+        (fixture / "first").mkdir()
+        (fixture / "first/records.py").write_text("", encoding="utf-8")
+        (fixture / "unmapped").mkdir()
+        (fixture / "unmapped/records.py").write_text("", encoding="utf-8")
+        measured = _coverage(temporary, {"first": ("records",), "second": ("records",)}, ())
+        check("nested_coverage_canary_detects_missing_and_unmapped_duplicate_basenames",
+              "second/records.py" in measured["missing"]
+              and measured["unmapped"] == ["unmapped/records.py"])
     # 3. the top-level abstraction set is frozen; nested subpackages ride
     #    inside their owning abstraction.
     check("top_level_abstractions_are_frozen",

@@ -15,6 +15,7 @@ available to Route instead of becoming a generic exception.
 """
 from __future__ import annotations
 
+from dataclasses import replace
 from ..core.capability_invocation import CapabilityInvocationPolicy
 
 
@@ -78,6 +79,7 @@ def _new_loop(*, goal: str, config, contract, ledger=None, parent=None):
 
 def run_capability_ref_as_loop(directory, ref, operation: str, *,
                                request=None, ledger=None, parent=None,
+                               invocation_policy: CapabilityInvocationPolicy | None = None,
                                **kwargs) -> dict:
     """Verify and invoke a Capability Directory LoopRef.
 
@@ -90,7 +92,7 @@ def run_capability_ref_as_loop(directory, ref, operation: str, *,
 
     if not isinstance(ref, IntelligenceItemRef):
         raise CapabilityLoopError("capability invocation requires a LoopRef")
-    surface = ref.handshake.loop_id
+    surface = ref.handshake.item_id
     if (ref.handshake.layer != "code_intelligence"
             or ref.payload_ref != f"capability://{surface}"):
         raise CapabilityLoopError(
@@ -100,9 +102,16 @@ def run_capability_ref_as_loop(directory, ref, operation: str, *,
     if not ref.payload_digest or ref.payload_digest != current_digest:
         raise CapabilityLoopError(
             "the selected capability handshake changed after discovery")
+    if invocation_policy is None:
+        invocation_policy = CapabilityInvocationPolicy(allow_fallback=False)
+    if type(invocation_policy) is not CapabilityInvocationPolicy:
+        raise CapabilityLoopError("a selected reference requires a typed invocation policy")
+    if invocation_policy.expected_handshake_digest not in ("", current_digest):
+        raise CapabilityLoopError("the invocation policy does not match the selected reference")
+    invocation_policy = replace(invocation_policy, expected_handshake_digest=current_digest)
     return run_capability_as_loop(
         directory, surface, operation, request=request, ledger=ledger,
-        parent=parent, **kwargs)
+        parent=parent, invocation_policy=invocation_policy, **kwargs)
 
 
 def run_capability_as_loop(directory, surface: str, operation: str, *,
@@ -116,10 +125,23 @@ def run_capability_as_loop(directory, surface: str, operation: str, *,
     returned ``ok`` remains false. This preserves rate/reset metadata for Route
     without misreporting provider success or hiding a retry in the adapter.
     """
+    if invocation_policy is None:
+        invocation_policy = CapabilityInvocationPolicy(allow_fallback=False)
+    if type(invocation_policy) is not CapabilityInvocationPolicy or invocation_policy.allow_fallback:
+        raise CapabilityLoopError("a governed single attempt cannot select an automatic fallback")
     handshake = directory.handshake(surface)
     if not handshake.supports(operation):
         raise CapabilityLoopError(
             f"{surface!r} does not support operation {operation!r}")
+    from ..core.capability_invocation import capability_handshake_digest
+    endpoint = directory._ep.get((surface, operation))
+    if endpoint is None:
+        raise CapabilityLoopError("the selected capability has no registered implementation")
+    function = endpoint.fn
+    invocation_policy.bind(handshake, function)
+    invocation_policy = replace(invocation_policy,
+                                expected_handshake_digest=capability_handshake_digest(handshake),
+                                expected_callable=function)
 
     from .loop_contract import LoopContract
     from .recursive_loop import LoopConfig, StepOutcome
@@ -226,7 +248,7 @@ def self_test() -> dict:
 
     refs = directory.search_core("search fixture")
     search_ref = next(ref for ref in refs
-                      if ref.handshake.loop_id == "fixture_search")
+                      if ref.handshake.item_id == "fixture_search")
     before = len(calls)
     ledger = LoopLedger()
     run = run_capability_ref_as_loop(
@@ -324,14 +346,14 @@ def _invocation_policy_checks() -> list[dict]:
     result = directory.call(handshake.surface, "run", policy=policy)
     check("pinned_exact_callable_executes_once", result.ok and calls == ["original"])
     calls.clear()
-    endpoint.fn = alternate
+    object.__setattr__(endpoint, "fn", alternate)
     try:
         directory.call(handshake.surface, "run", policy=policy)
         swap_refused = False
     except ValueError:
         swap_refused = True
     check("callable_swap_refuses_before_any_endpoint_or_fallback", swap_refused and not calls)
-    endpoint.fn = original
+    object.__setattr__(endpoint, "fn", original)
     directory.register(replace(handshake, functionality="changed declaration"), (endpoint,), replace=True)
     try:
         directory.call(handshake.surface, "run", policy=policy)
@@ -339,7 +361,8 @@ def _invocation_policy_checks() -> list[dict]:
     except ValueError:
         digest_refused = True
     check("handshake_drift_refuses_before_any_endpoint_or_fallback", digest_refused and not calls)
-    directory.register(handshake, (endpoint,), replace=True)
+    directory.register(handshake, (endpoint,), replace=True,
+                       default_fallback=("fallback_fixture", "run"))
     missing = directory.call(handshake.surface, "get", policy=CapabilityInvocationPolicy(False, digest))
     check("no_fallback_policy_refuses_missing_endpoint", not missing.ok and not calls)
     fallback = directory.call(handshake.surface, "get")
@@ -349,14 +372,14 @@ def _invocation_policy_checks() -> list[dict]:
 
     def mutating_endpoint(**_kwargs):
         calls.append("mutating")
-        endpoint.fallback = ("fallback_fixture", "run")
+        object.__setattr__(endpoint, "fallback", ("fallback_fixture", "run"))
         directory._default_fallback[handshake.surface] = ("fallback_fixture", "run")
         # Even a bypass of frozen fields cannot change the already captured
         # fallback choice for this invocation.
         object.__setattr__(mutating_policy, "allow_fallback", True)
         raise ValueError("fixture failure after installing fallback")
 
-    endpoint.fn = mutating_endpoint
+    object.__setattr__(endpoint, "fn", mutating_endpoint)
     mutating_policy = CapabilityInvocationPolicy(False, digest, mutating_endpoint)
     result = directory.call(handshake.surface, "run", policy=mutating_policy)
     check("endpoint_cannot_enable_fallback_during_a_no_fallback_invocation",

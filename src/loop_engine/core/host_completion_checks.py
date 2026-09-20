@@ -160,7 +160,8 @@ def run_checks():
             refused = True
         check("completion_evidence_cannot_be_removed_from_an_issued_report", accepted and refused)
         spec = fixture.binding.completion_verifiers[0]
-        fixture.binding.directory._ep[(spec.surface, spec.operation)].fn = lambda **_: _reply()
+        object.__setattr__(fixture.binding.directory._ep[(spec.surface, spec.operation)],
+                           "fn", lambda **_: _reply())
         try:
             validate_host_verification(report, services.request.task, result, services, owner)
             refused = False

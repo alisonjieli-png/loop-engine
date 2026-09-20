@@ -39,10 +39,11 @@ from .adaptive_practitioner_planning import (
 )
 from .adaptive_practitioner_records import (
     ADAPTIVE_PRACTITIONER_RECORD_TYPE, NEXT_ACTION_KINDS,
-    AdaptivePractitionerDependencies, AdaptivePractitionerError,
+    AdaptivePractitionerDependencies,
     AdaptivePractitionerRequest, AdaptiveRunServices, DeterministicAttemptTrace,
     ModelStepRequest, NextActionDecision, ModelResponseRepairStalled,
 )
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .adaptive_practitioner_result import (
     failed_adaptive_output, finish_deterministic_attempt, has_bound_accepted_incumbent,
     integrate_adaptive_state, latest_task_result, loop_details, safe_model_usage,

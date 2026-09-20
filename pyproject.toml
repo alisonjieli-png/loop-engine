@@ -52,10 +52,20 @@ integrations = [
     "opentelemetry-sdk>=1.41",
     "tomli>=2; python_version < '3.11'",
 ]
+serving = [
+    "mcp==1.29.1",
+    "starlette==1.6.0",
+    "uvicorn==0.52.4",
+    "httpx==0.28.1",
+    "PyJWT[crypto]==2.13.0",
+    "anyio==4.14.2",
+]
 all = [
     "optuna==5.0.0", "cmaes==0.12.0",
     "numpy", "pandas", "scikit-learn", "lightgbm", "xgboost", "kaggle",
-    "duckdb", "model2vec", "lancedb", "mcp>=1.29,<2",
+    "duckdb", "model2vec", "lancedb", "mcp==1.29.1",
+    "starlette==1.6.0", "uvicorn==0.52.4", "httpx==0.28.1",
+    "PyJWT[crypto]==2.13.0", "anyio==4.14.2",
     "opentelemetry-api>=1.41", "opentelemetry-sdk>=1.41",
     "tomli>=2; python_version < '3.11'",
 ]
@@ -87,6 +97,8 @@ loop_engine = [
     "ARCHITECTURE-MAP.md",
     "**/*.md",            # folder contracts and seed dimensions
     "**/*.html",          # Studio and report assets
+    "**/*.css",           # Packaged service workspace styling
+    "**/*.js",            # Packaged service workspace behavior
     "**/*.json",          # manifests, evidence, and published measurements
     "**/*.jsonl",         # intelligence, governance, and run evidence
     "**/*.yaml",          # installed architecture and semantic projections

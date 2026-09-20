@@ -1,5 +1,14 @@
 # Export a standalone solution
 
+Export verification checks the manifest identity, declared file digests,
+confined paths, and source restrictions before executing code. Local execution
+requires `ExportVerificationPolicy` bound to the exact reviewed manifest.
+The command line requires `--allow-local-execution` and
+`--export-manifest-digest`. Interpreter isolation prevents access to the
+installed Loop Engine package; it is not an operating-system sandbox. This
+example authorizes its trusted built-in source template explicitly. Untrusted
+generated exports require a separately qualified sandbox execution path.
+
 This example conforms a messy company file and then exports the solution as
 a package that runs without Loop Engine.
 

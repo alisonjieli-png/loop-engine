@@ -172,7 +172,7 @@ REGISTRY = {
 
 CUSTOMER_IMPORT = SolutionSpec(
     "validate_customer_import",
-    allowed_modes=("deterministic",),
+    permitted_loop_modes=("deterministic",),
     loops=(
         SolutionLoopSpec("normalize", "normalize_fields"),
         SolutionLoopSpec(

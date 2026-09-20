@@ -36,20 +36,136 @@ Verification: self_test() (folded into the package suite).
 """
 from __future__ import annotations
 
+from dataclasses import replace
+import functools
+import hashlib
+import html
 import json
+import marshal
+import sys
+import types
+
+from ..loop.loop_definition import ConfigurationFacts
 
 from .solution_canvas import (MODES, SolutionError, SolutionLoopSpec,
-                              SolutionSpec, _run_solution_runtime, _spec_dict)
+                              SolutionSpec, _run_solution_runtime)
 from .solution_graph import (GRAPH_RECORD_TYPE, LoopGraphDefinition,
                              LoopGraphError)
+from .solution_operation_identity import PROCESS_BOUND, PORTABLE_CODE, SolutionOperationIdentity
 
 #: strategies executed here (they need extra callables); the rest run in
 #: solution_canvas.run_solution.
 EXTENDED_STRATEGIES = ("select_best", "gating_router")
 
 
+def operation_identity(operation_ref: str, operation) -> SolutionOperationIdentity:
+    """Fingerprint code and referenced bindings without invoking the operation.
+
+    Mutable opaque state retains object identity and is explicitly process
+    bound. It remains trusted host state, not a claim of immutable semantics
+    or independent Code Intelligence qualification.
+    """
+    if not callable(operation):
+        raise SolutionError(f"operation {operation_ref!r} does not resolve to one callable")
+    process_bound = False
+    active = set()
+
+    def code_bytes(code):
+        constants = tuple(code_bytes(item) if isinstance(item, types.CodeType) else item
+                          for item in code.co_consts)
+        return marshal.dumps(code.replace(co_filename="", co_firstlineno=0,
+                                          co_consts=constants))
+
+    def material(value):
+        nonlocal process_bound
+        if value is None or type(value) in (str, bool, int, float, bytes):
+            return (type(value).__name__, marshal.dumps(value).hex())
+        if type(value) is tuple:
+            return ("tuple", tuple(material(item) for item in value))
+        if type(value) is frozenset:
+            return ("frozenset", tuple(sorted(material(item) for item in value)))
+        if id(value) in active:
+            return ("recursive_binding", type(value).__module__, type(value).__qualname__)
+        active.add(id(value))
+        try:
+            if isinstance(value, types.FunctionType):
+                closure = []
+                for cell in value.__closure__ or ():
+                    try:
+                        closure.append(material(cell.cell_contents))
+                    except ValueError:
+                        closure.append(("empty_cell",))
+                globals_used = tuple((name, material(value.__globals__[name]))
+                    for name in sorted(set(value.__code__.co_names))
+                    if name in value.__globals__)
+                return ("function", value.__module__, value.__qualname__,
+                        hashlib.sha256(code_bytes(value.__code__)).hexdigest(),
+                        material(value.__defaults__),
+                        tuple((key, material(item)) for key, item in sorted(
+                            (value.__kwdefaults__ or {}).items())),
+                        tuple(closure), globals_used)
+            if isinstance(value, types.MethodType):
+                return ("bound_method", material(value.__func__), material(value.__self__))
+            if isinstance(value, functools.partial):
+                return ("partial", material(value.func), material(value.args),
+                        tuple((key, material(item)) for key, item in sorted(
+                            (value.keywords or {}).items())))
+            if isinstance(value, types.ModuleType):
+                namespace = vars(value)
+                return ("module", namespace.get("__name__"),
+                        material(namespace.get("__version__")))
+            if isinstance(value, (types.BuiltinFunctionType, types.BuiltinMethodType)):
+                return ("builtin", value.__module__, value.__qualname__)
+            process_bound = True
+            return ("host_state", type(value).__module__, type(value).__qualname__, id(value))
+        finally:
+            active.remove(id(value))
+
+    runtime = f"{sys.implementation.name}:{sys.implementation.cache_tag}:{sys.version_info[:3]}"
+    body = material(operation)
+    if not isinstance(operation, (types.FunctionType, types.MethodType,
+                                  types.BuiltinFunctionType, types.BuiltinMethodType,
+                                  functools.partial)):
+        body = (body, material(type(operation).__call__))
+    digest = hashlib.sha256(json.dumps((runtime, body), sort_keys=True,
+        separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+    return SolutionOperationIdentity(operation_ref, digest, runtime,
+                                     PROCESS_BOUND if process_bound else PORTABLE_CODE)
+
+
+def bind_solution_operations(graph: LoopGraphDefinition, registry: dict) -> LoopGraphDefinition:
+    """Bind each operation inside its exact Loop definition before execution."""
+    identities = {name: operation_identity(name, registry.get(name))
+                  for name in graph.required_operation_refs()}
+    vertices = []
+    for vertex in graph.vertices:
+        if not vertex.operation_ref:
+            vertices.append(vertex)
+            continue
+        definition = vertex.resolved_definition(None)
+        facts = definition.configuration_facts.to_dict()
+        current = identities[vertex.operation_ref]
+        if "operation_identity" in facts:
+            prior = SolutionOperationIdentity.from_dict(facts["operation_identity"])
+            if prior != current:
+                raise SolutionError(f"operation {vertex.operation_ref!r} implementation changed")
+        facts["operation_identity"] = current.to_dict()
+        bound = replace(definition, configuration_facts=ConfigurationFacts.from_mapping(facts))
+        vertices.append(replace(vertex, definition=bound, definition_ref=bound.ref))
+    return replace(graph, vertices=tuple(vertices))
+
+
+def validate_operation_binding(definition, operation_ref, operation) -> None:
+    facts = definition.configuration_facts.to_dict()
+    if "operation_identity" not in facts:
+        raise SolutionError(f"operation {operation_ref!r} has no compiled implementation identity")
+    expected = SolutionOperationIdentity.from_dict(facts["operation_identity"])
+    if expected != operation_identity(operation_ref, operation):
+        raise SolutionError(f"operation {operation_ref!r} implementation changed")
+
+
 def compile_solution(spec: SolutionSpec, registry: dict) -> dict:
-    """Validate and resolve one authoritative Loop graph, without rewriting it."""
+    """Validate a graph and bind exact trusted operation implementations."""
     report = spec.validate()
     violations = list(report["violations"])
     assert spec.graph is not None
@@ -60,8 +176,12 @@ def compile_solution(spec: SolutionSpec, registry: dict) -> dict:
 
     if violations:
         return {"plan": None, "digest": "", "violations": violations}
-    canonical = spec.graph.to_dict()
-    return {"plan": canonical, "digest": spec.graph.content_digest,
+    try:
+        bound = bind_solution_operations(spec.graph, registry)
+    except (SolutionError, LoopGraphError) as exc:
+        return {"plan": None, "digest": "", "violations": [str(exc)]}
+    canonical = bound.to_dict()
+    return {"plan": canonical, "digest": bound.content_digest,
             "violations": []}
 
 
@@ -76,7 +196,7 @@ def run_compiled(plan: dict, registry: dict, inputs, *,
     """
     if not plan or plan.get("record_type") != GRAPH_RECORD_TYPE:
         raise SolutionError(
-            "not an authoritative loop_graph_definition/v1; compile first")
+            f"not an authoritative {GRAPH_RECORD_TYPE}; compile the current graph first")
     try:
         graph = LoopGraphDefinition.from_dict(plan)
     except LoopGraphError as exc:
@@ -85,40 +205,24 @@ def run_compiled(plan: dict, registry: dict, inputs, *,
                if not callable(registry.get(operation))]
     if missing:
         raise SolutionError(f"compiled graph operations do not resolve {missing}")
+    for vertex in graph.vertices:
+        if vertex.operation_ref:
+            validate_operation_binding(vertex.resolved_definition(None),
+                                       vertex.operation_ref, registry.get(vertex.operation_ref))
     spec = SolutionSpec.from_graph(graph)
     return _run_solution_runtime(
         spec, registry, inputs, trace=trace, ledger=ledger, parent=parent,
         allow_extended=True, model_execution=model_execution)
 
 
-def _spec_from_dict(d: dict) -> SolutionSpec:
-    if d.get("record_type") == GRAPH_RECORD_TYPE:
-        return SolutionSpec.from_graph(LoopGraphDefinition.from_dict(d))
-    # Narrow reader for immutable solution_spec/v1-shaped records. New writes
-    # emit only LoopGraphDefinition.
-    return SolutionSpec(
-        d["solution_id"], permitted_loop_modes=tuple(
-            d.get("permitted_loop_modes", d.get("allowed_modes", MODES))),
-        ensemble=d["ensemble"], weights=tuple(d.get("weights", ())),
-        max_members=(None if d.get("max_members") is None
-                     else int(d["max_members"])),
-        loops=tuple(SolutionLoopSpec(n["loop_id"], n["operation"],
-                                 mode=n.get("mode", "deterministic"),
-                                 fallback_operations=tuple(
-                                     n.get("fallback_operations", ())),
-                                 params=dict(n.get("params", {})),
-                                 input_role=n.get(
-                                     "input_role", "solution.value/v1"),
-                                 output_role=n.get(
-                                     "output_role", "solution.value/v1"))
-                    for n in d.get("loops", ())),
-        members=tuple(_spec_from_dict(m) for m in d.get("members", ())))
-
-
 def render_canvas(plan: dict) -> dict:
     """ONE canonical dict -> Mermaid + JSON views (never a UI-only truth)."""
     graph = LoopGraphDefinition.from_dict(plan)
-    lines = ["flowchart TD", '  IN([inputs])']
+    lines = ["flowchart TD"]
+    for index, port in enumerate(graph.input_ports, 1):
+        name = "IN" if len(graph.input_ports) == 1 else f"IN{index}"
+        label = html.escape(f"input {port.name}: {port.role}")
+        lines.append(f"  {name}([{json.dumps(label)}])")
     vertex_names = {}
     group_by_controller = {group.controller_vertex_id: group
                            for group in graph.groups}
@@ -128,19 +232,32 @@ def render_canvas(plan: dict) -> dict:
         group = group_by_controller.get(vertex.vertex_id)
         operation = (f": {vertex.operation_ref}" if vertex.operation_ref else
                      f": {group.combination}" if group is not None else "")
+        definition = vertex.resolved_definition(None)
+        label = "<br/>".join(html.escape(value) for value in (
+            f"{vertex.vertex_id}{operation}",
+            f"Loop: {definition.identity.role.value}",
+            f"{definition.role_profile_id}@{definition.role_profile_version}",
+            f"mode: {vertex.selected_mode}",
+            f"inputs: {', '.join(definition.contract.input_roles) or 'none'}",
+            f"outputs: {', '.join(definition.contract.output_roles)}",
+            f"continue: {definition.loop_condition}",
+            f"exit: {definition.exit_condition}"))
         lines.append(
-            f'  {name}(("{vertex.vertex_id}{operation}<br/>'
-            f'{vertex.selected_mode}"))')
-    first_target = graph.input_ports[0].targets[0].vertex_id
-    lines.append(f"  IN --> {vertex_names[first_target]}")
+            f"  {name}(({json.dumps(label)}))")
+    for index, port in enumerate(graph.input_ports, 1):
+        name = "IN" if len(graph.input_ports) == 1 else f"IN{index}"
+        for target in port.targets:
+            lines.append(f"  {name} --> {vertex_names[target.vertex_id]}")
     for edge in graph.edges:
         lines.append(
             f"  {vertex_names[edge.source.vertex_id]} -->|"
             f"{edge.relationship}: {edge.source.port_role}| "
             f"{vertex_names[edge.target.vertex_id]}")
-    lines.append("  OUT([output])")
-    source = graph.output_ports[0].source.vertex_id
-    lines.append(f"  {vertex_names[source]} --> OUT")
+    for index, port in enumerate(graph.output_ports, 1):
+        name = "OUT" if len(graph.output_ports) == 1 else f"OUT{index}"
+        label = html.escape(f"output {port.name}: {port.role}")
+        lines.append(f"  {name}([{json.dumps(label)}])")
+        lines.append(f"  {vertex_names[port.source.vertex_id]} --> {name}")
     mermaid = "\n".join(lines)
     return {"canonical": plan, "mermaid": mermaid,
             "json": json.dumps(plan, indent=1, default=str)}
@@ -272,7 +389,7 @@ def self_test() -> dict:
           str(seq_edges))
 
     # 7. round trip: plan -> spec -> identical re-compiled digest.
-    spec_rt = _spec_from_dict(ok_rep["plan"])
+    spec_rt = SolutionSpec.from_graph(LoopGraphDefinition.from_dict(ok_rep["plan"]))
     check("plan_spec_round_trip_is_stable",
           compile_solution(spec_rt, reg)["digest"] == d1)
 
@@ -285,14 +402,14 @@ def self_test() -> dict:
                    "output_role": "solution.value/v1"}],
         "members": [],
     }
-    normalized_legacy = _spec_from_dict(legacy_spec)
-    normalized_record = _spec_dict(normalized_legacy)
-    check("legacy_allowed_modes_are_read_but_never_emitted",
-          normalized_legacy.permitted_loop_modes == MODES
-          and normalized_record["record_type"] == GRAPH_RECORD_TYPE
-          and "permitted_vertex_modes" in normalized_record
-          and "allowed_modes" not in normalized_record,
-          "immutable Canvas v1 policy normalizes to permitted_loop_modes")
+    obsolete = dict(ok_rep["plan"], record_type="loop_graph_definition/v1")
+    refused = 0
+    for record in (legacy_spec, obsolete):
+        try:
+            LoopGraphDefinition.from_dict(record)
+        except LoopGraphError:
+            refused += 1
+    check("unsupported_solution_records_are_refused_without_upgrade", refused == 2)
 
     passed = sum(1 for r in results if r["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

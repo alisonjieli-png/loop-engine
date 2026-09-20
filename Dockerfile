@@ -18,8 +18,7 @@ COPY src ./src
 COPY examples ./examples
 
 RUN python -m pip install --upgrade pip \
-    && python -m pip install . \
-    && useradd --uid 65534 --no-create-home --shell /usr/sbin/nologin loopengine 2>/dev/null || true
+    && python -m pip install .
 
 USER 65534
 WORKDIR /work

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from dataclasses import dataclass, field
 
 from .intelligence_loops import INTELLIGENCE_LOOP_KINDS, serve_pillar
@@ -17,11 +18,46 @@ from .intelligence_loops import INTELLIGENCE_LOOP_KINDS, serve_pillar
 #: exists; it is trusted because it reached `registered` through a gate.
 CAPSULE_LIFECYCLE = ("draft", "candidate", "validated", "registered",
                      "deprecated", "retired")
+REFERENCE_SCHEMA = "intelligence_item_ref/v2"
+
+
+class IntelligenceReferenceError(ValueError):
+    """A reference does not satisfy the current typed wire contract."""
+
+    def __init__(self, message: str, *, code: str = "invalid_intelligence_reference"):
+        super().__init__(message)
+        self.code = code
 
 
 def _digest(obj) -> str:
     return hashlib.sha256(
         json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def inline_payload_digest(value: object) -> str:
+    """Measure the finite JSON value selected for inline materialization."""
+    try:
+        encoded = json.dumps(value, sort_keys=True, separators=(",", ":"),
+                             ensure_ascii=False, allow_nan=False)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("inline intelligence must have a stable JSON representation") from exc
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+
+
+def inline_intelligence_value(title: str, body: dict, layer: str):
+    """One value projection shared by selection and inline materialization."""
+    if "text" in body:
+        return body["text"]
+    if layer == "runtime_history_solution_intelligence":
+        return body
+    if layer == "code_intelligence":
+        return body.get("handle") or body
+    for key in ("value", "template", "instruction", "format_example"):
+        if body.get(key) not in (None, ""):
+            return body[key]
+    if body.get("focus") or body.get("default_questions"):
+        return {key: body[key] for key in ("focus", "default_questions") if body.get(key)}
+    return title
 
 
 @dataclass(frozen=True)
@@ -36,6 +72,7 @@ class IntelligenceItemHandshake:
     cost_class: str = "free"
     maturity: str = "candidate"
     version: str = "1.0.0"
+    qualification_digest: str = ""
 
     def compatible_with(self, *, need_mode: str = "", need_output: str = ""
                         ) -> bool:
@@ -73,7 +110,8 @@ class IntelligenceItemRef:
     source: str = ""
 
     def as_dict(self) -> dict:
-        return {"intelligence_item_ref": self.item_ref,
+        return {"record_type": REFERENCE_SCHEMA,
+                "intelligence_item_ref": self.item_ref,
                 "layer": self.handshake.layer,
                 "supported_modes": list(self.handshake.supported_modes),
                 "digest": self.digest,
@@ -85,23 +123,32 @@ class IntelligenceItemRef:
                 "output_contract": self.handshake.output_contract,
                 "effects": list(self.handshake.effects),
                 "cost_class": self.handshake.cost_class,
-                "version": self.handshake.version}
+                "version": self.handshake.version,
+                "qualification_digest": self.handshake.qualification_digest}
 
     @classmethod
     def from_dict(cls, body: dict) -> "IntelligenceItemRef":
-        item_ref = body.get("intelligence_item_ref", body.get("loop_ref", ""))
-        layer = body.get("layer", body.get("role", ""))
+        if not isinstance(body, dict) or body.get("record_type") != REFERENCE_SCHEMA:
+            raise IntelligenceReferenceError("unsupported intelligence reference version",
+                                             code="unsupported_reference_version")
+        required = {"intelligence_item_ref", "layer", "supported_modes", "input_contract",
+                    "output_contract", "effects", "cost_class", "maturity", "version",
+                    "payload_ref", "payload_digest", "digest", "qualification_digest"}
+        if not required <= set(body) or {"loop_ref", "role", "modes"} & set(body):
+            raise IntelligenceReferenceError("current intelligence reference fields are required")
+        item_ref = body["intelligence_item_ref"]
+        layer = body["layer"]
         handshake = IntelligenceItemHandshake(
             item_id=str(item_ref).rsplit("/", 1)[-1],
             layer=layer,
-            supported_modes=tuple(body.get(
-                "supported_modes", body.get("modes") or ("deterministic",))),
+            supported_modes=tuple(body["supported_modes"]),
             input_contract=body.get("input_contract", "unit_request"),
             output_contract=body.get("output_contract", "item"),
             effects=tuple(body.get("effects") or ()),
             cost_class=body.get("cost_class", "free"),
             maturity=body.get("maturity", "candidate"),
-            version=body.get("version", "1.0.0"))
+            version=body.get("version", "1.0.0"),
+            qualification_digest=body.get("qualification_digest", ""))
         return cls(item_ref=item_ref, handshake=handshake,
                    payload_ref=body.get("payload_ref", ""),
                    payload_digest=body.get("payload_digest", ""),
@@ -168,10 +215,12 @@ class IntelligenceItemPackage:
 
     @property
     def digest(self) -> str:
-        return _digest({"item_id": self.item_id, "layer": self.layer,
-                        "payload_ref": self.payload_ref,
-                        "payload_digest": self.payload_digest,
-                        "version": self.handshake.version})
+        identity = {"item_id": self.item_id, "layer": self.layer,
+                    "payload_ref": self.payload_ref, "payload_digest": self.payload_digest,
+                    "version": self.handshake.version}
+        if self.handshake.qualification_digest:
+            identity["qualification_digest"] = self.handshake.qualification_digest
+        return _digest(identity)
 
     @property
     def materialised(self) -> bool:
@@ -206,7 +255,8 @@ class IntelligenceItemPackage:
                               "output_contract":
                                   self.handshake.output_contract,
                               "maturity": self.handshake.maturity,
-                              "version": self.handshake.version}}
+                              "version": self.handshake.version,
+                              "qualification_digest": self.handshake.qualification_digest}}
 
     @property
     def loop_id(self) -> str:
@@ -241,22 +291,27 @@ def intelligence_package_from_record(
     modes = (("deterministic",) if execution_mode in ("", "code_only")
              else ("deterministic", "hybrid") if execution_mode == "hybrid"
              else ("non_deterministic",))
+    modes = tuple(body.get("supported_modes") or modes)
     output_contract = ("code_asset_ref" if layer == "code_intelligence"
                        else "context_item")
     effects = facets.get("effects") or "pure"
-    effect_values = (tuple(effects) if isinstance(effects, (tuple, list))
-                     else () if effects == "pure" else (str(effects),))
+    effect_values = (tuple(effects) if isinstance(effects, (tuple, list)) else (str(effects),))
+    payload_ref = str(body.get("payload_ref") or f"content://{layer}/{rid}")
+    payload_digest = (inline_payload_digest(inline_intelligence_value(title, body, layer))
+                      if payload_ref.startswith("content://")
+                      else str(body.get("payload_digest") or body.get("body_digest") or ""))
     return IntelligenceItemPackage(
         item_id=str(rid), layer=layer,
         handshake=IntelligenceItemHandshake(
                                 item_id=str(rid), layer=layer,
                                 supported_modes=modes,
+                                input_contract=str(body.get("input_contract") or "unit_request"),
                                 output_contract=output_contract,
-                                effects=effect_values, maturity=maturity),
-        payload_ref=str(body.get("payload_ref")
-                        or f"content://{layer}/{rid}"),
-        payload_digest=str(body.get("payload_digest")
-                           or body.get("body_digest") or ""),
+                                cost_class=str(facets.get("cost_class") or "free"),
+                                effects=effect_values, maturity=maturity,
+                                version=str(body.get("version") or "1.0.0"),
+                                qualification_digest=str(body.get("qualification_digest") or "")),
+        payload_ref=payload_ref, payload_digest=payload_digest,
         provenance=str(title)[:120], lifecycle=lifecycle,
         facets=facets)
 
@@ -283,8 +338,16 @@ def intelligence_refs_for_hits(
                      "payload_digest": hit.get("payload_digest", ""),
                      "maturity": hit.get("maturity", hit.get("tier", "core")),
                      "version": hit.get("version", "1.0.0"),
+                     "input_contract": hit.get("input_contract", "unit_request"),
+                     "supported_modes": hit.get("supported_modes") or (),
+                     "qualification_digest": hit.get("qualification_digest", ""),
                      "facets": dict(hit.get("facets") or {})}}
         package = intelligence_package_from_record(card, layer=layer)
+        if package.payload_ref.startswith("content://"):
+            # A search card is not the selected body. Missing measured identity
+            # remains unavailable rather than being inferred from its title.
+            package.payload_digest = str((hit.get("inline_payload_digests") or {}).get(layer)
+                                         or hit.get("payload_digest") or "")
         refs.append(package.to_ref(score=float(
             hit.get("score", hit.get("rrf", 0.0))),
             source=hit.get("source", layer)))
@@ -328,6 +391,11 @@ def load_intelligence_ref(
         raise TypeError("load_intelligence_ref needs IntelligenceLoadRequest")
     selected_context = context or IntelligenceLoadContext()
     ref = request.ref
+    if (not isinstance(ref, IntelligenceItemRef)
+            or not isinstance(ref.payload_digest, str)
+            or len(ref.payload_digest) != 64
+            or any(character not in "0123456789abcdef" for character in ref.payload_digest)):
+        raise ValueError("intelligence_payload_identity_unavailable: select a digest-bound body first")
     item_id = ref.item_ref.rsplit("/", 1)[-1]
     layer = ref.handshake.layer
     package = IntelligenceItemPackage(item_id=item_id, layer=layer,
@@ -345,6 +413,15 @@ def load_intelligence_ref(
 
     def resolve_inside_loop():
         payload = package.materialise(request.resolver)
+        if package.payload_ref.startswith("content://"):
+            value = deepcopy(payload.value if isinstance(payload, MaterializedPayload) else payload)
+            measured = inline_payload_digest(value)
+            if measured != ref.payload_digest or (
+                    isinstance(payload, MaterializedPayload) and payload.digest != measured):
+                raise ValueError("inline intelligence payload differs from the selected content")
+            observed["digest"] = measured
+            observed["local_ref"] = payload.local_ref if isinstance(payload, MaterializedPayload) else ""
+            return value
         if isinstance(payload, MaterializedPayload):
             if ref.payload_digest and payload.digest != ref.payload_digest:
                 raise ValueError(
@@ -357,7 +434,7 @@ def load_intelligence_ref(
             raise ValueError(
                 f"resolver for {ref.item_ref} must return MaterializedPayload "
                 "so the external body digest can be verified")
-        return payload
+        raise ValueError("an external body requires an observed materialization digest")
 
     out = serve_pillar(
         layer, item_id, resolve_inside_loop,
@@ -449,11 +526,11 @@ def self_test() -> dict:
     # — the retrieval lands on the caller's ledger as a canonical family.
     lg = LoopLedger()
     out = load_intelligence_ref(IntelligenceLoadRequest(
-        refs[0], lambda _ref: "has leakage been checked?"),
+        refs[0], lambda _ref: recs[0].title),
         IntelligenceLoadContext(ledger=lg))
     fams = {c["type"] for c in to_canonical_events(lg.events)}
     check("invoking_a_ref_runs_the_loop_and_returns_content",
-          out["value"] == "has leakage been checked?"
+          out["value"] == recs[0].title
           and out["intelligence_item_ref"] == refs[0].item_ref
           and "intelligence.context.retrieved" in fams
           and out["model_calls"] == 0,
@@ -500,17 +577,62 @@ def self_test() -> dict:
     # item remains unchanged and the two loop identities remain separate.
     reframe_ledger = LoopLedger()
     reframed = reframe_intelligence_ref(IntelligenceReframeRequest(
-        refs[0], lambda _payload_ref: "has leakage been checked?",
+        refs[0], lambda _payload_ref: recs[0].title,
         task="review a customer import",
         reframe=lambda source, task: f"For {task}: {source}"),
         IntelligenceLoadContext(ledger=reframe_ledger))
     check("model_reframing_is_a_separate_loop_and_keeps_source_unchanged",
           reframed["workflow_mode"] == "hybrid"
           and reframed["source_unchanged"]
-          and reframed["original"] == "has leakage been checked?"
+          and reframed["original"] == recs[0].title
           and reframed["value"].startswith("For review a customer import")
           and reframed["access_loop_id"] != reframed["reframe_loop_id"]
           and len(reframe_ledger.loops()) == 2)
+    inline_ref = intelligence_package_from_record(StoreRecord(
+        "inline", "context", "searchable title", body={"text": "selected body", "version": "2.1.3"})).to_ref()
+    inline = load_intelligence_ref(IntelligenceLoadRequest(inline_ref, lambda _: "selected body"))
+    refused_changes = []
+    for changed in ("changed body", MaterializedPayload("changed body", inline_ref.payload_digest)):
+        try:
+            load_intelligence_ref(IntelligenceLoadRequest(inline_ref, lambda _, value=changed: value))
+            refused_changes.append(False)
+        except ValueError:
+            refused_changes.append(True)
+    check("inline_selection_binds_the_actual_value_and_version",
+          inline["value"] == "selected body" and inline["payload_digest"] == inline_ref.payload_digest
+          and inline_ref.handshake.version == "2.1.3" and all(refused_changes))
+    wire = inline_ref.as_dict()
+    current = IntelligenceItemRef.from_dict(wire)
+    check("current_versioned_reference_round_trips_and_materializes",
+          current == inline_ref
+          and load_intelligence_ref(IntelligenceLoadRequest(current, lambda _: "selected body"))["value"]
+          == "selected body")
+    unsupported = dict(wire, record_type="intelligence_item_ref/v1")
+    try:
+        IntelligenceItemRef.from_dict(unsupported)
+        unsupported_refused = False
+    except IntelligenceReferenceError as exc:
+        unsupported_refused = exc.code == "unsupported_reference_version"
+    check("unsupported_reference_versions_do_not_gain_an_automatic_reader", unsupported_refused)
+    wire["payload_digest"] = ""
+    missing_identity = IntelligenceItemRef.from_dict(wire)
+    attempts = []
+    try:
+        load_intelligence_ref(IntelligenceLoadRequest(missing_identity, lambda _: attempts.append(True)))
+        unknown_refused = False
+    except ValueError as exc:
+        unknown_refused = "identity_unavailable" in str(exc)
+    check("unbound_current_reference_is_readable_but_not_materialized",
+          missing_identity.item_ref == inline_ref.item_ref and unknown_refused and not attempts)
+
+    from ..core.store_serve import SolverStore
+    from .intelligence_loops import search_as_loop_refs
+    source = StoreRecord("search-pinned", "context", "searchable title", body={"text": "separate body"})
+    searched_ref = search_as_loop_refs(SolverStore(core_records=(source,)), "searchable", top_n=1)[0]
+    searched_value = load_intelligence_ref(IntelligenceLoadRequest(searched_ref, lambda _: source.body["text"]))
+    check("legacy_store_search_emits_measured_body_free_references",
+          searched_value["value"] == "separate body" and bool(searched_ref.payload_digest)
+          and "separate body" not in json.dumps(searched_ref.as_dict()))
 
     passed = sum(1 for t in results if t["passed"])
     return {"tests": results, "passed": passed, "total": len(results),

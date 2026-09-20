@@ -8,7 +8,6 @@ runtime port, must terminate that Loop, and must return its exact output roles.
 from __future__ import annotations
 
 import asyncio
-import inspect
 import re
 from dataclasses import dataclass, field, replace
 from enum import Enum
@@ -440,24 +439,11 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
             services, runtime_memory=runtime_memory,
             context_artifacts=context_artifacts)
 
-    def start(self, spec: DelegationSpec) -> SpawnedTaskId:
-        """Start one synchronous spawned executor and return its task ID."""
-        if self._executor_is_async():
-            raise DelegationError(
-                "this executor is asynchronous; use start_async()")
-        record = self._prepare(spec)
-        try:
-            value = self._executor(self._request(record))
-            if inspect.isawaitable(value):
-                close = getattr(value, "close", None)
-                if callable(close):
-                    close()
-                raise DelegationError(
-                    "executor returned an awaitable; use start_async()")
-            self._finish(record, value)
-        except Exception as exc:
-            self._fail(record, "EXECUTOR_FAILED", str(exc))
-        return record.task_id
+    def start(self, spec: DelegationSpec, *, require_preemptive_deadline: bool = False) -> SpawnedTaskId:
+        """Run synchronously with a non-preemptive acceptance deadline."""
+        from .spawned_deadline import execute_synchronous_spawned
+        return execute_synchronous_spawned(
+            self, spec, require_preemptive_deadline=require_preemptive_deadline)
 
     async def start_async(self, spec: DelegationSpec) -> SpawnedTaskId:
         """Schedule an asynchronous spawned executor and return its task ID."""
@@ -688,32 +674,10 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
             memory)
 
     async def _execute_async(self, record: _SpawnedTaskRecord) -> None:
-        try:
-            value = self._executor(self._request(record))
-            if not inspect.isawaitable(value):
-                raise DelegationError(
-                    "asynchronous executor returned a synchronous result")
-            timeout = record.spec.budget.wall_time_seconds
-            result = (await value if timeout is None else
-                      await asyncio.wait_for(value, timeout=float(timeout)))
-            if not record.status.terminal:
-                self._finish(record, result)
-        # asyncio.wait_for raises builtin TimeoutError on 3.11+ but raises
-        # asyncio.exceptions.TimeoutError on 3.10 and earlier; the two are
-        # not the same class on those versions, so catching only the builtin
-        # silently lets the 3.10 timeout escape the deadline branch entirely.
-        except (TimeoutError, asyncio.TimeoutError):
-            self._fail(
-                record, "DEADLINE_EXCEEDED",
-                "spawned executor exceeded its wall-time deadline",
-                terminal_code="DEADLINE_EXCEEDED")
-        except asyncio.CancelledError:
-            if not record.status.terminal:
-                self.cancel(record.task_id)
-        except Exception as exc:
-            self._fail(record, "EXECUTOR_FAILED", str(exc))
+        from .spawned_deadline import execute_async_spawned
+        await execute_async_spawned(self, record)
 
-    def _finish(self, record: _SpawnedTaskRecord, result: Any) -> None:
+    def _finish(self, record: _SpawnedTaskRecord, result: Any, *, deadline_assessment=None) -> None:
         if not isinstance(result, SpawnedLoopResult):
             raise DelegationError(
                 "executor must return a SpawnedLoopResult")
@@ -750,6 +714,9 @@ class SpawnedTaskManager(SpawnedTaskLifecycleMixin):
         if (record.spec.budget.max_output_bytes is not None
                 and size > record.spec.budget.max_output_bytes):
             raise DelegationError("spawned result exceeded its output budget")
+        if deadline_assessment is not None:
+            from .spawned_deadline import retain_deadline_result
+            result = retain_deadline_result(result, deadline_assessment)
         self._publish(record, result)
 
     def _fail(self, record: _SpawnedTaskRecord, code: str, error: str, *,

@@ -312,6 +312,51 @@ class ModelExecutionSession:
         finally:
             self._invocation_lock.release()
 
+    def invoke_decisions(self, request, parent_loop) -> dict:
+        """Use this same session's cumulative budget for a typed judgment.
+
+        A native harness tool can hold this narrow method. Concurrent or nested
+        use of an already occupied session refuses rather than resetting or
+        oversubscribing authority. A host may allocate a separate tool session.
+        """
+        from ..core.decisions.contracts import DecisionBatchRequest, strict_json
+        if not isinstance(request, DecisionBatchRequest):
+            raise SolutionModelError("typed decision batch required")
+        if not self._invocation_lock.acquire(blocking=False):
+            raise SolutionModelError("a bounded session already has an invocation in flight",
+                                     error_code="model_invocation_in_progress")
+        try:
+            if self.authority is not self._bound_authority:
+                raise SolutionModelError("session authority changed", error_code="model_authority_changed")
+            if self._accounting_uncertain or self._effect_reconciliation_required:
+                raise SolutionModelError("previous work requires reconciliation", error_code="token_accounting_unavailable")
+            config = self.authority.config
+            maximum = self.authority.max_model_calls
+            if maximum is not None:
+                remaining = maximum - self.calls_used
+                if remaining <= 0:
+                    raise SolutionModelError("model call allowance exhausted", error_code="model_call_budget_exhausted")
+                config = replace(config, max_route_attempts=min(remaining, config.max_route_attempts or remaining))
+            try:
+                result = self.authority.gateway.invoke_decisions(request, config=config, parent=parent_loop)
+                self._calls_charged += result.physical_model_calls
+                if result.physical_model_calls:
+                    if result.total_tokens is None:
+                        self._usage_complete = False
+                    else:
+                        self._tokens_charged += result.total_tokens
+                self.results.append(result)
+            except BaseException as error:
+                self._accounting_uncertain = True
+                if not isinstance(error, Exception):
+                    raise
+                raise SolutionModelError("decision invocation has uncertain accounting", error_code="token_accounting_unavailable") from None
+            if not result.ok:
+                raise SolutionModelError("typed decision refused", error_code=result.error_code)
+            return strict_json(result.text)
+        finally:
+            self._invocation_lock.release()
+
     def _invoke_serial(self, request: ModelInvocationRequest, parent_loop) -> str:
         if not isinstance(request, ModelInvocationRequest):
             raise SolutionModelError(
@@ -575,6 +620,10 @@ class ModelInvocationPort:
     def __call__(self, request: ModelInvocationRequest) -> str:
         """Submit one typed invocation through the owning Solution Loop."""
         return self.session.invoke(request, self.parent_loop)
+
+    def decide(self, request) -> dict:
+        """Submit a typed judgment without a text-generation or harness wrapper."""
+        return self.session.invoke_decisions(request, self.parent_loop)
 
 
 def collect_model_mode_loops(spec) -> tuple:

@@ -137,7 +137,7 @@ def solution_canvas_self_test_checks() -> dict:
     check("member_bound_and_serializable",
           not over.validate()["valid"]
           and json.loads(json.dumps(_spec_dict(avg)))["record_type"]
-              == "loop_graph_definition/v1"
+              == "loop_graph_definition/v2"
           and any(group["combination"] == "average" for group in
                   json.loads(json.dumps(_spec_dict(avg)))["groups"]))
 

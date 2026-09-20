@@ -266,7 +266,7 @@ class LoopRuntimeContext:
             internal=InternalRuntimeMechanics(
                 bindings=internal_bindings,
                 permissions=requested_permissions,
-                executor_modes=requested_executors or ("deterministic",),
+                executor_modes=requested_executors,
                 compatibility_composition=(
                     self.internal.compatibility_composition)),
         )
@@ -289,4 +289,3 @@ class LoopRuntimeContext:
             permissions=_names("permissions", permissions),
             executor_modes=_names("executor_modes", executor_modes),
             compatibility_composition=True))
-

@@ -20,9 +20,9 @@ from ..loop.kernel import PassRecord, PractitionerState
 from ..loop.recursive_loop import Loop, StepOutcome
 from .adaptive_practitioner_records import (
     ADAPTIVE_PRACTITIONER_RECORD_TYPE,
-    AdaptivePractitionerError,
     AdaptiveRunServices,
 )
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .adaptive_practitioner_source import saved_source_inspections
 
 

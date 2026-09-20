@@ -1,17 +1,10 @@
-"""Reachability: which capability modules a live entry point can actually reach.
+"""Measure declared source imports from each named package entry point.
 
-A module with passing self-tests and no caller is proven correct and inert.
-The self-test total counts it, the conformance gates classify it, and no run
-ever executes it. A measurement of this repository on 2026-09-07 found that an
-end to end solve imported 129 of 406 modules, and one of twenty memory
-modules, while every one of those memory modules held typed records and
-passing tests.
-
-This module measures reachability as a static import closure: starting at an
-entry point, follow every import in every reached module, including imports
-written inside functions, because a lazily imported module is still wired.
-That is the generous reading, so a module this report calls dark is dark under
-any reading.
+This is a static import closure, not an execution trace. It includes imports
+inside functions, tests, and conditional branches, whether those branches run
+or not. It cannot resolve arbitrary dynamic imports, plugin discovery, or
+registry strings. Absence from this closure is not proof that a module can
+never execute. Passing local checks is not proof of correctness for all inputs.
 
 An inventory names the modules each entry point is expected to reach. One that
 is not reachable fails with its name in the message. The count of modules
@@ -33,7 +26,7 @@ from pathlib import Path
 
 PACKAGE = "loop_engine"
 
-#: Live entry points, named by the module a caller actually imports.
+#: Entry points for static analysis, named by their owning implementation.
 #: The curated public API in ``__init__`` resolves its names lazily from a map
 #: of strings, so no static reader can follow it. The entry module named here
 #: is therefore the one that actually runs the work, not the facade.
@@ -84,8 +77,8 @@ def _imports_of(path: Path, module: str) -> set:
     """Absolute in-package module names this file imports, at any depth."""
     try:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    except (OSError, SyntaxError):
-        return set()
+    except (OSError, SyntaxError) as exc:
+        raise ValueError(f"cannot inspect imports for {module}: {type(exc).__name__}") from exc
     package_parts = module.split(".")
     if path.name == "__init__.py":
         package_parts = package_parts[:-1] if package_parts[-1] == "__init__" \
@@ -158,7 +151,11 @@ def reachability_report(entry_point: str = "solve_path") -> dict:
     undeclared = sorted(item for item in required if item not in shipped)
     dark = sorted(required - reached - set(undeclared))
     return {
-        "record_type": "reachability_report/v1",
+        "record_type": "reachability_report/v2",
+        "measurement": "static_import_closure",
+        "observed_execution": False,
+        "includes_conditional_and_test_imports": True,
+        "unresolved_mechanisms": ["dynamic_imports", "registry_strings", "plugin_discovery"],
         "entry_point": entry_point,
         "entry_module": LIVE_ENTRY_POINTS[entry_point],
         "shipped_modules": len(shipped),
@@ -208,5 +205,28 @@ def self_test() -> dict:
         "passed": refused,
         "detail": "the declared set is the vocabulary",
     })
+    report = reachability_report("solve_path")
+    tests.append({
+        "test": "static_reachability_never_claims_observed_execution",
+        "passed": report["observed_execution"] is False
+        and report["measurement"] == "static_import_closure"
+        and report["includes_conditional_and_test_imports"] is True
+        and "dynamic_imports" in report["unresolved_mechanisms"],
+        "detail": "imports and runtime invocation remain separate evidence",
+    })
+    import tempfile
+    with tempfile.TemporaryDirectory() as directory:
+        broken = Path(directory) / "broken.py"
+        broken.write_text("def broken(:", encoding="utf-8")
+        refused = False
+        try:
+            _imports_of(broken, f"{PACKAGE}.broken")
+        except ValueError:
+            refused = True
+        tests.append({
+            "test": "an_unreadable_import_graph_is_not_an_empty_success",
+            "passed": refused,
+            "detail": "invalid source refuses the measurement instead of silently dropping edges",
+        })
     return {"module": "reachability_report",
             "passed": all(item["passed"] for item in tests), "tests": tests}

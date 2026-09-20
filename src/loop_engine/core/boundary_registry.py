@@ -284,6 +284,29 @@ BOUNDARIES = (
      "binding": "practitioner_loop",
      "envelope": "core.mcp_adapter.McpRegistry",
      "test": "mcp_adapter.self_test"},
+    {"boundary": "Harness Intelligence provisioning transport",
+     "crosses": "an authenticated local protocol request serves authorized Harness Intelligence",
+     "binding": "practitioner_loop",
+     "envelope": "core.provisioning_mcp.invoke_provisioning_as_loop",
+     "test": "provisioning_mcp_checks.self_test"},
+    {"boundary": "remote intelligence service operation",
+     "crosses": "one authenticated web or protocol request performs its authorized durable service operation",
+     "binding": "practitioner_loop",
+     "envelope": "core.service_runtime.http.invoke_http_service_as_loop",
+     "test": "core.service_runtime.http_checks.self_test"},
+    {"boundary": "remote intelligence metadata search",
+     "crosses": "one authenticated search returns authorized body-free intelligence references",
+     "binding": "native_loop",
+     "envelope": "core.service_runtime.http.invoke_http_retrieval_as_loop",
+     "test": "core.service_runtime.http_checks.self_test"},
+    {"boundary": "typed decision provider invocation",
+     "crosses": "one typed judgment uses a registered provider and exact owning Loop authority",
+     "binding": "practitioner_loop", "envelope": "core.decisions.gateway.invoke_decisions",
+     "test": "code_nodes.decision_tools.self_test"},
+    {"boundary": "harness typed decision tool",
+     "crosses": "a host-bound harness tool evaluates typed questions under one allocated model session",
+     "binding": "practitioner_loop", "envelope": "code_nodes.decision_tools.DecisionToolBinding.evaluate",
+     "test": "code_nodes.decision_tools.self_test"},
     {"boundary": "skill instruction load",
      "crosses": "a selected skill body enters active task context",
      "binding": "practitioner_loop",
@@ -368,6 +391,12 @@ BOUNDARIES = (
 )
 #: The boundary and ontology key sets must match exactly.
 BOUNDARY_ONTOLOGY = MappingProxyType({
+    "remote intelligence service operation": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0", "starting"),
+    "remote intelligence metadata search": _exact(
+        "intelligence", "intelligence.search@1.0.0", "starting"),
+    "Harness Intelligence provisioning transport": _exact(
+        "practitioner", "practitioner.code_execution@1.0.0", "starting", "spawned_by"),
     "task entry": _exact(
         "practitioner", "practitioner.solver@1.0.0", "starting"),
     "reference nine-step stages": _exact(
@@ -431,6 +460,8 @@ BOUNDARY_ONTOLOGY = MappingProxyType({
         "practitioner", "practitioner.solver@1.0.0",
         "starting", "spawned_by"),
     "provider-neutral model routing": _exact("practitioner", "practitioner.solver@1.0.0", "spawned_by"),
+    "typed decision provider invocation": _exact("practitioner", "practitioner.reference_nine_step@1.0.0", "spawned_by"),
+    "harness typed decision tool": _exact("practitioner", "practitioner.solver@1.0.0", "starting"),
     "model response admission": _exact("solution", "solution.validator@1.0.0", "starting", "spawned_by"),
     "assignment harness selection": _exact("practitioner", "practitioner.code_execution@1.0.0", "spawned_by"),
     "harness response evaluation": _exact("practitioner", "practitioner.verifier@1.0.0", "spawned_by"),
@@ -610,12 +641,12 @@ def _test_reference_resolves(reference: str) -> bool:
     package_root = os.path.dirname(os.path.dirname(__file__))
 
     def qualified(basename):
-        hits = [module for module in ROOT_MODULES if module == basename]
-        for package, modules in MODULE_MAP.items():
-            for module in modules:
-                if module == basename or module.endswith("." + basename):
-                    hits.append(f"{package}.{module}")
-        return hits
+        modules = set(ROOT_MODULES) | {
+            f"{package}.{module}" for package, names in MODULE_MAP.items() for module in names}
+        if basename in modules:
+            return [basename]
+        hits = sorted(module for module in modules if module.rsplit(".", 1)[-1] == basename)
+        return hits if len(hits) == 1 else []
     if ":" in reference:
         module_name, check_name = reference.split(":", 1)
         pattern = re.compile(r"['\"]" + re.escape(check_name) + r"['\"]")
@@ -859,6 +890,11 @@ def self_test() -> dict:
           and _mapped_symbol_exists("catalog.stores.sqlite_store.SQLiteRecordStore.put")
           and not _mapped_symbol_exists("record_cli.missing_operation")
           and not _mapped_symbol_exists("unregistered_module.record_command"))
+    check("fully_qualified_test_references_bind_the_exact_nested_module",
+          _test_reference_resolves("core.service_runtime.http_checks.self_test")
+          and _test_reference_resolves("core.service_runtime.runtime.self_test")
+          and not _test_reference_resolves("core.not_registered.http_checks.self_test")
+          and not _test_reference_resolves("core.service_runtime.http_checks.missing_check"))
 
     from ..loop.loop_templates import TEMPLATE_LIBRARY
     registered = {t["template_id"] for t in TEMPLATE_LIBRARY

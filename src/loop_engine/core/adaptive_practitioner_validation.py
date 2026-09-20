@@ -6,6 +6,10 @@ not interpret tasks, select capabilities, grant authority, or execute work.
 from __future__ import annotations
 
 
+class AdaptivePractitionerError(ValueError):
+    """The adaptive Practitioner could not satisfy a typed runtime contract."""
+
+
 MODEL_ROUTE_VALUES = (
     "stop_success", "continue", "retry", "repair", "explore_branch",
     "reframe", "soft_reset", "cold_restart", "stop_unprofitable")

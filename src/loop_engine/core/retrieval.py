@@ -47,6 +47,10 @@ import hashlib
 _DIMS = 512
 
 
+class RetrievalUnavailableError(RuntimeError):
+    """The selected retrieval backend failed; this is not an empty result."""
+
+
 def _bucket(kind: str, piece: str) -> int:
     """Stable hash bucket via crc32 — the builtin hash() is salt-randomized
     per process (PYTHONHASHSEED), which silently broke the identical-ranking
@@ -247,8 +251,8 @@ class SqliteFtsBackend:
             rows = self._con.execute(
                 "SELECT rid, bm25(recs) FROM recs WHERE recs MATCH ? "
                 "ORDER BY bm25(recs) LIMIT ?", (match, top_n)).fetchall()
-        except Exception:
-            return []
+        except Exception as exc:
+            raise RetrievalUnavailableError("SQLite lexical retrieval failed") from exc
         return [(rid, -score) for rid, score in rows]       # bm25: lower=better
 
 
@@ -279,8 +283,8 @@ class LanceDbBackend:
         try:
             rows = (self._tbl.search(query, query_type="fts")
                     .limit(top_n).to_list())
-        except Exception:
-            return []
+        except Exception as exc:
+            raise RetrievalUnavailableError("LanceDB lexical retrieval failed") from exc
         return [(r["rid"], float(r.get("_score", 0.0))) for r in rows]
 
 
@@ -349,8 +353,21 @@ class Retriever:
     def __init__(self, records, *, lexical_backend: str = "fts5",
                  vector_backend: str = "hash",
                  vector_model: "str | None" = None,
-                 reuse_evidence: "dict | None" = None):
+                 reuse_evidence: "dict | None" = None,
+                 backend_bindings=(), authority_effects=(), ranking_policy=None):
         from .store_serve import SolverStore
+        from .retrieval_backends import RetrievalBackendBinding, RetrievalRankingPolicy
+        self._ranking_policy = ranking_policy if ranking_policy is not None else RetrievalRankingPolicy()
+        if not isinstance(self._ranking_policy, RetrievalRankingPolicy):
+            raise ValueError("ranking policy must use the typed retrieval settings")
+        if type(backend_bindings) not in (tuple, list) or any(not isinstance(item, RetrievalBackendBinding) for item in backend_bindings):
+            raise ValueError("retrieval backends require explicit typed host bindings")
+        bindings = {(item.stage, item.identity): item for item in backend_bindings}
+        if len(bindings) != len(backend_bindings):
+            raise ValueError("duplicate retrieval backend binding")
+        lexical_binding = bindings.get(("lexical", lexical_backend))
+        vector_binding = bindings.get(("vector", vector_backend))
+        self._capability_notes = []
         self._records = list(records)
         # Verified outcomes change what a record is worth: a bounded ranking
         # term from the reuse evidence posterior, keyed by record identity.
@@ -358,7 +375,12 @@ class Retriever:
         # discredited record sinks below untested ones, a validated one rises.
         self._reuse = dict(reuse_evidence or {})
         self._by_id = {r.record_id: r for r in self._records}
-        if lexical_backend == "fts5":
+        if len(self._by_id) != len(self._records):
+            raise ValueError("retrieval records need unique identities")
+        if lexical_binding is not None:
+            self._lex = lexical_binding.instantiate(self._records, authority_effects=authority_effects)
+            self._capability_notes.append(lexical_binding.capability_note)
+        elif lexical_backend == "fts5":
             self._lex = SqliteFtsBackend(self._records)
         elif lexical_backend == "store":
             store = SolverStore(core_records=self._records)
@@ -370,7 +392,12 @@ class Retriever:
         else:
             raise ValueError(f"lexical_backend {lexical_backend!r} not in "
                              "store|fts5|lancedb")
-        if vector_backend == "hash":
+        if vector_binding is not None:
+            self._vec = vector_binding.instantiate(self._records, authority_effects=authority_effects)
+            self.embedding_space = vector_binding.embedding_space
+            self._capability_notes.append(vector_binding.capability_note)
+        elif vector_backend == "hash":
+            self._capability_notes.append("hashed local vectors: morphology/typo robustness, not semantic synonymy")
             self.embedding_space = EmbeddingSpace(
                 model="loop_engine-crc32-3gram", revision="v2", dims=_DIMS)
             vecs = {r.record_id: hash_vector(
@@ -379,10 +406,11 @@ class Retriever:
                 lambda q, n: [(rid, s) for rid, s in sorted(
                     ((rid, _cosine(hash_vector(q), v))
                      for rid, v in vecs.items()), key=lambda t: -t[1])[:n]
-                    if s > 0.05])})()
+                    if s > self._ranking_policy.hash_similarity_floor])})()
         elif vector_backend == "model2vec":
             self._vec = Model2VecBackend(self._records, model=vector_model)
             self.embedding_space = self._vec.space
+            self._capability_notes.append("local model2vec embeddings; task relevance and downstream benefit require evaluation")
         else:
             raise ValueError(f"vector_backend {vector_backend!r} not in "
                              "hash|model2vec")
@@ -397,39 +425,52 @@ class Retriever:
                flt=None, top_n: "int | None" = None) -> dict:
         if mode not in ("lexical", "vector", "hybrid"):
             raise ValueError(f"mode {mode!r} not in lexical|vector|hybrid")
-        if top_n is not None and top_n < 1:
-            raise ValueError("top_n must be positive when provided")
+        if top_n is not None and (type(top_n) is not int or top_n < 1):
+            raise ValueError("top_n must be a positive integer when provided")
         requested = top_n if top_n is not None else max(1, len(self._records))
+        from .facets import FacetFilter, facet_match
+        f = flt or FacetFilter()
+        eligible = {}
+        for record in self._records:
+            facets = dict((record.body or {}).get("facets") or {})
+            accepted, preference, _why = facet_match(facets, f)
+            if accepted:
+                eligible[record.record_id] = (facets, preference)
+        # A bounded backend pool can consist entirely of ineligible records.
+        # Read its complete local ranking before filtering and truncating it.
+        pool_limit = (max(1, len(self._records)) if not f.is_empty()
+                      else requested * self._ranking_policy.candidate_pool_multiplier)
         pools = {}
         if mode in ("lexical", "hybrid"):
-            pools["lexical"] = self._lexical(query, requested * 2)
+            pools["lexical"] = self._lexical(query, pool_limit)
         if mode in ("vector", "hybrid"):
-            pools["vector"] = self._vector(query, requested * 2)
+            pools["vector"] = self._vector(query, pool_limit)
         # reciprocal-rank fusion across whichever pools ran
         fused: dict = {}
         for pname, pool in pools.items():
-            for rank, (rid, _s) in enumerate(pool):
+            if (not isinstance(pool, (list, tuple)) or len(pool) > pool_limit
+                    or any(not isinstance(row, (list, tuple)) or len(row) != 2
+                           or not isinstance(row[0], str) or row[0] not in self._by_id
+                           or type(row[1]) not in (int, float) or not math.isfinite(row[1]) for row in pool)
+                    or len({row[0] for row in pool}) != len(pool)):
+                raise RetrievalUnavailableError("backend returned invalid candidate identities or scores")
+            for rank, (rid, _s) in enumerate(item for item in pool if item[0] in eligible):
                 e = fused.setdefault(rid, {"rrf": 0.0, "modes": []})
-                e["rrf"] += 1.0 / (10 + rank)
+                e["rrf"] += 1.0 / (self._ranking_policy.reciprocal_rank_offset + rank)
                 e["modes"].append(pname)
         hits = []
-        from .facets import FacetFilter, facet_match
-        f = flt or FacetFilter()
         for rid, e in fused.items():
             e["evidence"] = reuse_ranking_term(self._reuse.get(rid))
-        for rid, e in sorted(fused.items(), key=lambda t: -(t[1]["rrf"] + t[1]["evidence"])):
+        for rid, e in sorted(fused.items(), key=lambda t: (
+                -(t[1]["rrf"] + t[1]["evidence"]
+                  + self._ranking_policy.facet_preference_weight * eligible[t[0]][1]), t[0])):
             rec = self._by_id[rid]
-            facets = dict((rec.body or {}).get("facets") or {})
-            score_bonus = 0
-            if not f.is_empty():
-                ok, score_bonus, _why = facet_match(facets, f)
-                if not ok:
-                    continue
+            facets, score_bonus = eligible[rid]
             hit = {"record_id": rid, "title": rec.title,
                    "kind": rec.kind, "facets": facets,
                    "lsh64": simhash64(record_search_text(rec)),
                    "modes": sorted(set(e["modes"])),
-                   "rrf": round(e["rrf"] + 0.01 * score_bonus, 5)}
+                   "rrf": round(e["rrf"] + self._ranking_policy.facet_preference_weight * score_bonus, 5)}
             if rid in self._reuse:
                 hit["reuse_label"] = str(self._reuse[rid].get("label", ""))
                 hit["reuse_term"] = round(e["evidence"], 5)
@@ -438,8 +479,7 @@ class Retriever:
                 break
         return {"record_type": "retrieval/v1", "query": query,
                 "mode": mode, "hits": hits,
-                "capability_note": "hashed local vectors: morphology/typo "
-                                   "robustness, not semantic synonymy"}
+                "capability_note": "; ".join(self._capability_notes)}
 
 
 def tournament_as_loop(backend_names: list, records: list,
@@ -565,6 +605,23 @@ def self_test() -> dict:
     ids = {x["record_id"] for x in off["hits"]}
     check("facet_filters_apply_in_retrieval",
           "n.probe" in ids and "n.api" not in ids)
+    crowded = [StoreRecord(f"blocked.{index}", "context", "shared keyword",
+                           body={"facets": {"scope": "blocked"}}) for index in range(5)]
+    crowded.append(StoreRecord("eligible", "context", "shared keyword",
+                               body={"facets": {"scope": "allowed"}}))
+    crowded_retriever = Retriever(crowded)
+    check("required_facets_cannot_starve_a_bounded_query",
+          all([hit["record_id"] for hit in crowded_retriever.search(
+              "shared keyword", mode=mode, top_n=1,
+              flt=FacetFilter(require={"scope": "allowed"}))["hits"]] == ["eligible"]
+              for mode in ("lexical", "vector", "hybrid")))
+    preferred = Retriever([
+        StoreRecord("first", "context", "shared keyword", body={"facets": {"scope": "ordinary"}}),
+        StoreRecord("second", "context", "shared keyword", body={"facets": {"scope": "preferred"}}),
+    ]).search("shared keyword", mode="lexical", top_n=1,
+              flt=FacetFilter(prefer={"scope": "preferred"}))
+    check("facet_preferences_rank_before_the_result_limit",
+          [hit["record_id"] for hit in preferred["hits"]] == ["second"])
 
     # 4. determinism: identical inputs, identical ranking.
     a = r.search("temporal leakage features")
@@ -601,6 +658,15 @@ def self_test() -> dict:
           h5["hits"] and h5["hits"][0]["record_id"] == "s.leakage"
           and refused == 2,
           "stdlib FTS5 ranks; unknown backends refuse loudly")
+    broken = SqliteFtsBackend(records)
+    broken._con.close()
+    try:
+        broken.search("temporal leakage", 1)
+        failed_explicitly = False
+    except RetrievalUnavailableError:
+        failed_explicitly = True
+    check("backend_failure_is_distinct_from_a_valid_empty_result",
+          failed_explicitly and not r5.search("xyzunmatchedtoken", mode="lexical")["hits"])
 
     # 6b. ADOPTED ENGINE — LanceDB FTS (tournament round 2 winner on the
     # lexical leg). Present -> it ranks; absent -> explicit RuntimeError.

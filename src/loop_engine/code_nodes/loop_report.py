@@ -828,11 +828,14 @@ def self_test() -> dict:
     saved_root = tempfile.mkdtemp(prefix="loop_report_saved_")
     saved_run_history.save(saved_root)
     bind_product_outcome(saved_root, "saved-report", {
-        "record_type": "solve_outcome/v4", "run_id": "saved-report",
+        "record_type": "solve_outcome/v6", "run_id": "saved-report",
         "terminal_code": "COMPLETED_VERIFIED",
         "status": "COMPLETED_VERIFIED", "solved": True,
         "summary": "Saved product.", "failure_code": "",
         "verification": {"passed": True},
+        "stage_vectors": [], "action_vectors": [],
+        "model_calls": 1, "model_call_accounting_complete": True,
+        "model_calls_known_subtotal": 1,
         "artifacts": [{"path": "/tmp/result.txt"}],
         "workspace": "/tmp", "limitations": [], "questions": [{
             "record_type": "material_question/v1",

@@ -1,0 +1,11 @@
+{
+  "name": "loop-engine-browser-identity-build",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild entry.js --bundle --minify --format=iife --global-name=BaltorIdentitySdk --target=es2022 --legal-comments=eof --outfile=../../src/loop_engine/core/service_runtime/web_assets/supabase-client.js"
+  },
+  "dependencies": {"@supabase/supabase-js": "2.116.0"},
+  "devDependencies": {"esbuild": "0.28.2"}
+}

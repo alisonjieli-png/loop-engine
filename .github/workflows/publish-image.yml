@@ -1,39 +1,75 @@
 name: Publish worker image
 
 # Builds the Loop Engine worker image from the repository Dockerfile and
-# publishes it to the GitHub Container Registry under this repository. The
+# verifies it before publishing to the GitHub Container Registry. The
 # image carries no provider key, model, or customer data. Tags: the branch
 # name and the commit digest; the pushed image digest is written to the job
 # summary so a deployment manifest can pin it.
 
 on:
-  push:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
 concurrency:
-  group: publish-image-${{ github.ref }}
+  group: publish-image-main
   cancel-in-progress: false
 
 jobs:
   publish:
     name: build and push ghcr.io image
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     permissions:
       contents: read
+      actions: read
       packages: write
     env:
       IMAGE: ghcr.io/${{ github.repository }}
 
     steps:
-      - uses: actions/checkout@v7
-
-      - name: Log in to the GitHub Container Registry
-        uses: docker/login-action@v3
+      - name: Require successful source checks for the current main revision
+        id: source
+        uses: actions/github-script@v7
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const revision = context.eventName === 'workflow_run'
+              ? context.payload.workflow_run.head_sha : context.sha;
+            if (!/^[0-9a-f]{40}$/.test(revision)) {
+              throw new Error('The source revision must be an exact commit.');
+            }
+            const current = await github.rest.git.getRef({
+              ...context.repo, ref: 'heads/main'
+            });
+            if (current.data.object.sha !== revision) {
+              throw new Error('This revision is no longer the current main revision.');
+            }
+            const runs = await github.rest.actions.listWorkflowRuns({
+              ...context.repo, workflow_id: 'ci.yml', branch: 'main',
+              head_sha: revision, status: 'success', per_page: 100
+            });
+            const repository = `${context.repo.owner}/${context.repo.repo}`;
+            const eligible = runs.data.workflow_runs.find(run =>
+              run.head_sha === revision && run.head_branch === 'main' &&
+              run.status === 'completed' && run.conclusion === 'success' &&
+              ['push', 'workflow_dispatch'].includes(run.event) &&
+              run.head_repository?.full_name === repository);
+            if (!eligible) {
+              throw new Error('No successful trusted CI run covers this exact main revision.');
+            }
+            core.setOutput('revision', revision);
+            core.setOutput('ci_run', eligible.id);
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.source.outputs.revision }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -44,10 +80,10 @@ jobs:
         # A transient token fetch failure at the registry must not fail the
         # publication; the base image is pinned by digest in the Dockerfile.
         run: |
-          BASE=$(sed -n 's/^FROM \(python:[^ ]*\).*/\1/p' Dockerfile | head -1)
-          echo "base image: $BASE"
+          WORKER_BASE_IMAGE=$(sed -n 's/^FROM \(python:[^ ]*\).*/\1/p' Dockerfile | head -1)
+          echo "base image: $WORKER_BASE_IMAGE"
           for attempt in 1 2 3 4 5; do
-            if docker pull "$BASE"; then
+            if docker pull "$WORKER_BASE_IMAGE"; then
               exit 0
             fi
             echo "pull attempt $attempt failed; waiting before the next attempt"
@@ -56,42 +92,92 @@ jobs:
           echo "the base image could not be pulled after five attempts"
           exit 1
 
-      - name: Build and push
+      - name: Build the image without publishing
         id: build
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          push: false
+          load: true
           provenance: false
-          tags: |
-            ${{ env.IMAGE }}:main
-            ${{ env.IMAGE }}:sha-${{ github.sha }}
+          tags: loop-engine-verified:${{ steps.source.outputs.revision }}
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.revision=${{ steps.source.outputs.revision }}
             org.opencontainers.image.licenses=MIT
 
-      - name: Verify the pushed image runs the doctor command
+      - name: Verify the exact local image before publication
+        id: verify
+        env:
+          SOURCE_REVISION: ${{ steps.source.outputs.revision }}
         run: |
-          docker pull "${IMAGE}@${{ steps.build.outputs.digest }}"
-          docker run --rm "${IMAGE}@${{ steps.build.outputs.digest }}" doctor --format json > "$RUNNER_TEMP/doctor.json"
+          WORKER_TEST_IMAGE="loop-engine-verified:${SOURCE_REVISION}"
+          docker run --rm --network none "$WORKER_TEST_IMAGE" doctor --format json > "$RUNNER_TEMP/doctor.json"
           python3 - <<'PY'
           import json, os
           report = json.load(open(os.path.join(os.environ["RUNNER_TEMP"], "doctor.json")))
-          assert isinstance(report, dict) and report, "doctor produced no report"
-          print("doctor keys:", sorted(report)[:12])
+          assert report.get("record_type") == "loop_engine_doctor/v1", report
+          assert report.get("ok") is True, report
+          print("installed image configuration passed")
           PY
+          docker run --rm --network none --entrypoint python "$WORKER_TEST_IMAGE" -c '
+          import json
+          from loop_engine.core.service_api import self_test as service_checks
+          from loop_engine.code_nodes.service_endpoints import self_test as endpoint_checks
+          for check in (service_checks, endpoint_checks):
+              report = check()
+              assert report["total"] > 0 and report["all_passed"], report
+              print(json.dumps({"suite": report["record_type"], "passed": report["passed"], "total": report["total"]}))
+          '
+
+      - name: Refuse publication if main changed during verification
+        uses: actions/github-script@v7
+        env:
+          SOURCE_REVISION: ${{ steps.source.outputs.revision }}
+        with:
+          script: |
+            const current = await github.rest.git.getRef({
+              ...context.repo, ref: 'heads/main'
+            });
+            if (current.data.object.sha !== process.env.SOURCE_REVISION) {
+              throw new Error('Main changed during verification; do not publish this image.');
+            }
+
+      - name: Log in to the GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish the verified image without rebuilding it
+        id: publish
+        env:
+          SOURCE_REVISION: ${{ steps.source.outputs.revision }}
+        run: |
+          WORKER_TEST_IMAGE="loop-engine-verified:${SOURCE_REVISION}"
+          docker tag "$WORKER_TEST_IMAGE" "${IMAGE}:sha-${SOURCE_REVISION}"
+          docker tag "$WORKER_TEST_IMAGE" "${IMAGE}:main"
+          docker push "${IMAGE}:sha-${SOURCE_REVISION}"
+          docker push "${IMAGE}:main"
+          PUBLISHED_REFERENCE=$(docker image inspect "${IMAGE}:sha-${SOURCE_REVISION}" --format '{{index .RepoDigests 0}}')
+          case "$PUBLISHED_REFERENCE" in
+            "${IMAGE}@sha256:"*) ;;
+            *) echo "the published image has no expected repository digest"; exit 1 ;;
+          esac
+          echo "digest=${PUBLISHED_REFERENCE#*@}" >> "$GITHUB_OUTPUT"
 
       - name: Record the image digest
         run: |
           {
             echo "## Published worker image"
             echo
-            echo "- image: \`${IMAGE}@${{ steps.build.outputs.digest }}\`"
-            echo "- tags: \`main\`, \`sha-${{ github.sha }}\`"
+            echo "- image: \`${IMAGE}@${{ steps.publish.outputs.digest }}\`"
+            echo "- tags: \`main\`, \`sha-${{ steps.source.outputs.revision }}\`"
+            echo "- source verification: CI run ${{ steps.source.outputs.ci_run }}"
             echo "- base: python:3.12-slim pinned by digest in the Dockerfile"
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "${{ steps.build.outputs.digest }}" > "$RUNNER_TEMP/image-digest.txt"
+          echo "${{ steps.publish.outputs.digest }}" > "$RUNNER_TEMP/image-digest.txt"
 
       - uses: actions/upload-artifact@v7
         with:

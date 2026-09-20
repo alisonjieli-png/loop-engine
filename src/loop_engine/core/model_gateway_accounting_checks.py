@@ -109,7 +109,7 @@ def self_test() -> dict:
     gateway, routes = _gateway(refused, accepted)
     aggregate = gateway.invoke(ModelGatewayRequest(
         "aggregate failover", ModelGatewayConfig(
-            route_names=routes, max_route_attempts=2)))
+            route_names=routes, allow_failover=True, max_route_attempts=2)))
     check("gateway_aggregates_failed_and_winning_physical_usage",
           aggregate.ok and aggregate.physical_model_calls == 2
           and aggregate.input_tokens == 12
@@ -211,7 +211,7 @@ def self_test() -> dict:
     gateway, routes = _gateway(recovered_failure, recovered_answer)
     recovered = gateway.invoke(ModelGatewayRequest(
         "transport diagnostic propagation", ModelGatewayConfig(
-            route_names=routes, max_route_attempts=2)))
+            route_names=routes, allow_failover=True, max_route_attempts=2)))
     recovered_record = recovered.to_dict()
     check("prior_transport_diagnostic_stays_on_attempt_after_recovery",
           recovered.ok
@@ -366,7 +366,7 @@ def _reservation_checks() -> list[dict]:
     gateway, routes = _gateway(first, second)
     failover = gateway.invoke(ModelGatewayRequest(
         "remaining budget must fit the next route", ModelGatewayConfig(
-            route_names=routes, max_route_attempts=2, max_total_tokens=20)))
+            route_names=routes, allow_failover=True, max_route_attempts=2, max_total_tokens=20)))
     check("failover_rechecks_remaining_budget_after_failed_physical_usage",
           not failover.ok and first.calls == 1 and second.calls == 0
           and failover.physical_model_calls == 1 and failover.total_tokens == 3

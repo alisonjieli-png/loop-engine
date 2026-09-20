@@ -6,6 +6,7 @@ The checks preserve scope isolation, accounting, and separate task acceptance.
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -94,6 +95,46 @@ def run_checks():
               not spawned_service.request.allow_network_reads
               and not spawned_service.request.allow_source_materialization_to_model
               and spawned_service.request.max_passes is None)
+        from .practitioner_runtime.provisioning import (
+            HarnessAssignmentConfiguration, HarnessProvisioningConfiguration)
+        configuration = HarnessProvisioningConfiguration.bind(
+            assignment=HarnessAssignmentConfiguration("build"),
+            assignment_overrides=(("read", HarnessAssignmentConfiguration("reason")),))
+        spawning_service.request = replace(spawning_service.request,
+            harness_provisioning_digest=configuration.content_digest)
+        spawning_service.dependencies = replace(spawning_service.dependencies,
+            harness_provisioning=configuration)
+        reader = fork_services(spawning_service, spec, assignment_id="read")
+        writer = fork_services(spawning_service, spec, assignment_id="write")
+        check("explicit_assignment_choice_narrows_actual_spawned_runtime_permissions",
+              spawning_service.request.allow_workspace_writes
+              and spawning_service.request.allow_sandbox_commands
+              and not reader.request.allow_workspace_writes
+              and not reader.request.allow_sandbox_commands
+              and writer.request.allow_workspace_writes
+              and writer.request.allow_sandbox_commands
+              and reader.model_session is spawning_service.model_session)
+        experiments = replace(configuration, assignment_overrides=(
+            ("experiment", HarnessAssignmentConfiguration("reason", workspace_effects=("reads_fs", "writes_fs"),
+                                                           allow_sandbox_commands=True)),
+            ("proposal", HarnessAssignmentConfiguration("build", workspace_effects=("reads_fs",),
+                                                         allow_sandbox_commands=False))))
+        spawning_service.request = replace(spawning_service.request, harness_provisioning_digest=experiments.content_digest)
+        spawning_service.dependencies = replace(spawning_service.dependencies, harness_provisioning=experiments)
+        experiment = fork_services(spawning_service, spec, assignment_id="experiment")
+        proposal = fork_services(spawning_service, spec, assignment_id="proposal")
+        check("reasoning_experiments_and_read_only_builds_reach_actual_runtime_permissions",
+              experiment.request.allow_workspace_writes and experiment.request.allow_sandbox_commands
+              and not proposal.request.allow_workspace_writes and not proposal.request.allow_sandbox_commands)
+        original_request = spawning_service.request
+        spawning_service.request = replace(original_request, allow_sandbox_commands=False)
+        try:
+            fork_services(spawning_service, spec, assignment_id="experiment")
+            command_refused = False
+        except ValueError:
+            command_refused = True
+        spawning_service.request = original_request
+        check("reasoning_experiment_cannot_escalate_parent_command_authority", command_refused)
         view = _model_state(PractitionerState(spec), spawned_service)
         check("active_problem_exposes_exact_spawned_constraints_and_acceptance",
               view["active_problem"] == {"objective": "spawned_service task",

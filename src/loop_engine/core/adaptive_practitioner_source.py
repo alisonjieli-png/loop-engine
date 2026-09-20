@@ -18,7 +18,8 @@ from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError, AdaptiveRunServices)
+    AdaptiveRunServices)
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .capability_rejection import (ADMITTED_VALUES_LIMIT, CapabilityRejected,
                                    CapabilityRejection, bounded_admitted_values)
 from .runtime_capacity import model_evidence_bytes

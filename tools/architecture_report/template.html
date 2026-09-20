@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; font-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Loop Engine | Development log, owner checklist and system map</title>
+<style>@@STYLE@@</style>
+</head><body>
+<a class="skip-link" href="#main">Skip to development status</a>
+<div class="shell">
+<header class="masthead"><a class="wordmark" href="#architecture"><span aria-hidden="true" class="brand">L</span>Loop Engine</a><div class="header-tools"><span class="revision">Working tree · @@REVISION@@</span><label>Appearance<select id="theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div></header>
+<section class="intro"><div><p class="eyebrow">Development record</p><h1>Loop Engine</h1><p class="lede">Your setup tasks, engineering status, architecture and feature comparisons in one file.</p></div><aside class="build-note"><span class="badge partial">Hosted pilot; release gates open</span><p>Customer execution stays local. Model endpoints are operated by the customer or provider.</p><button class="text-button" type="button" data-open-page="owner">Open your checklist →</button></aside></section>
+<div id="summary" class="summary" aria-label="Measured report population"></div>
+<nav class="primary-nav" aria-label="System map sections"><button type="button" data-page="development" aria-pressed="true">Status &amp; log</button><button type="button" data-page="hosting" aria-pressed="false">Hosting &amp; setup</button><button type="button" data-page="owner" aria-pressed="false">Your checklist</button><button type="button" data-page="architecture" aria-pressed="false">All architecture</button><button type="button" data-page="features" aria-pressed="false">Feature matrices</button><button type="button" data-page="work" aria-pressed="false">Engineering <span id="active-count"></span></button><button type="button" data-page="source" aria-pressed="false">Source explorer</button><button type="button" data-page="evidence" aria-pressed="false">Evidence &amp; limits</button></nav>
+<main id="main">
+<section id="page-development" class="page" aria-labelledby="development-heading">
+<div class="section-heading"><div><p class="eyebrow">Current position</p><h2 id="development-heading">A hosted diagnostic pilot, not a paid launch</h2></div><button type="button" data-open-page="owner">Your next steps</button></div>
+<p id="development-evidence" class="description"></p><p id="development-gates" class="notice"></p>
+<details class="subsection" open><summary>Current checkpoint and developer handoff</summary><p>The Baltor website is live at <a href="https://baltor.ai/" target="_blank" rel="noopener noreferrer">https://baltor.ai/</a> and <a href="https://app.baltor.ai/" target="_blank" rel="noopener noreferrer">https://app.baltor.ai/</a>. Cloudflare is active and the nameserver change is confirmed. Fly release 7 includes the simpler public explanation and account integration code. Public registration remains disabled; sender delivery, customer accounts and paid access still need qualification.</p><p>Read <strong>Current development checkpoint and Claude Code handoff</strong> in the embedded guides below. It does not mark an incomplete paid release as finished.</p></details>
+<div class="development-next"><div><h3>Access and decisions still needed</h3><p>Fly, Supabase, Stripe, Resend, Cloudflare and Namecheap access are prepared. Supabase authentication-settings management still needs the exact permission. Engineering owns routine setup; no repeated account creation or manual domain configuration is needed.</p><button class="text-button" type="button" data-open-page="hosting">Open hosting and setup</button></div><div><h3>Engineering completes</h3><p>Finish and qualify customer signup, email recovery, scoped client access, shared storage, billing, native file loading and useful task completion. The deployed account code passes conformance and local checks, but those checks do not establish a real customer journey.</p><button class="text-button" type="button" data-open-page="work">Inspect the engineering worklist</button></div></div>
+<p class="description">Next complete journey: sign in, take a test subscription, connect a client, retrieve reviewed material, run locally, verify the result, record usage, then revoke access. The original 24-hour planning window is historical, not a release forecast.</p>
+<section aria-labelledby="handoff-heading"><div class="section-heading"><div><p class="eyebrow">Continue from this checkout</p><h3 id="handoff-heading">Claude Code Fable 5.1 handoff</h3></div><button type="button" id="download-developer-handoff">Download developer handoff</button></div><p>Read the checkpoint, resolve the first release blockers and continue at the existing owning boundaries. Do not redeploy, recreate accounts or repeat uncertain external actions from a stale note.</p><details class="subsection"><summary>Read complete takeover instructions</summary><pre id="developer-handoff-text"></pre></details></section>
+<section aria-labelledby="benefit-heading"><div class="section-heading"><h3 id="benefit-heading">Launch benefits to prove</h3></div><p class="description">Draft positioning, not current performance claims. Reusable solutions remain the overall product outcome.</p><div id="launch-benefits"></div></section>
+<section aria-labelledby="delivery-heading"><div class="section-heading"><h3 id="delivery-heading">Implementation and verification plan</h3></div><p class="description" id="delivery-planning-note"></p><div id="delivery-packages"></div></section>
+<details class="subsection"><summary>Review-only intelligence population</summary><p id="candidate-count" class="caption"></p><p>These authored candidates are not served by the hosted pilot or promoted for normal use. Select a title to inspect its text and exact source identities.</p><div id="candidate-table" class="table-scroll" tabindex="0" role="region" aria-label="Candidate intelligence review"></div><aside id="candidate-detail" class="detail-panel" hidden aria-live="polite"></aside></details>
+<div class="section-heading"><h3>Development log</h3></div><div id="development-log"></div>
+<details class="subsection"><summary>Complete setup guides, research and checkpoint reports</summary><p class="description">All text is embedded. Repository paths identify sources; you do not need separate Markdown files to read the guides here.</p><div id="development-guides"></div></details>
+</section>
+<section id="page-owner" class="page" aria-labelledby="owner-heading" hidden>
+<div class="section-heading"><div><p class="eyebrow">Owner preparation</p><h2 id="owner-heading">Your next steps</h2></div><button type="button" id="download-owner-handoff">Download handoff template</button></div>
+<p class="description">Some cards record preparation that is already complete. Do not recreate Fly, Stripe, Supabase, Resend or Cloudflare accounts. Act only where a new account, consent or business decision is still requested. You do not need to launch or manage models for Loop Engine; an existing endpoint and its authentication reference are enough when its protocol is supported.</p>
+<p class="description"><button type="button" class="text-button" data-open-page="hosting">Start with the concrete Fly.io + Supabase setup instructions</button>. This checklist tracks all owner decisions; preparation is not a deployment or an approval to spend.</p>
+<p id="owner-progress" class="notice" aria-live="polite"></p>
+<div class="owner-controls"><label>When<select id="owner-phase"><option value="all">All tasks</option><option value="now">Consent or decision needed</option><option value="prepared">Account prepared</option><option value="engineering">Engineering owned</option><option value="after_endpoint">After the endpoint is ready</option><option value="before_public">Before public access</option><option value="before_charging">Before charging</option><option value="optional">Optional</option></select></label><label class="preparation-check"><input id="owner-hide-prepared" type="checkbox">Hide marked tasks</label><button type="button" id="export-preparation">Export checkmarks</button><label class="import-preparation">Import checkmarks<input id="import-preparation" type="file" accept="application/json,.json"></label></div>
+<p id="owner-storage" class="caption"></p><p id="owner-transfer-status" class="caption" aria-live="polite"></p><div id="owner-items"></div>
+<aside id="owner-guide" class="detail-panel" hidden><button type="button" class="close" id="close-owner-guide">Close guide</button><h3 id="owner-guide-title"></h3><pre id="owner-guide-text"></pre></aside>
+</section>
+<section id="page-hosting" class="page" aria-labelledby="hosting-title" hidden>
+<div class="section-heading"><div><p class="eyebrow">Recommended for your pilot</p><h2 id="hosting-title">Hosting and account setup</h2></div><button type="button" data-open-page="owner">Track your preparation</button></div>
+<p id="hosting-recommendation" class="description"></p><p id="hosting-status" class="notice"></p>
+<p id="hosting-checked" class="caption"></p>
+<div class="section-heading"><h3>Prepared access and next actions</h3></div><p class="description">The accounts already exist. Engineering owns routine setup; the owner supplies missing consent and business decisions. This page performs no account, domain or deployment changes.</p><div id="hosting-today"></div>
+<div class="section-heading"><h3>What each service owns</h3></div><div id="hosting-stack" class="table-scroll"></div>
+<div class="section-heading"><h3>Monthly planning examples</h3></div><p id="hosting-assumptions" class="description"></p><div id="hosting-costs" class="table-scroll"></div><p id="hosting-cost-note" class="notice"></p><p id="hosting-cost-sources" class="source-links"></p>
+<div class="section-heading"><h3>Regions and database connections</h3></div><p id="hosting-regions" class="description"></p><p id="hosting-region-sources" class="source-links"></p><p id="hosting-connection" class="description"></p><p id="hosting-connection-source" class="source-links"></p>
+<div class="section-heading"><h3>Why not another host?</h3></div><div id="hosting-alternatives" class="table-scroll"></div>
+<div class="section-heading"><h3>Engineering work, not owner homework</h3></div><div id="hosting-engineering"></div>
+<div class="section-heading"><h3>Do not do these yet</h3></div><div id="hosting-wait" class="notice"></div>
+</section>
+<section id="page-architecture" class="page" aria-labelledby="architecture-heading" hidden>
+<details class="runtime-reference"><summary>Runtime classification: one Loop, three roles</summary><p>These diagrams show software and data boundaries, not a Loop execution graph. Services, files and stores are not executable vertices.</p><pre>Operational runtime type
+└── Loop
+    ├── Operational relationship
+    │   ├── Starting
+    │   ├── Spawned by
+    │   ├── Queried by
+    │   ├── Retrieved by
+    │   └── Connected from
+    ├── Role: Practitioner, Intelligence, or Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Run mode
+    │   ├── deterministic
+    │   ├── hybrid
+    │   └── non-deterministic, with model-led semantic work
+    ├── Step profile
+    ├── Typed input and output contract
+    ├── Loop condition
+    ├── Exit condition
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when the selected mode permits a model
+    └── Run History records</pre><pre>Loop role profiles
+├── Practitioner
+│   ├── reference nine-step
+│   ├── compact five-step
+│   ├── research
+│   ├── solver
+│   ├── verifier
+│   ├── code execution
+│   └── self-improvement task
+├── Intelligence
+│   ├── cross-layer search and materialize
+│   ├── Context Intelligence: serve, search and frame
+│   ├── Code Intelligence: resolve, invoke and load
+│   ├── Runtime History and Solution Intelligence: search, replay and compare
+│   └── User Feedback Intelligence: serve, scope and interpret
+└── Solution
+    ├── atomic component
+    ├── pipeline
+    ├── router and fallback
+    ├── ensemble
+    └── validator</pre></details>
+<div class="section-heading"><div><p class="eyebrow" id="diagram-level">High level</p><h2 id="architecture-heading">Whole-system architecture</h2></div><label class="architecture-select">Architecture area<select id="architecture-area"></select></label></div>
+<p id="architecture-coverage" class="description"></p>
+<div class="journeys"><span>Start here</span><button type="button" data-level="system" aria-pressed="true">Whole engine</button><button type="button" data-level="runtime" aria-pressed="false">Loop runtime</button><button type="button" data-level="practitioner" aria-pressed="false">Reasoning &amp; building</button><button type="button" data-level="intelligence" aria-pressed="false">Intelligence</button><button type="button" data-level="high" aria-pressed="false">Client/server</button></div>
+<p id="diagram-description" class="description"></p><div class="legend"><span><i class="dot customer"></i>Customer-controlled</span><span><i class="dot engine"></i>Loop Engine</span><span><i class="dot external"></i>External service</span><span>Select a component for its contract and source.</span></div>
+<div id="architecture-graph" class="diagram" role="group" aria-label="Architecture components and connections" aria-busy="true"></div><p id="diagram-layout-note" class="caption"></p><aside id="diagram-detail" class="detail-panel" aria-live="polite" hidden></aside>
+<details class="connections" open><summary>Connections and data flow</summary><ol id="connections"></ol></details>
+<details class="subsection" open><summary>Harness instance files and context</summary><div id="harness-layout"></div></details>
+<details class="subsection"><summary>Self-improving retrieval candidates</summary><p class="description">AutoRAG 2 is the leading integrated trial candidate. It is not installed or qualified here. GEPA is a separate deferred-optimization candidate; LangGraph is not a required runtime.</p><pre id="retrieval-research"></pre></details>
+<details class="subsection"><summary>SoL-Pi: optional harness profile, research and trade-offs</summary><p class="description">The released project is a configurable Pi extension bundle, not a model server. Our current text-only Pi recipe disables extensions. Its reported savings, quality trade-offs and integration checks are reviewed here; support is not claimed from package presence.</p><pre id="sol-pi-research"></pre></details>
+<details class="subsection"><summary>Jev, Circuit and SemIf: decision interfaces and confidence</summary><div id="decision-research"></div></details>
+<details class="subsection"><summary>Architecture notes and implementation limits</summary><div id="architecture-notes"></div></details>
+</section>
+<section id="page-features" class="page" aria-labelledby="features-heading" hidden>
+<div class="section-heading"><div><p class="eyebrow">Public websites · 20 Sep 2026</p><h2>Customer journeys and website comparison</h2></div><span class="badge partial">Observed pages, not product certification</span></div>
+<p class="description">Current page discovery, positioning and design observations complement the historical feature matrices below. A linked page is not a tested sign-up, purchase or product integration.</p>
+<div class="filters"><label>Find a company or topic<input type="search" id="website-search" placeholder="SenseLab, setup, reusable…"></label><label>Comparison group<select id="website-cohort"><option value="all">All reviewed websites</option><option value="historical_comparison">Original competitor population</option><option value="onboarding_reference">Onboarding references</option><option value="workflow_reference">Workflow references</option><option value="own_product">Baltor pilot</option></select></label></div>
+<p id="website-count" class="caption" aria-live="polite"></p><div id="website-table" class="table-scroll" role="region" aria-label="Public website journey comparison" tabindex="0"></div><aside id="website-detail" class="detail-panel" hidden aria-live="polite"></aside>
+<p class="caption">Link = a visible link observed in the sampled page. Unknown = not observed in that sample, never proof of absence. Overmind and Lemma remain unresolved identities. Authenticated competitor flows and conversion rates were not tested. No overall superiority score is assigned.</p>
+<div class="section-heading"><div><p class="eyebrow">Original comparison, preserved</p><h2 id="features-heading">Feature matrices</h2></div><span class="badge partial">Snapshot · 18 Sep 2026</span></div>
+<p class="description">The six Claude matrices retain their original cells and notes. They are historical claims, not a fresh vendor audit or proof of current Loop Engine wiring.</p><div class="notice">“N” combines undocumented and documented-absent features in the source. Treat it cautiously. “Y” does not mean a feature is reached, independently verified, or live-qualified.</div>
+<div class="filters"><label>Feature family<select id="feature-family"></select></label><label>Find a feature<input id="feature-search" type="search" placeholder="Memory, verification, routing…"></label><label>Company<input id="company-search" type="search" placeholder="Filter company names"></label></div>
+<div class="legend"><span class="cell-key yes">Y · documented in snapshot</span><span class="cell-key partial">P · partial</span><span class="cell-key absent">N · source caveat applies</span><span class="cell-key unknown">? · unverified</span></div>
+<p id="feature-count" class="caption" aria-live="polite"></p><div id="feature-table" class="table-scroll" role="region" aria-label="Historical feature comparison"></div><aside id="feature-detail" class="detail-panel" aria-live="polite" hidden></aside>
+<details class="subsection"><summary>Feature totals across the reviewed vendors</summary><p class="caption">Computed from preserved cells. Loop Engine and the unverified Overmind/Lemma pair are excluded, as in the original.</p><div id="feature-totals" class="table-scroll"></div></details><details class="subsection"><summary>Newer adjacent-product review</summary><div id="comparison-tables"></div></details><details class="subsection"><summary>Complete original comparison and notes</summary><pre id="original-comparison"></pre></details>
+</section>
+<section id="page-work" class="page" aria-labelledby="work-heading" hidden>
+<div class="section-heading"><div><p class="eyebrow">From the authoritative roadmap</p><h2 id="work-heading">Running worklist</h2></div><span class="badge">Read-only projection</span></div>
+<p class="description">Active work, unresolved gates and owner decisions. Completion is recorded in the roadmap after verification; clicking this report cannot mark software as finished.</p><p id="plan-freshness" class="caption"></p><div id="work-summary" class="summary compact"></div>
+<div class="filters"><label>Scope<select id="work-scope"><option value="continuation">Current continuation</option><option value="all">All retained initiatives</option></select></label><label>Status<select id="work-status"><option value="open">All open work</option><option value="building">Building</option><option value="ready">Ready</option><option value="proposed">Proposed</option><option value="blocked">Blocked</option><option value="all">All statuses</option></select></label><label>Find work<input id="work-search" type="search" placeholder="Search a step, component or requirement"></label></div>
+<p id="work-count" class="caption" aria-live="polite"></p><div id="work-items"></div><div class="section-heading"><h3>Release gates</h3></div><div id="release-gates"></div><div class="section-heading"><h3>Owner decisions</h3></div><div id="owner-decisions"></div><details class="subsection"><summary>Owner setup checklist</summary><pre id="owner-checklist"></pre></details><details class="subsection"><summary>Recorded activity</summary><div id="activity"></div></details><details class="subsection"><summary>Complete execution plan</summary><pre id="execution-plan"></pre></details>
+</section>
+<section id="page-source" class="page" aria-labelledby="source-heading" hidden>
+<div class="section-heading"><div><p class="eyebrow">Measured from repository files</p><h2 id="source-heading">Source explorer</h2></div></div><p class="description">Inspect classes, functions, records and import relationships. Static reachability is not observed execution; a named check is not a passing result.</p>
+<div class="source-layout"><aside class="source-index"><label for="source-search">File, module or symbol</label><input id="source-search" type="search" placeholder="Search the repository"><label for="source-folder">Folder</label><select id="source-folder"><option value="">All folders</option></select><p id="source-count" class="caption" aria-live="polite"></p><div id="source-files"></div><button id="more-files" type="button" class="secondary">Show more files</button></aside><article id="source-detail"></article></div>
+</section>
+<section id="page-evidence" class="page" aria-labelledby="evidence-heading" hidden>
+<div id="known-issues" class="notice" hidden></div>
+<details class="subsection"><summary>Publication review, website content and domain direction</summary><div id="publication-notes"></div></details>
+<div class="section-heading"><div><p class="eyebrow">Keep the claims separate</p><h2 id="evidence-heading">Evidence and open questions</h2></div></div><p id="evidence-state" class="description"></p><div id="evidence-limits" class="notice"></div><div id="entry-points"></div><div id="checkpoint-notes"></div><h3>Review questions</h3><p id="question-count" class="caption"></p><div id="questions"></div><details class="subsection"><summary>Source and plan identities</summary><pre id="identities"></pre></details><details class="subsection"><summary>Layout library license and source</summary><p>This file embeds ELK.js 0.12.0. The unmodified upstream source is available from <a href="https://github.com/kieler/elkjs/tree/0.12.0">kieler/elkjs, release 0.12.0</a>. The included license applies to that library.</p><pre>@@ELK_LICENSE@@</pre></details>
+</section>
+</main>
+<footer><p id="generated-at"></p><p>One self-contained file. No accounts, payments, model calls, network requests or deployments are started here.</p><div><button class="text-button" type="button" data-download="graph">Download full graph</button><button class="text-button" type="button" data-download="inventory">Download complete inventory</button></div></footer>
+</div>
+<noscript><p class="notice">JavaScript is required for this interactive report. All report data and source notes are embedded in the file.</p></noscript>
+<script id="elk-library">@@ELK@@</script><script type="application/json" id="report-data">@@PAYLOAD@@</script><script>@@SCRIPT@@</script>
+</body></html>

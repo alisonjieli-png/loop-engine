@@ -1867,6 +1867,1813 @@ entries:
     classification: RESOURCE_OR_TEMPLATE
     created_on: 2026-09-18
     expires_on: 2027-09-18
+  - finding_id: hardcoding.53438b7213f3f26b6e4d37f6
+    owner: docs.roadmap.roadmap.yaml:continuation.previous_artifact
+    rationale: >-
+      This exact URL identifies the owner's earlier Claude System Map artifact
+      as historical provenance. It is not a provider endpoint, selected route,
+      deployment setting, or executable resource. The current continuation
+      plan explicitly treats the hosted copy as a recovered historical view.
+      Reviewed on 2026-09-19 at docs/roadmap/roadmap.yaml:22. Only this exact
+      finding is allowed; new runtime endpoint URLs remain audited.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.7c8caf2630173802d1c64cd9
+    owner: loop_engine.core.practitioner_runtime.observations:_record_stage_assistance_decision
+    rationale: >-
+      The record_type literal is a record-field name excluded from a copied
+      event mapping, not a lifecycle state. The exact comparison moved unchanged
+      from adaptive_practitioner_records into practitioner_runtime.observations.
+      Its previous reviewed exception is hardcoding.4dd2c3e55fc40a9117726f17,
+      which is retained for provenance. Source comparison against commit
+      48cc954322691e492aad69a465ba470a112730e7 confirmed the same exclusion
+      expression on 2026-09-19. The detector includes path and symbol in finding
+      identity, so this moved occurrence needs its own exact entry.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.86322e44eb95347b74b539aa
+    owner: loop_engine.core.practitioner_runtime.observations:_record_stage_assistance_decision
+    rationale: >-
+      The stage_occurrence_id literal is the other record-field name excluded
+      from that copied event mapping. It is not a state selected by the runtime.
+      This exact expression moved unchanged from adaptive_practitioner_records;
+      its previous reviewed exception is hardcoding.1b7ee6c9caf7ba506079e8ee,
+      retained for provenance. Source comparison against commit
+      48cc954322691e492aad69a465ba470a112730e7 confirmed the same exclusion
+      expression on 2026-09-19. New state comparisons in the owning module remain
+      subject to the audit; no file or vocabulary exemption is introduced.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.0c9114d720b507d67cc4afd0
+    owner: loop_engine.strings.capability_resources
+    rationale: >-
+      This exact text is the purpose component of the existing typed
+      PromptResourceBundle adaptive.generated_project.purpose@1.0.0, not an
+      unowned executable prompt. The component declares zero slots and the
+      bundle binds generated_project_candidate/v1, the Practitioner profile,
+      and core.generated_project policy. Its 976 UTF-8 bytes retain SHA-256
+      f96ca4656100e386022b2125a11f6bbed0171c724388ebd262a10544c819f1db.
+      The descriptor carries exact render metadata and returns detached nested
+      data. Independent checks verify version/content/policy/schema identity,
+      undeclared-slot and provenance refusal, and consumer mutation isolation.
+      The detector recognizes typed resources automatically only in
+      prompt_fragments.py; this reviewed strings-owned subcomponent uses that
+      existing contract without increasing that file's size. In-memory
+      canaries in hardcoding-exact-allowance-canaries.py show that changed text,
+      another path, and a new prompt in this same file remain blocking. Only
+      this exact finding is allowed; no filename or directory exemption is
+      added. Reviewed on 2026-09-19. Evidence is under
+      artifacts/architecture-audit-2026-09-19/.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.ebc6c07b26c61720ddfc19ed
+    owner: loop_engine.core.service_runtime.http
+    rationale: >-
+      The exact literal is the public WWW-Authenticate challenge prefix
+      Bearer resource_metadata, not an authorization token. It advertises a
+      host-configured public discovery URL on a refusal. The transport checks
+      verify the exact discovery address and that requests never echo keys.
+      A changed challenge or any additional secret-shaped literal has a
+      different finding identity and remains blocked. No secret detector or
+      file exclusion changes. Review and canaries are recorded in the service
+      integration checkpoint of 2026-09-19.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.839518dfbbe7804c3e423907
+    owner: loop_engine.core.service_runtime.http_test_fixtures
+    rationale: >-
+      A real acceptance server binds an operating-system-assigned port on
+      loopback only. This literal builds its local client address from that
+      owned socket. It cannot select a production provider. Exact path and
+      literal identity remain checked; an external host must stay blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.883306ba058d99596dd8ac98
+    owner: loop_engine.core.service_runtime.http_test_fixtures
+    rationale: >-
+      Exact loopback browser Origin used as permitted input to the acceptance
+      fixture. Tests refuse other Origins. This value neither starts a
+      browser nor configures the production application. Changed origins and
+      literals outside this fixture keep separate finding identities.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.efc735fee76000b94b68ca6f
+    owner: loop_engine.core.service_runtime.http_test_fixtures
+    rationale: >-
+      Local public-key rotation fixture address, built from its own bound
+      loopback socket. The fixture tests signed-token validation, bounded key
+      responses and redirect refusal without contacting an identity provider.
+      It is not a deployment fallback or a production issuer.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.24ca9147889627b85cfe5c45
+    owner: loop_engine.core.service_runtime.stripe_provider
+    rationale: >-
+      The fixed official Stripe API origin is an adapter security boundary.
+      Callers cannot replace it with a credential-exfiltration endpoint.
+      Separate explicit network authority is required before resolving a key
+      or sending a request, and redirects are refused. Provider checks and
+      mutants cover these guards. The host still supplies the account, API
+      version and secret reference. Other origin literals remain blocking.
+      Source is the official Stripe API documentation at
+      https://docs.stripe.com/api/subscriptions/list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.1e8eaa28b82cba8bf4ed8d8a
+    owner: tools.architecture_report.app.js
+    rationale: >-
+      The fixed http://www.w3.org/2000/svg value is the XML namespace passed to
+      document.createElementNS, not a network endpoint or provider choice.
+      The self-contained report blocks all network connections and loads no
+      remote resources. Offline browser acceptance exercises every diagram
+      and proves that a copied single file works with no companion assets.
+      Altering the namespace is not a deployment setting. Only this exact
+      source path and literal identity are allowed; a changed or added URL
+      remains subject to the detector. No file, baseline or rule is excluded.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.17fd6e7b34513e2704257ab5
+    owner: loop_engine.core.decisions.jev
+    rationale: >-
+      This exact TypeSafe API origin and path is owned by its provider adapter.
+      It is the provider contract checked at https://docs.typesafe.ai/api on
+      September 19. Making the recipient caller-configurable would permit a
+      request to redirect the host credential. Engine replacement uses another
+      registered provider, not an arbitrary URL with this provider's key.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.bdfd3bd1c1f2b1f1baa9c17d
+    owner: loop_engine.core.decisions.jev
+    rationale: >-
+      Read-only provenance reference for the TypeSafe wire contract. It is
+      returned as source metadata and is never fetched by this module. It is
+      not a provider route, request recipient, credential or deployment choice.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.4f2ad5a50c46a84647f2afa7
+    owner: tools.check_service_workspace.mjs
+    rationale: >-
+      Independent browser assertion over a local provider fixture's returned
+      checkout URL. The browser does not navigate to this URL and the test
+      blocks every external request. The fixed expected origin is a negative
+      control against redirect substitution, not a deployment configuration.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.e1e020470a47615d8b6853c1
+    owner: tools.check_service_workspace.mjs
+    rationale: >-
+      Independent browser assertion over a local provider fixture's returned
+      portal URL. No external request is made. Keeping the expected provider
+      origin explicit lets a substituted redirect fail the browser check.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-19
+    expires_on: 2027-09-19
+  - finding_id: hardcoding.0412d4b5f094897c2f515e48
+    owner: .github.workflows.fly-pilot.yml:jobs.pilot.environment
+    rationale: >-
+      The literal is the name of the GitHub deployment environment that holds
+      the deployment secret and its protection rules. GitHub resolves
+      environment-scoped variables only after a job names its environment, so
+      the name cannot come from those variables, and taking it from a workflow
+      input would let a caller select an unprotected environment. Every other
+      deployment setting in this workflow comes from that environment's
+      variables. Reviewed on 2026-09-20. Only this exact finding is allowed; a
+      changed or added value has a different finding identity and stays
+      blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.06ccea6f8d182212ea00c3b0
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[0].url
+    rationale: >-
+      The literal at sites[0].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.d4c3c7b4e57f01e5e5426342
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[10].url
+    rationale: >-
+      The literal at sites[10].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.ea53f322abf83505e0845d51
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[11].url
+    rationale: >-
+      The literal at sites[11].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.d7c9b0cf476cf3b80c484c27
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[12].url
+    rationale: >-
+      The literal at sites[12].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.319a383690ef141679128a4d
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[13].url
+    rationale: >-
+      The literal at sites[13].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.4424e4c6bab172b1e2af94f4
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[14].url
+    rationale: >-
+      The literal at sites[14].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.59727971873418ce2a208902
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[15].url
+    rationale: >-
+      The literal at sites[15].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.2ef3e5e27dcc76266a1477c1
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[16].url
+    rationale: >-
+      The literal at sites[16].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.4030175a715bff0c3235d8e0
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[17].url
+    rationale: >-
+      The literal at sites[17].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.bc09d9b6bd1819455a5091e9
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[18].url
+    rationale: >-
+      The literal at sites[18].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.a71c0ec6da360dfa90b5dd52
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[19].url
+    rationale: >-
+      The literal at sites[19].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.a67e01fd516950b20106fae1
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[1].url
+    rationale: >-
+      The literal at sites[1].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.57cae2c102ce8b073a7eabd0
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[20].url
+    rationale: >-
+      The literal at sites[20].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.46b4ae5066d8c26bec2b0ebf
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[21].url
+    rationale: >-
+      The literal at sites[21].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.972dd5178db4539beeaf7389
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[22].url
+    rationale: >-
+      The literal at sites[22].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.c9ccb87af779398fb58c972d
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[23].url
+    rationale: >-
+      The literal at sites[23].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.4a14d8d6649d03393d0828f0
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[2].url
+    rationale: >-
+      The literal at sites[2].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.cb51057787b76a3ac27774e9
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[3].url
+    rationale: >-
+      The literal at sites[3].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.89d9131e22d4af958cff005c
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[4].url
+    rationale: >-
+      The literal at sites[4].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.4bbf4ff57d0bceae699abeed
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[5].url
+    rationale: >-
+      The literal at sites[5].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.01377f989cbc1a03b589bd99
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[6].url
+    rationale: >-
+      The literal at sites[6].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.2f26a2bb8ee79bef09fba945
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[7].url
+    rationale: >-
+      The literal at sites[7].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.d89a38744571c056380e86bc
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[8].url
+    rationale: >-
+      The literal at sites[8].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.811ca2f5c0f6e1a2c45c86b5
+    owner: docs.research.WEBSITE-COMPARISON-POPULATION-2026-09-20.json:sites[9].url
+    rationale: >-
+      The literal at sites[9].url is the public address of one reviewed
+      website in the dated comparison population of 2026-09-20. The file is
+      research input: it records which public pages were reviewed, so the
+      address is the datum itself, not a provider binding of the engine.
+      tools/website_comparison.py validates the population and the engine
+      never reads it. A later review needs a new dated file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.cfe850f121cd578be5651b9d
+    owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes[0].source_url
+    rationale: >-
+      client-recipes.json holds the connection recipes that the Connect page
+      shows for supported clients. The literal at recipes[0].source_url is the
+      client vendor's public documentation or configuration-schema address. It
+      is displayed as the source of the recipe or written into the
+      configuration the customer copies because that client requires it. The
+      service never contacts it. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.c5d875e8703424c8cd896d2a
+    owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes[1].configuration.$schema
+    rationale: >-
+      client-recipes.json holds the connection recipes that the Connect page
+      shows for supported clients. The literal at
+      recipes[1].configuration.$schema is the client vendor's public
+      documentation or configuration-schema address. It is displayed as the
+      source of the recipe or written into the configuration the customer
+      copies because that client requires it. The service never contacts it.
+      Reviewed on 2026-09-20. Only this exact finding is allowed; a changed or
+      added value has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.dd2807a7c820ba1ade36d758
+    owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes[1].source_url
+    rationale: >-
+      client-recipes.json holds the connection recipes that the Connect page
+      shows for supported clients. The literal at recipes[1].source_url is the
+      client vendor's public documentation or configuration-schema address. It
+      is displayed as the source of the recipe or written into the
+      configuration the customer copies because that client requires it. The
+      service never contacts it. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.f9cea603c6b74db7b602689b
+    owner: tools.architecture_report.hosting.json:alternatives[0].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at
+      alternatives[0].source is a citation link to a provider's public
+      documentation or pricing page, shown to the reader as the source of a
+      stated fact. No code contacts it and it selects no provider, endpoint or
+      deployment setting. Reviewed on 2026-09-20. Only this exact finding is
+      allowed; a changed or added value has a different finding identity and
+      stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.f95dc20777db7ad1538663ff
+    owner: tools.architecture_report.hosting.json:alternatives[1].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at
+      alternatives[1].source is a citation link to a provider's public
+      documentation or pricing page, shown to the reader as the source of a
+      stated fact. No code contacts it and it selects no provider, endpoint or
+      deployment setting. Reviewed on 2026-09-20. Only this exact finding is
+      allowed; a changed or added value has a different finding identity and
+      stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.6ba9825e93f6987981173cbf
+    owner: tools.architecture_report.hosting.json:alternatives[2].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at
+      alternatives[2].source is a citation link to a provider's public
+      documentation or pricing page, shown to the reader as the source of a
+      stated fact. No code contacts it and it selects no provider, endpoint or
+      deployment setting. Reviewed on 2026-09-20. Only this exact finding is
+      allowed; a changed or added value has a different finding identity and
+      stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.7daf3b321ee6068f0d005a48
+    owner: tools.architecture_report.hosting.json:alternatives[3].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at
+      alternatives[3].source is a citation link to a provider's public
+      documentation or pricing page, shown to the reader as the source of a
+      stated fact. No code contacts it and it selects no provider, endpoint or
+      deployment setting. Reviewed on 2026-09-20. Only this exact finding is
+      allowed; a changed or added value has a different finding identity and
+      stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.aea728eeaf90e27f8d23590f
+    owner: tools.architecture_report.hosting.json:alternatives[4].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at
+      alternatives[4].source is a citation link to a provider's public
+      documentation or pricing page, shown to the reader as the source of a
+      stated fact. No code contacts it and it selects no provider, endpoint or
+      deployment setting. Reviewed on 2026-09-20. Only this exact finding is
+      allowed; a changed or added value has a different finding identity and
+      stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.0d794539a80f3283e3f04be3
+    owner: tools.architecture_report.hosting.json:connection_source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at connection_source is
+      a citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.14fd589a3d001adcda468fcc
+    owner: tools.architecture_report.hosting.json:cost_sources[0]
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at cost_sources[0] is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.628cb32fc3cfeddecef07473
+    owner: tools.architecture_report.hosting.json:cost_sources[1]
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at cost_sources[1] is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.8fc694f2d6c97d2327ee9e43
+    owner: tools.architecture_report.hosting.json:costs[0].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[0].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.57b79b31633e5ad752a6ccd8
+    owner: tools.architecture_report.hosting.json:costs[1].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[1].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.8afcfa536f7e9c9dd1dc0693
+    owner: tools.architecture_report.hosting.json:costs[2].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[2].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.058e878b821d98c6d4b405fb
+    owner: tools.architecture_report.hosting.json:costs[3].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[3].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.d74fd6b8bad4d31516ca2a5e
+    owner: tools.architecture_report.hosting.json:costs[4].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[4].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.48ab3752466c491a9d3b4a93
+    owner: tools.architecture_report.hosting.json:costs[5].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[5].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.40f929fd2d436216d3be7e22
+    owner: tools.architecture_report.hosting.json:costs[6].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[6].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.f91efd62fe65ef26952bdcd6
+    owner: tools.architecture_report.hosting.json:do_now[0].url
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at do_now[0].url is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.9291fe4856fce6e90f26b981
+    owner: tools.architecture_report.hosting.json:do_now[1].url
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at do_now[1].url is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.e129b0d8f814896c0907c022
+    owner: tools.architecture_report.hosting.json:do_now[2].url
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at do_now[2].url is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.67a0770eb86757b856cb85c3
+    owner: tools.architecture_report.hosting.json:do_now[3].url
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at do_now[3].url is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.a4726725711af5532c66d494
+    owner: tools.architecture_report.hosting.json:do_now[4].url
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at do_now[4].url is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.3f1af12ff6526830bfe7dd56
+    owner: tools.architecture_report.hosting.json:do_now[5].url
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at do_now[5].url is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.0e9e829bec77614fecb1e95b
+    owner: tools.architecture_report.hosting.json:region_sources[0]
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at region_sources[0] is
+      a citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.34a497dcd98f4ddb6c686d92
+    owner: tools.architecture_report.hosting.json:region_sources[1]
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at region_sources[1] is
+      a citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.bc12950d24b601658a9b049d
+    owner: tools.architecture_report.hosting.json:stack[0].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at stack[0].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.b106700c44a222d1e9f38b41
+    owner: tools.architecture_report.hosting.json:stack[1].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at stack[1].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.7dd6e0fad3b6e131e41331fa
+    owner: tools.architecture_report.hosting.json:stack[2].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at stack[2].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.3803bcb466b6d8a42a3064b7
+    owner: tools.architecture_report.hosting.json:stack[3].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at stack[3].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.78a620d50b2cbd86ba4eb9c2
+    owner: tools.architecture_report.hosting.json:stack[4].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at stack[4].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.5681071d36677b2a455c9bf9
+    owner: tools.architecture_report.hosting.json:stack[5].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at stack[5].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.59774d67073d4fc98ca50e3d
+    owner: tools.architecture_report.hosting.json:stack[6].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at stack[6].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.0382204f04eb324add6b037b
+    owner: tools.check_architecture_report.mjs:url
+    rationale: >-
+      The literal is text that the development report must display: the
+      address of a reviewed reference site in the website review detail. The
+      browser check asserts that the citation is visible. Nothing contacts the
+      address. Reviewed on 2026-09-20. Only this exact finding is allowed; a
+      changed or added value has a different finding identity and stays
+      blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.c937c3fbdaea3df3ab7566a5
+    owner: tools.check_hosted_service:main
+    rationale: >-
+      The literal names the one environment variable passed to a child
+      process, so the child runs with a minimal environment and cannot see
+      injected credentials. It is the standard executable search path name,
+      not a deployment setting. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.ff9408471dde54773be9b3b1
+    owner: tools.check_hosted_service:main
+    rationale: >-
+      The literal is a deliberately foreign browser Origin used as a negative
+      control: the hosted service must refuse it. The .invalid top-level
+      domain is reserved and can never resolve, so nothing is contacted.
+      Reviewed on 2026-09-20. Only this exact finding is allowed; a changed or
+      added value has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.180f972d4e4e33f42f5ac7f8
+    owner: tools.check_identity_customer_access:main
+    rationale: >-
+      The literal is the scheme prefix in a validation that refuses an address
+      that is not HTTPS, or that builds an HTTPS origin from a validated
+      argument. It is a security check, not a destination: it names no
+      provider and selects no route. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.804d3a25440543e0ad632408
+    owner: tools.check_identity_customer_access:main
+    rationale: >-
+      The empty string is the default of an environment lookup, so an absent
+      credential is detected and refused instead of raising. It configures
+      nothing. Reviewed on 2026-09-20. Only this exact finding is allowed; a
+      changed or added value has a different finding identity and stays
+      blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.86d7a2500e9aab15eef7eacb
+    owner: tools.check_identity_customer_access:main
+    rationale: >-
+      The literal is the environment variable name declared for this
+      credential in tools/operator_credentials.json. This operator tool reads
+      it, or removes it from a child environment so the child cannot see it,
+      when tools/operator_credentials.py injects the named keyring credential.
+      It is a name, not a value. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.9498d271499665f4e8b02480
+    owner: tools.check_identity_customer_access:main
+    rationale: >-
+      The literal is the environment variable name declared for this
+      credential in tools/operator_credentials.json. This operator tool reads
+      it, or removes it from a child environment so the child cannot see it,
+      when tools/operator_credentials.py injects the named keyring credential.
+      It is a name, not a value. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.ef147a2df1b70e572dacb22b
+    owner: tools.check_identity_customer_access:main
+    rationale: >-
+      The empty string is the default of an environment lookup, so an absent
+      credential is detected and refused instead of raising. It configures
+      nothing. Reviewed on 2026-09-20. Only this exact finding is allowed; a
+      changed or added value has a different finding identity and stays
+      blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.055043d439837622e0289bf2
+    owner: tools.check_pilot_backup_restore:main
+    rationale: >-
+      The literal is a lookup attribute (service or purpose) of a named
+      credential in the workstation keyring, equal to the value declared for
+      it in tools/operator_credentials.json; '.fly.dev' completes the service
+      name from the --app argument. The drill uses it to find a credential
+      reference. It holds no secret and selects no deployment target: the
+      application and organization come from command-line arguments. Reviewed
+      on 2026-09-20. Only this exact finding is allowed; a changed or added
+      value has a different finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.18c20155d6664a1122663e0b
+    owner: tools.check_pilot_backup_restore:main
+    rationale: >-
+      The literal is the name of the second phase of this restore drill,
+      compared with the loop variable of the drill's own phase sequence to
+      decide when to restart the container. It is a local label inside one
+      function, not a lifecycle state of the engine. Reviewed on 2026-09-20.
+      Only this exact finding is allowed; a changed or added value has a
+      different finding identity and stays blocking.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.29ed69c81550fdfa506bf0e8
+    owner: tools.check_pilot_backup_restore:main
+    rationale: >-
+      The literal is a lookup attribute (service or purpose) of a named
+      credential in the workstation keyring, equal to the value declared for
+      it in tools/operator_credentials.json; '.fly.dev' completes the service
+      name from the --app argument. The drill uses it to find a credential
+      reference. It holds no secret and selects no deployment target: the
+      application and organization come from command-line arguments. Reviewed
+      on 2026-09-20. Only this exact finding is allowed; a changed or added
+      value has a different finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.a26c56b6b1bc6d5bf8261bdc
+    owner: tools.check_pilot_backup_restore:main
+    rationale: >-
+      The literal is a lookup attribute (service or purpose) of a named
+      credential in the workstation keyring, equal to the value declared for
+      it in tools/operator_credentials.json; '.fly.dev' completes the service
+      name from the --app argument. The drill uses it to find a credential
+      reference. It holds no secret and selects no deployment target: the
+      application and organization come from command-line arguments. Reviewed
+      on 2026-09-20. Only this exact finding is allowed; a changed or added
+      value has a different finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.a53b58be570b570053eb2c08
+    owner: tools.check_pilot_backup_restore:main
+    rationale: >-
+      The literal is a lookup attribute (service or purpose) of a named
+      credential in the workstation keyring, equal to the value declared for
+      it in tools/operator_credentials.json; '.fly.dev' completes the service
+      name from the --app argument. The drill uses it to find a credential
+      reference. It holds no secret and selects no deployment target: the
+      application and organization come from command-line arguments. Reviewed
+      on 2026-09-20. Only this exact finding is allowed; a changed or added
+      value has a different finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.db0798a63f4c4ba48f5dccee
+    owner: tools.check_pilot_backup_restore:main
+    rationale: >-
+      The literal is a lookup attribute (service or purpose) of a named
+      credential in the workstation keyring, equal to the value declared for
+      it in tools/operator_credentials.json; '.fly.dev' completes the service
+      name from the --app argument. The drill uses it to find a credential
+      reference. It holds no secret and selects no deployment target: the
+      application and organization come from command-line arguments. Reviewed
+      on 2026-09-20. Only this exact finding is allowed; a changed or added
+      value has a different finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.f74cfc271f553c8d49a2e835
+    owner: tools.check_pilot_backup_restore:main
+    rationale: >-
+      The literal is a lookup attribute (service or purpose) of a named
+      credential in the workstation keyring, equal to the value declared for
+      it in tools/operator_credentials.json; '.fly.dev' completes the service
+      name from the --app argument. The drill uses it to find a credential
+      reference. It holds no secret and selects no deployment target: the
+      application and organization come from command-line arguments. Reviewed
+      on 2026-09-20. Only this exact finding is allowed; a changed or added
+      value has a different finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.a7ec911f670541d456faae6a
+    owner: tools.check_rollback_key_version:in_source
+    rationale: >-
+      The literal is the name of this repository's source folder, used to run
+      the rollback drill's producer against the working tree. It is a fixed
+      repository layout name, not a deployment setting. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.cfd2302e2313a5d0ed5a4219
+    owner: tools.check_rollback_key_version:in_source
+    rationale: >-
+      The literal is the enabling value of the interpreter's standard switch
+      that stops it writing bytecode files into the source tree during the
+      rollback drill. It is not a deployment setting. Reviewed on 2026-09-20.
+      Only this exact finding is allowed; a changed or added value has a
+      different finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.96cc36ea799bffdd841a4d2c
+    owner: tools.fly_operator:main
+    rationale: >-
+      The literal is the environment variable name that the Fly command-line
+      tool itself reads for its access token. The operator wrapper sets it,
+      from the named keyring credential, only in the child process
+      environment. The name is defined by the external tool, not chosen here,
+      and it is a name, not a value. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.0efeecaef7d99f8a35aec52c
+    owner: tools.identity_qualification_host:operate
+    rationale: >-
+      The literal is the scheme prefix in a validation that refuses an address
+      that is not HTTPS, or that builds an HTTPS origin from a validated
+      argument. It is a security check, not a destination: it names no
+      provider and selects no route. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.7c00315b41ca9efd7f2fa2f1
+    owner: tools.identity_qualification_host:operate
+    rationale: >-
+      The literal is the environment variable name declared for this
+      credential in tools/operator_credentials.json. This operator tool reads
+      it, or removes it from a child environment so the child cannot see it,
+      when tools/operator_credentials.py injects the named keyring credential.
+      It is a name, not a value. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.86f06cbc8829e5f0c8907a02
+    owner: tools.identity_qualification_host:operate
+    rationale: >-
+      The literal is the environment variable name declared for this
+      credential in tools/operator_credentials.json. This operator tool reads
+      it, or removes it from a child environment so the child cannot see it,
+      when tools/operator_credentials.py injects the named keyring credential.
+      It is a name, not a value. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.50c318bb5519009ef556bf12
+    owner: tools.measure_service_latency:validated_origin
+    rationale: >-
+      The literal is the scheme prefix in a validation that refuses an address
+      that is not HTTPS, or that builds an HTTPS origin from a validated
+      argument. It is a security check, not a destination: it names no
+      provider and selects no route. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.19bff80b2591f8ffcf5f98e6
+    owner: tools.operator_credentials.json:api_keys.baltor-admin.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.baltor-admin.environment is the environment variable name
+      under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.e325f26e5169cbe0d6dc7814
+    owner: tools.operator_credentials.json:api_keys.baltor-pilot-boundary.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.baltor-pilot-boundary.environment is the environment
+      variable name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.8f0ed469d1052313e5256552
+    owner: tools.operator_credentials.json:api_keys.baltor-pilot-owner.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.baltor-pilot-owner.environment is the environment variable
+      name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.511e67287fe87cbdec5ace8b
+    owner: tools.operator_credentials.json:api_keys.cloudflare-dns.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.cloudflare-dns.environment is the environment variable name
+      under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.8e632f32c449a3b2f3d776c0
+    owner: tools.operator_credentials.json:api_keys.fly.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.fly.environment is the environment variable name under which
+      tools/operator_credentials.py passes one named system-keyring credential
+      to a trusted child command. It is a name, not a value: no credential is
+      stored in the repository, and tools/test_operator_credentials.py checks
+      secret suppression. Declaring the name once in this registry is the
+      abstraction the audit proposes, so there is no further place to move it.
+      Reviewed on 2026-09-20. Only this exact finding is allowed; a changed or
+      added value has a different finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.b4255812aacb339ee8ef3654
+    owner: tools.operator_credentials.json:api_keys.resend-send.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.resend-send.environment is the environment variable name
+      under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.fe8eec3c05dbfbe4ea09ce1b
+    owner: tools.operator_credentials.json:api_keys.stripe-test.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.stripe-test.environment is the environment variable name
+      under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.993f2b8ba62f34abdce4e0a4
+    owner: tools.operator_credentials.json:api_keys.stripe-test.mcp_url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.stripe-test.mcp_url is the pinned provider address of one
+      named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.bc4c67af0354342422dbae30
+    owner: tools.operator_credentials.json:api_keys.supabase-auth-settings.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.supabase-auth-settings.environment is the environment
+      variable name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.99ad8a53ec68f5d797475333
+    owner: tools.operator_credentials.json:api_keys.supabase-legacy-anon.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.supabase-legacy-anon.environment is the environment variable
+      name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.d2fbbe7de483e00e73d15756
+    owner: tools.operator_credentials.json:api_keys.supabase-legacy-service-role.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.supabase-legacy-service-role.environment is the environment
+      variable name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.976496aed97be8d09fb90619
+    owner: tools.operator_credentials.json:api_keys.supabase-publishable.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.supabase-publishable.environment is the environment variable
+      name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.05d81cdcb6ce15dbfa632024
+    owner: tools.operator_credentials.json:api_keys.supabase-secret.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.supabase-secret.environment is the environment variable name
+      under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.cf543f103b60cb1c31ea2456
+    owner: tools.operator_credentials.json:mcp.baltor-cloudflare.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at mcp.baltor-cloudflare.url is the pinned provider address of one named
+      operator connection. tools/operator_credentials.py returns a credential
+      only when the client's server name and address equal this exact value
+      and the credential's own destination matches, so the pin is a security
+      boundary against redirecting a valid credential, not a selectable
+      runtime route. The engine never reads this file. Reviewed on 2026-09-20.
+      Only this exact finding is allowed; a changed or added value has a
+      different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.79a3f6a5feadaf855cd983f8
+    owner: tools.operator_credentials.json:mcp.baltor-resend.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at mcp.baltor-resend.url is the pinned provider address of one named
+      operator connection. tools/operator_credentials.py returns a credential
+      only when the client's server name and address equal this exact value
+      and the credential's own destination matches, so the pin is a security
+      boundary against redirecting a valid credential, not a selectable
+      runtime route. The engine never reads this file. Reviewed on 2026-09-20.
+      Only this exact finding is allowed; a changed or added value has a
+      different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.3e6e373c55e82f4084e946b3
+    owner: tools.operator_credentials.json:mcp.baltor-stripe-test.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at mcp.baltor-stripe-test.url is the pinned provider address of one
+      named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.03360f6f142f81cdbf5cf8d2
+    owner: tools.operator_credentials.json:mcp.baltor-supabase.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at mcp.baltor-supabase.url is the pinned provider address of one named
+      operator connection. tools/operator_credentials.py returns a credential
+      only when the client's server name and address equal this exact value
+      and the credential's own destination matches, so the pin is a security
+      boundary against redirecting a valid credential, not a selectable
+      runtime route. The engine never reads this file. Reviewed on 2026-09-20.
+      Only this exact finding is allowed; a changed or added value has a
+      different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.df70a230e3d8863419e36d4a
+    owner: tools.operator_credentials.json:native_mcp.baltor-namecheap.oauth.authServerMetadataUrl
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at native_mcp.baltor-namecheap.oauth.authServerMetadataUrl is the pinned
+      provider address of one named operator connection.
+      tools/operator_credentials.py returns a credential only when the
+      client's server name and address equal this exact value and the
+      credential's own destination matches, so the pin is a security boundary
+      against redirecting a valid credential, not a selectable runtime route.
+      The engine never reads this file. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.d9f018e054f6488f7821b001
+    owner: tools.operator_credentials.json:native_mcp.baltor-namecheap.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at native_mcp.baltor-namecheap.url is the pinned provider address of one
+      named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.e0a5ad163a7ea120ae3c0aaa
+    owner: tools.operator_credentials.json:oauth.cloudflare-management.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.cloudflare-management.environment is the environment variable
+      name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.d316cdf69d4e729614e161d3
+    owner: tools.operator_credentials.json:oauth.cloudflare-management.issuer
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.cloudflare-management.issuer is the pinned provider address of
+      one named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.33b496d68a8612c8f9adeaea
+    owner: tools.operator_credentials.json:oauth.cloudflare-management.token_endpoint
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.cloudflare-management.token_endpoint is the pinned provider
+      address of one named operator connection. tools/operator_credentials.py
+      returns a credential only when the client's server name and address
+      equal this exact value and the credential's own destination matches, so
+      the pin is a security boundary against redirecting a valid credential,
+      not a selectable runtime route. The engine never reads this file.
+      Reviewed on 2026-09-20. Only this exact finding is allowed; a changed or
+      added value has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.9eda4d42729934a320fbd8b5
+    owner: tools.operator_credentials.json:oauth.cloudflare-management.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.cloudflare-management.url is the pinned provider address of one
+      named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.77f1f6437c2cc0452fb5d5b7
+    owner: tools.operator_credentials.json:oauth.resend-management.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.resend-management.environment is the environment variable name
+      under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.2bd9bbb50fa7627f089df3ce
+    owner: tools.operator_credentials.json:oauth.resend-management.issuer
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.resend-management.issuer is the pinned provider address of one
+      named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.80df1ec63656b27d2c92031b
+    owner: tools.operator_credentials.json:oauth.resend-management.token_endpoint
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.resend-management.token_endpoint is the pinned provider address
+      of one named operator connection. tools/operator_credentials.py returns
+      a credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.8ba577c96c44f75c8f6582a1
+    owner: tools.operator_credentials.json:oauth.resend-management.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.resend-management.url is the pinned provider address of one
+      named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.33d8b58ad1055b4db1bb6b96
+    owner: tools.operator_credentials.json:oauth.supabase-management.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.supabase-management.environment is the environment variable
+      name under which tools/operator_credentials.py passes one named
+      system-keyring credential to a trusted child command. It is a name, not
+      a value: no credential is stored in the repository, and
+      tools/test_operator_credentials.py checks secret suppression. Declaring
+      the name once in this registry is the abstraction the audit proposes, so
+      there is no further place to move it. Reviewed on 2026-09-20. Only this
+      exact finding is allowed; a changed or added value has a different
+      finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.3c2bc72bd7c1cd5f2239f95d
+    owner: tools.operator_credentials.json:oauth.supabase-management.issuer
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.supabase-management.issuer is the pinned provider address of
+      one named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.1016fbec70700446ba65607f
+    owner: tools.operator_credentials.json:oauth.supabase-management.token_endpoint
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.supabase-management.token_endpoint is the pinned provider
+      address of one named operator connection. tools/operator_credentials.py
+      returns a credential only when the client's server name and address
+      equal this exact value and the credential's own destination matches, so
+      the pin is a security boundary against redirecting a valid credential,
+      not a selectable runtime route. The engine never reads this file.
+      Reviewed on 2026-09-20. Only this exact finding is allowed; a changed or
+      added value has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.8bce99c34b3ebba9d5e79195
+    owner: tools.operator_credentials.json:oauth.supabase-management.url
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at oauth.supabase-management.url is the pinned provider address of one
+      named operator connection. tools/operator_credentials.py returns a
+      credential only when the client's server name and address equal this
+      exact value and the credential's own destination matches, so the pin is
+      a security boundary against redirecting a valid credential, not a
+      selectable runtime route. The engine never reads this file. Reviewed on
+      2026-09-20. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.2ddd1f4a4920740afe7d2698
+    owner: tools.operator_credentials:claude_configuration
+    rationale: >-
+      The literal is the scheme prefix in a validation that refuses an address
+      that is not HTTPS, or that builds an HTTPS origin from a validated
+      argument. It is a security check, not a destination: it names no
+      provider and selects no route. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.c13cea792e61ae7dea8045ec
+    owner: tools.operator_credentials:claude_configuration
+    rationale: >-
+      The literal is the scheme prefix in a validation that refuses an address
+      that is not HTTPS, or that builds an HTTPS origin from a validated
+      argument. It is a security check, not a destination: it names no
+      provider and selects no route. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.08e7313bccf5a4db748f7bd2
+    owner: tools.service_admin_operator:main
+    rationale: >-
+      The literal is the list index that selects the single keyring item
+      returned by the preceding lookup. It is sequence indexing, not a
+      deployment setting. Reviewed on 2026-09-20. Only this exact finding is
+      allowed; a changed or added value has a different finding identity and
+      stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.e47712a52cdab1fc51e57f1e
+    owner: tools.service_admin_operator:main
+    rationale: >-
+      The literal is the list index that selects the single keyring item
+      returned by the preceding lookup. It is sequence indexing, not a
+      deployment setting. Reviewed on 2026-09-20. Only this exact finding is
+      allowed; a changed or added value has a different finding identity and
+      stays blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
+  - finding_id: hardcoding.1e269883165695f2366e17a4
+    owner: tools.website_comparison:website_comparison
+    rationale: >-
+      The literal is the scheme prefix in a validation that refuses an address
+      that is not HTTPS, or that builds an HTTPS origin from a validated
+      argument. It is a security check, not a destination: it names no
+      provider and selects no route. Reviewed on 2026-09-20. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-20
+    expires_on: 2027-09-20
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
@@ -1884,3 +3691,19 @@ excluded_paths:
     created_on: 2026-09-13
     expires_on: 2027-09-13
     sha256: a8f0c0473452a7318f07497bf77dc776e026b4175ccba59a47bedf17a215bd08
+  - path: src/loop_engine/core/service_runtime/web_assets/supabase-client.js
+    owner: loop_engine.core.service_runtime.web_assets
+    rationale: >-
+      The browser bundle generated from @supabase/supabase-js 2.116.0, with
+      its dependency graph pinned in
+      tools/browser_identity_sdk/package-lock.json. Every literal in it is the
+      upstream project's own code, such as links to its migration notes and
+      its local development default, not a decision made in this repository.
+      Its licence terms are served beside it. The exclusion binds to these
+      exact bytes: a regenerated or edited bundle is scanned again until it is
+      reviewed. Measured on 2026-09-20: excluding it removes the findings of
+      this file and moves no other finding id.
+    classification: UPSTREAM_RECORD_COPY
+    created_on: 2026-09-20
+    sha256: 2c51934382bb7d6f9afd859989734562e267ad47296fa54432fbbcc1af5a95a0
+    expires_on: 2027-09-20

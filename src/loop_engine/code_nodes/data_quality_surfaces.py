@@ -279,7 +279,7 @@ def self_test() -> dict:
     from types import SimpleNamespace
     from ..core.registered_capability_call import (
         registered_capabilities, registered_capability_operation)
-    from .solve_runtime import (solve_capability_directory, solve_dependencies,
+    from .solve_runtime import (SolveRequest, solve_capability_directory, solve_dependencies,
                                 solve_intelligence_catalog)
     run_directory = solve_capability_directory()
     run_services = SimpleNamespace(
@@ -291,10 +291,19 @@ def self_test() -> dict:
     from ..core.intelligence_layers import LAYERS
     catalog_builder = solve_intelligence_catalog()
     run_catalog = catalog_builder()
-    from types import SimpleNamespace as _Namespace
-    installed = solve_dependencies(
-        _Namespace(model_execution=None, progress=None, reuse_observation_port=None,
-                   project_executor=None, extension_snapshot={}, host_runtime=None), ())
+    from ..templates.intake import TaskIntakeRequest, intake_task
+    request = SolveRequest(intake_task(TaskIntakeRequest(text="Inspect declared family surfaces.")),
+                           practitioner_mode="deterministic")
+    installed = solve_dependencies(request, ())
+    from ..core.model_call_collection import LearningEventCollector
+    forwarded = []
+    with_collector = solve_dependencies(
+        request, (), LearningEventCollector(forward_to=forwarded.append))
+    check("a_solve_run_installs_the_collector_that_keeps_what_its_model_calls_can_teach",
+          isinstance(with_collector.progress, LearningEventCollector)
+          and with_collector.progress.forward_to is not None
+          and installed.progress is None,
+          type(with_collector.progress).__name__)
     check("a_solve_run_is_given_the_four_layer_catalog_as_a_builder_it_pays_for_only_when_asked",
           installed.intelligence_catalog is not None
           and installed.capability_directory is not None

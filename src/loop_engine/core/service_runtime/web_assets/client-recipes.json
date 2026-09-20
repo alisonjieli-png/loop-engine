@@ -1,0 +1,49 @@
+{
+  "record_type": "website_client_recipes/v1",
+  "reviewed_at": "2026-09-20",
+  "credential_variable": "BALTOR_SERVICE_TOKEN",
+  "recipes": [
+    {
+      "id": "codex",
+      "name": "Codex",
+      "format": "toml",
+      "configuration_location": "Your existing Codex config.toml",
+      "configuration": {
+        "mcp_servers": {
+          "baltor": {
+            "url": "{{ENDPOINT}}",
+            "bearer_token_env_var": "BALTOR_SERVICE_TOKEN",
+            "startup_timeout_sec": 20,
+            "tool_timeout_sec": 45
+          }
+        }
+      },
+      "verification_command": "codex mcp list",
+      "verification_note": "This command shows configuration, not a completed handshake. In a Codex session, inspect /mcp and confirm that Baltor's tools are available before asking it to search.",
+      "version_note": "Documented configuration; native end-to-end qualification is pending. Check your installed version with codex --version.",
+      "source_url": "https://learn.chatgpt.com/docs/extend/mcp?surface=cli"
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode 1.x",
+      "format": "json",
+      "configuration_location": "Your existing opencode.json",
+      "configuration": {
+        "$schema": "https://opencode.ai/config.json",
+        "mcp": {
+          "baltor": {
+            "type": "remote",
+            "url": "{{ENDPOINT}}",
+            "enabled": true,
+            "oauth": false,
+            "headers": {"Authorization": "Bearer {env:BALTOR_SERVICE_TOKEN}"}
+          }
+        }
+      },
+      "verification_command": "opencode mcp list",
+      "verification_note": "Confirm that Baltor connects and exposes its tools. This service uses a supplied token; do not start an OAuth login for it. OpenCode 2.x uses a different configuration layout.",
+      "version_note": "Documented 1.x configuration; native end-to-end qualification is pending. Check your installed version with opencode --version.",
+      "source_url": "https://opencode.ai/docs/mcp-servers/"
+    }
+  ]
+}

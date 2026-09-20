@@ -1,0 +1,7 @@
+{
+  "name": "loop-engine-architecture-report",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Pinned build-time layout dependency embedded in the offline architecture report.",
+  "dependencies": { "elkjs": "0.12.0" }
+}

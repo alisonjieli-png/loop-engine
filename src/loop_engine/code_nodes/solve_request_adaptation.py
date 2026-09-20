@@ -72,6 +72,8 @@ def build_adaptive_request(
             getattr(request, "allow_fast_path_resolution", False)),
         host_runtime_manifest=(request.host_runtime.summary()
                                if request.host_runtime is not None else {}),
+        harness_provisioning_digest=(request.harness_provisioning.content_digest
+                                     if request.harness_provisioning is not None else ""),
         **budget,
     )
 
@@ -524,13 +526,11 @@ def _public_call_accounting_checks() -> list[dict]:
               and saved.outcome["action_vectors"] == []
               and all(saved.outcome[name] == expected
                       for name, expected in interrupted.items()))
-        legacy = {**value, "model_calls": 0}
-        legacy.pop("model_call_accounting_complete")
-        legacy.pop("model_calls_known_subtotal")
-        check("legacy_v3_v4_records_remain_readable_without_accounting_rewrite",
-              all(_validate_product_outcome({**legacy, "record_type": version}, run_id)
-                  == {**legacy, "record_type": version}
-                  for version in ("solve_outcome/v3", "solve_outcome/v4")))
+        check("unsupported_product_outcome_versions_are_refused",
+              all(refused(lambda version=version: _validate_product_outcome(
+                  {**value, "record_type": version}, run_id))
+                  for version in ("solve_outcome/v3", "solve_outcome/v4",
+                                  "solve_outcome/v5", "solve_outcome/v999")))
         malformed_v6 = [
             {key: item for key, item in value.items() if key != missing}
             for missing in interrupted]

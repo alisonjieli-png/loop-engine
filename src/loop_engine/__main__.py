@@ -49,7 +49,7 @@ def _concise_self_test_summary(
         report: dict, captured_lines: int, elapsed_seconds: float = 0.0) -> dict:
     failures = []
     for item in report.get("tests", ()):
-        if item.get("passed"):
+        if item.get("passed") is True or item.get("not_tested") is True:
             continue
         failures.append({
             "test": item.get("test") or item.get("name") or "unnamed test",
@@ -65,6 +65,12 @@ def _concise_self_test_summary(
         "missing_dependencies": report.get("missing_dependencies", []),
         "optional_adapters_not_tested": report.get(
             "optional_adapters_not_tested", []),
+        "not_tested_checks": [
+            {"test": item.get("test") or item.get("name"),
+             "detail": str(item.get("detail") or item.get("note") or "")[:300],
+             "missing_optional_dependencies": item.get("missing_optional_dependencies", [])}
+            for item in report.get("tests", ()) if item.get("not_tested") is True],
+        "not_tested": report.get("not_tested", 0),
         "captured_output_lines": captured_lines,
         "elapsed_seconds": round(elapsed_seconds, 3),
         "provider_calls_made": 0,
@@ -119,6 +125,12 @@ def main(argv=None) -> int:
     if raw_argv[:1] == ["records"]:
         from .record_cli import record_command
         return record_command(raw_argv[1:])
+    if raw_argv[:1] == ["service"]:
+        from .service_cli import service_command
+        return service_command(raw_argv[1:])
+    if raw_argv[:1] == ["decisions"]:
+        from .decision_cli import decision_command
+        return decision_command(raw_argv[1:])
     parser = argparse.ArgumentParser(
         prog="loop-engine",
         description=__doc__.splitlines()[0],
@@ -211,6 +223,8 @@ def main(argv=None) -> int:
     parser.add_argument("--run-arguments", default="",
                         help="JSON list of arguments for the exported entry "
                              "point during --verify-export")
+    parser.add_argument("--export-manifest-digest", default="",
+                        help="exact reviewed export manifest digest for authorized local verification")
     parser.add_argument("--evaluate", metavar="SUITE", default="",
                         help="score a solver on a frozen evaluation suite with "
                              "registered graders and exact denominators")
@@ -819,7 +833,7 @@ def main(argv=None) -> int:
         from .cli_operations import run_candidate_action
         return run_candidate_action(args)
     if args.candidates:
-        from .memory.storage.repository import CandidateJournal
+        from .memory.storage.learning_cycle import CandidateJournal
         journal = CandidateJournal()
         candidates = journal.list_candidates()
         print(json.dumps({

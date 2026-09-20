@@ -47,7 +47,7 @@ class StoreCapabilities:
             raise ValueError(f"unknown result formats {unknown}")
 
     def supports(self, operation: str) -> bool:
-        return bool(self.operations.get(operation))
+        return self.operations.get(operation) is True
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -86,6 +86,19 @@ def self_test() -> dict:
           caps.supports("query") and not caps.supports("write"))
     check("capabilities_round_trip_through_mapping",
           StoreCapabilities.from_mapping(caps.to_dict()) == caps)
+    from dataclasses import replace
+    from .protocol import require_operation, UnsupportedOperationError
+    ambiguous = replace(caps, operations={"write": "false", "query": 1, "get": True})
+    refused = False
+    try:
+        require_operation(type("DeclaredStore", (), {
+            "capabilities": lambda self: ambiguous})(), "write")
+    except UnsupportedOperationError:
+        refused = True
+    check("only_exact_true_grants_an_operation",
+          refused and ambiguous.supports("get")
+          and not ambiguous.supports("write") and not ambiguous.supports("query")
+          and not ambiguous.supports("unknown"))
     try:
         StoreCapabilities(adapter_id="x", adapter_version="1.0.0",
                           adapter_kind="file_sql", authority="bogus")

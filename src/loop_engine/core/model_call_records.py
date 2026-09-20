@@ -25,7 +25,7 @@ from pathlib import Path
 
 from .reuse_evidence import SYNTHETIC_MARKER
 
-RECORD_TYPE = "model_call_learning_record/v1"
+RECORD_TYPE = "model_call_learning_record/v2"
 STARTED = "model.step.started"
 COMPLETED = "model.step.completed"
 TRANSPORT_FAILED = "model.step.transport_failed"
@@ -33,6 +33,7 @@ REJECTED = "model.step.response_rejected"
 DEVIATION = "model.step.suggested_output_deviation"
 OUTCOME_LABELS = ("verified", "failed", "unknown")
 VERIFIED, FAILED, UNKNOWN = OUTCOME_LABELS
+INVALID_METADATA = "invalid_model_call_metadata"
 _FORBIDDEN_PATHS = Path(__file__).resolve().parents[1] / "forbidden_paths.json"
 
 
@@ -70,6 +71,8 @@ class ModelCallLearningRecord:
     objective: str = ""
     outcome_label: str = UNKNOWN
     markers: tuple[str, ...] = ()
+    occurrence_id: str = ""
+    deviation_count: int = 0
 
     def __post_init__(self):
         if not self.run_id or not self.step:
@@ -78,9 +81,20 @@ class ModelCallLearningRecord:
             raise ModelCallRecordsError("model_call_number counts from 1")
         if self.outcome_label not in OUTCOME_LABELS:
             raise ModelCallRecordsError(f"outcome label must be one of {OUTCOME_LABELS}")
+        if not isinstance(self.occurrence_id, str):
+            raise ModelCallRecordsError("occurrence_id must be text")
+        if type(self.deviation_count) is not int or self.deviation_count < 0:
+            raise ModelCallRecordsError("deviation_count must be a non-negative integer")
+        for name in ("markers", "deviation_problems"):
+            value = getattr(self, name)
+            if not isinstance(value, (list, tuple)) or any(not isinstance(item, str) for item in value):
+                raise ModelCallRecordsError(f"{name} must be a sequence of text values")
+            object.__setattr__(self, name, tuple(value))
 
     @property
     def record_id(self) -> str:
+        if self.occurrence_id:
+            return f"{self.run_id}:{self.step}:{self.occurrence_id}"
         return f"{self.run_id}:{self.step}:{self.model_call_number}"
 
     def to_dict(self) -> dict:
@@ -88,34 +102,80 @@ class ModelCallLearningRecord:
             name: (list(value) if isinstance(value, tuple) else value)
             for name, value in ((name, getattr(self, name)) for name in self.__dataclass_fields__)}}
 
+    @classmethod
+    def from_dict(cls, value: dict) -> "ModelCallLearningRecord":
+        """Accept the current version; unsupported records need an explicit migration."""
+        if not isinstance(value, dict) or value.get("record_type") != RECORD_TYPE:
+            raise ModelCallRecordsError("unsupported model call learning record")
+        allowed = set(cls.__dataclass_fields__) | {"record_type", "record_id"}
+        if set(value) - allowed:
+            raise ModelCallRecordsError("unknown model call learning fields")
+        fields = {key: item for key, item in value.items() if key in cls.__dataclass_fields__}
+        for key in ("markers", "deviation_problems"):
+            if key in fields:
+                fields[key] = tuple(fields[key])
+        result = cls(**fields)
+        if value.get("record_id", result.record_id) != result.record_id:
+            raise ModelCallRecordsError("the record identity does not match its fields")
+        return result
+
 
 def outcome_label(result: "dict | None") -> str:
-    """The label a run's result earns: verified only by an independent pass."""
+    """Project only the independent check bound to the accepted incumbent."""
     if not isinstance(result, dict):
         return UNKNOWN
-    reports = [item for item in result.get("independent_verification_records") or ()
-               if isinstance(item, dict)]
-    passed = any(item.get("status") == "passed" for item in reports)
-    failed = any(item.get("status") == "failed" for item in reports)
-    if result.get("solved") is True and passed:
-        return VERIFIED
-    if result.get("solved") is False or failed:
+    if result.get("solved") is False:
         return FAILED
+    if result.get("solved") is not True:
+        return UNKNOWN
+    incumbent = (result.get("state_evidence") or {}).get("accepted_incumbent") or {}
+    if incumbent.get("verification_bound") is not True:
+        return UNKNOWN
+    from .stage_action_lineage import _digest
+    exact = [record for record in result.get("verification", ())
+             if isinstance(record, dict)
+             and _digest(record) == incumbent.get("verification_record_digest")]
+    if len(exact) != 1:
+        return UNKNOWN
+    record = exact[0]
+    if (record.get("verdict") != "accept" or not record.get("subject")
+            or record["subject"] != incumbent.get("verification_subject")):
+        return UNKNOWN
+    selected = (record.get("evaluation") or {}).get("best_index")
+    checks = [entry.get("report") for entry in record.get("independent_checks", ())
+              if isinstance(entry, dict) and type(selected) is int
+              and entry.get("result_index") == selected and not entry.get("error")]
+    if (len(checks) == 1 and isinstance(checks[0], dict)
+            and checks[0].get("status") == "passed"
+            and checks[0].get("source_unchanged") is True
+            and checks[0] in result.get("independent_verification_records", ())):
+        return VERIFIED
     return UNKNOWN
 
 
 def learning_records(events, result: "dict | None" = None) -> list[ModelCallLearningRecord]:
     """Join a run's progress events into one record per started model call."""
     label = outcome_label(result)
-    started: dict[tuple, dict] = {}
-    order: list[tuple] = []
-    for event in events:
+    started: dict[str, dict] = {}
+    active: dict[tuple, str] = {}
+    for sequence, event in enumerate(events):
         if not isinstance(event, dict):
             continue
         kind = event.get("event_type")
-        key = (str(event.get("step", "")), event.get("format_attempt"), event.get("transport_attempt"))
+        run_id = str(event.get("run_id") or "")
+        step = str(event.get("step") or "")
+        key = (run_id, str(event.get("context_loop_id") or ""), step,
+               event.get("format_attempt"), event.get("transport_attempt"))
+        explicit = str(event.get("model_call_occurrence_id") or "")
         if kind == STARTED:
-            record = {"run_id": str(event.get("run_id") or ""), "step": key[0],
+            occurrence = explicit or f"event:{event.get('progress_sequence', sequence)}"
+            identity = run_id + ":" + occurrence
+            if identity in started:
+                # A repeated delivery of the same occurrence is not another call.
+                continue
+            record = {"run_id": run_id, "step": step,
+                      "occurrence_id": occurrence,
+                      "markers": tuple(event.get("markers") or ()),
                       "model_call_number": int(event.get("model_call_number") or 0),
                       "pass_number": int(event.get("pass_number") or 0),
                       "contract_id": str(event.get("output_contract_id") or ""),
@@ -124,10 +184,15 @@ def learning_records(events, result: "dict | None" = None) -> list[ModelCallLear
                       "output_schema_digest": str(event.get("output_schema_digest") or ""),
                       "objective": str(event.get("objective") or ""),
                       "transport_failures": 0, "rejections": 0, "deviation_problems": ()}
-            started[key] = record
-            order.append(key)
-        elif key in started:
-            record = started[key]
+            started[identity] = record
+            active[key] = identity
+        else:
+            identity = run_id + ":" + explicit if explicit else active.get(key)
+            if identity not in started:
+                continue
+            record = started[identity]
+            if event.get("markers"):
+                record["markers"] = tuple(dict.fromkeys((*record["markers"], *event["markers"])))
             if kind == COMPLETED:
                 record.update(completed=True, output_digest=str(event.get("output_digest") or ""),
                               output_bytes=event.get("output_bytes"),
@@ -138,9 +203,12 @@ def learning_records(events, result: "dict | None" = None) -> list[ModelCallLear
                 record["rejections"] += 1
             elif kind == DEVIATION:
                 record["deviation_problems"] = tuple(str(item) for item in event.get("problems") or ())
+                count = event.get("deviation_count", len(record["deviation_problems"]))
+                if type(count) is not int or count < 0:
+                    raise ModelCallRecordsError("a deviation event needs a non-negative count")
+                record["deviation_count"] = record.get("deviation_count", 0) + count
     records = []
-    for key in order:
-        record = started[key]
+    for record in started.values():
         if record["model_call_number"] < 1 or not record["run_id"]:
             continue
         records.append(ModelCallLearningRecord(outcome_label=label, **record))
@@ -186,11 +254,14 @@ def _contains_secret(row: dict, patterns: tuple[str, ...]) -> "str | None":
 def export_training_rows(records, policy: "TrainingExportPolicy | None" = None) -> dict:
     """Split, exclude, and scan; the result names why each excluded row was left out."""
     policy = policy or TrainingExportPolicy()
-    train, holdout, excluded = [], [], []
+    train, holdout, excluded, seen = [], [], [], set()
     for record in records:
         if not isinstance(record, ModelCallLearningRecord):
             raise ModelCallRecordsError("training rows are built from ModelCallLearningRecord")
         row = record.to_dict()
+        if INVALID_METADATA in record.markers:
+            excluded.append({"record_id": record.record_id, "reason": "invalid_metadata"})
+            continue
         if any(marker in record.markers for marker in policy.synthetic_markers):
             excluded.append({"record_id": record.record_id, "reason": "synthetic_marker"})
             continue
@@ -204,6 +275,10 @@ def export_training_rows(records, policy: "TrainingExportPolicy | None" = None) 
         if pattern is not None:
             excluded.append({"record_id": record.record_id, "reason": "secret_pattern"})
             continue
+        if record.record_id in seen:
+            excluded.append({"record_id": record.record_id, "reason": "duplicate_occurrence"})
+            continue
+        seen.add(record.record_id)
         (holdout if policy.holdout(record.run_id) else train).append(row)
     return {"record_type": "model_call_training_export/v1", "policy_version": policy.version,
             "holdout_fraction": policy.holdout_fraction, "train": train, "holdout": holdout,
@@ -240,9 +315,46 @@ def self_test() -> dict:
                            "output_bytes": 300, "admitted_strategy": "strict_json"})
         return events
 
-    solved = {"solved": True, "independent_verification_records": [{"status": "passed"}]}
+    from .stage_action_lineage import _digest
+    independent = {"status": "passed", "source_unchanged": True, "subject_digest": "a" * 64}
+    verification = {"verdict": "accept", "subject": {"result_digest": "b" * 64},
+                    "evaluation": {"best_index": 0},
+                    "independent_checks": [{"result_index": 0, "report": independent}]}
+    solved = {"solved": True, "independent_verification_records": [independent],
+              "verification": [verification], "state_evidence": {"accepted_incumbent": {
+                  "verification_bound": True, "verification_record_digest": _digest(verification),
+                  "verification_subject": verification["subject"]}}}
+    check("a_past_or_conflicting_unbound_pass_cannot_label_the_current_run_verified",
+          outcome_label({"solved": True, "independent_verification_records": [
+              {"status": "passed", "subject_digest": "old"},
+              {"status": "failed", "subject_digest": "current"}]}) == UNKNOWN
+          and outcome_label({**solved, "state_evidence": {}}) == UNKNOWN
+          and outcome_label(solved) == VERIFIED)
     unsolved = {"solved": False, "independent_verification_records": [{"status": "failed"}]}
     records = learning_records(run_events("run-1", ("orient", "decide_next", "verify"), deviation=True), solved)
+    repeated = learning_records(run_events("repeat", ("route", "route")), solved)
+    check("repeated_steps_preserve_both_occurrences_instead_of_overwriting_the_first",
+          [item.model_call_number for item in repeated] == [1, 2]
+          and len({item.record_id for item in repeated}) == 2)
+    interleaved = [
+        {"event_type": STARTED, "run_id": "one", "step": "route", "model_call_number": 1,
+         "model_call_occurrence_id": "first"},
+        {"event_type": STARTED, "run_id": "one", "step": "route", "model_call_number": 2,
+         "model_call_occurrence_id": "second"},
+        {"event_type": COMPLETED, "run_id": "one", "step": "route",
+         "model_call_occurrence_id": "first", "output_digest": "a" * 64},
+        {"event_type": COMPLETED, "run_id": "one", "step": "route",
+         "model_call_occurrence_id": "second", "output_digest": "b" * 64},
+    ]
+    joined = learning_records(interleaved, solved)
+    check("interleaved_completion_uses_the_exact_occurrence_identity",
+          [item.output_digest for item in joined] == ["a" * 64, "b" * 64]
+          and len(learning_records([*interleaved, interleaved[0]], solved)) == 2)
+    unsupported = {"record_type": "model_call_learning_record/v1", "run_id": "old", "step": "route",
+                   "model_call_number": 1, "record_id": "old:route:1"}
+    check("unsupported_records_refuse_and_current_records_round_trip",
+          _refuses(lambda: ModelCallLearningRecord.from_dict(unsupported))
+          and ModelCallLearningRecord.from_dict(joined[0].to_dict()) == joined[0])
     check("events_join_into_one_record_per_call_with_digests_and_labels",
           len(records) == 3 and all(item.completed for item in records)
           and records[1].contract_id == "practitioner.decide_next"

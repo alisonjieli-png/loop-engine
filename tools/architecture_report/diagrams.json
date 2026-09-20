@@ -1,0 +1,1973 @@
+{
+  "record_type": "architecture_report_views/v1",
+  "limits": "Software boundaries and request flow, not a Loop execution graph. Local implementation and external qualification are separate.",
+  "views": [
+    {
+      "id": "system",
+      "title": "Whole-system architecture",
+      "group": "Whole engine",
+      "level": "High level",
+      "direction": "DOWN",
+      "description": "The engine includes governed solving, reusable intelligence, executable solutions and internal runtime services. Hosted delivery is one boundary, not the complete product.",
+      "components": [
+        {
+          "id": "task",
+          "title": "Task and declared requirements",
+          "source": "src/loop_engine/templates/intake.py",
+          "summary": "Original objective, material and acceptance conditions.",
+          "detail": "Intake preserves the task and declared authority. A service subscription does not supply execution permissions.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "practice",
+          "title": "Practitioner solving",
+          "source": "src/loop_engine/core/adaptive_practitioner.py",
+          "summary": "Research, reason, build, test and revise.",
+          "detail": "The Practitioner owns solutioning under a classified Loop. Reasoning and building are assignment purposes, not separate runtime types.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "intelligence",
+          "title": "Four intelligence layers",
+          "source": "src/loop_engine/core/intelligence_layers.py",
+          "summary": "Context, Code, Runtime History and Solution, and User Feedback Intelligence.",
+          "detail": "Search returns typed references; permission and identity checks precede loading. Complete all-layer hosted qualification remains open.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "solution",
+          "title": "Solution Canvas",
+          "source": "src/loop_engine/code_nodes/solution_canvas.py",
+          "summary": "Typed executable composition for subsequent inputs.",
+          "detail": "A Canvas contains canonical Loops with compatible ports. Different member Loops may use different allowed modes.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "runtime",
+          "title": "Canonical Loop runtime",
+          "source": "src/loop_engine/loop/recursive_loop.py",
+          "summary": "One runtime for Practitioner, Intelligence and Solution roles.",
+          "detail": "Definitions bind role profiles, modes, step profiles, conditions, budgets and typed connections. Passive stores and services are not Loop vertices.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "ports",
+          "title": "Capabilities and engine adapters",
+          "source": "src/loop_engine/loop/runtime_context.py",
+          "summary": "Intelligence Search and Retrieval, Web Research, and Custom Plugins.",
+          "detail": "Model, harness, workspace, store and provider adapters are internal mechanics. Only an owning Loop's authority permits effects.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "assurance",
+          "title": "Verification and acceptance",
+          "source": "src/loop_engine/core/independent_verification.py",
+          "summary": "Checks decide acceptance; model confidence does not.",
+          "detail": "Independent verification, failure review and recorded evidence are separate from production of a candidate.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "history",
+          "title": "Run History and improvement inputs",
+          "source": "src/loop_engine/core/run_history.py",
+          "summary": "Keep exact outputs, failures, provenance and unknown accounting.",
+          "detail": "History supports playback and review. Automated improvement and promotion still need full integrated qualification.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "delivery",
+          "title": "Hosted intelligence delivery",
+          "source": "src/loop_engine/core/service_runtime/http.py",
+          "summary": "Website, authenticated protocol, subscriptions and selected bytes.",
+          "detail": "Local service paths are tested. Fly.io and Supabase are the proposed hosted deployment; cloud adapters, signup and live payments remain unqualified.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "task",
+          "to": "practice",
+          "label": "Preserved task"
+        },
+        {
+          "from": "practice",
+          "to": "intelligence",
+          "label": "Search and use permitted material"
+        },
+        {
+          "from": "practice",
+          "to": "solution",
+          "label": "Construct typed candidates"
+        },
+        {
+          "from": "practice",
+          "to": "runtime",
+          "label": "Govern work"
+        },
+        {
+          "from": "solution",
+          "to": "runtime",
+          "label": "Execute member Loops"
+        },
+        {
+          "from": "runtime",
+          "to": "ports",
+          "label": "Call permitted operations"
+        },
+        {
+          "from": "runtime",
+          "to": "assurance",
+          "label": "Submit observed results"
+        },
+        {
+          "from": "assurance",
+          "to": "history",
+          "label": "Record acceptance and failures"
+        },
+        {
+          "from": "delivery",
+          "to": "intelligence",
+          "label": "Serve reviewed material",
+          "state": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "runtime",
+      "title": "Loop definition and runtime",
+      "group": "Whole engine",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "This is a map of runtime components, not a graph of particular executing Loop instances. Role, relationship, mode, step profile and authority stay separate.",
+      "components": [
+        {
+          "id": "definition",
+          "title": "Versioned Loop definition",
+          "source": "src/loop_engine/loop/loop_definition.py",
+          "summary": "Identity, typed ports and executable contract.",
+          "detail": "The definition names the role profile, supported modes, conditions and required capabilities. Unknown or incompatible definitions refuse before work.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "profiles",
+          "title": "Role and step profiles",
+          "source": "src/loop_engine/loop/loop_profile_catalog.py",
+          "summary": "Practitioner, Intelligence and Solution behavior presets.",
+          "detail": "Profiles configure canonical Loops; they do not create a second runtime. Categories do not grant authority.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "context",
+          "title": "Restricted runtime context",
+          "source": "src/loop_engine/loop/runtime_context.py",
+          "summary": "Capabilities, permissions and installed executors.",
+          "detail": "A derived context may narrow authority, not expand it. Services and adapter objects are not graph vertices.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "loop",
+          "title": "Canonical Loop",
+          "source": "src/loop_engine/loop/recursive_loop.py",
+          "summary": "Execute the declared steps and conditions.",
+          "detail": "Starting, Spawned by, Queried by, Retrieved by and Connected from are relationships. Execution mode belongs to each Loop.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "effects",
+          "title": "Exact effect approval",
+          "source": "src/loop_engine/loop/effect_approval.py",
+          "summary": "Bind approval to the requested operation.",
+          "detail": "Changing the effect requires a new decision. Prompt text and model confidence cannot approve an effect.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "state",
+          "title": "History and checkpoints",
+          "source": "src/loop_engine/core/run_history.py",
+          "summary": "Record progress, outcomes and resumable state.",
+          "detail": "Publication, completion, acceptance and promotion remain different states. An uncertain external effect is not safely replayable.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "profiles",
+          "to": "definition",
+          "label": "Select exact behavior"
+        },
+        {
+          "from": "definition",
+          "to": "context",
+          "label": "Resolve required capabilities"
+        },
+        {
+          "from": "definition",
+          "to": "loop",
+          "label": "Admit the definition"
+        },
+        {
+          "from": "context",
+          "to": "loop",
+          "label": "Bound execution services"
+        },
+        {
+          "from": "loop",
+          "to": "effects",
+          "label": "Request a concrete effect"
+        },
+        {
+          "from": "loop",
+          "to": "state",
+          "label": "Record transitions"
+        }
+      ]
+    },
+    {
+      "id": "practitioner",
+      "title": "Reasoning, building and adaptive solving",
+      "group": "Whole engine",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "A Practitioner may reason, inspect, build and run experiments within explicit permissions. The purpose of an assignment does not grant its effects.",
+      "components": [
+        {
+          "id": "intake",
+          "title": "Task intake and materials",
+          "source": "src/loop_engine/code_nodes/solve_runtime.py",
+          "summary": "Preserve requirements and the working material.",
+          "detail": "Public solving binds the original task, selected files and request settings. Complete unified downloads and shared scoped views remain open.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "orient",
+          "title": "Orientation and intelligence",
+          "source": "src/loop_engine/core/adaptive_practitioner_orientation_capabilities.py",
+          "summary": "Find relevant context and available capabilities.",
+          "detail": "Retrieval and source loading are separate. Offers, fetched content, native loading and helpful use are distinct observations.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "plan",
+          "title": "Plan and assignments",
+          "source": "src/loop_engine/core/adaptive_practitioner_planning.py",
+          "summary": "Choose a bounded course of work and its dependencies.",
+          "detail": "Exact task decomposition and generic adaptive replanning require more qualification than the local fixture paths provide.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "decision",
+          "title": "Typed decision engines",
+          "source": "src/loop_engine/core/decisions/configuration.py",
+          "summary": "Optional Jev, Circuit and compatible endpoints.",
+          "detail": "The configured direct and harness-tool paths are tested locally. Automatic selection at every Practitioner branch is not implemented.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "build",
+          "title": "Capability and harness execution",
+          "source": "src/loop_engine/core/adaptive_practitioner_capabilities.py",
+          "summary": "Invoke code, inspect data or delegate authorized work.",
+          "detail": "Registered code may avoid a model call. An execution choice must satisfy its inputs, required effects and remaining allowance.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "review",
+          "title": "Assess and verify",
+          "source": "src/loop_engine/core/adaptive_practitioner_verification.py",
+          "summary": "Check the result against the task.",
+          "detail": "A response, process exit and accepted outcome are not interchangeable.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "route",
+          "title": "Continue, repair or finish",
+          "source": "src/loop_engine/core/adaptive_practitioner_routing.py",
+          "summary": "Use observations, failure evidence and remaining authority.",
+          "detail": "A failed check needs classification. A provisional terminal package must retain missing material and uncertainty.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "intake",
+          "to": "orient",
+          "label": "Original task"
+        },
+        {
+          "from": "orient",
+          "to": "plan",
+          "label": "Relevant evidence"
+        },
+        {
+          "from": "plan",
+          "to": "build",
+          "label": "Typed assignment"
+        },
+        {
+          "from": "plan",
+          "to": "decision",
+          "label": "Explicit optional judgment",
+          "state": "optional"
+        },
+        {
+          "from": "build",
+          "to": "review",
+          "label": "Observed output"
+        },
+        {
+          "from": "review",
+          "to": "route",
+          "label": "Assessment"
+        },
+        {
+          "from": "route",
+          "to": "plan",
+          "label": "Continue or repair",
+          "state": "optional"
+        }
+      ]
+    },
+    {
+      "id": "solution",
+      "title": "Solution graph, execution and reuse",
+      "group": "Whole engine",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "The solutioning process creates candidates. A Solution Canvas specifies what can run on another input; its publication and qualification have separate gates.",
+      "components": [
+        {
+          "id": "graph",
+          "title": "Typed Solution graph",
+          "source": "src/loop_engine/code_nodes/solution_graph.py",
+          "summary": "Contracts and relationships between member Loops.",
+          "detail": "Ports must be compatible before execution. A pipeline does not have one execution mode for all its Loops.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "compile",
+          "title": "Compile and bind operations",
+          "source": "src/loop_engine/code_nodes/solution_compiler.py",
+          "summary": "Resolve exact operations and implementation identities.",
+          "detail": "Do not infer executable behavior from a label, filename or prose.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "execute",
+          "title": "Canvas execution",
+          "source": "src/loop_engine/code_nodes/solution_canvas.py",
+          "summary": "Run supported members under their selected executors.",
+          "detail": "Deterministic, hybrid and non-deterministic members need a compatible executor and exact authority; unavailable executors refuse.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "models",
+          "title": "Model invocation port",
+          "source": "src/loop_engine/code_nodes/solution_model_port.py",
+          "summary": "Shared model gateway and cumulative session allowance.",
+          "detail": "Text and typed decisions use the existing model session. No endpoint is a permission grant.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "accept",
+          "title": "Independent checks",
+          "source": "src/loop_engine/core/independent_verification.py",
+          "summary": "Accept only the declared task outcome.",
+          "detail": "Check failure, repair and verification are recorded separately. Provider qualification remains separate.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "export",
+          "title": "Standalone export",
+          "source": "src/loop_engine/code_nodes/solution_export.py",
+          "summary": "Package code, tests and deployment recipes.",
+          "detail": "Supported export paths are locally checked. A package must run without relying on its builder conversation.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "space",
+          "title": "Solutions space and later reuse",
+          "source": "src/loop_engine/code_nodes/solutions_space.py",
+          "summary": "Retain exact candidate and accepted solution references.",
+          "detail": "The complete automatic publication-and-reuse lifecycle remains an integration gap.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "graph",
+          "to": "compile",
+          "label": "Validated graph"
+        },
+        {
+          "from": "compile",
+          "to": "execute",
+          "label": "Bound operations"
+        },
+        {
+          "from": "execute",
+          "to": "models",
+          "label": "Authorized model-backed member",
+          "state": "optional"
+        },
+        {
+          "from": "execute",
+          "to": "accept",
+          "label": "Observed execution"
+        },
+        {
+          "from": "accept",
+          "to": "export",
+          "label": "Qualified supported export"
+        },
+        {
+          "from": "accept",
+          "to": "space",
+          "label": "Publish exact result",
+          "state": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "intelligence",
+      "title": "Intelligence layers and memory",
+      "group": "Intelligence and capabilities",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "Four persistent intelligence layers share retrieval and record contracts. Runtime Memory is separate and scoped to one run; source formats do not create new layers.",
+      "components": [
+        {
+          "id": "context",
+          "title": "Context Intelligence",
+          "source": "src/loop_engine/core/intelligence_layers.py",
+          "summary": "Facts, instructions, forms and reusable context.",
+          "detail": "Versioned records are searched before selected bodies are loaded. Imported material remains candidate-only until review.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "code",
+          "title": "Code Intelligence",
+          "source": "src/loop_engine/core/code_intelligence_assets.py",
+          "summary": "Executable assets with contracts and provenance.",
+          "detail": "Active code needs source identity, license, dependencies, effects, tests and independent admission.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "history",
+          "title": "Runtime History and Solution Intelligence",
+          "source": "src/loop_engine/core/run_history.py",
+          "summary": "Prior work, exact outputs, costs and verification.",
+          "detail": "Recorded failures and missing accounting must remain visible. History does not automatically become a generalizable procedure.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "feedback",
+          "title": "User Feedback Intelligence",
+          "source": "src/loop_engine/core/user_feedback_intelligence.py",
+          "summary": "Scoped advice, decisions and reviewed feedback.",
+          "detail": "Feedback is subject to scope and authority. It cannot waive protected contracts.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "search",
+          "title": "Cross-layer search",
+          "source": "src/loop_engine/core/intelligence_layers.py",
+          "summary": "Typed references before large bodies.",
+          "detail": "The actual installed catalogue determines what can be found. Hosted all-layer qualification remains incomplete.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "store",
+          "title": "Catalogue store contract",
+          "source": "src/loop_engine/catalog/protocol.py",
+          "summary": "Identity, namespaces, versions and atomic operations.",
+          "detail": "Current adapters have distinct capabilities. Hosted PostgreSQL is not supplied by creating a Supabase account.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "temporary",
+          "title": "Runtime Memory",
+          "source": "src/loop_engine/core/runtime_memory.py",
+          "summary": "A temporary note board for one run.",
+          "detail": "It is not a fifth persistent intelligence layer or an independent authority.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "memory",
+          "title": "Working, episodic, semantic and procedural memory",
+          "source": "src/loop_engine/memory/loop_integration.py",
+          "summary": "Different record purposes and lifecycle rules.",
+          "detail": "Memory kind is distinct from intelligence layer, record format and storage backend.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "context",
+          "to": "search",
+          "label": "Context references"
+        },
+        {
+          "from": "code",
+          "to": "search",
+          "label": "Capability references"
+        },
+        {
+          "from": "history",
+          "to": "search",
+          "label": "Run and solution references"
+        },
+        {
+          "from": "feedback",
+          "to": "search",
+          "label": "Scoped guidance"
+        },
+        {
+          "from": "search",
+          "to": "store",
+          "label": "Shared record operations"
+        },
+        {
+          "from": "memory",
+          "to": "store",
+          "label": "Persistent record adapters"
+        },
+        {
+          "from": "temporary",
+          "to": "search",
+          "label": "Run-scoped context",
+          "state": "optional"
+        }
+      ]
+    },
+    {
+      "id": "retrieval",
+      "title": "Retrieval stages and artifact delivery",
+      "group": "Intelligence and capabilities",
+      "level": "Low level",
+      "direction": "DOWN",
+      "description": "Eligibility, candidate generation, ranking, selection and materialization are separate. The cloud index is a target deployment; the default local backend is not semantic embedding search.",
+      "components": [
+        {
+          "id": "request",
+          "title": "Typed search requirements",
+          "source": "src/loop_engine/core/intelligence_layers.py",
+          "summary": "Query, layer, filters and caller scope.",
+          "detail": "Required compatibility and permission constraints must not become merely soft ranking preferences.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "backend",
+          "title": "Configured retrieval backend",
+          "source": "src/loop_engine/core/retrieval_backends.py",
+          "summary": "Lexical or vector stage with a typed handshake.",
+          "detail": "Bindings check effects before factory use. Embedding spaces include exact model, revision, dimensions and normalization.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "rank",
+          "title": "Fusion and ranking policy",
+          "source": "src/loop_engine/core/retrieval.py",
+          "summary": "Combine eligible candidate rankings and explicit evidence.",
+          "detail": "Ranking settings are configurable. Outcome evidence is not assumed to exist merely because a ranking term supports it.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "refs",
+          "title": "Selected typed references",
+          "source": "src/loop_engine/core/provisioning_server.py",
+          "summary": "Identity, revision, digest and metadata.",
+          "detail": "Search does not silently materialize every result or qualify a candidate.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "bytes",
+          "title": "Authorize and load exact bytes",
+          "source": "src/loop_engine/core/service_runtime/provisioning.py",
+          "summary": "Selected-body permission and integrity checks.",
+          "detail": "Local file delivery is implemented; Supabase private bucket delivery remains an adapter task.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "host",
+          "title": "Harness materialization",
+          "source": "src/loop_engine/core/node_provisioning.py",
+          "summary": "Prepare only the declared context and native layout.",
+          "detail": "Current metadata offers and instruction files do not establish full native resource loading.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "advanced",
+          "title": "Iterative search and optional reranking",
+          "source": "docs/architecture/RETRIEVAL-PIPELINE-AND-RUNTIME-COMPATIBILITY.md",
+          "summary": "Bounded alternative engines and search refinement.",
+          "detail": "Agentic retrieval, learned routing and named external engines require their own integration and evaluation.",
+          "state": "proposed",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "request",
+          "to": "backend",
+          "label": "Admitted requirements"
+        },
+        {
+          "from": "backend",
+          "to": "rank",
+          "label": "Eligible candidates"
+        },
+        {
+          "from": "rank",
+          "to": "refs",
+          "label": "Body-free result"
+        },
+        {
+          "from": "refs",
+          "to": "bytes",
+          "label": "Explicit selection"
+        },
+        {
+          "from": "bytes",
+          "to": "host",
+          "label": "Verified material",
+          "state": "proposed"
+        },
+        {
+          "from": "rank",
+          "to": "advanced",
+          "label": "Insufficient evidence",
+          "state": "proposed"
+        },
+        {
+          "from": "advanced",
+          "to": "backend",
+          "label": "Bounded revised query",
+          "state": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "engines",
+      "title": "Engine wrappers and runtime configuration",
+      "group": "Intelligence and capabilities",
+      "level": "Low level",
+      "direction": "DOWN",
+      "description": "Share typed contracts and authority rules across replaceable implementations. These are domain-specific ports, not one invented universal engine runtime.",
+      "components": [
+        {
+          "id": "caller",
+          "title": "Owning Loop and runtime context",
+          "source": "src/loop_engine/loop/runtime_context.py",
+          "summary": "Task contract, capability needs and authority.",
+          "detail": "A Loop asks for an operation; it does not gain permissions from a preferred engine.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "selection",
+          "title": "Version, capability and effect checks",
+          "source": "src/loop_engine/core/capability_directory.py",
+          "summary": "An explicit installed binding before invocation.",
+          "detail": "Unknown adapters refuse. Runtime negotiation chooses supported contracts; it does not invent conversions.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "retrieval",
+          "title": "Retrieval binding",
+          "source": "src/loop_engine/core/retrieval_backends.py",
+          "summary": "Swap lexical and vector implementations.",
+          "detail": "Each backend owns its declared stage and exact embedding space. Automatic arbitrary plugin installation is not supplied.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "model",
+          "title": "Model gateway and decision profiles",
+          "source": "src/loop_engine/core/model_gateway.py",
+          "summary": "Select configured model endpoints and explicit fallback.",
+          "detail": "Users supply endpoints and credentials. Loop Engine does not launch or manage their model servers.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "harness",
+          "title": "Harness adapter",
+          "source": "src/loop_engine/core/external_harness_adapters.py",
+          "summary": "Native or custom execution under the assignment.",
+          "detail": "Actual supported versions, observed native loading and hidden model calls require qualification.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "workspace",
+          "title": "Workspace and store adapters",
+          "source": "src/loop_engine/core/workspace_backends.py",
+          "summary": "Confined files, commands and record operations.",
+          "detail": "Shared interfaces do not erase differences in transactions, sandbox strength or availability.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "history",
+          "title": "Admission, accounting and evidence",
+          "source": "src/loop_engine/core/operation_cost_capture.py",
+          "summary": "Record the route, attempts and unknown costs.",
+          "detail": "A schema-valid response is not independent task acceptance.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "caller",
+          "to": "selection",
+          "label": "Requested operation"
+        },
+        {
+          "from": "selection",
+          "to": "retrieval",
+          "label": "Search contract"
+        },
+        {
+          "from": "selection",
+          "to": "model",
+          "label": "Model contract"
+        },
+        {
+          "from": "selection",
+          "to": "harness",
+          "label": "Assignment contract"
+        },
+        {
+          "from": "selection",
+          "to": "workspace",
+          "label": "Effect contract"
+        },
+        {
+          "from": "model",
+          "to": "history",
+          "label": "Physical attempts"
+        },
+        {
+          "from": "harness",
+          "to": "history",
+          "label": "Observed work"
+        },
+        {
+          "from": "retrieval",
+          "to": "history",
+          "label": "Search evidence"
+        }
+      ]
+    },
+    {
+      "id": "capabilities",
+      "title": "Core capabilities and reusable code",
+      "group": "Intelligence and capabilities",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "The three public capability groups are Intelligence Search and Retrieval, Web Research, and Custom Plugins. Registered operations are called under classified Loops.",
+      "components": [
+        {
+          "id": "search",
+          "title": "Intelligence Search and Retrieval",
+          "source": "src/loop_engine/core/intelligence_layers.py",
+          "summary": "Search, select and materialize governed records.",
+          "detail": "Source format and vendor do not create new intelligence layers.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "web",
+          "title": "Web Research",
+          "source": "src/loop_engine/core/web_search.py",
+          "summary": "Source discovery and authorized retrieval.",
+          "detail": "HTTP, browser and external-service choices need explicit adapters and effects; a discovered URL is not permission to fetch.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "plugins",
+          "title": "Custom Plugins",
+          "source": "src/loop_engine/core/plugin_bundles.py",
+          "summary": "Admitted skills, tools and extension bundles.",
+          "detail": "File presence does not execute a plugin or grant authority.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "directory",
+          "title": "Capability directory",
+          "source": "src/loop_engine/core/capability_directory.py",
+          "summary": "Versioned handshakes and registered operations.",
+          "detail": "One named capability call can reach installed surfaces without adding task-specific branches.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "quality",
+          "title": "Detection and correction families",
+          "source": "src/loop_engine/code_nodes/data_quality_surfaces.py",
+          "summary": "Typed conformance, duplicates, recovery, copy and address operations.",
+          "detail": "Effects differ: a pure proposal is not a file mutation. Confidence and review bands remain explicit.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "admission",
+          "title": "Candidate qualification",
+          "source": "src/loop_engine/core/reusable_capability_flywheel.py",
+          "summary": "Review executable code before active reuse.",
+          "detail": "The producer cannot approve its own newly generated capability.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "search",
+          "to": "directory",
+          "label": "Registered search operations"
+        },
+        {
+          "from": "web",
+          "to": "directory",
+          "label": "Permitted research operations"
+        },
+        {
+          "from": "plugins",
+          "to": "directory",
+          "label": "Admitted plugin surface"
+        },
+        {
+          "from": "quality",
+          "to": "directory",
+          "label": "Installed deterministic families"
+        },
+        {
+          "from": "admission",
+          "to": "directory",
+          "label": "Qualified active capability",
+          "state": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "assurance",
+      "title": "Verification, failure review and acceptance",
+      "group": "Assurance and improvement",
+      "level": "Low level",
+      "direction": "DOWN",
+      "description": "Model output, a completed process, task acceptance and independent promotion are separate. No permission or secret boundary may be waived by a favorable review.",
+      "components": [
+        {
+          "id": "candidate",
+          "title": "Candidate output and provenance",
+          "source": "src/loop_engine/code_nodes/solution_records.py",
+          "summary": "Exact artifacts and declared claims.",
+          "detail": "Retain the original task and output identity for every evaluation.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "contracts",
+          "title": "Contract matching and graders",
+          "source": "src/loop_engine/core/contract_matching.py",
+          "summary": "Deterministic checks and declared matching modes.",
+          "detail": "Unknown, false and failed checks are distinct. A matching policy cannot relax unrelated authority.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "verify",
+          "title": "Independent verification",
+          "source": "src/loop_engine/core/independent_verification.py",
+          "summary": "Separate evidence and task judgments.",
+          "detail": "Route separation is optional only when declared and available; absence is recorded, not replaced with a fictional second provider.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "failure",
+          "title": "Failed-check review",
+          "source": "src/loop_engine/core/independent_failure_review.py",
+          "summary": "Classify whether work, check or environment failed.",
+          "detail": "A check revision still has to reject a known-wrong answer.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "terminal",
+          "title": "Accepted or provisional result",
+          "source": "src/loop_engine/code_nodes/solve_terminal.py",
+          "summary": "Preserve verified outcomes or explicit missing work.",
+          "detail": "Partial resolution includes assumptions and next actions without claiming verified completion.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "gates",
+          "title": "Repository and release gates",
+          "source": "src/loop_engine/_conformance_scan.py",
+          "summary": "Structural rules, tests, negative controls and source binding.",
+          "detail": "Passing a component suite does not qualify a hosted product or prove every source file correct.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "candidate",
+          "to": "contracts",
+          "label": "Exact result"
+        },
+        {
+          "from": "contracts",
+          "to": "verify",
+          "label": "Outcome evidence"
+        },
+        {
+          "from": "verify",
+          "to": "failure",
+          "label": "Failed or ambiguous check",
+          "state": "optional"
+        },
+        {
+          "from": "failure",
+          "to": "candidate",
+          "label": "Repair with retained evidence",
+          "state": "optional"
+        },
+        {
+          "from": "verify",
+          "to": "terminal",
+          "label": "Recorded acceptance decision"
+        },
+        {
+          "from": "gates",
+          "to": "terminal",
+          "label": "Software qualification remains separate"
+        }
+      ]
+    },
+    {
+      "id": "history",
+      "title": "Memory, records, history and telemetry",
+      "group": "Assurance and improvement",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "Keep temporary working state, persistent intelligence and operational accounting distinct. Privacy and unknown-accounting rules apply across all adapters.",
+      "components": [
+        {
+          "id": "temporary",
+          "title": "Run-scoped state",
+          "source": "src/loop_engine/core/runtime_memory.py",
+          "summary": "Temporary notes and current working context.",
+          "detail": "Not automatically shared across tasks or written into reusable intelligence.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "records",
+          "title": "Managed records and catalogue",
+          "source": "src/loop_engine/core/record_operations.py",
+          "summary": "Exact revisions, namespaces and approved writes.",
+          "detail": "Managed note collections use the existing record operation boundary, not direct row edits.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "history",
+          "title": "Run History",
+          "source": "src/loop_engine/core/run_history.py",
+          "summary": "Events, checkpoints and output identities.",
+          "detail": "Recorded producer claims are not independent verification. Failed and excluded work remains inspectable.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "accounting",
+          "title": "Model and operation accounting",
+          "source": "src/loop_engine/core/operation_cost_records.py",
+          "summary": "Physical calls, usage and implementation cost.",
+          "detail": "Unknown usage and cost stay unknown. Complete learnable collection for every physical call remains open.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "playback",
+          "title": "Playback and reports",
+          "source": "src/loop_engine/code_nodes/run_playback.py",
+          "summary": "Inspect the saved run and its evidence.",
+          "detail": "Replay does not authorize repeating committed external effects.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "telemetry",
+          "title": "Service metering and privacy",
+          "source": "src/loop_engine/core/service_runtime/runtime.py",
+          "summary": "Durable acknowledged usage with tenant scope.",
+          "detail": "Raw task bodies and model keys are not default telemetry; complete retention and export workflows remain open.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "temporary",
+          "to": "history",
+          "label": "Selected run events"
+        },
+        {
+          "from": "records",
+          "to": "history",
+          "label": "Exact artifact references"
+        },
+        {
+          "from": "accounting",
+          "to": "history",
+          "label": "Observed accounting"
+        },
+        {
+          "from": "history",
+          "to": "playback",
+          "label": "Saved evidence"
+        },
+        {
+          "from": "telemetry",
+          "to": "records",
+          "label": "Scoped durable usage"
+        }
+      ]
+    },
+    {
+      "id": "resources",
+      "title": "Resources, credentials and process lifetime",
+      "group": "Assurance and improvement",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "These components exist, but ordinary harness-lifetime integration is incomplete. Do not read this diagram as proof that every process is already resource-admitted or credential-brokered.",
+      "components": [
+        {
+          "id": "request",
+          "title": "Scoped harness assignment",
+          "source": "src/loop_engine/core/node_provisioning.py",
+          "summary": "Purpose, capabilities and separate effect authority.",
+          "detail": "Reasoning may include explicitly authorized experiments; building may be read-only.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "capacity",
+          "title": "Local resource measurement",
+          "source": "src/loop_engine/core/local_resources.py",
+          "summary": "Observe capacity and declared ceilings.",
+          "detail": "Full pre-start reservation across every harness path remains integration work.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "leases",
+          "title": "Credential leases",
+          "source": "src/loop_engine/core/credential_leases.py",
+          "summary": "Host-held authentication and scoped delegated use.",
+          "detail": "A private key absent from a prompt is not isolated from an unrestricted process under the same user.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "process",
+          "title": "Harness process adapter",
+          "source": "src/loop_engine/core/harness_process.py",
+          "summary": "Start, cancel and observe owned subprocesses.",
+          "detail": "Models remain external endpoints. Starting a harness does not mean starting all its models.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "hibernate",
+          "title": "Checkpoint and hibernation",
+          "source": "src/loop_engine/core/instance_hibernation.py",
+          "summary": "Preserve state and unresolved effects when suspending work.",
+          "detail": "The full ordinary process lifecycle and resume integration remain incomplete.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "request",
+          "to": "capacity",
+          "label": "Requested resources",
+          "state": "proposed"
+        },
+        {
+          "from": "request",
+          "to": "leases",
+          "label": "Required scoped service access",
+          "state": "proposed"
+        },
+        {
+          "from": "capacity",
+          "to": "process",
+          "label": "Admit within reservation",
+          "state": "proposed"
+        },
+        {
+          "from": "leases",
+          "to": "process",
+          "label": "Delegated authority",
+          "state": "proposed"
+        },
+        {
+          "from": "process",
+          "to": "hibernate",
+          "label": "Pause and resume policy",
+          "state": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "improvement",
+      "title": "Controlled improvement and experiments",
+      "group": "Assurance and improvement",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "Self-improvement is a Practitioner task that stages candidates for independent review. The complete autonomous cross-run cycle is not qualified by isolated optimizer tests.",
+      "components": [
+        {
+          "id": "history",
+          "title": "Permitted prior evidence",
+          "source": "src/loop_engine/core/product_outcome_store.py",
+          "summary": "Outcomes, failures, exact configurations and consent.",
+          "detail": "Do not collect private raw context merely because it could help optimization.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "proposals",
+          "title": "Candidate mechanisms and configurations",
+          "source": "src/loop_engine/core/configuration_optimizer.py",
+          "summary": "Add or remove steps, context, tools and settings.",
+          "detail": "No universal preference for fewer steps or smaller context. Preserve initial choices and explicit fallback priorities.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "experiments",
+          "title": "Frozen tasks and controlled comparisons",
+          "source": "src/loop_engine/core/evaluation_suite.py",
+          "summary": "Matched baselines, perturbations and exact denominators.",
+          "detail": "Development, candidate acceptance and final holdout remain separate. Sampling is not exhaustive coverage.",
+          "state": "local",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "review",
+          "title": "Independent review and adoption policy",
+          "source": "src/loop_engine/core/heuristic_adoption.py",
+          "summary": "Refuse premature generalized learned routing.",
+          "detail": "A selector or generated capability cannot independently approve itself.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "registry",
+          "title": "Qualified intelligence and rollback",
+          "source": "src/loop_engine/core/reusable_capability_flywheel.py",
+          "summary": "Version, admit or reject the candidate.",
+          "detail": "Complete generation, promotion and later-task reuse remain a connected release requirement.",
+          "state": "partial",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        },
+        {
+          "id": "research",
+          "title": "External experiments",
+          "source": "docs/research/SOL-PI-HARNESS-REVIEW-2026-09-19.md",
+          "summary": "SoL-Pi, retrieval optimizers and decision-readout candidates.",
+          "detail": "Research informs experiments; it does not install or qualify a new engine. SoL-Pi needs an explicit extension-capable Pi profile.",
+          "state": "proposed",
+          "owner": "Loop Engine component",
+          "zone": "engine"
+        }
+      ],
+      "edges": [
+        {
+          "from": "history",
+          "to": "proposals",
+          "label": "Evidence for a hypothesis",
+          "state": "proposed"
+        },
+        {
+          "from": "proposals",
+          "to": "experiments",
+          "label": "Versioned candidate"
+        },
+        {
+          "from": "experiments",
+          "to": "review",
+          "label": "Measured gains and failures",
+          "state": "proposed"
+        },
+        {
+          "from": "review",
+          "to": "registry",
+          "label": "Independent promotion",
+          "state": "proposed"
+        },
+        {
+          "from": "research",
+          "to": "proposals",
+          "label": "Source-backed design input",
+          "state": "optional"
+        }
+      ]
+    },
+    {
+      "id": "high",
+      "title": "Client and server boundaries",
+      "level": "High level",
+      "direction": "RIGHT",
+      "description": "Customers run the work. Loop Engine supplies permitted intelligence. Hosted identity, billing and storage still need separate integration qualification.",
+      "components": [
+        {
+          "id": "customer",
+          "title": "Customer environment",
+          "owner": "Customer-controlled",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Task files, Loop runtime and native harnesses stay here.",
+          "detail": "A customer may use the full Loop Engine runtime or connect a supported client for retrieval only. Connecting a harness does not automatically govern its internal steps.",
+          "source": "src/loop_engine/code_nodes/solve_runtime.py"
+        },
+        {
+          "id": "service",
+          "title": "Intelligence service",
+          "owner": "Loop Engine",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Authenticated search, exact artifact delivery and durable access records.",
+          "detail": "The Python service has real local HTTP and Model Context Protocol checks. A hosted endpoint, production identity and provider billing qualification are separate release gates.",
+          "source": "src/loop_engine/core/service_runtime/http.py"
+        },
+        {
+          "id": "external",
+          "title": "External services",
+          "owner": "Owner-selected providers",
+          "zone": "external",
+          "state": "owner",
+          "summary": "Identity, payments, hosted storage and optional model access.",
+          "detail": "Supabase, Stripe and a website host are candidate integrations. Model calls are customer-authorized. A subscription does not grant model, file or execution authority.",
+          "source": "docs/guides/launch-owner-checklist.md"
+        }
+      ],
+      "edges": [
+        {
+          "from": "customer",
+          "to": "service",
+          "label": "Search references; fetch selected material"
+        },
+        {
+          "from": "service",
+          "to": "external",
+          "label": "Configured identity, billing and storage",
+          "state": "proposed"
+        },
+        {
+          "from": "customer",
+          "to": "external",
+          "label": "Optional authorized model or tool calls",
+          "state": "optional"
+        }
+      ],
+      "group": "Service and delivery"
+    },
+    {
+      "id": "medium",
+      "title": "Serving subsystem responsibilities",
+      "level": "Medium level",
+      "direction": "DOWN",
+      "description": "The serving and execution paths share typed contracts. They do not share unrestricted credentials, task folders or execution authority.",
+      "components": [
+        {
+          "id": "client",
+          "title": "Local runtime and client",
+          "owner": "Customer-controlled",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Owns the task graph, permissions and selected assignments.",
+          "detail": "Canonical Loops own governed execution. Native harnesses remain replaceable adapters. LangGraph is not a required runtime dependency.",
+          "source": "src/loop_engine/loop/runtime_context.py"
+        },
+        {
+          "id": "transport",
+          "title": "Service adapters",
+          "owner": "Loop Engine",
+          "zone": "engine",
+          "state": "local",
+          "summary": "One durable domain behind web and protocol operations.",
+          "detail": "Requests have explicit version, size, origin, deadline and scope checks. Supported protocol: 2025-11-25. Current-version and live identity interoperability are not inferred.",
+          "source": "src/loop_engine/core/service_runtime/http.py"
+        },
+        {
+          "id": "harness",
+          "title": "Harness preparation",
+          "owner": "Customer-controlled",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Selected instructions and resources enter a confined workspace.",
+          "detail": "Exact provisioning and file integrity have local checks. Complete remote retrieval into an actual native harness, observed loading and task acceptance still need combined qualification.",
+          "source": "src/loop_engine/core/node_provisioning.py"
+        },
+        {
+          "id": "search",
+          "title": "Intelligence Search and Retrieval",
+          "owner": "Loop Engine",
+          "zone": "engine",
+          "state": "partial",
+          "summary": "References first; lexical and optional hybrid ranking.",
+          "detail": "The default local service uses SQLite full-text search and deterministic hashed features, not a learned semantic embedding. Hosts can supply typed backend bindings and ranking settings. Named external engines still need adapters and qualification.",
+          "source": "src/loop_engine/core/retrieval.py"
+        },
+        {
+          "id": "authority",
+          "title": "Access and qualification",
+          "owner": "Loop Engine",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Tenant grants, exact source identity, revocation and metering.",
+          "detail": "Access is rechecked at use. Payment does not promote an intelligence candidate. Host-attested review is labeled separately from independent source qualification.",
+          "source": "src/loop_engine/core/service_runtime/provisioning.py"
+        },
+        {
+          "id": "store",
+          "title": "Catalogue and artifact storage",
+          "owner": "Existing storage contracts",
+          "zone": "engine",
+          "state": "partial",
+          "summary": "Durable records and immutable bodies have different duties.",
+          "detail": "Local SQLite supports atomic read-set batches and restart. Private hosted buckets and shared Postgres deployment are not qualified by the embedded database tests.",
+          "source": "src/loop_engine/catalog/protocol.py"
+        },
+        {
+          "id": "history",
+          "title": "Run History and verification",
+          "owner": "Customer-controlled",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Keep outcomes, failures and exact output references.",
+          "detail": "Recorded execution, task acceptance and independent qualification remain distinct. Raw customer files and prompts are not automatically service telemetry.",
+          "source": "src/loop_engine/core/run_history.py"
+        },
+        {
+          "id": "learning",
+          "title": "Candidate improvement",
+          "owner": "Practitioner task",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Evaluate proposed changes before independent promotion.",
+          "detail": "AutoRAG, memory utility learners and deferred optimizers are candidates, not installed production policies. Keep existing authority, held-out evaluation and rollback obligations.",
+          "source": "docs/architecture/RETRIEVAL-PIPELINE-AND-RUNTIME-COMPATIBILITY.md"
+        }
+      ],
+      "edges": [
+        {
+          "from": "client",
+          "to": "transport",
+          "label": "Scoped query or selected reference"
+        },
+        {
+          "from": "client",
+          "to": "harness",
+          "label": "Assignment and scoped preparation"
+        },
+        {
+          "from": "transport",
+          "to": "search",
+          "label": "Authorized metadata search"
+        },
+        {
+          "from": "transport",
+          "to": "authority",
+          "label": "Manifest, body and usage operations"
+        },
+        {
+          "from": "search",
+          "to": "store",
+          "label": "Search projection and exact references"
+        },
+        {
+          "from": "authority",
+          "to": "store",
+          "label": "Atomic records; selected bytes"
+        },
+        {
+          "from": "harness",
+          "to": "history",
+          "label": "Observed outputs and checks"
+        },
+        {
+          "from": "history",
+          "to": "learning",
+          "label": "Permitted outcome evidence"
+        }
+      ],
+      "group": "Service and delivery"
+    },
+    {
+      "id": "low",
+      "title": "A retrieval and delivery request",
+      "level": "Low level",
+      "direction": "DOWN",
+      "description": "Follow the actual serving boundaries. Finding a reference, accepting a selected digest and releasing bytes are separate operations.",
+      "components": [
+        {
+          "id": "request",
+          "title": "Versioned request",
+          "owner": "HTTP or protocol client",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Query, result limit or exact selected item; caller credential outside arguments.",
+          "detail": "Request JSON cannot choose a tenant, override an account or supply server write authority. Unsupported fields and protocol versions refuse.",
+          "source": "src/loop_engine/core/service_runtime/http.py"
+        },
+        {
+          "id": "auth",
+          "title": "Authenticate and narrow scope",
+          "owner": "http_auth.py",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Durable key, or verified issuer, signature, audience and token scope.",
+          "detail": "External token permissions intersect durable principal scopes. Token tenant claims do not determine tenancy. Configured key endpoints are bounded and cannot redirect.",
+          "source": "src/loop_engine/core/service_runtime/http_auth.py"
+        },
+        {
+          "id": "principal",
+          "title": "Current principal and grants",
+          "owner": "runtime.py",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Recheck revocation, entitlement and exact item disclosure.",
+          "detail": "An issued principal is bound to durable records. A stale key, subject or grant does not retain earlier access. Billing management requires a separate non-default scope.",
+          "source": "src/loop_engine/core/service_runtime/runtime.py"
+        },
+        {
+          "id": "rank",
+          "title": "Search permitted metadata",
+          "owner": "retrieval.py",
+          "zone": "engine",
+          "state": "local",
+          "summary": "SQLite lexical search or bounded local hybrid ranking.",
+          "detail": "Returns typed provisioning_item_binding/v1 references with identity, source and digests. The transport revalidates the initial grant revision before releasing metadata. Bodies are not loaded by this query.",
+          "source": "src/loop_engine/core/retrieval.py"
+        },
+        {
+          "id": "select",
+          "title": "Select an immutable reference",
+          "owner": "Customer client",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Pin identity and expected digest before requesting the body.",
+          "detail": "A digest mismatch refuses before body disclosure or a new usage charge. A caller request identity binds a retry to the same effect.",
+          "source": "src/loop_engine/core/provisioning_server.py"
+        },
+        {
+          "id": "body",
+          "title": "Qualified, bounded body read",
+          "owner": "provisioning.py",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Reauthorize, verify bytes and enforce inline or download limits.",
+          "detail": "Larger UTF-8 bodies use a separately authorized download route. Bucket delivery and arbitrary binary bundle support remain separate integration work.",
+          "source": "src/loop_engine/core/service_runtime/provisioning.py"
+        },
+        {
+          "id": "commit",
+          "title": "Atomic usage acknowledgment",
+          "owner": "Catalogue contract",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Compare current authority revisions and commit one idempotent usage record.",
+          "detail": "An uncertain commit is not success. HTTP and protocol retries share the same durable request identity. A response timeout does not prove the write was cancelled.",
+          "source": "src/loop_engine/catalog/stores/sqlite_store.py"
+        },
+        {
+          "id": "deliver",
+          "title": "Deliver exact material",
+          "owner": "Customer client",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Verified bytes can be prepared for a separately authorized harness.",
+          "detail": "Delivery is locally tested. End-to-end native loading and task success require further evidence; downloaded content grants no execution permission.",
+          "source": "src/loop_engine/core/instance_instructions.py"
+        }
+      ],
+      "edges": [
+        {
+          "from": "request",
+          "to": "auth",
+          "label": "Authenticate"
+        },
+        {
+          "from": "auth",
+          "to": "principal",
+          "label": "Resolve host-bound tenant"
+        },
+        {
+          "from": "principal",
+          "to": "rank",
+          "label": "Search operation"
+        },
+        {
+          "from": "rank",
+          "to": "select",
+          "label": "Body-free references"
+        },
+        {
+          "from": "principal",
+          "to": "body",
+          "label": "Separate selected-body operation"
+        },
+        {
+          "from": "select",
+          "to": "body",
+          "label": "Selected identity and digest"
+        },
+        {
+          "from": "body",
+          "to": "commit",
+          "label": "Exact effect and current read set"
+        },
+        {
+          "from": "commit",
+          "to": "deliver",
+          "label": "Acknowledged bytes or explicit uncertainty"
+        }
+      ],
+      "group": "Service and delivery"
+    },
+    {
+      "id": "access",
+      "title": "Sign-in and subscription access",
+      "level": "Account journey",
+      "direction": "DOWN",
+      "description": "Website sign-in, payment, client authorization and intelligence qualification remain separate decisions.",
+      "components": [
+        {
+          "id": "signin",
+          "title": "Website connection",
+          "owner": "Customer and identity provider",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Connect the implemented workspace with a scoped service credential.",
+          "detail": "The same-origin website supports a service key or configured access token held in page memory. Automated account signup and live identity-provider consent remain incomplete. Local token checks do not prove end-user OAuth onboarding.",
+          "source": "src/loop_engine/core/service_runtime/web_assets/index.html"
+        },
+        {
+          "id": "subscription",
+          "title": "Hosted checkout or billing portal",
+          "owner": "Stripe adapter",
+          "zone": "external",
+          "state": "partial",
+          "summary": "Local adapter checked; live provider checkout not qualified.",
+          "detail": "The adapter binds the exact plan, customer and return address. Fifty-two local checks and eighteen detected mutants cover session creation and recovery. No live Stripe checkout or payment has been performed. A browser return is not payment evidence.",
+          "source": "src/loop_engine/core/service_runtime/stripe_sessions.py"
+        },
+        {
+          "id": "event",
+          "title": "Verify and reconcile",
+          "owner": "Loop Engine",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Validate the signature, deduplicate the event and reconcile current state.",
+          "detail": "Stripe event timestamps are not an ordering guarantee. Durable pending state refuses access until a configured provider snapshot is reconciled. Local injected-provider tests are not live Stripe qualification.",
+          "source": "src/loop_engine/core/service_runtime/billing.py"
+        },
+        {
+          "id": "rights",
+          "title": "Durable entitlement",
+          "owner": "Loop Engine catalogue contract",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Persist the current access decision without overriding administrative revocation.",
+          "detail": "The local SQLite domain preserves tenants, keys, exact grants and usage through restart. The website and protocol must consult this same authority.",
+          "source": "src/loop_engine/core/service_runtime/runtime.py"
+        },
+        {
+          "id": "connect",
+          "title": "Connect a scoped client",
+          "owner": "Customer-controlled",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Use the supported protocol and permissions to request intelligence.",
+          "detail": "Real local HTTP and protocol clients are tested. External discovery, consent and authorization must be qualified with the selected provider and actual harness client.",
+          "source": "src/loop_engine/core/service_runtime/http_auth.py"
+        }
+      ],
+      "edges": [
+        {
+          "from": "signin",
+          "to": "subscription",
+          "label": "Choose a configured plan; local route checked"
+        },
+        {
+          "from": "subscription",
+          "to": "event",
+          "label": "Signed event and current provider state",
+          "state": "proposed"
+        },
+        {
+          "from": "event",
+          "to": "rights",
+          "label": "Atomic access decision"
+        },
+        {
+          "from": "rights",
+          "to": "connect",
+          "label": "Scoped current entitlement"
+        }
+      ],
+      "group": "Service and delivery"
+    },
+    {
+      "id": "execution",
+      "title": "Harness preparation and local execution",
+      "level": "Local execution journey",
+      "direction": "DOWN",
+      "description": "Retrieval supplies material. The local runtime owns task authority, harness execution and acceptance.",
+      "components": [
+        {
+          "id": "intake",
+          "title": "Task and declared authority",
+          "owner": "Customer-controlled",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Bind the original task, files, budget and allowed effects.",
+          "detail": "The public solve path preserves task intake and authority. Materials, provider credentials and execution permission do not come from a service subscription.",
+          "source": "src/loop_engine/code_nodes/solve_runtime.py"
+        },
+        {
+          "id": "plan",
+          "title": "Governed Loop assignments",
+          "owner": "Canonical Loop runtime",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Resolve typed graph relationships and separately scoped assignments.",
+          "detail": "Local graph and provisioning integration checks exist. Broad unseen-task decomposition and complete internal paths still require additional evidence.",
+          "source": "src/loop_engine/code_nodes/solution_graph.py"
+        },
+        {
+          "id": "material",
+          "title": "Prepare selected material",
+          "owner": "Local provisioner",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Verify exact bytes and write only the permitted native layout.",
+          "detail": "Path, overwrite, digest and guardrail checks are implemented. Complete service-to-native-harness materialization remains a combined integration gate.",
+          "source": "src/loop_engine/core/node_provisioning.py"
+        },
+        {
+          "id": "harness",
+          "title": "Separate harness process",
+          "owner": "Customer-controlled adapter",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Run an installed harness inside the declared workspace and authority.",
+          "detail": "A mounted file is not proof the native harness loaded or used it. Exact installed harness, model route, cancellation and observed loading need live qualification.",
+          "source": "src/loop_engine/core/harness_process.py"
+        },
+        {
+          "id": "decision",
+          "title": "Configured decision endpoints",
+          "owner": "Existing model gateway",
+          "zone": "customer",
+          "state": "partial",
+          "summary": "Jev, Circuit or a compatible endpoint, directly or through a harness tool.",
+          "detail": "Users supply endpoint, model, locality, authentication reference and ordered routes. Loop Engine does not launch model services. Direct and protocol-tool paths have local fixture checks. Automatic Practitioner routing, actual model quality and complete context coverage remain unqualified; a judgment never grants authority or accepts a task.",
+          "source": "src/loop_engine/core/decisions/configuration.py"
+        },
+        {
+          "id": "accept",
+          "title": "Verification and Run History",
+          "owner": "Customer-controlled runtime",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Record outputs and failures; accept only under the declared checks.",
+          "detail": "Process completion, valid output and independently accepted task success remain separate. Failed attempts and unresolved effects are retained rather than silently replayed.",
+          "source": "src/loop_engine/core/independent_verification.py"
+        }
+      ],
+      "edges": [
+        {
+          "from": "intake",
+          "to": "plan",
+          "label": "Original task and typed requirements"
+        },
+        {
+          "from": "plan",
+          "to": "material",
+          "label": "Selected references and scoped write authority"
+        },
+        {
+          "from": "material",
+          "to": "harness",
+          "label": "Exact instruction and resource manifest"
+        },
+        {
+          "from": "harness",
+          "to": "accept",
+          "label": "Observed output and verification evidence"
+        },
+        {
+          "from": "intake",
+          "to": "decision",
+          "label": "Explicit direct decision request",
+          "state": "optional"
+        },
+        {
+          "from": "harness",
+          "to": "decision",
+          "label": "Configured decision tool",
+          "state": "optional"
+        },
+        {
+          "from": "decision",
+          "to": "accept",
+          "label": "Candidate judgment, not an acceptance verdict",
+          "state": "optional"
+        }
+      ],
+      "group": "Whole engine"
+    },
+    {
+      "id": "website",
+      "title": "Frontend, backend and account services",
+      "group": "Service and delivery",
+      "level": "Low level",
+      "direction": "DOWN",
+      "description": "The browser renders the product interface. The Python backend owns authorization and delivery. Supabase and Stripe are external integrations, not substitutes for the application's access rules.",
+      "components": [
+        {
+          "id": "browser",
+          "title": "Browser frontend",
+          "owner": "Customer browser",
+          "zone": "customer",
+          "state": "local",
+          "summary": "Workspace, catalogue search, downloads and setup pages.",
+          "detail": "The packaged JavaScript calls the same-origin service. Its access token stays in page memory; model-provider keys are not collected by this website. Automated signup remains incomplete.",
+          "source": "src/loop_engine/core/service_runtime/web_assets/service.js"
+        },
+        {
+          "id": "api",
+          "title": "Python service boundary",
+          "owner": "Fly.io container target",
+          "zone": "engine",
+          "state": "partial",
+          "summary": "Versioned HTTP and Model Context Protocol operations.",
+          "detail": "The implementation is locally checked. Fly deployment, exact hostname and live account interoperability are not yet qualified.",
+          "source": "src/loop_engine/core/service_runtime/http.py"
+        },
+        {
+          "id": "identity",
+          "title": "Authentication adapter",
+          "owner": "Identity provider and backend",
+          "zone": "engine",
+          "state": "partial",
+          "summary": "Validate issuer, signature, audience and scope.",
+          "detail": "Supabase Auth is the proposed identity provider. The backend resolves its own durable subject-to-tenant binding; a token cannot declare another tenant.",
+          "source": "src/loop_engine/core/service_runtime/http_auth.py"
+        },
+        {
+          "id": "domain",
+          "title": "Tenant and entitlement domain",
+          "owner": "Python backend",
+          "zone": "engine",
+          "state": "local",
+          "summary": "Current grants, revocation, idempotency and acknowledged usage.",
+          "detail": "Website and protocol calls share this authority. A browser success page does not grant subscription access.",
+          "source": "src/loop_engine/core/service_runtime/runtime.py"
+        },
+        {
+          "id": "payments",
+          "title": "Stripe subscription adapter",
+          "owner": "External payment provider",
+          "zone": "external",
+          "state": "partial",
+          "summary": "Hosted checkout, portal, signed events and reconciliation.",
+          "detail": "The adapter has local tests. Live accounts, automatic customer bootstrap and periodic reconciliation still need qualification.",
+          "source": "src/loop_engine/core/service_runtime/stripe_sessions.py"
+        },
+        {
+          "id": "data",
+          "title": "Database and private bodies",
+          "owner": "Supabase target",
+          "zone": "external",
+          "state": "proposed",
+          "summary": "PostgreSQL metadata and indexes; private object storage.",
+          "detail": "Current serving uses SQLite and local reviewed files. Engineering must implement the cloud adapters and qualify their transaction and disclosure behavior before this target is active.",
+          "source": "src/loop_engine/core/service_runtime/provisioning.py"
+        }
+      ],
+      "edges": [
+        {
+          "from": "browser",
+          "to": "api",
+          "label": "Scoped same-origin request"
+        },
+        {
+          "from": "api",
+          "to": "identity",
+          "label": "Authenticate caller"
+        },
+        {
+          "from": "identity",
+          "to": "domain",
+          "label": "Resolve current authority"
+        },
+        {
+          "from": "domain",
+          "to": "payments",
+          "label": "Explicit billing operation",
+          "state": "optional"
+        },
+        {
+          "from": "domain",
+          "to": "data",
+          "label": "Authorized record or selected body",
+          "state": "proposed"
+        },
+        {
+          "from": "payments",
+          "to": "domain",
+          "label": "Verified event and current subscription state",
+          "state": "optional"
+        }
+      ]
+    }
+  ],
+  "default_view": "system"
+}

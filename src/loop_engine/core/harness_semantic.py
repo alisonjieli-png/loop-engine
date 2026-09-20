@@ -380,7 +380,7 @@ class HarnessSemanticBinding:
                 artifact_store=manager,
                 instruction_writer=InstanceInstructionWriter(
                     str(work), SEMANTIC_INSTANCE_EFFECTS,
-                    reporting=SEMANTIC_INSTANCE_REPORTING),
+                    reporting=SEMANTIC_INSTANCE_REPORTING, visible_root="/work"),
                 runtime_binding=HarnessRuntimeBinding(
                     primary.provider, primary.model, 'client', client,
                     'gateway-request:' + request.request_digest, limit)))
@@ -625,7 +625,9 @@ class GatewayHarnessProcessAdapter:
             timeout_seconds=request.budget.max_seconds,
             work_dir=request.input_data['work_directory'],
             socket_directory=request.input_data['socket_directory'] or None,
-            context_capacity=request.input_data['context_capacity'] or None)
+            context_capacity=request.input_data['context_capacity'] or None,
+            instruction_material=(services.instruction_writer.material_for(request)
+                                  if services.instruction_writer is not None else ()))
         observed = run_harness_process(process_request, client)
         calls = tuple(HarnessModelCall(
             provider=attempt.provider, model=attempt.model, ok=attempt.provider_ok,
@@ -642,6 +644,8 @@ class GatewayHarnessProcessAdapter:
                         'errors': observed.errors, 'process_identity': observed.process_identity,
                         'broker_requests': observed.broker_request_count,
                         'received_requests': observed.received_request_count,
+                        'instruction_manifest': list(observed.instruction_manifest),
+                        'instruction_loading_observed': False,
                         'stdout_digest': _digest(observed.stdout),
                         'stderr_digest': _digest(observed.stderr)}, sort_keys=True),
             media_type='application/json', artifact_kind='harness_execution')

@@ -47,6 +47,27 @@ component_architecture:
     - example
   physical_fusion_requires_logical_history: true
 
+typed_decision_execution:
+  component_path: src/loop_engine/core/decisions
+  architecture_contract: src/loop_engine/core/decisions/README.md
+  gateway: loop_engine.core.model_gateway.ModelGateway
+  provider_registry: existing_model_gateway_provider_specs
+  application_tool: loop_engine.code_nodes.decision_tools.DecisionToolBinding
+  budget_owner: loop_engine.code_nodes.solution_model_port.ModelExecutionSession
+  request_contract: decision_batch_request/v1
+  response_contract: decision_batch_result/v1
+  provider_capability: typed_decisions/v1
+  host_configuration: decision_host_configuration/v2
+  adapter_profiles: [jev, circuit, system_one]
+  endpoint_lifecycle: externally_managed_no_model_server_launch
+  provider_choice: explicit_ordered_route_names
+  provider_failover: separately_authorized_never_implied_by_preference
+  runtime_type: Loop
+  adds_runtime_or_intelligence_layer: false
+  native_harness_loading_qualified: false
+  live_provider_qualified: false
+  import_check: tools/test_decision_engine_boundary.py
+
 host_task_execution:
   operational_runtime_type: Loop
   public_port: CustomPluginsPort

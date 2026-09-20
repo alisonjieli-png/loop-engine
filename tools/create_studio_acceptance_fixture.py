@@ -38,11 +38,14 @@ def main() -> int:
     artifact.write_text("verified Studio result\n", encoding="utf-8")
     digest = hashlib.sha256(artifact.read_bytes()).hexdigest()
     bind_product_outcome(str(runs_dir), run_id, {
-        "record_type": "solve_outcome/v3", "run_id": run_id,
+        "record_type": "solve_outcome/v6", "run_id": run_id,
         "terminal_code": "COMPLETED_VERIFIED",
         "status": "COMPLETED_VERIFIED", "solved": True,
         "summary": "Verified Studio browser fixture.", "failure_code": "",
         "verification": {"passed": True, "verdict": "accept"},
+        "questions": [], "stage_vectors": [], "action_vectors": [],
+        "model_calls": 0, "model_call_accounting_complete": True,
+        "model_calls_known_subtotal": 0,
         "artifacts": [{
             "path": str(artifact), "media_type": "text/plain",
             "byte_count": artifact.stat().st_size, "digest": digest,

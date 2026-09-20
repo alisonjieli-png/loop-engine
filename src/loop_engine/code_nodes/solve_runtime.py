@@ -23,6 +23,9 @@ from ..core.adaptive_practitioner_records import (
 )
 from ..core.generated_project import execute_generated_project
 from ..core.independent_verification import IndependentVerificationPolicy
+from ..core.practitioner_runtime.provisioning import (
+    HarnessProvisioningConfiguration, provisioning_summary,
+)
 from ..loop.supervision_policy import SupervisionPolicy
 from ..templates.compiler import TaskCompileRequest, compile_task_value
 from ..templates.intake import TaskIntake
@@ -141,8 +144,12 @@ class SolveRequest:
     #: with zero model calls. False keeps the recorded default: a
     #: model-led run starts with semantic orientation.
     allow_fast_path_resolution: bool = False
+    harness_provisioning: HarnessProvisioningConfiguration | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
+        if self.harness_provisioning is not None and not isinstance(
+                self.harness_provisioning, HarnessProvisioningConfiguration):
+            raise SolveError("harness_provisioning must use its immutable configuration")
         if self.supervision is not None and not isinstance(self.supervision, SupervisionPolicy):
             raise SolveError("supervision must use its typed SupervisionPolicy contract")
         if type(self.capture_recovery_learning) is not bool:
@@ -527,7 +534,7 @@ def solve_capability_directory():
     return default_directory(surfaces=family_surfaces())
 
 
-def solve_dependencies(request, resolvers) -> AdaptivePractitionerDependencies:
+def solve_dependencies(request, resolvers, progress=None) -> AdaptivePractitionerDependencies:
     """Everything a solve run is given, in one place a check can inspect.
 
     Built here rather than inline at the call so that what a run actually
@@ -537,13 +544,14 @@ def solve_dependencies(request, resolvers) -> AdaptivePractitionerDependencies:
     return AdaptivePractitionerDependencies(
         model_execution=request.model_execution,
         deterministic_resolvers=resolvers,
-        progress=request.progress,
+        progress=progress if progress is not None else request.progress,
         reuse_observation_port=request.reuse_observation_port,
         project_executor=(request.project_executor or execute_generated_project),
         extension_snapshot=request.extension_snapshot,
         host_runtime=request.host_runtime,
         capability_directory=solve_capability_directory(),
-        intelligence_catalog=solve_intelligence_catalog())
+        intelligence_catalog=solve_intelligence_catalog(),
+        harness_provisioning=request.harness_provisioning)
 
 
 def solve_intelligence_catalog():
@@ -653,8 +661,13 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
     adaptive_request = build_adaptive_request(
         SolveAdaptationRequest(request, mode, region_evidence, tuned_budget)
     )
+    # Every model step event a run publishes is forwarded to the caller's own
+    # listener and also retained, without its prompt, so the run can say what
+    # its model calls can teach instead of dropping it.
+    from ..core.model_call_collection import collector_for
+    learning = collector_for(request.progress)
     adaptive = run_adaptive_practitioner(
-        adaptive_request, solve_dependencies(request, resolvers))
+        adaptive_request, solve_dependencies(request, resolvers, learning))
     solved = bool(adaptive.get("solved"))
     product = _product_result(adaptive, solved)
     selected = adaptive.get("selected_solution_canvas") or {}
@@ -761,6 +774,13 @@ def solve_task(request: SolveRequest) -> SolveOutcome:
             "extensions": dict(request.extension_snapshot),
             "region_evidence": region_evidence,
             "stage_assistance": stage_assistance_summary(request, adaptive),
+            # What this run's model calls can teach a later one: one record per
+            # started call, joined from the events the run published, with no
+            # prompt and no response body retained. A truncated collection says
+            # so rather than passing as complete.
+            "model_call_learning": learning.report(adaptive),
+            "harness_provisioning": provisioning_summary(
+                request.harness_provisioning, adaptive.get("spawned_results", ())),
         },
         selected_mode=mode,
         requested_mode=request.practitioner_mode,
@@ -880,6 +900,20 @@ def self_test() -> dict:
               not model.solved
               and model.failure_code == "BUDGET_EXHAUSTED"
               and model.run_history["chain_intact"])
+        learning = model.intelligence["model_call_learning"]
+        saved_learning = load_saved_run_bundle(root, model.run_id).outcome[
+            "intelligence"]["model_call_learning"]
+        from ..core.model_call_records import ModelCallLearningRecord
+        learned_records = [ModelCallLearningRecord.from_dict(row)
+                           for row in learning["items"]]
+        check("public_solve_persists_sanitized_occurrences_with_the_actual_run_outcome",
+              bool(learned_records) and saved_learning == learning
+              and learning["records"] == len(learned_records)
+              and len({row.record_id for row in learned_records}) == len(learned_records)
+              and all(row.outcome_label == "failed" for row in learned_records)
+              and all(row.occurrence_id for row in learned_records)
+              and "output_preview" not in json.dumps(learning)
+              and "prompt_text" not in json.dumps(learning))
         from ..core.adaptive_practitioner_acceptance_checks import (
             _action_vector,
             _decision,
@@ -1024,4 +1058,5 @@ def self_test() -> dict:
                   == "model_only"
               and autonomous.compiled_task["template_candidates"])
     from .solve_mode_checks import mode_checks
-    return {"tests": [*results, *mode_checks()]}
+    from .solve_provisioning_checks import run_checks as provisioning_checks
+    return {"tests": [*results, *mode_checks(), *provisioning_checks()]}

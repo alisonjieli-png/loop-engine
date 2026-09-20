@@ -246,14 +246,14 @@ def self_test() -> dict:
                            {"record_id": "y", "reason": "unverified_outcome"},
                            {"record_id": "z", "reason": "secret_pattern"}],
               "content_digest": "d" * 64}
-    first = dataset_version_from_export("decide_next_calls", "1.0.0", "model_call_learning_record/v1", export)
+    first = dataset_version_from_export("decide_next_calls", "1.0.0", "model_call_learning_record/v2", export)
     check("a_dataset_version_describes_an_export_without_holding_its_rows",
           first.row_count == 3 and first.train_rows == 2 and first.holdout_rows == 1
           and first.source_run_count == 3 and dict(first.exclusions) == {"secret_pattern": 1, "unverified_outcome": 2}
           and "run-1" not in json.dumps(first.to_record("org:test")["attributes"]))
     store = TrainingDataStore(EphemeralRecordStore(), "org:test")
     store.publish(first)
-    second = dataset_version_from_export("decide_next_calls", "1.1.0", "model_call_learning_record/v1",
+    second = dataset_version_from_export("decide_next_calls", "1.1.0", "model_call_learning_record/v2",
                                          {**export, "train": [*export["train"], {"run_id": "run-4", "step": "a"}],
                                           "content_digest": "e" * 64})
     store.publish(second)
@@ -261,7 +261,7 @@ def self_test() -> dict:
           store.versions("decide_next_calls") == ["1.0.0", "1.1.0"] and store.current("decide_next_calls").version == "1.1.0"
           and store.datasets() == ["decide_next_calls"]
           and refuses(lambda: store.publish(dataset_version_from_export(
-              "decide_next_calls", "1.1.0", "model_call_learning_record/v1", {**export, "content_digest": "f" * 64})))
+              "decide_next_calls", "1.1.0", "model_call_learning_record/v2", {**export, "content_digest": "f" * 64})))
           and DatasetVersion.from_record(store.store.get("dataset.decide_next_calls")) == second)
     policy = HeuristicAdoptionPolicy()
     atomic = HeuristicProposal("fp.decide_next", "exact_fingerprint", "atomic", 12)

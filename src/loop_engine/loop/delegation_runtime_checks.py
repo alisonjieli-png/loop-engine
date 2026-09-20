@@ -304,6 +304,8 @@ def run_checks() -> dict:
     )
     from .delegation_checkpoint_checks import run_checkpoint_checks
     tests.extend(run_checkpoint_checks())
+    from .spawned_deadline_checks import run_deadline_checks
+    tests.extend(run_deadline_checks())
 
     passed = sum(1 for test in tests if test["passed"])
     return {

@@ -26,7 +26,7 @@ from __future__ import annotations
 import hashlib
 
 from ..templates.intake import CapturedInstructionProvenance
-from .adaptive_practitioner_records import AdaptivePractitionerError
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .adaptive_practitioner_source import inventory_source_files, project_input_path
 from .adaptive_practitioner_supervision import DEFAULT_SUPERVISION_POLICY
 from .generated_project import selected_execution_backend

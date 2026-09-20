@@ -69,7 +69,7 @@ interactions:
     consumer_kind: runtime_definition
     operation: compile_selected_capability_action
     request_contract: next_action_decision/v1
-    result_contract: loop_graph_definition/v1
+    result_contract: loop_graph_definition/v2
     relationship: connected_from
     delivery: synchronous
     scheduling: graph_defined

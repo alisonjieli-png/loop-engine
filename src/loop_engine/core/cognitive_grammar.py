@@ -69,8 +69,8 @@ def cognitive_operators() -> dict:
     describe the runtime as it was when someone last edited the copy, which
     is exactly the failure mode this catalog exists to expose.
     """
-    from .adaptive_practitioner_records import (ADAPTIVE_CAPABILITIES,
-                                                NEXT_ACTION_KINDS)
+    from .adaptive_practitioner_records import NEXT_ACTION_KINDS
+    from .practitioner_runtime.capabilities import ADAPTIVE_CAPABILITIES
     operators = {}
     for node in KERNEL_NODES:
         operators[f"node:{node}"] = {
@@ -310,8 +310,8 @@ def self_test() -> dict:
     def check(name: str, passed: bool, detail: str = "") -> None:
         tests.append({"test": name, "passed": bool(passed), "detail": detail})
 
-    from .adaptive_practitioner_records import (ADAPTIVE_CAPABILITIES,
-                                                NEXT_ACTION_KINDS)
+    from .adaptive_practitioner_records import NEXT_ACTION_KINDS
+    from .practitioner_runtime.capabilities import ADAPTIVE_CAPABILITIES
     operators = cognitive_operators()
     check("the_catalog_is_derived_from_every_live_source",
           len(operators) == (len(KERNEL_NODES) + len(NEXT_ACTION_KINDS)

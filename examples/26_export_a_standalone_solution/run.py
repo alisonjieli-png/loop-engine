@@ -23,7 +23,7 @@ from pathlib import Path
 
 from loop_engine import LoopLedger
 from loop_engine.code_nodes import text_conformance_operations as operations
-from loop_engine.code_nodes.solution_export import export_solution, text_conformance_export_spec, verify_export
+from loop_engine.code_nodes.solution_export import ExportVerificationPolicy, export_solution, text_conformance_export_spec, verify_export
 from loop_engine.code_nodes.text_conformance import (ConformancePolicy, ConformanceRule, load_packaged_catalogs,
                                                      merge_layers, propose_rules, run_conformance)
 from loop_engine.loop.encapsulate import as_practitioner_loop
@@ -103,6 +103,7 @@ def main() -> int:
     record = export_solution(spec, str(target))
     (target / "input.csv").write_text(INPUT.read_text("utf-8"), "utf-8")
     verification = verify_export(str(target), run_arguments=("--input", "input.csv", "--output-dir", "out"),
+                                 policy=ExportVerificationPolicy(True, record.manifest_digest),
                                  expected_artifacts=("out/conformed.csv", "out/report.json",
                                                      "out/corrections.jsonl", "out/escalations.jsonl"))
     print("EXPORT")

@@ -12,7 +12,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from .solution_export import (_FORBIDDEN_IMPORT, ContainerSpec, ExportedFile, SolutionExportError,
+from .solution_export import (_FORBIDDEN_IMPORT, ContainerSpec, ExportedFile, ExportVerificationPolicy, SolutionExportError,
                               SolutionExportSpec, export_solution, render_dockerfile,
                               render_kubernetes_job, render_pyproject,
                               text_conformance_export_spec, verify_export)
@@ -84,26 +84,130 @@ def run_checks() -> dict:
               and manifest["spec_digest"] == spec.digest)
         check("export_refuses_a_non_empty_target",
               _refuses(lambda: export_solution(spec, str(target))))
-        verification = verify_export(str(target), run_arguments=())
+        policy = ExportVerificationPolicy(True, record.manifest_digest)
+        verification = verify_export(str(target), run_arguments=(), policy=policy)
         check("a_clean_export_verifies_in_an_isolated_interpreter",
               verification.passed and [item["check"] for item in verification.checks]
-              == ["manifest_digests_match_files", "no_loop_engine_import_and_no_secret_shape",
+              == ["manifest_identity_is_verified", "manifest_digests_match_files", "no_loop_engine_import_and_no_secret_shape",
+                  "executable_sources_are_declared", "exact_local_execution_authority",
                   "package_imports_in_isolation", "entry_point_runs_in_isolation",
                   "expected_artifacts_exist"],
               json.dumps(verification.checks))
         (target / "src/fixture_solution/__init__.py").write_text('"""tampered"""\n', "utf-8")
         tampered = verify_export(str(target))
         check("a_tampered_file_fails_the_manifest_check",
-              not tampered.passed and tampered.checks[0]["check"] == "manifest_digests_match_files"
-              and not tampered.checks[0]["passed"])
+              not tampered.passed
+              and not next(item for item in tampered.checks if item["check"] == "manifest_digests_match_files")["passed"])
         (target / "src/fixture_solution/__init__.py").write_text(
             '"""fixture"""\nimport loop_engine\n', "utf-8")
-        leaking = verify_export(str(target))
+        from unittest.mock import patch
+        with patch("loop_engine.code_nodes.solution_export._run_isolated") as execute:
+            leaking = verify_export(str(target), policy=policy)
+            invoked = execute.called
         check("an_export_that_imports_loop_engine_fails_verification",
-              not leaking.passed and not leaking.checks[1]["passed"]
-              and not leaking.checks[2]["passed"]
-              and "No module named 'loop_engine'" in leaking.checks[2]["detail"],
-              "the isolated interpreter cannot import loop_engine even when the package tries")
+              not leaking.passed and not invoked,
+              "integrity failure prevents execution rather than relying on the import to fail")
+        # The tampered file above stops at its digest, so it no longer reaches
+        # the content scan or the interpreter. Exercise both directly. Here the
+        # manifest is re-issued for the offending file, so integrity passes and
+        # only the content scan can refuse it.
+        from .solution_export import ISOLATION_MODES, _digest, _digest_bytes, _run_isolated
+        relative = "src/fixture_solution/__init__.py"
+        reissued = json.loads((target / "MANIFEST.json").read_text("utf-8"))
+        reissued["files"][relative] = _digest_bytes((target / relative).read_bytes())
+        reissued["manifest_digest"] = _digest({key: value for key, value in reissued.items() if key != "manifest_digest"})
+        (target / "MANIFEST.json").write_text(json.dumps(reissued), "utf-8")
+        with patch("loop_engine.code_nodes.solution_export._run_isolated") as execute:
+            scanned = verify_export(str(target), policy=ExportVerificationPolicy(True, reissued["manifest_digest"]))
+            outcome = {item["check"]: item["passed"] for item in scanned.checks}
+            check("a_consistent_manifest_cannot_hide_an_engine_import_from_the_content_scan",
+                  not scanned.passed and outcome.get("manifest_digests_match_files") is True
+                  and outcome.get("no_loop_engine_import_and_no_secret_shape") is False and not execute.called,
+                  json.dumps(scanned.checks, default=str))
+        # The strict interpreter must not see the engine even though the
+        # interpreter running these checks can import it. The mode that admits
+        # installed packages makes no such promise: there the content scan
+        # above is the guard, so only the strict mode is asserted here.
+        import loop_engine  # noqa: F401  (proves the host interpreter has it)
+        probe = _run_isolated(target, ISOLATION_MODES[0], "import loop_engine", 60.0)
+        check("strict_isolated_interpreter_cannot_import_the_engine",
+              probe.returncode != 0 and "No module named 'loop_engine'" in probe.stderr, probe.stderr[-300:])
+    with tempfile.TemporaryDirectory() as folder:
+        target = Path(folder) / "export"
+        record = export_solution(spec, str(target))
+        with patch("loop_engine.code_nodes.solution_export._run_isolated") as execute:
+            unapproved = verify_export(str(target))
+            check("static_verification_does_not_authorize_host_execution",
+                  not unapproved.passed and not execute.called)
+            wrong_policy = ExportVerificationPolicy(True, "0" * 64)
+            wrong = verify_export(str(target), policy=wrong_policy)
+            check("local_verification_authority_is_bound_to_the_exact_manifest",
+                  not wrong.passed and not execute.called)
+            manifest = json.loads((target / "MANIFEST.json").read_text("utf-8"))
+            manifest["package_name"] = "bad;raise RuntimeError"
+            (target / "MANIFEST.json").write_text(json.dumps(manifest), "utf-8")
+            check("a_manifest_cannot_inject_an_import_or_name_an_unknown_isolation",
+                  _refuses(lambda: verify_export(str(target))) and not execute.called)
+            manifest["package_name"] = spec.package_name
+            manifest["isolation"] = "unrecognized"
+            (target / "MANIFEST.json").write_text(json.dumps(manifest), "utf-8")
+            check("an_unknown_interpreter_isolation_is_refused_before_execution",
+                  _refuses(lambda: verify_export(str(target))) and not execute.called)
+    from dataclasses import replace
+    check("the_export_specification_identity_covers_execution_and_resource_settings",
+          spec.digest != replace(spec, container=replace(spec.container, cpu="2")).digest
+          and spec.digest != replace(spec, container=replace(spec.container, arguments=("different",))).digest
+          and spec.digest != replace(spec, python_requires=">=3.11").digest)
+    with tempfile.TemporaryDirectory() as folder:
+        target = Path(folder) / "export"
+        record = export_solution(spec, str(target))
+        policy = ExportVerificationPolicy(True, record.manifest_digest)
+        outside = Path(folder) / "outside.py"
+        outside.write_text("raise RuntimeError('must not execute')\n", "utf-8")
+        package_init = target / "src/fixture_solution/__init__.py"
+        package_init.unlink()
+        package_init.symlink_to(outside)
+        with patch("loop_engine.code_nodes.solution_export._run_isolated") as execute:
+            check("export_verification_refuses_symbolic_links_before_reading_or_execution",
+                  _refuses(lambda: verify_export(str(target), policy=policy))
+                  and not execute.called)
+            package_init.unlink()
+            package_init.write_text(init.content, "utf-8")
+            (target / "src/undeclared.py").write_text("raise RuntimeError('undeclared')\n", "utf-8")
+            extra = verify_export(str(target), policy=policy)
+            check("undeclared_executable_source_cannot_enter_verification",
+                  not extra.passed and not execute.called
+                  and not next(row for row in extra.checks
+                               if row["check"] == "executable_sources_are_declared")["passed"])
+            check("expected_artifacts_cannot_escape_the_export_directory",
+                  _refuses(lambda: verify_export(str(target), policy=policy,
+                                                  expected_artifacts=("../outside.py",)))
+                  and not execute.called)
+    with tempfile.TemporaryDirectory() as folder:
+        target = Path(folder) / "export"
+        record = export_solution(spec, str(target))
+        outside_tests = Path(folder) / "outside_tests"
+        outside_tests.mkdir()
+        (outside_tests / "test_outside.py").write_text("raise RuntimeError('outside')\n", "utf-8")
+        (target / "tests").symlink_to(outside_tests, target_is_directory=True)
+        with patch("loop_engine.code_nodes.solution_export._run_isolated") as execute:
+            check("unlisted_test_directory_symlinks_cannot_enter_unittest_discovery",
+                  _refuses(lambda: verify_export(str(target), policy=ExportVerificationPolicy(
+                      True, record.manifest_digest))) and not execute.called)
+    with tempfile.TemporaryDirectory() as folder:
+        target = Path(folder) / "export"
+        record = export_solution(spec, str(target))
+        manifest_path = target / "MANIFEST.json"
+        manifest = json.loads(manifest_path.read_text("utf-8"))
+        manifest["summary"] = "changed manifest"
+        manifest_path.write_text(json.dumps(manifest), "utf-8")
+        from .solution_export import _digest
+        actual = _digest({key: value for key, value in manifest.items() if key != "manifest_digest"})
+        with patch("loop_engine.code_nodes.solution_export._run_isolated") as execute:
+            changed = verify_export(str(target), policy=ExportVerificationPolicy(True, actual))
+            check("the_manifest_digest_is_verified_before_any_execution",
+                  not changed.passed and not execute.called
+                  and not changed.checks[0]["passed"])
 
     from .text_conformance import ConformancePolicy, ConformanceRule, load_packaged_catalogs, merge_layers
     rules = (ConformanceRule("whitespace", "whitespace_normalize", ("name",)),
@@ -121,10 +225,11 @@ def run_checks() -> dict:
           and conformance.isolation == "stdlib_only" and conformance.console_script == "company-conformance")
     with tempfile.TemporaryDirectory() as folder:
         target = Path(folder) / "conformance"
-        export_solution(conformance, str(target))
+        record = export_solution(conformance, str(target))
         (target / "input.csv").write_text(
             'name\nACME CORPORATION\n"  mcdouglas & sons, inc.  "\nAA CAREERS\nABC Consulting Inc.\n', "utf-8")
         verification = verify_export(str(target), run_arguments=("--input", "input.csv", "--output-dir", "out"),
+                                     policy=ExportVerificationPolicy(True, record.manifest_digest),
                                      expected_artifacts=("out/conformed.csv", "out/corrections.jsonl",
                                                          "out/escalations.jsonl", "out/report.json"))
         conformed = (target / "out/conformed.csv").read_text("utf-8").splitlines() if verification.passed else []

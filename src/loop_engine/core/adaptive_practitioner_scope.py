@@ -83,18 +83,31 @@ def delegated_task_text(spec, *, assignment=None, inputs=()) -> str:
     return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
 
 
-def fork_services(spawning_service, spec):
+def fork_services(spawning_service, spec, *, assignment_id=""):
     """Isolate task, context, workspace, and acceptance; retain shared authority."""
     from .adaptive_practitioner_records import (
         AdaptiveRunServices, StageAssistanceRuntimeBinding)
 
     if spawning_service.request.stage_assistance.mode != SHADOW_MODE:
         raise ValueError("Spawned work in a paired experiment requires exact per-Loop assignments")
+    from .spawned_provisioning import configuration_for, runtime_permissions_for
+    configuration = configuration_for(spawning_service)
+    choice = configuration.assignment_for(assignment_id) if configuration is not None else None
+    allow_writes, allow_commands = runtime_permissions_for(spawning_service.request, choice)
+    read_only = choice is not None and not allow_writes and not allow_commands
+    host = spawning_service.dependencies.host_runtime
+    # A pure directory handshake does not constrain a host effect factory.
+    # Preserve the explicit read-only binding requirement when narrowing work.
+    if read_only and host is not None and any(
+            set(item["effects"]) != {"reads_fs"} for item in host.descriptors()):
+        raise ValueError("read-only assignments require a read-only host binding; narrowing arbitrary host effects is unsupported")
     workspace = spawning_service.workspace_base / "spawned" / str(len(spawning_service.spawned_results) + 1)
     request = replace(
         spawning_service.request, task=delegated_task_text(spec), max_passes=spec.budget_passes,
         source_kind="text", source_refs=(), feedback=(),
         workspace_root=str(workspace), instruction_provenance=None,
+        allow_workspace_writes=allow_writes,
+        allow_sandbox_commands=allow_commands,
         prior_region_evidence={}, stage_assistance=StageAssistanceRuntimeBinding())
     spawned_service = AdaptiveRunServices(
         request, spawning_service.dependencies, spawning_service.run_id, workspace,
@@ -241,22 +254,25 @@ def run_spawned_tasks(state, plan, services, implementations):
             key: value for key, value in specs[index].seed_facts.items()
             if key != ASSIGNMENT_KEY})
         spawned_service = None
+        node_id = assignment.task_id if assignment is not None else f"spawned-{index + 1}"
+        provisioned = None
         try:
-            spawned_service = fork_services(services, spec)
+            spawned_service = fork_services(services, spec, assignment_id=node_id)
             # The node's folder is filled before it starts: its instruction file,
             # its typed assignment, and the record of what it was offered. A
             # blocking guardrail refuses here rather than after work begins.
             from .spawned_provisioning import provision_spawned
             provisioned = provision_spawned(
                 spawned_service,
-                node_id=(assignment.task_id if assignment is not None
-                         else f"spawned-{index + 1}"),
+                node_id=node_id,
                 objective=spec.objective,
                 output_contract_refs=(
                     (assignment.output_contract.bound_contract_ref,)
                     if assignment is not None and assignment.output_contract else ()),
                 dependency_ids=(tuple(assignment.depends_on)
                                 if assignment is not None else ()))
+            owner.ledger.record(loop_id=owner.loop_id, event="custom",
+                custom_kind="spawned_provisioning_decided", provisioning=provisioned)
             if provisioned["provisioned"]:
                 owner.ledger.record(
                     loop_id=owner.loop_id, event="custom",
@@ -290,6 +306,7 @@ def run_spawned_tasks(state, plan, services, implementations):
                 spec, implementations(spawned_service), selected_mode=services.request.mode,
                 prepare=prepare)
             summary = spawned_summary(spawned, spawned_service, spec=spec, calls_before=calls_before)
+            summary["provisioning"] = provisioned
             if frame is not None:
                 summary.update(task_id=assignment.task_id, dependency_plan_digest=plan_digest)
                 try:
@@ -325,11 +342,22 @@ def run_spawned_tasks(state, plan, services, implementations):
                 errors=(() if summary["task_complete"]
                         else ("SPAWNED_TASK_UNVERIFIED",))))
         except (Exception, KeyboardInterrupt) as exc:
+            if provisioned is None:
+                configuration = services.dependencies.harness_provisioning
+                provisioned = getattr(exc, "record", {
+                    "record_type": "spawned_provisioning/v2", "node_id": node_id,
+                    "provisioned": False, "status": "refused", "reason": str(exc),
+                    "configuration_digest": configuration.content_digest if configuration else None,
+                    "files_written": [], "resource_bodies_installed": 0,
+                    "native_loading_observed": False})
+                owner.ledger.record(loop_id=owner.loop_id, event="custom",
+                    custom_kind="spawned_provisioning_decided", provisioning=provisioned)
             services.spawned_results.append({
                 "record_type": "spawned_practitioner_result/v1",
                 "objective": spec.objective, "task_complete": False,
                 "completes_spawning_task": False,
                 "error_type": type(exc).__name__,
+                "provisioning": provisioned,
                 **({"task_id": assignment.task_id, "dependency_plan_digest": plan_digest}
                    if assignment is not None else {}),
                 **({"binding_disposition": exc.disposition.value}

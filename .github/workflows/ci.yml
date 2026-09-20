@@ -212,6 +212,9 @@ jobs:
         run: PYTHONPATH=src:devtools python -m unittest discover -s devtools/embodiment_lab/tests -v
 
       - name: Development command regression checks
+        run: npm ci --prefix tools/architecture_report --ignore-scripts --no-audit --no-fund
+
+      - name: Development command and report regression checks
         run: PYTHONPATH=src:tools python -m unittest discover -s tools -p 'test_*.py'
 
       - name: Self-orientation and hardcoding delta gates

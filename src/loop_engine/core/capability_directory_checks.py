@@ -7,10 +7,130 @@ ceiling; a service-sized model is never loaded inside a tool.
 """
 from __future__ import annotations
 
+from dataclasses import FrozenInstanceError, replace
+
 from .capability_directory import (
     CapabilityDirectory, CapabilityHandshake, CapabilityQuery, Endpoint, HandshakeError,
     default_directory)
 from .model_ontology import ModelProfile
+from .capability_invocation import CapabilityInvocationPolicy
+
+
+def registration_checks() -> list:
+    """Exercise current version negotiation and safe implementation replacement."""
+    tests, calls = [], []
+
+    def check(name, value):
+        tests.append({"test": name, "passed": bool(value)})
+
+    def refuses(action):
+        try:
+            action()
+        except (ValueError, HandshakeError):
+            return True
+        return False
+
+    effects, operations = ["pure"], ["run", "get"]
+    handshake = CapabilityHandshake("replace_fixture", "static_component", "replacement fixture",
+                                    operations, effects=effects)
+    effects.append("writes_fs")
+    operations.append("invoke")
+    check("handshake_copies_caller_owned_sequences", handshake.effects == ("pure",)
+          and handshake.operations == ("run", "get"))
+    check("handshake_refuses_pure_with_effects_and_ambiguous_sequences",
+          refuses(lambda: replace(handshake, effects=("pure", "writes_fs")))
+          and refuses(lambda: replace(handshake, operations="run"))
+          and refuses(lambda: replace(handshake, protocol_version="")))
+    check("all_scalar_handshake_fields_refuse_mutable_or_unbounded_values",
+          all(refuses(lambda key=key: replace(handshake, **{key: []}))
+              for key in ("privacy_class", "functionality", "auth_method", "retention_default",
+                          "idempotency", "secret_ref", "license_terms", "quota_policy"))
+          and refuses(lambda: replace(handshake, timeout_seconds=float("nan")))
+          and refuses(lambda: replace(handshake, max_response_bytes=True)))
+    endpoint = Endpoint("run", lambda **_: calls.append("run") or {"ok": True})
+    try:
+        endpoint.fn = lambda: None
+        immutable = False
+    except FrozenInstanceError:
+        immutable = True
+    check("endpoint_declaration_is_immutable", immutable)
+    directory = CapabilityDirectory()
+    directory.register(handshake, (endpoint, Endpoint("get", lambda: "old")),
+                       default_fallback=(handshake.surface, "get"))
+    current = replace(handshake, operations=("run",))
+    directory.register(current, (endpoint,), replace=True)
+    check("replacement_removes_old_endpoints_and_fallbacks",
+          (handshake.surface, "get") not in directory._ep
+          and handshake.surface not in directory._default_fallback
+          and not directory.call(handshake.surface, "get").ok)
+    check("invalid_replacement_preserves_the_complete_existing_registration",
+          refuses(lambda: directory.register(current, (Endpoint("get", lambda: "bad"),), replace=True))
+          and directory.handshake(handshake.surface) is current
+          and directory.call(handshake.surface, "run").ok)
+    check("duplicate_and_untyped_endpoints_refuse_before_registration",
+          refuses(lambda: directory.register(current, (endpoint, endpoint), replace=True))
+          and refuses(lambda: directory.register(current, (object(),), replace=True)))
+    calls.clear()
+    future = replace(current, protocol_version="2.0.0")
+    directory.register(future, (endpoint,), replace=True)
+    negotiation = directory.negotiate(future.surface, ("run",))
+    check("unknown_protocol_version_refuses_negotiation_and_dispatch",
+          not negotiation["ok"] and not negotiation["version_supported"]
+          and refuses(lambda: directory.call(future.surface, "run")) and not calls)
+    supported = ["2.0.0"]
+    policy = CapabilityInvocationPolicy(supported_protocol_versions=supported)
+    supported.append("unsupported")
+    check("explicit_supported_version_is_required_and_immutable",
+          directory.negotiate(future.surface, ("run",), policy=policy)["ok"]
+          and directory.call(future.surface, "run", policy=policy).ok
+          and policy.supported_protocol_versions == ("2.0.0",))
+    calls.clear()
+    directory.register(current, (endpoint,), replace=True)
+    old_snapshot = directory.snapshot().snapshot_id
+    directory.register(replace(current, effects=("reads_fs",)), (endpoint,), replace=True)
+    check("snapshot_changes_when_contract_changes_without_a_version_change",
+          old_snapshot != directory.snapshot().snapshot_id)
+    cycle = CapabilityDirectory()
+    cycle.register(current, (), default_fallback=(current.surface, "run"))
+    check("a_fallback_cycle_refuses_without_repeated_execution",
+          refuses(lambda: cycle.call(current.surface, "run")))
+    from ..loop.capability_loops import CapabilityLoopError, run_capability_as_loop
+    directory.register(current, (Endpoint("run", lambda **_: (_ for _ in ()).throw(ValueError("fixture"))),),
+                       replace=True, default_fallback=("fallback_fixture", "run"))
+    directory.register(CapabilityHandshake("fallback_fixture", "static_component", "fallback fixture", ("run",)),
+                       (Endpoint("run", lambda **_: calls.append("unexpected fallback")),))
+    result = run_capability_as_loop(directory, current.surface, "run")
+    check("a_governed_attempt_does_not_silently_select_a_fallback", not result["ok"] and not calls)
+    try:
+        run_capability_as_loop(directory, current.surface, "run", invocation_policy=CapabilityInvocationPolicy(True))
+        refused = False
+    except CapabilityLoopError:
+        refused = True
+    check("a_single_attempt_refuses_automatic_fallback_authority", refused and not calls)
+    from ..loop.recursive_loop import LoopLedger
+    from ..loop.capability_loops import run_capability_ref_as_loop
+
+    class ReplacingLedger(LoopLedger):
+        def record(self, **event):
+            if event.get("event") == "spec" and event.get("capability_surface") == current.surface:
+                directory.register(replace(current, effects=("writes_fs",)),
+                                   (Endpoint("run", lambda **_: calls.append("changed implementation")),),
+                                   replace=True)
+            return super().record(**event)
+
+    directory.register(current, (endpoint,), replace=True)
+    selected = directory.search_core("replacement fixture")[0]
+    check("a_selected_reference_remains_pinned_through_dispatch_callbacks",
+          refuses(lambda: run_capability_ref_as_loop(directory, selected, "run", ledger=ReplacingLedger()))
+          and not calls)
+    rejected_callback = False
+    try:
+        default_directory(llm_invoke=lambda **_: calls.append("ungoverned model callback"))
+    except TypeError:
+        rejected_callback = True
+    check("the_pure_directory_constructor_cannot_install_an_unaccounted_model_callback",
+          rejected_callback and not calls)
+    return tests
 
 
 def model_use_checks() -> list:
@@ -173,13 +293,12 @@ def run_checks() -> dict:
           and "resource_search" in r2.note,
           "contract_registry has no search → fell back to resource_search")
 
-    # 7. serve = the two-rail bias: no code node for a need → the LLM pipeline.
-    served = d.serve("summarize")             # nothing supports 'summarize'... but
-    # 'summarize' is not a standard op; discover returns [], so it asks the LLM.
-    check("serve_falls_back_to_the_llm_when_no_code_node_serves",
-          served.used_fallback and served.surface == "llm_pipeline"
-          and served.value.get("asked_model"),
-          "prefer a code node; ask the model (string rail) only when none serves")
+    served = d.serve("summarize")
+    check("an_absent_model_executor_is_unavailable_not_a_canned_success",
+          not served.ok and served.used_fallback and served.surface == "llm_pipeline"
+          and served.value.get("asked_model") is False
+          and served.value.get("error_code") == "model_executor_unavailable",
+          "a declared model path is not an installed model implementation")
 
     # 8. an unknown surface raises (no silent guessing).
     bad = False
@@ -315,6 +434,7 @@ def run_checks() -> dict:
           duplicate_refused)
 
     results.extend(model_use_checks())
+    results.extend(registration_checks())
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "capability_directory_self_test", "tests": results,
             "passed": passed, "total": len(results),

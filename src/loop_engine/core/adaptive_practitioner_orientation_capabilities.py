@@ -11,7 +11,8 @@ import os
 
 from ..loop.encapsulate import as_practitioner_loop
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError, AdaptiveRunServices)
+    AdaptiveRunServices)
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 
 
 def environment_describe_operation(services: AdaptiveRunServices) -> dict:
@@ -264,6 +265,30 @@ def self_test() -> dict:
     services.request.allow_source_materialization_to_model = False
     check("source_profile_and_inspection_are_withheld_without_source_authority",
           not {"core.source.inspect", "core.source.profile"} & advertised())
+    from .capability_directory import default_directory
+    services.dependencies.capability_directory = default_directory()
+    check("registered_code_handle_is_advertised_when_its_directory_is_installed",
+          "core.capability.call" in advertised())
+    services.dependencies.capability_directory = None
+    check("registered_code_handle_is_withheld_without_its_binding",
+          "core.capability.call" not in advertised())
+    services.request.allow_workspace_writes = True
+    services.request.allow_sandbox_commands = True
+    services.request.verifier_path = ""
+    check("every_declared_workspace_capability_is_advertised_under_its_authority",
+          {"core.generated_project", "core.verify.differential", "core.workspace.read"} <= advertised()
+          and "core.verifier.execute" not in advertised())
+    views = AdaptiveRunServices.available_capabilities(services)
+    selected = next(item for item in views if item["capability_ref"] == "core.generated_project")
+    original = selected["purpose"]
+    selected["purpose"] = "changed by a discovery consumer"
+    selected["required_permissions"].clear()
+    selected["purpose_resource"]["render_digest"] = "changed"
+    fresh = next(item for item in AdaptiveRunServices.available_capabilities(services)
+                 if item["capability_ref"] == "core.generated_project")
+    check("discovery_consumers_cannot_mutate_instructions_permissions_or_resource_identity",
+          fresh["purpose"] == original and fresh["required_permissions"]
+          and fresh["purpose_resource"]["render_digest"] != "changed")
     default = load_practitioner_context()
     custom = replace(default, guidance=(replace(default.guidance[0], content="filtermarker unique guidance"),),
                      perspectives=tuple(PractitionerPersona(

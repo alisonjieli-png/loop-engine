@@ -18,13 +18,19 @@ Start here:
   studio          inspect results and playback locally
 
 Other commands:
-  setup, task, models, extensions, settings, plugin, candidates, templates, profiles, export, evaluate, optimize
+  setup, task, models, extensions, settings, plugin, candidates, templates, profiles, export, evaluate, optimize, service, decisions
 
 Run `loop-engine COMMAND --help` for focused help."""
 
 
 COMMAND_HELP = {
     "--help": ROOT_HELP, "-h": ROOT_HELP,
+    "decisions": """usage: loop-engine decisions {inspect|evaluate|serve} --config ABSOLUTE_PATH [--request ABSOLUTE_PATH]
+
+Inspect or use a host-configured typed decision engine. Inspection resolves no key and makes no provider call. Evaluate requires a versioned request file. Serve exposes decision tools over standard input/output for a host-launched harness integration. Configuration contains an exact model, credential reference, explicit call allowance and network/model authority. Credentials never enter tool arguments. Each process owns its allocated session; restarting does not imply a renewed allowance from an outer task.""",
+    "service": """usage: loop-engine service {configure|issue-key|serve} --config ABSOLUTE_PATH [options] | loop-engine service smoke
+
+Run the authenticated intelligence service with durable tenant, access, and usage records. Install loop-engine[serving] for web and Model Context Protocol support. Host configuration names an exact reviewed manifest and explicit write authority. Configure and key issuance are separate from serving; a restart does not restore revoked grants. Key issuance prints a new secret once, so do not record its output. Smoke runs local loopback checks only, not a live provider qualification. No account creation, payment activation, or deployment is implied.""",
     "records": """usage: loop-engine records --policy HOST_POLICY --backend sqlite|package-jsonl --artifact-root PATH [--database PATH | --shard PATH] [--approve-effect-digest DIGEST]
 
 Read one JSON request from stdin: create, get, query, update, or retire. Host configuration fixes storage and scope. Mutations first return an exact effect plan and require matching explicit approval. No raw SQL, direct Markdown edits, or promotion authority.""",
@@ -69,9 +75,9 @@ Create or inspect typed runtime settings.""",
     "plugin": """usage: loop-engine plugin {discover|resolve|inspect} [options]
 
 Inspect or resolve passive plugin bundles through existing admission records.""",
-    "export": """usage: loop-engine export solution SPEC --out DIR | loop-engine export verify DIR [--run-arguments JSON] [--format text|json]
+    "export": """usage: loop-engine export solution SPEC --out DIR | loop-engine export verify DIR [--allow-local-execution --export-manifest-digest DIGEST] [--run-arguments JSON] [--format text|json]
 
-Write a standalone solution package (source, tests, manifest with digests, Dockerfile, Kubernetes Job) from a JSON export specification, or verify an exported package in an isolated interpreter that cannot import loop_engine. The specification kind text_conformance builds a conformance solution from rules, a policy, and catalog files.""",
+Write a standalone solution package (source, tests, manifest with digests, Dockerfile, Kubernetes Job) from a JSON export specification. Verification checks integrity before any code runs. A trusted export additionally needs --allow-local-execution and its exact --export-manifest-digest to run in an isolated interpreter; this is not an operating-system sandbox. The specification kind text_conformance builds a conformance solution from rules, a policy, and catalog files.""",
     "evaluate": """usage: loop-engine evaluate SUITE --solver-spec SPEC [--out PATH] [--format text|json]
 
 Score a solver on a frozen evaluation suite (evaluation_suite/v1 JSON) with registered deterministic graders. The report carries the exact denominator, attempted, passed, failed, errored, per grader and per tag counts, and every failure. Solver kinds: text_conformance (rules, policy, catalog files, column) and recorded (outputs by case identifier). No model is called.""",

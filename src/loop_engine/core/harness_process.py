@@ -151,8 +151,16 @@ class HarnessProcessRequest:
     maximum_request_history_bytes: int = 16 * 1024 * 1024
     context_capacity: int | None = None
     socket_directory: str = ""
+    instruction_material: tuple = field(default=(), repr=False)
 
     def __post_init__(self):
+        from .instance_instructions import InstructionMaterial
+        material = tuple(self.instruction_material)
+        if any(not isinstance(item, InstructionMaterial) for item in material):
+            raise HarnessProcessError("instruction material must contain typed exact files")
+        if len({item.name for item in material}) != len(material):
+            raise HarnessProcessError("instruction file names must be unique")
+        object.__setattr__(self, "instruction_material", material)
         if (not isinstance(self.spec, HarnessProcessSpec) or not isinstance(self.prompt, str)
                 or not self.prompt or not isinstance(self.model, str) or not self.model.strip()):
             raise HarnessProcessError("typed spec, task, and exact model are required")
@@ -174,6 +182,8 @@ class HarnessProcessRequest:
             raise HarnessProcessError("Pi model configuration needs an explicit context capacity")
         if len(self.prompt.encode("utf-8")) > self.maximum_request_bytes:
             raise HarnessProcessError("private task exceeds request byte allowance")
+        if sum(len(item.body.encode("utf-8")) for item in material) > self.maximum_request_bytes:
+            raise HarnessProcessError("instruction material exceeds the declared request allowance")
         work = _absolute(self.work_dir)
         if (len(work.parts) < 4 or not work.is_dir()
                 or any(part.is_symlink() for part in (work, *work.parents))):
@@ -213,6 +223,7 @@ class HarnessProcessResult:
     stdout_truncated: bool = False
     stderr_truncated: bool = False
     exchanges: tuple[HarnessProcessExchange, ...] = field(default=(), repr=False)
+    instruction_manifest: tuple[tuple[str, str], ...] = ()
 
     @property
     def ok(self):
@@ -247,6 +258,8 @@ def _sandbox(request, run, socket_path):
              "--ro-bind", str(run / "config.json"), "/relay/config.json",
              "--ro-bind", str(run / "task.txt"), "/relay/task.txt",
              "--ro-bind", str(socket_path), "/relay/broker.sock"]
+    for item in request.instruction_material:
+        args += ["--ro-bind", str(run / "work" / item.name), "/work/" + item.name]
     additional = Path(__file__).with_name("harness_additional_recipes.py")
     args += ["--ro-bind", str(additional), "/relay/harness_additional_recipes.py"]
     goose = Path(__file__).with_name("harness_goose_recipe.py")
@@ -348,6 +361,9 @@ def run_harness_process(request: HarnessProcessRequest,
     started = time.monotonic()
     run = Path(tempfile.mkdtemp(prefix="harness-", dir=request.work_dir))
     (run / "work" / "home").mkdir(parents=True)
+    for item in request.instruction_material:
+        _write_private(run / "work" / item.name, item.body.encode("utf-8"))
+    instruction_manifest = tuple((item.name, item.digest) for item in request.instruction_material)
     config = {name: getattr(request, name) for name in (
         "model", "output_capacity", "output_allowance", "timeout_seconds", "maximum_request_bytes",
         "maximum_response_bytes", "context_capacity")}
@@ -359,6 +375,7 @@ def run_harness_process(request: HarnessProcessRequest,
         "output_capacity": request.output_capacity, "output_allowance": request.output_allowance,
         "prompt_digest": _sha(request.prompt.encode()), "context_capacity": request.context_capacity,
         "timeout_seconds": request.timeout_seconds, "run": str(run),
+        "instruction_manifest": instruction_manifest,
         "relay_digest": _path_digest(Path(__file__).with_name("harness_process_relay.py")),
         "codec_digest": _path_digest(Path(__file__).with_name("harness_additional_recipes.py")),
         "goose_recipe_digest": _path_digest(Path(__file__).with_name("harness_goose_recipe.py")),
@@ -494,4 +511,4 @@ def run_harness_process(request: HarnessProcessRequest,
         errors.append("empty_harness_output" if proc.returncode == 0 else "process_failed")
     return HarnessProcessResult(proc.returncode, expired.is_set(), output, stdout, stderr,
         tuple(dict.fromkeys(errors)), identity, round(time.monotonic() - started, 6),
-        *truncated, tuple(exchanges))
+        *truncated, tuple(exchanges), instruction_manifest)

@@ -22,7 +22,8 @@ from .model_response_admission import ModelResponseRepairStalled
 from ..loop.kernel import ExecutionPlan, PractitionerState, ResultPacket
 from ..loop.encapsulate import as_practitioner_loop
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError, AdaptiveRunServices, NextActionDecision)
+    AdaptiveRunServices, NextActionDecision)
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .generated_project import (
     sandbox_image,
     GeneratedProjectAuthority, GeneratedProjectError, GeneratedProjectExecutionContext, GeneratedProjectExecutionRequest,
@@ -132,8 +133,7 @@ def _search_operation(arguments, services, owner):
         WebSearchRequest(
             str(arguments.get("query") or ""),
             str(arguments.get("purpose") or ""),
-            maximum_results=(None if maximum_results is None
-                             else int(maximum_results))),
+            maximum_results=maximum_results),
         WebSearchAuthority(
             services.run_id, services.request.allow_network_reads),
         WebSearchContext(owner))

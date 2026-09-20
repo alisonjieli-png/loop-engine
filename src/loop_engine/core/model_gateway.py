@@ -78,8 +78,10 @@ class ProviderSpec:
             raise ValueError("ProviderSpec needs provider_id")
         if self.locality not in LOCALITIES:
             raise ValueError(f"provider locality must be one of {LOCALITIES}")
-        required = ("chat_maxout", "verify", "live_models",
-                    "output_capability_for", "DEFAULT_MODEL")
+        from .decisions.contracts import PROVIDER_CAPABILITY
+        required = (("decide_questions", "prepare_decisions", "decision_capabilities", "DEFAULT_MODEL")
+                    if PROVIDER_CAPABILITY in self.capabilities else
+                    ("chat_maxout", "verify", "live_models", "output_capability_for", "DEFAULT_MODEL"))
         missing = [name for name in required if not hasattr(self.adapter, name)]
         if missing:
             raise ValueError(
@@ -94,6 +96,8 @@ class ProviderSpec:
         if (self.model_output_capability is not None
                 and model == self.model_output_capability_model):
             return self.model_output_capability
+        if not callable(getattr(self.adapter, "output_capability_for", None)):
+            raise UnknownModelOutputLimit("typed decision provider has no text output capacity")
         return self.adapter.output_capability_for(model)
 
     def describe(self) -> dict:
@@ -219,7 +223,7 @@ class ModelGatewayConfig:
     thinking_power: str = "medium"
     allowed_models: tuple[str, ...] = ()
     allowed_localities: tuple[str, ...] = LOCALITIES
-    allow_failover: bool = True
+    allow_failover: bool = False
     max_route_attempts: "int | None" = None
     timeout_seconds: float = 900.0
     max_output_tokens: "int | None" = None
@@ -815,7 +819,7 @@ class ModelGateway:
                  routes: "Sequence[ModelRoute] | None" = None,
                  policy: "RoutePolicy | None" = None, token_bound_resolver=None,
                  cost_ledger=None, run_id: str = ""):
-        specs = tuple(providers or builtin_provider_specs())
+        specs = tuple(builtin_provider_specs() if providers is None else providers)
         self.providers = {spec.provider_id: spec for spec in specs}
         self.registry = RouteRegistry(routes)
         self.policy = policy or RoutePolicy()
@@ -823,6 +827,11 @@ class ModelGateway:
         #: When present, every invocation writes one operation cost record.
         self.cost_ledger = cost_ledger
         self.run_id = run_id
+
+    def invoke_decisions(self, request, *, config, parent=None, ledger=None):
+        """Typed decisions share provider registration, route policy and history."""
+        from .decisions.gateway import invoke_decisions
+        return invoke_decisions(self, request, config=config, parent=parent, ledger=ledger)
 
     def _routes(self, config: ModelGatewayConfig
                 ) -> list[tuple[ModelRoute, ModelRouteAttemptSpec]]:
@@ -1736,11 +1745,27 @@ def self_test() -> dict:
     auth_result = auth_gateway.invoke(ModelGatewayRequest(
         "authentication failure must stop",
         ModelGatewayConfig(route_names=("first.route", "second.route"),
-                           max_route_attempts=2)))
+                           allow_failover=True, max_route_attempts=2)))
     check("authentication_failure_does_not_silently_fail_over",
           not auth_result.ok
           and auth_result.error_code == "authentication_failed"
           and auth.calls == 1 and auth_fallback.calls == 0)
+
+    default_first, default_second = ErrorAdapter("HTTP 402 insufficient credits"), SuccessAdapter()
+    default_gateway = ModelGateway(
+        providers=(ProviderSpec("first", default_first, "fixture", "env:FIRST"),
+                   ProviderSpec("second", default_second, "fixture", "env:SECOND")),
+        routes=(ModelRoute("first.route", "first", "first-model"),
+                ModelRoute("second.route", "second", "second-model")))
+    default_result = default_gateway.invoke(ModelGatewayRequest(
+        "a route list is not permission to fail over",
+        ModelGatewayConfig(route_names=("first.route", "second.route"), max_route_attempts=2)))
+    check("default_gateway_does_not_enable_cross_provider_failover",
+          not default_result.ok and default_first.calls == 1 and default_second.calls == 0
+          and default_result.physical_model_calls == 1)
+    check("default_route_discovery_selects_only_one_provider",
+          len(default_gateway._routes(ModelGatewayConfig())) == 1
+          and not ModelGatewayConfig().allow_failover)
 
     from ..loop.recursive_loop import LoopLedger
     from .run_history import RunHistory
@@ -1758,7 +1783,7 @@ def self_test() -> dict:
         ModelGatewayRequest(
             "payment failure may use another authorized provider",
             ModelGatewayConfig(route_names=("first.route", "second.route"),
-                               max_route_attempts=2),
+                               allow_failover=True, max_route_attempts=2),
             semantic_call_id="semantic-call:payment-failover"),
         ledger=payment_ledger)
     check("payment_failure_can_fail_over_to_another_authorized_provider",
@@ -1770,7 +1795,7 @@ def self_test() -> dict:
         ModelGatewayRequest(
             "a separate logical call receives a separate identity",
             ModelGatewayConfig(route_names=("first.route", "second.route"),
-                               max_route_attempts=2)),
+                               allow_failover=True, max_route_attempts=2)),
         ledger=payment_ledger)
     payment_history = RunHistory.from_ledger(
         payment_ledger.events, run_id="model-gateway-correlation")
@@ -1818,7 +1843,7 @@ def self_test() -> dict:
     limit_result = limit_gateway.invoke(ModelGatewayRequest(
         "a truncated response may use another authorized route",
         ModelGatewayConfig(route_names=("first.route", "second.route"),
-                           max_route_attempts=2)))
+                           allow_failover=True, max_route_attempts=2)))
     first_limit = limit_result.attempts[0]
     check("output_limit_is_typed_and_can_fail_over",
           limit_result.ok and limit_result.provider == "second"

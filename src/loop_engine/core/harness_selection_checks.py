@@ -171,6 +171,7 @@ def _two_route_authority(*,evaluators=(),harness=None,allow_evaluator_route_fail
                 ModelRoute('fx.beta','beta','beta-model','local',purposes=('counted_generation',))),
         policy=RoutePolicy(allow_local_counted_generation=True))
     config=ModelGatewayConfig(route_names=('fx.alpha','fx.beta'),allowed_localities=('local',),
+                              allow_failover=True,
                               allow_evaluator_route_failover=allow_evaluator_route_failover)
     return ModelExecution(gateway,config,max_model_calls=4,response_evaluators=tuple(evaluators),harness=harness)
 

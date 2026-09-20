@@ -15,7 +15,8 @@ import re
 from copy import deepcopy
 from dataclasses import dataclass
 
-from ..catalog.protocol import CatalogStore, StoreError, require_operation
+from ..catalog.handshake import negotiate
+from ..catalog.protocol import CatalogStore, PreconditionFailed, StoreError
 from ..catalog.query import IntelligenceQuery
 
 VISIBILITIES = ("members_only", "organization", "public")
@@ -94,7 +95,11 @@ class SharedMemory:
     def write(self, scope: SharedMemoryScope, writer_id: str, record: dict, *,
               written_at: str, expected_version: str | None = None) -> SharedWrite:
         """Store a record inside the scope with the writer's identity on it."""
-        require_operation(self.store, "write")
+        capabilities = self.store.capabilities()
+        handshake = negotiate(capabilities, required_operations=("get", "write"), write_requested=True)
+        if (not handshake.permits("write") or capabilities.authority != "authoritative"
+                or capabilities.transactions.get("atomic_preconditions") is not True):
+            raise SharedMemoryError("shared writes require atomic authoritative preconditions")
         if not scope.can_write(writer_id):
             raise SharedMemoryError(f"{writer_id!r} is not a member of scope {scope.scope_id!r}")
         record_id = record.get("record_id")
@@ -118,17 +123,41 @@ class SharedMemory:
         if expected_version is None and current is not None:
             raise SharedMemoryError(f"{record_id!r} exists; pass the version you last read")
         if expected_version is not None:
+            if not isinstance(expected_version, str) or not expected_version:
+                raise SharedMemoryError("expected_version must be a nonempty version")
             if current is None:
                 raise SharedMemoryError(f"{record_id!r} does not exist; nothing to guard against")
-            if (current.get("attributes") or {}).get("scope_id") != scope.scope_id:
+            if ((current.get("attributes") or {}).get("scope_id") != scope.scope_id
+                    or current.get("namespace") != scope.namespace):
                 raise SharedMemoryError(f"{record_id!r} belongs to another scope")
-            try:
-                self.store.put(stamped, precondition={"record_version": expected_version})
-            except StoreError as exc:
-                raise SharedMemoryError(
-                    f"{record_id!r} changed since version {expected_version!r} was read") from exc
-        else:
-            self.store.put(stamped)
+            if version == expected_version:
+                raise SharedMemoryError("a shared update must use a new record_version")
+            if (re.fullmatch(r"\d+(?:\.\d+)*", version)
+                    and re.fullmatch(r"\d+(?:\.\d+)*", expected_version)
+                    and tuple(map(int, version.split("."))) <= tuple(map(int, expected_version.split(".")))):
+                raise SharedMemoryError("a numeric shared record_version must advance")
+        precondition = ({"exists": False} if expected_version is None
+                        else {"record_version": expected_version})
+        try:
+            confirmation = self.store.put(stamped, precondition=precondition)
+        except PreconditionFailed as exc:
+            raise SharedMemoryError(f"{record_id!r} changed before the guarded write") from exc
+        except StoreError as exc:
+            raise SharedMemoryError(f"{record_id!r} write outcome is unknown") from exc
+        if (not isinstance(confirmation, dict) or confirmation.get("stored") is not True
+                or confirmation.get("record_id") != record_id):
+            raise SharedMemoryError(f"{record_id!r} write outcome is unknown: invalid acknowledgment")
+        try:
+            actual = self.store.get(record_id)
+        except StoreError as exc:
+            raise SharedMemoryError(f"{record_id!r} write outcome is unknown: readback failed") from exc
+        # Compare stored forms: a durable store returns a list where the
+        # caller supplied a tuple, and that is not a changed record.
+        def stored_form(value):
+            return json.loads(json.dumps(value, sort_keys=True))
+        if not isinstance(actual, dict) or any(stored_form(actual.get(key)) != stored_form(value)
+                                                for key, value in stamped.items()):
+            raise SharedMemoryError(f"{record_id!r} write outcome is unknown: readback changed")
         return SharedWrite(scope.scope_id, writer_id, record_id, version, written_at)
 
     def read(self, scope: SharedMemoryScope, reader_id: str, *, reader_organization: str = "",
@@ -228,6 +257,80 @@ def self_test() -> dict:
           and refuses(lambda: SharedMemoryScope("x", "ns", ("a", "a")))
           and refuses(lambda: SharedMemoryScope("x", "ns", ()))
           and refuses(lambda: SharedMemoryScope("x", "ns", ("a",), visibility="secret")))
+    check("shared_updates_refuse_reused_and_lower_numeric_versions",
+          refuses(lambda: memory.write(scope, "loop.builder", {**note, "record_version": "1.1.0"},
+                                       written_at="now", expected_version="1.1.0"))
+          and refuses(lambda: memory.write(scope, "loop.builder", note,
+                                           written_at="now", expected_version="1.1.0"))
+          and memory.store.get(note["record_id"])["record_version"] == "1.1.0")
+
+    class LostAcknowledgment(EphemeralRecordStore):
+        def put(self, record, *, precondition=None):
+            super().put(record, precondition=precondition)
+            return None
+
+    uncertain = LostAcknowledgment()
+    check("unacknowledged_shared_write_is_not_reported_successful",
+          refuses(lambda: SharedMemory(uncertain).write(scope, "loop.builder", note, written_at="now"))
+          and uncertain.get(note["record_id"]) is not None)
+
+    class IgnoredWrite(EphemeralRecordStore):
+        def put(self, record, *, precondition=None):
+            return {"record_id": record["record_id"], "stored": True}
+
+    check("shared_write_requires_matching_readback",
+          refuses(lambda: SharedMemory(IgnoredWrite()).write(scope, "loop.builder", note, written_at="now")))
+
+    class GuardRecorder(EphemeralRecordStore):
+        def put(self, record, *, precondition=None):
+            self.last_precondition = precondition
+            return super().put(record, precondition=precondition)
+
+    guarded = GuardRecorder()
+    SharedMemory(guarded).write(scope, "loop.builder", note, written_at="now")
+    check("shared_creation_uses_an_atomic_absence_guard", guarded.last_precondition == {"exists": False})
+
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    class ConcurrentCreationStore(EphemeralRecordStore):
+        def __init__(self):
+            super().__init__()
+            self.barrier = Barrier(2)
+
+        def get(self, record_id, version=None):
+            observed = super().get(record_id, version)
+            if observed is None:
+                self.barrier.wait(timeout=5)
+            return observed
+
+    concurrent = SharedMemory(ConcurrentCreationStore())
+
+    def create(writer):
+        try:
+            concurrent.write(scope, writer, note, written_at="now")
+            return True
+        except SharedMemoryError:
+            return False
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        wins = list(pool.map(create, scope.members))
+    check("concurrent_shared_creation_has_one_winner", sum(wins) == 1)
+    # A durable store returns a list where the writer supplied a tuple. That
+    # is the same record, so the write must be confirmed, not reported unknown.
+    import tempfile
+    from pathlib import Path
+    from ..catalog.stores.sqlite_store import SQLiteRecordStore
+    with tempfile.TemporaryDirectory() as folder:
+        durable = SharedMemory(SQLiteRecordStore(str(Path(folder) / "shared.sqlite")))
+        try:
+            written = durable.write(scope, "loop.planner", {**note, "record_id": "alpha.note.pairs",
+                "payload": {"pairs": (("a", 1), ("b", 2))}}, written_at="2026-09-18T10:00:00Z")
+        except SharedMemoryError:
+            written = None
+        check("durable_shared_write_with_a_tuple_is_confirmed",
+              written is not None and durable.store.get("alpha.note.pairs")["payload"] == {"pairs": [["a", 1], ["b", 2]]})
+        durable.store.close()
     passed = sum(item["passed"] for item in results)
     return {"record_type": "shared_memory_scopes_test/v1", "tests": results, "passed": passed,
             "total": len(results), "all_passed": passed == len(results)}

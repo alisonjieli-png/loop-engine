@@ -22,7 +22,7 @@ def spawn_practitioner_loop(
         executor: "SpawnedExecutor | None" = None,
         limits: "SpawnedTaskManagerLimits | None" = None,
         services=None, runtime_memory=None,
-        context_artifacts=None) -> "SpawnedTaskSnapshot":
+        context_artifacts=None, require_preemptive_deadline: bool = False) -> "SpawnedTaskSnapshot":
     """Run one registered Practitioner profile as a Spawned Loop."""
     from .delegation_runtime import (
         DelegationError,
@@ -39,7 +39,8 @@ def spawn_practitioner_loop(
         runtime_memory=runtime_memory,
         context_artifacts=context_artifacts,
     )
-    return manager.status(manager.start(spec))
+    return manager.status(manager.start(spec,
+        require_preemptive_deadline=require_preemptive_deadline))
 
 
 def self_test() -> dict:

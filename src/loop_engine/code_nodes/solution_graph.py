@@ -19,7 +19,7 @@ from ..loop.loop_profile_catalog import LoopProfileRef
 from ..loop.loop_profile_ontology import resolve_profile
 
 
-GRAPH_RECORD_TYPE = "loop_graph_definition/v1"
+GRAPH_RECORD_TYPE = "loop_graph_definition/v2"
 GRAPH_EDGE_RELATIONSHIPS = ("connected_from", "spawned_by")
 GRAPH_COMBINATIONS = (
     "single", "average", "vote", "weighted_average", "ordered_fallback",
@@ -45,6 +45,8 @@ _HIDDEN_WORK_KEYS = frozenset({
 
 class LoopGraphError(ValueError):
     """A Loop graph is malformed, unresolved, changed, or not executable."""
+
+
 
 
 def _identifier(label: str, value: str) -> str:

@@ -14,7 +14,8 @@ import json
 import mimetypes
 
 from .adaptive_practitioner_records import (
-    AdaptivePractitionerError, AdaptiveRunServices)
+    AdaptiveRunServices)
+from .adaptive_practitioner_validation import AdaptivePractitionerError
 from .capability_rejection import (CapabilityRejected, CapabilityRejection,
                                    bounded_admitted_values)
 from .runtime_capacity import converged, model_evidence_bytes

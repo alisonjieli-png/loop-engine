@@ -450,6 +450,8 @@ class IntelligenceSearchRequest:
     def __post_init__(self):
         if type(self.include_candidates) is not bool:
             raise TypeError('candidate review selection must be an explicit Boolean')
+        if self.top_n is not None and (type(self.top_n) is not int or self.top_n < 1):
+            raise ValueError('top_n must be a positive integer when provided')
         if not isinstance(self.reuse_evidence, dict):
             raise TypeError('reuse evidence must be a mapping from record identity to evidence')
 
@@ -471,7 +473,7 @@ def query_intelligence(
     Returns {"need", "hits": [... each with "layer" ...], "unqueried"}."""
     if not isinstance(request, IntelligenceSearchRequest):
         raise TypeError("query_intelligence needs IntelligenceSearchRequest")
-    from .retrieval import Retriever
+    from .retrieval import Retriever, RetrievalUnavailableError
     from .store_serve import CORE_TIER, GATED_TIER
     selected_context = context or IntelligenceSearchContext()
     need = request.need
@@ -512,9 +514,7 @@ def query_intelligence(
             identities[wrapped_id] = (record, wrapped.body["classification"])
             if record.record_id in request.reuse_evidence:
                 evidence[wrapped_id] = request.reuse_evidence[record.record_id]
-    requested = (max(1, len(combined)) if request.top_n is None else
-                 max(request.top_n, request.top_n * max(
-                     1, len(LAYERS) - len(unqueried))))
+    requested = max(1, len(combined)) if request.top_n is None else request.top_n
     from ..loop.encapsulate import as_loop
     search_run = as_loop(
         f"search four intelligence layers for {need[:80]}",
@@ -524,6 +524,8 @@ def query_intelligence(
         kind="callable", ledger=selected_context.ledger,
         parent=selected_context.parent)
     res = search_run["value"]
+    if search_run.get("error") is not None:
+        raise RetrievalUnavailableError("intelligence_search_unavailable") from search_run["error"]
     hits, refs = [], []
     from ..loop.loop_capsule import intelligence_package_from_record
     for hit in res["hits"]:
@@ -584,7 +586,7 @@ def load_intelligence_item(
     """Load one selected intelligence item through its access Loop."""
     from ..loop.loop_capsule import (
         IntelligenceLoadContext, IntelligenceLoadRequest,
-        load_intelligence_ref)
+        inline_intelligence_value, load_intelligence_ref)
     selected_context = context or IntelligenceCatalogLoadContext()
     ref = request.ref
     normalized = normalize_layer_records(request.layer_records)
@@ -602,19 +604,7 @@ def load_intelligence_item(
                     f"external payload {payload_ref!r} needs a resolver")
             return request.external_resolver(payload_ref)
         body = dict(record.body or {})
-        if "text" in body:
-            return body["text"]
-        if ref.handshake.layer == "runtime_history_solution_intelligence":
-            return body
-        if ref.handshake.layer == "code_intelligence":
-            return body.get("handle") or body
-        for key in ("value", "template", "instruction", "format_example"):
-            if body.get(key) not in (None, ""):
-                return body[key]
-        if body.get("focus") or body.get("default_questions"):
-            return {key: body[key] for key in ("focus", "default_questions")
-                    if body.get(key)}
-        return record.title
+        return inline_intelligence_value(record.title, body, ref.handshake.layer)
 
     return load_intelligence_ref(
         IntelligenceLoadRequest(ref, resolve),
@@ -680,6 +670,30 @@ def self_test() -> dict:
           and materialized["value"] == "adopt a statistician persona for review"
           and materialized["model_calls"] == 0
           and len(ref_ledger.loops()) == 1)
+    source = StoreRecord("ctx.pinned", "context", "unique selection",
+                         body={"text": "original material", "version": "2.1.3"})
+    source_catalog = {"context_intelligence": [source]}
+    selected = query_intelligence_refs(IntelligenceSearchRequest(
+        "unique selection", source_catalog, top_n=1))[0]
+    admitted_value = load_intelligence_item(IntelligenceCatalogLoadRequest(selected, source_catalog))
+    source.body["text"] = "different material"
+    try:
+        load_intelligence_item(IntelligenceCatalogLoadRequest(selected, source_catalog))
+        changed_refused = False
+    except ValueError:
+        changed_refused = True
+    check("public_query_and_load_refuse_a_changed_inline_body",
+          admitted_value["value"] == "original material"
+          and selected.handshake.version == "2.1.3" and changed_refused)
+    from unittest.mock import patch
+    from .retrieval import Retriever, RetrievalUnavailableError
+    with patch.object(Retriever, "search", side_effect=RuntimeError("injected retrieval failure")):
+        try:
+            query_intelligence(IntelligenceSearchRequest("unique selection", source_catalog))
+            unavailable = False
+        except RetrievalUnavailableError:
+            unavailable = True
+    check("public_search_preserves_backend_unavailability", unavailable)
 
     # 2. a Context need routes to the stable internal string layer; a prior-solution
     # need routes to past runs — three DISTINCT buckets, not one soup.
@@ -773,8 +787,11 @@ def self_test() -> dict:
                         "duplicate rows here are legitimate repeat orders — "
                         "do not drop them", body={}, tags=("user_advice",))]}
     fed = query_intelligence(IntelligenceSearchRequest(
-        need, corpus, top_n=3))
+        need, corpus, top_n=4))
     layers_hit = {h["layer"] for h in fed["hits"]}
+    bounded = query_intelligence(IntelligenceSearchRequest(need, corpus, top_n=1))
+    check("top_n_bounds_the_combined_hits_and_references",
+          len(bounded["hits"]) == len(bounded["intelligence_item_refs"]) == 1)
 
     lg5 = LoopLedger()
     consumed: dict = {}

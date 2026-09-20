@@ -5,7 +5,7 @@ execution authority come from its exact ``LoopGraphDefinition``.
 """
 from __future__ import annotations
 
-from dataclasses import InitVar, dataclass, field
+from dataclasses import dataclass, field
 
 from ..loop.loop_definition import (LoopDefinition, LoopStartRequest)
 from ..loop.loop_role import (LoopRelationship, LoopRelationshipKind,
@@ -16,6 +16,9 @@ from ..loop.recursive_loop import (MODES, Loop, LoopError, LoopLedger,
 from .solution_graph import (GRAPH_COMBINATIONS, LoopGraphDefinition,
                              LoopGraphError)
 from .solution_graph_builder import build_solution_graph
+from .solution_graph_execution import (
+    SolutionError, _SolutionGraphValues, _model_execution_preflight,
+    _run_pipeline, _runtime_depth, _runtime_identity, _spec_roles)
 from .solution_model_port import (MODEL_LEAF_MODES, ModelExecution,
                                   ModelExecutionSession, ModelInvocationPort,
                                   preflight_model_execution)
@@ -28,13 +31,13 @@ ENSEMBLE_METHODS = GRAPH_COMBINATIONS
 _EXTENDED = ("select_best", "gating_router")
 
 
-class SolutionError(ValueError):
-    """A solution spec that cannot be honestly executed as declared."""
+
+
 
 
 @dataclass
 class SolutionLoopSpec:
-    """Compatibility builder for one graph stage of Solution Loop vertices."""
+    """Typed builder for one graph stage of Solution Loop vertices."""
     loop_id: str
     operation: str
     mode: str = "deterministic"
@@ -85,18 +88,7 @@ class SolutionSpec:
     max_members: "int | None" = None
     graph: LoopGraphDefinition | None = field(default=None, repr=False)
     group_id: str = field(default="", repr=False)
-    allowed_modes: InitVar["tuple | None"] = None
-
-    def __post_init__(self, allowed_modes) -> None:
-        """Accept the old constructor keyword without emitting the old field."""
-        if allowed_modes is not None:
-            legacy = tuple(allowed_modes)
-            if (tuple(self.permitted_loop_modes) != MODES
-                    and tuple(self.permitted_loop_modes) != legacy):
-                raise SolutionError(
-                    "cannot mix permitted_loop_modes with a different legacy "
-                    "allowed_modes value")
-            self.permitted_loop_modes = legacy
+    def __post_init__(self) -> None:
         self.permitted_loop_modes = tuple(self.permitted_loop_modes)
         self.loops = tuple(self.loops)
         self.members = tuple(self.members)
@@ -205,46 +197,12 @@ def _apply_graph_projection(spec: SolutionSpec) -> None:
     spec.max_members = projected["max_members"]
 
 
-def _spec_roles(spec: SolutionSpec) -> tuple[str, str]:
-    group = spec.graph.group(spec.group_id) if spec.graph else None
-    if group is None:
-        return "solution.value/v1", "solution.value/v1"
-    definition = spec.graph.resolved_definition(group.controller_vertex_id)
-    return (definition.contract.input_roles[0],
-            definition.contract.output_roles[-1])
 
 
-def _runtime_depth(spec: SolutionSpec) -> int:
-    """Maximum descendant depth below this spec's own Solution envelope."""
-    if spec.loops:
-        return max((2 if loop.fallback_operations else 1
-                    for loop in spec.loops), default=0)
-    return 1 + max((_runtime_depth(member) for member in spec.members),
-                   default=0)
 
 
-def _model_execution_preflight(spec, model_execution) -> list[str]:
-    """Fail-closed preflight for model-mode leaves, before any callable.
-
-    A Solution leaf declares deterministic, hybrid, or non_deterministic like
-    every Loop. Model modes are legitimate declarations: they execute only
-    under the run's explicit, budgeted ``ModelExecution`` authority. A run
-    that declares model-mode leaves without that authority refuses here,
-    before any operation callable.
-    """
-    return preflight_model_execution(spec, model_execution)
 
 
-def _runtime_identity(loop: Loop) -> dict:
-    identity = loop.identity
-    relationship = loop.relationship
-    if identity is None or identity.role != LoopRole.SOLUTION:
-        raise SolutionError(
-            f"runtime loop {loop.loop_id} is not bound to the Solution role")
-    return {
-        "runtime_loop_id": loop.loop_id,
-        **identity.to_dict(), **relationship.to_dict(),
-    }
 
 
 def _new_solution_loop(*, definition: LoopDefinition, goal: str,
@@ -383,8 +341,14 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
                           registry: dict, trace: list, max_depth: int,
                           model_session: "ModelExecutionSession | None" = None,
                           pass_params: bool = True,
-                          relationship: "LoopRelationship | None" = None
+                          relationship: "LoopRelationship | None" = None,
+                          graph_values: "_SolutionGraphValues | None" = None,
+                          vertex_id: str = ""
                           ) -> dict:
+    if graph_values is not None:
+        value = graph_values.input_for(vertex_id)
+        if relationship is None or relationship.kind is LoopRelationshipKind.CONNECTED_FROM:
+            relationship = graph_values.connected_relationship(vertex_id)
     relationship = relationship or LoopRelationship.connected_from(
         (owner.loop_id,))
     loop = _new_solution_loop(
@@ -393,6 +357,10 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
         ledger=owner.ledger, parent=owner, max_depth=max_depth,
         solution_id=solution_id, logical_loop_id=logical_loop_id,
         relationship=relationship, trace=trace)
+    if graph_values is not None:
+        loop.ledger.record(loop_id=loop.loop_id, event="custom",
+            action="solution_graph_inputs_bound", graph_digest=graph_values.graph.content_digest,
+            vertex_id=vertex_id, bindings=graph_values.input_bindings(vertex_id))
 
     def invoke(active: Loop):
         from ..loop.delegation_runtime import LoopPortValue
@@ -404,6 +372,8 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
             raise SolutionError(
                 f"solution loop {logical_loop_id}: operation {operation!r} "
                 "does not resolve to a callable")
+        from .solution_compiler import validate_operation_binding
+        validate_operation_binding(definition, operation, callable_)
         identity = _runtime_identity(active)
         actual_input = value
         if isinstance(value, LoopPortValue):
@@ -462,6 +432,8 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
                      else "act"),
         body=invoke, trace=trace,
         act_mode=definition.contract.runtime_mode)
+    if graph_values is not None:
+        graph_values.publish(vertex_id, output, loop.loop_id)
     return {"value": output, "loop_id": loop.loop_id,
             "identity": _runtime_identity(loop)}
 
@@ -469,7 +441,8 @@ def _run_atomic_operation(*, owner: Loop, solution_id: str,
 def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
                        solution_id: str, registry: dict, trace: list,
                        max_depth: int, connected_from_loop_ids: tuple[str, ...],
-                       model_execution: "ModelExecutionSession | None" = None
+                       model_execution: "ModelExecutionSession | None" = None,
+                       graph_values: "_SolutionGraphValues | None" = None
                        ) -> dict:
     operations = (node.operation,) + tuple(node.fallback_operations)
     definitions = (node.definition,) + tuple(node.fallback_definitions)
@@ -485,6 +458,7 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
             output_role=node.output_role, definition=node.definition,
             registry=registry, trace=trace,
             max_depth=max_depth, model_session=model_execution,
+            graph_values=graph_values, vertex_id=node.vertex_id,
             relationship=LoopRelationship.connected_from(
                 connected_from_loop_ids))
 
@@ -497,6 +471,9 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
         ledger=owner.ledger, parent=owner, max_depth=max_depth,
         solution_id=solution_id, logical_loop_id=f"{node.loop_id}:fallback",
         relationship=LoopRelationship.spawned_by(owner.loop_id), trace=trace)
+    if graph_values is not None:
+        value = graph_values.input_for(node.router_vertex_id)
+        graph_values.begin_controller(node.router_vertex_id, value, router.loop_id)
 
     def route(active: Loop):
         errors = []
@@ -514,6 +491,8 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
                     registry=registry,
                     trace=trace, max_depth=max_depth,
                     model_session=model_execution,
+                    graph_values=graph_values,
+                    vertex_id=(node.vertex_id, *node.fallback_vertex_ids)[index],
                     relationship=LoopRelationship.spawned_by(active.loop_id))
             except SolutionError as exc:
                 errors.append(f"{operation}: {exc}")
@@ -540,13 +519,16 @@ def _run_solution_node(node: SolutionLoopSpec, value, *, owner: Loop,
         router, solution_id=solution_id,
         logical_loop_id=f"{node.loop_id}:fallback", action_step="act",
         body=route, trace=trace)
+    if graph_values is not None:
+        graph_values.publish(node.router_vertex_id, output, router.loop_id, controller=True)
     return {"value": output, "loop_id": router.loop_id,
             "identity": _runtime_identity(router)}
 
 
 def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
                  trace: list, max_depth: int, allow_extended: bool,
-                 model_execution: "ModelExecutionSession | None" = None):
+                 model_execution: "ModelExecutionSession | None" = None,
+                 graph_values: "_SolutionGraphValues | None" = None):
     assert spec.graph is not None
     group = spec.graph.group(spec.group_id)
     if spec.ensemble in _EXTENDED and not allow_extended:
@@ -564,6 +546,7 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
             input_role=_spec_roles(spec)[0],
             output_role="solution.member_id/v1",
             definition=route_definition, registry=registry,
+            graph_values=graph_values, vertex_id=group.route_vertex_id,
             trace=trace, max_depth=max_depth, pass_params=False,
             relationship=LoopRelationship.connected_from((owner.loop_id,)))
         target = routed["value"]
@@ -576,6 +559,7 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
                     member, registry, inputs, parent=owner, trace=trace,
                     max_depth=max_depth, allow_extended=allow_extended,
                     model_execution=model_execution,
+                    graph_values=graph_values,
                     relationship=LoopRelationship.spawned_by(owner.loop_id))
                 return executed["value"]
         raise SolutionError(
@@ -588,6 +572,7 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
                 member, registry, inputs, parent=owner, trace=trace,
                 max_depth=max_depth, allow_extended=allow_extended,
                 model_execution=model_execution,
+                graph_values=graph_values,
                 relationship=LoopRelationship.spawned_by(owner.loop_id))
         except SolutionError as exc:
             errors.append(f"{member.solution_id}: {exc}")
@@ -617,6 +602,7 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
                 output_role="solution.evaluation_score/v1",
                 definition=evaluator_vertex.resolved_definition(None),
                 registry=registry, trace=trace, max_depth=max_depth,
+                graph_values=graph_values, vertex_id=evaluator_vertex.vertex_id,
                 pass_params=False,
                 relationship=LoopRelationship.connected_from(
                     (executed["loop_id"],)))
@@ -642,10 +628,13 @@ def _run_members(spec: SolutionSpec, registry: dict, inputs, *, owner: Loop,
     return values[0]
 
 
+
+
 def _execute_spec(spec: SolutionSpec, registry: dict, inputs, *,
                   parent: "Loop | None", trace: list, max_depth: int,
                   allow_extended: bool, relationship: LoopRelationship,
-                  model_execution: "ModelExecutionSession | None" = None):
+                  model_execution: "ModelExecutionSession | None" = None,
+                  graph_values: "_SolutionGraphValues | None" = None):
     assert spec.graph is not None
     group = spec.graph.group(spec.group_id)
     controller_definition = spec.graph.resolved_definition(
@@ -658,29 +647,25 @@ def _execute_spec(spec: SolutionSpec, registry: dict, inputs, *,
         parent=parent, max_depth=max_depth, solution_id=spec.solution_id,
         logical_loop_id=spec.solution_id, relationship=relationship,
         trace=trace)
+    if graph_values is not None:
+        inputs = graph_values.input_for(group.controller_vertex_id)
+        graph_values.begin_controller(group.controller_vertex_id, inputs, loop.loop_id)
 
     def execute(active: Loop):
         if spec.members:
             return _run_members(
                 spec, registry, inputs, owner=active, trace=trace,
                 max_depth=max_depth, allow_extended=allow_extended,
-                model_execution=model_execution)
-        value = inputs
-        upstream = (active.loop_id,)
-        for node in spec.loops:
-            executed = _run_solution_node(
-                node, value, owner=active, solution_id=spec.solution_id,
-                registry=registry, trace=trace, max_depth=max_depth,
-                connected_from_loop_ids=upstream,
-                model_execution=model_execution)
-            value = executed["value"]
-            upstream = (executed["loop_id"],)
-        return value
+                model_execution=model_execution, graph_values=graph_values)
+        return _run_pipeline(spec, registry, owner=active, trace=trace,
+            max_depth=max_depth, model_execution=model_execution, graph_values=graph_values)
 
     output = _run_envelope(
         loop, solution_id=spec.solution_id,
         logical_loop_id=spec.solution_id, action_step="act",
         body=execute, trace=trace)
+    if graph_values is not None:
+        graph_values.publish(group.controller_vertex_id, output, loop.loop_id, controller=True)
     return {"value": output, "loop_id": loop.loop_id,
             "identity": _runtime_identity(loop)}
 
@@ -694,6 +679,9 @@ def _run_solution_runtime(spec: SolutionSpec, registry: dict, inputs, *,
     report = spec.validate()
     if not report["valid"]:
         raise SolutionError("; ".join(report["violations"]))
+    from .solution_compiler import bind_solution_operations
+    spec = SolutionSpec.from_graph(bind_solution_operations(spec.graph, registry),
+                                   group_id=spec.group_id)
     model_violations = _model_execution_preflight(spec, model_execution)
     if model_violations:
         raise SolutionError("; ".join(model_violations))
@@ -721,6 +709,7 @@ def _run_solution_runtime(spec: SolutionSpec, registry: dict, inputs, *,
     # A plain list cannot carry the selected ledger. Pass it explicitly into
     # the starting initializer, then recurse only through spawning ledgers.
     assert spec.graph is not None
+    graph_values = _SolutionGraphValues(spec.graph, inputs)
     group = spec.graph.group(spec.group_id)
     controller_definition = spec.graph.resolved_definition(
         group.controller_vertex_id)
@@ -733,29 +722,24 @@ def _run_solution_runtime(spec: SolutionSpec, registry: dict, inputs, *,
         ledger=selected_ledger, parent=parent, max_depth=max_depth,
         solution_id=spec.solution_id, logical_loop_id=spec.solution_id,
         relationship=starting_relationship, trace=tr)
+    inputs = graph_values.input_for(group.controller_vertex_id)
+    graph_values.begin_controller(group.controller_vertex_id, inputs, starting.loop_id)
 
     def execute(active: Loop):
         if spec.members:
             return _run_members(
                 spec, registry, inputs, owner=active, trace=tr,
                 max_depth=max_depth, allow_extended=allow_extended,
-                model_execution=model_session)
-        value = inputs
-        upstream = (active.loop_id,)
-        for node in spec.loops:
-            executed = _run_solution_node(
-                node, value, owner=active, solution_id=spec.solution_id,
-                registry=registry, trace=tr, max_depth=max_depth,
-                connected_from_loop_ids=upstream,
-                model_execution=model_session)
-            value = executed["value"]
-            upstream = (executed["loop_id"],)
-        return value
+                model_execution=model_session, graph_values=graph_values)
+        return _run_pipeline(spec, registry, owner=active, trace=tr,
+            max_depth=max_depth, model_execution=model_session, graph_values=graph_values)
 
-    return _run_envelope(
+    output = _run_envelope(
         starting, solution_id=spec.solution_id,
         logical_loop_id=spec.solution_id, action_step="act",
         body=execute, trace=tr)
+    graph_values.publish(group.controller_vertex_id, output, starting.loop_id, controller=True)
+    return graph_values.public_output()
 
 
 def run_solution(spec: SolutionSpec, registry: dict, inputs,

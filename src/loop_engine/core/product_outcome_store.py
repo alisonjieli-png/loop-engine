@@ -17,11 +17,7 @@ if TYPE_CHECKING:
 
 
 PRODUCT_OUTCOME_FILENAME = "outcome.json"
-SOLVE_OUTCOME_V5 = "solve_outcome/v5"
 SOLVE_OUTCOME_V6 = "solve_outcome/v6"
-PRODUCT_OUTCOME_RECORD_TYPES = (
-    "solve_outcome/v3", "solve_outcome/v4", SOLVE_OUTCOME_V5,
-    SOLVE_OUTCOME_V6)
 
 
 @dataclass(frozen=True)
@@ -71,8 +67,9 @@ class ProductOutcomeRef:
     def __post_init__(self) -> None:
         if (self.path != PRODUCT_OUTCOME_FILENAME
                 or not _is_digest(self.content_digest)
-                or self.record_type not in PRODUCT_OUTCOME_RECORD_TYPES
-                or not self.terminal_code):
+                or self.record_type != SOLVE_OUTCOME_V6
+                or not self.terminal_code
+                or type(self.solved) is not bool):
             raise _error("product outcome reference is malformed")
 
     def to_dict(self) -> dict:
@@ -134,12 +131,12 @@ def _product_outcome_ref(value: Mapping) -> ProductOutcomeRef:
         str(body.get("content_digest") or ""),
         str(body.get("outcome_record_type") or ""),
         str(body.get("terminal_code") or ""),
-        bool(body.get("solved")))
+        body.get("solved"))
 
 
 def _validate_product_outcome(value: Mapping, run_id: str) -> dict:
     body = dict(value)
-    if (body.get("record_type") not in PRODUCT_OUTCOME_RECORD_TYPES
+    if (body.get("record_type") != SOLVE_OUTCOME_V6
             or body.get("run_id") != run_id
             or not isinstance(body.get("solved"), bool)
             or not str(body.get("terminal_code") or "")
@@ -147,24 +144,20 @@ def _validate_product_outcome(value: Mapping, run_id: str) -> dict:
             or not isinstance(body.get("artifacts"), list)
             or not isinstance(body.get("verification"), dict)):
         raise _error("saved product outcome violates its solve outcome contract")
-    if (body.get("record_type") in (
-            "solve_outcome/v4", SOLVE_OUTCOME_V5, SOLVE_OUTCOME_V6)
-            and not isinstance(body.get("questions"), list)):
+    if not isinstance(body.get("questions"), list):
         raise _error("versioned solve outcome questions must be a list")
-    if body.get("record_type") in (SOLVE_OUTCOME_V5, SOLVE_OUTCOME_V6):
-        try:
-            ProductModelCallAccounting(
-                body["model_calls"], body["model_call_accounting_complete"],
-                body["model_calls_known_subtotal"])
-        except (KeyError, ValueError) as exc:
-            raise _error("solve outcome model call accounting is invalid") from exc
-    if body.get("record_type") == SOLVE_OUTCOME_V6:
-        if (not isinstance(body.get("stage_vectors"), list)
-                or not isinstance(body.get("action_vectors"), list)
-                or any(not isinstance(item, dict)
-                       for item in (*body["stage_vectors"],
-                                    *body["action_vectors"]))):
-            raise _error("solve_outcome/v6 vector projections are invalid")
+    try:
+        ProductModelCallAccounting(
+            body["model_calls"], body["model_call_accounting_complete"],
+            body["model_calls_known_subtotal"])
+    except (KeyError, ValueError) as exc:
+        raise _error("solve outcome model call accounting is invalid") from exc
+    if (not isinstance(body.get("stage_vectors"), list)
+            or not isinstance(body.get("action_vectors"), list)
+            or any(not isinstance(item, dict)
+                   for item in (*body["stage_vectors"],
+                                *body["action_vectors"]))):
+        raise _error("solve_outcome/v6 vector projections are invalid")
     return body
 
 
@@ -255,6 +248,6 @@ def load_saved_run_bundle(root: str, run_id: str) -> SavedRunBundle:
 
 
 __all__ = (
-    "PRODUCT_OUTCOME_FILENAME", "PRODUCT_OUTCOME_RECORD_TYPES",
+    "PRODUCT_OUTCOME_FILENAME", "SOLVE_OUTCOME_V6",
     "ProductModelCallAccounting", "ProductOutcomeRef", "SavedRunBundle",
     "bind_product_outcome", "load_saved_run_bundle", "matches_bound_product_outcome")
