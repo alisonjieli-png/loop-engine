@@ -10,7 +10,7 @@ continuation:
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
-  updated_at: "2026-09-20T21:30:00Z"
+  updated_at: "2026-09-20T21:50:00Z"
   baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
   plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
   artifact: docs/roadmap/CONTINUATION-STATUS.md
@@ -1252,6 +1252,10 @@ continuation:
       event: takeover_review_gate_repairs_and_release_blockers
       evidence: docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md; artifacts/architecture-audit-2026-09-19/rollback-key-version-1.json
       outcome: Claude Code reviewed the September 19 and 20 work after the previous developer reached its usage limit before deploying a release candidate. Read-only checks confirmed Fly release 7, host-key sign-in only, and closed registration and billing. An isolated rerun reproduced 30 of 30 conformance gates, 5,990 self-test checks, 206 tool tests, 336 focused checks and 131 browser checks. Two continuous integration suites failed and were repaired without weakening a check. A dropped link to the dimension discovery addendum was restored. 120 unregistered hardcoding findings in new files received exact reviewed entries, and the packaged browser library received one exclusion bound to its contents. The release candidate's rollback defect was proven against the real release 7 image and fixed with an owner-bound key record version. Identity key reads are now paused between attempts, the subscription reader ignores proxy settings from the environment, a durable write with a tuple is confirmed instead of reported unknown, two loosened negative controls are restored, and the browser library's licence terms are served. Package D-17 defines the private beta.
+    - at: "2026-09-20T21:40:00Z"
+      event: first_release_from_a_committed_revision
+      evidence: artifacts/architecture-audit-2026-09-19/pilot-release-8.json; artifacts/architecture-audit-2026-09-19/domain-mail-policy-1.json
+      outcome: The work of September 19 and 20 was committed and pushed to main. Its first continuous integration run failed in three ways that only a clean machine shows, which were repaired without weakening a check. The guarded release workflow then ran for the first time, stopped at a guard whose text match could never succeed, was repaired, and deployed release 8 from revision e63f614. Every hostname passes 46 website checks and the service passes 16 service and protocol checks. Deployment is switched off again. A monitoring-only DMARC record was added for the domain. Browser sign-in, personal client keys, registration and billing remain switched off.
 statuses: [proposed, ready, building, offline_verified, live_qualified, published, blocked, superseded]
 verification_aliases:
   CONF: "python -m loop_engine --conformance"
@@ -2043,7 +2047,7 @@ steps:
     verify: [manifest validation, explicit launch inputs, provider capability checks, dry-run plans, exact image/configuration identity, same acceptance contract]
     adversarial: Ephemeral storage cannot claim durability; an unavailable platform capability or missing budget must refuse a deployment plan.
     acceptance: Local containers, application platforms, cloud containers, Kubernetes, virtual servers, dedicated servers, and edge containers have documented deploy, verify, upgrade, rollback, restore, and retirement procedures.
-    evidence: One tested service image runs on the existing Fly Machine and encrypted volume. A prior deployed backup passed 15 local restore checks. Release 7 carries the account code, switched off by host configuration. Releases one to seven were built on one workstation from an uncommitted working tree, so none can be rebuilt from the repository. From release 8 a release needs a committed revision whose continuous integration run passed. Shared-state scaling, current-image rollback and other hosting profiles remain unqualified.
+    evidence: One tested service image runs on the existing Fly Machine and encrypted volume. A prior deployed backup passed 15 local restore checks. Release 7 carries the account code, switched off by host configuration. Releases one to seven were built on one workstation from an uncommitted working tree, so none can be rebuilt from the repository. Release 8 (2026-09-20) is the first built by the guarded workflow from a committed revision, e63f614, after its continuous integration run passed; 46 website checks pass on each of four hostnames and 16 service and protocol checks pass. The record is artifacts/architecture-audit-2026-09-19/pilot-release-8.json. Shared-state scaling, current-image rollback and other hosting profiles remain unqualified.
   - id: S-6.14
     phase: 6
     title: Qualify the release candidate on the exact exported tree
@@ -2065,7 +2069,7 @@ steps:
     verify: [real hostname, authenticated client, durable records, traffic and egress observations, restart, rollback, restore]
     adversarial: Healthy process status without a successful authorized capability fetch is not a hosted acceptance result.
     acceptance: One explicitly chosen target is observed working; every other prepared target retains its own qualification state.
-    evidence: The private diagnostic Fly pilot runs release 7, image sha256:7b45d327faba2e65829230e8ee4f91109207183b4575cdab08c545aae6af55e8, confirmed by a read-only platform query on 2026-09-20, and is healthy. Public read-only status checks returned successful homepage, login, connection, health and capability responses. Live capabilities still disable public registration, checkout, portal and webhooks. Complete customer and native task journeys remain open.
+    evidence: The private diagnostic Fly pilot runs release 8, image sha256:a2d31be073025fcc4f6f0ad86ef743eeffbd36d8d65671855d7298260862ce0a, built from revision e63f614, and is healthy. Release 7, image sha256:7b45d327faba2e65829230e8ee4f91109207183b4575cdab08c545aae6af55e8, is kept for rollback. Public read-only status checks returned successful homepage, login, connection, health and capability responses. Live capabilities still disable public registration, checkout, portal and webhooks. Complete customer and native task journeys remain open.
   - id: S-6.16
     phase: 6
     title: Activate approved paid access and publish the release decision
