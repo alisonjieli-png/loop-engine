@@ -9,7 +9,7 @@ Use it on email columns that contain wrappers such as `mailto:`, spelled out sym
 ## Steps
 
 1. Leave null markers unchanged.
-2. Replace spelled out symbols from a declared table: ` at `, `(at)`, `[at]`, `{at}`, ` dot `, `(dot)`, `[dot]` and `{dot}`. Confidence 0.9.
+2. Replace spelled out symbols from a declared table: the words `at` and `dot` with a space on each side, and the bracketed forms `(at)`, `[at]`, `{at}`, `(dot)`, `[dot]` and `{dot}`. Confidence 0.9.
 3. Repair punctuation slips from a declared table: `@@`, `..`, `,com` and `.com.` at 0.9, `@.` and `.@` at 0.85. Remove a trailing period or comma at 0.92.
 4. Correct the domain from a declared table of typed domains, each with its own confidence. `gmail.con` gives `gmail.com` at 0.9. `gmail.co` gives `gmail.com` at only 0.7, because it is also a plausible real domain.
 5. Normalize: trim, remove a `mailto:` prefix and angle brackets, and write the domain in lower case. The part before `@` is written in lower case by default. A parameter keeps it as written.

@@ -17,7 +17,7 @@ Use it on phone columns with mixed punctuation, extensions and missing country c
    - the digits start with the declared country code, followed by a full national number: add `+`, confidence 0.95;
    - no default country code is declared and the count equals the national length: return the digits alone at confidence 0.7, so the value is held;
    - any other count: leave the value unchanged at confidence 0.35 and record `digit_count_unexpected` with the count, so the value is escalated.
-5. Put the extension back as ` ext ` and its digits when extensions are kept.
+5. When extensions are kept, put the extension back after the number: a space, the word `ext`, a space and the digits.
 
 The national length is a parameter. Its default is 10. The default country code is a parameter with no default.
 
