@@ -16,6 +16,9 @@ python3 examples/12_wrap_a_large_codebase/run.py
 - Uses a fixture resolver, so it does not clone the example repository or load
   the example dataset
 - Demonstrates three entry points: preflight, export, and postflight
+- Shows the admission rule: the imported codebase starts as a candidate, a
+  verifier that is not the producer qualifies its exact digests, a separate
+  authority promotes it, and execution without that authority is refused
 
 The repository and dataset locators are examples. The important behavior is
 that search sees only the card. The selected repository body is materialized
