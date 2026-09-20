@@ -1,0 +1,343 @@
+schema: hardcoding_triage_worklist/v1
+audit_id: hardcoding_audit.sha256_552e41120261b189da56a580556e3c35e8b324a1b985275ca834491621085596
+severity_threshold: high
+decisions:
+- allowlist
+- abstract
+- fix
+- exclude_file
+- undecided
+summary:
+  findings: 20
+  owners: 14
+  by_classification:
+    CLOSED_CONTROLLED_VOCABULARY: 18
+    RESOURCE_OR_TEMPLATE: 1
+    STRATEGY_OR_PROVIDER_BINDING: 1
+  top_paths:
+  - path: src/loop_engine/loop/spawned_deadline.py
+    findings: 4
+  - path: src/loop_engine/core/node_provisioning.py
+    findings: 3
+  - path: src/loop_engine/core/provisioning_server.py
+    findings: 2
+  - path: src/loop_engine/code_nodes/solution_operation_identity.py
+    findings: 2
+  - path: src/loop_engine/core/practitioner_runtime/observations.py
+    findings: 2
+  - path: src/loop_engine/core/capability_directory.py
+    findings: 1
+  - path: docs/roadmap/roadmap.yaml
+    findings: 1
+  - path: src/loop_engine/core/adaptive_practitioner_records.py
+    findings: 1
+  - path: src/loop_engine/core/adaptive_practitioner_scope.py
+    findings: 1
+  - path: src/loop_engine/core/spawned_provisioning.py
+    findings: 1
+  - path: src/loop_engine/core/code_intelligence_assets.py
+    findings: 1
+  - path: src/loop_engine/core/practitioner_runtime/capabilities.py
+    findings: 1
+owners:
+- owner: docs.roadmap.roadmap.yaml:continuation.previous_artifact
+  findings:
+  - finding_id: hardcoding.53438b7213f3f26b6e4d37f6
+    path: docs/roadmap/roadmap.yaml
+    line: null
+    symbol_ref: continuation.previous_artifact
+    severity: high
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    literal_kind: string
+    literal_preview: '''https://claude.ai/code/artifact/a9e49f80-1fa5-4acc-af02-71e2dfa6786d'''
+    proposed_abstraction_kind: admitted_strategy_or_provider_binding
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: An endpoint or external identity should be bound at its owner.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.code_nodes.solution_operation_identity:SolutionOperationIdentity.__post_init__
+  findings:
+  - finding_id: hardcoding.4e5609a24c68b3b905665d53
+    path: src/loop_engine/code_nodes/solution_operation_identity.py
+    line: 36
+    symbol_ref: SolutionOperationIdentity.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''process_bound'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.d2adc0249355b2f16397a1c8
+    path: src/loop_engine/code_nodes/solution_operation_identity.py
+    line: 36
+    symbol_ref: SolutionOperationIdentity.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''portable_code'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.adaptive_practitioner_records:AdaptiveRunServices.publish
+  findings:
+  - finding_id: hardcoding.603ad0e404e9a21098eb45e7
+    path: src/loop_engine/core/adaptive_practitioner_records.py
+    line: 1394
+    symbol_ref: AdaptiveRunServices.publish
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''model.step.started'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.adaptive_practitioner_scope:fork_services
+  findings:
+  - finding_id: hardcoding.6771355211e247046c8dfbd7
+    path: src/loop_engine/core/adaptive_practitioner_scope.py
+    line: 96
+    symbol_ref: fork_services
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''reason'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.capability_directory:CapabilityHandshake.__post_init__
+  findings:
+  - finding_id: hardcoding.099da64db3cc3df32fb42cbb
+    path: src/loop_engine/core/capability_directory.py
+    line: 74
+    symbol_ref: CapabilityHandshake.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''str'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.code_intelligence_assets:CodeAssetSpec.from_dict
+  findings:
+  - finding_id: hardcoding.74bb173406938b94438d17be
+    path: src/loop_engine/core/code_intelligence_assets.py
+    line: 323
+    symbol_ref: CodeAssetSpec.from_dict
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''code_asset_spec/v2'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.node_provisioning:NodeAssignment.__post_init__
+  findings:
+  - finding_id: hardcoding.28480020c7028977313583be
+    path: src/loop_engine/core/node_provisioning.py
+    line: 78
+    symbol_ref: NodeAssignment.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''non_deterministic'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.6d32db3e7c3adb44ac1f925b
+    path: src/loop_engine/core/node_provisioning.py
+    line: 78
+    symbol_ref: NodeAssignment.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''deterministic'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.966633971dbd425ea722744c
+    path: src/loop_engine/core/node_provisioning.py
+    line: 78
+    symbol_ref: NodeAssignment.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''hybrid'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.practitioner_runtime.capabilities
+  findings:
+  - finding_id: hardcoding.f67116c66ce7ef75d743980c
+    path: src/loop_engine/core/practitioner_runtime/capabilities.py
+    line: 84
+    symbol_ref: null
+    severity: high
+    classification: RESOURCE_OR_TEMPLATE
+    literal_kind: string
+    literal_preview: '"Create files, execute Python commands in a confined Docker workspace, run tests,
+      and verify expected artifacts. Put every source file you want in ''files'' wi...'
+    proposed_abstraction_kind: versioned_resource_bundle
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: Long executable instructions need versioned identity and typed slots.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.practitioner_runtime.observations:_record_stage_assistance_decision
+  findings:
+  - finding_id: hardcoding.7c8caf2630173802d1c64cd9
+    path: src/loop_engine/core/practitioner_runtime/observations.py
+    line: 470
+    symbol_ref: _record_stage_assistance_decision
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''record_type'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.86322e44eb95347b74b539aa
+    path: src/loop_engine/core/practitioner_runtime/observations.py
+    line: 470
+    symbol_ref: _record_stage_assistance_decision
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''stage_occurrence_id'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.provisioning_server:ProvisioningQualification.__post_init__
+  findings:
+  - finding_id: hardcoding.fc98f0029f63d5dde8eadf77
+    path: src/loop_engine/core/provisioning_server.py
+    line: 127
+    symbol_ref: ProvisioningQualification.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''approved'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.provisioning_server:ProvisioningServer._approved
+  findings:
+  - finding_id: hardcoding.03c6ecb3589a80f5508cf223
+    path: src/loop_engine/core/provisioning_server.py
+    line: 356
+    symbol_ref: ProvisioningServer._approved
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''approved'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.spawned_provisioning:effects_for
+  findings:
+  - finding_id: hardcoding.69b552ec4fb29eed845a3bd8
+    path: src/loop_engine/core/spawned_provisioning.py
+    line: 43
+    symbol_ref: effects_for
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''build'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.loop.spawned_deadline:SpawnedDeadlineAssessment.__post_init__
+  findings:
+  - finding_id: hardcoding.493c57ae252a4ab022f30d7f
+    path: src/loop_engine/loop/spawned_deadline.py
+    line: 28
+    symbol_ref: SpawnedDeadlineAssessment.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''before_dispatch'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.6dc3ca5518e82e59a846ccbe
+    path: src/loop_engine/loop/spawned_deadline.py
+    line: 28
+    symbol_ref: SpawnedDeadlineAssessment.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''after_return'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.bf1e0b0e4105eb940581dbcf
+    path: src/loop_engine/loop/spawned_deadline.py
+    line: 28
+    symbol_ref: SpawnedDeadlineAssessment.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''after_exception'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.loop.spawned_deadline:SpawnedDeadlineAssessment.to_dict
+  findings:
+  - finding_id: hardcoding.69230a95492ca3f433322aaf
+    path: src/loop_engine/loop/spawned_deadline.py
+    line: 44
+    symbol_ref: SpawnedDeadlineAssessment.to_dict
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''before_dispatch'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''

@@ -1,0 +1,44 @@
+{
+  "record_type": "runtime_regression_repair_evidence/v1",
+  "review_date": "2026-09-19",
+  "revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "failed_attempt": "verification-attempt-1.json",
+  "frozen_source": ".loop-engine-dev/continuation-20260919-jjAX0K",
+  "original_suite": {"passed": 5531, "total": 5535, "not_tested": 15},
+  "focused_results": {
+    "remaining_recipe_checks_through_unchanged_collector": {"passed": 35, "total": 35},
+    "data_quality_surfaces_through_unchanged_collector": {"passed": 10, "total": 10},
+    "preceding_conformance_tests": {"passed": 28, "total": 28},
+    "source_scanner": {"passed": 5, "total": 5},
+    "provisioning_domain": {"passed": 40, "total": 40},
+    "provisioning_protocol": {"passed": 19, "total": 19},
+    "provisioning_access_runner_overlapping_suites": {"passed": 101, "total": 101, "modules": 8},
+    "code_asset_owning_checks": {"passed": 27, "total": 27}
+  },
+  "mutants": {
+    "regression_probe": {"detected": 3, "total": 3},
+    "provisioning_access_runner": {"detected": 14, "total": 14},
+    "current_only_code_asset_schema": {"detected": 1, "total": 1}
+  },
+  "nomenclature_diagnosis": {
+    "frozen_source_findings_before_any_tests": 19,
+    "working_source_findings_before_cleanup": 18,
+    "working_source_findings_after_preceding_conformance_tests": 18,
+    "policy_mutated_by_preceding_tests": false,
+    "public_decision_spine_findings_before_cleanup": 0,
+    "source_findings_after_cleanup": 0,
+    "public_decision_spine_findings_after_cleanup": 0,
+    "cause": "Different conformance gates plus actual new first-party metering nomenclature, not reproduced cross-test pollution.",
+    "scanner_or_policy_changed": false
+  },
+  "changed_source_sha256": {
+    "src/loop_engine/core/harness_remaining_recipe_checks.py": "20d86f7c500febac729e7e9e01cb183e02093583e8048482ecbfa65fd876d64d",
+    "src/loop_engine/code_nodes/data_quality_surfaces.py": "138f82de023f39e7669898754dd20fedb59022527075df8298ab8babaf8d258f",
+    "src/loop_engine/core/provisioning_server.py": "f02efcfe473730d9ebf22b6f679d7499b616a71554357621b80e5b1351f57e3b",
+    "src/loop_engine/core/provisioning_server_checks.py": "21be20c20e44f14d8a03273415beb343c6294ef051a8dc3d1caa69c2cefea295"
+  },
+  "unchanged_scanner_sha256": "a1a74de8b556b911744a9d6120c814322595a688b9fe36c996100a8c1a29129b",
+  "historical_result_bytes_rewritten": false,
+  "provider_calls": 0,
+  "full_suite_rerun_by_this_agent": false
+}

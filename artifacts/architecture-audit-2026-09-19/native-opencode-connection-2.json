@@ -1,0 +1,26 @@
+{
+  "record_type": "native_client_connection_check/v1",
+  "client": "opencode",
+  "origin": "https://baltor-pilot.fly.dev",
+  "observed_at": "2026-09-20T05:08:04.683942+00:00",
+  "model_turns_started": 0,
+  "file_bodies_requested": 0,
+  "persistent_client_configuration_changed": false,
+  "scope": "Native client startup handshake and tool discovery only; not native material loading or task success",
+  "checks": [
+    {
+      "name": "only_the_declared_server_is_enabled",
+      "passed": true
+    },
+    {
+      "name": "native_client_reports_connected",
+      "passed": true
+    }
+  ],
+  "client_version": "1.17.9",
+  "native_status_lines": [
+    "\u25cf  \u2713 baltor_connection_probe connected"
+  ],
+  "process_exit_code": 0,
+  "all_passed": true
+}

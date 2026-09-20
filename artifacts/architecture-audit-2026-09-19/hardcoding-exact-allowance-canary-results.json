@@ -1,0 +1,94 @@
+{
+  "added_finding_ids": [
+    "hardcoding.0c9114d720b507d67cc4afd0",
+    "hardcoding.53438b7213f3f26b6e4d37f6",
+    "hardcoding.7c8caf2630173802d1c64cd9",
+    "hardcoding.86322e44eb95347b74b539aa"
+  ],
+  "checks": {
+    "all_existing_detector_canaries_pass": true,
+    "all_previous_entries_preserved_exactly": true,
+    "changed_text_loses_exception": true,
+    "exact_reviewed_resource_only_is_suppressed": true,
+    "exactly_four_entries_added": true,
+    "file_exclusions_unchanged": true,
+    "new_state_branch_in_allowed_owner_remains_blocking": true,
+    "no_allowlist_problems_in_canaries": true,
+    "no_duplicate_finding_entries": true,
+    "same_text_at_another_path_remains_blocking": true,
+    "unreviewed_prompt_in_same_file_remains_blocking": true
+  },
+  "existing_detector_checks": {
+    "passed": 24,
+    "total": 24
+  },
+  "passed": true,
+  "record_type": "hardcoding_exact_allowance_canaries/v1",
+  "source_cases": {
+    "additional_state_branch": {
+      "allowlist_problems": [],
+      "high": [
+        "hardcoding.7c8caf2630173802d1c64cd9",
+        "hardcoding.86322e44eb95347b74b539aa",
+        "hardcoding.7e9a88fbdd39e221074864a8"
+      ],
+      "suppressed_high": [
+        "hardcoding.7c8caf2630173802d1c64cd9",
+        "hardcoding.86322e44eb95347b74b539aa"
+      ],
+      "unsuppressed_high": [
+        "hardcoding.7e9a88fbdd39e221074864a8"
+      ]
+    },
+    "additional_unreviewed_prompt": {
+      "allowlist_problems": [],
+      "high": [
+        "hardcoding.0c9114d720b507d67cc4afd0",
+        "hardcoding.bde64747cd16f232866ee138"
+      ],
+      "suppressed_high": [
+        "hardcoding.0c9114d720b507d67cc4afd0"
+      ],
+      "unsuppressed_high": [
+        "hardcoding.bde64747cd16f232866ee138"
+      ]
+    },
+    "another_path": {
+      "allowlist_problems": [],
+      "high": [
+        "hardcoding.1fa4124da2e2d9fb32ad22dd"
+      ],
+      "suppressed_high": [],
+      "unsuppressed_high": [
+        "hardcoding.1fa4124da2e2d9fb32ad22dd"
+      ]
+    },
+    "changed_text": {
+      "allowlist_problems": [],
+      "high": [
+        "hardcoding.c81fcafeac4732f92b7a535b"
+      ],
+      "suppressed_high": [],
+      "unsuppressed_high": [
+        "hardcoding.c81fcafeac4732f92b7a535b"
+      ]
+    },
+    "reviewed": {
+      "allowlist_problems": [],
+      "high": [
+        "hardcoding.0c9114d720b507d67cc4afd0"
+      ],
+      "suppressed_high": [
+        "hardcoding.0c9114d720b507d67cc4afd0"
+      ],
+      "unsuppressed_high": []
+    }
+  },
+  "source_sha256": {
+    "devtools/hardcoding-allowlist.yaml": "b6c54fe3aa905f9f2690f97c1afe521782425c3813c5675d1f8edbf1150d66ef",
+    "devtools/hardcoding-ci-baseline.json": "abd9c99f7f57b708a27fdd3a905a8b3662f5985c4b46a3fc75d2d26f59893f54",
+    "devtools/src/loop_engine_devtools/assurance/hardcoding.py": "978ce26b30fa41f2f153c4a4326493cc1269d84f22981207c351a8913e56a725",
+    "src/loop_engine/core/practitioner_runtime/observations.py": "9c172e2899071421b7fafa17e3e14182dd691fac5cd149dc30c9d5a6f2d294be",
+    "src/loop_engine/strings/capability_resources.py": "627d28791534fdb9ccf84120f1e2588ca4e82e790caa1ce425f4bc106e55dce2"
+  }
+}

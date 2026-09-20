@@ -1,0 +1,1036 @@
+{
+  "record_type": "service_latency_report/v1",
+  "observed_at": "2026-09-20T05:08:03.531318+00:00",
+  "origin": "https://baltor-pilot.fly.dev",
+  "vantage_point": "development_workstation",
+  "authenticated": true,
+  "samples_per_profile": 12,
+  "serial_concurrency": 1,
+  "interval_seconds": 0.25,
+  "maximum_requests": 84,
+  "automatic_retries": 0,
+  "query_sha256": "7f90679c323767ae03a638c2c035a87a3fc99e89ec4ada70c7ddb10ef78c1f90",
+  "query_characters": 13,
+  "percentile_method": "nearest_rank_successful_samples_only",
+  "limits": [
+    "Network round trip and client processing, not isolated server execution time",
+    "New connections include name lookup and TLS setup; reused connections are reported separately",
+    "Small diagnostic catalogue; not a capacity, availability, geographic or competitor benchmark",
+    "No body downloads, model calls or external mutations"
+  ],
+  "profiles": [
+    {
+      "name": "homepage",
+      "path": "/",
+      "samples": [
+        {
+          "sample": 1,
+          "new_connection": true,
+          "ok": true,
+          "status": 200,
+          "header_ms": 133.691,
+          "total_ms": 199.687,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 2,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 34.633,
+          "total_ms": 71.001,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 3,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 61.397,
+          "total_ms": 64.532,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 4,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 54.968,
+          "total_ms": 62.97,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 5,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 105.189,
+          "total_ms": 105.311,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 6,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 45.253,
+          "total_ms": 58.081,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 7,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 55.319,
+          "total_ms": 61.652,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 8,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 52.289,
+          "total_ms": 71.627,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 9,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 40.842,
+          "total_ms": 56.923,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 10,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 39.74,
+          "total_ms": 59.049,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 11,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 47.405,
+          "total_ms": 73.156,
+          "response_bytes": 46317,
+          "error": null
+        },
+        {
+          "sample": 12,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 181.956,
+          "total_ms": 198.016,
+          "response_bytes": 46317,
+          "error": null
+        }
+      ],
+      "summary": {
+        "attempted": 12,
+        "successful": 12,
+        "failed": 0,
+        "successful_p50_ms": 64.532,
+        "successful_p95_ms": 199.687,
+        "successful_max_ms": 199.687,
+        "reused_connection_successful_p50_ms": 64.532,
+        "reused_connection_successful_p95_ms": 198.016
+      }
+    },
+    {
+      "name": "javascript",
+      "path": "/assets/service.js",
+      "samples": [
+        {
+          "sample": 1,
+          "new_connection": true,
+          "ok": true,
+          "status": 200,
+          "header_ms": 162.931,
+          "total_ms": 219.231,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 2,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 91.639,
+          "total_ms": 91.689,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 3,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 96.797,
+          "total_ms": 148.293,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 4,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 67.635,
+          "total_ms": 67.682,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 5,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 40.447,
+          "total_ms": 170.801,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 6,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 59.145,
+          "total_ms": 62.09,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 7,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 50.563,
+          "total_ms": 53.66,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 8,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 56.37,
+          "total_ms": 62.676,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 9,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 48.721,
+          "total_ms": 58.359,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 10,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 66.619,
+          "total_ms": 72.982,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 11,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 41.716,
+          "total_ms": 54.577,
+          "response_bytes": 29088,
+          "error": null
+        },
+        {
+          "sample": 12,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 54.963,
+          "total_ms": 70.527,
+          "response_bytes": 29088,
+          "error": null
+        }
+      ],
+      "summary": {
+        "attempted": 12,
+        "successful": 12,
+        "failed": 0,
+        "successful_p50_ms": 67.682,
+        "successful_p95_ms": 219.231,
+        "successful_max_ms": 219.231,
+        "reused_connection_successful_p50_ms": 67.682,
+        "reused_connection_successful_p95_ms": 170.801
+      }
+    },
+    {
+      "name": "health",
+      "path": "/api/v1/health",
+      "samples": [
+        {
+          "sample": 1,
+          "new_connection": true,
+          "ok": true,
+          "status": 200,
+          "header_ms": 191.876,
+          "total_ms": 191.895,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 2,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 49.82,
+          "total_ms": 49.842,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 3,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 55.552,
+          "total_ms": 55.572,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 4,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 66.064,
+          "total_ms": 66.079,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 5,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 59.081,
+          "total_ms": 59.095,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 6,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 38.915,
+          "total_ms": 38.928,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 7,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 51.677,
+          "total_ms": 51.691,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 8,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 36.868,
+          "total_ms": 36.882,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 9,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 38.015,
+          "total_ms": 38.029,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 10,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 72.631,
+          "total_ms": 72.647,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 11,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 61.193,
+          "total_ms": 61.207,
+          "response_bytes": 187,
+          "error": null
+        },
+        {
+          "sample": 12,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 97.843,
+          "total_ms": 97.858,
+          "response_bytes": 187,
+          "error": null
+        }
+      ],
+      "summary": {
+        "attempted": 12,
+        "successful": 12,
+        "failed": 0,
+        "successful_p50_ms": 55.572,
+        "successful_p95_ms": 191.895,
+        "successful_max_ms": 191.895,
+        "reused_connection_successful_p50_ms": 55.572,
+        "reused_connection_successful_p95_ms": 97.858
+      }
+    },
+    {
+      "name": "capabilities",
+      "path": "/api/v1/capabilities",
+      "samples": [
+        {
+          "sample": 1,
+          "new_connection": true,
+          "ok": true,
+          "status": 200,
+          "header_ms": 197.931,
+          "total_ms": 197.949,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 2,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 60.61,
+          "total_ms": 60.626,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 3,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 57.682,
+          "total_ms": 57.732,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 4,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 34.671,
+          "total_ms": 37.759,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 5,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 49.301,
+          "total_ms": 49.331,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 6,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 62.317,
+          "total_ms": 62.348,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 7,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 46.95,
+          "total_ms": 46.967,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 8,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 92.61,
+          "total_ms": 95.603,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 9,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 43.094,
+          "total_ms": 46.185,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 10,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 53.014,
+          "total_ms": 53.028,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 11,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 59.205,
+          "total_ms": 59.219,
+          "response_bytes": 1640,
+          "error": null
+        },
+        {
+          "sample": 12,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 130.619,
+          "total_ms": 130.634,
+          "response_bytes": 1640,
+          "error": null
+        }
+      ],
+      "summary": {
+        "attempted": 12,
+        "successful": 12,
+        "failed": 0,
+        "successful_p50_ms": 57.732,
+        "successful_p95_ms": 197.949,
+        "successful_max_ms": 197.949,
+        "reused_connection_successful_p50_ms": 57.732,
+        "reused_connection_successful_p95_ms": 130.634
+      }
+    },
+    {
+      "name": "permitted_catalogue",
+      "path": "/api/v1/provisioning",
+      "samples": [
+        {
+          "sample": 1,
+          "new_connection": true,
+          "ok": true,
+          "status": 200,
+          "header_ms": 182.925,
+          "total_ms": 182.95,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 2,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 50.56,
+          "total_ms": 50.575,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 3,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 54.794,
+          "total_ms": 54.817,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 4,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 71.738,
+          "total_ms": 71.755,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 5,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 56.886,
+          "total_ms": 56.9,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 6,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 50.912,
+          "total_ms": 50.926,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 7,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 61.805,
+          "total_ms": 61.819,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 8,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 52.983,
+          "total_ms": 52.998,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 9,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 45.253,
+          "total_ms": 45.267,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 10,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 84.239,
+          "total_ms": 84.255,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 11,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 88.849,
+          "total_ms": 88.863,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        },
+        {
+          "sample": 12,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 61.436,
+          "total_ms": 61.451,
+          "response_bytes": 1023,
+          "error": null,
+          "permitted_items": 1
+        }
+      ],
+      "summary": {
+        "attempted": 12,
+        "successful": 12,
+        "failed": 0,
+        "successful_p50_ms": 56.9,
+        "successful_p95_ms": 182.95,
+        "successful_max_ms": 182.95,
+        "reused_connection_successful_p50_ms": 56.9,
+        "reused_connection_successful_p95_ms": 88.863
+      }
+    },
+    {
+      "name": "lexical_retrieval",
+      "path": "/api/v1/retrieval",
+      "samples": [
+        {
+          "sample": 1,
+          "new_connection": true,
+          "ok": true,
+          "status": 200,
+          "header_ms": 133.137,
+          "total_ms": 133.151,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 2,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 46.797,
+          "total_ms": 46.812,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 3,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 62.313,
+          "total_ms": 62.346,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 4,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 56.645,
+          "total_ms": 56.674,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 5,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 83.405,
+          "total_ms": 83.444,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 6,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 50.13,
+          "total_ms": 50.145,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 7,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 49.069,
+          "total_ms": 49.103,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 8,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 52.61,
+          "total_ms": 52.639,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 9,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 82.67,
+          "total_ms": 82.716,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 10,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 77.077,
+          "total_ms": 77.091,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 11,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 62.516,
+          "total_ms": 62.548,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 12,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 98.248,
+          "total_ms": 98.275,
+          "response_bytes": 1399,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        }
+      ],
+      "summary": {
+        "attempted": 12,
+        "successful": 12,
+        "failed": 0,
+        "successful_p50_ms": 62.346,
+        "successful_p95_ms": 133.151,
+        "successful_max_ms": 133.151,
+        "reused_connection_successful_p50_ms": 62.346,
+        "reused_connection_successful_p95_ms": 98.275
+      }
+    },
+    {
+      "name": "hybrid_retrieval",
+      "path": "/api/v1/retrieval",
+      "samples": [
+        {
+          "sample": 1,
+          "new_connection": true,
+          "ok": true,
+          "status": 200,
+          "header_ms": 161.362,
+          "total_ms": 161.404,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 2,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 141.201,
+          "total_ms": 141.229,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 3,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 61.686,
+          "total_ms": 61.725,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 4,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 82.553,
+          "total_ms": 82.569,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 5,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 56.181,
+          "total_ms": 56.212,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 6,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 56.467,
+          "total_ms": 56.495,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 7,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 51.869,
+          "total_ms": 51.884,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 8,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 69.815,
+          "total_ms": 69.836,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 9,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 56.951,
+          "total_ms": 56.982,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 10,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 48.056,
+          "total_ms": 51.212,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 11,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 53.703,
+          "total_ms": 53.75,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        },
+        {
+          "sample": 12,
+          "new_connection": false,
+          "ok": true,
+          "status": 200,
+          "header_ms": 60.936,
+          "total_ms": 60.95,
+          "response_bytes": 1407,
+          "error": null,
+          "returned_references": 1,
+          "bodies_loaded": false
+        }
+      ],
+      "summary": {
+        "attempted": 12,
+        "successful": 12,
+        "failed": 0,
+        "successful_p50_ms": 56.982,
+        "successful_p95_ms": 161.404,
+        "successful_max_ms": 161.404,
+        "reused_connection_successful_p50_ms": 56.982,
+        "reused_connection_successful_p95_ms": 141.229
+      }
+    }
+  ],
+  "all_requests_succeeded": true
+}

@@ -1,0 +1,291 @@
+schema: hardcoding_triage_worklist/v1
+audit_id: hardcoding_audit.sha256_e455538200dd28a6987f25fcc8f02877e8fdd77086a3cb46b8ab9b5b5a94bf6e
+severity_threshold: high
+decisions:
+- allowlist
+- abstract
+- fix
+- exclude_file
+- undecided
+summary:
+  findings: 18
+  owners: 9
+  by_classification:
+    CLOSED_CONTROLLED_VOCABULARY: 13
+    DEPLOYMENT_CONFIGURATION: 1
+    STRATEGY_OR_PROVIDER_BINDING: 4
+  top_paths:
+  - path: src/loop_engine/core/decisions/jev.py
+    findings: 10
+  - path: src/loop_engine/core/decisions/contracts.py
+    findings: 5
+  - path: tools/check_service_workspace.mjs
+    findings: 2
+  - path: src/loop_engine/core/retrieval_backends.py
+    findings: 1
+owners:
+- owner: loop_engine.core.decisions.contracts:DecisionQuestion.__post_init__
+  findings:
+  - finding_id: hardcoding.209d51d6fb196b8bf54d46f2
+    path: src/loop_engine/core/decisions/contracts.py
+    line: 81
+    symbol_ref: DecisionQuestion.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''score'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.ab09c5e5e4e8040dbb91cdde
+    path: src/loop_engine/core/decisions/contracts.py
+    line: 83
+    symbol_ref: DecisionQuestion.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''boolean_probability'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.ba1dab72ebdcabcd2b62ea3e
+    path: src/loop_engine/core/decisions/contracts.py
+    line: 79
+    symbol_ref: DecisionQuestion.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''choice'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.decisions.contracts:admit_answers
+  findings:
+  - finding_id: hardcoding.bc967f25477ead0d52b41c3a
+    path: src/loop_engine/core/decisions/contracts.py
+    line: 174
+    symbol_ref: admit_answers
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''choice'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.daa150260f1c11a07d01bc36
+    path: src/loop_engine/core/decisions/contracts.py
+    line: 158
+    symbol_ref: admit_answers
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''boolean_probability'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.decisions.jev
+  findings:
+  - finding_id: hardcoding.17fd6e7b34513e2704257ab5
+    path: src/loop_engine/core/decisions/jev.py
+    line: 19
+    symbol_ref: null
+    severity: high
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    literal_kind: string
+    literal_preview: '''https://api.typesafe.ai/v1/systemone'''
+    proposed_abstraction_kind: admitted_strategy_or_provider_binding
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: An endpoint or external identity should be bound at its owner.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.bdfd3bd1c1f2b1f1baa9c17d
+    path: src/loop_engine/core/decisions/jev.py
+    line: 20
+    symbol_ref: null
+    severity: high
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    literal_kind: string
+    literal_preview: '''https://docs.typesafe.ai/api'''
+    proposed_abstraction_kind: admitted_strategy_or_provider_binding
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: An endpoint or external identity should be bound at its owner.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.decisions.jev:JevAdapter.decide_questions
+  findings:
+  - finding_id: hardcoding.a5711c45fe5b9690aa6e992a
+    path: src/loop_engine/core/decisions/jev.py
+    line: 170
+    symbol_ref: JevAdapter.decide_questions
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''noul'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.e9e3e0c9cf7bd85df502e5c1
+    path: src/loop_engine/core/decisions/jev.py
+    line: 167
+    symbol_ref: JevAdapter.decide_questions
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''boolean_probability'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.ef9fc5b433c685b96ca49ba4
+    path: src/loop_engine/core/decisions/jev.py
+    line: 175
+    symbol_ref: JevAdapter.decide_questions
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''score'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.decisions.jev:JevAdapter.prepare_decisions
+  findings:
+  - finding_id: hardcoding.1b85ebd2ea56c1f18c5d7750
+    path: src/loop_engine/core/decisions/jev.py
+    line: 121
+    symbol_ref: JevAdapter.prepare_decisions
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''choice'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.3b2a2531738b79b1059030fc
+    path: src/loop_engine/core/decisions/jev.py
+    line: 119
+    symbol_ref: JevAdapter.prepare_decisions
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''boolean_probability'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.f5da2cddd07088cb3c3e16f4
+    path: src/loop_engine/core/decisions/jev.py
+    line: 125
+    symbol_ref: JevAdapter.prepare_decisions
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''score'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.decisions.jev:JevConfiguration.__post_init__
+  findings:
+  - finding_id: hardcoding.474c325f267adb6cdbf2f8c0
+    path: src/loop_engine/core/decisions/jev.py
+    line: 44
+    symbol_ref: JevConfiguration.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''jev_configuration/v1'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.decisions.jev:environment_credential
+  findings:
+  - finding_id: hardcoding.20912b3fa02d698dcd182802
+    path: src/loop_engine/core/decisions/jev.py
+    line: 59
+    symbol_ref: environment_credential
+    severity: high
+    classification: DEPLOYMENT_CONFIGURATION
+    literal_kind: integer
+    literal_preview: '4'
+    proposed_abstraction_kind: typed_runtime_settings
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A deployment value is read at a source boundary.
+    decision: undecided
+    reason: ''
+- owner: loop_engine.core.retrieval_backends:RetrievalBackendBinding.__post_init__
+  findings:
+  - finding_id: hardcoding.8e76693f99beaccf1fce050d
+    path: src/loop_engine/core/retrieval_backends.py
+    line: 62
+    symbol_ref: RetrievalBackendBinding.__post_init__
+    severity: high
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    literal_kind: string
+    literal_preview: '''vector'''
+    proposed_abstraction_kind: enum_literal_or_terminology_authority
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A raw token directly controls state, routing, or lifecycle behavior.
+    decision: undecided
+    reason: ''
+- owner: tools.check_service_workspace.mjs:url
+  findings:
+  - finding_id: hardcoding.4f2ad5a50c46a84647f2afa7
+    path: tools/check_service_workspace.mjs
+    line: 79
+    symbol_ref: url
+    severity: high
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    literal_kind: string
+    literal_preview: '''https://checkout.stripe.com/'''
+    proposed_abstraction_kind: admitted_strategy_or_provider_binding
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: An endpoint or external identity should be bound at its owner.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.e1e020470a47615d8b6853c1
+    path: tools/check_service_workspace.mjs
+    line: 81
+    symbol_ref: url
+    severity: high
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    literal_kind: string
+    literal_preview: '''https://billing.stripe.com/'''
+    proposed_abstraction_kind: admitted_strategy_or_provider_binding
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: An endpoint or external identity should be bound at its owner.
+    decision: undecided
+    reason: ''

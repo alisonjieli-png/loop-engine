@@ -1,0 +1,15 @@
+schema: hardcoding_triage_worklist/v1
+audit_id: hardcoding_audit.sha256_6fc3eab9fe5e04af43f65bbf5036bfcd5d05cffa43c41bb9edb5650fef863649
+severity_threshold: high
+decisions:
+- allowlist
+- abstract
+- fix
+- exclude_file
+- undecided
+summary:
+  findings: 0
+  owners: 0
+  by_classification: {}
+  top_paths: []
+owners: []

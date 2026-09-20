@@ -1,0 +1,18 @@
+{
+  "record_type": "development_adversarial_check/v1",
+  "scope": "Isolated candidate-record versioning, not qualification or hosted publication",
+  "source_sha256": {
+    "tools/stage_intelligence_candidates.py": "9d2c187efc0f3bdfacd13764d27572eb133676792db554237fa766921d805a0c",
+    "tools/test_intelligence_candidate_staging.py": "acf6edd70487fef33c4651f4870e8794ccc5308ef4990b194dbc5f42869cdba3"
+  },
+  "normal_checks_passed": 8,
+  "normal_checks_total": 8,
+  "control": "Replace the candidate record version with its payload-only content digest in memory",
+  "required_check": "test_search_metadata_changes_the_record_version_without_changing_body_identity",
+  "control_tests_run": 1,
+  "control_assertion_failures": 1,
+  "control_errors": 0,
+  "removed_metadata_version_guard_detected": true,
+  "source_files_mutated_by_control": false,
+  "external_provider_calls": 0
+}

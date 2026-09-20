@@ -1,0 +1,144 @@
+{
+  "record_type": "intelligence_storage_diagnostic_observations/v1",
+  "research_date": "2026-09-19",
+  "revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "working_tree_is_dirty": true,
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 artifacts/architecture-audit-2026-09-19/intelligence-storage-probes.py",
+  "exit_code": 0,
+  "external_calls": 0,
+  "untrusted_export_execution": false,
+  "probes_are_not_acceptance_tests": true,
+  "source_sha256": {
+    "src/loop_engine/catalog/capabilities.py": "6af46ad55cbf09e115efcae92df9ef250fa2cee17196371781ab1fe53d538f8f",
+    "src/loop_engine/catalog/composite.py": "04046dcffbca9f9fff13b0856a92dc2e4763cfa38416a52195792ce1a1d41c87",
+    "src/loop_engine/catalog/handshake.py": "2ad39fb146e5b26d854ad8cd4c45ee2de1daac4ab16d9eff8eea62778bc598d0",
+    "src/loop_engine/catalog/protocol.py": "9d24aa2d55c96ffe3062472dd02df2509cd23d28e25e65492380e2c468d227a1",
+    "src/loop_engine/catalog/query.py": "0c9ce1d22107e53d25c6bf611b5be0b3a55ce18cbdb214a3e5ee3a92e9e81017",
+    "src/loop_engine/catalog/registry.py": "f33f4c5dcb35a2f3a097c99ef03ce43e8d5d38edd5d706cd21e3db60bb1895a3",
+    "src/loop_engine/catalog/versioning.py": "d3f2edbc48efd0d35248ab1d8a58744d14ac55c502efa3deb36b370fb5dc3469",
+    "src/loop_engine/catalog/stores/duckdb_files.py": "9c8d1ae4a84ea347d0a4834a730f6d9d2302569bffc841a2a43fb1ad0786973f",
+    "src/loop_engine/catalog/stores/duckdb_store.py": "c1694f7c96c0febfe0185ec6c904baabb8ec764f15d24939f75bd7ad683a4bfd",
+    "src/loop_engine/catalog/stores/in_memory.py": "b36693ce729ae4697db8ac577606894479cb2a75b7d9baf138709f8eadc67c73",
+    "src/loop_engine/catalog/stores/package_jsonl.py": "fbe06ac97a1f85bf154a0274403fdcc0dee3a16ce98e60a03db1fbc7d3d1d9ed",
+    "src/loop_engine/catalog/stores/sqlite_store.py": "533257d5b5cd1b21c199c0db7d7743c3c609998db252868d13a8a6daddad2e93",
+    "src/loop_engine/core/shared_memory_scopes.py": "28628501131b15580bd48b5154923249135774c4f6cc516ebcf50cd42283edac",
+    "src/loop_engine/core/provisioning_server.py": "8535c7af83f3cbe053511cc174674080e9594b2e4a232944230e71c72dc672a5",
+    "src/loop_engine/core/harness_intelligence.py": "956f53f618d7cc13092d4838ec0908b17288a262719618e00724218c90e281fe",
+    "src/loop_engine/core/harness_intelligence_bridge.py": "0ce8c2af5754a3859a295c044279fc077daf5b565dcd0ec72b73ff4a2f020649",
+    "src/loop_engine/core/intelligence_layers.py": "a84a614c0538297e5345ef396e996b5c5e3d455e275c262dde68cf2bb6b5f7d9",
+    "src/loop_engine/core/retrieval.py": "ee76637e68bc94841ac8e434b6a9684537cb7a2c8e5012503a9cc71a77e3301f",
+    "src/loop_engine/core/code_intelligence_assets.py": "9dd95c1d0154d8eba5a3c4dd3974d0c6c3b4247487f40e4c5c9eccdd35608c3a",
+    "src/loop_engine/core/reusable_capability_flywheel.py": "ac22275ee8542e12a1d4348732ff6bbd00190ffffe7199e44df465548e7d1f75",
+    "src/loop_engine/core/reusable_capability_resolution.py": "516c8baccc5f9d142bc920fd4cd0ecc3b1d6e5c9af14c82301d7fd60bfc8929d",
+    "src/loop_engine/loop/loop_capsule.py": "c7596ce68c6044a28e1e43817d335dd06521329affdde68382ac2948f294ba34",
+    "src/loop_engine/core/store_serve.py": "75858ada6464bc1f899b6572c26dd5dfbd86b0c49b1bce5fcf38fc6cae8ec1de",
+    "src/loop_engine/core/context_catalog.py": "af20158892102cd3dbd11db7eeaa36067d145643d3a35b98281577a5bc41cf5f",
+    "src/loop_engine/core/user_feedback_intelligence.py": "11fb76666a3cb608dd1c5398d4de098fcf558b725f4558cf0f93195dbed39b77",
+    "src/loop_engine/core/solution_library.py": "67846d717721d617e3e8534b1cc63c9e2aaab384ecf88754a1cfebca1c8f0fa8",
+    "src/loop_engine/code_nodes/solve_runtime.py": "6b6be8acfee03bb71b1ccd8675ab9c81f13334b58242dd75cd3bbe41906f2bf4",
+    "src/loop_engine/core/adaptive_practitioner_orientation_capabilities.py": "a1c0e2c2e6103abf95c08a895053869c924ad94668c17e455c4c8c2d0106589b",
+    "src/loop_engine/memory/storage/store.py": "11660233a65dd78e40f7d91a23d707d4ccd7cd875ca73f05ad67b4d227d8eddc",
+    "src/loop_engine/memory/storage/repository.py": "476a6cfcffbce14650a34453a2a446937e311167c6516b7eb27553382fd6176e",
+    "src/loop_engine/memory/query/query.py": "79dd8e44abfd31df38d3746a53952204ed6c5a62e5a9540ac310911fe7f33c0e",
+    "src/loop_engine/memory/semantic/record.py": "ef02e847e0bf7c4567b960bed3ea21995c4d9f1e3e231679e1187bba2a8a21dc",
+    "src/loop_engine/memory/storage/learning_cycle.py": "d5f2b0ea252fd46949978d5ab49b2f56353129c1573faec9e8053ea740c795bf",
+    "src/loop_engine/code_nodes/solve_learned_memory.py": "ca998135aa7c61603d8506799d43b73896b31f0518c86fb60958b2d008f853d4",
+    "src/loop_engine/core/service_api.py": "47e033b6de5db322cd51aded3ab8661f2fce52ec91a69dcd6ec54c9ab059e47c",
+    "src/loop_engine/core/duckdb_catalog.py": "c3fccfdf8ad6c663113d540a7a686435323ba67be04c61a145967459b832b15f",
+    "src/loop_engine/templates/library.py": "3675b6d518791e8f3d7248fe5daeffbf86f6b77a2bcb72c59f9e7ab9349c25ba",
+    "src/loop_engine/templates/model.py": "5264ab4abbe3aad2498a4b1bc42ef64ce9f21ba23646f1c927ee9a1023f19b74",
+    "src/loop_engine/code_nodes/solution_export.py": "88cbd547e48215b4f2feaf59462ba0815427fcb9be35d117266cc77ae486c18f",
+    "src/loop_engine/code_nodes/solution_export_checks.py": "a771c128e8c182ba38e2da167633243f1cc764682fd6ab68c73ef9b1215195ed",
+    "src/loop_engine/templates/compiler.py": "1381d06b2add1b8c1f3814e29ef276d1c73938e737e941a897b4be152e2794f9",
+    "src/loop_engine/core/record_operations.py": "bb9c4553ff4decc7c920ead2c7548a119c503839b49064a15c750970f7357e83",
+    "src/loop_engine/core/runtime_memory.py": "3e3a4089d8c23b1788af410c634d164756ac92cfc22faece0384463b076439ca",
+    "src/loop_engine/code_nodes/service_endpoints.py": "164b0e70acb268882eac131c24b027d293b5dbbae2e8dcaa20ab9c7e141e6a59",
+    "src/loop_engine/core/intelligence_registry.py": "9a1c44c73cae49c6705d7ce68ac9f2b6fb9c777a1f5c144c64773784207b44d6",
+    "src/loop_engine/core/external_service_intelligence.py": "e51981cf87f0c8cfff8e5608f19af2df11313dac5c6cf27bb8709d990d01b617",
+    "src/loop_engine/code_nodes/solutions_space.py": "a715a2e0da9955f9c5f73137fa13faec2edd55dd7de99a2f5c846a5b398a76ab",
+    "src/loop_engine/templates/intake.py": "1089c73ad632af7e68b6aa7bf838e1601177b3003bb9fa0eb2c78bc6eac03e49",
+    "src/loop_engine/core/run_history.py": "e1c2e616b6600db1ac46eefcaa6381ea8145338315305c5c00a8eb07b8163b62",
+    "src/loop_engine/core/practitioner_context.py": "8cbbf5331de7c3a30f5d46931c63714129f467f7f2d5592be7f3bebcde0eafa6",
+    "src/loop_engine/core/facets.py": "7c9d043ed04eda8e81d13a315905c996499adfb6fb0808f9c4e3ba86323b07d9",
+    "src/loop_engine/core/intelligence_tagging.py": "6a4c5cc290decc67f81e9a2e2e5dda286dd895d7d814247150e7fa0c6e809e0e",
+    "src/loop_engine/loop/encapsulate.py": "388b16985bf46db7e26ade0dd1f8dfd2de6141b905aa496e334b5c2ee6e9e9cc",
+    "artifacts/architecture-audit-2026-09-19/intelligence-storage-probes.py": "f03055a6e9462d4742a5a2fda7a0a7a3611a72447245587e6799c7a9d5a2cc7c"
+  },
+  "observations": {
+    "absent_create_memory": "StoreError",
+    "absent_create_sqlite": "accepted",
+    "candidate_direct_execution": {
+      "admission_ref": "",
+      "lifecycle": "candidate",
+      "value": 7
+    },
+    "capability_gate_disagreement": {
+      "handshake_permitted": false,
+      "require_operation_permitted": true
+    },
+    "concurrent_revise_create": [
+      "accepted",
+      "accepted"
+    ],
+    "export_spec_identity": {
+      "digest_equal": true,
+      "rendered_job_equal": false
+    },
+    "export_verifier_control_flow_mocked": {
+      "digest_check_passed": false,
+      "real_files_read": 0,
+      "real_subprocesses_run": 0,
+      "returned_unverified_manifest_digest": "unverified",
+      "runner_calls_despite_failed_integrity": 1,
+      "unvalidated_isolation_forwarded": "unknown",
+      "unvalidated_package_in_generated_code": true
+    },
+    "inline_digest_binding": {
+      "loaded": "changed",
+      "payload_digest": ""
+    },
+    "memory_conflicts": {
+      "conflicts": [],
+      "selected": 2
+    },
+    "postfilter_candidate_starvation": {
+      "available_matching_record": "allowed",
+      "hits": []
+    },
+    "qualification_digest_omits_data_references": {
+      "card_digest_equal": false,
+      "qualification_digest_equal": true
+    },
+    "query_top_n": {
+      "actual": 4,
+      "requested": 1
+    },
+    "revision_attribute_preservation": {
+      "before": {
+        "ordinary": "yes",
+        "revision_customer_field": "keep"
+      },
+      "digest_matches": false,
+      "restored": {
+        "ordinary": "yes"
+      }
+    },
+    "same_version_shared_writes": {
+      "both_accepted": true,
+      "final_payload": {
+        "v": 2
+      }
+    },
+    "solution_projection_trust": {
+      "report_digest": "unrelated",
+      "status_from_unbound_report": "verified",
+      "wrong_serialized_digest_accepted": true
+    },
+    "template_contract_identity": {
+      "digest_equal": true,
+      "registration_rejected": false,
+      "stored_contract": "tabular_dataset",
+      "stored_maturity": "registered"
+    }
+  }
+}

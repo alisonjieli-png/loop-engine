@@ -1,0 +1,153 @@
+{
+  "record_type": "identity_customer_access_qualification/v1",
+  "observed_at": "2026-09-20T19:02:01.889364+00:00",
+  "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+  "run_id": "80ec59af73204f2f973bfe6b258a9d58",
+  "scope": "real identity provider with temporary local service and diagnostic material",
+  "source_before": {
+    "src/loop_engine/core/service_runtime/access.py": "6660045a08cf876c7bb310a33bbb4f44cde9f990a585084ea18e7c8e3c3cdef9",
+    "src/loop_engine/core/service_runtime/records.py": "147a1fc46b1765f076e3490c76d0825fefa756aa3b7e44c09699a56593b91657",
+    "src/loop_engine/core/service_runtime/runtime.py": "4204aebd2d0c05e1dfd0ea8928fa50c5bf6ce8f690e2cef630c760a93296143c",
+    "src/loop_engine/core/service_runtime/storage.py": "210566426c362e5755dd8ef8560b8331c17bf69eab7e9aec88003537f35b8e68",
+    "src/loop_engine/core/service_runtime/provisioning.py": "4b5553ae122781f31737d19d9b77886c74535e8674fe6ba96ee3e0699bb54d06",
+    "src/loop_engine/core/service_runtime/http.py": "d656a459caaffdb8455c52f1ec0361404be4ee834ff72becde0c59090640aac8",
+    "src/loop_engine/core/service_runtime/http_auth.py": "a84f38f866f6a8fafecb456eed3a160765f7a241aa84adacbd245508a617e7d4",
+    "src/loop_engine/core/service_runtime/browser_identity.py": "c8a69dd44fa6e1ace0d4180d82a52afbdd76dfcbc46cdad09c56351288b50369",
+    "tools/check_identity_customer_access.py": "d3d81d055df7b04eb6a10a55fc065b62fa3888eac7ea820ea27a2155b43653c4"
+  },
+  "source_after": {
+    "src/loop_engine/core/service_runtime/access.py": "6660045a08cf876c7bb310a33bbb4f44cde9f990a585084ea18e7c8e3c3cdef9",
+    "src/loop_engine/core/service_runtime/records.py": "147a1fc46b1765f076e3490c76d0825fefa756aa3b7e44c09699a56593b91657",
+    "src/loop_engine/core/service_runtime/runtime.py": "4204aebd2d0c05e1dfd0ea8928fa50c5bf6ce8f690e2cef630c760a93296143c",
+    "src/loop_engine/core/service_runtime/storage.py": "210566426c362e5755dd8ef8560b8331c17bf69eab7e9aec88003537f35b8e68",
+    "src/loop_engine/core/service_runtime/provisioning.py": "4b5553ae122781f31737d19d9b77886c74535e8674fe6ba96ee3e0699bb54d06",
+    "src/loop_engine/core/service_runtime/http.py": "d656a459caaffdb8455c52f1ec0361404be4ee834ff72becde0c59090640aac8",
+    "src/loop_engine/core/service_runtime/http_auth.py": "a84f38f866f6a8fafecb456eed3a160765f7a241aa84adacbd245508a617e7d4",
+    "src/loop_engine/core/service_runtime/browser_identity.py": "c8a69dd44fa6e1ace0d4180d82a52afbdd76dfcbc46cdad09c56351288b50369",
+    "tools/check_identity_customer_access.py": "d3d81d055df7b04eb6a10a55fc065b62fa3888eac7ea820ea27a2155b43653c4"
+  },
+  "source_unchanged": true,
+  "checks": [
+    {
+      "name": "provider_exposes_supported_asymmetric_signing_keys",
+      "passed": true
+    },
+    {
+      "name": "disposable_user_created_0",
+      "passed": true
+    },
+    {
+      "name": "provider_user_identity_is_valid_0",
+      "passed": true
+    },
+    {
+      "name": "created_user_is_bound_to_this_test_0",
+      "passed": true
+    },
+    {
+      "name": "real_password_sign_in_0",
+      "passed": true
+    },
+    {
+      "name": "disposable_user_created_1",
+      "passed": true
+    },
+    {
+      "name": "provider_user_identity_is_valid_1",
+      "passed": true
+    },
+    {
+      "name": "created_user_is_bound_to_this_test_1",
+      "passed": true
+    },
+    {
+      "name": "real_password_sign_in_1",
+      "passed": true
+    },
+    {
+      "name": "real_identity_activates_server_owned_account_0",
+      "passed": true
+    },
+    {
+      "name": "real_identity_activates_server_owned_account_1",
+      "passed": true
+    },
+    {
+      "name": "real_identities_cannot_choose_or_share_a_tenant",
+      "passed": true
+    },
+    {
+      "name": "real_account_activation_is_idempotent",
+      "passed": true
+    },
+    {
+      "name": "real_identity_can_issue_a_scoped_client_key",
+      "passed": true
+    },
+    {
+      "name": "retry_never_replays_the_secret",
+      "passed": true
+    },
+    {
+      "name": "real_other_identity_cannot_revoke_the_key",
+      "passed": true
+    },
+    {
+      "name": "client_key_cannot_mint_more_credentials",
+      "passed": true
+    },
+    {
+      "name": "issued_key_connects_through_the_real_protocol_sdk",
+      "passed": true
+    },
+    {
+      "name": "issued_key_retrieves_only_permitted_reference_metadata",
+      "passed": true
+    },
+    {
+      "name": "metadata_key_cannot_download_bodies",
+      "passed": true
+    },
+    {
+      "name": "local_subject_revocation_invalidates_its_existing_key",
+      "passed": true
+    },
+    {
+      "name": "real_browser_token_can_be_revoked_locally",
+      "passed": true
+    }
+  ],
+  "passed": 22,
+  "total": 22,
+  "all_passed": true,
+  "failure": null,
+  "provider_requests": {
+    "operator_provider_requests": 9,
+    "identity_user_reads": 13,
+    "key_set_reads": 1
+  },
+  "elapsed_seconds": 6.727376196999103,
+  "disposable_accounts": [
+    {
+      "user_id": "824d6870-cba4-46d8-bda8-7edec3aa7191",
+      "soft_deleted": true
+    },
+    {
+      "user_id": "51e4117f-c306-442c-9ab4-f70382f73b2a",
+      "soft_deleted": true
+    }
+  ],
+  "cleanup_failed": false,
+  "unknown_creation_outcome": false,
+  "email_sent": false,
+  "email_confirmation_tested": false,
+  "public_registration_enabled": false,
+  "deployed_host_qualified": false,
+  "model_calls": 0,
+  "payments_created": false,
+  "limitations": [
+    "Administratively confirmed test identities do not qualify email confirmation, recovery or real customer onboarding.",
+    "Provider account deletion reconciliation is separate from the tested local subject revocation.",
+    "Diagnostic material and protocol retrieval do not prove native harness loading or useful task completion."
+  ]
+}

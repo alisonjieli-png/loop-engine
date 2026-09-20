@@ -1,0 +1,82 @@
+{
+  "record_type": "pilot_backup_restore_check/v1",
+  "observed_at": "2026-09-20T04:02:41.256899+00:00",
+  "source_application": "baltor-pilot",
+  "image_reference": "loop-engine-service:light-benefits-20260920-001",
+  "image_id": "sha256:1d8af70db56293a85a0fc55d52c06490f07494ab24962c9cdf0d711b97f3e3da",
+  "backup_sha256": "76316abe4c84b9bfafd11893e5d8f846676d182dee9f6eb8d0185e562d125df9",
+  "private_backup_path": "/home/username/loop-engine/.loop-engine-dev/pilot-restore-8aec166f8e6a4d03999bbc81a5ce6652/private-backup.json",
+  "production_data_mutated": false,
+  "new_cloud_resources": 0,
+  "checks": [
+    {
+      "name": "private_backup_saved_with_owner_only_permissions",
+      "passed": true
+    },
+    {
+      "name": "snapshot_integrity_and_exact_file_digests_pass",
+      "passed": true
+    },
+    {
+      "name": "restore_container_has_no_network_or_published_ports",
+      "passed": true
+    },
+    {
+      "name": "initial_authenticated",
+      "passed": true
+    },
+    {
+      "name": "initial_tenant_scope_preserved",
+      "passed": true
+    },
+    {
+      "name": "initial_revoked_records_preserved",
+      "passed": true
+    },
+    {
+      "name": "initial_body_digest_checked",
+      "passed": true
+    },
+    {
+      "name": "initial_idempotency_preserved",
+      "passed": true
+    },
+    {
+      "name": "after_restart_authenticated",
+      "passed": true
+    },
+    {
+      "name": "after_restart_tenant_scope_preserved",
+      "passed": true
+    },
+    {
+      "name": "after_restart_revoked_records_preserved",
+      "passed": true
+    },
+    {
+      "name": "after_restart_body_digest_checked",
+      "passed": true
+    },
+    {
+      "name": "after_restart_idempotency_preserved",
+      "passed": true
+    },
+    {
+      "name": "owned_container_removed",
+      "passed": true
+    },
+    {
+      "name": "owned_volume_removed",
+      "passed": true
+    }
+  ],
+  "passed": 15,
+  "total": 15,
+  "all_passed": true,
+  "limitations": [
+    "Local point-in-time restoration only; no cross-region recovery.",
+    "Private backup is permission-restricted, not separately encrypted by this tool.",
+    "Reconcile revocations and external payment state before a production restore; old backups can restore old authority.",
+    "This does not establish a scheduled off-site backup or recovery-time guarantee."
+  ]
+}

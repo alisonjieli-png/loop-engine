@@ -1,0 +1,66 @@
+{
+ "all_passed": true,
+ "cases": {
+  "current_source_read_by_current_source": {
+   "customer": "refused:unauthorized",
+   "host": "accepted"
+  },
+  "current_source_read_by_older_image": {
+   "customer": "refused:unsupported_or_corrupt_record",
+   "host": "accepted"
+  },
+  "unfixed_candidate_read_by_older_image": {
+   "customer": "accepted",
+   "host": "accepted"
+  }
+ },
+ "checks": [
+  {
+   "name": "current_source_writes_the_service_state",
+   "passed": true
+  },
+  {
+   "name": "current_server_refuses_a_key_whose_owner_was_disabled",
+   "passed": true
+  },
+  {
+   "name": "older_image_refuses_the_customer_key_record",
+   "passed": true
+  },
+  {
+   "name": "older_image_still_accepts_a_host_issued_key",
+   "passed": true
+  },
+  {
+   "name": "unfixed_candidate_writes_the_service_state",
+   "passed": true
+  },
+  {
+   "name": "drill_detects_the_defect_in_the_unfixed_candidate",
+   "passed": true
+  }
+ ],
+ "container_network": "none",
+ "limitations": [
+  "Local fixture state, not the deployed volume.",
+  "The older image is identified by its local reference and image identity."
+ ],
+ "observed_at": "2026-09-20T20:01:42.880844+00:00",
+ "older_image": {
+  "identity": "sha256:0dd8a0e539c775c1898cf98f239b1c780e104b88c164ec7631c993c4cfe5d0e1",
+  "reference": "baltor-service:account-code-20260920"
+ },
+ "passed": 6,
+ "provider_requests": 0,
+ "record_type": "rollback_key_version_drill/v1",
+ "source": {
+  "access.py": "39d7eae865850832dd77bbb7ee3a842892d4474318490c7c1b71a25b85b23cce",
+  "records.py": "147a1fc46b1765f076e3490c76d0825fefa756aa3b7e44c09699a56593b91657",
+  "runtime.py": "54ac4cf44a04391b2397bd9d0e512dd64b46c5c69d3fa43c8e9cafb3e4503551"
+ },
+ "total": 6,
+ "unfixed_image": {
+  "identity": "sha256:1f63bfde862f1410875cd95fd55dd359a947240ad7ed4caebfccabca030dd188",
+  "reference": "baltor-service:customer-access-20260920"
+ }
+}

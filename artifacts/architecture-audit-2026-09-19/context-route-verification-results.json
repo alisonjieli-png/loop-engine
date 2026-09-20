@@ -1,0 +1,125 @@
+{
+  "baseline": {
+    "checks": 10,
+    "errors": [],
+    "failures": [],
+    "skipped": 0
+  },
+  "date": "2026-09-19",
+  "document_sizes": [
+    {
+      "after_lines": 153,
+      "before_lines": 1036,
+      "path": "ASTRA.md"
+    },
+    {
+      "after_lines": 78,
+      "before_lines": 110,
+      "path": "docs/context/START-HERE.md"
+    },
+    {
+      "after_lines": 84,
+      "before_lines": 609,
+      "path": "docs/context/CODEX-START-HERE.md"
+    },
+    {
+      "after_lines": 88,
+      "before_lines": 159,
+      "path": "docs/README.md"
+    },
+    {
+      "after_lines": 203,
+      "before_lines": 190,
+      "path": "docs/contracts/README.md"
+    },
+    {
+      "after_lines": 87,
+      "before_lines": 92,
+      "path": "docs/components/loop-object/RECORD-COMPATIBILITY.md"
+    }
+  ],
+  "limits": [
+    "Documentation and local-link checks do not qualify runtime behavior or a deployed service.",
+    "Remote URLs, dynamic HTML, JavaScript routes, and example execution are outside this check.",
+    "Other inventory candidates remain unchanged and need separate coordinated remediation."
+  ],
+  "local_links": {
+    "files": 379,
+    "findings": [],
+    "limitations": "No remote URLs, dynamic HTML, JavaScript routes, or code examples executed; GitHub-style Markdown heading slugs are locally approximated.",
+    "local_links_checked": 1400
+  },
+  "mutants": [
+    {
+      "checks": 3,
+      "detected": true,
+      "errors": [],
+      "failures": [
+        "test_old_publish_instruction_is_detected (context_checks.ContextRouteTests)",
+        "test_old_outcome_reader_promise_is_detected (context_checks.ContextRouteTests)",
+        "test_lost_current_route_is_detected (context_checks.ContextRouteTests)"
+      ],
+      "name": "ignore_stale_context_and_missing_routes",
+      "skipped": 0
+    },
+    {
+      "checks": 1,
+      "detected": true,
+      "errors": [],
+      "failures": [
+        "test_changed_snapshot_is_detectable (context_checks.ContextRouteTests)"
+      ],
+      "name": "ignore_changed_snapshot_bytes",
+      "skipped": 0
+    },
+    {
+      "checks": 1,
+      "detected": true,
+      "errors": [],
+      "failures": [
+        "test_missing_file_and_fragment_controls_are_detected (context_checks.ContextRouteTests)"
+      ],
+      "name": "ignore_broken_local_targets_and_anchors",
+      "skipped": 0
+    },
+    {
+      "checks": 1,
+      "detected": true,
+      "errors": [],
+      "failures": [
+        "test_removing_owner_behavior_from_the_explanation_is_detectable (context_checks.ContextRouteTests)"
+      ],
+      "name": "ignore_removed_owner_behavior",
+      "skipped": 0
+    }
+  ],
+  "passed": true,
+  "record_type": "context_route_verification/v1",
+  "snapshot_bytes_verified": true,
+  "source_sha256": {
+    "ASTRA.md": "a3d2ad21f7954be19d755a49f1d5a161d1d65ae7b930596244d64c3fd6d211f9",
+    "docs/README.md": "ff95debede9679ece4453903f7ad9336c3ab4ae89fbf0f0b10d408bfcdbfed7e",
+    "docs/components/loop-object/RECORD-COMPATIBILITY.md": "082d589f99220ef7c094ef569c1a686b1caa3d4a9ae8e0e5247268f2056981e5",
+    "docs/context/CODEX-START-HERE.md": "1bb202479ff97f0b8a32fe797d00c9d2c98ab7b550489a3bca896133cb3ccb68",
+    "docs/context/START-HERE.md": "2682d6ce5f3fbada0c95e022bc799ae0939c14665384cbfbcbcf5e01e3e87dc5",
+    "docs/contracts/README.md": "9b0f1d9de4f2fe4c7b46fef360d4cd696f5f255e9d063f880b0255e9d3bc424c",
+    "docs/evidence/context-route-snapshot-2026-09-19/manifest.json": "372c0a677afc2c42f49bdd4e93c3756116fcb8e877b49316939d2e550ad694d7",
+    "tools/test_context_routes.py": "cbafac2afefdcf76c26cafbc9953289e2200a87ced43b3cd61591a309fef91a6"
+  },
+  "markdown_lint": {
+    "command": "node /home/username/.npm/_npx/0b2c56f61857d977/node_modules/markdownlint-cli2/markdownlint-cli2-bin.mjs AGENTS.md README.md CHANGELOG.md CONTRIBUTING.md SECURITY.md humanizer-context.md ASTRA.md CLAUDE.md showcase/README.md 'docs/**/*.md' 'case-studies/*.md' 'examples/**/*.md' artifacts/architecture-audit-2026-09-19/context-route-candidate-inventory.md",
+    "files": 382,
+    "issues": 0,
+    "exit_code": 0
+  },
+  "prose_review": {
+    "skill": "humanizer",
+    "mode": "technical editing",
+    "influence": "Reduced repeated session history in active routes; kept exact owner terminology, the complete behavioral explanation, and precise evidence limits. No AI-origin score claimed.",
+    "vale": "not run; executable unavailable on PATH"
+  },
+  "retired_language_check": {
+    "scope": "six edited active Markdown files",
+    "matches": 0
+  }
+}

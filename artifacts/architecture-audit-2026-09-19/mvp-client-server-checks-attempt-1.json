@@ -1,0 +1,992 @@
+{
+  "record_type": "client_server_diagram_browser_checks/v1",
+  "browser": "/opt/google/chrome/chrome",
+  "library": "ELK.js 0.12.0",
+  "checks": [
+    {
+      "name": "forty_eight_viewport_theme_view_combinations_are_legible",
+      "passed": false,
+      "detail": {
+        "passed": 47,
+        "total": 48,
+        "failed": [
+          {
+            "theme": "light",
+            "width": 1024,
+            "view": "overview",
+            "passed": false,
+            "engine": "ELK.js@0.12.0",
+            "direction": "vertical",
+            "active": "overview",
+            "errors": [
+              "Overlapping cards: customer/engine",
+              "Overlapping cards: customer/providers",
+              "Overlapping cards: engine/providers"
+            ],
+            "cards": 3,
+            "selected": [
+              "overview"
+            ],
+            "minimumCardText": 11,
+            "background": "rgb(245, 246, 244)"
+          }
+        ]
+      }
+    },
+    {
+      "name": "keyboard_selects_view",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "keyboard_opens_component_detail",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "escape_closes_detail_and_returns_focus",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "native_tab_order_reaches_the_next_component",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "appearance_control_changes_actual_surfaces",
+      "passed": true,
+      "detail": {
+        "light": "rgb(245, 246, 244)",
+        "dark": "rgb(17, 23, 22)"
+      }
+    },
+    {
+      "name": "eight_false_or_broken_content_variants_are_rejected",
+      "passed": true,
+      "detail": [
+        {
+          "name": "provider_claimed_implemented",
+          "errors": [
+            "Supabase must remain proposed."
+          ]
+        },
+        {
+          "name": "postgres_used_as_body_store",
+          "errors": [
+            "The proposed metadata/body split changed."
+          ]
+        },
+        {
+          "name": "pgvector_claimed_current_default",
+          "errors": [
+            "Current retrieval defaults changed."
+          ]
+        },
+        {
+          "name": "history_assigned_to_model_provider",
+          "errors": [
+            "Run History ownership changed."
+          ]
+        },
+        {
+          "name": "remote_authorization_claimed_implemented",
+          "errors": [
+            "Hosted implementation state is not the reviewed proposal."
+          ]
+        },
+        {
+          "name": "visible_vendor_status_changed",
+          "errors": [
+            "Supabase: label must remain proposed."
+          ]
+        },
+        {
+          "name": "model_moved_inside_product",
+          "errors": [
+            "Remote models must stay external."
+          ]
+        },
+        {
+          "name": "dangling_connection",
+          "errors": [
+            "retrieval: dangling connection."
+          ]
+        }
+      ]
+    },
+    {
+      "name": "long_and_markup_shaped_labels_wrap_without_execution",
+      "passed": true,
+      "detail": {
+        "errors": [],
+        "injectedElement": false,
+        "executed": false,
+        "textVisible": true
+      }
+    },
+    {
+      "name": "overlap_and_clipping_mutants_are_detected",
+      "passed": true,
+      "detail": {
+        "overlap": [
+          "Overlapping cards: customer/engine"
+        ],
+        "clipping": [
+          "Clipped card: customer"
+        ]
+      }
+    },
+    {
+      "name": "rapid_view_changes_cannot_publish_stale_layout",
+      "passed": true,
+      "detail": {
+        "active": "execution",
+        "state": "execution",
+        "errors": []
+      }
+    },
+    {
+      "name": "blocked_layout_dependency_has_honest_readable_fallback",
+      "passed": true,
+      "detail": {
+        "engine": "unavailable",
+        "text": "Automatic layout is unavailable. The same architecture is shown as readable boxes and connections.",
+        "cards": 3,
+        "errors": [],
+        "connections": true
+      }
+    },
+    {
+      "name": "no_runtime_javascript_errors",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "only_owned_files_and_one_pinned_static_package_are_requested",
+      "passed": true,
+      "detail": [
+        {
+          "url": "file:///home/username/loop-engine/artifacts/architecture-audit-2026-09-19/mvp-client-server.html",
+          "type": "document"
+        },
+        {
+          "url": "file:///home/username/loop-engine/artifacts/architecture-audit-2026-09-19/mvp-client-server.css",
+          "type": "stylesheet"
+        },
+        {
+          "url": "https://cdn.jsdelivr.net/npm/elkjs@0.12.0/lib/elk.bundled.js",
+          "type": "script"
+        },
+        {
+          "url": "file:///home/username/loop-engine/artifacts/architecture-audit-2026-09-19/mvp-client-server.data.js",
+          "type": "script"
+        },
+        {
+          "url": "file:///home/username/loop-engine/artifacts/architecture-audit-2026-09-19/mvp-client-server.js",
+          "type": "script"
+        }
+      ]
+    }
+  ],
+  "matrix": [
+    {
+      "theme": "light",
+      "width": 1440,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1440,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1280,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "view": "overview",
+      "passed": false,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [
+        "Overlapping cards: customer/engine",
+        "Overlapping cards: customer/providers",
+        "Overlapping cards: engine/providers"
+      ],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 1024,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 736,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 736,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 736,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 736,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 360,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 360,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 360,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 360,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "light",
+      "width": 320,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(245, 246, 244)"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1440,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1280,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "horizontal",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 1024,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 736,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 736,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 736,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 736,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 360,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 360,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 360,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 360,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "view": "overview",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "overview",
+      "errors": [],
+      "cards": 3,
+      "selected": [
+        "overview"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "view": "sign-in",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "sign-in",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "sign-in"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "view": "retrieval",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "retrieval",
+      "errors": [],
+      "cards": 5,
+      "selected": [
+        "retrieval"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    },
+    {
+      "theme": "dark",
+      "width": 320,
+      "view": "execution",
+      "passed": true,
+      "engine": "ELK.js@0.12.0",
+      "direction": "vertical",
+      "active": "execution",
+      "errors": [],
+      "cards": 6,
+      "selected": [
+        "execution"
+      ],
+      "minimumCardText": 11,
+      "background": "rgb(17, 23, 22)"
+    }
+  ],
+  "screenshots": [
+    "mvp-client-server-overview-1440-light.png",
+    "mvp-client-server-sign-in-1440-light.png",
+    "mvp-client-server-retrieval-1440-light.png",
+    "mvp-client-server-execution-1440-light.png",
+    "mvp-client-server-overview-360-light.png",
+    "mvp-client-server-sign-in-360-light.png",
+    "mvp-client-server-retrieval-360-light.png",
+    "mvp-client-server-execution-360-light.png",
+    "mvp-client-server-overview-1440-dark.png",
+    "mvp-client-server-sign-in-1440-dark.png",
+    "mvp-client-server-retrieval-1440-dark.png",
+    "mvp-client-server-execution-1440-dark.png",
+    "mvp-client-server-overview-360-dark.png",
+    "mvp-client-server-sign-in-360-dark.png",
+    "mvp-client-server-retrieval-360-dark.png",
+    "mvp-client-server-execution-360-dark.png"
+  ],
+  "source_sha256": {
+    "mvp-client-server.html": "24acee6881063e95c7bb4020ebc7c6bba58b498b3f24fe9319ffeb603075e360",
+    "mvp-client-server.css": "8946b7f160c5e2692228a05524761ea764dc67b053c4758c98d4d2a52a142c14",
+    "mvp-client-server.data.js": "4b9a551be7cbeb80130d1384345e768752d145a971ef26ba88ec4e81b3d6c00e",
+    "mvp-client-server.js": "38b7f05828476894e8d2b8740b7ade994ff8925f31159deb25b3c1712fc2f0d2"
+  },
+  "passed": false,
+  "network_scope": "Static package only; no fetch, API, account or payment call."
+}

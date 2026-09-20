@@ -1,0 +1,188 @@
+{
+  "baseline": [
+    {
+      "checks": 24,
+      "failed": [],
+      "module": "loop_engine.core.code_intelligence_assets",
+      "not_tested": []
+    },
+    {
+      "checks": 11,
+      "failed": [],
+      "module": "loop_engine.loop.loop_capsule",
+      "not_tested": []
+    },
+    {
+      "checks": 31,
+      "failed": [],
+      "module": "loop_engine.core.intelligence_layers",
+      "not_tested": []
+    },
+    {
+      "checks": 16,
+      "failed": [],
+      "module": "loop_engine.core.retrieval",
+      "not_tested": []
+    },
+    {
+      "checks": 7,
+      "failed": [],
+      "module": "loop_engine.core.store_serve",
+      "not_tested": []
+    },
+    {
+      "checks": 11,
+      "failed": [],
+      "module": "loop_engine.core.intelligence_portfolio",
+      "not_tested": []
+    },
+    {
+      "checks": 33,
+      "failed": [],
+      "module": "loop_engine.core.reusable_capability_checks",
+      "not_tested": []
+    },
+    {
+      "checks": 16,
+      "failed": [],
+      "module": "loop_engine.loop.capability_loops",
+      "not_tested": []
+    },
+    {
+      "checks": 8,
+      "failed": [],
+      "module": "loop_engine.loop.intelligence_loops",
+      "not_tested": []
+    },
+    {
+      "checks": 14,
+      "failed": [],
+      "module": "loop_engine.core.adaptive_practitioner_orientation_capabilities",
+      "not_tested": []
+    }
+  ],
+  "baseline_candidate_refused": true,
+  "mutants": [
+    {
+      "detected": true,
+      "failing_checks": [
+        "public_candidate_refused_before_materialization"
+      ],
+      "name": "bypass_authoritative_Code_admission"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "changed_data_and_dependency_bindings_invalidate_admission",
+        "selected_Code_reference_binds_qualified_data_identity"
+      ],
+      "name": "omit_data_references_from_qualification"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "selected_Code_reference_binds_qualified_data_identity"
+      ],
+      "name": "omit_qualification_from_selected_reference_identity"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "legacy_Code_records_remain_readable_but_require_new_qualification"
+      ],
+      "name": "permit_stale_legacy_qualification"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "stored_admission_evidence_digest_is_validated_before_materialization"
+      ],
+      "name": "ignore_stored_admission_evidence_integrity"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "Code_admission_refuses_before_materialization:changed_contract"
+      ],
+      "name": "ignore_selected_Code_contract"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "Code_executor_unavailable_before_materialization:effectful",
+        "Code_executor_unavailable_before_materialization:unsupported_mode"
+      ],
+      "name": "permit_unavailable_effectful_callable"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "inline_selection_binds_the_actual_value_and_version"
+      ],
+      "name": "ignore_changed_inline_value"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "inline_selection_binds_the_actual_value_and_version"
+      ],
+      "name": "discard_inline_record_version"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "top_n_bounds_the_combined_hits_and_references"
+      ],
+      "name": "expand_unified_result_limit"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "required_facets_cannot_starve_a_bounded_query"
+      ],
+      "name": "bound_pool_before_required_facets"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "facet_preferences_rank_before_the_result_limit"
+      ],
+      "name": "ignore_facet_preference_during_sort"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "backend_failure_is_distinct_from_a_valid_empty_result"
+      ],
+      "name": "turn_backend_failure_into_no_matches"
+    }
+  ],
+  "passed": true,
+  "record_type": "intelligence_access_verification/v1",
+  "source_sha256": {
+    "src/loop_engine/core/adaptive_practitioner_orientation_capabilities.py": "a1c0e2c2e6103abf95c08a895053869c924ad94668c17e455c4c8c2d0106589b",
+    "src/loop_engine/core/code_intelligence_asset_checks.py": "2276e4442626b1a2a65d13a426bd4b19e15bc06944cde2ff54545f66a05b9b18",
+    "src/loop_engine/core/code_intelligence_assets.py": "75136cf7431ca64b34dfa18592e9ab9431c68e3c4e172b4f410fa201ddd13665",
+    "src/loop_engine/core/intelligence_layers.py": "f5af7ed40adb48ea1965982fb852c1ad9195a4f33063e2bb3fc063a6971e4c0b",
+    "src/loop_engine/core/intelligence_portfolio.py": "3e35d25c57912d4401a2136bf931f94895f1b0283ba9d08852b58250630e6c4b",
+    "src/loop_engine/core/intelligence_portfolio_checks.py": "b9c7914242d182813a3b16e48f5a9d4b0184f36647cd5b05dd8955a574c9331a",
+    "src/loop_engine/core/retrieval.py": "91682f090501ad70956aeb0f8d5a390999ba7f49ce93828efd2de5769c443092",
+    "src/loop_engine/core/reusable_capability_checks.py": "42c95fcd344e8564f433c91cfd4c5a7e37c9d61a7c12a53ad175067b025ff063",
+    "src/loop_engine/core/reusable_capability_resolution.py": "d36d7217f183361c15e59ff42b2052525afbef98721da8b50670fbd5032a2b28",
+    "src/loop_engine/core/store_serve.py": "582ba6181b8dc1ec8ed0fc4fb2bfd75b42c412737c6bb704aeafaef42b19a8d1",
+    "src/loop_engine/loop/capability_loops.py": "dd80260d6ba2f4f7674a554bb71da4e1fbd4f1e264336c7478f6b9f0d33fb3dc",
+    "src/loop_engine/loop/intelligence_loops.py": "c37afdedbfe8de10f253b4230cbbd462d0f62c7bca2943e4b461feeb13475a1b",
+    "src/loop_engine/loop/loop_capsule.py": "dfe9d36313cf77ac47cc6a2aba7f7e914e402f0f51fb6bbc6d992fad38276c51"
+  },
+  "checked_at": "2026-09-19",
+  "base_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "check_count": 171,
+  "mutants_detected": 13,
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src HF_HUB_OFFLINE=1 python3 artifacts/architecture-audit-2026-09-19/intelligence-access-verification.py",
+  "prior_attempt": "intelligence-access-initial-mutation-attempt.json",
+  "live_provider_calls": 0,
+  "cloud_operations": 0,
+  "local_embedding_checks": "The existing retrieval suite exercised installed local embedding backends with Hugging Face offline mode enabled.",
+  "full_repository_suite_run": false,
+  "committed": false
+}

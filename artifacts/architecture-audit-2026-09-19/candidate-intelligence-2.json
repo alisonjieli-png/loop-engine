@@ -1,0 +1,515 @@
+{
+  "record_type": "catalog_export/v1",
+  "records": [
+    {
+      "record_id": "pilot.review.20260920.inputs_before_action",
+      "record_version": "30b3557bdb9e434f9e6f2b9dbd88bc4d4f8595937bee04adf56f50ccc775259d",
+      "intelligence_layer": "context",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "9293ddc7178214d0dd7e0bf58c6bd3fefc5972ce59ffd0acedd96d543552922e",
+        "family": "checklist",
+        "license_state": "pending_review",
+        "tags": [
+          "inputs",
+          "review",
+          "missing requirements",
+          "authority"
+        ],
+        "title": "Check missing inputs before a consequential action"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "checklist",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "AGENTS.md",
+            "sha256": "3a27395761176dc7c328c04e964319d62660d36349eee63680ca6c0f0b3efabd"
+          },
+          {
+            "path": "src/loop_engine/core/action_vector_assessment.py",
+            "sha256": "888d739871a2f607a2ec55357a27cbee291ec301e866422abc73a623adba182c"
+          }
+        ],
+        "symbols": [],
+        "text": "Before acting, identify the supplied inputs, requested output and acceptance check. List missing information that changes the result. Keep an unknown value distinct from a false value. Prepare useful work that does not require the missing authority, and ask a scoped question when only the owner can resolve it. Do not substitute a guessed permission or fabricate an input.",
+        "title": "Check missing inputs before a consequential action"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.reference_before_body",
+      "record_version": "112d032d161253941cf2ec04425d6e5d4057e1f78a9f838a91cc54ec7a938551",
+      "intelligence_layer": "context",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "3c852d3db995702b3c4d8cb23bdd1df5d26293fe1d0e4239002d181e831e00fa",
+        "family": "method",
+        "license_state": "pending_review",
+        "tags": [
+          "retrieval",
+          "digest",
+          "selection",
+          "materialization"
+        ],
+        "title": "Select a reference before downloading intelligence"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "method",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "docs/guides/harness-instance-context-layout.md",
+            "sha256": "5c8cc6928fbe1a8eb96c8d7d8dd173ab9fa2f864cbbfb18b345bc0c9c96f569f"
+          },
+          {
+            "path": "src/loop_engine/core/service_runtime/provisioning.py",
+            "sha256": "4b5553ae122781f31737d19d9b77886c74535e8674fe6ba96ee3e0699bb54d06"
+          }
+        ],
+        "symbols": [],
+        "text": "Search for small references using task requirements and authorized scope. Inspect source, revision, compatibility, license state and qualification. Select the required references before requesting bodies. Reauthorize at fetch time and compare exact bytes with the selected digest. Record selection, fetching, native loading and downstream use separately. A digest match does not prove safety or usefulness.",
+        "title": "Select a reference before downloading intelligence"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.failure_classification",
+      "record_version": "c15b804895279d615bd61105c8f7f9ead4e0272c1fe3e8cd055cec5baaca71e0",
+      "intelligence_layer": "context",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "cbc2726558c30033cd39dabe58e7986b709854dd2db03af82b4bfea90540a54a",
+        "family": "method",
+        "license_state": "pending_review",
+        "tags": [
+          "failure",
+          "environment",
+          "verification",
+          "repair"
+        ],
+        "title": "Classify a failed check before changing the work"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "method",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "docs/architecture/CONSTITUTION.md",
+            "sha256": "986401969a2745862693335a89f3a38025c1a20271d6b0030f9798f00517554a"
+          }
+        ],
+        "symbols": [],
+        "text": "Preserve the failing input and observation. Determine whether the candidate, the check or the environment is wrong. Name the smallest discriminating test and a known-wrong control. A revised check needs separate review and must still reject that control. Never use a review to waive permission, secrets, network, spending, sandbox or external-effect requirements.",
+        "title": "Classify a failed check before changing the work"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.complete_route_cost",
+      "record_version": "cd57eaf70bd5fef2149fd5a4f42a631a7589049e625c1e2c61511d167d56be7f",
+      "intelligence_layer": "context",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "3d652910392e4003298a811f4f53b6d921391b7c3dd415f96c04eb3765385749",
+        "family": "evaluation",
+        "license_state": "pending_review",
+        "tags": [
+          "model selection",
+          "cost",
+          "latency",
+          "retry",
+          "routing"
+        ],
+        "title": "Compare complete route cost rather than the first model call"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "evaluation",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "docs/guides/configuration-grid-search-and-optimization.md",
+            "sha256": "51bb646ab4ba7d99cf4678e84ac3fa7eee787261f8e54e702bd58f0e2912da12"
+          },
+          {
+            "path": "docs/architecture/CONSTITUTION.md",
+            "sha256": "986401969a2745862693335a89f3a38025c1a20271d6b0030f9798f00517554a"
+          }
+        ],
+        "symbols": [],
+        "text": "Compare eligible routes on the same frozen task population. Include retrieval, feature computation, process startup, context transfer, execution, verification and permitted retries. Keep correctness and authority as hard requirements. Record failures, uncertain costs and missing token accounting. A cheaper initial call is not a cheaper successful task when it needs more retries. Do not promote a route from these instructions alone.",
+        "title": "Compare complete route cost rather than the first model call"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.harness_layout_review",
+      "record_version": "507d504d004e0ec1b8d04c118d1f4acf4fb59640ce42b75baefcfed6b7f9317a",
+      "intelligence_layer": "context",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "0c0e1b53a13ab6c417382e8a13cf5b819b71dfb5a3e55a21886aa65ed86d9ffb",
+        "family": "context_layout",
+        "license_state": "pending_review",
+        "tags": [
+          "harness",
+          "context",
+          "files",
+          "loading",
+          "permissions"
+        ],
+        "title": "Review a harness briefing and its native loading evidence"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "context_layout",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "docs/guides/harness-instance-context-layout.md",
+            "sha256": "5c8cc6928fbe1a8eb96c8d7d8dd173ab9fa2f864cbbfb18b345bc0c9c96f569f"
+          }
+        ],
+        "symbols": [],
+        "text": "Prepare a scoped objective, exact input and output contracts, budget and allowed effects. Keep host credentials and acceptance records outside model-editable context. Materialize only selected revisions into paths the chosen harness version supports. Inspect inherited user and repository instructions, disabled discovery and truncation. File placement alone does not prove native loading, execution or task benefit.",
+        "title": "Review a harness briefing and its native loading evidence"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.connection_diagnosis",
+      "record_version": "76995eca1313ccbbf8069db93b124bb57ffe7e9c32c06f7def85596ba087a808",
+      "intelligence_layer": "context",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "146ed2197a8596fba8884bc9bdaeb64cc8b94d4cf897c8d2ac5483215f0064a1",
+        "family": "connection_recipe",
+        "license_state": "pending_review",
+        "tags": [
+          "authentication",
+          "connection",
+          "client",
+          "service token"
+        ],
+        "title": "Distinguish a service token from model-provider authentication"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "connection_recipe",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "docs/guides/launch-setup-runbook.md",
+            "sha256": "58ac50aae2df8f71c61b0cdf43c915a58d0782c22fe37e41bb3f534b105d0128"
+          },
+          {
+            "path": "src/loop_engine/core/service_runtime/web_assets/client-recipes.json",
+            "sha256": "3d976e2ffed89ba3339c01dcb795be485b6dc6ee23dc43c2d897d50bed40bb60"
+          }
+        ],
+        "symbols": [],
+        "text": "First verify the service origin and declared protocol. Supply a scoped service token through the client's secret mechanism. Confirm the server-bound tenant and available operations. Model access is configured separately in the executor or approved broker. Do not send a model key to the website, put a token in a URL, or assume an operator's provider login supplies backend runtime credentials.",
+        "title": "Distinguish a service token from model-provider authentication"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.duplicate_detection_reference",
+      "record_version": "54b9ca2f94ff850d8e86bb5e57360034747d20b3108de7a3c0e54f7627c3dcc5",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "d553e7d949234551c2b1dc44044982d941bc8f8cc066c1c9737b2440c53cdfb6",
+        "family": "code_reference",
+        "license_state": "pending_review",
+        "tags": [
+          "duplicate",
+          "blocking",
+          "deduplication",
+          "records"
+        ],
+        "title": "Candidate reference to duplicate detection with declared blocking keys"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "code_reference",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "src/loop_engine/code_nodes/duplicate_detection.py",
+            "sha256": "7e9ba9b589707e612dc8f1d245ca199d4802cb50106b7d9751bddef20fce0f15"
+          }
+        ],
+        "symbols": [
+          "DuplicateFieldSpec",
+          "DuplicatePolicy",
+          "find_duplicates",
+          "dedupe"
+        ],
+        "text": "Review the existing duplicate_detection module before writing a new duplicate matcher. It supports declared field policies and blocking keys, records skipped oversized blocks and produces a deduplication proposal rather than silently changing source rows. This is a source reference only. Packaging, dependency checks, exact callable contract, effect admission and independent qualification remain required before reusable activation.",
+        "title": "Candidate reference to duplicate detection with declared blocking keys"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.non_destructive_copy_reference",
+      "record_version": "dfbe07f1564dc38dbb4615919892844f1a819e5324fb84bd25c179a520e193f9",
+      "intelligence_layer": "code",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "5886bc6984d07ac93121a84029a507a9a01923c03d78fee748b1ad35cf83d819",
+        "family": "code_reference",
+        "license_state": "pending_review",
+        "tags": [
+          "database",
+          "copy",
+          "corrections",
+          "preserve original"
+        ],
+        "title": "Candidate reference to corrected database copies without in-place edits"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "code_reference",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "src/loop_engine/code_nodes/database_copy.py",
+            "sha256": "a3b2a781702cb8dd09f97f1d27a315ba9184ea52cbbc12b52d1b003b3df3e18b"
+          }
+        ],
+        "symbols": [
+          "TableLocation",
+          "ColumnCorrection",
+          "copy_table"
+        ],
+        "text": "Review the existing database_copy module for copying declared rows to a new destination with selected corrections. Preserve the original source and compare its digest before and after. A new target must not be the source or an existing unrelated file. This card does not authorize a database write and is not an independently qualified package.",
+        "title": "Candidate reference to corrected database copies without in-place edits"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.latency_observation",
+      "record_version": "a175e96c905eb25a75cfbbd1398ba0bcfb8b846519495ff5d700c70a7b757538",
+      "intelligence_layer": "runtime_history_solution",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "7f7cbd54a9326f2bb05cbe708f28c447c3c6974702e3047cf28b8e5eb178b270",
+        "family": "measurement",
+        "license_state": "pending_review",
+        "tags": [
+          "latency",
+          "Fly",
+          "measurement",
+          "retrieval",
+          "small catalogue"
+        ],
+        "title": "Workstation-to-Fly diagnostic retrieval latency observation"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "measurement",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "artifacts/architecture-audit-2026-09-19/service-latency-1.json",
+            "sha256": "11ba9cde3a685479abe99b7d81d879b88931f28e8b739c22da30ab6cb9e47ef3"
+          }
+        ],
+        "symbols": [],
+        "text": "The referenced report contains 84 serial read-only requests across seven profiles and retains every sample. Inspect the report for actual timings, failures, cold versus reused connections and its timestamp. The population is a small diagnostic catalogue. It does not establish production capacity, global latency, model savings or superiority to another service.",
+        "title": "Workstation-to-Fly diagnostic retrieval latency observation"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.stream_response_failure",
+      "record_version": "6cb0548da8617c9e15f8207edce4a17bf291704ea5b21a089af561a6187fa2c5",
+      "intelligence_layer": "runtime_history_solution",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "ba5e03872e32e5a7f5dc7c59f5147fe194c353541cafa09fead94590f5dfde35",
+        "family": "failure_remedy",
+        "license_state": "pending_review",
+        "tags": [
+          "protocol",
+          "event stream",
+          "browser",
+          "failure",
+          "response"
+        ],
+        "title": "Browser protocol check failed when it assumed only JSON responses"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "failure_remedy",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "artifacts/architecture-audit-2026-09-19/guided-connection-browser-1.json",
+            "sha256": "6b97dda384a7a9a7abc89e75d618a758c1d683d536067c27d8900b3c4ed8fedb"
+          },
+          {
+            "path": "artifacts/architecture-audit-2026-09-19/guided-connection-browser-3.json",
+            "sha256": "ccabea319e745831ea2c76d8f5cbe8fbcbfde82d3d70fe5b8718eb21328431f7"
+          },
+          {
+            "path": "src/loop_engine/core/service_runtime/web_assets/service.js",
+            "sha256": "a7e57758913dc3d6de0d35c1980cfce0985bad281bc1640cf78bcf20b4fc8441"
+          }
+        ],
+        "symbols": [],
+        "text": "The first guided-connection browser check did not complete because its success condition was not reached. Inspection found that the service's protocol transport can return server-sent events, while the first browser reader assumed a JSON response. The repair handles bounded event frames and matching request identities. Preserve the original failure and compare it with the later successful report. This is local browser evidence, not native harness qualification.",
+        "title": "Browser protocol check failed when it assumed only JSON responses"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.owner_compatible_endpoints",
+      "record_version": "308967737a5bd174ec3f7186439c7fa8ba55252d7c11d35a6e91c4e9828eb7ce",
+      "intelligence_layer": "user_feedback",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "d87d57c9a64e4df96b21a29e45025490c8c092079376969c976eb6223f7077a2",
+        "family": "owner_constraint",
+        "license_state": "pending_review",
+        "tags": [
+          "provider",
+          "endpoint",
+          "configuration",
+          "ownership"
+        ],
+        "title": "Owner direction: use configured model endpoints without managing servers"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "owner_constraint",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md",
+            "sha256": "e71af1005567c75ccad403cfca39340ff25a8828c695e9e782eb6dfbc13fbfe2"
+          },
+          {
+            "path": "docs/guides/jev-and-harness-decision-tools.md",
+            "sha256": "ff41b7342702b1ae81f4c9c398a2181d7f0f871dbafb9a41688b2d58a1e36479"
+          }
+        ],
+        "symbols": [],
+        "text": "The recorded owner direction keeps model endpoints operated by the customer or provider. Loop Engine accepts supported endpoint and credential references; it does not need to own or launch every model server. Preserve selectable decision and building providers. Availability and quality need exact-route evidence, and a missing credential must remain an explicit unavailable result.",
+        "title": "Owner direction: use configured model endpoints without managing servers"
+      }
+    },
+    {
+      "record_id": "pilot.review.20260920.owner_benefit_copy",
+      "record_version": "b8d508e8b8b1b820f74e9d4566b03e12e0dd528ecafb0b68bf2b75a2321da240",
+      "intelligence_layer": "user_feedback",
+      "source_collection": "learned",
+      "artifact_kind": "intelligence_record",
+      "lifecycle": "candidate",
+      "namespace": "pilot.review.20260920",
+      "attributes": {
+        "content_sha256": "d978e0b93df6045ae83d6980c82439ffe07bdc0e07057ac84a7d6c1d95cd0f67",
+        "family": "owner_priority",
+        "license_state": "pending_review",
+        "tags": [
+          "website",
+          "messaging",
+          "reusable solutions",
+          "benefits"
+        ],
+        "title": "Owner direction: explain reusable solutions before deployment mechanics"
+      },
+      "payload": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "execution_available": false,
+        "family": "owner_priority",
+        "license_state": "pending_review",
+        "lifecycle": "candidate",
+        "qualification": "not_independently_qualified",
+        "record_type": "candidate_intelligence_specification/v1",
+        "sources": [
+          {
+            "path": "docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md",
+            "sha256": "e71af1005567c75ccad403cfca39340ff25a8828c695e9e782eb6dfbc13fbfe2"
+          }
+        ],
+        "symbols": [],
+        "text": "The recorded owner direction leads the homepage with reusable solutions and useful work. Explain excessive context, unnecessarily expensive models, missing domain expertise, repeated code generation and repeated mistakes in plain language. Keep architecture details in technical pages. Do not replace this direction with unmeasured percentage savings, guaranteed daily improvement or fabricated customer proof.",
+        "title": "Owner direction: explain reusable solutions before deployment mechanics"
+      }
+    }
+  ],
+  "count": 12
+}

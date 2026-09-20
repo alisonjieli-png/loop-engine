@@ -1,0 +1,165 @@
+{
+  "record_type": "candidate_intelligence_staging_report/v1",
+  "records": 12,
+  "families": {
+    "checklist": 1,
+    "method": 2,
+    "evaluation": 1,
+    "context_layout": 1,
+    "connection_recipe": 1,
+    "code_reference": 2,
+    "measurement": 1,
+    "failure_remedy": 1,
+    "owner_constraint": 1,
+    "owner_priority": 1
+  },
+  "layers": {
+    "context": 6,
+    "code": 2,
+    "runtime_history_solution": 2,
+    "user_feedback": 2
+  },
+  "batch_digest": "683467b7ddd8d8dfc90e71fcb46757a748d935e1c7dc5f1a55e7c65fcd77e357",
+  "committed": true,
+  "hosted_publication": false,
+  "independent_qualification": false,
+  "review_search": {
+    "normal_search_hits": 0,
+    "normal_search_excluded": 12,
+    "probes": [
+      {
+        "expected_identity": "pilot.review.20260920.inputs_before_action",
+        "returned": [
+          "pilot.review.20260920.inputs_before_action",
+          "pilot.review.20260920.failure_classification",
+          "pilot.review.20260920.stream_response_failure"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 21.152,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.reference_before_body",
+        "returned": [
+          "pilot.review.20260920.reference_before_body",
+          "pilot.review.20260920.duplicate_detection_reference",
+          "pilot.review.20260920.non_destructive_copy_reference"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 12.533,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.failure_classification",
+        "returned": [
+          "pilot.review.20260920.failure_classification",
+          "pilot.review.20260920.stream_response_failure",
+          "pilot.review.20260920.inputs_before_action"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 12.271,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.complete_route_cost",
+        "returned": [
+          "pilot.review.20260920.complete_route_cost",
+          "pilot.review.20260920.stream_response_failure",
+          "pilot.review.20260920.duplicate_detection_reference"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.822,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.harness_layout_review",
+        "returned": [
+          "pilot.review.20260920.harness_layout_review",
+          "pilot.review.20260920.stream_response_failure",
+          "pilot.review.20260920.reference_before_body"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 12.171,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.connection_diagnosis",
+        "returned": [
+          "pilot.review.20260920.connection_diagnosis",
+          "pilot.review.20260920.complete_route_cost",
+          "pilot.review.20260920.owner_compatible_endpoints"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 12.244,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.duplicate_detection_reference",
+        "returned": [
+          "pilot.review.20260920.duplicate_detection_reference",
+          "pilot.review.20260920.non_destructive_copy_reference",
+          "pilot.review.20260920.connection_diagnosis"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.615,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.non_destructive_copy_reference",
+        "returned": [
+          "pilot.review.20260920.non_destructive_copy_reference",
+          "pilot.review.20260920.duplicate_detection_reference",
+          "pilot.review.20260920.owner_compatible_endpoints"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.31,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.latency_observation",
+        "returned": [
+          "pilot.review.20260920.latency_observation",
+          "pilot.review.20260920.complete_route_cost",
+          "pilot.review.20260920.failure_classification"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.544,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.stream_response_failure",
+        "returned": [
+          "pilot.review.20260920.stream_response_failure",
+          "pilot.review.20260920.failure_classification",
+          "pilot.review.20260920.inputs_before_action"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.625,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.owner_compatible_endpoints",
+        "returned": [
+          "pilot.review.20260920.owner_compatible_endpoints",
+          "pilot.review.20260920.owner_benefit_copy",
+          "pilot.review.20260920.connection_diagnosis"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.525,
+        "physical_model_calls": 0
+      },
+      {
+        "expected_identity": "pilot.review.20260920.owner_benefit_copy",
+        "returned": [
+          "pilot.review.20260920.owner_benefit_copy",
+          "pilot.review.20260920.owner_compatible_endpoints",
+          "pilot.review.20260920.duplicate_detection_reference"
+        ],
+        "found_in_first_three": true,
+        "elapsed_ms": 11.113,
+        "physical_model_calls": 0
+      }
+    ],
+    "limits": "Title-derived lexical smoke probes on authored candidates, not a held-out relevance or task-success benchmark"
+  }
+}

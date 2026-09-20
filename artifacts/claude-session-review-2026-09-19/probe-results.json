@@ -1,0 +1,172 @@
+{
+  "date": "2026-09-19",
+  "finding_count": 10,
+  "interpretation": "Finding presence reproduces a defect or launch gap; it is not a passing product test.",
+  "probe_count": 10,
+  "probes": [
+    {
+      "finding_present": true,
+      "observed": {
+        "files_written": [],
+        "node_id": "review-assignment",
+        "provisioned": false,
+        "reason": "no_catalogue_installed",
+        "record_type": "spawned_provisioning/v1"
+      },
+      "probe": "public_solve_has_no_provisioning_catalogue"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "files_inside_plan": [],
+        "outside_folder_created": true
+      },
+      "probe": "plan_identifier_escapes_provisioning_root"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "outside_file_overwritten": true
+      },
+      "probe": "assignment_write_follows_existing_symlink"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "files_created": [
+          "AGENTS.md",
+          "artifacts",
+          "contracts",
+          "provisioning.json",
+          "task.json"
+        ],
+        "guardrails": {
+          "blocked": false,
+          "blocked_by": [],
+          "decisions": [
+            {
+              "category": "permission",
+              "consequence": "escalate",
+              "detail": "no judge is installed for a model judged rule",
+              "digest": "6114f0052015f8c05dff03dcc2cf9d9d3999e8b894607ca481439d7e86c88368",
+              "guardrail_id": "review.authorization",
+              "level": "block",
+              "obligation": "authorization must pass",
+              "outcome": "unavailable",
+              "point": "before_provisioning",
+              "record_type": "guardrail_decision/v1",
+              "scope": "organization"
+            }
+          ],
+          "escalated_by": [
+            "review.authorization"
+          ],
+          "evaluated": 1,
+          "fired": [],
+          "point": "before_provisioning",
+          "record_type": "guardrail_evaluation/v1"
+        }
+      },
+      "probe": "unavailable_blocking_guardrail_allows_provisioning"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "actual_call_numbers": [
+          2,
+          2
+        ],
+        "actual_record_ids": [
+          "review-run:route:2",
+          "review-run:route:2"
+        ],
+        "expected_call_numbers": [
+          1,
+          2
+        ]
+      },
+      "probe": "repeated_steps_overwrite_learning_records"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "reported_bodies_retained": false,
+        "response_marker_retained": true
+      },
+      "probe": "response_preview_retained_but_report_denies_bodies"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "derived_rows_available_on_collector": 2,
+        "report": {
+          "bodies_retained": false,
+          "ceiling": 20000,
+          "complete": true,
+          "events_retained": 5,
+          "events_seen": 5,
+          "prompt_fields_withheld": 0,
+          "record_type": "model_call_collection/v1",
+          "records": 2,
+          "truncated": false
+        }
+      },
+      "probe": "collector_report_contains_count_not_training_rows"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "item_tags": {
+          "authentication": [
+            "operator"
+          ],
+          "data_sensitivity": [
+            "regulated"
+          ],
+          "lifecycle": [
+            "candidate"
+          ],
+          "record_type": "intelligence_tags/v1"
+        },
+        "served": true,
+        "tenant_entitlement": "bodies"
+      },
+      "probe": "provisioning_has_no_qualification_or_sensitivity_access_gate"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "meter_installed": false,
+        "reported_metered": true
+      },
+      "probe": "read_claims_metered_without_installed_meter"
+    },
+    {
+      "finding_present": true,
+      "observed": {
+        "/mcp": 404,
+        "/provision": 404,
+        "/read": 404,
+        "/v1/usage": 200
+      },
+      "probe": "existing_http_service_does_not_expose_provisioning_protocol"
+    }
+  ],
+  "provider_calls": 0,
+  "record_type": "claude_session_review_probes/v1",
+  "remote_effects": 0,
+  "source_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "source_sha256": {
+    "src/loop_engine/code_nodes/solve_runtime.py": "6b6be8acfee03bb71b1ccd8675ab9c81f13334b58242dd75cd3bbe41906f2bf4",
+    "src/loop_engine/core/guardrail_intelligence.py": "604e5102c98f78ed22df750fca4740eabc2f4e4999c0669dbb7330625d2644ff",
+    "src/loop_engine/core/harness_intelligence.py": "956f53f618d7cc13092d4838ec0908b17288a262719618e00724218c90e281fe",
+    "src/loop_engine/core/intelligence_tagging.py": "6a4c5cc290decc67f81e9a2e2e5dda286dd895d7d814247150e7fa0c6e809e0e",
+    "src/loop_engine/core/model_call_collection.py": "d0236b6a79c074ef0709bf9b3c009f13831444d1dd73a6eb5e01d470eb5061a5",
+    "src/loop_engine/core/model_call_records.py": "177d55e896d86fa956a638f21c933401aa602335133c2c10960c9b78e1cc9d24",
+    "src/loop_engine/core/node_provisioning.py": "5de489a1ba68a971e5f474b0cbef49448dda2840d4e664c63623a4895a8a3c07",
+    "src/loop_engine/core/provisioning_server.py": "8535c7af83f3cbe053511cc174674080e9594b2e4a232944230e71c72dc672a5",
+    "src/loop_engine/core/service_api.py": "47e033b6de5db322cd51aded3ab8661f2fce52ec91a69dcd6ec54c9ab059e47c",
+    "src/loop_engine/core/spawned_provisioning.py": "7fff8762fc6398f248e58458279fd05ccd357d19e6432637eefa4ed33f4d4d9d"
+  },
+  "source_state": "existing uncommitted work included; no implementation edited"
+}

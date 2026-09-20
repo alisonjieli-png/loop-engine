@@ -1,0 +1,1138 @@
+{
+  "record_type": "system_map_browser_checks/v1",
+  "checks": [
+    {
+      "name": "development_log_is_the_default_working_surface",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_fifteen_owner_tasks_have_instructions_and_handoff_fields",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_marks_are_preparation_not_software_completion",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_marks_survive_reload",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "changed_checklist_instructions_invalidate_old_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "malformed_owner_import_preserves_existing_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_export_contains_only_bound_preparation_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_checklist_filters_later_setup",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "full_setup_guide_is_readable_without_a_companion_file",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_1440_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_1440_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_736_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_736_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_390_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_390_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_320_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_320_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_six_original_tables_and_measured_feature_count_are_embedded",
+      "passed": true,
+      "detail": {
+        "page": "architecture",
+        "view": "high",
+        "layout": {
+          "view": "high",
+          "engine": "elk",
+          "nodes": 3,
+          "edges": 3
+        },
+        "featureTables": 6,
+        "featureColumns": 77,
+        "steps": 106,
+        "files": 2523
+      }
+    },
+    {
+      "name": "complete_roadmap_and_source_inventory_are_embedded",
+      "passed": true,
+      "detail": {
+        "page": "architecture",
+        "view": "high",
+        "layout": {
+          "view": "high",
+          "engine": "elk",
+          "nodes": 3,
+          "edges": 3
+        },
+        "featureTables": 6,
+        "featureColumns": 77,
+        "steps": 106,
+        "files": 2523
+      }
+    },
+    {
+      "name": "layout_light_1440_high",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "elk",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_medium",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_low",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_access",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_execution",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_high",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_medium",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_low",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_access",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_execution",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_736_high",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_medium",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_low",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_access",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_execution",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_high",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_medium",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_low",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_access",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_execution",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_high",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_medium",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_low",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_access",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_execution",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_1440_high",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "elk",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_medium",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_low",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_access",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_execution",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_high",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_medium",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_low",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_access",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_execution",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_736_high",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_medium",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_low",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_access",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_execution",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_high",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_medium",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_low",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_access",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_execution",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_high",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_medium",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_low",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_access",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_execution",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "desktop_uses_the_embedded_ELK_layout_engine",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "component_details_are_keyboard_accessible",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_0_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_1_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_2_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_3_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_4_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_5_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "partial_cell_and_its_source_note_are_inspectable",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "empty_matrix_filter_is_explicit",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "worklist_filters_active_work_without_marking_it_verified",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "work_item_has_acceptance_and_evidence",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "source_lookup_finds_the_real_serving_file",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "source_details_distinguish_imports_from_observed_calls",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "overlap_control_rejects_a_deliberately_broken_layout",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "clipping_control_rejects_a_deliberately_broken_layout",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "fresh_mobile_capture_matches_the_actual_mobile_viewport",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "complete_graph_download_works_from_embedded_bytes",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_acceptance_completed",
+      "passed": false,
+      "detail": {
+        "error": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded."
+      }
+    }
+  ],
+  "passed": 87,
+  "total": 88,
+  "all_passed": false,
+  "source_sha256": "b8aa055aaa3d1df2c6e2087c908df0f2e6288ef799e7d8f5f982b0707e6539fa",
+  "roadmap_sha256": "ae5e7b199c9d408eb3289adb0a3c1c47213edc2cbc80c8d320291d6b971c3b14",
+  "screenshots": [
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-7-overview-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-7-subsystems-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-7-request-path-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-7-matrix-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-7-worklist-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-7-mobile-dark.png"
+  ],
+  "errors": [],
+  "remote_requests": []
+}

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Loop Engine: first-release client and server</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: light-dark(#17212d,#e4ebf2); background: light-dark(#fafbfc,#141b23); font: 16px/1.6 system-ui,sans-serif; }
+    main { max-width: 1240px; margin: auto; padding: 28px; }
+    h1 { margin: 0 0 12px; font-size: 30px; line-height: 1.25; }
+    h2 { margin: 32px 0 12px; font-size: 22px; }
+    p { max-width: 85ch; }
+    a { color: light-dark(#155bb1,#9bc8ff); }
+    nav { display: flex; flex-wrap: wrap; gap: 12px 24px; margin: 22px 0; }
+    figure { margin: 16px 0 30px; }
+    img { width: 100%; height: auto; display: block; }
+    figcaption { margin-top: 8px; }
+    .state { padding: 12px 0; border-block: 1px solid light-dark(#c9d2dd,#4b5b6d); }
+    details { margin: 20px 0; }
+    summary { cursor: pointer; }
+    pre { overflow-wrap: anywhere; white-space: pre-wrap; font-size: 13px; }
+    @media (max-width: 640px) { main { padding: 18px; } h1 { font-size: 25px; } }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Loop Engine: first-release client and server</h1>
+  <p>The service supplies intelligence. Customers run their harnesses. Accounts, payments, and storage can use managed services without moving customer task execution into our cloud.</p>
+  <p class="state"><strong>Proposed deployment, not a launched service.</strong> The local runtime, provisioning rules, and local protocol integration have component tests. The website, remote authorization, payment lifecycle, and hosted storage integration still require implementation and qualification.</p>
+  <nav aria-label="Diagram sections">
+    <a href="#architecture">System boundaries</a>
+    <a href="#subscription">Sign-in and subscription</a>
+    <a href="#retrieval">Retrieve and run</a>
+    <a href="../../docs/architecture/MVP-CLIENT-SERVER.md">Editable diagrams and status</a>
+    <a href="architecture.html">Source-level system map</a>
+  </nav>
+  <details>
+    <summary>One runtime, separate configuration dimensions</summary>
+    <pre>Operational runtime type
+└── Loop
+    ├── Operational relationship: Starting, Spawned by, Queried by, Retrieved by, Connected from
+    ├── Role: Practitioner, Intelligence, or Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Run mode: deterministic, hybrid, or non-deterministic
+    ├── Step profile
+    ├── Typed input and output contract
+    ├── Loop condition
+    ├── Exit condition
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when the selected mode permits a model
+    └── Run History records</pre>
+  </details>
+  <section id="architecture">
+    <h2>System boundaries</h2>
+    <p>These are software containers and trust boundaries, not individual executable Loop vertices. Vercel, Supabase, and Stripe are candidates. The Python service can use Vercel Functions or a qualified container host.</p>
+    <figure>
+      <a href="mvp-client-server-rendered-1.svg"><img src="mvp-client-server-rendered-1.svg" alt="Subscriber browser and local execution connect to a hosted website and intelligence service. Authentication and payments are separate services. Postgres stores metadata and rights; private storage holds selected bodies. Remote model providers sit outside the customer's environment."></a>
+      <figcaption>Open the diagram to zoom. A protocol-only client can retrieve material; enforced task graphs and independent acceptance require the Loop Engine runtime on the execution side.</figcaption>
+    </figure>
+  </section>
+  <section id="subscription">
+    <h2>Sign-in and subscription</h2>
+    <figure>
+      <a href="mvp-client-server-rendered-2.svg"><img src="mvp-client-server-rendered-2.svg" alt="The subscriber signs in through an identity provider and completes hosted checkout. A verified payment event updates durable entitlement. Both dashboard and protocol service read that same entitlement."></a>
+      <figcaption>A checkout return page does not grant access. Signed events, event ordering, and idempotent writes determine the subscription state.</figcaption>
+    </figure>
+  </section>
+  <section id="retrieval">
+    <h2>Retrieve intelligence, then run in the customer's environment</h2>
+    <figure>
+      <a href="mvp-client-server-rendered-3.svg"><img src="mvp-client-server-rendered-3.svg" alt="The client obtains user-approved authorization, searches permitted references, selects an exact version, and requests its body. The server rechecks access and qualification, verifies the artifact and acknowledges required usage. The client binds the material to a scoped assignment, runs its harness, and independently verifies the result."></a>
+      <figcaption>Retrieval grants no file, network, model, or spending authority. Paid retries retain their usage identity; lost delivery does not undo committed metering.</figcaption>
+    </figure>
+  </section>
+  <p>Current transport evidence covers local JSON-RPC sessions using protocol <code>2025-11-25</code> and a host-bound credential. Remote provisioning HTTP, OAuth integration, all-layer qualification adapters, and full typed template, graph, and package delivery remain open.</p>
+  <p><a href="../../docs/roadmap/CONTINUATION-STATUS.md">Remaining launch work</a> · <a href="../../docs/guides/supabase-and-vercel-launch-profile.md">Hosting choices, limits, and primary sources</a></p>
+</main>
+</body>
+</html>

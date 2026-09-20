@@ -1,0 +1,17 @@
+{
+  "record_type": "provisioning_verification_runner_corrections/v1",
+  "entries": [
+    {
+      "stage": "initial dependency import",
+      "observed": "ModuleNotFoundError: No module named 'loop_engine.loop.harness_intelligence_bridge'",
+      "classification": "verification runner defect",
+      "correction": "Use the existing core.harness_intelligence_bridge owning module; no runtime or check was weakened."
+    },
+    {
+      "stage": "initial mutant construction",
+      "observed": "RuntimeError: mutant target must be unique: acknowledgment commitment and receipt predicate",
+      "classification": "verification runner defect",
+      "correction": "Match the dedented source indentation used by the in-memory mutant compiler. The commitment refusal test remains unchanged."
+    }
+  ]
+}

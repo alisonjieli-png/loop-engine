@@ -1,0 +1,1019 @@
+{
+  "record_type": "architecture_question_register/v1",
+  "scope": "intelligence-storage-and-exports",
+  "date": "2026-09-19",
+  "source_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "question_count": 100,
+  "status_counts": {
+    "answered": 48,
+    "open": 14,
+    "disputed": 38
+  },
+  "status_meanings": {
+    "answered": "The inspected implementation establishes the answer, including explicit limitations.",
+    "open": "A qualification or design decision remains unresolved; a discriminating check is supplied.",
+    "disputed": "A documented or intended invariant conflicts with inspected source or a saved probe."
+  },
+  "questions": [
+    {
+      "id": "INT-Q001",
+      "component": "Catalog contract",
+      "file": "src/loop_engine/catalog/protocol.py",
+      "question": "Which operations are actually part of CatalogStore, and is deletion one of them?",
+      "status": "answered",
+      "evidence": "CatalogStore at lines 28-50 exposes get, query, stream, put, export, import_bundle, health and close. No delete method exists.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.protocol.CatalogStore"
+    },
+    {
+      "id": "INT-Q002",
+      "component": "Record authority",
+      "file": "src/loop_engine/catalog/stores/sqlite_store.py",
+      "question": "Does a generic put preserve all earlier versions of the same record?",
+      "status": "answered",
+      "evidence": "_write_values at lines 182-191 overwrites the row keyed by record_id. History requires a separate owning service.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.stores.sqlite_store.SQLiteRecordStore"
+    },
+    {
+      "id": "INT-Q003",
+      "component": "SQLite write guards",
+      "file": "src/loop_engine/catalog/stores/sqlite_store.py",
+      "question": "Does SQLite make absence and version preconditions atomic with the write?",
+      "status": "answered",
+      "evidence": "put at lines 151-180 checks within BEGIN IMMEDIATE and commits or rolls back. The in-memory SQLite absence probe succeeds.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.stores.sqlite_store.SQLiteRecordStore.put"
+    },
+    {
+      "id": "INT-Q004",
+      "component": "Adapter substitution",
+      "file": "src/loop_engine/catalog/stores/in_memory.py",
+      "question": "Can the in-memory adapter perform the same create-if-absent write as SQLite?",
+      "status": "disputed",
+      "evidence": "put at lines 60-65 understands only record_version comparison. absent_create_memory reports StoreError while absent_create_sqlite reports accepted.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.stores.in_memory.EphemeralRecordStore.put"
+    },
+    {
+      "id": "INT-Q005",
+      "component": "DuckDB write guards",
+      "file": "src/loop_engine/catalog/stores/duckdb_store.py",
+      "question": "Are DuckDB version reads and conditional writes one atomic transaction?",
+      "status": "disputed",
+      "evidence": "put at lines 111-132 calls get and then INSERT OR REPLACE without an enclosing conditional transaction. This was inspected, not race-tested.",
+      "discriminating_check": "Run two connections against one disposable database, both updating the same expected version; exactly one must succeed.",
+      "owning_boundary": "catalog.stores.duckdb_store.DuckDBRecordStore.put"
+    },
+    {
+      "id": "INT-Q006",
+      "component": "Bundle import",
+      "file": "src/loop_engine/catalog/stores/duckdb_store.py",
+      "question": "Does a failed bundle import leave the catalog unchanged on every writable adapter?",
+      "status": "disputed",
+      "evidence": "DuckDB import_bundle at lines 139-145 and EphemeralRecordStore import_bundle iterate individual puts; SQLite validates then imports inside one transaction.",
+      "discriminating_check": "Import a valid record followed by an invalid record and compare the complete pre/post store.",
+      "owning_boundary": "catalog.protocol.CatalogStore.import_bundle"
+    },
+    {
+      "id": "INT-Q007",
+      "component": "Export selection",
+      "file": "src/loop_engine/catalog/stores/sqlite_store.py",
+      "question": "Is an unsupported export selection refused consistently across adapters?",
+      "status": "disputed",
+      "evidence": "SQLite export at lines 202-207 refuses nonempty selection. In-memory, package JSONL, DuckDB and composite exports ignore their selection argument.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.protocol.CatalogStore.export"
+    },
+    {
+      "id": "INT-Q008",
+      "component": "Capability booleans",
+      "file": "src/loop_engine/catalog/capabilities.py",
+      "question": "Can the string false grant an operation through require_operation?",
+      "status": "disputed",
+      "evidence": "supports at lines 49-50 uses bool(value). capability_gate_disagreement confirms require_operation permits write='false' while negotiate refuses it.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.capabilities.StoreCapabilities.supports"
+    },
+    {
+      "id": "INT-Q009",
+      "component": "Handshake refusal",
+      "file": "src/loop_engine/catalog/handshake.py",
+      "question": "Do unknown or unresolved compatibility declarations permit catalog reads?",
+      "status": "answered",
+      "evidence": "negotiate at lines 71-76 returns a nonpermitting verdict; permits at lines 44-54 refuses unresolved outcomes.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.handshake.negotiate"
+    },
+    {
+      "id": "INT-Q010",
+      "component": "Composite identity",
+      "file": "src/loop_engine/catalog/composite.py",
+      "question": "Does the composite reject different bodies for an encountered identical identifier and version?",
+      "status": "answered",
+      "evidence": "get at lines 71-88 and _merged_records at lines 93-109 compare complete finite-JSON signatures and refuse conflicts.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.composite.CompositeCatalog"
+    },
+    {
+      "id": "INT-Q011",
+      "component": "Composite versions",
+      "file": "src/loop_engine/catalog/composite.py",
+      "question": "Which version is returned when different stores hold different versions and no version is requested?",
+      "status": "answered",
+      "evidence": "get keeps the first encountered record at lines 86-87. It does not select the greatest semantic version.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.composite.CompositeCatalog.get"
+    },
+    {
+      "id": "INT-Q012",
+      "component": "Bounded conflict discovery",
+      "file": "src/loop_engine/catalog/composite.py",
+      "question": "Does a paginated composite query establish that all source stores are conflict-free?",
+      "status": "answered",
+      "evidence": "_merged_records explicitly limits its claim to encountered rows; iter_query_records can end before later conflicting stores are visited.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.composite.CompositeCatalog.stream"
+    },
+    {
+      "id": "INT-Q013",
+      "component": "Pagination stability",
+      "file": "src/loop_engine/catalog/stores/sqlite_store.py",
+      "question": "Are pages stable while records change or adapters return different native row order?",
+      "status": "open",
+      "evidence": "SQLite streams SELECT without ORDER BY at line 144; the shared query contract has offset but no ordering or snapshot token.",
+      "discriminating_check": "Repeat successive pages with concurrent insertion and across adapters, checking for duplicate or skipped identifiers.",
+      "owning_boundary": "catalog.query.IntelligenceQuery"
+    },
+    {
+      "id": "INT-Q014",
+      "component": "Revision creation",
+      "file": "src/loop_engine/catalog/versioning.py",
+      "question": "Can two callers both create a versioned record with expected_version=None?",
+      "status": "disputed",
+      "evidence": "revise at lines 113-125 separates the absence read and unconditional put. concurrent_revise_create returned accepted for both synchronized callers.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.versioning.revise"
+    },
+    {
+      "id": "INT-Q015",
+      "component": "Revision commit",
+      "file": "src/loop_engine/catalog/versioning.py",
+      "question": "Are the history row and current-version update committed together?",
+      "status": "disputed",
+      "evidence": "revise writes _revision_record at line 123 before the guarded current put at line 127. No multi-record transaction surrounds them.",
+      "discriminating_check": "Inject failure after history insertion and before current update; inspect whether incomplete revisions are reported explicitly.",
+      "owning_boundary": "catalog.versioning.revise"
+    },
+    {
+      "id": "INT-Q016",
+      "component": "Historical attributes",
+      "file": "src/loop_engine/catalog/versioning.py",
+      "question": "Does reading an old version preserve caller attributes beginning revision_?",
+      "status": "disputed",
+      "evidence": "version_record removes all such keys at lines 158-159. revision_attribute_preservation loses revision_customer_field and changes its digest.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.versioning.version_record"
+    },
+    {
+      "id": "INT-Q017",
+      "component": "Historical integrity",
+      "file": "src/loop_engine/catalog/versioning.py",
+      "question": "Does history recompute preserved-record digests before reporting them?",
+      "status": "open",
+      "evidence": "history reads attributes.revision_digest directly at lines 138-139; version_record reconstructs content without comparing that digest.",
+      "discriminating_check": "Tamper only a preserved payload and require history, diff and rollback to reject it.",
+      "owning_boundary": "catalog.versioning.history"
+    },
+    {
+      "id": "INT-Q018",
+      "component": "Query snapshots",
+      "file": "src/loop_engine/catalog/query.py",
+      "question": "Are a caller's mutable query attributes detached before backend iteration?",
+      "status": "answered",
+      "evidence": "IntelligenceQuery copies attributes and snapshot_query reconstructs the typed request; iter_query_records binds the snapshot at call time.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.query.snapshot_query"
+    },
+    {
+      "id": "INT-Q019",
+      "component": "Default query scope",
+      "file": "src/loop_engine/catalog/query.py",
+      "question": "Does an empty IntelligenceQuery itself restrict tenant, namespace or lifecycle?",
+      "status": "answered",
+      "evidence": "All facet sequences default empty and matching treats them as unrestricted. Caller-owned authorization must add scope.",
+      "discriminating_check": "",
+      "owning_boundary": "catalog.query.IntelligenceQuery"
+    },
+    {
+      "id": "INT-Q020",
+      "component": "Hosted database adapter",
+      "file": "src/loop_engine/catalog/registry.py",
+      "question": "Which installed server-database adapter provides a durable multitenant deployment?",
+      "status": "open",
+      "evidence": "Inspected adapters cover in-memory, package JSONL, SQLite, DuckDB and DuckDB over local files. The storage decision names a server database as future work.",
+      "discriminating_check": "Demonstrate a registered remote adapter with authenticated namespace enforcement, concurrent writes, recovery and a versioned handshake.",
+      "owning_boundary": "catalog.registry.AdapterRegistry"
+    },
+    {
+      "id": "INT-Q021",
+      "component": "Four intelligence layers",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "What are the exact four persistent layer names?",
+      "status": "answered",
+      "evidence": "LAYERS at lines 56-57 names context_intelligence, code_intelligence, runtime_history_solution_intelligence and user_feedback_intelligence.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.LAYERS"
+    },
+    {
+      "id": "INT-Q022",
+      "component": "Default catalog sources",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Does build_intelligence_catalog read all four layers through CatalogStore?",
+      "status": "disputed",
+      "evidence": "Lines 291-367 use Context registry projections, source-module cards, RunHistory.load and AdviceStore. The result is a dictionary of lists of StoreRecord.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.build_intelligence_catalog"
+    },
+    {
+      "id": "INT-Q023",
+      "component": "Documentation compatibility",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Do the documented materialize_intelligence_ref and positional query examples match current entry points?",
+      "status": "disputed",
+      "evidence": "The current implementation requires IntelligenceSearchRequest and exposes load_intelligence_item. INTELLIGENCE-AS-LOOPS.md still uses older positional calls and output keys.",
+      "discriminating_check": "Execute each documentation snippet against the installed package with no model calls.",
+      "owning_boundary": "core.intelligence_layers.query_intelligence"
+    },
+    {
+      "id": "INT-Q024",
+      "component": "Historical token completeness",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Does the history search card preserve unknown provider token usage as unknown?",
+      "status": "disputed",
+      "evidence": "Lines 343-346 sum prompt_tokens and eval_tokens through get(...,0) and or 0, collapsing missing values to zero.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.build_intelligence_catalog"
+    },
+    {
+      "id": "INT-Q025",
+      "component": "Excluded history evidence",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Are corrupt or unreadable saved runs counted in catalog results?",
+      "status": "answered",
+      "evidence": "Lines 332-337 silently continue after selected load errors. No excluded-run list is returned by this builder.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.build_intelligence_catalog"
+    },
+    {
+      "id": "INT-Q026",
+      "component": "Requested run storage",
+      "file": "src/loop_engine/code_nodes/solve_runtime.py",
+      "question": "Does the default four-layer builder use SolveRequest.runs_dir?",
+      "status": "disputed",
+      "evidence": "solve_dependencies installs solve_intelligence_catalog(), which returns the bare build_intelligence_catalog function. _installed_catalog invokes it with no arguments.",
+      "discriminating_check": "Supply separate default and request run roots and inspect the selected history identifiers without exposing real user data.",
+      "owning_boundary": "code_nodes.solve_runtime.solve_dependencies"
+    },
+    {
+      "id": "INT-Q027",
+      "component": "User-feedback disclosure",
+      "file": "src/loop_engine/core/user_feedback_intelligence.py",
+      "question": "Does four-layer search restrict advice by the requesting user, run, or target?",
+      "status": "open",
+      "evidence": "advice_records_for_search at lines 324-346 returns every nonretired advice row. The default four-layer request supplies no target/actor filter.",
+      "discriminating_check": "Place two synthetic users' scoped guidance in one host collection and require authorized search to omit the other user's title and body.",
+      "owning_boundary": "core.user_feedback_intelligence.advice_records_for_search"
+    },
+    {
+      "id": "INT-Q028",
+      "component": "Candidate search",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Are explicit inactive lifecycle records excluded from normal retrieval?",
+      "status": "answered",
+      "evidence": "query_intelligence at lines 486-499 rejects draft, generated, staged, candidate, validated, deprecated, quarantined, rejected, superseded and retired states unless review is requested.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.query_intelligence"
+    },
+    {
+      "id": "INT-Q029",
+      "component": "Gated search",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Does include_candidates also admit records in the gated tier?",
+      "status": "answered",
+      "evidence": "The gated-tier branch at lines 496-497 excludes those records independently of include_candidates.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.query_intelligence"
+    },
+    {
+      "id": "INT-Q030",
+      "component": "Result count",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Does top_n bound the final unified query result count?",
+      "status": "disputed",
+      "evidence": "Lines 515-522 multiply by the number of populated layers and no final trim follows. query_top_n requested one and returned four.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.query_intelligence"
+    },
+    {
+      "id": "INT-Q031",
+      "component": "History loading cost",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Are complete histories loaded only after a search result is selected?",
+      "status": "disputed",
+      "evidence": "build_intelligence_catalog at lines 324-359 loads and projects every eligible run before query ranking. Selected materialization later returns the small card.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.build_intelligence_catalog"
+    },
+    {
+      "id": "INT-Q032",
+      "component": "Code cards",
+      "file": "src/loop_engine/core/intelligence_layers.py",
+      "question": "Does a built-in module search card establish an invokable qualified capability?",
+      "status": "answered",
+      "evidence": "Lines 295-319 explicitly create module_reference records with implemented maturity. They do not bind a qualified entrypoint.",
+      "discriminating_check": "",
+      "owning_boundary": "core.intelligence_layers.build_intelligence_catalog"
+    },
+    {
+      "id": "INT-Q033",
+      "component": "Solution discovery",
+      "file": "src/loop_engine/core/solution_library.py",
+      "question": "Are saved SolutionLibrary assets added by the default four-layer builder?",
+      "status": "answered",
+      "evidence": "SolutionLibrary has its own supplied SolverStore-compatible interface; build_intelligence_catalog does not consume it. The component README explicitly records this limit.",
+      "discriminating_check": "",
+      "owning_boundary": "core.solution_library.SolutionLibrary"
+    },
+    {
+      "id": "INT-Q034",
+      "component": "Orientation references",
+      "file": "src/loop_engine/core/adaptive_practitioner_orientation_capabilities.py",
+      "question": "Does orientation retain the full selected intelligence reference and exact version?",
+      "status": "disputed",
+      "evidence": "_four_layer_search at lines 149-159 projects scalar fields and drops intelligence_item_ref. Version and payload_digest are read from absent top-level hit fields rather than the nested reference.",
+      "discriminating_check": "",
+      "owning_boundary": "core.adaptive_practitioner_orientation_capabilities._four_layer_search"
+    },
+    {
+      "id": "INT-Q035",
+      "component": "Context collisions",
+      "file": "src/loop_engine/core/context_catalog.py",
+      "question": "Are duplicate Context record identifiers checked for conflicting content?",
+      "status": "answered",
+      "evidence": "The local add helper at lines 28-31 keeps the first record by identifier and silently ignores later duplicates without content comparison.",
+      "discriminating_check": "",
+      "owning_boundary": "core.context_catalog.build_context_records"
+    },
+    {
+      "id": "INT-Q036",
+      "component": "Search construction cost",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Are the lexical and hash-vector indexes built anew for each four-layer query?",
+      "status": "answered",
+      "evidence": "query_intelligence creates a new Retriever. Retriever.__init__ at lines 354-388 builds both selected backends even for lexical-only searches.",
+      "discriminating_check": "",
+      "owning_boundary": "core.retrieval.Retriever.__init__"
+    },
+    {
+      "id": "INT-Q037",
+      "component": "Backend extensibility",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Can external retrieval engines register through backend_handshakes?",
+      "status": "answered",
+      "evidence": "backend_handshakes returns descriptive records. Constructor branches at lines 361-387 accept fixed backend names; there is no dynamic registration hook here.",
+      "discriminating_check": "",
+      "owning_boundary": "core.retrieval.backend_handshakes"
+    },
+    {
+      "id": "INT-Q038",
+      "component": "Search failures",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Can an index failure be distinguished from a legitimate empty search?",
+      "status": "disputed",
+      "evidence": "SqliteFtsBackend.search and LanceDbBackend.search catch any exception and return an empty list at lines 250-251 and 282-283.",
+      "discriminating_check": "",
+      "owning_boundary": "core.retrieval.SqliteFtsBackend.search"
+    },
+    {
+      "id": "INT-Q039",
+      "component": "Facet completeness",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Can an eligible record disappear because filtering occurs after a bounded ranking pool?",
+      "status": "disputed",
+      "evidence": "Backend pools are limited at lines 404-407 before facet_match. postfilter_candidate_starvation returned no hits although allowed matched the query.",
+      "discriminating_check": "",
+      "owning_boundary": "core.retrieval.Retriever.search"
+    },
+    {
+      "id": "INT-Q040",
+      "component": "Facet preference",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Does the prefer score affect ordering before the final result limit?",
+      "status": "disputed",
+      "evidence": "Fused results are sorted at line 420; preference is calculated at lines 423-432 and no resort follows before the break.",
+      "discriminating_check": "Use two equal lexical candidates whose preference should reverse the initial order and assert the preferred candidate is selected.",
+      "owning_boundary": "core.retrieval.Retriever.search"
+    },
+    {
+      "id": "INT-Q041",
+      "component": "Indexed bodies",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Does bodies_never_in_index accurately describe the searchable text placed in indexes?",
+      "status": "disputed",
+      "evidence": "backend_handshakes declares it true, but record_search_text includes text and template fields and feeds the combined text into SQLite and LanceDB indexes.",
+      "discriminating_check": "",
+      "owning_boundary": "core.retrieval.record_search_text"
+    },
+    {
+      "id": "INT-Q042",
+      "component": "Embedding network effect",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Can selecting model2vec cause a model download without a typed network decision?",
+      "status": "open",
+      "evidence": "Model2VecBackend.__init__ calls StaticModel.from_pretrained at line 311. No effect authority appears in its constructor; no download was run during this audit.",
+      "discriminating_check": "Start with an empty cache under denied network authority and require refusal before any request.",
+      "owning_boundary": "core.retrieval.Model2VecBackend"
+    },
+    {
+      "id": "INT-Q043",
+      "component": "Embedding identity",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Does model2vec record the actual downloaded model revision and measured dimensions?",
+      "status": "disputed",
+      "evidence": "Its EmbeddingSpace is constructed with revision='hf-cache-pin' and dims=256 at lines 324-325, regardless of the supplied model identifier.",
+      "discriminating_check": "",
+      "owning_boundary": "core.retrieval.Model2VecBackend"
+    },
+    {
+      "id": "INT-Q044",
+      "component": "Search resource cleanup",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Who removes LanceDB temporary indexes and closes retrieval connections?",
+      "status": "open",
+      "evidence": "LanceDbBackend uses tempfile.mkdtemp at line 271 and no close method is present in the inspected backend or Retriever definitions.",
+      "discriminating_check": "Repeatedly construct and dispose a retriever, measuring temporary directories and open descriptors.",
+      "owning_boundary": "core.retrieval.LanceDbBackend"
+    },
+    {
+      "id": "INT-Q045",
+      "component": "Vector claim",
+      "file": "src/loop_engine/core/retrieval.py",
+      "question": "Does the hash backend distinguish lexical morphology from learned semantic retrieval?",
+      "status": "answered",
+      "evidence": "hash_vector at lines 145-157 implements token and character features. The capability note explicitly disclaims semantic synonym matching.",
+      "discriminating_check": "",
+      "owning_boundary": "core.retrieval.hash_vector"
+    },
+    {
+      "id": "INT-Q046",
+      "component": "Inline content identity",
+      "file": "src/loop_engine/loop/loop_capsule.py",
+      "question": "Does an ordinary inline Context reference bind the selected body text?",
+      "status": "disputed",
+      "evidence": "intelligence_package_from_record leaves payload_digest empty without a supplied body digest. inline_digest_binding loaded changed text using the same reference.",
+      "discriminating_check": "",
+      "owning_boundary": "loop.loop_capsule.load_intelligence_ref"
+    },
+    {
+      "id": "INT-Q047",
+      "component": "External content identity",
+      "file": "src/loop_engine/loop/loop_capsule.py",
+      "question": "Who computes the digest of an externally materialized body?",
+      "status": "answered",
+      "evidence": "load_intelligence_ref at lines 346-359 compares MaterializedPayload.digest with the reference. Computing that observed digest is the supplied resolver's responsibility.",
+      "discriminating_check": "",
+      "owning_boundary": "loop.loop_capsule.MaterializedPayload"
+    },
+    {
+      "id": "INT-Q048",
+      "component": "Reference contract identity",
+      "file": "src/loop_engine/loop/loop_capsule.py",
+      "question": "Does the reference envelope digest bind effects, contracts, modes and maturity?",
+      "status": "answered",
+      "evidence": "IntelligenceItemPackage.digest at lines 170-174 includes item_id, layer, payload_ref, payload_digest and version only.",
+      "discriminating_check": "",
+      "owning_boundary": "loop.loop_capsule.IntelligenceItemPackage.digest"
+    },
+    {
+      "id": "INT-Q049",
+      "component": "Reference version identity",
+      "file": "src/loop_engine/loop/loop_capsule.py",
+      "question": "Does projecting StoreRecord into a reference preserve body.version?",
+      "status": "disputed",
+      "evidence": "intelligence_package_from_record at lines 249-260 constructs IntelligenceItemHandshake without a version argument, so it uses 1.0.0.",
+      "discriminating_check": "",
+      "owning_boundary": "loop.loop_capsule.intelligence_package_from_record"
+    },
+    {
+      "id": "INT-Q050",
+      "component": "Candidate execution",
+      "file": "src/loop_engine/core/code_intelligence_assets.py",
+      "question": "Can a candidate Code reference execute through the direct helper without admission?",
+      "status": "disputed",
+      "evidence": "execute_code_ref at lines 581-607 has no lifecycle/admission authority argument. candidate_direct_execution returned 7 with lifecycle=candidate and an empty admission_ref.",
+      "discriminating_check": "",
+      "owning_boundary": "core.code_intelligence_assets.execute_code_ref"
+    },
+    {
+      "id": "INT-Q051",
+      "component": "Entrypoint admission",
+      "file": "src/loop_engine/core/code_intelligence_assets.py",
+      "question": "Does execute_code_ref prove that the requested entrypoint is one of the qualified entrypoints?",
+      "status": "open",
+      "evidence": "The request carries a string entrypoint and resolver/binder; the direct helper does not load CodeAssetSpec or compare its entrypoints.",
+      "discriminating_check": "Ask for a different callable in a materialized mapping and require exact admission refusal before binding.",
+      "owning_boundary": "core.code_intelligence_assets.CodeRefExecutionRequest"
+    },
+    {
+      "id": "INT-Q052",
+      "component": "Materialization caching",
+      "file": "src/loop_engine/core/code_intelligence_assets.py",
+      "question": "Does a cached external handle get revalidated before later use?",
+      "status": "open",
+      "evidence": "MaterializationCache at lines 547-559 returns the cached object by digest or locator without rehashing the current body.",
+      "discriminating_check": "Change a backing file after first resolution and require the next invocation to detect the changed bytes.",
+      "owning_boundary": "core.code_intelligence_assets.MaterializationCache"
+    },
+    {
+      "id": "INT-Q053",
+      "component": "Package materializers",
+      "file": "src/loop_engine/core/code_intelligence_assets.py",
+      "question": "Are package installation and repository checkout implemented by the Code template records themselves?",
+      "status": "answered",
+      "evidence": "The strings are load_strategy values. execute_code_ref delegates loading to a supplied resolver and binder; no automatic installer or checkout implementation appears on this path.",
+      "discriminating_check": "",
+      "owning_boundary": "core.code_intelligence_assets.spec_from_template"
+    },
+    {
+      "id": "INT-Q054",
+      "component": "Dataset qualification",
+      "file": "src/loop_engine/core/code_intelligence_assets.py",
+      "question": "Does changing a Code asset's dataset references invalidate its qualification digest?",
+      "status": "disputed",
+      "evidence": "qualification_digest omits data_refs. The probe changes data_refs, changes card_digest, and keeps qualification_digest unchanged.",
+      "discriminating_check": "",
+      "owning_boundary": "core.code_intelligence_assets.CodeAssetSpec.qualification_digest"
+    },
+    {
+      "id": "INT-Q055",
+      "component": "Current admission",
+      "file": "src/loop_engine/core/reusable_capability_flywheel.py",
+      "question": "Does CapabilityAuthority recheck current registered state and exact admission before returning an active asset?",
+      "status": "answered",
+      "evidence": "active_spec at lines 334-351 requires registered state and rebinds the stored admission to the exact asset digest set.",
+      "discriminating_check": "",
+      "owning_boundary": "core.reusable_capability_flywheel.CapabilityAuthority.active_spec"
+    },
+    {
+      "id": "INT-Q056",
+      "component": "Verifier independence",
+      "file": "src/loop_engine/core/code_intelligence_assets.py",
+      "question": "Does Code asset admission reject the same producer and verifier identity?",
+      "status": "answered",
+      "evidence": "CodeAssetAdmissionRecord compares casefolded identities at lines 355-357. The authenticated meaning of those identities remains a host responsibility.",
+      "discriminating_check": "",
+      "owning_boundary": "core.code_intelligence_assets.CodeAssetAdmissionRecord"
+    },
+    {
+      "id": "INT-Q057",
+      "component": "Promoter independence",
+      "file": "src/loop_engine/core/reusable_capability_flywheel.py",
+      "question": "Can the capability producer promote its own validated asset through CapabilityAuthority?",
+      "status": "answered",
+      "evidence": "promote_as_loop compares promoter_id with producer at lines 556-559 and refuses equality.",
+      "discriminating_check": "",
+      "owning_boundary": "core.reusable_capability_flywheel.CapabilityAuthority.promote_as_loop"
+    },
+    {
+      "id": "INT-Q058",
+      "component": "Lifecycle recovery",
+      "file": "src/loop_engine/core/reusable_capability_flywheel.py",
+      "question": "Are qualification records, transitions and the lifecycle pointer updated atomically?",
+      "status": "open",
+      "evidence": "qualify_as_loop and promote_as_loop perform several separate puts followed by a guarded state put; CatalogStore provides no common transaction context.",
+      "discriminating_check": "Inject failures and concurrent transitions after every put; require one committed lifecycle or an explicit recoverable incomplete state.",
+      "owning_boundary": "core.reusable_capability_flywheel.CapabilityAuthority"
+    },
+    {
+      "id": "INT-Q059",
+      "component": "Immutable insertion",
+      "file": "src/loop_engine/core/reusable_capability_flywheel.py",
+      "question": "Does _put_immutable prevent conflicting simultaneous first insertion?",
+      "status": "open",
+      "evidence": "Lines 131-137 check absence and then put without an absence precondition, leaving the same class of creation race reproduced in versioning.",
+      "discriminating_check": "Synchronize two distinct bodies with one immutable record identifier and require exactly one accepted insertion.",
+      "owning_boundary": "core.reusable_capability_flywheel._put_immutable"
+    },
+    {
+      "id": "INT-Q060",
+      "component": "Projection authority",
+      "file": "src/loop_engine/core/reusable_capability_resolution.py",
+      "question": "Can a stale or forged projection override current capability eligibility?",
+      "status": "answered",
+      "evidence": "_authoritative_match reloads active_spec and compares contract, effect, environment, privacy, tenant and admission fields. invoke_capability_as_loop repeats eligibility before executing.",
+      "discriminating_check": "",
+      "owning_boundary": "core.reusable_capability_resolution._authoritative_match"
+    },
+    {
+      "id": "INT-Q061",
+      "component": "Projection generation races",
+      "file": "src/loop_engine/core/reusable_capability_resolution.py",
+      "question": "Can an older rebuild replace the active projection pointer after a newer rebuild?",
+      "status": "open",
+      "evidence": "rebuild_capability_projection_as_loop writes capability_projection_manifest.active unconditionally at line 155.",
+      "discriminating_check": "Complete rebuilds in reversed version order and require an explicit policy or precondition to prevent accidental rollback.",
+      "owning_boundary": "core.reusable_capability_resolution.rebuild_capability_projection_as_loop"
+    },
+    {
+      "id": "INT-Q062",
+      "component": "Task compilation",
+      "file": "src/loop_engine/templates/compiler.py",
+      "question": "Does task compilation choose a template or infer semantic task type?",
+      "status": "answered",
+      "evidence": "compile_task_value preserves original input, reports advisory template candidates, keeps task_type/output_kind unknown and binding None.",
+      "discriminating_check": "",
+      "owning_boundary": "templates.compiler.compile_task_value"
+    },
+    {
+      "id": "INT-Q063",
+      "component": "Template digest",
+      "file": "src/loop_engine/templates/model.py",
+      "question": "Do input/output contracts and maturity participate in TaskTemplate identity?",
+      "status": "disputed",
+      "evidence": "content_digest at lines 353-364 omits both contracts and maturity. template_contract_identity demonstrates equal digests and accepted conflicting registration.",
+      "discriminating_check": "",
+      "owning_boundary": "templates.model.TaskTemplate.content_digest"
+    },
+    {
+      "id": "INT-Q064",
+      "component": "Template versions",
+      "file": "src/loop_engine/templates/library.py",
+      "question": "Can the template library retrieve both old and new versions after registration?",
+      "status": "answered",
+      "evidence": "The dictionary is keyed only by template_id at lines 159-173. A later different version replaces the earlier entry.",
+      "discriminating_check": "",
+      "owning_boundary": "templates.library.TemplateLibrary"
+    },
+    {
+      "id": "INT-Q065",
+      "component": "Template lifecycle discovery",
+      "file": "src/loop_engine/templates/library.py",
+      "question": "Does template search exclude deprecated templates from ordinary candidates?",
+      "status": "answered",
+      "evidence": "search at lines 187-199 ranks every stored template without checking maturity. Selection remains advisory.",
+      "discriminating_check": "",
+      "owning_boundary": "templates.library.TemplateLibrary.search"
+    },
+    {
+      "id": "INT-Q066",
+      "component": "Input provenance",
+      "file": "src/loop_engine/templates/intake.py",
+      "question": "Are captured instructions kept distinct from unexamined external data references?",
+      "status": "answered",
+      "evidence": "TaskIntake.external_source_refs returns empty for FILE_INTAKE; CapturedInstructionProvenance binds text, source bytes and capture method.",
+      "discriminating_check": "",
+      "owning_boundary": "templates.intake.TaskIntake"
+    },
+    {
+      "id": "INT-Q067",
+      "component": "Memory contradictions",
+      "file": "src/loop_engine/memory/storage/store.py",
+      "question": "Does the reference memory store return contradiction groups for conflicting selected claims?",
+      "status": "disputed",
+      "evidence": "_detect_conflicts reads result.record, but MemorySearchResult contains only ref/score/refusal fields. memory_conflicts selected two conflicting claims and returned no conflicts.",
+      "discriminating_check": "",
+      "owning_boundary": "memory.storage.store._detect_conflicts"
+    },
+    {
+      "id": "INT-Q068",
+      "component": "Memory query bounds",
+      "file": "src/loop_engine/memory/query/query.py",
+      "question": "Does max_candidates actually bound records considered by memory ranking?",
+      "status": "disputed",
+      "evidence": "MemoryQuery accepts and serializes max_candidates, but rank_records iterates all records and InMemoryMemoryStore.query does not enforce it.",
+      "discriminating_check": "",
+      "owning_boundary": "memory.query.query.MemoryQuery.max_candidates"
+    },
+    {
+      "id": "INT-Q069",
+      "component": "Memory version selection",
+      "file": "src/loop_engine/memory/storage/store.py",
+      "question": "Which version does get return when no version is supplied?",
+      "status": "answered",
+      "evidence": "get at lines 37-41 returns the first appended version, not the most recent. CandidateJournal.as_store separately projects latest versions.",
+      "discriminating_check": "",
+      "owning_boundary": "memory.storage.store.InMemoryMemoryStore.get"
+    },
+    {
+      "id": "INT-Q070",
+      "component": "Memory scope identity",
+      "file": "src/loop_engine/memory/query/query.py",
+      "question": "Does the memory query scope distinguish two projects or two users?",
+      "status": "answered",
+      "evidence": "The query carries a MemoryScope category, not a project/user identity. Separate journal roots or another authorized host boundary must provide identity isolation.",
+      "discriminating_check": "",
+      "owning_boundary": "memory.query.query.MemoryQuery"
+    },
+    {
+      "id": "INT-Q071",
+      "component": "Service writer identity",
+      "file": "src/loop_engine/code_nodes/service_endpoints.py",
+      "question": "Can a client choose another writer identity for a shared-memory request?",
+      "status": "answered",
+      "evidence": "memory_handlers rejects writer_id in payload and passes the authenticated tenant_id to SharedMemory.write at lines 123-133.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.service_endpoints.memory_handlers"
+    },
+    {
+      "id": "INT-Q072",
+      "component": "Shared-memory revisions",
+      "file": "src/loop_engine/core/shared_memory_scopes.py",
+      "question": "Does each shared-memory update advance the version used to reject stale writers?",
+      "status": "disputed",
+      "evidence": "write accepts any nonempty record_version and does not require advancement. same_version_shared_writes accepted both updates with the same expected version on SQLite.",
+      "discriminating_check": "",
+      "owning_boundary": "core.shared_memory_scopes.SharedMemory.write"
+    },
+    {
+      "id": "INT-Q073",
+      "component": "Runtime Memory lifetime",
+      "file": "src/loop_engine/core/runtime_memory.py",
+      "question": "Is RunNoteBoard durable or automatically promoted into persistent intelligence?",
+      "status": "answered",
+      "evidence": "Notes live in an instance list. Reads return detached copies and to_curation_candidates emits candidate records. There is no persistence or automatic promotion here.",
+      "discriminating_check": "",
+      "owning_boundary": "core.runtime_memory.RunNoteBoard"
+    },
+    {
+      "id": "INT-Q074",
+      "component": "Learning-journal durability",
+      "file": "src/loop_engine/memory/storage/learning_cycle.py",
+      "question": "Are completed journal appends flushed to durable storage?",
+      "status": "answered",
+      "evidence": "CandidateJournal._append at lines 75-78 writes a line, flushes and calls fsync.",
+      "discriminating_check": "",
+      "owning_boundary": "memory.storage.learning_cycle.CandidateJournal._append"
+    },
+    {
+      "id": "INT-Q075",
+      "component": "Learning-journal concurrency",
+      "file": "src/loop_engine/memory/storage/learning_cycle.py",
+      "question": "Can multiple writers safely assign one journal sequence and predecessor chain?",
+      "status": "open",
+      "evidence": "_next_entry reads the current history before a separate append; no file lock or compare-and-swap surrounds lines 183-203 and 59-78.",
+      "discriminating_check": "Run two journal instances with synchronized tail reads and require a single ordered, valid chain after both return.",
+      "owning_boundary": "memory.storage.learning_cycle.CandidateJournal"
+    },
+    {
+      "id": "INT-Q076",
+      "component": "Direct journal retrieval",
+      "file": "src/loop_engine/memory/storage/learning_cycle.py",
+      "question": "Does every CandidateJournal query verify the entire chain before serving active records?",
+      "status": "answered",
+      "evidence": "query delegates to as_store at lines 244-245. as_store checks latest lifecycle/action but does not call validate_journal.",
+      "discriminating_check": "",
+      "owning_boundary": "memory.storage.learning_cycle.CandidateJournal.query"
+    },
+    {
+      "id": "INT-Q077",
+      "component": "Solve learning safeguard",
+      "file": "src/loop_engine/code_nodes/solve_learned_memory.py",
+      "question": "Does the public learned-memory projection verify the journal and bound its size?",
+      "status": "answered",
+      "evidence": "learned_memory_for_solve checks a four-megabyte limit and validate_journal before querying, and returns typed unavailable statuses.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solve_learned_memory.learned_memory_for_solve"
+    },
+    {
+      "id": "INT-Q078",
+      "component": "Learning location",
+      "file": "src/loop_engine/code_nodes/solve_learned_memory.py",
+      "question": "Do command-line learning and public solve use the same default journal location?",
+      "status": "disputed",
+      "evidence": "CandidateJournal defaults to the configured memory root or .loop-engine/memory, while solve reads request.runs_dir/learning and serves nothing if runs_dir is empty.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solve_learned_memory.journal_root_for"
+    },
+    {
+      "id": "INT-Q079",
+      "component": "Advice partial writes",
+      "file": "src/loop_engine/core/user_feedback_intelligence.py",
+      "question": "Does AdviceStore recover a truncated final JSON line after interruption?",
+      "status": "open",
+      "evidence": "_rows at lines 191-194 decodes every nonempty line without recovery. _append has no transaction, fsync or partial-record marker.",
+      "discriminating_check": "Interrupt a synthetic append and require explicit corruption status without losing prior readable records.",
+      "owning_boundary": "core.user_feedback_intelligence.AdviceStore"
+    },
+    {
+      "id": "INT-Q080",
+      "component": "Advice identity races",
+      "file": "src/loop_engine/core/user_feedback_intelligence.py",
+      "question": "Can two AdviceStore instances generate the same identifier in the same millisecond?",
+      "status": "open",
+      "evidence": "leave_advice combines time in milliseconds with a per-instance counter seeded from the file, without an interprocess reservation.",
+      "discriminating_check": "Freeze the clock, initialize two writers from the same history, and verify distinct advice identities.",
+      "owning_boundary": "core.user_feedback_intelligence.AdviceStore.leave_advice"
+    },
+    {
+      "id": "INT-Q081",
+      "component": "Harness body identity",
+      "file": "src/loop_engine/core/harness_intelligence.py",
+      "question": "Can one Harness Intelligence identity be re-registered with a different body digest?",
+      "status": "answered",
+      "evidence": "HarnessIntelligenceCatalogue.register at lines 161-165 refuses a changed digest for an existing identity.",
+      "discriminating_check": "",
+      "owning_boundary": "core.harness_intelligence.HarnessIntelligenceCatalogue.register"
+    },
+    {
+      "id": "INT-Q082",
+      "component": "Harness metadata identity",
+      "file": "src/loop_engine/core/harness_intelligence.py",
+      "question": "Can the same identity and body digest be re-registered with changed effects or source metadata?",
+      "status": "answered",
+      "evidence": "register compares only held.digest and then replaces the whole item at line 166. It does not compare effects, source_ref, licence or tags.",
+      "discriminating_check": "",
+      "owning_boundary": "core.harness_intelligence.HarnessIntelligenceCatalogue.register"
+    },
+    {
+      "id": "INT-Q083",
+      "component": "Provisioning admission",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Does a bodies entitlement also verify source qualification and tenant disclosure scope?",
+      "status": "disputed",
+      "evidence": "_item checks style, kinds and request-declared effects. _read checks the generic entitlement and body digest. No source admission or tenant-specific record scope is resolved.",
+      "discriminating_check": "",
+      "owning_boundary": "core.provisioning_server.ProvisioningServer._read"
+    },
+    {
+      "id": "INT-Q084",
+      "component": "Metering confirmation",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Can a body read return metered=true when no meter exists?",
+      "status": "disputed",
+      "evidence": "The meter callback is optional at lines 200-201; the response unconditionally reports metered=true at line 205.",
+      "discriminating_check": "",
+      "owning_boundary": "core.provisioning_server.ProvisioningServer._read"
+    },
+    {
+      "id": "INT-Q085",
+      "component": "Serving transport",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Does ProvisioningServer itself expose an authenticated network protocol endpoint?",
+      "status": "answered",
+      "evidence": "The module explicitly provides no transport. handle accepts local typed requests; the separate ServiceApplication endpoints do not wire this catalogue.",
+      "discriminating_check": "",
+      "owning_boundary": "core.provisioning_server.ProvisioningServer"
+    },
+    {
+      "id": "INT-Q086",
+      "component": "External imports",
+      "file": "src/loop_engine/core/harness_intelligence_bridge.py",
+      "question": "Does importing a skill, repository or trace activate it for normal execution?",
+      "status": "answered",
+      "evidence": "HarnessIntelligenceCandidate requires candidate lifecycle, and to_store_record emits experimental tier with executable=false.",
+      "discriminating_check": "",
+      "owning_boundary": "core.harness_intelligence_bridge.HarnessIntelligenceCandidate"
+    },
+    {
+      "id": "INT-Q087",
+      "component": "Export validation",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Are tests checked as typed, unique ExportedFile values just like package source files?",
+      "status": "answered",
+      "evidence": "SolutionExportSpec validates files and their uniqueness at lines 138-147, but merely converts tests to a tuple at line 153.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.SolutionExportSpec"
+    },
+    {
+      "id": "INT-Q088",
+      "component": "Export specification identity",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Does changing the container configuration change the export specification digest?",
+      "status": "disputed",
+      "evidence": "digest at lines 157-164 omits container settings. export_spec_identity reports equal digests with different rendered Jobs.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.SolutionExportSpec.digest"
+    },
+    {
+      "id": "INT-Q089",
+      "component": "Manifest identity",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Does verify_export recompute and verify manifest_digest before returning it?",
+      "status": "disputed",
+      "evidence": "Lines 341-380 load the manifest and return its stated digest without recomputation. The mocked probe returns the literal unverified digest.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.verify_export"
+    },
+    {
+      "id": "INT-Q090",
+      "component": "Manifest confinement",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Are manifest file paths revalidated as confined, nonsymlink paths during verification?",
+      "status": "disputed",
+      "evidence": "verify_export joins root/path directly at lines 347-354. The mocked tree accepts ../outside.py; no real outside file was accessed.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.verify_export"
+    },
+    {
+      "id": "INT-Q091",
+      "component": "Export failure gating",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Does a failed integrity or forbidden-content check prevent code execution?",
+      "status": "disputed",
+      "evidence": "After recording failed checks, verify_export calls _run_isolated at line 358. The mocked runner was called once after a failing digest check.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.verify_export"
+    },
+    {
+      "id": "INT-Q092",
+      "component": "Export package-name validation",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Is package_name from a loaded manifest validated before interpolation into Python code?",
+      "status": "disputed",
+      "evidence": "The loaded package string at line 345 is inserted into source at lines 359 and 375. The safe mock captured the supplied audit_marker statement.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.verify_export"
+    },
+    {
+      "id": "INT-Q093",
+      "component": "Export sandbox",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Do the isolated Python flags confine file, network and process effects?",
+      "status": "answered",
+      "evidence": "_isolated_python uses -I/-S and _run_isolated uses subprocess.run on the host. No operating-system sandbox or network policy is installed by this code.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export._run_isolated"
+    },
+    {
+      "id": "INT-Q094",
+      "component": "Export acceptance coverage",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Can verification pass without running any tests or customer entry point?",
+      "status": "answered",
+      "evidence": "Tests run only if the tests directory exists; entry-point checks run only when run_arguments is supplied. The result accepts all checks that happened to run.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.verify_export"
+    },
+    {
+      "id": "INT-Q095",
+      "component": "Export dependencies",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Does site_packages verification prove a clean install with declared dependencies only?",
+      "status": "answered",
+      "evidence": "The site_packages mode uses the current interpreter with -I. It does not build a wheel, install into a fresh environment or validate a dependency lock.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export._isolated_python"
+    },
+    {
+      "id": "INT-Q096",
+      "component": "Container qualification",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Are the generated container and scheduling definitions ready to deploy by default?",
+      "status": "answered",
+      "evidence": "ContainerSpec defaults to an unpinned base image. render_kubernetes_job writes IMAGE_REFERENCE. No image build or cluster qualification runs in verify_export.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export.render_kubernetes_job"
+    },
+    {
+      "id": "INT-Q097",
+      "component": "Export task correctness",
+      "file": "src/loop_engine/code_nodes/solution_export_checks.py",
+      "question": "Does the export example establish general fresh-input task correctness?",
+      "status": "answered",
+      "evidence": "The example checks a specific conformance fixture and existence of outputs. It does not independently qualify arbitrary exported solutions or new task populations.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solution_export_checks.run_checks"
+    },
+    {
+      "id": "INT-Q098",
+      "component": "Solution verification binding",
+      "file": "src/loop_engine/code_nodes/solutions_space.py",
+      "question": "Is the passed verification report bound to the exact selected graph before marking it verified?",
+      "status": "disputed",
+      "evidence": "solutions_space_from_adaptive uses the last passed report without matching its subject. The probe marks a graph verified with report_digest=unrelated.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solutions_space.solutions_space_from_adaptive"
+    },
+    {
+      "id": "INT-Q099",
+      "component": "Solution wire integrity",
+      "file": "src/loop_engine/code_nodes/solutions_space.py",
+      "question": "Does deserialization reject an incorrect solutions-space content digest?",
+      "status": "disputed",
+      "evidence": "from_dict at lines 146-150 ignores content_digest. solution_projection_trust confirms acceptance of an incorrect digest.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solutions_space.SolutionsSpaceRecord.from_dict"
+    },
+    {
+      "id": "INT-Q100",
+      "component": "Solution status evolution",
+      "file": "src/loop_engine/code_nodes/solutions_space.py",
+      "question": "Can adding the same graph with newly verified status update a previously candidate member?",
+      "status": "answered",
+      "evidence": "add_member at lines 119-123 returns the existing space when the graph digest already exists, without updating status or evidence.",
+      "discriminating_check": "",
+      "owning_boundary": "code_nodes.solutions_space.SolutionsSpaceRecord.add_member"
+    }
+  ]
+}

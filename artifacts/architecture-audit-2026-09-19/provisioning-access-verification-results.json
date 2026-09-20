@@ -1,0 +1,175 @@
+{
+  "baseline": [
+    {
+      "checks": 40,
+      "failed": [],
+      "module": "loop_engine.core.provisioning_server",
+      "not_tested": []
+    },
+    {
+      "checks": 7,
+      "failed": [],
+      "module": "loop_engine.core.harness_intelligence",
+      "not_tested": []
+    },
+    {
+      "checks": 5,
+      "failed": [],
+      "module": "loop_engine.core.intelligence_tagging",
+      "not_tested": []
+    },
+    {
+      "checks": 14,
+      "failed": [],
+      "module": "loop_engine.core.node_provisioning",
+      "not_tested": []
+    },
+    {
+      "checks": 16,
+      "failed": [],
+      "module": "loop_engine.core.spawned_provisioning",
+      "not_tested": []
+    },
+    {
+      "checks": 6,
+      "failed": [],
+      "module": "loop_engine.core.external_service_intelligence",
+      "not_tested": []
+    },
+    {
+      "checks": 4,
+      "failed": [],
+      "module": "loop_engine.core.harness_intelligence_bridge",
+      "not_tested": []
+    },
+    {
+      "checks": 7,
+      "failed": [],
+      "module": "loop_engine.core.service_api",
+      "not_tested": []
+    }
+  ],
+  "mutants": [
+    {
+      "detected": true,
+      "failing_checks": [
+        "metadata_is_scoped_effect_free_and_honest_about_host_attestation",
+        "unauthorized_item_is_hidden_on_all_surfaces_skill.other_tenant"
+      ],
+      "name": "ignore_tenant_identity_in_grant_lookup"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "changed_purpose_invalidates_the_exact_grant",
+        "changed_license_name_invalidates_the_exact_grant"
+      ],
+      "name": "omit_descriptor_identity_from_grants"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "unauthorized_item_is_hidden_on_all_surfaces_skill.candidate",
+        "qualification_unknown_is_not_disclosure_authority"
+      ],
+      "name": "ignore_unapproved_qualification"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "qualification_mismatched_is_not_disclosure_authority"
+      ],
+      "name": "ignore_qualification_binding"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "entitlement_and_exact_body_grant_are_both_required"
+      ],
+      "name": "ignore_subscription_and_body_grant"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "metadata_is_scoped_effect_free_and_honest_about_host_attestation",
+        "missing_host_policy_denies_by_default_and_revokes_previous_grants"
+      ],
+      "name": "disclose_global_catalogue_counts"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "changed_body_is_refused_before_metering",
+        "measured_body_size_must_match_the_approved_descriptor"
+      ],
+      "name": "ignore_body_integrity"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "meter_wrong_tenant_does_not_return_a_successful_body",
+        "meter_wrong_body_does_not_return_a_successful_body"
+      ],
+      "name": "ignore_acknowledgment_exact_request"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "meter_refused_does_not_return_a_successful_body",
+        "meter_unknown_does_not_return_a_successful_body"
+      ],
+      "name": "accept_unknown_meter_commit"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "revocation_during_body_read_prevents_metering_and_disclosure"
+      ],
+      "name": "ignore_revocation_before_disclosure"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "revocation_during_metadata_resolution_cannot_reuse_the_old_policy"
+      ],
+      "name": "ignore_reentrant_policy_revocation"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "unknown_commit_retries_the_same_effect_without_a_second_charge",
+        "concurrent_exact_retries_have_one_reference_meter_charge",
+        "changed_effect_cannot_reuse_an_existing_charge_identity",
+        "reference_meter_itself_refuses_changed_effect_for_a_committed_identity"
+      ],
+      "name": "charge_exact_retries_again"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "reference_meter_itself_refuses_changed_effect_for_a_committed_identity"
+      ],
+      "name": "reuse_charge_for_changed_effect"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "unsupported_versions_and_missing_meter_identity_refuse_before_effects"
+      ],
+      "name": "accept_unsupported_contract_version"
+    }
+  ],
+  "passed": true,
+  "record_type": "provisioning_access_verification/v1",
+  "source_sha256": {
+    "src/loop_engine/core/external_service_intelligence.py": "e51981cf87f0c8cfff8e5608f19af2df11313dac5c6cf27bb8709d990d01b617",
+    "src/loop_engine/core/harness_intelligence.py": "956f53f618d7cc13092d4838ec0908b17288a262719618e00724218c90e281fe",
+    "src/loop_engine/core/harness_intelligence_bridge.py": "0ce8c2af5754a3859a295c044279fc077daf5b565dcd0ec72b73ff4a2f020649",
+    "src/loop_engine/core/intelligence_tagging.py": "6a4c5cc290decc67f81e9a2e2e5dda286dd895d7d814247150e7fa0c6e809e0e",
+    "src/loop_engine/core/node_provisioning.py": "ce77e0abb85869561c0ec8846c5fde29ba78b7601fe063b3277e9c0a6da5d5df",
+    "src/loop_engine/core/provisioning_server.py": "c1babd5c6dfd3d18d35d4ab7e139d87cdc4b9eefd0e1f57c8372e3d0a9beb2a6",
+    "src/loop_engine/core/provisioning_server_checks.py": "3a67ad8df09800a408fd45716f6466e6ec26a8d80d1d00c1825bda84c764293e",
+    "src/loop_engine/core/service_api.py": "202e9bd3fcd8e51c3ba523dc74eccb15e271467aee245011f7731cdcb4a700f1",
+    "src/loop_engine/core/spawned_provisioning.py": "7f4d11ed5c81b2dc5d1f6d48b0962afef787fa5ad1cefd60828099cbec796dcb"
+  }
+}

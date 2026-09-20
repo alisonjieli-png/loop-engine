@@ -1,0 +1,60 @@
+{
+  "record_type": "identity_customer_access_qualification/v1",
+  "observed_at": "2026-09-20T18:55:52.013569+00:00",
+  "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+  "run_id": "6937e1d761e1431fb91f556fc44393c9",
+  "scope": "real identity provider with temporary local service and diagnostic material",
+  "source_before": {
+    "src/loop_engine/core/service_runtime/access.py": "6660045a08cf876c7bb310a33bbb4f44cde9f990a585084ea18e7c8e3c3cdef9",
+    "src/loop_engine/core/service_runtime/records.py": "147a1fc46b1765f076e3490c76d0825fefa756aa3b7e44c09699a56593b91657",
+    "src/loop_engine/core/service_runtime/runtime.py": "4204aebd2d0c05e1dfd0ea8928fa50c5bf6ce8f690e2cef630c760a93296143c",
+    "src/loop_engine/core/service_runtime/storage.py": "210566426c362e5755dd8ef8560b8331c17bf69eab7e9aec88003537f35b8e68",
+    "src/loop_engine/core/service_runtime/provisioning.py": "4b5553ae122781f31737d19d9b77886c74535e8674fe6ba96ee3e0699bb54d06",
+    "src/loop_engine/core/service_runtime/http.py": "d656a459caaffdb8455c52f1ec0361404be4ee834ff72becde0c59090640aac8",
+    "src/loop_engine/core/service_runtime/http_auth.py": "5fd6221afd33162a3c2ee7cb345418154a655469d391e771b974a41ea5911444",
+    "src/loop_engine/core/service_runtime/browser_identity.py": "c8a69dd44fa6e1ace0d4180d82a52afbdd76dfcbc46cdad09c56351288b50369",
+    "tools/check_identity_customer_access.py": "d3d81d055df7b04eb6a10a55fc065b62fa3888eac7ea820ea27a2155b43653c4"
+  },
+  "source_after": {
+    "src/loop_engine/core/service_runtime/access.py": "6660045a08cf876c7bb310a33bbb4f44cde9f990a585084ea18e7c8e3c3cdef9",
+    "src/loop_engine/core/service_runtime/records.py": "147a1fc46b1765f076e3490c76d0825fefa756aa3b7e44c09699a56593b91657",
+    "src/loop_engine/core/service_runtime/runtime.py": "4204aebd2d0c05e1dfd0ea8928fa50c5bf6ce8f690e2cef630c760a93296143c",
+    "src/loop_engine/core/service_runtime/storage.py": "210566426c362e5755dd8ef8560b8331c17bf69eab7e9aec88003537f35b8e68",
+    "src/loop_engine/core/service_runtime/provisioning.py": "4b5553ae122781f31737d19d9b77886c74535e8674fe6ba96ee3e0699bb54d06",
+    "src/loop_engine/core/service_runtime/http.py": "d656a459caaffdb8455c52f1ec0361404be4ee834ff72becde0c59090640aac8",
+    "src/loop_engine/core/service_runtime/http_auth.py": "5fd6221afd33162a3c2ee7cb345418154a655469d391e771b974a41ea5911444",
+    "src/loop_engine/core/service_runtime/browser_identity.py": "c8a69dd44fa6e1ace0d4180d82a52afbdd76dfcbc46cdad09c56351288b50369",
+    "tools/check_identity_customer_access.py": "d3d81d055df7b04eb6a10a55fc065b62fa3888eac7ea820ea27a2155b43653c4"
+  },
+  "source_unchanged": true,
+  "checks": [
+    {
+      "name": "provider_exposes_supported_asymmetric_signing_keys",
+      "passed": true
+    }
+  ],
+  "passed": 1,
+  "total": 1,
+  "all_passed": false,
+  "failure": "unexpected_UnicodeEncodeError",
+  "provider_requests": {
+    "operator_provider_requests": 2,
+    "identity_user_reads": 0,
+    "key_set_reads": 0
+  },
+  "elapsed_seconds": 0.5513813749421388,
+  "disposable_accounts": [],
+  "cleanup_failed": false,
+  "unknown_creation_outcome": false,
+  "email_sent": false,
+  "email_confirmation_tested": false,
+  "public_registration_enabled": false,
+  "deployed_host_qualified": false,
+  "model_calls": 0,
+  "payments_created": false,
+  "limitations": [
+    "Administratively confirmed test identities do not qualify email confirmation, recovery or real customer onboarding.",
+    "Provider account deletion reconciliation is separate from the tested local subject revocation.",
+    "Diagnostic material and protocol retrieval do not prove native harness loading or useful task completion."
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "record_type": "domain_cutover_observation/v1",
+  "kind": "operator observation, not an executable configuration or release approval",
+  "captured_at": "2026-09-20T17:54:30Z",
+  "previous_observation": "domain-cutover-progress-1.json",
+  "domain": "baltor.ai",
+  "registrar": "Namecheap",
+  "registrar_nameservers_confirmed": ["dana.ns.cloudflare.com", "nile.ns.cloudflare.com"],
+  "registry_nameservers_confirmed": ["dana.ns.cloudflare.com", "nile.ns.cloudflare.com"],
+  "registry_observation_server": "v0n1.nic.ai",
+  "cloudflare": {
+    "zone_id": "574082e7cc7798981b82b317a8dceb38",
+    "plan": "Free Website",
+    "status": "active",
+    "activated_on": "2026-09-20T17:44:35.765138Z",
+    "website_records_proxied": false,
+    "dns_records": 14
+  },
+  "website_checks": [
+    {"origin":"https://app.baltor.ai","certificate_issued":true,"https_status":200,"tls_verification_passed":true,"report":"hosted-custom-domain-cutover-1.json","passed":45,"total":45},
+    {"origin":"https://baltor.ai","certificate_issued":true,"https_status":200,"tls_verification_passed":true,"report":"hosted-root-domain-1.json","passed":45,"total":45},
+    {"origin":"https://www.baltor.ai","certificate_issued":true,"https_status":200,"tls_verification_passed":true,"report":"hosted-www-domain-1.json","passed":45,"total":45}
+  ],
+  "dns_cache_observations": {
+    "authoritative_cloudflare_records": "Website and sender records resolve from assigned servers",
+    "google_public_resolver": "Returns the required sender mail-exchange record",
+    "cloudflare_public_resolver": "Still returned a cached negative mail-exchange response from the old zone and old cached nameservers",
+    "global_cache_convergence_claimed": false
+  },
+  "resend": {
+    "domain": "auth.baltor.ai",
+    "verification_status": "pending",
+    "dkim_status": "pending",
+    "mail_exchange_status": "pending",
+    "sender_policy_status": "pending",
+    "provider_cname_status": "verified",
+    "verification_requested": true,
+    "email_sent": false,
+    "supabase_mail_configuration_complete": false
+  },
+  "credential_checks": {
+    "passed": 23,
+    "total": 23,
+    "removed_guard_controls_detected": 2,
+    "operator_source_sha256": "6c0eb7ff9dffabdbf6d9f9ac36e4914c1f03b4ba6075242bb6522783a262167e",
+    "cloudflare_claude_connection": "Connected",
+    "native_namecheap_connection_in_private_export": true,
+    "secret_values_exported": false
+  },
+  "limits": [
+    "Observations were collected sequentially, not as an atomic provider snapshot.",
+    "Cloudflare provides authoritative DNS. Proxy, content caching and web firewall protection are not enabled by this DNS-only setup.",
+    "The earlier transient HTTPS failure remains in the first observation; passing later checks does not prove uninterrupted availability.",
+    "Registration, authentication email delivery, subscriptions, shared cloud storage and complete native task execution remain unqualified.",
+    "The Fly protocol resource and account callback remain canonical until the separate identity migration is qualified.",
+    "A documentation check initially detected a stale generated status; another detected a removed paid-release disclaimer. Regeneration and restoring the disclaimer address those failures without weakening the checks."
+  ]
+}

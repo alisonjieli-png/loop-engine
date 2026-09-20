@@ -1,0 +1,427 @@
+{
+  "record_type": "billing_session_verification/v1",
+  "baseline": {
+    "tests": [
+      {
+        "test": "checkout_uses_only_server_bound_account_customer_price_and_return_policy",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "session_creation_never_confirms_payment_or_changes_entitlement",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "same_request_reconciles_the_same_provider_idempotency_identity",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "changed_plan_cannot_reuse_an_existing_effect_request_identity",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "portal_uses_exact_server_configuration_and_customer",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "credentials_and_ephemeral_portal_URLs_are_not_persisted_in_effect_records",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "an_expired_reconciliation_window_cannot_silently_create_a_new_provider_effect",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "allow_network_is_required_before_secret_resolution_or_provider_work",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "allow_session_creation_is_required_before_secret_resolution_or_provider_work",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "billing_management_is_an_explicit_scope_not_a_new_default_key_privilege",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "caller_wire_data_cannot_supply_price_customer_tenant_or_return_URL_authority",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "stale_plan_policy_and_unknown_plan_refuse_before_provider_work",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "different_provider_account_refuses_before_customer_or_session_work",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "customer_and_key_mode_mismatch_refuses_before_the_creation_POST",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "inactive_or_unverified_price_cannot_reach_session_creation",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "revocation_during_preflight_refuses_before_creation",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "lost_provider_response_preserves_unknown_effect_and_does_not_retry_automatically",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "restart_reconciles_the_original_key_without_a_second_provider_creation",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "concurrent_same_identity_attempts_do_not_dispatch_duplicate_creations",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "an_issued_reservation_cannot_drop_its_authority_guards",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "a_changed_financial_policy_invalidates_an_inflight_session_reservation",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_checkout_URL_fragment_is_preserved_as_documented",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "same_provider_idempotency_key_cannot_change_its_confirmed_session_identity",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "portal_response_requires_the_exact_host_configuration",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_redirect_host_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_redirect_userinfo_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_customer_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_livemode_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_success_return_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_cancel_return_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_closed_session_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_expiry_cannot_be_returned_as_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "revocation_after_provider_creation_retains_effect_but_refuses_success",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "unknown_reservation_commit_never_reaches_secret_or_provider",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "request_identity_is_tenant_scoped_with_distinct_provider_idempotency_keys",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "changed_host_session_policy_requires_exact_durable_revision",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "real_provider_serializer_binds_origin_version_form_and_idempotency_without_redirects",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_redirect_is_refused_without_following_its_location",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_response_byte_limit_prevents_unbounded_loading",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "provider_duplicate_JSON_fields_are_not_accepted",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "wire_contract_refuses_unscoped_paths_missing_idempotency_and_read_effect_fields",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "real_HTTP_checkout_and_portal_use_versioned_canonical_Loop_results",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "real_HTTP_refuses_client_authority_obsolete_version_changed_selection_and_missing_token",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "real_HTTP_requires_explicit_billing_scope_and_does_not_advertise_it_to_limited_keys",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "real_HTTP_unknown_effect_keeps_same_request_identity_without_secret_echo_or_retry",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "real_HTTP_same_identity_reconciles_uncertain_creation_once",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "real_HTTP_revoked_tenant_cannot_create_or_reconcile_sessions",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "narrow_external_token_cannot_borrow_its_subjects_durable_billing_scope",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "explicit_verified_external_billing_scope_can_create_the_bound_session",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "session_response_timeout_never_claims_cancellation_or_replays_running_creation",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "late_session_completion_is_reconciled_under_the_original_identity",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      },
+      {
+        "test": "executable_host_loader_installs_exact_session_policy_without_network_or_activation",
+        "passed": true,
+        "detail": "durable local state and injected provider, no live Stripe"
+      }
+    ],
+    "passed": 52,
+    "total": 52,
+    "all_passed": true
+  },
+  "mutants": [
+    {
+      "mutant": "remove_explicit_network_and_session_authority",
+      "detected": true,
+      "failed_checks": [
+        "allow_network_is_required_before_secret_resolution_or_provider_work",
+        "allow_session_creation_is_required_before_secret_resolution_or_provider_work"
+      ]
+    },
+    {
+      "mutant": "substitute_a_different_server_price",
+      "detected": true,
+      "failed_checks": [
+        "checkout_uses_only_server_bound_account_customer_price_and_return_policy",
+        "changed_plan_cannot_reuse_an_existing_effect_request_identity"
+      ]
+    },
+    {
+      "mutant": "ignore_provider_account_identity",
+      "detected": true,
+      "failed_checks": [
+        "different_provider_account_refuses_before_customer_or_session_work",
+        "customer_and_key_mode_mismatch_refuses_before_the_creation_POST",
+        "inactive_or_unverified_price_cannot_reach_session_creation",
+        "revocation_during_preflight_refuses_before_creation"
+      ]
+    },
+    {
+      "mutant": "ignore_customer_live_mode",
+      "detected": true,
+      "failed_checks": [
+        "customer_and_key_mode_mismatch_refuses_before_the_creation_POST",
+        "inactive_or_unverified_price_cannot_reach_session_creation",
+        "revocation_during_preflight_refuses_before_creation"
+      ]
+    },
+    {
+      "mutant": "allow_inactive_price",
+      "detected": true,
+      "failed_checks": [
+        "inactive_or_unverified_price_cannot_reach_session_creation",
+        "revocation_during_preflight_refuses_before_creation"
+      ]
+    },
+    {
+      "mutant": "accept_arbitrary_redirect_host",
+      "detected": true,
+      "failed_checks": [
+        "provider_response_redirect_host_cannot_be_returned_as_success"
+      ]
+    },
+    {
+      "mutant": "accept_expired_checkout_session",
+      "detected": true,
+      "failed_checks": [
+        "provider_response_expiry_cannot_be_returned_as_success"
+      ]
+    },
+    {
+      "mutant": "accept_changed_cancel_return_URL",
+      "detected": true,
+      "failed_checks": [
+        "provider_response_cancel_return_cannot_be_returned_as_success"
+      ]
+    },
+    {
+      "mutant": "accept_changed_portal_configuration",
+      "detected": true,
+      "failed_checks": [
+        "portal_response_requires_the_exact_host_configuration"
+      ]
+    },
+    {
+      "mutant": "drop_reserved_authority_read_set",
+      "detected": true,
+      "failed_checks": [
+        "a_changed_financial_policy_invalidates_an_inflight_session_reservation"
+      ]
+    },
+    {
+      "mutant": "allow_forged_reservation_guard_removal",
+      "detected": true,
+      "failed_checks": [
+        "an_issued_reservation_cannot_drop_its_authority_guards"
+      ]
+    },
+    {
+      "mutant": "ignore_changed_effect_under_same_request",
+      "detected": true,
+      "failed_checks": [
+        "changed_plan_cannot_reuse_an_existing_effect_request_identity"
+      ]
+    },
+    {
+      "mutant": "create_a_fresh_provider_identity_on_retry",
+      "detected": true,
+      "failed_checks": [
+        "same_request_reconciles_the_same_provider_idempotency_identity",
+        "changed_plan_cannot_reuse_an_existing_effect_request_identity",
+        "portal_uses_exact_server_configuration_and_customer",
+        "restart_reconciles_the_original_key_without_a_second_provider_creation"
+      ]
+    },
+    {
+      "mutant": "ignore_provider_retention_window",
+      "detected": true,
+      "failed_checks": [
+        "an_expired_reconciliation_window_cannot_silently_create_a_new_provider_effect"
+      ]
+    },
+    {
+      "mutant": "accept_changed_confirmed_provider_identity",
+      "detected": true,
+      "failed_checks": [
+        "same_provider_idempotency_key_cannot_change_its_confirmed_session_identity"
+      ]
+    },
+    {
+      "mutant": "borrow_subject_billing_scope_from_narrow_token",
+      "detected": true,
+      "failed_checks": [
+        "narrow_external_token_cannot_borrow_its_subjects_durable_billing_scope"
+      ]
+    },
+    {
+      "mutant": "follow_Stripe_redirect",
+      "detected": true,
+      "failed_checks": [
+        "real_provider_serializer_binds_origin_version_form_and_idempotency_without_redirects",
+        "provider_redirect_is_refused_without_following_its_location"
+      ]
+    },
+    {
+      "mutant": "remove_Stripe_response_byte_limit",
+      "detected": true,
+      "failed_checks": [
+        "provider_response_byte_limit_prevents_unbounded_loading"
+      ]
+    }
+  ],
+  "all_detected": true,
+  "external_network_calls": 0,
+  "live_payment_provider_qualified": false,
+  "limitations": [
+    "injected provider records, not Stripe interoperability",
+    "loopback identity issuer, not a deployed OAuth authorization flow",
+    "response timeout cannot preempt an already running synchronous callback"
+  ],
+  "source_sha256": {
+    "src/loop_engine/core/service_runtime/billing_effects.py": "d759d593d6a97832d0e2e8db4a1ae317bead85336fb823d733c67b83bb727874",
+    "src/loop_engine/core/service_runtime/stripe_sessions.py": "b0a1e015baad84c3e2f6322f2cc39d541f8d75b4550965d590e929a872c1fba5",
+    "src/loop_engine/core/service_runtime/stripe_session_checks.py": "bf8b64b856cf9750c372bdeca2aad4cd03d1dbc40c36317177b3f0a560b0998f",
+    "src/loop_engine/core/service_runtime/stripe_session_transport_checks.py": "8170ae8f5481fb7cf550237cc1bd8d338feaf5cf2bfa12d212fdac73ce8c9953",
+    "src/loop_engine/core/service_runtime/http.py": "b935f7c13b02bc070ee25c8ccef4b35451c56284247ca2b1692906c937a022e6",
+    "src/loop_engine/core/service_runtime/http_auth.py": "dcbfb526d8c4bd802ac1d7bd45811bae2dc2dc1f6d77ba2e9b14833e5d6e88a6",
+    "src/loop_engine/core/service_runtime/http_entrypoint.py": "170fc108247d167e485b8cb7756f5e84b2535fe39747f953376f419242676ff8"
+  }
+}

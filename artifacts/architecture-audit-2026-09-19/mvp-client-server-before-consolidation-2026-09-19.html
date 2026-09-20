@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; font-src 'self'; worker-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Loop Engine | Client and server architecture</title>
+<link rel="stylesheet" href="mvp-client-server.css">
+<script defer src="https://cdn.jsdelivr.net/npm/elkjs@0.12.0/lib/elk.bundled.js" integrity="sha384-ww57TDqx4cGknIavPm0QKO+aygLUR1BLSn2Vhbnt1XdYKWcwLyWTFKX7aZMaKIi2" crossorigin="anonymous"></script>
+<script defer src="mvp-client-server.data.js"></script>
+<script defer src="mvp-client-server.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#diagram-section">Skip to architecture</a>
+<div class="page-shell">
+<header class="masthead">
+<a class="wordmark" href="#overview" aria-label="Loop Engine architecture overview"><span class="brand-mark" aria-hidden="true">L</span>Loop Engine</a>
+<div class="masthead-right"><span class="edition">Architecture / 19 Sep 2026</span><label class="appearance">Theme<select id="appearance"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label></div>
+</header>
+<main>
+<section class="intro" aria-labelledby="page-title">
+<div><p class="eyebrow">First-release architecture</p><h1 id="page-title">Intelligence from the service.<br><span>Execution stays with you.</span></h1><p class="intro-copy">Connect your harness to reviewed material. Run the work in your own environment, with your own permissions and model access.</p></div>
+<aside class="release-note"><span class="status proposed">Proposed deployment</span><p>The Python domain and local protocol integration exist. The hosted website, remote authorization and billing still need implementation.</p><a href="../../docs/architecture/MVP-CLIENT-SERVER.md">Read the architecture note ↗</a></aside>
+</section>
+<nav class="view-nav" aria-label="Architecture views">
+<button type="button" data-view="overview" aria-pressed="true"><span>01</span>Overview</button>
+<button type="button" data-view="sign-in" aria-pressed="false"><span>02</span>Sign-in &amp; access</button>
+<button type="button" data-view="retrieval" aria-pressed="false"><span>03</span>Retrieve material</button>
+<button type="button" data-view="execution" aria-pressed="false"><span>04</span>Run locally</button>
+</nav>
+<details class="runtime-reference"><summary>Runtime vocabulary: one Loop, three roles</summary><p>These diagrams show software boundaries and workflow steps. Passive services and stores are not executable Loop vertices.</p><pre>Operational runtime type
+└── Loop
+    ├── Operational relationship
+    │   ├── Starting
+    │   ├── Spawned by
+    │   ├── Queried by
+    │   ├── Retrieved by
+    │   └── Connected from
+    ├── Role: Practitioner, Intelligence, or Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Run mode
+    │   ├── deterministic
+    │   ├── hybrid
+    │   └── non-deterministic, with model-led semantic work
+    ├── Step profile
+    ├── Typed input and output contract
+    ├── Loop condition
+    ├── Exit condition
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when the selected mode permits a model
+    └── Run History records</pre></details>
+<section id="diagram-section" aria-labelledby="view-title">
+<div class="view-heading"><div><p class="eyebrow" id="view-eyebrow">01 / Overview</p><h2 id="view-title">Three boundaries. Different responsibilities.</h2><p id="view-description">The customer runs the task. Loop Engine supplies permitted intelligence. External services support the proposed hosted product.</p></div><p class="interaction-hint">Select a box for its scope<br>and current implementation.</p></div>
+<div class="trust-key" aria-label="Trust boundaries"><span><i class="zone-dot customer"></i>Customer-controlled</span><span><i class="zone-dot engine"></i>Loop Engine</span><span><i class="zone-dot vendor"></i>External service</span></div>
+<div id="layout-message" class="layout-message" role="status">Preparing the diagram…</div>
+<div id="diagram" class="diagram" role="group" aria-labelledby="view-title" aria-describedby="diagram-caption" aria-busy="true"></div>
+<p id="diagram-caption" class="diagram-caption"></p>
+<aside id="component-detail" class="component-detail" aria-live="polite" hidden><div><p class="eyebrow" id="detail-owner"></p><h3 id="detail-title"></h3></div><div><p id="detail-copy"></p><p id="detail-state" class="detail-state"></p></div><button id="close-detail" type="button" aria-label="Close selected component details">Close</button></aside>
+<div id="view-notes" class="view-notes"></div>
+<details id="connections" class="connections"><summary>Read the connections as text</summary><ol id="connection-list"></ol></details>
+<p id="view-announcement" class="sr-only" aria-live="polite"></p>
+</section>
+<section class="implementation-note" aria-labelledby="implementation-title"><div><span class="status existing">Existing local implementation</span><h2 id="implementation-title">Local evidence is not a hosted launch.</h2></div><p>Current transport tests use local JSON-RPC sessions and protocol <code>2025-11-25</code>. Remote provisioning HTTP and OAuth are not implemented. Connecting a harness alone does not create a governed Loop Engine task graph.</p></section>
+</main>
+<footer><p>Architecture proposal. No live accounts, payments or task execution.</p><div><a href="../../docs/roadmap/CONTINUATION-STATUS.md">Launch work</a><a href="architecture.html">Source map</a><a href="https://github.com/kieler/elkjs">Layout: ELK.js 0.12.0</a></div></footer>
+</div>
+<noscript><p class="noscript-note">This diagram uses JavaScript for layout and view selection. <a href="../../docs/architecture/MVP-CLIENT-SERVER.md">Read the complete architecture note.</a></p></noscript>
+</body>
+</html>

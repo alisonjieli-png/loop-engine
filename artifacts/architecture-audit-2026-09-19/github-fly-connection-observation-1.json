@@ -1,0 +1,29 @@
+{
+  "record_type": "github_fly_connection_observation/v1",
+  "observed_at": "2026-09-20T00:43:33.639107+00:00",
+  "repository": "alisonjieli-png/loop-engine",
+  "environment": "pilot",
+  "deployment_branch_policy": {
+    "protected_branches": false,
+    "custom_branch_policies": true
+  },
+  "allowed_branches": [
+    {
+      "name": "main",
+      "type": "branch"
+    }
+  ],
+  "secret_metadata": [
+    {
+      "name": "FLY_API_TOKEN",
+      "updated_at": "2026-09-20T00:27:56Z"
+    }
+  ],
+  "variables": {
+    "FLY_DEPLOY_ENABLED": "false",
+    "FLY_ORG": "baltor"
+  },
+  "secret_values_read_back": false,
+  "workflow_published": false,
+  "fly_deployment_performed": false
+}

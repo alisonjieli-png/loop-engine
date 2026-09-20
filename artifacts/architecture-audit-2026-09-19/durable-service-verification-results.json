@@ -1,0 +1,186 @@
+{
+  "baseline": [
+    {
+      "checks": 25,
+      "failed": [],
+      "module": "loop_engine.core.service_runtime.runtime",
+      "not_tested": []
+    },
+    {
+      "checks": 38,
+      "failed": [],
+      "module": "loop_engine.core.service_runtime.billing",
+      "not_tested": []
+    },
+    {
+      "checks": 5,
+      "failed": [],
+      "module": "loop_engine.core.service_runtime.stripe_provider",
+      "not_tested": []
+    },
+    {
+      "checks": 40,
+      "failed": [],
+      "module": "loop_engine.core.provisioning_server",
+      "not_tested": []
+    },
+    {
+      "checks": 2,
+      "failed": [],
+      "module": "loop_engine.catalog.protocol",
+      "not_tested": []
+    },
+    {
+      "checks": 17,
+      "failed": [],
+      "module": "loop_engine.catalog.stores.sqlite_store",
+      "not_tested": []
+    },
+    {
+      "checks": 26,
+      "failed": [],
+      "module": "loop_engine.core.record_operations_checks",
+      "not_tested": []
+    }
+  ],
+  "limitations": [
+    "No live Stripe account or deployment tested.",
+    "SQLite embedded single-writer profile, not a clustered database claim.",
+    "Injected provider transport and signed fixtures establish local contracts, not provider qualification."
+  ],
+  "mutants": [
+    {
+      "detected": true,
+      "failing_checks": [
+        "tenant_namespace_collision_rolls_back_the_whole_registration",
+        "atomic_batch_conflict_writes_nothing",
+        "atomic_read_set_serializes_two_competing_writers"
+      ],
+      "name": "ignore_catalog_read_set"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "atomic_batch_mid_write_failure_rolls_back_all_rows"
+      ],
+      "name": "omit_batch_rollback"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "key_revocation_invalidates_previously_issued_principals",
+        "external_subject_mapping_is_exact_durable_and_revocable",
+        "key_revocation_during_body_read_prevents_meter_and_delivery"
+      ],
+      "name": "ignore_key_revocation"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "key_revocation_invalidates_previously_issued_principals",
+        "expiry_is_checked_at_use_not_only_key_issue",
+        "mutated_principals_do_not_inherit_issued_authentication",
+        "external_subject_mapping_is_exact_durable_and_revocable",
+        "key_revocation_during_body_read_prevents_meter_and_delivery",
+        "entitlement_revocation_during_body_read_prevents_meter_and_delivery"
+      ],
+      "name": "trust_unissued_or_stale_principal"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "exact_body_retry_has_one_durable_usage_record_after_restart",
+        "idempotency_identity_cannot_cover_a_changed_body",
+        "unknown_commit_is_not_success_and_exact_retry_reconciles_once",
+        "separate_connections_concurrent_retries_do_not_double_meter"
+      ],
+      "name": "discard_usage_idempotency"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "unknown_commit_is_not_success_and_exact_retry_reconciles_once"
+      ],
+      "name": "ignore_unknown_commit_acknowledgment"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "signature_wrong_signature_refuses_before_state_effects",
+        "signature_changed_raw_body_refuses_before_state_effects"
+      ],
+      "name": "accept_invalid_webhook_signature"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "signature_expired_refuses_before_state_effects",
+        "signature_future_refuses_before_state_effects"
+      ],
+      "name": "accept_expired_or_future_webhook_signature"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "unpaid_does_not_grant_paid_access",
+        "unknown_invoice_does_not_grant_paid_access"
+      ],
+      "name": "grant_active_but_unpaid_subscription"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "snapshot_incomplete_cannot_grant_entitlement",
+        "snapshot_account_cannot_grant_entitlement",
+        "snapshot_mode_cannot_grant_entitlement",
+        "snapshot_api_version_cannot_grant_entitlement"
+      ],
+      "name": "ignore_unknown_or_wrong_provider_snapshot"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "provider_network_denial_precedes_secret_or_transport"
+      ],
+      "name": "ignore_provider_network_authority"
+    }
+  ],
+  "passed": true,
+  "record_type": "durable_service_verification/v1",
+  "source_sha256": {
+    "src/loop_engine/catalog/protocol.py": "8b6e1cd14d0786adfcce7c59140e9c37c78bd9711f412abcded3fea978a4f8a5",
+    "src/loop_engine/catalog/stores/sqlite_store.py": "c956901e8a5f9c7ebef273d44ca7a3f7937f76948aa9a56cde48d90cfddf9b7b",
+    "src/loop_engine/core/provisioning_server.py": "22ee1f4c17861d4a49ff698c88fc564ffd11d9295e95e90bfade8db135760744",
+    "src/loop_engine/core/record_operations_checks.py": "cafb1107eff2cd833fb89ae572e5100cb131a17445464ee41a47f236ee761e20",
+    "src/loop_engine/core/service_runtime/billing.py": "3459ecfe6cff9a1c2437c98110c6a00b7f4d75af31cfd06a4b6ac5ee4b9db8ba",
+    "src/loop_engine/core/service_runtime/billing_checks.py": "f8a52dd1cdab51a250b1874f05486a067a6c4c9a1ea7ee5bb584b7f8da903b66",
+    "src/loop_engine/core/service_runtime/billing_records.py": "eafeaca0ba783ff7341b63789aae6226a7d109de02436f2b190d0ef1540e4e6c",
+    "src/loop_engine/core/service_runtime/provisioning.py": "4b5553ae122781f31737d19d9b77886c74535e8674fe6ba96ee3e0699bb54d06",
+    "src/loop_engine/core/service_runtime/records.py": "944380484b4818353eb42e98bde949a3d3565227b940be3d88a4ecf9585784e3",
+    "src/loop_engine/core/service_runtime/runtime.py": "85cbea88e31092d587bad88c4a21e3696d204338e4c370771562b4fe75057cb1",
+    "src/loop_engine/core/service_runtime/runtime_checks.py": "88aa607c6f7da5f14bf4bd4e096757a11ead9e2a73b2cc76927b2af06def719d",
+    "src/loop_engine/core/service_runtime/storage.py": "210566426c362e5755dd8ef8560b8331c17bf69eab7e9aec88003537f35b8e68",
+    "src/loop_engine/core/service_runtime/stripe_provider.py": "003e8a0ea56759b82d5a8e0aa738f20d4ff83dd5c9b33e7e795203def1ac2bb6"
+  },
+  "date": "2026-09-19",
+  "scope": "Real local SQLite domain and existing dependent contracts; scoped source identities, not a frozen whole-repository release claim.",
+  "owning_checks": 68,
+  "dependent_checks": 85,
+  "total_checks": 153,
+  "live_provider_calls": 0,
+  "deployments": 0,
+  "corrections": [
+    {
+      "stage": "initial billing-policy smoke",
+      "classification": "work defect",
+      "observation": "A tuple-valued policy became a list after JSON storage, so exact readback was reported unknown despite commit.",
+      "correction": "Normalize domain records through finite canonical JSON and compare policy identity canonically; same-policy restart remains idempotent."
+    },
+    {
+      "stage": "initial mutant construction",
+      "classification": "verification runner defect",
+      "observation": "The multiline read-set predicate target did not match dedented source.",
+      "correction": "Use the unique predicate prefix to remove the same guard in memory. The known-wrong behavior and checks were not weakened."
+    }
+  ]
+}

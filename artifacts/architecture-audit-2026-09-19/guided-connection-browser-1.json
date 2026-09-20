@@ -1,0 +1,201 @@
+{
+  "record_type": "service_workspace_browser_checks/v1",
+  "scope": "real browser and loopback service; provider fixtures only",
+  "external_provider_calls": 0,
+  "checks": [
+    {
+      "name": "public_landing_has_real_routes_and_configured_brand",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_four_persistent_intelligence_layers_are_visible",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_leads_with_reusable_solutions_not_deployment",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_explains_token_value_without_invented_savings",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "light_is_default_even_when_operating_system_is_dark",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "operating_system_does_not_override_explicit_light_default",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_five_owner_pain_points_are_present",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "optimization_message_does_not_guarantee_daily_improvement",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "harness_intelligence_and_temporary_memory_are_not_new_layers",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "hosted_service_and_local_execution_have_distinct_responsibilities",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "client_server_exchange_names_sent_and_returned_data",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "external_model_connection_is_separate_from_intelligence_service",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "benefits_are_explicit_without_invented_benchmark_numbers",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_deep_link_opens_task_explorer",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_inspect",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_decide",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_build",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_verify",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "verifier_does_not_receive_builders_entire_context",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_home",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_arrows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_end",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "illustrative_step_selection_launches_no_network_or_model_work",
+      "passed": true,
+      "detail": {
+        "requests": 0
+      }
+    },
+    {
+      "name": "architecture_keeps_live_evidence_separate_from_illustration",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "selected_assignment_has_no_mobile_overflow",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unfinished_signup_is_explicit_and_collects_no_email",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "anonymous_workspace_has_real_setup_and_no_active_search",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "guided_setup_uses_current_origin_and_no_embedded_token",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "anonymous_protocol_test_is_disabled",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "client_selection_changes_real_secret_free_configuration",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "wrong_key_does_not_enter_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "real_durable_tenant_authentication_reaches_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "credentials_are_not_persisted_in_browser_storage",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "sign_in_returns_to_requested_setup_page",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_journey_completed",
+      "passed": false,
+      "detail": {
+        "error": "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded."
+      }
+    }
+  ],
+  "passed": 34,
+  "total": 35,
+  "all_passed": false,
+  "source_sha256": {
+    "src/loop_engine/core/service_runtime/http.py": "496e8faacad2312cb4db38179f2ce0bb0ce32e0d1485f7280da55ccc7bf057bf",
+    "src/loop_engine/core/service_runtime/records.py": "251ed16ebd37e0f6c85dc8af5ef2bfd92f2e1d564f0d3f81d7c2762ba4c4b67e",
+    "src/loop_engine/core/service_runtime/access.py": "28b8fead744a63af3faf535a03d4d6e6a0306fc9c145af3947b020db0c4f75e8",
+    "src/loop_engine/core/service_runtime/access_checks.py": "99467debd507233caf455ae234fd4a89a26821424cf5a92c9124e98ad8fa1969",
+    "src/loop_engine/core/service_runtime/http_entrypoint.py": "5bda64570dd6e96c6e20496b492bccd202ef1fe9697d6a27c016c0e5e8c7013b",
+    "src/loop_engine/core/service_runtime/web_assets/index.html": "52b6f4d71b3fca43296ca8c646588720627b9da588b593bdcb10070ad996058f",
+    "src/loop_engine/core/service_runtime/web_assets/service.css": "ef29d5c78ce27c5bb3c634cbca0ad0b75629e6697cb8755a45a25f4e17a4f661",
+    "src/loop_engine/core/service_runtime/web_assets/service.js": "d07ead45d8c574f6c2730645dbabfbc7b2328d26706b1a24baa93972cfb331b9",
+    "src/loop_engine/core/service_runtime/web_assets/architecture-story.js": "ccdb7eeed22e28087d5a03db3f50b2f3ea8fb22264eb6224875c68d5a46f989b",
+    "src/loop_engine/core/service_runtime/web_assets/architecture.css": "cb086cfa4dedbdf21d7178bb37310c11c8f2dd2f8d9bab41dfa20ecabeb7d994"
+  }
+}

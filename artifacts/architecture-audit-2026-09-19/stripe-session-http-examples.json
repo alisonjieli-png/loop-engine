@@ -1,0 +1,112 @@
+{
+  "record_type": "billing_session_http_examples/v1",
+  "basis": "actual loopback HTTP with durable local state and explicit injected Stripe transport",
+  "live_Stripe_qualified": false,
+  "plans": {
+    "record_type": "service_http_result/v1",
+    "operation": "billing_plans",
+    "result": {
+      "record_type": "billing_session_options/v1",
+      "policy_digest": "929062bb23fd3b05066cc7c4dff85326c321c29cd52d0899a1d073cb01c9b4a8",
+      "checkout_available": true,
+      "portal_available": true,
+      "plans": [
+        {
+          "plan_ref": "basic",
+          "label": "Basic service"
+        },
+        {
+          "plan_ref": "other",
+          "label": "Other service"
+        }
+      ],
+      "unavailable_reason": "",
+      "payment_confirmation_source": "verified_subscription_state",
+      "provider_qualified": false
+    },
+    "execution": {
+      "runtime_type": "Loop",
+      "loop_id": "loop1",
+      "profile": "practitioner.code_execution@1.0.0",
+      "mode": "deterministic",
+      "model_calls": 0,
+      "definition_digest": "9fb3cf4a94f664c6add2cee70cf6d756238fc6583463ddb872a0420847979ad4"
+    }
+  },
+  "checkout_request": {
+    "record_type": "billing_session_request/v1",
+    "request_id": "example-checkout",
+    "policy_digest": "929062bb23fd3b05066cc7c4dff85326c321c29cd52d0899a1d073cb01c9b4a8",
+    "plan_ref": "basic"
+  },
+  "checkout_response": {
+    "record_type": "service_http_result/v1",
+    "operation": "checkout",
+    "result": {
+      "record_type": "billing_session_result/v1",
+      "operation": "checkout",
+      "request_id": "example-checkout",
+      "effect_ref": "service:b17424b7f92eb1fc4512391ec4ad31230dc1df809fbacc04d3ea9f7cacb89618",
+      "status": "created",
+      "provider_session_id": "cs_fixture_1",
+      "redirect_url": "<redacted ephemeral provider URL; actual HTTP response contains string>",
+      "payment_confirmed": false,
+      "entitlement_changed": false,
+      "transport_basis": "injected_transport"
+    },
+    "execution": {
+      "runtime_type": "Loop",
+      "loop_id": "loop1",
+      "profile": "practitioner.code_execution@1.0.0",
+      "mode": "deterministic",
+      "model_calls": 0,
+      "definition_digest": "451d61626df4687323757bdc2456f0f71d97b6006a8bef735de62ca765d9ea2f"
+    }
+  },
+  "portal_request": {
+    "record_type": "billing_session_request/v1",
+    "request_id": "example-portal",
+    "policy_digest": "929062bb23fd3b05066cc7c4dff85326c321c29cd52d0899a1d073cb01c9b4a8"
+  },
+  "portal_response": {
+    "record_type": "service_http_result/v1",
+    "operation": "portal",
+    "result": {
+      "record_type": "billing_session_result/v1",
+      "operation": "portal",
+      "request_id": "example-portal",
+      "effect_ref": "service:6dfd5bb7fc428850a43e83278537766c52b8816f99095a351730185c2dd6000c",
+      "status": "created",
+      "provider_session_id": "bps_fixture_2",
+      "redirect_url": "<redacted ephemeral provider URL; actual HTTP response contains string>",
+      "payment_confirmed": false,
+      "entitlement_changed": false,
+      "transport_basis": "injected_transport"
+    },
+    "execution": {
+      "runtime_type": "Loop",
+      "loop_id": "loop1",
+      "profile": "practitioner.code_execution@1.0.0",
+      "mode": "deterministic",
+      "model_calls": 0,
+      "definition_digest": "76e212995581b223a06627bf31552345ca9e2799baf71d5a488c9ca279d9544a"
+    }
+  },
+  "uncertainty_response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+      "code": "billing_session_uncertain",
+      "details": {
+        "record_type": "billing_session_uncertainty/v1",
+        "request_id": "example-uncertain",
+        "effect_ref": "service:7c4c1401fc0a2e4d11ffd58710129c754c8defe604b2c29dc90e0afd8358734d",
+        "creation_attempted": true,
+        "provider_commitment": "not_asserted",
+        "retry_same_request": true,
+        "retry_before": 1789849802
+      }
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+  }
+}

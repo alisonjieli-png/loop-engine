@@ -1,0 +1,202 @@
+{
+  "baseline": [
+    {
+      "checks": 10,
+      "failed": [],
+      "module": "loop_engine.catalog.stores.in_memory"
+    },
+    {
+      "checks": 17,
+      "failed": [],
+      "module": "loop_engine.catalog.stores.sqlite_store"
+    },
+    {
+      "checks": 10,
+      "failed": [],
+      "module": "loop_engine.catalog.stores.duckdb_store"
+    },
+    {
+      "checks": 16,
+      "failed": [],
+      "module": "loop_engine.catalog.versioning"
+    },
+    {
+      "checks": 12,
+      "failed": [],
+      "module": "loop_engine.core.shared_memory_scopes"
+    },
+    {
+      "checks": 4,
+      "failed": [],
+      "module": "loop_engine.catalog.capabilities"
+    }
+  ],
+  "mutants": [
+    {
+      "detected": true,
+      "failing_checks": [
+        "atomic_guard_has_one_concurrent_winner:absence",
+        "atomic_guard_has_one_concurrent_winner:version"
+      ],
+      "name": "remove_in_memory_write_serialization"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "absence_guard_creates_once_and_refuses_ambiguous_guards",
+        "atomic_guard_has_one_concurrent_winner:absence"
+      ],
+      "name": "remove_in_memory_absence_precondition"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "guarded_updates_cannot_reuse_the_expected_version"
+      ],
+      "name": "allow_same_version_guarded_update:loop_engine.catalog.stores.in_memory"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "guarded_updates_cannot_reuse_the_expected_version"
+      ],
+      "name": "allow_same_version_guarded_update:loop_engine.catalog.stores.sqlite_store"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "guarded_updates_cannot_reuse_the_expected_version"
+      ],
+      "name": "allow_same_version_guarded_update:loop_engine.catalog.stores.duckdb_store"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "StoreError: DuckDB record write was not confirmed"
+      ],
+      "name": "remove_duckdb_failed_transaction_rollback"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "tampered_history_is_refused_by_read_history_and_rollback"
+      ],
+      "name": "remove_revision_digest_validation"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "initial_revision_uses_the_stores_atomic_absence_guard",
+        "concurrent_revision_creation_has_one_winner"
+      ],
+      "name": "remove_revision_absence_guard"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "unacknowledged_write_never_returns_a_successful_revision"
+      ],
+      "name": "ignore_revision_write_acknowledgment"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "false_write_acknowledgment_is_refused_on_readback"
+      ],
+      "name": "ignore_revision_readback"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "shared_creation_uses_an_atomic_absence_guard",
+        "concurrent_shared_creation_has_one_winner"
+      ],
+      "name": "remove_shared_absence_guard"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "shared_updates_refuse_reused_and_lower_numeric_versions"
+      ],
+      "name": "permit_shared_numeric_version_rollback"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "shared_write_requires_matching_readback"
+      ],
+      "name": "ignore_shared_readback"
+    },
+    {
+      "detected": true,
+      "failing_checks": [
+        "only_exact_true_grants_an_operation"
+      ],
+      "name": "allow_truthy_operation_capabilities"
+    }
+  ],
+  "passed": true,
+  "record_type": "storage_write_verification/v1",
+  "source_sha256": {
+    "src/loop_engine/catalog/capabilities.py": "f6e743e70bd242bca6c4440e2536ada1082e624319766af3140b20d8215d18d0",
+    "src/loop_engine/catalog/stores/duckdb_store.py": "c56497bef2bbac043104a169bc51e16ec883047244a53282d80829cca9ac327d",
+    "src/loop_engine/catalog/stores/in_memory.py": "019297343abcce8f54162d9f1b15157ceb1d9f783c9757f4b8b8e6a2d0ffeb8c",
+    "src/loop_engine/catalog/stores/sqlite_store.py": "3bef0ca733a02451e46bed474aae42c4f32e3ad2b1273889140ed3097fc8cfc1",
+    "src/loop_engine/catalog/versioning.py": "6e06fee0e968a24889f9a4625725e191863ab71bafe96f72654bcb9e6bf2effc",
+    "src/loop_engine/core/shared_memory_scopes.py": "61974587ba9f8fd29f52530372ccce1630aa1837f4336522e9c7c95d3fea2552"
+  },
+  "checked_at": "2026-09-19",
+  "base_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "contract_policy": "Current active contracts only; automatic legacy readers removed following owner direction. Historical artifact bytes preserved.",
+  "live_provider_calls": 0,
+  "cloud_operations": 0,
+  "full_repository_suite_run": false,
+  "committed": false,
+  "dependent_checks": [
+    {
+      "module": "loop_engine.catalog.conformance",
+      "checks": 38,
+      "failed": []
+    },
+    {
+      "module": "loop_engine.catalog.handshake",
+      "checks": 14,
+      "failed": []
+    },
+    {
+      "module": "loop_engine.catalog.registry",
+      "checks": 6,
+      "failed": []
+    },
+    {
+      "module": "loop_engine.catalog.composite",
+      "checks": 9,
+      "failed": []
+    },
+    {
+      "module": "loop_engine.core.record_operations_checks",
+      "checks": 26,
+      "failed": []
+    },
+    {
+      "module": "loop_engine.core.reusable_capability_checks",
+      "checks": 33,
+      "failed": []
+    },
+    {
+      "module": "loop_engine.core.temporal_facts",
+      "checks": 8,
+      "failed": []
+    },
+    {
+      "module": "loop_engine.code_nodes.service_endpoints",
+      "checks": 8,
+      "failed": []
+    }
+  ],
+  "owning_check_count": 69,
+  "dependent_check_count": 142,
+  "mutants_detected": 14,
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 artifacts/architecture-audit-2026-09-19/storage-write-verification.py",
+  "supersedes_verification": "storage-write-verification-results.json"
+}

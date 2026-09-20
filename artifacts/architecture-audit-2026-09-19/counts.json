@@ -1,0 +1,17 @@
+{
+  "files": 2576,
+  "python_files": 1047,
+  "component_rows": 645,
+  "entities": 140749,
+  "relationships": 152580,
+  "call_sites": 127034,
+  "test_declarations": 5836,
+  "focused_review_files": 174,
+  "review_questions": 285,
+  "inspection": {
+    "text_read_structurally": 869,
+    "metadata_only": 13,
+    "structured_text_read": 647,
+    "python_syntax_analyzed": 1047
+  }
+}

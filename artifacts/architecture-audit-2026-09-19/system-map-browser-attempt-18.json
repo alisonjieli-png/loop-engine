@@ -1,0 +1,3613 @@
+{
+  "record_type": "system_map_browser_checks/v1",
+  "checks": [
+    {
+      "name": "development_log_is_the_default_working_surface",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_fifteen_owner_tasks_have_instructions_and_handoff_fields",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_marks_are_preparation_not_software_completion",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_marks_survive_reload",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "changed_checklist_instructions_invalidate_old_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "malformed_owner_import_preserves_existing_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_export_contains_only_bound_preparation_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_checklist_filters_later_setup",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "full_setup_guide_is_readable_without_a_companion_file",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_1440_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_1440_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_1440_hosting",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_736_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_736_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_736_hosting",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_390_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_390_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_390_hosting",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_320_owner",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_320_development",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "development_layout_320_hosting",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "whole_engine_is_the_default_architecture_not_client_server",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "architecture_selector_reaches_internal_runtime",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "hosting_has_six_concrete_owner_steps_and_sources",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "hosting_preparation_does_not_claim_database_integration",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_six_original_tables_and_measured_feature_count_are_embedded",
+      "passed": true,
+      "detail": {
+        "page": "architecture",
+        "view": "system",
+        "views": [
+          "system",
+          "runtime",
+          "practitioner",
+          "solution",
+          "intelligence",
+          "retrieval",
+          "engines",
+          "capabilities",
+          "assurance",
+          "history",
+          "resources",
+          "improvement",
+          "high",
+          "medium",
+          "low",
+          "access",
+          "execution",
+          "website"
+        ],
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "featureTables": 6,
+        "featureColumns": 77,
+        "steps": 106,
+        "files": 2556
+      }
+    },
+    {
+      "name": "complete_roadmap_and_source_inventory_are_embedded",
+      "passed": true,
+      "detail": {
+        "page": "architecture",
+        "view": "system",
+        "views": [
+          "system",
+          "runtime",
+          "practitioner",
+          "solution",
+          "intelligence",
+          "retrieval",
+          "engines",
+          "capabilities",
+          "assurance",
+          "history",
+          "resources",
+          "improvement",
+          "high",
+          "medium",
+          "low",
+          "access",
+          "execution",
+          "website"
+        ],
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "featureTables": 6,
+        "featureColumns": 77,
+        "steps": 106,
+        "files": 2556
+      }
+    },
+    {
+      "name": "layout_light_1440_system",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_runtime",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_solution",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_engines",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_assurance",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_history",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_resources",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_improvement",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_high",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "elk",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_medium",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_low",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_access",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_execution",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1440_website",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_system",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_runtime",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_solution",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_engines",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_assurance",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_history",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_resources",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_improvement",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_high",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_medium",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_low",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_access",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_execution",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_1024_website",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_light_736_system",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_runtime",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_solution",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_engines",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_assurance",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_history",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_resources",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_improvement",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_high",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_medium",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_low",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_access",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_execution",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_736_website",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_system",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "stacked",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_runtime",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_solution",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_engines",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_assurance",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_history",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_resources",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_improvement",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_high",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_medium",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_low",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_access",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_execution",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_390_website",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_system",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "stacked",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_runtime",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_solution",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_engines",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_assurance",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_history",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_resources",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_improvement",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_high",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_medium",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_low",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_access",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_execution",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_light_320_website",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_1440_system",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_runtime",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_solution",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_engines",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_assurance",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_history",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_resources",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_improvement",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_high",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "elk",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_medium",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_low",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_access",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_execution",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1440_website",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_system",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_runtime",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_solution",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_engines",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_assurance",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_history",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_resources",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_improvement",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_high",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_medium",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_low",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_access",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_execution",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_1024_website",
+      "passed": true,
+      "detail": {
+        "width": 1024,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 11
+      }
+    },
+    {
+      "name": "layout_dark_736_system",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "elk",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_runtime",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_solution",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "elk",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_engines",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_assurance",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_history",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_resources",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_improvement",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_high",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_medium",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_low",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "elk",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_access",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "elk",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_execution",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_736_website",
+      "passed": true,
+      "detail": {
+        "width": 736,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "elk",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_system",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "stacked",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_runtime",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_solution",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_engines",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_assurance",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_history",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_resources",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_improvement",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_high",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_medium",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_low",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_access",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_execution",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_390_website",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_system",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 9,
+        "layout": {
+          "view": "system",
+          "engine": "stacked",
+          "nodes": 9,
+          "edges": 9
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_runtime",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "runtime",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_practitioner",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "practitioner",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_solution",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "solution",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_intelligence",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "intelligence",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_retrieval",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "retrieval",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_engines",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 7,
+        "layout": {
+          "view": "engines",
+          "engine": "stacked",
+          "nodes": 7,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_capabilities",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "capabilities",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_assurance",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "assurance",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_history",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "history",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_resources",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "resources",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_improvement",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "improvement",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 5
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_high",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 3,
+        "layout": {
+          "view": "high",
+          "engine": "stacked",
+          "nodes": 3,
+          "edges": 3
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_medium",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "medium",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_low",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 8,
+        "layout": {
+          "view": "low",
+          "engine": "stacked",
+          "nodes": 8,
+          "edges": 8
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_access",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 5,
+        "layout": {
+          "view": "access",
+          "engine": "stacked",
+          "nodes": 5,
+          "edges": 4
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_execution",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "execution",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 7
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "layout_dark_320_website",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "overflow": false,
+        "overlaps": [],
+        "clipped": 0,
+        "cards": 6,
+        "layout": {
+          "view": "website",
+          "engine": "stacked",
+          "nodes": 6,
+          "edges": 6
+        },
+        "minimumText": 12
+      }
+    },
+    {
+      "name": "desktop_uses_the_embedded_ELK_layout_engine",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "component_details_are_keyboard_accessible",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "candidate_intelligence_is_embedded_with_its_actual_lifecycle",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "candidate_details_keep_source_identity_and_review_limits",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "current_website_comparison_covers_all_sampled_pages",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "website_comparison_filter_finds_named_reference",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "website_review_exposes_scope_source_and_action",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "website_comparison_keeps_original_known_population",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_0_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_1_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_2_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_3_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_4_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "historical_family_5_preserves_21_rows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "partial_cell_and_its_source_note_are_inspectable",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "empty_matrix_filter_is_explicit",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "worklist_filters_active_work_without_marking_it_verified",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "work_item_has_acceptance_and_evidence",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "source_lookup_finds_the_real_serving_file",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "source_details_distinguish_imports_from_observed_calls",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "overlap_control_rejects_a_deliberately_broken_layout",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "clipping_control_rejects_a_deliberately_broken_layout",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "fresh_mobile_capture_matches_the_actual_mobile_viewport",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "complete_graph_download_works_from_embedded_bytes",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "one_copied_file_works_offline_without_companion_assets",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "no_remote_resource_or_data_request_was_made",
+      "passed": true,
+      "detail": {
+        "requests": [
+          "file:///home/username/loop-engine/artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html",
+          "file:///home/username/loop-engine/artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html",
+          "file:///home/username/loop-engine/artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html",
+          "file:///tmp/loop-map-offline-sDG81J/standalone.html"
+        ]
+      }
+    },
+    {
+      "name": "no_browser_runtime_errors",
+      "passed": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "name": "report_and_roadmap_are_not_mutated_by_UI_controls",
+      "passed": true,
+      "detail": {}
+    }
+  ],
+  "passed": 235,
+  "total": 235,
+  "all_passed": true,
+  "source_sha256": "d8e5994341a9f647584b6fd24b86dc855bd9e108dc9d3901397f0a9e1de82751",
+  "roadmap_sha256": "f48ba0eedd88cce714d5a8c98dcda809661c8e8c13c0e33a296e7245c73ad5c2",
+  "screenshots": [
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-whole-system-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-runtime-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-intelligence-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-client-server-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-request-path-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-hosting-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-matrix-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-worklist-1440.png",
+    "/home/username/loop-engine/artifacts/architecture-audit-2026-09-19/system-map-browser-attempt-18-mobile-dark.png"
+  ],
+  "errors": [],
+  "remote_requests": []
+}

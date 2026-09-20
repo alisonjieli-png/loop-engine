@@ -1,0 +1,35 @@
+{
+  "record_type": "pilot_backup_restore_check/v1",
+  "observed_at": "2026-09-20T04:00:26.325139+00:00",
+  "source_application": "baltor-pilot",
+  "image_reference": "loop-engine-service:light-benefits-20260920-001",
+  "image_id": "sha256:1d8af70db56293a85a0fc55d52c06490f07494ab24962c9cdf0d711b97f3e3da",
+  "backup_sha256": "8243d64d5b600a68b7abb689711ef04e0efe06a4a8bad0dacfa6c3fc36f01150",
+  "private_backup_path": "/home/username/loop-engine/.loop-engine-dev/pilot-restore-75a58c2f78454f86b92b349d28f65960/private-backup.json",
+  "production_data_mutated": false,
+  "new_cloud_resources": 0,
+  "checks": [
+    {
+      "name": "private_backup_saved_with_owner_only_permissions",
+      "passed": true
+    },
+    {
+      "name": "restore_exercise_completed",
+      "passed": false,
+      "error_type": "RuntimeError"
+    },
+    {
+      "name": "owned_volume_removed",
+      "passed": true
+    }
+  ],
+  "passed": 2,
+  "total": 3,
+  "all_passed": false,
+  "limitations": [
+    "Local point-in-time restoration only; no cross-region recovery.",
+    "Private backup is permission-restricted, not separately encrypted by this tool.",
+    "Reconcile revocations and external payment state before a production restore; old backups can restore old authority.",
+    "This does not establish a scheduled off-site backup or recovery-time guarantee."
+  ]
+}

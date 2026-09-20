@@ -1,0 +1,1025 @@
+{
+  "record_type": "architecture_question_register/v1",
+  "audit_date": "2026-09-19",
+  "source_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "scope": "Focused organization, test-discovery/assertion, package, deployment, hosted service and delivery audit. Status answered means the question is resolved from inspected evidence, not necessarily that the behavior is correct. Disputed means a stated or required property conflicts with evidence. Open means a concrete check or design decision remains.",
+  "question_count": 83,
+  "repair_followup": {
+    "report_section": "organization-tests-and-delivery.md#authorized-service-and-delivery-repairs-after-the-audit",
+    "original_observations_preserved": true,
+    "state": "Assigned service, delivery, test collection, and test reporting protections repaired with owning checks and in-memory mutants. Original question statuses describe audit-time evidence unless a question explicitly names the repair.",
+    "diagnostic_full_suite": {
+      "passed": 5424,
+      "executed": 5426,
+      "not_tested": 15,
+      "elapsed_seconds": 355.283,
+      "limitation": "Concurrent working-tree diagnostic. Two failures reported graph module size and classification findings; not a frozen-export qualification."
+    }
+  },
+  "inspected_files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "836ec1d6d250ebbac8c6e4b5eef347313a13583ec24b5f17e0920d9b7579a563"
+    },
+    {
+      "path": "ASTRA.md",
+      "sha256": "107eb4492f880486c316f78ba4e5af5f25dcc810ae0a08958894fa718eb5e91e"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "3592cf7d6d0bb4c9e2898319408c34224cb8fdb273b16fbde37dbe4a2af51118"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "815b69d8b1c0cd064c4c6218c96c543a3c505e79d6cc44baf9cfbb39ffec3b0b"
+    },
+    {
+      "path": ".github/workflows/publish-image.yml",
+      "sha256": "8ee1909359b51c201f205393bfc2fc20b13c592ccc4eafdfc8d32f4e95f58ef0"
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "e827cd77ef65310e8e4c7ee48ec4a59c633a7754ee40ed594c855f00af77dc80"
+    },
+    {
+      "path": ".dockerignore",
+      "sha256": "8cd8c6dafffba2f924879cd8840aa04ee2e106b1e4128e8ae43dd0f01906d210"
+    },
+    {
+      "path": "devtools/AGENTS.md",
+      "sha256": "158c6cfd204d2e9aaea3f22860acdfb62d61f8d0084d126fd1aeb7310d0a6f5c"
+    },
+    {
+      "path": "devtools/README.md",
+      "sha256": "750bdad6968fd1556241dc7f0b346753aac93f23e0c1f0e889360244d794ce7f"
+    },
+    {
+      "path": "docs/architecture/FOLDER-DEPTH-AND-THE-FLAT-CORE-2026-09-18.md",
+      "sha256": "b0c58d5c1e4acb5a7412c7cfe9d8ffafa85e0212f1c2773732f6f1f468ef3e72"
+    },
+    {
+      "path": "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md",
+      "sha256": "c097ff999c50a9f388e8d88106d52d8fbb2c6004859fb1afa8fc7e374736a050"
+    },
+    {
+      "path": "src/loop_engine/__init__.py",
+      "sha256": "d0af332397c054a66b08a108fcbebeff11ea4e4a1c1c6468d5f471e2940d8fa0"
+    },
+    {
+      "path": "src/loop_engine/_self_test.py",
+      "sha256": "de86f52f1f64fb044d99c07f2f95fbf82cc08cde4802b321bca3b25ab0a1dc2e"
+    },
+    {
+      "path": "src/loop_engine/_conformance_scan.py",
+      "sha256": "11e4c1ba53e9ab128030588779544016981fa54ef3227d994120499afe8df7c1"
+    },
+    {
+      "path": "src/loop_engine/repository_conformance.py",
+      "sha256": "6e1fdb7a9ff8d897b585b6595317b408732825459697336fb2bc54978488a1cf"
+    },
+    {
+      "path": "src/loop_engine/architecture_contract.py",
+      "sha256": "77b791df160bdc9ddbe5dc412d95b30a9e04c86afc3e412c7a39ed5b8ecb122b"
+    },
+    {
+      "path": "src/loop_engine/reachability_report.py",
+      "sha256": "79b38c9688657bacf60d1e3c1fa153474b343edea65f0531a1489cbd2e0012d4"
+    },
+    {
+      "path": "src/loop_engine/backend_isolation.py",
+      "sha256": "639720a96de1a563d4674c3c26ac211942844ec5f3178e7e7d3e170d7b863b52"
+    },
+    {
+      "path": "src/loop_engine/structure_review.py",
+      "sha256": "09a31b25bf48d272806d730edb6851743350e4295d5cdf70a7cef9ce3786844a"
+    },
+    {
+      "path": "src/loop_engine/cli_operations.py",
+      "sha256": "6b0aa4a2f641cf0aff1b6fde0508c3e3bdb1c6c107fbd972180d43a9547114fe"
+    },
+    {
+      "path": "src/loop_engine/core/api_quality.py",
+      "sha256": "4854e365838b539b394fe886218f3db3184b3bbc81b8c0b6fff8a3fbc01904b2"
+    },
+    {
+      "path": "src/loop_engine/core/service_api.py",
+      "sha256": "47e033b6de5db322cd51aded3ab8661f2fce52ec91a69dcd6ec54c9ab059e47c"
+    },
+    {
+      "path": "src/loop_engine/core/provisioning_server.py",
+      "sha256": "8535c7af83f3cbe053511cc174674080e9594b2e4a232944230e71c72dc672a5"
+    },
+    {
+      "path": "src/loop_engine/core/harness_intelligence.py",
+      "sha256": "956f53f618d7cc13092d4838ec0908b17288a262719618e00724218c90e281fe"
+    },
+    {
+      "path": "src/loop_engine/core/spawned_provisioning.py",
+      "sha256": "7fff8762fc6398f248e58458279fd05ccd357d19e6432637eefa4ed33f4d4d9d"
+    },
+    {
+      "path": "src/loop_engine/core/boundary_registry.py",
+      "sha256": "0db8dd3edc471b52db7a83e4d54f72e33eb82264814c4aa559853cc47919fe29"
+    },
+    {
+      "path": "src/loop_engine/core/evaluation_suite.py",
+      "sha256": "120181ccc272fa9333699178d959f38da7ec92bf5fc2d20c801c39e853575c46"
+    },
+    {
+      "path": "src/loop_engine/core/task_materials.py",
+      "sha256": "cae3c44eefb62b962a38af1dfc56d5f406553b1105fa8abe1ddb4082fe47a5e3"
+    },
+    {
+      "path": "src/loop_engine/core/provider_failure_classes.py",
+      "sha256": "498f843830854ac7912f57bc58de79a753acf8e2a2feb7565ee01725ec2ecf13"
+    },
+    {
+      "path": "src/loop_engine/code_nodes/service_endpoints.py",
+      "sha256": "164b0e70acb268882eac131c24b027d293b5dbbae2e8dcaa20ab9c7e141e6a59"
+    },
+    {
+      "path": "src/loop_engine/code_nodes/solve_runtime.py",
+      "sha256": "6b6be8acfee03bb71b1ccd8675ab9c81f13334b58242dd75cd3bbe41906f2bf4"
+    },
+    {
+      "path": "src/loop_engine/code_nodes/text_conformance.py",
+      "sha256": "52339c27f806056ff2afca54abbcbfb1dc301a1527d31f681659f3f554b06b62"
+    },
+    {
+      "path": "src/loop_engine/code_nodes/solution_export.py",
+      "sha256": "88cbd547e48215b4f2feaf59462ba0815427fcb9be35d117266cc77ae486c18f"
+    },
+    {
+      "path": "src/loop_engine/code_nodes/solution_export_checks.py",
+      "sha256": "a771c128e8c182ba38e2da167633243f1cc764682fd6ab68c73ef9b1215195ed"
+    },
+    {
+      "path": "tools/export_component_inventory.py",
+      "sha256": "c053b26b49408d4f2c7b84b4e781df4c80a56798147da158eb5a903bb5845243"
+    },
+    {
+      "path": "examples/28_containerized_worker/run.py",
+      "sha256": "4fd550604e5d6b040ee12fba75a4dd529307933a2c980b75fe0163ab4b5daaef"
+    },
+    {
+      "path": "examples/28_containerized_worker/README.md",
+      "sha256": "1e3ea2e4cf8bb090a0dafdab4c01c5a16d2258e5f25a32cc7361f1c8ee79df32"
+    },
+    {
+      "path": "examples/28_containerized_worker/k8s/worker-deployment.yaml",
+      "sha256": "eb743e7a62beadb78099e341d510d6e28fcc14486a389090ae83b4031714a206"
+    },
+    {
+      "path": "examples/28_containerized_worker/k8s/solution-job.yaml",
+      "sha256": "65e5e5b3edcd5368d2e7c89027191b36152376fdc8cb647cd23f8990855f243f"
+    },
+    {
+      "path": "examples/25_host_runtime/test_intelligence_resource_catalog.py",
+      "sha256": "474676eca9b4bfca4ab9908cde15208df345f7db48842022a3def44a6124a202"
+    },
+    {
+      "path": "integrations/README.md",
+      "sha256": "d1dbcc7dafc62072ffcb06c108c3fd78a15f90c5ee9091d333d4317f2614f30e"
+    },
+    {
+      "path": "integrations/architecture.yaml",
+      "sha256": "fba2ed07f376ba6ee23a915a0980476ef33cbc05acf9294a92a81815b3a0557f"
+    },
+    {
+      "path": "integrations/tests/check_integrations.py",
+      "sha256": "c7d088ada6f437055c3213215907bd949a555442ab39eb7ced0d6f23e3c10366"
+    }
+  ],
+  "questions": [
+    {
+      "id": "ORG-Q-001",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Does serializing and reloading a deny-all endpoint tuple preserve denial?",
+      "status": "disputed",
+      "evidence": "Lines 68-72 replace an empty endpoints array with ENDPOINTS; an in-memory roundtrip changed [] to all six endpoints.",
+      "discriminating_test": "Roundtrip an empty permission set and verify every endpoint remains denied.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-002",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Can two tenant identities or namespaces alias while using different keys?",
+      "status": "open",
+      "evidence": "Lines 142-147 check duplicate key digests, but not duplicate tenant identifiers or namespaces.",
+      "discriminating_test": "Load two distinct keys with repeated tenant identity or namespace; verify an explicit rejection or documented shared-scope decision.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-003",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Is key comparison performed using constant-time digest comparison?",
+      "status": "answered",
+      "evidence": "Lines 149-156 hash the supplied key and use secrets.compare_digest against stored digests.",
+      "discriminating_test": "Retain a positive and negative synthetic-key check without recording the keys.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-004",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Are routes matched to an exact supported version and path?",
+      "status": "disputed",
+      "evidence": "Line 160 accepts the last path segment, so any prefix ending in a known endpoint is eligible for dispatch.",
+      "discriminating_test": "Request /unexpected-prefix/conform and /v999/conform and require the declared routing contract.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-005",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Are non-object request bodies refused before handler invocation?",
+      "status": "answered",
+      "evidence": "Lines 176-181 reject malformed JSON and a non-dictionary top-level value.",
+      "discriminating_test": "Supply array, scalar, invalid UTF-8, and malformed JSON bodies and assert the handler is not called.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-006",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Do unexpected handler errors produce bounded typed responses instead of an abruptly closed connection?",
+      "status": "open",
+      "evidence": "Lines 185-188 catch ValueError only; KeyError, TypeError, and runtime failures have no response mapping here.",
+      "discriminating_test": "Inject each non-ValueError exception and verify the chosen protocol error and safe diagnostic.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-007",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Are malformed, duplicate, and negative Content-Length values refused consistently?",
+      "status": "open",
+      "evidence": "Lines 211-217 convert Content-Length with int and treat non-positive values as an empty body; no framing error policy appears here.",
+      "discriminating_test": "Exercise malformed and conflicting headers through an owned local transport fixture.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-008",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "What limits slow body reads, handler duration, and concurrent request threads?",
+      "status": "open",
+      "evidence": "Lines 212-213 perform a blocking body read; line 240 uses ThreadingHTTPServer without a declared request deadline or thread admission bound.",
+      "discriminating_test": "Hold a partial request open and flood only a declared local fixture; assert explicit admission and deadline limits.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-009",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Does metering reject non-finite quantities and times?",
+      "status": "open",
+      "evidence": "MeteringRecord lines 89-93 check unit membership and quantity < 0, which does not reject NaN or infinity.",
+      "discriminating_test": "Construct NaN and infinite quantities and timestamps; require refusal before aggregation or JSON serialization.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-010",
+      "component": "hosted service",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Can the public server inject and restore a durable metering ledger?",
+      "status": "disputed",
+      "evidence": "ServiceRequest lines 191-204 has no ledger field, and serve lines 237-240 creates a new in-memory ServiceApplication ledger.",
+      "discriminating_test": "Restart the service after an acknowledged charge and verify the same durable usage record and total.",
+      "owning_boundary": "core.service_api"
+    },
+    {
+      "id": "ORG-Q-011",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Does the shipped HTTP service expose provisioning discovery, selection, manifests, and body delivery?",
+      "status": "disputed",
+      "evidence": "service_api ENDPOINTS lists health, conform, evaluate, usage, memory_write, and memory_read; default_handlers at service_endpoints:153-155 contains no provisioning adapter.",
+      "discriminating_test": "Use the installed client against the real transport for one complete qualified material delivery.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-012",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Does metadata discovery apply tenant-specific disclosure scope?",
+      "status": "open",
+      "evidence": "ProvisioningServer._offered receives the request but not the authenticated tenant; discover reports total catalog size.",
+      "discriminating_test": "Create disjoint tenant collections and verify search, withheld identities, item counts, and manifests do not disclose the other collection.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-013",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Can client-supplied authority_effects be mistaken for host-issued execution authority?",
+      "status": "open",
+      "evidence": "ProvisioningRequest carries authority_effects and _offered forwards them to offer; no server-issued authority binding appears in this component.",
+      "discriminating_test": "Forge broader effects in a remote request and verify that server disclosure and later client execution remain bounded by issued authority.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-014",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/harness_intelligence.py",
+      "question": "Does normal provisioning exclude candidates until independent admission?",
+      "status": "disputed",
+      "evidence": "HarnessIntelligenceItem and visibility have kinds, effects, tags, source references and digest, but no authoritative qualification lookup; the prior local review reproduced candidate disclosure.",
+      "discriminating_test": "Connect source qualification to the normal read path and show that candidate, quarantined, revoked, and unknown records cannot be served as active material.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-015",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Is the body digest rechecked before a successful read returns?",
+      "status": "answered",
+      "evidence": "ProvisioningServer._read hashes the returned text and refuses mismatches before returning the body.",
+      "discriminating_test": "Change only the body-reader output and require refusal with no meter call.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-016",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Is the response size checked against actual encoded bytes at delivery?",
+      "status": "open",
+      "evidence": "The read response returns item.size_bytes, while _read checks the digest but does not recompute or compare the stored size.",
+      "discriminating_test": "Register an item with a correct body digest and incorrect size; verify refusal or an explicitly recomputed authoritative size.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-017",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Does delivery report metered only after an acknowledged charge?",
+      "status": "disputed",
+      "evidence": "ProvisioningServer._read returns metered=true even without a callable meter and ignores the callback return value.",
+      "discriminating_test": "Test absent, failing, false-acknowledgement, unknown, and successful meters separately.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-018",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/provisioning_server.py",
+      "question": "Are duplicate provisioning key digests rejected rather than resolved by tuple order?",
+      "status": "open",
+      "evidence": "ProvisioningServer.tenant_for returns the first matching tenant; this class has no equivalent of ServiceApplication's duplicate-key validation.",
+      "discriminating_test": "Configure two provisioning tenants with the same digest and require an explicit rejection.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-019",
+      "component": "harness delivery",
+      "file": "src/loop_engine/core/harness_intelligence.py",
+      "question": "Can an item's license, effects, or tags change under the same identity and body digest?",
+      "status": "disputed",
+      "evidence": "HarnessIntelligenceCatalogue.register at harness_intelligence:158-166 only refuses a changed body digest, then replaces the whole item.",
+      "discriminating_test": "Re-register one identity with unchanged bytes but widened effects or changed qualification-relevant metadata; require a new version or exact refusal.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-020",
+      "component": "harness delivery",
+      "file": "src/loop_engine/code_nodes/solve_runtime.py",
+      "question": "Does public solve dependency construction install the catalog needed by the Spawned Loop provisioning hook?",
+      "status": "disputed",
+      "evidence": "solve_runtime:537-546 installs capability_directory and intelligence_catalog but not harness_catalogue or guardrails; spawned_provisioning returns no_catalogue_installed.",
+      "discriminating_test": "Start at solve_task and inspect actual offered material and written assignment files for a spawned assignment.",
+      "owning_boundary": "core.provisioning_server and core.harness_intelligence"
+    },
+    {
+      "id": "ORG-Q-021",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Does a manifest file digest mismatch prevent any candidate code from executing?",
+      "status": "disputed",
+      "evidence": "verify_export:347-360 records the mismatch, then still calls _run_isolated; the safe probe observed one execution callback after the failed digest check.",
+      "discriminating_test": "Mutate one file and assert no interpreter, tests, or entry point starts.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-022",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Is the supplied manifest_digest recomputed and checked?",
+      "status": "disputed",
+      "evidence": "verify_export returns the manifest_digest at line 380 without recomputing it; the safe probe returned a forged value.",
+      "discriminating_test": "Change only manifest content or manifest_digest and require refusal before execution.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-023",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Are manifest-listed paths confined and symlink-checked again during verification?",
+      "status": "open",
+      "evidence": "verify_export joins arbitrary manifest files keys onto root at lines 347-355, unlike ExportedFile's path validation.",
+      "discriminating_test": "Use synthetic absolute, traversal, and symlink paths in an otherwise valid manifest and assert no outside read.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-024",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Is package_name from a loaded manifest validated before insertion into interpreter source?",
+      "status": "open",
+      "evidence": "verify_export:345 and 359 interpolate the raw string; the package-name regex is enforced on SolutionExportSpec, not the loaded manifest.",
+      "discriminating_test": "Load a malformed manifest package name and verify refusal before composing or running interpreter code.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-025",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Are loaded isolation values restricted to the declared modes?",
+      "status": "open",
+      "evidence": "_isolated_python selects -I/-S for stdlib_only and -I for every other value; verify_export reads the manifest value without enum validation.",
+      "discriminating_test": "Supply an unknown isolation value and require a typed refusal.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-026",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Which declared sandbox and effect authority govern exported candidate code during verification?",
+      "status": "disputed",
+      "evidence": "_run_isolated:321-323 invokes a local subprocess with Python import-isolation flags and a reduced environment; it does not invoke the workspace sandbox boundary.",
+      "discriminating_test": "Run a controlled candidate that attempts an undeclared file or network effect inside the intended sandbox and verify refusal.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-027",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Can an export with no test directory be labeled passed after only import checks?",
+      "status": "answered",
+      "evidence": "verify_export:363 conditionally omits test execution when tests/ is absent; tests default to an empty tuple in SolutionExportSpec.",
+      "discriminating_test": "Assert that the report names import-only verification and cannot be promoted as independently task-qualified.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-028",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Does the export specification digest bind container resources and invocation arguments?",
+      "status": "disputed",
+      "evidence": "SolutionExportSpec.digest:157-164 omits container, isolation and python_requires; the safe probe changed resources and arguments without changing the digest.",
+      "discriminating_test": "Change each behavior-affecting field separately and require identity changes under the declared digest contract.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-029",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Do generic exported resources survive packaging, including nested templates and text files?",
+      "status": "open",
+      "evidence": "ExportedFile accepts text files generally, while render_pyproject:183 includes only *.json and *.yaml package data.",
+      "discriminating_test": "Export a package using a nested HTML template, build and install the wheel, and read it outside the source tree.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-030",
+      "component": "standalone export",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Does standalone verification exercise an installed distribution rather than adding src to the interpreter path?",
+      "status": "disputed",
+      "evidence": "verify_export:359 and 365 insert src into sys.path; no wheel build or installation occurs in this path.",
+      "discriminating_test": "Build and install the exact export in a fresh environment, then run its public entry point with fresh inputs.",
+      "owning_boundary": "code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-031",
+      "component": "package and public interface",
+      "file": "src/loop_engine/architecture_contract.py",
+      "question": "Are installed architecture and terminology projections checked for equality with repository authorities?",
+      "status": "open",
+      "evidence": "architecture_contract chooses root YAML when present and packaged YAML otherwise; this review did not execute a projection equality check.",
+      "discriminating_test": "Compare both authority pairs at the exact export tree and run the same invariant checks from an installed wheel.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-032",
+      "component": "package and public interface",
+      "file": "pyproject.toml",
+      "question": "Is every shipped non-Python resource classified as runtime data rather than accepted through broad wildcards?",
+      "status": "open",
+      "evidence": "pyproject.toml includes recursive Markdown, HTML, JSON, JSONL, and YAML patterns.",
+      "discriminating_test": "Compare wheel data files against a reviewed runtime resource manifest and refuse unexpected records.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-033",
+      "component": "package and public interface",
+      "file": "pyproject.toml",
+      "question": "Are local run and Studio state paths excluded from distribution?",
+      "status": "answered",
+      "evidence": "pyproject.toml exclude-package-data covers evidence/runs and evidence/studio; CI inspects the built wheel for these paths.",
+      "discriminating_test": "Retain canaries for each excluded path in a disposable build export and check both wheel and source distribution.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-034",
+      "component": "package and public interface",
+      "file": "src/loop_engine/backend_isolation.py",
+      "question": "Does the optional-backend import check actually make installed optional providers unavailable?",
+      "status": "disputed",
+      "evidence": "backend_isolation.base_import_report only removes selected sys.modules entries; imports may reload installed providers and cached base modules may bypass import work.",
+      "discriminating_test": "Use a fresh subprocess with an import blocker or a genuinely minimal environment, and plant a forbidden import.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-035",
+      "component": "package and public interface",
+      "file": "pyproject.toml",
+      "question": "Are production and build dependencies locked sufficiently to reproduce a published image?",
+      "status": "open",
+      "evidence": "pyproject.toml leaves several dependencies unpinned; Dockerfile upgrades pip and installs the project without a lock file.",
+      "discriminating_test": "Rebuild the same source with a frozen dependency set and compare manifests; state which differences are intentionally allowed.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-036",
+      "component": "package and public interface",
+      "file": "pyproject.toml",
+      "question": "Can two releases be distinguished beyond the unchanged Python distribution version?",
+      "status": "open",
+      "evidence": "pyproject.toml reports 0.1.0 while the image workflow also adds commit labels; installed package provenance is not equivalent to the image label.",
+      "discriminating_test": "Produce a source-and-dependency build identity in the installed distribution and compare two source revisions.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-037",
+      "component": "package and public interface",
+      "file": "src/loop_engine/__init__.py",
+      "question": "Do all names in the lazy public facade resolve in supported installation variants?",
+      "status": "open",
+      "evidence": "__init__.py maps public names to string module/attribute pairs and imports them lazily; no complete facade resolution run was performed here.",
+      "discriminating_test": "Resolve the declared public surface in base and selected-extra installations while blocking accidental effects.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-038",
+      "component": "package and public interface",
+      "file": "src/loop_engine/code_nodes/solution_export.py",
+      "question": "Are console-script and Python-requirement values safely serialized into generated project metadata?",
+      "status": "open",
+      "evidence": "render_pyproject interpolates console_script and python_requires directly; SolutionExportSpec validates names and version but not these fields.",
+      "discriminating_test": "Supply quotes, newlines, invalid entry-point names, and invalid version requirements and require typed validation or safe serialization.",
+      "owning_boundary": "distribution metadata and code_nodes.solution_export"
+    },
+    {
+      "id": "ORG-Q-039",
+      "component": "container and deployment",
+      "file": "Dockerfile",
+      "question": "Does a failed pip installation fail the Docker image build?",
+      "status": "disputed",
+      "evidence": "Dockerfile:20-22 ends the entire && chain with || true; a harmless equivalent shell chain returned success after false.",
+      "discriminating_test": "Make the install command fail in an isolated build fixture and require a nonzero build result.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-040",
+      "component": "container and deployment",
+      "file": ".github/workflows/publish-image.yml",
+      "question": "Can a public image tag be updated before source tests and image acceptance have passed?",
+      "status": "disputed",
+      "evidence": "publish-image.yml runs independently on push, publishes in Build and push, then executes doctor.",
+      "discriminating_test": "Build once, qualify the exact digest, and publish/promote only after the required checks for that revision succeed.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-041",
+      "component": "container and deployment",
+      "file": ".github/workflows/publish-image.yml",
+      "question": "Does the image smoke test establish service or solve behavior?",
+      "status": "answered",
+      "evidence": "publish-image.yml only runs doctor and checks for a nonempty dictionary; cli_operations.run_doctor explicitly checks configuration, not provider or sandbox operation.",
+      "discriminating_test": "Add offline installed-image service and client acceptance matched to the release claim.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-042",
+      "component": "container and deployment",
+      "file": ".github/workflows/publish-image.yml",
+      "question": "Does publication retain a build provenance attestation?",
+      "status": "disputed",
+      "evidence": "publish-image.yml Build and push sets provenance: false despite attaching source revision labels.",
+      "discriminating_test": "Verify signed or otherwise governed source/build provenance for the exact published digest.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-043",
+      "component": "container and deployment",
+      "file": "examples/28_containerized_worker/run.py",
+      "question": "Does the recipe checker reject numeric root user declarations?",
+      "status": "disputed",
+      "evidence": "examples/28 run.py rejects only the literal USER root; a USER 0 fixture passed every Dockerfile check.",
+      "discriminating_test": "Require refusal of USER 0, 0:0, and equivalent root declarations.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-044",
+      "component": "container and deployment",
+      "file": "examples/28_containerized_worker/run.py",
+      "question": "Does the recipe checker validate the syntax of a base-image digest?",
+      "status": "disputed",
+      "evidence": "Its check only looks for @sha256:; the safe fixture sha256:invalid passed.",
+      "discriminating_test": "Require exactly the supported digest algorithm and hex length and then verify resolution in a build check.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-045",
+      "component": "container and deployment",
+      "file": "examples/28_containerized_worker/run.py",
+      "question": "Does removing the base-image digest fail the example's overall status?",
+      "status": "disputed",
+      "evidence": "examples/28 run.py marks base_image_digest_pinned as non-required in main; the README calls it a warning.",
+      "discriminating_test": "Remove the digest and assert the production qualification gate fails, while retaining any explicitly separate development mode.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-046",
+      "component": "container and deployment",
+      "file": "examples/28_containerized_worker/k8s/worker-deployment.yaml",
+      "question": "Does following the example deployment guide configure the authenticated readiness header?",
+      "status": "disputed",
+      "evidence": "worker-deployment.yaml uses READINESS_KEY_FROM_SECRET as a literal header, while the README only instructs replacing IMAGE_REFERENCE and creating the tenants Secret.",
+      "discriminating_test": "Render the actual deployment configuration and show readiness authenticates without exposing a key in published manifests.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-047",
+      "component": "container and deployment",
+      "file": "examples/28_containerized_worker/k8s/worker-deployment.yaml",
+      "question": "What state survives a worker replacement or replica increase?",
+      "status": "open",
+      "evidence": "worker-deployment.yaml mounts /work from emptyDir and the default service stores are in memory.",
+      "discriminating_test": "Replace the worker and exercise two replicas; verify the selected durable store's tenant, usage, and record consistency.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-048",
+      "component": "container and deployment",
+      "file": "Dockerfile",
+      "question": "Can the non-root image write every declared output location and shut down cleanly?",
+      "status": "open",
+      "evidence": "Dockerfile switches to user 65534 and /work; no actual image filesystem/cancellation test was run in this audit.",
+      "discriminating_test": "Run an owned exact-image smoke test against mounted work storage and verify output ownership, termination, and cleanup.",
+      "owning_boundary": "Dockerfile, publication workflow, and worker deployment"
+    },
+    {
+      "id": "ORG-Q-049",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Does test collection detect a self_test moved into a nested package?",
+      "status": "disputed",
+      "evidence": "_conformance_scan:676 skips paths deeper than two segments; the in-memory nested-file fixture produced no findings.",
+      "discriminating_test": "Move a test module one level deeper without registering it and require the collection gate to fail.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-050",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Are all root modules exempt from collection checks even when their self_test is not called?",
+      "status": "disputed",
+      "evidence": "_conformance_scan:678-681 skips every name in ROOT_MODULES.",
+      "discriminating_test": "Remove one root self-test from the actual suite and require an uncollected-test failure.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-051",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Can an unrelated quoted module name make the collection detector believe a suite is registered?",
+      "status": "disputed",
+      "evidence": "Collection uses regex over source text at _conformance_scan:667-671; an unrelated string fixture produced no findings.",
+      "discriminating_test": "Mention an unregistered module only in a comment or string and require the detector to report it.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-052",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_self_test.py",
+      "question": "Does the aggregator reject an empty module test report?",
+      "status": "disputed",
+      "evidence": "_fold accepts tests=[]; mocking every module report empty produced passed=1, total=1, all_passed=true.",
+      "discriminating_test": "Require nonempty checks or a separately typed, justified unavailable outcome per collected module.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-053",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_self_test.py",
+      "question": "Are folded module identities unique?",
+      "status": "disputed",
+      "evidence": "The actual list has 385 entries and 381 distinct module names; four ontology modules occur twice.",
+      "discriminating_test": "Reject duplicate module registration and distinguish invocation count from unique behavior checks.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-054",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_self_test.py",
+      "question": "Are optional adapters counted separately from passed behavioral checks?",
+      "status": "disputed",
+      "evidence": "Missing optional adapters return passed=true with not_tested=true and contribute to the aggregate passed count.",
+      "discriminating_test": "Report executed passes, failures, unavailable checks, and denominator separately; assert summary consistency.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-055",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_self_test.py",
+      "question": "Does one crashing module produce a failed record while allowing other suites to run?",
+      "status": "answered",
+      "evidence": "_fold catches exceptions and returns a failed record; the aggregator carries a timeout-fixture assertion.",
+      "discriminating_test": "Keep an exception fixture and verify it cannot become a passed or skipped result.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-056",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_self_test.py",
+      "question": "Are individual result records required to carry actual Boolean passed values?",
+      "status": "open",
+      "evidence": "The aggregator sums truthy r[passed] values without validating every record shape or Boolean type.",
+      "discriminating_test": "Return passed='false', missing passed, a non-list tests value, and duplicate identities; require typed aggregate failures.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-057",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/_self_test.py",
+      "question": "Are check identities unique and stable enough to compare coverage across releases?",
+      "status": "open",
+      "evidence": "Modules emit either test or name keys; the aggregator concatenates records and does not enforce unique qualified identities.",
+      "discriminating_test": "Compare exact check identities across exports and flag removed or duplicated checks independently of total count.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-058",
+      "component": "test discovery and aggregation",
+      "file": "src/loop_engine/core/service_api.py",
+      "question": "Does the service self-test shut down its owned listener and thread?",
+      "status": "disputed",
+      "evidence": "service_api.self_test:308-334 starts serve in a daemon thread, tests health, and returns without stopping the server or joining the thread.",
+      "discriminating_test": "Invoke the suite repeatedly in one process and assert there are no remaining owned listeners or threads.",
+      "owning_boundary": "_self_test and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-059",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Does the dependency-direction detector catch ordinary absolute import statements?",
+      "status": "disputed",
+      "evidence": "scan_dependency_direction examines ast.ImportFrom only; the equivalent ast.Import fixture produced zero findings.",
+      "discriminating_test": "Require the same result for import, from-import, and aliased forms of the same dependency.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-060",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Will relative dependency detection remain correct after adding another package level?",
+      "status": "open",
+      "evidence": "The detector recognizes relative imports only when node.level == 2 and uses the first source path segment.",
+      "discriminating_test": "Move a fixture into core/family and test every valid relative spelling against resolved module identity.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-061",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Does current conformance distinguish tolerated dependency debt from a clean boundary?",
+      "status": "answered",
+      "evidence": "The read-only scan found 73 dependency_direction findings against a baseline of 73; clean=false, while the separate architecture contract passed.",
+      "discriminating_test": "Preserve the 73-debt count in public status instead of reducing all evidence to one pass flag.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-062",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Can replacing one existing bad dependency with a new bad dependency pass a count-only ratchet?",
+      "status": "open",
+      "evidence": "The ratchet compares aggregate counts with a ceiling; it does not bind the existing exact edge set.",
+      "discriminating_test": "Remove one baseline edge and add an unrelated forbidden edge, then decide whether the policy should reject the new edge.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-063",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Are cached source trees invalidated when files change in a long-lived process?",
+      "status": "disputed",
+      "evidence": "_source_text, _source_tree, and _py_files_cached have unbounded path-only caches with no file identity input.",
+      "discriminating_test": "Scan, change a fixture, and scan again in the same process; require the second result to reflect new bytes.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-064",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Does the boundary register match exact module identities rather than substrings?",
+      "status": "open",
+      "evidence": "scan_unregistered_boundaries uses if mod in registered, where registered is one joined string.",
+      "discriminating_test": "Use two module names where one is a substring of the other and require distinct registration decisions.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-065",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/_conformance_scan.py",
+      "question": "Can an envelope call through an alias or attribute bypass unregistered-boundary discovery?",
+      "status": "open",
+      "evidence": "The scanner collects only direct ast.Name calls with six exact spellings.",
+      "discriminating_test": "Call the same envelope via an imported alias and a module attribute; require equivalent detection.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-066",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/repository_conformance.py",
+      "question": "Do repository and bootstrap import guards use the same forbidden development roots?",
+      "status": "disputed",
+      "evidence": "repository_conformance omits loop_engine_devtools from its forbidden roots, while the independent bootstrap includes it.",
+      "discriminating_test": "Run the same forbidden import fixtures through both guards and document intentional scope differences.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-067",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/repository_conformance.py",
+      "question": "Does a code_ref validate the named symbol as well as importing its module?",
+      "status": "disputed",
+      "evidence": "repository_conformance.reference_violations drops the final dotted segment and only imports the resulting module.",
+      "discriminating_test": "Reference a nonexistent symbol in an existing module and require reference-integrity failure.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-068",
+      "component": "conformance detector strength",
+      "file": "src/loop_engine/repository_conformance.py",
+      "question": "Does the repository Node-class detector cover classes nested in functions and classes?",
+      "status": "open",
+      "evidence": "repository_conformance.node_class_violations inspects tree.body only; other invariants may cover a subset separately.",
+      "discriminating_test": "Plant a uniquely named nested forbidden class and verify that the actual required gate reports it.",
+      "owning_boundary": "repository_conformance and _conformance_scan"
+    },
+    {
+      "id": "ORG-Q-069",
+      "component": "organization and integration",
+      "file": "docs/architecture/FOLDER-DEPTH-AND-THE-FLAT-CORE-2026-09-18.md",
+      "question": "Does the physical core directory provide useful ownership boundaries at its current size?",
+      "status": "answered",
+      "evidence": "The current directory contains 362 Python files directly; the September 18 folder-depth record describes a proposed migration rather than a completed move.",
+      "discriminating_test": "Choose one existing boundary by dependency isolation and verify a move without changing behavior or public imports.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-070",
+      "component": "organization and integration",
+      "file": "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md",
+      "question": "Are README-only package folders being mistaken for implemented package separation?",
+      "status": "disputed",
+      "evidence": "The layout record says six declared areas hold contracts/data while behavior resides in core, catalog, memory, and strings.",
+      "discriminating_test": "Label conceptual boundaries and physical implementation ownership separately in the architecture view.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-071",
+      "component": "organization and integration",
+      "file": "src/loop_engine/reachability_report.py",
+      "question": "How much cross-module private-symbol coupling exists, and how much is test-only?",
+      "status": "answered",
+      "evidence": "An AST census found 131 private import statements and 266 imported private symbols; a heuristic excluding named check modules/functions left 75 statements and 149 symbols.",
+      "discriminating_test": "Classify each remaining edge as deliberate shared boundary, compatibility dependency, test helper, or refactor candidate before renaming files.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-072",
+      "component": "organization and integration",
+      "file": "src/loop_engine/core/task_materials.py",
+      "question": "Which private source-reading helpers should have a stable owning interface?",
+      "status": "open",
+      "evidence": "task_materials:32-34 imports _open_source and private source classification constants from adaptive_practitioner_source.",
+      "discriminating_test": "Change the source-admission implementation behind a stable contract and rerun archive and ordinary-source refusal checks.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-073",
+      "component": "organization and integration",
+      "file": "src/loop_engine/reachability_report.py",
+      "question": "Can a static import closure be read as proof of actual public-path invocation?",
+      "status": "disputed",
+      "evidence": "reachability_report uses ast.walk including self_test bodies; the current report says 350/587 reachable while public provisioning dependencies are absent.",
+      "discriminating_test": "Require an observed public-boundary call and result record independently from static import reachability.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-074",
+      "component": "organization and integration",
+      "file": "src/loop_engine/reachability_report.py",
+      "question": "Does static non-reachability prove a module is unused when dispatch uses strings?",
+      "status": "disputed",
+      "evidence": "reachability_report itself excludes the string-driven public facade from analysis, but its docstring describes dark modules as dark under any reading.",
+      "discriminating_test": "Compare static misses against known lazy facade and registry dispatches before calling any module unused.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-075",
+      "component": "organization and integration",
+      "file": "src/loop_engine/reachability_report.py",
+      "question": "Is the public solve capability inventory broad enough to represent first-release integration?",
+      "status": "disputed",
+      "evidence": "REQUIRED_REACHABLE contains eight selected modules and does not assert provisioning transport, qualification, durable metering, or client material loading.",
+      "discriminating_test": "Build an acceptance inventory from requested behaviors, each with public-path observation and refusal checks.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-076",
+      "component": "organization and integration",
+      "file": "tools/export_component_inventory.py",
+      "question": "Are generated architecture findings computed from current source rather than embedded narrative?",
+      "status": "disputed",
+      "evidence": "tools/export_component_inventory.py emits several fixed findings and states, including context-handoff status, alongside computed inventory.",
+      "discriminating_test": "Bind each narrative finding to a current check or explicitly mark it historical or proposed.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-077",
+      "component": "organization and integration",
+      "file": ".github/workflows/ci.yml",
+      "question": "Are integration package checks executed by continuous integration?",
+      "status": "open",
+      "evidence": "No reference to integrations/tests/check_integrations.py was found in the inspected CI/test entry points; it passed locally with four manifests and six skills.",
+      "discriminating_test": "Add or identify the owning CI job and plant an invalid integration manifest to prove the job fails.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-078",
+      "component": "organization and integration",
+      "file": ".github/workflows/ci.yml",
+      "question": "Are the thirteen host-runtime example test files executed by continuous integration?",
+      "status": "open",
+      "evidence": "The inspected CI workflow does not discover examples/25_host_runtime or run example 25; the selected resource-catalog file contains substantive refusal and process-parity tests.",
+      "discriminating_test": "Collect these suites under an explicit offline/live partition and prove each intended offline check is executed.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-079",
+      "component": "organization and integration",
+      "file": ".github/workflows/ci.yml",
+      "question": "Does base-wheel acceptance exercise the full installed self-test and all first-release behavior?",
+      "status": "disputed",
+      "evidence": "CI default-install block runs pip check, doctor, setup, Studio self-test, and CLI acceptance; it does not run the full installed self-test or provisioning transport acceptance.",
+      "discriminating_test": "Run the exact claimed base-install public paths outside the source tree, with unsupported extras reported separately.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-080",
+      "component": "organization and integration",
+      "file": "src/loop_engine/core/boundary_registry.py",
+      "question": "Does the generic registered api endpoint actually cover the newly added hosted service path?",
+      "status": "open",
+      "evidence": "boundary_registry:154-158 binds api endpoint to core.saas_routes.serve_api; ServiceApplication dispatches its own handlers.",
+      "discriminating_test": "Trace a real hosted request to an exact registered owning Loop and verify that every new operational boundary has its own truthful registration.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-081",
+      "component": "organization and integration",
+      "file": "src/loop_engine/code_nodes/service_endpoints.py",
+      "question": "Do solver identifiers distinguish different executable specifications and catalogs?",
+      "status": "disputed",
+      "evidence": "service_endpoints:34 identifies recorded solvers only by output count; line 60 identifies text conformance by two thresholds.",
+      "discriminating_test": "Change rules, catalogs, or recorded outputs while holding their counts/thresholds fixed and require distinguishable implementation identities.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-082",
+      "component": "organization and integration",
+      "file": "src/loop_engine/core/evaluation_suite.py",
+      "question": "Do frozen record types also freeze mutable nested mappings?",
+      "status": "open",
+      "evidence": "EvaluationCase is frozen but retains input, expected, and grader_parameters objects; HarnessIntelligenceCatalogue exposes its mutable items dictionary.",
+      "discriminating_test": "Mutate nested data after admission and verify immutable identity, rejection, or a new version rather than silent behavior drift.",
+      "owning_boundary": "existing owning component named by evidence"
+    },
+    {
+      "id": "ORG-Q-083",
+      "component": "hosted evaluation catalog authority",
+      "file": "src/loop_engine/code_nodes/service_endpoints.py",
+      "question": "Can a remote evaluation request choose its own physical catalog root, and does the repair preserve legitimate local and tenant-scoped catalog use?",
+      "status": "answered",
+      "evidence": "The audit reproduced caller-selected catalog reads through real service dispatch with only the final read intercepted. The authorized repair adds ServiceCatalogScope, rejects request catalog_root, selects scope by authenticated tenant, denies file catalogs by default, and preserves local solver file specifications. Endpoint suite 8/8 and catalog authority mutants passed their discriminating checks.",
+      "discriminating_test": "Remove root rejection, tenant binding, reference validation, or configured catalog loading independently. Require the existing endpoint checks to reject each mutant while a valid scoped catalog changes the observed output.",
+      "owning_boundary": "code_nodes.service_endpoints.ServiceCatalogScope and evaluate_handler"
+    }
+  ]
+}

@@ -1,0 +1,1259 @@
+{
+  "record_type": "context_route_candidate_inventory/v1",
+  "date": "2026-09-19",
+  "source_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "scope": "Focused semantic inspection, not every-line correctness proof. Inbound links scanned in repository Markdown excluding artifacts, docs/evidence and private stub-test workspace. No private logs or managed records read.",
+  "candidates": [
+    {
+      "id": "CTX-001",
+      "path": "AGENTS.md",
+      "action": "keep",
+      "reason": "Canonical task instructions and current pre-launch policy. Do not archive or weaken owner constraints.",
+      "replacement": "docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md",
+      "inbound_links": [
+        "ASTRA.md:8 -> AGENTS.md",
+        "ASTRA.md:454 -> AGENTS.md [explicit path]",
+        "CLAUDE.md:3 -> AGENTS.md",
+        "embodiments/AGENTS.md:3 -> ../AGENTS.md",
+        "docs/roadmap/FABRIC-ROADMAP-2026-09-18.md:151 -> AGENTS.md [explicit path]",
+        "integrations/README.md:16 -> ../AGENTS.md",
+        "FULL-PROJECT-REVIEW-2026-09-11.md:11 -> AGENTS.md [explicit path]",
+        "embodiments/HARNESS-GUIDE.md:62 -> ../AGENTS.md",
+        "embodiments/HARNESS-GUIDE.md:69 -> AGENTS.md [explicit path]",
+        "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md:90 -> AGENTS.md [explicit path]",
+        "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md:96 -> AGENTS.md [explicit path]",
+        "docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md:193 -> AGENTS.md [explicit path]",
+        "docs/architecture/HARNESS-AS-LOOP-NODE-CONSTITUTION.md:13 -> AGENTS.md [explicit path]",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:72 -> ../../AGENTS.md",
+        "docs/context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md:29 -> ../../AGENTS.md",
+        "docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md:175 -> ../../AGENTS.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:7 -> ../../AGENTS.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:81 -> ../../AGENTS.md",
+        "docs/README.md:129 -> ../AGENTS.md",
+        "docs/README.md:129 -> AGENTS.md [explicit path]",
+        "docs/context/INVARIANTS-AND-TRAPS.md:44 -> AGENTS.md [explicit path]",
+        "docs/context/GPT-6-ASTRA-READINESS-2026-09-04.md:53 -> AGENTS.md [explicit path]",
+        "docs/context/START-HERE.md:9 -> ../../AGENTS.md",
+        "docs/context/CODEX-START-HERE.md:25 -> ../../AGENTS.md",
+        "docs/context/CODEX-START-HERE.md:367 -> ../../AGENTS.md",
+        "docs/context/CODEX-START-HERE.md:367 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md:271 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md:77 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md:8 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md:9 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md:46 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md:28 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md:57 -> AGENTS.md [explicit path]",
+        "docs/prompts/README.md:5 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md:8 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md:19 -> AGENTS.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md:22 -> AGENTS.md [explicit path]",
+        "docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md:10 -> ../../AGENTS.md",
+        "docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md:10 -> AGENTS.md [explicit path]",
+        "docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md:30 -> AGENTS.md [explicit path]",
+        "devtools/AGENTS.md:3 -> ../AGENTS.md",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:60 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:61 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:62 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:63 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:64 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:65 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:66 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:67 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:68 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:69 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:70 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:71 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:118 -> AGENTS.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:217 -> AGENTS.md [explicit path]",
+        "docs/research/CODING-HARNESS-ARCHITECTURE-COMPARISON.md:46 -> AGENTS.md [explicit path]",
+        "docs/research/COGNITIVE-STEP-ARCHITECTURE-AND-STATE-2026-09-12.md:923 -> ../../AGENTS.md",
+        "docs/research/SKILL-REPOSITORIES-AS-CONTEXT-INTELLIGENCE-2026-09-18.md:185 -> AGENTS.md [explicit path]",
+        "docs/research/SKILL-REPOSITORIES-AS-CONTEXT-INTELLIGENCE-2026-09-18.md:365 -> AGENTS.md [explicit path]",
+        "docs/research/SKILL-REPOSITORIES-AS-CONTEXT-INTELLIGENCE-2026-09-18.md:407 -> AGENTS.md [explicit path]",
+        "docs/verification/ARCHITECTURE-MESH-CORPUS-AUDIT-2026-09-04.md:372 -> AGENTS.md [explicit path]",
+        "docs/verification/ADVERSARIAL-PROJECT-AUDIT-2026-09-18.md:114 -> AGENTS.md [explicit path]",
+        "docs/verification/RECORD-ACCESS-AND-MEMORY-AUDIT-2026-09-04.md:154 -> AGENTS.md [explicit path]",
+        "docs/verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md:154 -> AGENTS.md [explicit path]"
+      ],
+      "inbound_count": 64,
+      "source_sha256": "1ac442d8c44c88c28ace963e98083b92e9a45d082a0ab8d14684170714cf925f",
+      "line_count": 480,
+      "inspected_ranges": [
+        [
+          42,
+          56
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-002",
+      "path": "CLAUDE.md",
+      "action": "keep",
+      "reason": "Stable import wrapper; compact ASTRA at the existing target instead of breaking automatic imports.",
+      "replacement": "ASTRA.md",
+      "inbound_links": [
+        "ASTRA.md:450 -> CLAUDE.md",
+        "ASTRA.md:453 -> CLAUDE.md [explicit path]",
+        "integrations/README.md:16 -> ../CLAUDE.md",
+        "embodiments/HARNESS-GUIDE.md:64 -> ../CLAUDE.md",
+        "embodiments/HARNESS-GUIDE.md:69 -> CLAUDE.md [explicit path]",
+        "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md:96 -> CLAUDE.md [explicit path]",
+        "docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md:192 -> CLAUDE.md [explicit path]",
+        "docs/context/CODEX-START-HERE.md:24 -> ../../CLAUDE.md",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md:77 -> CLAUDE.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:61 -> CLAUDE.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:64 -> CLAUDE.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:65 -> CLAUDE.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:66 -> CLAUDE.md [explicit path]",
+        "docs/research/HARNESS-PROVISIONING-STANDARDS-2026-09-18.md:67 -> CLAUDE.md [explicit path]",
+        "docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md:562 -> CLAUDE.md [explicit path]"
+      ],
+      "inbound_count": 15,
+      "source_sha256": "9841a283d70347a0ee9d9c56b835da411916874f08cfa0166ab812fc5b13f52f",
+      "line_count": 14,
+      "inspected_ranges": [
+        [
+          1,
+          14
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-003",
+      "path": "ASTRA.md",
+      "action": "snapshot_then_compact",
+      "reason": "Automatically imported advisory file mixes current policy with old provider windows, worker operations and historical implementation status. At line975 it also describes publication on every push, while workflow now requires successful exact-revision continuous integration.",
+      "replacement": "docs/roadmap/CONTINUATION-AND-LAUNCH.md",
+      "inbound_links": [
+        "AGENTS.md:36 -> ASTRA.md [explicit path]",
+        "AGENTS.md:398 -> ASTRA.md [explicit path]",
+        "CLAUDE.md:5 -> ASTRA.md",
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:731 -> ../ASTRA.md",
+        "docs/opencode-step-instances.md:11 -> ../ASTRA.md#complete-behavioral-explanation",
+        "embodiments/opencode/README.md:10 -> ../../ASTRA.md",
+        "embodiments/AGENTS.md:4 -> ../ASTRA.md",
+        "docs/roadmap/FABRIC-ROADMAP-2026-09-18.md:50 -> ASTRA.md [explicit path]",
+        "integrations/README.md:17 -> ../ASTRA.md",
+        "embodiments/pi/README.md:4 -> ../../ASTRA.md",
+        "embodiments/README.md:11 -> ../ASTRA.md",
+        "embodiments/HARNESS-GUIDE.md:58 -> ../ASTRA.md",
+        "embodiments/HARNESS-GUIDE.md:63 -> ../ASTRA.md",
+        "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md:96 -> ASTRA.md [explicit path]",
+        "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md:139 -> ASTRA.md [explicit path]",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:70 -> ../../ASTRA.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:76 -> ../../ASTRA.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:76 -> ASTRA.md [explicit path]",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:80 -> ../../ASTRA.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:81 -> ../../ASTRA.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:111 -> ../../ASTRA.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:227 -> ../../ASTRA.md",
+        "docs/context/CODEX-START-HERE.md:21 -> ../../ASTRA.md",
+        "docs/context/CODEX-START-HERE.md:173 -> ASTRA.md [explicit path]",
+        "embodiments/codex/README.md:4 -> ../../ASTRA.md",
+        "devtools/README.md:42 -> ../ASTRA.md",
+        "devtools/AGENTS.md:4 -> ../ASTRA.md",
+        "docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md:24 -> ../../ASTRA.md#complete-behavioral-explanation",
+        "docs/verification/EXPERIMENT-FABRIC-READINESS-2026-09-14.md:173 -> ../../ASTRA.md",
+        "docs/research/HYPERLAMBDA-AND-WIDE-SEARCH-2026-09-13.md:119 -> ../../ASTRA.md#complete-behavioral-explanation",
+        "docs/verification/RUN-PATH-AND-DIMENSION-COVERAGE-2026-09-13.md:11 -> ../../ASTRA.md#complete-behavioral-explanation",
+        "docs/verification/CLAUDE-OPUS-5-REVIEW-2026-09-14.md:256 -> ../../ASTRA.md",
+        "docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md:562 -> ASTRA.md [explicit path]",
+        "docs/verification/ASTRA-INTEGRATION-REVIEW-2026-09-13.md:33 -> ../../ASTRA.md",
+        "devtools/embodiment_lab/README.md:28 -> ../../ASTRA.md",
+        "docs/verification/CLAUDE-FABLE-5-1-REVIEW-2026-09-18.md:71 -> ASTRA.md [explicit path]",
+        "docs/verification/CLAUDE-FABLE-5-1-REVIEW-2026-09-18.md:361 -> ASTRA.md [explicit path]"
+      ],
+      "inbound_count": 37,
+      "source_sha256": "7989ba3c397aea3caf758ce154955902abc068f7f0a8c31dd02fd5748149ace8",
+      "line_count": 1036,
+      "inspected_ranges": [
+        [
+          13,
+          29
+        ],
+        [
+          168,
+          193
+        ],
+        [
+          364,
+          405
+        ],
+        [
+          973,
+          994
+        ]
+      ],
+      "archive_suitability": "snapshot only; keep active filename"
+    },
+    {
+      "id": "CTX-004",
+      "path": "docs/context/START-HERE.md",
+      "action": "snapshot_then_correct",
+      "reason": "Active route says preserve legacy readers and instructs same-turn commit/push. It foregrounds September13 as current review. Current authority is the task and September19 policy.",
+      "replacement": "docs/roadmap/CONTINUATION-AND-LAUNCH.md",
+      "inbound_links": [
+        "checkpoints/README.md:9 -> ../docs/context/START-HERE.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:6 -> START-HERE.md",
+        "docs/context/EVERYTHING-LEARNED-2026-09-08.md:8 -> START-HERE.md",
+        "docs/context/EVERYTHING-LEARNED-2026-09-08.md:432 -> docs/context/START-HERE.md [explicit path]",
+        "docs/context/CODEX-START-HERE.md:3 -> START-HERE.md",
+        "docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md:335 -> docs/context/START-HERE.md [explicit path]"
+      ],
+      "inbound_count": 6,
+      "source_sha256": "416ece936e941a0304e8f7776ed9d7645c8af31db18caf347d0dc6c5d1f19704",
+      "line_count": 110,
+      "inspected_ranges": [
+        [
+          28,
+          35
+        ],
+        [
+          94,
+          110
+        ]
+      ],
+      "archive_suitability": "snapshot only; keep active filename"
+    },
+    {
+      "id": "CTX-005",
+      "path": "docs/context/CODEX-START-HERE.md",
+      "action": "snapshot_then_compact",
+      "reason": "Required after new or compacted sessions but carries historical urgent worker directions, unconditional commit/push text, model-specific bootstrap and old current-capstone routing.",
+      "replacement": "docs/context/START-HERE.md",
+      "inbound_links": [
+        "ASTRA.md:457 -> docs/context/CODEX-START-HERE.md",
+        "AGENTS.md:34 -> docs/context/CODEX-START-HERE.md [explicit path]",
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:731 -> context/CODEX-START-HERE.md",
+        "FULL-PROJECT-REVIEW-2026-09-11.md:11 -> docs/context/CODEX-START-HERE.md [explicit path]",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:69 -> CODEX-START-HERE.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:29 -> CODEX-START-HERE.md",
+        "docs/README.md:127 -> context/CODEX-START-HERE.md",
+        "docs/context/GPT-6-ASTRA-READINESS-2026-09-04.md:188 -> CODEX-START-HERE.md",
+        "docs/context/START-HERE.md:26 -> CODEX-START-HERE.md",
+        "docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md:47 -> docs/context/CODEX-START-HERE.md [explicit path]",
+        "docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md:11 -> ../context/CODEX-START-HERE.md",
+        "docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md:30 -> docs/context/CODEX-START-HERE.md [explicit path]",
+        "docs/prompts/UNSEEN-TASK-WORK-HANDOFF.md:264 -> docs/context/CODEX-START-HERE.md [explicit path]",
+        "docs/internal/HANDOFF.md:5 -> ../context/CODEX-START-HERE.md"
+      ],
+      "inbound_count": 14,
+      "source_sha256": "ecc5eaa3a8805abf4af1888c959340edaaa5942c553ba11a4d362d281a9c64bf",
+      "line_count": 609,
+      "inspected_ranges": [
+        [
+          1,
+          18
+        ],
+        [
+          141,
+          160
+        ],
+        [
+          350,
+          362
+        ],
+        [
+          389,
+          396
+        ],
+        [
+          458,
+          462
+        ]
+      ],
+      "archive_suitability": "snapshot only; keep active filename"
+    },
+    {
+      "id": "CTX-006",
+      "path": "docs/README.md",
+      "action": "snapshot_then_correct",
+      "reason": "Public route calls the September6 report latest/current and describes a609-line orientation as compact. Replace stale status adjectives with dated evidence and current continuation routes.",
+      "replacement": "docs/roadmap/CONTINUATION-STATUS.md",
+      "inbound_links": [
+        "docs/guides/README.md:15 -> ../README.md"
+      ],
+      "inbound_count": 1,
+      "source_sha256": "f87109a855a746daf948a241d989fbf890e13ba2a033aa7dd5d7baabc8059ad6",
+      "line_count": 159,
+      "inspected_ranges": [
+        [
+          11,
+          18
+        ],
+        [
+          120,
+          155
+        ]
+      ],
+      "archive_suitability": "snapshot only; keep active filename"
+    },
+    {
+      "id": "CTX-007",
+      "path": "docs/contracts/README.md",
+      "action": "snapshot_then_correct",
+      "reason": "Current contract index promises readable solve_outcome v3/v4/v5 despite current-only v6 product outcome reader; historical-reader links need policy/implementation separation.",
+      "replacement": "docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md",
+      "inbound_links": [
+        "AGENTS.md:30 -> docs/contracts/README.md [explicit path]",
+        "docs/reference/README.md:9 -> ../contracts/README.md",
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:724 -> contracts/README.md",
+        "FULL-PROJECT-REVIEW-2026-09-11.md:11 -> docs/contracts/README.md [explicit path]",
+        "docs/context/CODEX-START-HERE.md:36 -> ../contracts/README.md",
+        "docs/context/CODEX-START-HERE.md:369 -> ../contracts/README.md",
+        "docs/prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md:31 -> docs/contracts/README.md [explicit path]",
+        "docs/research/COGNITIVE-STEP-ARCHITECTURE-AND-STATE-2026-09-12.md:925 -> ../contracts/README.md",
+        "docs/research/ADAPTIVE-QUESTIONS-COMPILATION-AND-CAPABILITY-RESEARCH-2026-09-05.md:47 -> ../contracts/README.md",
+        "docs/verification/REUSABLE-CAPABILITY-FLYWHEEL-IMPLEMENTATION-LEDGER.md:68 -> docs/contracts/README.md [explicit path]",
+        "docs/verification/LEARNING-INTEGRITY-AND-RESEARCH-2026-09-04.md:162 -> docs/contracts/README.md [explicit path]"
+      ],
+      "inbound_count": 11,
+      "source_sha256": "646641e39ccb52f0073a56f4755a3a004bfce2be655bc0e675ba9fa188c18d37",
+      "line_count": 190,
+      "inspected_ranges": [
+        [
+          113,
+          120
+        ],
+        [
+          140,
+          147
+        ],
+        [
+          180,
+          188
+        ]
+      ],
+      "archive_suitability": "snapshot only; keep active filename"
+    },
+    {
+      "id": "CTX-008",
+      "path": "docs/components/loop-object/RECORD-COMPATIBILITY.md",
+      "action": "snapshot_then_correct",
+      "reason": "Top pre-launch warning conflicts with present-tense historical-reader instructions below. Cardinality remains current; some old Loop definition/checkpoint readers are still implemented and must be honestly marked pending removal.",
+      "replacement": "docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md",
+      "inbound_links": [
+        "docs/components/loop-object/README.md:28 -> RECORD-COMPATIBILITY.md",
+        "docs/contracts/README.md:142 -> ../components/loop-object/RECORD-COMPATIBILITY.md",
+        "docs/context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md:132 -> ../components/loop-object/RECORD-COMPATIBILITY.md"
+      ],
+      "inbound_count": 3,
+      "source_sha256": "292b1e17c3106800c4cf4baddd787a02867e4d2c9d6d0aaaa21a35d981eaed43",
+      "line_count": 92,
+      "inspected_ranges": [
+        [
+          1,
+          12
+        ],
+        [
+          44,
+          59
+        ],
+        [
+          73,
+          92
+        ]
+      ],
+      "archive_suitability": "snapshot only; keep active filename"
+    },
+    {
+      "id": "CTX-009",
+      "path": "docs/context/INVARIANTS-AND-TRAPS.md",
+      "action": "correct_later_no_move",
+      "reason": "Undated route contains stale gate/interpreter/build-status observations and recommends pruning broad loop-engine temporary paths without proving ownership.",
+      "replacement": "docs/context/START-HERE.md",
+      "inbound_links": [
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:727 -> context/INVARIANTS-AND-TRAPS.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:19 -> INVARIANTS-AND-TRAPS.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:148 -> INVARIANTS-AND-TRAPS.md",
+        "docs/context/START-HERE.md:88 -> INVARIANTS-AND-TRAPS.md",
+        "docs/context/EVERYTHING-LEARNED-2026-09-08.md:9 -> INVARIANTS-AND-TRAPS.md",
+        "docs/context/EVERYTHING-LEARNED-2026-09-08.md:433 -> docs/context/INVARIANTS-AND-TRAPS.md [explicit path]",
+        "docs/context/CODEX-START-HERE.md:5 -> INVARIANTS-AND-TRAPS.md"
+      ],
+      "inbound_count": 7,
+      "source_sha256": "bac1247025cdda37ca5ab0c0684a9164b601865b59438f69058391bf576e7cd9",
+      "line_count": 137,
+      "inspected_ranges": [
+        [
+          13,
+          18
+        ],
+        [
+          59,
+          68
+        ],
+        [
+          88,
+          101
+        ],
+        [
+          119,
+          132
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-010",
+      "path": "docs/context/WAYS-OF-RUNNING.md",
+      "action": "correct_later_no_move",
+      "reason": "Undated inventory frames all listed behavior as current, requires preserving old defaults and includes an old proposed-not-built list. These need current per-boundary checks, not blanket compatibility preservation.",
+      "replacement": "docs/contracts/README.md",
+      "inbound_links": [
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:730 -> context/WAYS-OF-RUNNING.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:21 -> WAYS-OF-RUNNING.md",
+        "docs/context/EVERYTHING-LEARNED-2026-09-08.md:434 -> docs/context/WAYS-OF-RUNNING.md [explicit path]",
+        "docs/context/CODEX-START-HERE.md:6 -> WAYS-OF-RUNNING.md",
+        "docs/verification/RUN-PATH-AND-DIMENSION-COVERAGE-2026-09-13.md:90 -> ../context/WAYS-OF-RUNNING.md"
+      ],
+      "inbound_count": 5,
+      "source_sha256": "c52df3e8c484ff346f0b98161b35c532f64f56ec98bb10e343558bf574e1b941",
+      "line_count": 204,
+      "inspected_ranges": [
+        [
+          1,
+          10
+        ],
+        [
+          150,
+          174
+        ],
+        [
+          194,
+          204
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-011",
+      "path": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "action": "retain_with_priority_note_later",
+      "reason": "Sole broad prompt remains useful and defers to authority, but its mandatory next vertical slice predates the subscription-service launch priority. Current task and continuation plan must select work.",
+      "replacement": "docs/roadmap/CONTINUATION-AND-LAUNCH.md",
+      "inbound_links": [
+        "docs/README.md:151 -> prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+        "docs/context/GPT-6-ASTRA-READINESS-2026-09-04.md:189 -> ../prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+        "docs/context/CODEX-START-HERE.md:385 -> ../prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+        "docs/internal/HANDOFF.md:7 -> ../prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md"
+      ],
+      "inbound_count": 4,
+      "source_sha256": "37172f66a43ab5be9bfb96074a0664c9799f05596b61660f526db3151efdba82",
+      "line_count": 472,
+      "inspected_ranges": [
+        [
+          1,
+          14
+        ],
+        [
+          391,
+          420
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-012",
+      "path": "README.md",
+      "action": "correct_selected_claims_later_no_move",
+      "reason": "Public entry must stay stable. It calls a September4 report current; historical evidence should be dated and current service status should link to continuation. Preserve the separate stub-test workspace pointer without consuming private history.",
+      "replacement": "docs/roadmap/CONTINUATION-STATUS.md",
+      "inbound_links": [
+        "AGENTS.md:26 -> README.md [explicit path]",
+        "docs/guides/text-conformance-and-standalone-export.md:137 -> README.md [explicit path]",
+        "docs/guides/harness-service-onboarding.md:24 -> ../../README.md",
+        "docs/reference/MASTER-SPECIFICATION.md:9 -> ../../README.md",
+        "docs/getting-started.md:6 -> ../README.md",
+        "docs/components/README.md:62 -> ../../README.md",
+        "src/loop_engine/runtime/runs/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/runtime/runtime_memory/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/runtime/README.md:27 -> README.md [explicit path]",
+        "FULL-PROJECT-REVIEW-2026-09-11.md:11 -> README.md [explicit path]",
+        "src/loop_engine/runtime/artifacts/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/intelligence/runtime_history_solution/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/intelligence/code/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/intelligence/README.md:27 -> README.md [explicit path]",
+        "docs/architecture/REPOSITORY-LAYOUT-AND-RECORD-KINDS-2026-09-18.md:96 -> README.md [explicit path]",
+        "docs/architecture/ARCHITECTURE-CONFLICT-REGISTER.md:106 -> README.md [explicit path]",
+        "src/loop_engine/intelligence/context/README.md:28 -> README.md [explicit path]",
+        "docs/architecture/ARCHITECTURE.md:45 -> ../../README.md",
+        "docs/README.md:3 -> ../README.md",
+        "examples/README.md:9 -> README.md [explicit path]",
+        "docs/context/INVARIANTS-AND-TRAPS.md:44 -> README.md [explicit path]",
+        "docs/context/INVARIANTS-AND-TRAPS.md:45 -> README.md [explicit path]",
+        "docs/context/EVERYTHING-LEARNED-2026-09-08.md:343 -> README.md [explicit path]",
+        "docs/context/CODEX-START-HERE.md:368 -> ../../README.md",
+        "docs/context/CODEX-START-HERE.md:368 -> README.md [explicit path]",
+        "src/loop_engine/intelligence/user_feedback/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/kernel/executor/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/kernel/README.md:27 -> README.md [explicit path]",
+        "src/loop_engine/kernel/resolver/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/governance/README.md:27 -> README.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md:270 -> README.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md:76 -> README.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md:3140 -> README.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md:49 -> README.md [explicit path]",
+        "docs/prompts/LOOP-ENGINE-ARCHITECTURE-VIDEO-BUILD-PROMPT.md:29 -> README.md [explicit path]",
+        "src/loop_engine/kernel/enforcement/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/governance/promotion/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/kernel/loader/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/governance/candidates/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/governance/review/README.md:28 -> README.md [explicit path]",
+        "src/loop_engine/governance/approval/README.md:28 -> README.md [explicit path]",
+        "docs/internal/HANDOFF.md:20 -> ../../README.md",
+        "docs/verification/FIXES-AND-FORK-PLAN-2026-09-07.md:61 -> README.md [explicit path]",
+        "docs/verification/REUSABLE-CAPABILITY-FLYWHEEL-IMPLEMENTATION-LEDGER.md:69 -> README.md [explicit path]"
+      ],
+      "inbound_count": 44,
+      "source_sha256": "81c6881a57fb3fe5501d61726dfc53a0da206679b3c0659b2a6c6b657eb8bed0",
+      "line_count": 466,
+      "inspected_ranges": [
+        [
+          176,
+          185
+        ],
+        [
+          459,
+          466
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-013",
+      "path": "docs/guides/packaging-tiers-and-hosted-service.md",
+      "action": "correct_later_no_move",
+      "reason": "Older business direction claims refusals cost nothing and publication on every push. Meter acknowledgments can be unknown after a commit, prices remain owner decisions, and publication requires successful exact-revision checks.",
+      "replacement": "docs/architecture/MVP-CLIENT-SERVER.md",
+      "inbound_links": [
+        "CHANGELOG.md:328 -> docs/guides/packaging-tiers-and-hosted-service.md",
+        "examples/28_containerized_worker/README.md:46 -> ../../docs/guides/packaging-tiers-and-hosted-service.md",
+        "docs/research/BUSINESS-PATHS-2026-09-18.md:19 -> docs/guides/packaging-tiers-and-hosted-service.md [explicit path]",
+        "docs/research/BUSINESS-PATHS-2026-09-18.md:419 -> docs/guides/packaging-tiers-and-hosted-service.md [explicit path]",
+        "docs/research/LOCAL-AND-CLUSTER-RESOURCE-MANAGEMENT-2026-09-18.md:63 -> ../guides/packaging-tiers-and-hosted-service.md"
+      ],
+      "inbound_count": 5,
+      "source_sha256": "3672e7e6a3234bfa5d71ad12eed2da683b543a0b041aaaffe70df07c40193e81",
+      "line_count": 105,
+      "inspected_ranges": [
+        [
+          44,
+          68
+        ],
+        [
+          87,
+          107
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-014",
+      "path": "docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md",
+      "action": "correct_later_no_move",
+      "reason": "Active example uses LoopRef and old query/materialization call shapes. These need current typed-request examples and planned alias removal; do not present legacy syntax as a new integration route.",
+      "replacement": "src/loop_engine/core/intelligence_layers.py",
+      "inbound_links": [
+        "docs/components/intelligence-layers/README.md:150 -> INTELLIGENCE-AS-LOOPS.md",
+        "docs/components/core-architecture/README.md:37 -> ../intelligence-layers/INTELLIGENCE-AS-LOOPS.md"
+      ],
+      "inbound_count": 2,
+      "source_sha256": "753ccc81103502c6686c2217a47edb7395b4ac654719a88f72d72248dcda8a78",
+      "line_count": 144,
+      "inspected_ranges": [
+        [
+          1,
+          8
+        ],
+        [
+          36,
+          65
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-015",
+      "path": "docs/components/intelligence-layers/CODE-INTELLIGENCE-TEMPLATES.md",
+      "action": "correct_later_no_move",
+      "reason": "Admission wording must require exact authoritative evidence, not a populated admission_ref string alone. The example creates only a candidate and must stay labeled as such.",
+      "replacement": "artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md",
+      "inbound_links": [
+        "examples/12_wrap_a_large_codebase/README.md:26 -> ../../docs/components/intelligence-layers/CODE-INTELLIGENCE-TEMPLATES.md",
+        "docs/components/intelligence-layers/README.md:79 -> CODE-INTELLIGENCE-TEMPLATES.md"
+      ],
+      "inbound_count": 2,
+      "source_sha256": "d1afb850d80cdb95c813eb5087ef99a35e2f026ae79b452c07b0c6e513efeda5",
+      "line_count": 210,
+      "inspected_ranges": [
+        [
+          54,
+          68
+        ],
+        [
+          89,
+          93
+        ],
+        [
+          201,
+          211
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-016",
+      "path": "docs/guides/harness-service-onboarding.md",
+      "action": "clarify_supported_profile_later_no_move",
+      "reason": "The guide is explicitly a plan, but links newer remote protocol requirements without stating the implemented in-process2025-11-25 profile. Keep desired remote authorization distinct from tested local protocol support.",
+      "replacement": "docs/architecture/MVP-CLIENT-SERVER.md",
+      "inbound_links": [
+        "docs/guides/README.md:20 -> harness-service-onboarding.md",
+        "docs/roadmap/CONTINUATION-AND-LAUNCH.md:301 -> ../guides/harness-service-onboarding.md"
+      ],
+      "inbound_count": 2,
+      "source_sha256": "a97c8735d4370b05d0a7847118e31873552822cda098b5dcca78c054b0fcebb9",
+      "line_count": 136,
+      "inspected_ranges": [
+        [
+          43,
+          60
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-017",
+      "path": "docs/context/START-HERE-SNAPSHOT-2026-09-08.md",
+      "action": "optional_recoverable_archive_only",
+      "reason": "Already marked historical and non-authoritative, but filename resembles current bootstrap and contains old standing publication/default-preservation mandates. Preserve bytes and update incoming historical links before any move.",
+      "replacement": "docs/context/START-HERE.md",
+      "inbound_links": [
+        "docs/RECORDS-INDEX.md:47 -> context/START-HERE-SNAPSHOT-2026-09-08.md",
+        "docs/context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md:151 -> docs/context/START-HERE-SNAPSHOT-2026-09-08.md [explicit path]",
+        "docs/context/START-HERE.md:53 -> START-HERE-SNAPSHOT-2026-09-08.md"
+      ],
+      "inbound_count": 3,
+      "source_sha256": "62485964ccfc71df9af3c78fc8c9df3da76b06adc523e9311b39a104ace982b6",
+      "line_count": 169,
+      "inspected_ranges": [
+        [
+          1,
+          15
+        ],
+        [
+          40,
+          75
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-018",
+      "path": "docs/context/EVERYTHING-LEARNED-2026-09-08.md",
+      "action": "optional_recoverable_archive_only",
+      "reason": "Dated measured history should remain available by evidence links, not a required bootstrap. No rewriting of measurements or historic failures.",
+      "replacement": "docs/context/START-HERE.md",
+      "inbound_links": [
+        "docs/RECORDS-INDEX.md:43 -> context/EVERYTHING-LEARNED-2026-09-08.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:69 -> EVERYTHING-LEARNED-2026-09-08.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:23 -> EVERYTHING-LEARNED-2026-09-08.md"
+      ],
+      "inbound_count": 3,
+      "source_sha256": "bb0a24faad0eb0496abb43df8395875f53fe51a3e570bb68f273d358ae25b12a",
+      "line_count": 445,
+      "inspected_ranges": [
+        [
+          1,
+          24
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-019",
+      "path": "docs/context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md",
+      "action": "optional_recoverable_archive_only",
+      "reason": "Dated review of a prior dirty tree and old compatibility work. Remove current-review routing from active entrypoints but preserve its original scope and evidence.",
+      "replacement": "artifacts/claude-session-review-2026-09-19/README.md",
+      "inbound_links": [
+        "docs/RECORDS-INDEX.md:37 -> context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:93 -> CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md",
+        "docs/context/CONFIGURATION-DIMENSION-DISCOVERY-ADDENDUM-2026-09-13.md:11 -> CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md",
+        "docs/context/START-HERE.md:32 -> CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md",
+        "docs/context/CODEX-START-HERE.md:99 -> CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md",
+        "docs/verification/CLAUDE-FABLE-5.1-REVIEW-2026-09-13.md:4 -> ../context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md"
+      ],
+      "inbound_count": 6,
+      "source_sha256": "265f0a4a7c3bd6c3e7e8081bee878d6685a36a85a1845d65de5f8e3d85bb64c4",
+      "line_count": 242,
+      "inspected_ranges": [
+        [
+          1,
+          29
+        ],
+        [
+          117,
+          130
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-020",
+      "path": "docs/context/GPT-6-ASTRA-READINESS-2026-09-04.md",
+      "action": "keep_dated_evidence_remove_bootstrap_requirement",
+      "reason": "Model-specific dated prices, capacities and quarantined adapter status are not generic coding-agent startup instructions. No external facts were revalidated by this inventory.",
+      "replacement": "docs/context/START-HERE.md",
+      "inbound_links": [
+        "docs/guides/providers-and-keys.md:72 -> ../context/GPT-6-ASTRA-READINESS-2026-09-04.md",
+        "docs/RECORDS-INDEX.md:45 -> context/GPT-6-ASTRA-READINESS-2026-09-04.md",
+        "docs/context/CODEX-START-HERE.md:394 -> GPT-6-ASTRA-READINESS-2026-09-04.md",
+        "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md:462 -> ../context/GPT-6-ASTRA-READINESS-2026-09-04.md",
+        "docs/internal/HANDOFF.md:25 -> ../context/GPT-6-ASTRA-READINESS-2026-09-04.md"
+      ],
+      "inbound_count": 5,
+      "source_sha256": "987b70c4ee67e1511cf61ec3f20326fdebfa530fd2ac832413d176a0138825b8",
+      "line_count": 193,
+      "inspected_ranges": [
+        [
+          1,
+          34
+        ],
+        [
+          49,
+          60
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-021",
+      "path": "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md",
+      "action": "keep_dated_evidence",
+      "reason": "Useful dated source/evidence inventory. Keep historical framing and load by relevance rather than importing whole sessions.",
+      "replacement": "docs/roadmap/CONTINUATION-STATUS.md",
+      "inbound_links": [
+        "docs/RECORDS-INDEX.md:35 -> context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md",
+        "docs/context/CODEX-START-HERE.md:32 -> AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md",
+        "docs/verification/ADVERSARIAL-PROJECT-AUDIT-2026-09-18.md:21 -> ../context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md"
+      ],
+      "inbound_count": 3,
+      "source_sha256": "e675b0ec6968554177175c6b8f23305869b33ec6e1630000010c683c2f4892ac",
+      "line_count": 655,
+      "inspected_ranges": [
+        [
+          1,
+          35
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-022",
+      "path": "docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+      "action": "protect_do_not_archive",
+      "reason": "Despite its date, this is the explicitly required complete phrase and behavioral explanation. Preserve exact owner meaning and active links.",
+      "replacement": "AGENTS.md",
+      "inbound_links": [
+        "humanizer-context.md:33 -> docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "AGENTS.md:367 -> docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/guides/harness-service-onboarding.md:115 -> ../context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/RECORDS-INDEX.md:41 -> context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:717 -> context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md:83 -> ../context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:72 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/context/START-HERE-SNAPSHOT-2026-09-08.md:10 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/context/START-HERE.md:14 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/context/CODEX-START-HERE.md:53 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/research/RECURRENT-MODELS-AND-SYSTEM-IMPROVEMENT-2026-09-14.md:49 -> ../context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/research/VISION-ALIGNMENT-REVIEW-2026-09-12.md:5 -> ../context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md",
+        "docs/verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md:17 -> ../context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md"
+      ],
+      "inbound_count": 13,
+      "source_sha256": "54d020b0514afd7f9941f18ef867bdade5d29cd92cfc21933d071fc6ed53e239",
+      "line_count": 215,
+      "inspected_ranges": [
+        [
+          1,
+          60
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-023",
+      "path": "docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+      "action": "protect_do_not_archive",
+      "reason": "Required non-exhaustive initial/fallback dimension inventory. A concise route must retain this owner requirement, not replace it with a summary.",
+      "replacement": "AGENTS.md",
+      "inbound_links": [
+        "AGENTS.md:373 -> docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/guides/configuration-grid-search-and-optimization.md:14 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:716 -> architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/roadmap/CONTINUATION-AND-LAUNCH.md:217 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/components/core-architecture/HARNESS-FALLBACK.md:250 -> ../../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md:13 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md:21 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/architecture/DIMENSION-INVENTORY-2026-09-18.md:7 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md:212 -> DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/contracts/README.md:149 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:73 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md:32 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md:127 -> docs/architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md [explicit path]",
+        "docs/context/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-HANDOFF-2026-09-12.md:122 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/context/CONFIGURATION-DIMENSION-DISCOVERY-ADDENDUM-2026-09-13.md:14 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/context/START-HERE.md:16 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/context/CODEX-START-HERE.md:59 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/research/RECURRENT-MODELS-AND-SYSTEM-IMPROVEMENT-2026-09-14.md:223 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/research/VISION-ALIGNMENT-REVIEW-2026-09-12.md:6 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/verification/RUN-PATH-AND-DIMENSION-COVERAGE-2026-09-13.md:10 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md",
+        "docs/research/AGENT-HARNESS-RUNTIME-PROTOCOL-ONTOLOGY-LANDSCAPE-2026-09-14.md:725 -> ../architecture/DISCRETE-COGNITIVE-OR-ACT-STEP-LOOP-NODE-DIMENSIONS.md"
+      ],
+      "inbound_count": 21,
+      "source_sha256": "ba7f46a698ad77fb4eaec1f63ce4d8b3594477677c280e6b8ab77f088327ef32",
+      "line_count": 422,
+      "inspected_ranges": [
+        [
+          1,
+          30
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-024",
+      "path": "docs/architecture/CONSTITUTION.md",
+      "action": "protect_do_not_archive",
+      "reason": "Canonical architectural authority, not stale session context.",
+      "replacement": "AGENTS.md",
+      "inbound_links": [
+        "ASTRA.md:477 -> docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction",
+        "ASTRA.md:543 -> docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction",
+        "README.md:205 -> docs/architecture/CONSTITUTION.md",
+        "AGENTS.md:27 -> docs/architecture/CONSTITUTION.md [explicit path]",
+        "AGENTS.md:433 -> docs/architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction",
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:14 -> architecture/CONSTITUTION.md",
+        "docs/COMPLETE-PROJECT-CONSTITUTION.md:703 -> architecture/CONSTITUTION.md",
+        "FULL-PROJECT-REVIEW-2026-09-11.md:11 -> docs/architecture/CONSTITUTION.md [explicit path]",
+        "docs/architecture/ARCHITECTURE-CONFLICT-REGISTER.md:107 -> docs/architecture/CONSTITUTION.md [explicit path]",
+        "docs/architecture/CURRENT-ARCHITECTURE-MAP.md:491 -> docs/architecture/CONSTITUTION.md [explicit path]",
+        "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md:29 -> CONSTITUTION.md#proposed-invariants-from-owner-direction",
+        "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md:208 -> CONSTITUTION.md#proposed-invariants-from-owner-direction",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:97 -> ../architecture/CONSTITUTION.md",
+        "docs/context/CLAUDE-FABLE-5.1-REVIEW-HANDOFF-2026-09-13.md:30 -> ../architecture/CONSTITUTION.md",
+        "docs/context/CODEX-START-HERE.md:249 -> ../architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction",
+        "docs/prompts/LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md:59 -> docs/architecture/CONSTITUTION.md [explicit path]",
+        "src/loop_engine/node/README.md:115 -> docs/architecture/CONSTITUTION.md [explicit path]",
+        "docs/research/COGNITIVE-STEP-ARCHITECTURE-AND-STATE-2026-09-12.md:923 -> ../architecture/CONSTITUTION.md",
+        "docs/research/AGENT-HARNESS-RUNTIME-PROTOCOL-ONTOLOGY-LANDSCAPE-2026-09-14.md:723 -> ../architecture/CONSTITUTION.md#proposed-invariants-from-owner-direction",
+        "docs/verification/CLAUDE-OPUS-5-REVIEW-2026-09-14.md:434 -> ../architecture/CONSTITUTION.md"
+      ],
+      "inbound_count": 20,
+      "source_sha256": "986401969a2745862693335a89f3a38025c1a20271d6b0030f9798f00517554a",
+      "line_count": 456,
+      "inspected_ranges": [
+        [
+          1,
+          25
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-025",
+      "path": "docs/guides/queryable-records-and-storage.md",
+      "action": "protect_do_not_archive",
+      "reason": "Managed record authority and historical revisions are not pre-launch compatibility scaffolding. Keep service access rules and immutable artifacts.",
+      "replacement": "AGENTS.md",
+      "inbound_links": [
+        "README.md:339 -> docs/guides/queryable-records-and-storage.md",
+        "AGENTS.md:285 -> docs/guides/queryable-records-and-storage.md [explicit path]",
+        "docs/architecture/ADR-SCOPED-RECORD-OPERATIONS.md:58 -> ../guides/queryable-records-and-storage.md",
+        "docs/README.md:64 -> guides/queryable-records-and-storage.md",
+        "docs/context/CODEX-START-HERE.md:398 -> ../guides/queryable-records-and-storage.md",
+        "docs/research/STORAGE-PACKAGES-HARNESSES-AND-MEMORY-2026-09-04.md:49 -> ../guides/queryable-records-and-storage.md",
+        "docs/research/STORAGE-PACKAGES-HARNESSES-AND-MEMORY-2026-09-04.md:52 -> ../guides/queryable-records-and-storage.md",
+        "docs/research/COGNITIVE-STEP-ARCHITECTURE-AND-STATE-2026-09-12.md:949 -> ../guides/queryable-records-and-storage.md",
+        "docs/research/COGNITIVE-STEP-HARNESS-DIRECTION-2026-09-12.md:512 -> ../guides/queryable-records-and-storage.md"
+      ],
+      "inbound_count": 9,
+      "source_sha256": "7f0f2f23ce095476ef4ea5699df637ddf18e8b0ac59a3045e7f7ca238a509d82",
+      "line_count": 186,
+      "inspected_ranges": [
+        [
+          99,
+          115
+        ],
+        [
+          168,
+          183
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-026",
+      "path": "docs/internal/HANDOFF.md",
+      "action": "retain_pointer_update_only_if_needed",
+      "reason": "Stable pointer correctly defers to current source but includes model-specific bootstrap. Existing CODEX target can remain stable after compaction.",
+      "replacement": "docs/context/CODEX-START-HERE.md",
+      "inbound_links": [
+        "docs/README.md:140 -> internal/HANDOFF.md",
+        "docs/internal/README.md:10 -> HANDOFF.md"
+      ],
+      "inbound_count": 2,
+      "source_sha256": "c24f1dbe370a50bba16275908e541879d183b5d19fe14f07aa12aa7543a85e56",
+      "line_count": 31,
+      "inspected_ranges": [
+        [
+          1,
+          32
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-027",
+      "path": "docs/BUILD-PROMPT.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "An undated imperative Overnight build order says start from nothing, never touch the checkout and never ask a question; it is a separate historical product mandate, not current Loop Engine authority.",
+      "replacement": "docs/prompts/README.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "ee300ef6aac02d6fb55bde398b0ccd595eafe08f1e0cc1d4f63e428f565ccf3f",
+      "line_count": 300,
+      "inspected_ranges": [
+        [
+          1,
+          31
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-028",
+      "path": "docs/BUILD-PROMPT-KIMI.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "Undated independent Overnight constitution claims it is self-contained and needs no other file. Prevent this historical mandate from competing with current repository authority.",
+      "replacement": "docs/prompts/README.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "9a2f0e0498c5a588cf1c915eff93995457c1b7258f097782542e46e4d20e5d8c",
+      "line_count": 1160,
+      "inspected_ranges": [
+        [
+          1,
+          17
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-029",
+      "path": "docs/COMPLETE-PROJECT-CONSTITUTION.md",
+      "action": "retain_synthesis_review_later_no_move",
+      "reason": "Explicitly non-normative synthesis, but authoritative-looking name and whole-system current claims invite drift. Keep canonical Constitution first and review its compatibility claims separately.",
+      "replacement": "docs/architecture/CONSTITUTION.md",
+      "inbound_links": [
+        "docs/architecture/ADAPTIVE-COGNITION-AND-ATOMIC-HARNESS-INSTANCES.md:14 -> ../COMPLETE-PROJECT-CONSTITUTION.md",
+        "docs/context/AGENT-SESSION-DIGEST-AND-RESEARCH-INVENTORY-2026-09-18.md:114 -> docs/COMPLETE-PROJECT-CONSTITUTION.md [explicit path]"
+      ],
+      "inbound_count": 2,
+      "source_sha256": "64b2ebe43952b39f9208671dcb60eeaea2f1d1120bcbb6daafe871a8667ef48e",
+      "line_count": 739,
+      "inspected_ranges": [
+        [
+          1,
+          27
+        ]
+      ],
+      "archive_suitability": "keep active; no move approved"
+    },
+    {
+      "id": "CTX-030",
+      "path": "docs/prompts/AGI-LOOPNODE-NETWORK-SELF-ORIENTING-FOOD-FOR-THOUGHT.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [
+        "docs/verification/CLAUDE-OPUS-5-REVIEW-2026-09-14.md:359 -> ../prompts/AGI-LOOPNODE-NETWORK-SELF-ORIENTING-FOOD-FOR-THOUGHT.md"
+      ],
+      "inbound_count": 1,
+      "source_sha256": "a44a0b3dff2d551af8e749df7de61d8ef99e88d079bce39091715b0c590abff5",
+      "line_count": 528,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-031",
+      "path": "docs/prompts/LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [
+        "docs/verification/EVERYTHING-IS-A-LOOP-AUDIT-2026-09-01.md:8 -> docs/prompts/LOOP-ENGINE-EVERYTHING-IS-A-LOOP-ADVERSARIAL-AUDIT.md [explicit path]"
+      ],
+      "inbound_count": 1,
+      "source_sha256": "034d49af6e3fcd80a2a8ffb0ec389e35d341cd7a9cb27f27c2d3baa96c5b74bb",
+      "line_count": 1132,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-032",
+      "path": "docs/prompts/STRICT-EVERYTHING-IS-A-LOOP-PRIMITIVES.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "ef331d06c71f8d4389b0ec865b41fbfa2a579fab584edf44c730f4fc2f99847f",
+      "line_count": 103,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-033",
+      "path": "docs/prompts/LOOP-ENGINE-GOVERNING-DEVELOPMENT-PROMPT.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "69c34d0df01d914e9f51e2a842d61ade5a3b98e1c2c0ba907b0b81a9b8f23402",
+      "line_count": 503,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-034",
+      "path": "docs/prompts/LOOP-ENGINE-SELF-ORIENTING-CODE-INTELLIGENCE-MASTER-PROMPT.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "1ef6e295ab982dbd845588279217dd5c39050f5ebcfc14dbce339d203933add8",
+      "line_count": 783,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-035",
+      "path": "docs/prompts/LOOP-ENGINE-CLEANUP-AND-INTELLIGENCE-ACCESS-PROMPT.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "993e18379705ac11d3900deecc628f619230ff3a52d4c4687211035e2c8b4759",
+      "line_count": 795,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-036",
+      "path": "docs/prompts/LOOP-ENGINE-ADVERSARIAL-INTELLIGENCE-SEEKING-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "dfd4de6fd7c88917c11be49e7d2e1828135757faf0445f522a99a6a9369737ae",
+      "line_count": 1985,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-037",
+      "path": "docs/prompts/LOOP-ENGINE-PLANE-INTERACTION-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [
+        "docs/prompts/README.md:70 -> LOOP-ENGINE-PLANE-INTERACTION-MANDATE.md"
+      ],
+      "inbound_count": 1,
+      "source_sha256": "adef6c4e9d6d81c534d6c2ca09aa889b6344ec1387dd7f8a13830d6c5469bcd7",
+      "line_count": 1405,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-038",
+      "path": "docs/prompts/LOOP-ENGINE-LOOPNODE-SPEC-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [
+        "docs/prompts/README.md:71 -> LOOP-ENGINE-LOOPNODE-SPEC-MANDATE.md"
+      ],
+      "inbound_count": 1,
+      "source_sha256": "4e78b9d0ba1b9c8495678e06548206820d1460503c4d8f19dba1ffcc12564578",
+      "line_count": 1869,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-039",
+      "path": "docs/prompts/LOOP-ENGINE-DEVELOPMENT-ASSURANCE-PLANE-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "4ff01637b966f3161f392b9be94c06f7b1bb424396ee0adcf7b20b67ff448baa",
+      "line_count": 805,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-040",
+      "path": "docs/prompts/LOOP-ENGINE-DEVELOPMENT-ASSURANCE-INTELLIGENCE-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "ce590ac263189f9d8cf5dd42f8db682b2e76f35fea9de28801eed8f45b01d876",
+      "line_count": 1239,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-041",
+      "path": "docs/prompts/LOOP-ENGINE-DEVELOPMENT-ENGINEERING-ASSURANCE-PLANES-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "2029fc8141ccd605504afc88e233160f3b6ac2962a8b5eadf719da3f9e2f7eb2",
+      "line_count": 900,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-042",
+      "path": "docs/prompts/LOOP-ENGINE-PARALLEL-EXECUTION-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "198700645276a3331576283c5fa7335ce0cc7059ad45223898fb03086f2bf6b3",
+      "line_count": 553,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-043",
+      "path": "docs/prompts/LOOP-ENGINE-FOUNDRY-AND-CAMPAIGN-MANDATE.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [],
+      "inbound_count": 0,
+      "source_sha256": "0e27061f48c4c63336b4602b5b09258b916d895206cc4058590116c4f17f2683",
+      "line_count": 486,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    },
+    {
+      "id": "CTX-044",
+      "path": "docs/prompts/LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md",
+      "action": "propose_recoverable_archive_after_coordination",
+      "reason": "The prompt index explicitly classifies this as design history, not a current entrypoint. Preserve the original mandate; remove it from automatic context routes and coordinate all inbound links before any move.",
+      "replacement": "docs/prompts/LOOP-ENGINE-UNIVERSAL-SOLVER-HANDOFF.md",
+      "inbound_links": [
+        "docs/prompts/README.md:82 -> LOOP-ENGINE-UNIVERSAL-EVOLUTION-PROMPT.md"
+      ],
+      "inbound_count": 1,
+      "source_sha256": "49e1023013937131d5e01c81427742360a74b2db4a200ea007a0725b57191d1d",
+      "line_count": 3851,
+      "inspected_ranges": [
+        [
+          1,
+          16
+        ]
+      ],
+      "archive_suitability": "recoverable archive candidate; coordinate all inbound links"
+    }
+  ],
+  "markdown_files_scanned_for_links": 519
+}

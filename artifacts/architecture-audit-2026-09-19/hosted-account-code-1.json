@@ -1,0 +1,225 @@
+{
+  "record_type": "hosted_website_acceptance/v1",
+  "origin": "https://baltor-pilot.fly.dev",
+  "observed_at": "2026-09-20T16:41:33.299Z",
+  "checks": [
+    {
+      "name": "HTTPS_homepage_is_available",
+      "passed": true
+    },
+    {
+      "name": "live_page_has_four_intelligence_layers",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_leads_with_reusable_solutions",
+      "passed": true
+    },
+    {
+      "name": "live_default_appearance_is_light",
+      "passed": true
+    },
+    {
+      "name": "live_homepage_covers_five_optimization_problems",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_service.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_architecture-story.js",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_service.css",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_architecture.css",
+      "passed": true
+    },
+    {
+      "name": "deployed_bytes_match_tested_source_client-recipes.json",
+      "passed": true
+    },
+    {
+      "name": "how_it_works_separates_client_and_server",
+      "passed": true
+    },
+    {
+      "name": "how_it_works_identifies_external_model_connection",
+      "passed": false
+    },
+    {
+      "name": "live_task_explorer_changes_selected_context",
+      "passed": true
+    },
+    {
+      "name": "live_task_explorer_supports_keyboard_selection",
+      "passed": true
+    },
+    {
+      "name": "guided_setup_uses_deployed_origin",
+      "passed": true
+    },
+    {
+      "name": "anonymous_connection_check_is_not_faked",
+      "passed": true
+    },
+    {
+      "name": "deployed_recipe_keeps_service_secret_as_reference",
+      "passed": true
+    },
+    {
+      "name": "deployed_example_prepares_an_explicit_search",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_1440_/security",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_390_/security",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/how-it-works",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/login",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/admin",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/connect",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/examples",
+      "passed": true
+    },
+    {
+      "name": "live_layout_320_/security",
+      "passed": true
+    },
+    {
+      "name": "deployed_administration_still_requires_credentials",
+      "passed": true
+    },
+    {
+      "name": "no_browser_runtime_errors",
+      "passed": true
+    },
+    {
+      "name": "no_unexpected_third_party_requests",
+      "passed": true
+    }
+  ],
+  "passed": 41,
+  "total": 42,
+  "all_passed": false,
+  "errors": [],
+  "external": [],
+  "navigation": [
+    {
+      "path": "/",
+      "response_start_ms": 111.5,
+      "dom_content_loaded_ms": 424.69999998807907,
+      "load_ms": 426,
+      "transfer_bytes": 16235,
+      "resource_count": 5
+    },
+    {
+      "path": "/connect",
+      "response_start_ms": 285.9000000357628,
+      "dom_content_loaded_ms": 450.69999998807907,
+      "load_ms": 454.4000000357628,
+      "transfer_bytes": 16290,
+      "resource_count": 5
+    },
+    {
+      "path": "/examples",
+      "response_start_ms": 120.69999998807907,
+      "dom_content_loaded_ms": 296.69999998807907,
+      "load_ms": 299.19999998807907,
+      "transfer_bytes": 16149,
+      "resource_count": 5
+    },
+    {
+      "path": "/security",
+      "response_start_ms": 283.80000001192093,
+      "dom_content_loaded_ms": 500.69999998807907,
+      "load_ms": 503.5999999642372,
+      "transfer_bytes": 16226,
+      "resource_count": 5
+    },
+    {
+      "path": "/app",
+      "response_start_ms": 82.89999997615814,
+      "dom_content_loaded_ms": 227.30000001192093,
+      "load_ms": 230.19999998807907,
+      "transfer_bytes": 16061,
+      "resource_count": 5
+    }
+  ],
+  "navigation_limits": "One headless browser navigation per route from the development workstation; not field Core Web Vitals or an availability guarantee",
+  "credentials_used": false,
+  "external_mutations": false
+}

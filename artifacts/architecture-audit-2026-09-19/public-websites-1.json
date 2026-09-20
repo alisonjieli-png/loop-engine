@@ -1,0 +1,4645 @@
+{
+  "record_type": "public_website_observations/v1",
+  "observed_at": "2026-09-20T04:44:16.297Z",
+  "population": [
+    "mem0",
+    "zep",
+    "supermemory",
+    "cognee",
+    "honcho",
+    "memos",
+    "hindsight",
+    "senselab",
+    "letta",
+    "synth",
+    "tellurio",
+    "langwatch",
+    "notdiamond",
+    "typesafe",
+    "prismml",
+    "osmosis",
+    "adaptive",
+    "distyl",
+    "tensorzero",
+    "stripe",
+    "n8n",
+    "retool",
+    "resend",
+    "baltor"
+  ],
+  "observations": [
+    {
+      "id": "mem0",
+      "name": "Mem0",
+      "cohort": "historical_comparison",
+      "requested_url": "https://mem0.ai/",
+      "observed_at": "2026-09-20T04:43:15.589Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://mem0.ai/",
+      "title": "Mem0 - AI Memory Layer for your Agents & Apps | Persistent Context",
+      "h1": [
+        "AI memory that persists across sessions and agents"
+      ],
+      "headings": [
+        "Built for <developers> who want proof, not promises",
+        "How it works",
+        "AI memory that adapts to your domain",
+        "Benchmarking Mem0",
+        "Built for enterprise Designed for control",
+        "Latest from the Mem0 Blog"
+      ],
+      "links": [
+        {
+          "label": "PRICING",
+          "url": "https://mem0.ai/pricing"
+        },
+        {
+          "label": "Star 62,590",
+          "url": "https://github.com/mem0ai/mem0"
+        },
+        {
+          "label": "home_primary_get-started Home Get Started",
+          "url": "https://app.mem0.ai/login"
+        },
+        {
+          "label": "Introducing Gateway",
+          "url": "https://mem0.ai/gateway"
+        },
+        {
+          "label": "Try Mem0 now",
+          "url": "https://app.mem0.ai/login"
+        },
+        {
+          "label": "home_secondary_healtcare Home Explore Mem0 for Healthcare",
+          "url": "https://mem0.ai/usecase/healthcare"
+        },
+        {
+          "label": "home_primary_research Home View Research",
+          "url": "https://mem0.ai/research"
+        },
+        {
+          "label": "home_enterprise_talk-to-team Home Visit Trust Center",
+          "url": "https://trust.mem0.ai/"
+        },
+        {
+          "label": "Coding Agents Explained: What They Are and How They Differ from AI Assistants Sep 18, 2026",
+          "url": "https://mem0.ai/blog/coding-agents-explained-what-they-are-and-how-they-differ-from-ai-assistants"
+        },
+        {
+          "label": "OpenAI Codex vs Claude Code: Which AI Coding Agent Wins in 2026? Sep 17, 2026 · Library",
+          "url": "https://mem0.ai/blog/openai-codex-vs-claude-code-which-ai-coding-agent-wins-in-2026"
+        },
+        {
+          "label": "Mem0 joins Vercel Marketplace Sep 16, 2026 · Product",
+          "url": "https://mem0.ai/blog/mem0-joins-vercel-marketplace"
+        },
+        {
+          "label": "home_primary_get-started home_primary_get-started Get Started",
+          "url": "https://app.mem0.ai/login"
+        },
+        {
+          "label": "home_primary_get-started home_primary_get-started See Pricing",
+          "url": "https://mem0.ai/pricing"
+        },
+        {
+          "label": "HIPAA Ready",
+          "url": "https://trust.mem0.ai/"
+        },
+        {
+          "label": "SOC 2 Type I",
+          "url": "https://trust.mem0.ai/"
+        },
+        {
+          "label": "GDPR Ready",
+          "url": "https://trust.mem0.ai/"
+        },
+        {
+          "label": "Developer Docs",
+          "url": "https://docs.mem0.ai/introduction"
+        },
+        {
+          "label": "API Reference",
+          "url": "https://docs.mem0.ai/api-reference"
+        },
+        {
+          "label": "MCP Integration",
+          "url": "https://docs.mem0.ai/platform/mem0-mcp"
+        },
+        {
+          "label": "OpenMemory",
+          "url": "https://mem0.ai/openmemory"
+        },
+        {
+          "label": "Gateway",
+          "url": "https://mem0.ai/gateway"
+        },
+        {
+          "label": "CLI",
+          "url": "https://mem0.ai/cli"
+        },
+        {
+          "label": "Trust Center",
+          "url": "https://trust.mem0.ai/"
+        },
+        {
+          "label": "Status",
+          "url": "https://status.mem0.ai/"
+        },
+        {
+          "label": "Research",
+          "url": "https://mem0.ai/research"
+        },
+        {
+          "label": "Blog",
+          "url": "https://mem0.ai/blog"
+        },
+        {
+          "label": "Integrations",
+          "url": "https://mem0.ai/integrations"
+        },
+        {
+          "label": "Release notes",
+          "url": "https://github.com/mem0ai/mem0/releases"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/mem0ai/mem0"
+        },
+        {
+          "label": "About Us",
+          "url": "https://mem0.ai/about-us"
+        },
+        {
+          "label": "Contact Us",
+          "url": "https://mem0.ai/contact-us"
+        },
+        {
+          "label": "Careers",
+          "url": "https://mem0.ai/careers"
+        },
+        {
+          "label": "Startup Program",
+          "url": "https://mem0.ai/startup-program"
+        },
+        {
+          "label": "Investors",
+          "url": "https://mem0.ai/investors"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://mem0.ai/pricing"
+        },
+        {
+          "label": "Customer Support",
+          "url": "https://mem0.ai/usecase/customer-support"
+        },
+        {
+          "label": "Healthcare",
+          "url": "https://mem0.ai/usecase/healthcare"
+        },
+        {
+          "label": "Education",
+          "url": "https://mem0.ai/usecase/education"
+        },
+        {
+          "label": "Sales & CRM",
+          "url": "https://mem0.ai/usecase/sales"
+        },
+        {
+          "label": "E-Commerce",
+          "url": "https://mem0.ai/usecase/e-commerce"
+        },
+        {
+          "label": "Privacy Policy",
+          "url": "https://mem0.ai/privacy-policy"
+        },
+        {
+          "label": "Terms of Service",
+          "url": "https://mem0.ai/terms"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(255, 255, 255)",
+      "rendered_body_font": "sans-serif",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/mem0.png",
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "zep",
+      "name": "Zep and Graphiti",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.getzep.com/",
+      "observed_at": "2026-09-20T04:43:15.603Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.getzep.com/",
+      "title": "Agent memory at enterprise scale — Zep",
+      "h1": [
+        "Agent memory, at enterprise scale."
+      ],
+      "headings": [
+        "Memory Built on Context Graphs",
+        "Introducing the Context Lake",
+        "Agent memory infrastructure for the enterprise.",
+        "Memory that understands when things change",
+        "Memory patterns become Observations",
+        "Three Lines of Code",
+        "Governed at the data layer",
+        "More accurate. Faster. Fewer tokens.",
+        "Built-in observability",
+        "Analytics",
+        "Choose your deployment model",
+        "What teams are saying"
+      ],
+      "links": [
+        {
+          "label": "We're hiring! Come build with us →",
+          "url": "https://www.getzep.com/careers/"
+        },
+        {
+          "label": "Zep home",
+          "url": "https://www.getzep.com/"
+        },
+        {
+          "label": "Enterprise",
+          "url": "https://www.getzep.com/enterprise/"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://www.getzep.com/pricing/"
+        },
+        {
+          "label": "GitHub stars",
+          "url": "https://github.com/getzep/graphiti"
+        },
+        {
+          "label": "Log in",
+          "url": "https://app.getzep.com/"
+        },
+        {
+          "label": "Sign up",
+          "url": "https://app.getzep.com/api/auth/register"
+        },
+        {
+          "label": "Start Building",
+          "url": "https://app.getzep.com/api/auth/register"
+        },
+        {
+          "label": "Project",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Users",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Graphs",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Batches",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Playground",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Webhooks",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Account",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Documentation",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "Feedback",
+          "url": "https://www.getzep.com/#"
+        },
+        {
+          "label": "how they change",
+          "url": "https://www.getzep.com/#memory-validity"
+        },
+        {
+          "label": "Konig",
+          "url": "https://www.getzep.com/platform/agent-knowledge-graph/"
+        },
+        {
+          "label": "LEARN ABOUT THE CONTEXT LAKE",
+          "url": "https://www.getzep.com/platform/context-lake/"
+        },
+        {
+          "label": "LEARN MORE",
+          "url": "https://www.getzep.com/#governance"
+        },
+        {
+          "label": "Read the report",
+          "url": "https://www.getzep.com/analysts/sp-market-intelligence-report/"
+        },
+        {
+          "label": "S&P Global Market Intelligence Zep tackles agent memory limitations through its temporal c",
+          "url": "https://www.getzep.com/analysts/sp-market-intelligence-report/"
+        },
+        {
+          "label": "Learn about agent memory →",
+          "url": "https://www.getzep.com/product/agent-memory/"
+        },
+        {
+          "label": "Read the Quickstart →",
+          "url": "https://help.getzep.com/v3/quick-start-guide"
+        },
+        {
+          "label": "Zep leads on all three.",
+          "url": "https://www.getzep.com/research/"
+        },
+        {
+          "label": "See the methodology and full results →",
+          "url": "https://www.getzep.com/research/"
+        },
+        {
+          "label": "Learn more.",
+          "url": "https://www.getzep.com/enterprise/"
+        },
+        {
+          "label": "Security & compliance →",
+          "url": "https://trust.getzep.com/"
+        },
+        {
+          "label": "Ken Collins on LinkedIn",
+          "url": "https://www.linkedin.com/in/metaskills/"
+        },
+        {
+          "label": "Lior Sinclair on LinkedIn",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7287958207971434496"
+        },
+        {
+          "label": "Mark Losey on LinkedIn",
+          "url": "https://www.linkedin.com/in/markalosey/"
+        },
+        {
+          "label": "Vijay Morampudi on LinkedIn",
+          "url": "https://www.linkedin.com/in/vijaymorampudi/?originalSubdomain=in"
+        },
+        {
+          "label": "View all posts →",
+          "url": "https://blog.getzep.com/"
+        },
+        {
+          "label": "Follow on X",
+          "url": "https://x.com/zep_ai"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/getzep"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/company/zep-ai/"
+        },
+        {
+          "label": "YouTube",
+          "url": "https://www.youtube.com/@zepai_videos"
+        },
+        {
+          "label": "Agent Memory",
+          "url": "https://www.getzep.com/product/agent-memory/"
+        },
+        {
+          "label": "Context Lake",
+          "url": "https://www.getzep.com/platform/context-lake/"
+        },
+        {
+          "label": "Graphiti",
+          "url": "https://www.getzep.com/platform/graphiti/"
+        },
+        {
+          "label": "Documentation",
+          "url": "https://help.getzep.com/"
+        },
+        {
+          "label": "API Reference",
+          "url": "https://help.getzep.com/sdk-reference"
+        },
+        {
+          "label": "Blog",
+          "url": "https://blog.getzep.com/"
+        },
+        {
+          "label": "Research",
+          "url": "https://www.getzep.com/research/"
+        },
+        {
+          "label": "S&P Global Market Intelligence coverage",
+          "url": "https://www.getzep.com/research/sp-global-market-intelligence-zep-coverage/"
+        },
+        {
+          "label": "Trust Center",
+          "url": "https://trust.getzep.com/"
+        },
+        {
+          "label": "Context Engineering",
+          "url": "https://www.getzep.com/solutions/context-engineering/"
+        },
+        {
+          "label": "AI Agents Guides",
+          "url": "https://www.getzep.com/ai-agents/"
+        },
+        {
+          "label": "Buy vs. Build: Agent Memory",
+          "url": "https://www.getzep.com/resources/buy-vs-build-agent-memory/"
+        },
+        {
+          "label": "Overview",
+          "url": "https://www.getzep.com/enterprise/"
+        },
+        {
+          "label": "Deployment",
+          "url": "https://www.getzep.com/enterprise/#deployment"
+        },
+        {
+          "label": "Security & compliance",
+          "url": "https://trust.getzep.com/"
+        },
+        {
+          "label": "Mem0 Alternative",
+          "url": "https://www.getzep.com/mem0-alternative/"
+        },
+        {
+          "label": "Letta Alternative",
+          "url": "https://www.getzep.com/letta-alternative/"
+        },
+        {
+          "label": "AWS AgentCore Alternative",
+          "url": "https://www.getzep.com/aws-agentcore-memory-alternative/"
+        },
+        {
+          "label": "Vertex AI Memory Bank Alternative",
+          "url": "https://www.getzep.com/vertex-ai-memory-bank-alternative/"
+        },
+        {
+          "label": "Cognee Alternative",
+          "url": "https://www.getzep.com/cognee-alternative/"
+        },
+        {
+          "label": "Supermemory Alternative",
+          "url": "https://www.getzep.com/supermemory-alternative/"
+        },
+        {
+          "label": "About",
+          "url": "https://www.getzep.com/about/"
+        },
+        {
+          "label": "Careers",
+          "url": "https://www.getzep.com/careers/"
+        },
+        {
+          "label": "Privacy policy",
+          "url": "https://www.getzep.com/legal/privacy/"
+        },
+        {
+          "label": "Terms of service",
+          "url": "https://www.getzep.com/legal/terms/"
+        },
+        {
+          "label": "Website terms",
+          "url": "https://www.getzep.com/legal/website-terms/"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(250, 250, 247)",
+      "rendered_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/zep.png",
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "supermemory",
+      "name": "Supermemory",
+      "cohort": "historical_comparison",
+      "requested_url": "https://supermemory.ai/",
+      "observed_at": "2026-09-20T04:43:20.051Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://supermemory.ai/",
+      "title": "supermemory — Memory and continual learning for agents",
+      "h1": [
+        "supermemory is building the default engine for memory and continual learning for agents."
+      ],
+      "headings": [
+        "What we do",
+        "IN PRODUCTION",
+        "supermemory runs everywhere, even in air-gapped environments.",
+        "Running memory in production?",
+        "Writing",
+        "Careers"
+      ],
+      "links": [
+        {
+          "label": "Skip to content",
+          "url": "https://supermemory.ai/#content"
+        },
+        {
+          "label": "supermemory, home",
+          "url": "https://supermemory.ai/"
+        },
+        {
+          "label": "Home",
+          "url": "https://supermemory.ai/"
+        },
+        {
+          "label": "Product",
+          "url": "https://supermemory.ai/product"
+        },
+        {
+          "label": "Blog",
+          "url": "https://supermemory.ai/blog"
+        },
+        {
+          "label": "Changelog",
+          "url": "https://supermemory.ai/changelog"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://supermemory.ai/pricing"
+        },
+        {
+          "label": "Docs",
+          "url": "https://supermemory.ai/docs"
+        },
+        {
+          "label": "Console",
+          "url": "https://console.supermemory.ai/"
+        },
+        {
+          "label": "Mission",
+          "url": "https://supermemory.ai/#memo"
+        },
+        {
+          "label": "What we do",
+          "url": "https://supermemory.ai/#what"
+        },
+        {
+          "label": "In production",
+          "url": "https://supermemory.ai/#production"
+        },
+        {
+          "label": "Writing",
+          "url": "https://supermemory.ai/#writing"
+        },
+        {
+          "label": "Careers",
+          "url": "https://supermemory.ai/#careers"
+        },
+        {
+          "label": "Introducing supermemory Read the post ↗",
+          "url": "https://x.com/supermemory/status/2097035274094272935"
+        },
+        {
+          "label": "BUILD WITH SUPERMEMORY",
+          "url": "https://console.supermemory.ai/"
+        },
+        {
+          "label": "TALK TO SALES",
+          "url": "https://cal.com/supermemory/meet?overlayCalendar=true"
+        },
+        {
+          "label": "ChatGPT",
+          "url": "https://supermemory.ai/docs/supermemory-mcp/chatgpt-web"
+        },
+        {
+          "label": "Claude",
+          "url": "https://supermemory.ai/docs/supermemory-mcp/claude-desktop"
+        },
+        {
+          "label": "Cursor",
+          "url": "https://supermemory.ai/docs/integrations/cursor"
+        },
+        {
+          "label": "Hermes",
+          "url": "https://supermemory.ai/docs/integrations/hermes"
+        },
+        {
+          "label": "MCP",
+          "url": "https://supermemory.ai/docs/supermemory-mcp/mcp"
+        },
+        {
+          "label": "in-context continuous learning",
+          "url": "https://supermemory.ai/#q-hassabis"
+        },
+        {
+          "label": "multi-model",
+          "url": "https://openrouter.ai/rankings"
+        },
+        {
+          "label": "Intelligence is no longer a constraint.",
+          "url": "https://arcprize.org/leaderboard"
+        },
+        {
+          "label": "dense, interconnected, growing learnings",
+          "url": "https://supermemory.ai/docs/concepts/graph-memory"
+        },
+        {
+          "label": "Claude Code",
+          "url": "https://supermemory.ai/docs/integrations/claude-code"
+        },
+        {
+          "label": "Read more about the specifics →",
+          "url": "https://supermemory.ai/product"
+        },
+        {
+          "label": "Read the paper ↗",
+          "url": "https://arxiv.org/abs/2602.08316"
+        },
+        {
+          "label": "See the research ↗",
+          "url": "https://supermemory.ai/research"
+        },
+        {
+          "label": "The research runs ↗",
+          "url": "https://smfs.ai/research/runs"
+        },
+        {
+          "label": "Founder, Chatarmin · on X↗",
+          "url": "https://x.com/saasjesus/status/2024410743135694991"
+        },
+        {
+          "label": "Talk to us for your deployment requirements ↗",
+          "url": "https://cal.com/supermemory/meet?overlayCalendar=true"
+        },
+        {
+          "label": "Trust center ↗",
+          "url": "https://trust.supermemory.com/"
+        },
+        {
+          "label": "Self-hosting in the docs ↗",
+          "url": "https://supermemory.ai/docs/self-hosting/overview"
+        },
+        {
+          "label": "01 An update to supermemory",
+          "url": "https://supermemory.ai/blog/an-update-to-supermemory"
+        },
+        {
+          "label": "02 Scaling Conversations: How Adapta Grew Usage Without Losing Context",
+          "url": "https://supermemory.ai/blog/adapta-scaling-conversations"
+        },
+        {
+          "label": "03 How Chatarmin Ditched RAG and Went Memory-Only with Supermemory",
+          "url": "https://supermemory.ai/blog/chatarmin-memory-only"
+        },
+        {
+          "label": "Read the blog ↗",
+          "url": "https://supermemory.ai/blog"
+        },
+        {
+          "label": "See open roles ↗",
+          "url": "https://binary.so/UeNYHHE"
+        },
+        {
+          "label": "Research",
+          "url": "https://supermemory.ai/research"
+        },
+        {
+          "label": "Careers",
+          "url": "https://binary.so/UeNYHHE"
+        },
+        {
+          "label": "Talk to sales",
+          "url": "https://cal.com/supermemory/meet?overlayCalendar=true"
+        },
+        {
+          "label": "X",
+          "url": "https://x.com/supermemory"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/supermemoryai"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://linkedin.com/company/supermemory"
+        },
+        {
+          "label": "Reddit",
+          "url": "https://reddit.com/r/supermemory"
+        },
+        {
+          "label": "Discord",
+          "url": "https://supermemory.link/discord"
+        },
+        {
+          "label": "Privacy",
+          "url": "https://supermemory.ai/privacy"
+        },
+        {
+          "label": "Terms",
+          "url": "https://supermemory.ai/terms"
+        },
+        {
+          "label": "Responsible disclosure",
+          "url": "https://supermemory.ai/responsible-disclosure"
+        },
+        {
+          "label": "Status",
+          "url": "https://status.supermemory.ai/"
+        },
+        {
+          "label": "Back to top ↑",
+          "url": "https://supermemory.ai/#top"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(255, 255, 255)",
+      "rendered_body_font": "Geist, \"Geist Fallback\", ui-sans-serif, system-ui, sans-serif",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/supermemory.png",
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "cognee",
+      "name": "Cognee",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.cognee.ai/",
+      "observed_at": "2026-09-20T04:43:20.059Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.cognee.ai/",
+      "title": "Cognee - Open-Source Agent Memory Platform",
+      "h1": [
+        "Open Source Memory Platform for Agents"
+      ],
+      "headings": [
+        "Agents get lost in your complex systems.",
+        "Memory that improves",
+        "From an AI chatbot to agentic research memory at Bayer.",
+        "Your company builds a shared company brain for agents.",
+        "Stay in the loop",
+        "Any agent. One memory API.",
+        "Don't take our word for it.",
+        "Give your agents memory in 60 seconds ."
+      ],
+      "links": [
+        {
+          "label": "Cognee home",
+          "url": "https://www.cognee.ai/"
+        },
+        {
+          "label": "Product",
+          "url": "https://www.cognee.ai/product/cognee-sdk"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.cognee.ai/"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://www.cognee.ai/pricing"
+        },
+        {
+          "label": "Star 30.8k",
+          "url": "https://github.com/topoteretes/cognee"
+        },
+        {
+          "label": "Log in",
+          "url": "https://platform.cognee.ai/sign-in"
+        },
+        {
+          "label": "Sign up",
+          "url": "https://platform.cognee.ai/sign-up"
+        },
+        {
+          "label": "NEW Cognee now runs free on local models",
+          "url": "https://www.cognee.ai/memory-on-device"
+        },
+        {
+          "label": "Building a company brain? Start here",
+          "url": "https://www.cognee.ai/company-brain"
+        },
+        {
+          "label": "Start building",
+          "url": "https://platform.cognee.ai/"
+        },
+        {
+          "label": "Claude Code ·",
+          "url": "https://docs.cognee.ai/cognee-mcp/integrations/claude-code"
+        },
+        {
+          "label": "Codex ·",
+          "url": "https://docs.cognee.ai/integrations/openai-agents-sdk-integration"
+        },
+        {
+          "label": "Skill ·",
+          "url": "https://docs.cognee.ai/getting-started/llm-quickstart-skill"
+        },
+        {
+          "label": "MCP ·",
+          "url": "https://docs.cognee.ai/cognee-mcp"
+        },
+        {
+          "label": "OpenClaw ·",
+          "url": "https://docs.cognee.ai/integrations/openclaw-integration"
+        },
+        {
+          "label": "Hermes",
+          "url": "https://docs.cognee.ai/integrations/hermes-agent-integration"
+        },
+        {
+          "label": "30.8k GitHub Stars",
+          "url": "https://github.com/topoteretes/cognee"
+        },
+        {
+          "label": "PART OF BERKELEY XCELERATOR",
+          "url": "https://rdi.berkeley.edu/xcelerator"
+        },
+        {
+          "label": "01 FOR TEAMS CONNECTED Knowledge is scattered The answer is spread across a doc, a ticket,",
+          "url": "https://www.cognee.ai/company-brain"
+        },
+        {
+          "label": "02 FOR AGENT BUILDERS REMEMBERED Agent experience is discarded Your agent is solving a tas",
+          "url": "https://www.cognee.ai/product/cognee-sdk"
+        },
+        {
+          "label": "03 FOR ENTERPRISES FOLLOWED Domain rules are guessed Your organization runs on rules no mo",
+          "url": "https://www.cognee.ai/product/enterprise#auto-ontologies"
+        },
+        {
+          "label": "Read the case study",
+          "url": "https://www.cognee.ai/case-study/bayer"
+        },
+        {
+          "label": "Join",
+          "url": "https://www.cognee.ai/community"
+        },
+        {
+          "label": "@svpino “Knowledge graphs for representing information are unbeatable. I used cognee.”",
+          "url": "https://x.com/i/status/1971594493259599897"
+        },
+        {
+          "label": "@iruletheworldmo “Bookmark this immediately. cognee just solved the biggest problem with A",
+          "url": "https://x.com/i/status/2032964133306446114"
+        },
+        {
+          "label": "@akshay_pachaar “Build agents that never forget. Cognee is an open-source tool built for e",
+          "url": "https://x.com/i/status/2013962148955992237"
+        },
+        {
+          "label": "@SaadatNajafova “Most AI agents today have the memory of a goldfish. That's why cognee is ",
+          "url": "https://x.com/i/status/2072208036480106952"
+        },
+        {
+          "label": "@felores “Been using cognee for over 7 months now after migrating from Graphiti. Great pro",
+          "url": "https://x.com/i/status/2070605643392729470"
+        },
+        {
+          "label": "@_Matt_Bell “Almost 24 hours since I added cognee across Codex — I'm noticing faster agent",
+          "url": "https://x.com/i/status/2072402797874782233"
+        },
+        {
+          "label": "5 min LOCAL Give your agent durable memory Install Cognee and connect it to Claude Code, C",
+          "url": "https://docs.cognee.ai/quickstart"
+        },
+        {
+          "label": "1 day CONNECT Connect the data your agents should know We connect your GitHub org, Slack, ",
+          "url": "https://docs.cognee.ai/integrations"
+        },
+        {
+          "label": "1 week PRODUCTION Ship agents that understand your domain We deploy Cognee BYOC — in your ",
+          "url": "https://www.cognee.ai/cognee-knowunity-connects-learners"
+        },
+        {
+          "label": "CUSTOMISE Custom ontologies",
+          "url": "https://docs.cognee.ai/core-concepts/further-concepts/ontologies"
+        },
+        {
+          "label": "CUSTOMISE Custom data model",
+          "url": "https://docs.cognee.ai/guides/custom-data-models"
+        },
+        {
+          "label": "GOVERN Permissions control",
+          "url": "https://docs.cognee.ai/setup-configuration/permissions"
+        },
+        {
+          "label": "MCP Server",
+          "url": "https://docs.cognee.ai/cognee-mcp"
+        },
+        {
+          "label": "Codex",
+          "url": "https://docs.cognee.ai/integrations/openai-agents-sdk-integration"
+        },
+        {
+          "label": "Claude Code",
+          "url": "https://docs.cognee.ai/cognee-mcp/integrations/claude-code"
+        },
+        {
+          "label": "Hermes Agent",
+          "url": "https://docs.cognee.ai/integrations"
+        },
+        {
+          "label": "LangGraph",
+          "url": "https://docs.cognee.ai/integrations/langgraph-integration"
+        },
+        {
+          "label": "Cursor",
+          "url": "https://docs.cognee.ai/cognee-mcp/integrations/cursor"
+        },
+        {
+          "label": "Skill",
+          "url": "https://docs.cognee.ai/getting-started/llm-quickstart-skill"
+        },
+        {
+          "label": "OpenClaw",
+          "url": "https://docs.cognee.ai/integrations/openclaw-integration"
+        },
+        {
+          "label": "CrewAI",
+          "url": "https://docs.cognee.ai/integrations"
+        },
+        {
+          "label": "+ build your own",
+          "url": "https://github.com/topoteretes/cognee-community"
+        },
+        {
+          "label": "Ask ChatGPT ↗",
+          "url": "https://chatgpt.com/?q=I%27m%20evaluating%20cognee%20(cognee.ai)%2C%20the%20open-source%20AI%20memory%20engine%20for%20agents.%20What%20does%20it%20do%2C%20how%20does%20it%20compare%20to%20Mem0%2C%20Zep%20and%20Letta%2C%20what%20are%20its%20strengths%20and%20weaknesses%2C%20and%20who%20is%20it%20best%20for%3F&hints=search"
+        },
+        {
+          "label": "Ask Perplexity ↗",
+          "url": "https://www.perplexity.ai/search?q=I%27m%20evaluating%20cognee%20(cognee.ai)%2C%20the%20open-source%20AI%20memory%20engine%20for%20agents.%20What%20does%20it%20do%2C%20how%20does%20it%20compare%20to%20Mem0%2C%20Zep%20and%20Letta%2C%20what%20are%20its%20strengths%20and%20weaknesses%2C%20and%20who%20is%20it%20best%20for%3F"
+        },
+        {
+          "label": "Ask Claude ↗",
+          "url": "https://claude.ai/new?q=I%27m%20evaluating%20cognee%20(cognee.ai)%2C%20the%20open-source%20AI%20memory%20engine%20for%20agents.%20What%20does%20it%20do%2C%20how%20does%20it%20compare%20to%20Mem0%2C%20Zep%20and%20Letta%2C%20what%20are%20its%20strengths%20and%20weaknesses%2C%20and%20who%20is%20it%20best%20for%3F"
+        },
+        {
+          "label": "Cognee on Discord",
+          "url": "https://discord.gg/m63hxKsp4p"
+        },
+        {
+          "label": "Cognee on X",
+          "url": "https://x.com/cognee_"
+        },
+        {
+          "label": "Cognee on LinkedIn",
+          "url": "https://www.linkedin.com/company/cognee-ai"
+        },
+        {
+          "label": "Cognee on TikTok",
+          "url": "https://www.tiktok.com/@cognee.ai"
+        },
+        {
+          "label": "Cognee on Reddit",
+          "url": "https://www.reddit.com/r/AIMemory/"
+        },
+        {
+          "label": "Cognee on YouTube",
+          "url": "https://www.youtube.com/@cognee-ef/featured"
+        },
+        {
+          "label": "Cognee on GitHub",
+          "url": "https://github.com/topoteretes/cognee"
+        },
+        {
+          "label": "About Us",
+          "url": "https://www.cognee.ai/about-us"
+        },
+        {
+          "label": "Partners",
+          "url": "https://www.cognee.ai/consulting"
+        },
+        {
+          "label": "Cost Calculator",
+          "url": "https://www.cognee.ai/cost-calculator"
+        },
+        {
+          "label": "Academy",
+          "url": "https://www.cognee.ai/academy"
+        },
+        {
+          "label": "FAQ",
+          "url": "https://www.cognee.ai/faq"
+        },
+        {
+          "label": "Company Brain",
+          "url": "https://www.cognee.ai/company-brain"
+        },
+        {
+          "label": "Cloud",
+          "url": "https://www.cognee.ai/product/cloud"
+        },
+        {
+          "label": "Cognee SDK",
+          "url": "https://www.cognee.ai/product/cognee-sdk"
+        },
+        {
+          "label": "Enterprise",
+          "url": "https://www.cognee.ai/product/enterprise"
+        },
+        {
+          "label": "Docs ↗",
+          "url": "https://docs.cognee.ai/"
+        },
+        {
+          "label": "Benchmarks",
+          "url": "https://www.cognee.ai/research-and-evaluation-results"
+        },
+        {
+          "label": "Case Studies",
+          "url": "https://www.cognee.ai/case-study"
+        },
+        {
+          "label": "Blog",
+          "url": "https://www.cognee.ai/blog"
+        },
+        {
+          "label": "Newsroom",
+          "url": "https://www.cognee.ai/newsroom"
+        },
+        {
+          "label": "Brand Resources",
+          "url": "https://www.cognee.ai/brand-resources"
+        },
+        {
+          "label": "Events",
+          "url": "https://www.cognee.ai/events"
+        },
+        {
+          "label": "Community",
+          "url": "https://www.cognee.ai/community"
+        },
+        {
+          "label": "Creator Program",
+          "url": "https://www.cognee.ai/creators"
+        },
+        {
+          "label": "Careers",
+          "url": "https://www.cognee.ai/careers"
+        },
+        {
+          "label": "Privacy Policy ↗",
+          "url": "https://www.iubenda.com/privacy-policy/30110453"
+        },
+        {
+          "label": "Cookie Policy ↗",
+          "url": "https://www.iubenda.com/privacy-policy/30110453/cookie-policy"
+        },
+        {
+          "label": "Terms and Conditions (US)",
+          "url": "https://www.cognee.ai/gtc-us"
+        },
+        {
+          "label": "Terms and Conditions (EU)",
+          "url": "https://www.cognee.ai/gtc-eu"
+        },
+        {
+          "label": "Impressum",
+          "url": "https://www.cognee.ai/impressum"
+        },
+        {
+          "label": "Cognee vs Zep",
+          "url": "https://www.cognee.ai/cognee-vs-zep"
+        },
+        {
+          "label": "Cognee vs mem0",
+          "url": "https://www.cognee.ai/cognee-vs-mem0"
+        },
+        {
+          "label": "Cognee vs Supermemory",
+          "url": "https://www.cognee.ai/cognee-vs-supermemory"
+        },
+        {
+          "label": "Migrating from Mem0",
+          "url": "https://www.cognee.ai/migrating-from-mem0"
+        },
+        {
+          "label": "Migrating from Zep",
+          "url": "https://www.cognee.ai/migrating-from-zep"
+        },
+        {
+          "label": "Migrating from Graphiti",
+          "url": "https://www.cognee.ai/migrating-from-graphiti"
+        },
+        {
+          "label": "Migrating from Letta",
+          "url": "https://www.cognee.ai/migrating-from-letta"
+        },
+        {
+          "label": "heyData EU AI and GDPR compliance seals",
+          "url": "https://heydata.eu/"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(0, 0, 0)",
+      "rendered_body_font": "twkLausanne, \"twkLausanne Fallback\", sans-serif",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "honcho",
+      "name": "Honcho (Plastic Labs)",
+      "cohort": "historical_comparison",
+      "requested_url": "https://honcho.dev/",
+      "observed_at": "2026-09-20T04:43:21.241Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://honcho.dev/",
+      "title": "Honcho",
+      "h1": [
+        "MEMORY THAT REASONS"
+      ],
+      "headings": [
+        "Beyond Store & Retrieve",
+        "Statefulness, Solved",
+        "Advanced Reasoning On-Demand",
+        "Transcend Memory",
+        "Stateful Production",
+        "Transparent. Predictable.",
+        "Optimize Context. Ship State."
+      ],
+      "links": [
+        {
+          "label": "DOCS",
+          "url": "https://honcho.dev/docs/"
+        },
+        {
+          "label": "PRICING",
+          "url": "https://honcho.dev/#pricing"
+        },
+        {
+          "label": "BLOG",
+          "url": "https://blog.plasticlabs.ai/"
+        },
+        {
+          "label": "EVALS",
+          "url": "https://evals.honcho.dev/"
+        },
+        {
+          "label": "> LAUNCH APP",
+          "url": "https://app.honcho.dev/"
+        },
+        {
+          "label": "7,262",
+          "url": "https://github.com/plastic-labs/honcho"
+        },
+        {
+          "label": "View Results",
+          "url": "https://evals.honcho.dev/"
+        },
+        {
+          "label": "START BUILDING",
+          "url": "https://app.honcho.dev/"
+        },
+        {
+          "label": "VIBECODING SETUP",
+          "url": "https://honcho.dev/docs/v3/documentation/introduction/vibecoding"
+        },
+        {
+          "label": "HONCHO CLI you@honcho-cli ~ % honc",
+          "url": "https://honcho.dev/cli"
+        },
+        {
+          "label": "MODEL CARD",
+          "url": "https://plasticlabs.ai/neuromancer"
+        },
+        {
+          "label": "VERIFY ON GITHUB",
+          "url": "https://github.com/plastic-labs/honcho-benchmarks"
+        },
+        {
+          "label": "VIEW EVALS",
+          "url": "https://evals.honcho.dev/"
+        },
+        {
+          "label": "Explore the docs",
+          "url": "https://honcho.dev/docs/v3/documentation/features/get-context"
+        },
+        {
+          "label": "APPLY NOW",
+          "url": "https://plasticlabs.typeform.com/startups"
+        },
+        {
+          "label": "CONTACT FOUNDERS",
+          "url": "https://cal.com/team/plasticlabs/enterprise"
+        },
+        {
+          "label": "BOOK A CALL",
+          "url": "https://cal.com/team/plasticlabs/inbound"
+        },
+        {
+          "label": "Quickstart — Get started in 5 minutes",
+          "url": "https://honcho.dev/docs/v3/documentation/introduction/quickstart"
+        },
+        {
+          "label": "Honcho Chat — Experience your own memory",
+          "url": "https://honcho.chat/"
+        },
+        {
+          "label": "Documentation — Full SDK docs and guides",
+          "url": "https://honcho.dev/docs"
+        },
+        {
+          "label": "Discord — Join the community",
+          "url": "https://discord.gg/honcho"
+        },
+        {
+          "label": "GitHub — Open source core",
+          "url": "https://github.com/plastic-labs/honcho"
+        },
+        {
+          "label": "Made by Plastic Labs, © 2026",
+          "url": "https://plasticlabs.ai/"
+        },
+        {
+          "label": "Terms of Service",
+          "url": "https://app.honcho.dev/tos"
+        },
+        {
+          "label": "Privacy Policy",
+          "url": "https://app.honcho.dev/privacy"
+        },
+        {
+          "label": "Docs",
+          "url": "https://honcho.dev/docs"
+        },
+        {
+          "label": "App",
+          "url": "https://app.honcho.dev/"
+        },
+        {
+          "label": "Careers",
+          "url": "https://plasticlabs.ai/blog/careers/Working-at-Plastic"
+        },
+        {
+          "label": "Brand",
+          "url": "https://honcho.dev/brand/honcho-brand-kit.zip"
+        },
+        {
+          "label": "Discord",
+          "url": "https://discord.gg/honcho"
+        },
+        {
+          "label": "Hugging Face",
+          "url": "https://huggingface.co/plastic-labs"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/plastic-labs/honcho"
+        },
+        {
+          "label": "X (Twitter)",
+          "url": "https://x.com/honchodotdev"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(26, 26, 26)",
+      "rendered_body_font": "departureMono, \"departureMono Fallback\", ui-monospace, SFMono-Regular, Monaco, Consolas, \"Liberation Mono\", Menlo, monospace, monospace",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "memos",
+      "name": "MemOS (MemTensor)",
+      "cohort": "historical_comparison",
+      "requested_url": "https://memos.openmem.net/",
+      "observed_at": "2026-09-20T04:43:21.256Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://memos.openmem.net/",
+      "title": "INTELLIGENCE BEGINS WITH MEMORY",
+      "h1": [
+        "INTELLIGENCE BEGINS WITH MEMORY MemOS Gives AI Continuous Memory & Growth"
+      ],
+      "headings": [
+        "Quick Start",
+        "Not only can it remember, but it’s fast",
+        "SOTA Performance of MemOS",
+        "Related Product Ecosystem",
+        "Partner Developers & Organizations",
+        "Enterprise-grade service · Flexible, secure, and scalable",
+        "Unlock Custom Intelligence with MemOS",
+        "MemOS, suitable for all intelligent application ecosystems",
+        "Start Easy, Build with Less",
+        "Join the OpenMem Open Source Community"
+      ],
+      "links": [
+        {
+          "label": "Developer",
+          "url": "https://memos.openmem.net/"
+        },
+        {
+          "label": "Memmy",
+          "url": "https://memmy.bot/"
+        },
+        {
+          "label": "MCP",
+          "url": "https://memos-docs.openmem.net/mcp_agent/mcp/guide"
+        },
+        {
+          "label": "Github",
+          "url": "https://github.com/MemTensor/MemOS"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://memos.openmem.net/pricing"
+        },
+        {
+          "label": "Docs",
+          "url": "https://memos-docs.openmem.net/"
+        },
+        {
+          "label": "ClawForce Enterprise Enterprise Agent platform Skill engine captures team knowledge with e",
+          "url": "https://clawforce.memtensor.cn/#home"
+        },
+        {
+          "label": "Memmy Personal Every AI remembers the same you Your personal memory hub and a dedicated Ag",
+          "url": "https://memmy.bot/"
+        },
+        {
+          "label": "Agent Cloud Plugin Inject cloud persistent memory into Agent,reduce Token usage",
+          "url": "https://memos-docs.openmem.net/cn/openclaw/guide"
+        },
+        {
+          "label": "Agent Local Plugin Persistent memory plus skill evolution,lower Token · fully local",
+          "url": "https://memos-claw.openmem.net/"
+        },
+        {
+          "label": "MemOS Cloud Ready-to-use cloud memory service 5-minute integration, millisecond response",
+          "url": "https://memos.openmem.net/cn/"
+        },
+        {
+          "label": "MemOS Lite Lightweight memory service for local-first scenarios Zero cloud dependency, ful",
+          "url": "https://github.com/MemTensor/MemOS/tree/main/apps/memos-local-openclaw"
+        },
+        {
+          "label": "MemOS Official Open Source Memory management operating system for Al applications Memory A",
+          "url": "https://github.com/MemTensor/MemOS"
+        },
+        {
+          "label": "MemOS Cloud ClawForce",
+          "url": "https://memos.openmem.net/cn/"
+        },
+        {
+          "label": "MemOS Lite Open Source MindDock",
+          "url": "https://github.com/MemTensor/MemOS/tree/main/apps/memos-local-openclaw"
+        },
+        {
+          "label": "MemOS Official Open Source",
+          "url": "https://github.com/MemTensor/MemOS"
+        },
+        {
+          "label": "Agent Cloud Plugin",
+          "url": "https://memos-docs.openmem.net/cn/openclaw/guide"
+        },
+        {
+          "label": "Agent Local Plugin",
+          "url": "https://memos-claw.openmem.net/"
+        },
+        {
+          "label": "Memtensor",
+          "url": "https://www.memtensor.com.cn/"
+        },
+        {
+          "label": "OpenMem",
+          "url": "https://openmem.net/"
+        },
+        {
+          "label": "Job openings",
+          "url": "https://www.memtensor.com.cn/h-col-250.html"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(2, 2, 11)",
+      "rendered_body_font": "\"PingFang SC\", -apple-system, BlinkMacSystemFont, sans-serif",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "hindsight",
+      "name": "Hindsight (Vectorize)",
+      "cohort": "historical_comparison",
+      "requested_url": "https://hindsight.vectorize.io/",
+      "observed_at": "2026-09-20T04:43:31.164Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://hindsight.vectorize.io/",
+      "title": "Hindsight",
+      "h1": [
+        "Overview"
+      ],
+      "headings": [
+        "Why Hindsight?​",
+        "What Hindsight Does​",
+        "Key Components​",
+        "Clients & Languages​",
+        "Integrations​",
+        "Next Steps​"
+      ],
+      "links": [
+        {
+          "label": "Skip to main content",
+          "url": "https://hindsight.vectorize.io/#__docusaurus_skipToContent_fallback"
+        },
+        {
+          "label": "Read the paper →",
+          "url": "https://arxiv.org/abs/2512.12818"
+        },
+        {
+          "label": "Docs",
+          "url": "https://hindsight.vectorize.io/"
+        },
+        {
+          "label": "0.10",
+          "url": "https://hindsight.vectorize.io/"
+        },
+        {
+          "label": "Integrations",
+          "url": "https://hindsight.vectorize.io/integrations"
+        },
+        {
+          "label": "Changelog",
+          "url": "https://hindsight.vectorize.io/changelog"
+        },
+        {
+          "label": "Academy",
+          "url": "https://learn.hindsight.vectorize.io/"
+        },
+        {
+          "label": "Resources",
+          "url": "https://hindsight.vectorize.io/#"
+        },
+        {
+          "label": "Sign up",
+          "url": "https://ui.hindsight.vectorize.io/signup"
+        },
+        {
+          "label": "Overview",
+          "url": "https://hindsight.vectorize.io/"
+        },
+        {
+          "label": "Retain",
+          "url": "https://hindsight.vectorize.io/developer/retain"
+        },
+        {
+          "label": "Recall",
+          "url": "https://hindsight.vectorize.io/developer/retrieval"
+        },
+        {
+          "label": "Reflect",
+          "url": "https://hindsight.vectorize.io/developer/reflect"
+        },
+        {
+          "label": "Observations",
+          "url": "https://hindsight.vectorize.io/developer/observations"
+        },
+        {
+          "label": "Mental Models",
+          "url": "https://hindsight.vectorize.io/developer/mental-models"
+        },
+        {
+          "label": "Knowledge Pages",
+          "url": "https://hindsight.vectorize.io/developer/knowledge-pages"
+        },
+        {
+          "label": "Multilingual",
+          "url": "https://hindsight.vectorize.io/developer/multilingual"
+        },
+        {
+          "label": "Performance",
+          "url": "https://hindsight.vectorize.io/developer/performance"
+        },
+        {
+          "label": "Storage",
+          "url": "https://hindsight.vectorize.io/developer/storage"
+        },
+        {
+          "label": "RAG vs Memory",
+          "url": "https://hindsight.vectorize.io/developer/rag-vs-hindsight"
+        },
+        {
+          "label": "Quick Start",
+          "url": "https://hindsight.vectorize.io/developer/api/quickstart"
+        },
+        {
+          "label": "Retain",
+          "url": "https://hindsight.vectorize.io/developer/api/retain"
+        },
+        {
+          "label": "Recall",
+          "url": "https://hindsight.vectorize.io/developer/api/recall"
+        },
+        {
+          "label": "Reflect",
+          "url": "https://hindsight.vectorize.io/developer/api/reflect"
+        },
+        {
+          "label": "Mental Models",
+          "url": "https://hindsight.vectorize.io/developer/api/mental-models"
+        },
+        {
+          "label": "Knowledge Pages",
+          "url": "https://hindsight.vectorize.io/developer/api/knowledge-pages"
+        },
+        {
+          "label": "Memories",
+          "url": "https://hindsight.vectorize.io/developer/api/memories"
+        },
+        {
+          "label": "Memory Banks",
+          "url": "https://hindsight.vectorize.io/developer/api/memory-banks"
+        },
+        {
+          "label": "Documents",
+          "url": "https://hindsight.vectorize.io/developer/api/documents"
+        },
+        {
+          "label": "Operations",
+          "url": "https://hindsight.vectorize.io/developer/api/operations"
+        },
+        {
+          "label": "Webhooks",
+          "url": "https://hindsight.vectorize.io/developer/api/webhooks"
+        },
+        {
+          "label": "Bank Templates",
+          "url": "https://hindsight.vectorize.io/developer/api/bank-templates"
+        },
+        {
+          "label": "API Reference",
+          "url": "https://hindsight.vectorize.io/api-reference"
+        },
+        {
+          "label": "Memory Defense",
+          "url": "https://hindsight.vectorize.io/developer/memory-defense"
+        },
+        {
+          "label": "Python",
+          "url": "https://hindsight.vectorize.io/sdks/python"
+        },
+        {
+          "label": "TypeScript",
+          "url": "https://hindsight.vectorize.io/sdks/nodejs"
+        },
+        {
+          "label": "Go",
+          "url": "https://hindsight.vectorize.io/sdks/go"
+        },
+        {
+          "label": "CLI",
+          "url": "https://hindsight.vectorize.io/sdks/cli"
+        },
+        {
+          "label": "Claude Code",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Codex CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "DeepAgents Dcode",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "opencode",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "opencode 2",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Kilo CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Cursor CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "GitHub Copilot CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Grok Build",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Qwen Code",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Factory Droid",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "ZCode",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Antigravity CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Devin CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Cline CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "pi",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "Prime Agent",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "DeepSeek Harness",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/coding-agents"
+        },
+        {
+          "label": "LangGraph / LangChain",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/langgraph"
+        },
+        {
+          "label": "Vercel AI SDK",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/ai-sdk"
+        },
+        {
+          "label": "Vercel Chat",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/chat"
+        },
+        {
+          "label": "Eve",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/eve"
+        },
+        {
+          "label": "CrewAI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/crewai"
+        },
+        {
+          "label": "ChatGPT",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/chatgpt"
+        },
+        {
+          "label": "Hermes",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/hermes"
+        },
+        {
+          "label": "OpenClaw",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/openclaw"
+        },
+        {
+          "label": "Obsidian",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/obsidian"
+        },
+        {
+          "label": "Claude Code",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/claude-code"
+        },
+        {
+          "label": "Cline",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/cline"
+        },
+        {
+          "label": "Codex",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/codex"
+        },
+        {
+          "label": "Cursor CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/cursor-cli"
+        },
+        {
+          "label": "GitHub Copilot CLI",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/copilot-cli"
+        },
+        {
+          "label": "OpenCode",
+          "url": "https://hindsight.vectorize.io/sdks/integrations/opencode"
+        },
+        {
+          "label": "All integrations",
+          "url": "https://hindsight.vectorize.io/integrations"
+        },
+        {
+          "label": "Cloud",
+          "url": "https://ui.hindsight.vectorize.io/signup"
+        },
+        {
+          "label": "Installation",
+          "url": "https://hindsight.vectorize.io/developer/installation"
+        },
+        {
+          "label": "Services",
+          "url": "https://hindsight.vectorize.io/developer/services"
+        },
+        {
+          "label": "Configuration",
+          "url": "https://hindsight.vectorize.io/developer/configuration"
+        },
+        {
+          "label": "Admin CLI",
+          "url": "https://hindsight.vectorize.io/developer/admin-cli"
+        },
+        {
+          "label": "Oracle Database",
+          "url": "https://hindsight.vectorize.io/developer/oracle"
+        },
+        {
+          "label": "Extensions",
+          "url": "https://hindsight.vectorize.io/developer/extensions"
+        },
+        {
+          "label": "Models",
+          "url": "https://hindsight.vectorize.io/developer/models"
+        },
+        {
+          "label": "Monitoring",
+          "url": "https://hindsight.vectorize.io/developer/monitoring"
+        },
+        {
+          "label": "MCP Server",
+          "url": "https://hindsight.vectorize.io/developer/mcp-server"
+        },
+        {
+          "label": "Docker",
+          "url": "https://hindsight.vectorize.io/developer/installation#docker"
+        },
+        {
+          "label": "Kubernetes",
+          "url": "https://hindsight.vectorize.io/developer/installation#helm--kubernetes"
+        },
+        {
+          "label": "Bare Metal",
+          "url": "https://hindsight.vectorize.io/developer/installation#bare-metal-pip"
+        },
+        {
+          "label": "Programmatic API (Python)",
+          "url": "https://hindsight.vectorize.io/sdks/hindsight-all"
+        },
+        {
+          "label": "Programmatic API (Node.js)",
+          "url": "https://hindsight.vectorize.io/sdks/hindsight-all-npm"
+        },
+        {
+          "label": "Daemon CLI",
+          "url": "https://hindsight.vectorize.io/sdks/embed"
+        },
+        {
+          "label": "Bank Templates Hub",
+          "url": "https://hindsight.vectorize.io/templates"
+        },
+        {
+          "label": "Best Practices",
+          "url": "https://hindsight.vectorize.io/best-practices"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgba(0, 0, 0, 0)",
+      "rendered_body_font": "Inter, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "senselab",
+      "name": "SenseLab (AMFS)",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.sense-lab.ai/",
+      "observed_at": "2026-09-20T04:43:31.177Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.sense-lab.ai/",
+      "title": "SenseLab - Continual Learning for AI Agents",
+      "h1": [
+        "Make Learning Continuous"
+      ],
+      "headings": [
+        "The more your agents work, the more your AI learns.",
+        "See continuous learning in action.",
+        "Memory should do more than remember",
+        "Up and Running In 5 Minutes",
+        "Plug it in No rewrites",
+        "Start free Scale with your agents",
+        "Make learning continuous.",
+        "Written by the engineers Shipping it"
+      ],
+      "links": [
+        {
+          "label": "home",
+          "url": "https://www.sense-lab.ai/"
+        },
+        {
+          "label": "Home",
+          "url": "https://www.sense-lab.ai/"
+        },
+        {
+          "label": "About",
+          "url": "https://www.sense-lab.ai/about-us"
+        },
+        {
+          "label": "Features",
+          "url": "https://www.sense-lab.ai/feature"
+        },
+        {
+          "label": "Login Login",
+          "url": "https://amfs.sense-lab.ai/"
+        },
+        {
+          "label": "Start Free Start Free",
+          "url": "https://amfs.sense-lab.ai/"
+        },
+        {
+          "label": "How it works How it works",
+          "url": "https://www.sense-lab.ai/#how-it-works"
+        },
+        {
+          "label": "open lightbox",
+          "url": "https://www.sense-lab.ai/#"
+        },
+        {
+          "label": "Billing Monthly",
+          "url": "https://www.sense-lab.ai/#w-tabs-0-data-w-pane-0"
+        },
+        {
+          "label": "Billing Yearly",
+          "url": "https://www.sense-lab.ai/#w-tabs-0-data-w-pane-1"
+        },
+        {
+          "label": "Choose This Plan Choose This Plan",
+          "url": "https://amfs.sense-lab.ai/"
+        },
+        {
+          "label": "Get Started For Free",
+          "url": "https://amfs.sense-lab.ai/"
+        },
+        {
+          "label": "Download the Mac OS App",
+          "url": "https://storage.googleapis.com/senselab-releases/desktop/SenseLab-3.0.1-universal.dmg"
+        },
+        {
+          "label": "SenseLab is backed by a16z Speedrun. Databases became infrastructure because applications ",
+          "url": "https://www.sense-lab.ai/post/senselab-is-backed-by-a16z-speedrun"
+        },
+        {
+          "label": "Markdown and skills are not memory Markdown files and skills are two different things, and",
+          "url": "https://www.sense-lab.ai/post/markdown-and-skills-are-not-memory"
+        },
+        {
+          "label": "How to build AI agents that scale The moment you go from one agent to several working on t",
+          "url": "https://www.sense-lab.ai/post/how-to-build-and-scale-ai-agents"
+        },
+        {
+          "label": "Explore All Blog Explore All Blog",
+          "url": "https://www.sense-lab.ai/blog"
+        },
+        {
+          "label": "Terms & Conditions",
+          "url": "https://www.sense-lab.ai/terms-condition"
+        },
+        {
+          "label": "Privacy Policy",
+          "url": "https://www.sense-lab.ai/privacy-policy"
+        },
+        {
+          "label": "facebook",
+          "url": "https://www.facebook.com/"
+        },
+        {
+          "label": "twitter",
+          "url": "https://x.com/"
+        },
+        {
+          "label": "instagram",
+          "url": "https://github.com/raia-live/amfs"
+        },
+        {
+          "label": "linkedin",
+          "url": "https://www.linkedin.com/company/senselabai"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(255, 255, 255)",
+      "rendered_body_font": "Geist, sans-serif",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/senselab.png",
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "letta",
+      "name": "Letta",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.letta.com/",
+      "observed_at": "2026-09-20T04:43:34.022Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.letta.com/",
+      "title": "Letta | Machines that learn",
+      "h1": [],
+      "headings": [
+        "RESEARCH",
+        "PRODUCT",
+        "PRESS",
+        "TEAM"
+      ],
+      "links": [
+        {
+          "label": "Letta home",
+          "url": "https://www.letta.com/"
+        },
+        {
+          "label": "Research",
+          "url": "https://www.letta.com/research/"
+        },
+        {
+          "label": "Blog",
+          "url": "https://www.letta.com/blog/"
+        },
+        {
+          "label": "Letta Agent",
+          "url": "https://www.letta.com/agent/"
+        },
+        {
+          "label": "Join Us",
+          "url": "https://www.letta.com/join-us/"
+        },
+        {
+          "label": "Memory Models: Towards Agents That Learn JUN 2026 Powering agent learning through memory m",
+          "url": "https://www.letta.com/blog/towards-agents-that-learn/"
+        },
+        {
+          "label": "Context Constitution APR 2026 A set of principles governing how AI agents manage context t",
+          "url": "https://www.letta.com/blog/context-constitution/"
+        },
+        {
+          "label": "Context Repositories: Git-based Memory FEB 2026 A rebuild of how agent memory works, using",
+          "url": "https://www.letta.com/blog/context-repositories/"
+        },
+        {
+          "label": "Continual Learning in Token Space DEC 2025 Learning in token space is the key to building ",
+          "url": "https://www.letta.com/blog/continual-learning/"
+        },
+        {
+          "label": "Sleep-time Compute: Learning Offline APR 2025 Letting agents reason about context during i",
+          "url": "https://www.letta.com/blog/sleep-time-compute/"
+        },
+        {
+          "label": "MemGPT: The LLM Operating System OCT 2023 The original work on virtual context management ",
+          "url": "https://arxiv.org/abs/2310.08560"
+        },
+        {
+          "label": "All research →",
+          "url": "https://www.letta.com/research/"
+        },
+        {
+          "label": "Bilt",
+          "url": "https://www.letta.com/case-studies/bilt/"
+        },
+        {
+          "label": "11x",
+          "url": "https://www.letta.com/case-studies/11x/"
+        },
+        {
+          "label": "Kognitos",
+          "url": "https://www.letta.com/case-studies/kognitos/"
+        },
+        {
+          "label": "Hunt Club",
+          "url": "https://www.letta.com/case-studies/hunt-club/"
+        },
+        {
+          "label": "WIRED Do large language models dream of AI agents?",
+          "url": "https://www.wired.com/story/sleeptime-compute-chatbots-memory/"
+        },
+        {
+          "label": "Fast Company Why sleep-time compute is the next big leap in AI",
+          "url": "https://www.fastcompany.com/91368307/why-sleep-time-compute-is-the-next-big-leap-in-ai"
+        },
+        {
+          "label": "Matthew Berman Sleep-time compute — AI that “thinks” 24/7",
+          "url": "https://www.youtube.com/watch?v=FGRxw3ACIkw"
+        },
+        {
+          "label": "TechCrunch Letta, one of UC Berkeley’s most anticipated AI startups, has just come out of ",
+          "url": "https://techcrunch.com/2024/09/23/letta-one-of-uc-berkeleys-most-anticipated-ai-startups-has-just-come-out-of-stealth/"
+        },
+        {
+          "label": "join our team",
+          "url": "https://www.letta.com/join-us/"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/letta-ai"
+        },
+        {
+          "label": "Discord",
+          "url": "https://discord.gg/letta"
+        },
+        {
+          "label": "𝕏 / Twitter",
+          "url": "https://x.com/letta_ai"
+        },
+        {
+          "label": "Privacy",
+          "url": "https://www.letta.com/privacy-policy/"
+        },
+        {
+          "label": "Terms",
+          "url": "https://www.letta.com/terms-of-service/"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgba(0, 0, 0, 0)",
+      "rendered_body_font": "\"Fira Code\", ui-monospace, SFMono-Regular, Menlo, monospace",
+      "visible_form_count": 1,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "synth",
+      "name": "Synth",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.usesynth.ai/",
+      "observed_at": "2026-09-20T04:43:34.031Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.usesynth.ai/",
+      "title": "Synth AI",
+      "h1": [
+        "Managed Research"
+      ],
+      "headings": [
+        "Increase your Experiments Per Minute",
+        "The macOS app for research engineering",
+        "Hill climb in the cloud",
+        "Independent OSS infrastructure"
+      ],
+      "links": [
+        {
+          "label": "Research",
+          "url": "https://www.usesynth.ai/research"
+        },
+        {
+          "label": "Workshop",
+          "url": "https://www.usesynth.ai/workshop"
+        },
+        {
+          "label": "Blog",
+          "url": "https://www.usesynth.ai/blog"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.usesynth.ai/managed-research/intro"
+        },
+        {
+          "label": "Sign in",
+          "url": "https://www.usesynth.ai/signin"
+        },
+        {
+          "label": "Get Started",
+          "url": "https://www.usesynth.ai/signup"
+        },
+        {
+          "label": "Start a Project",
+          "url": "https://www.usesynth.ai/smr?onboarding=mcp"
+        },
+        {
+          "label": "View Docs",
+          "url": "https://docs.usesynth.ai/managed-research/quickstart"
+        },
+        {
+          "label": "Explore Synth Workshop",
+          "url": "https://www.usesynth.ai/workshop"
+        },
+        {
+          "label": "Download v0.10.1 for Mac",
+          "url": "https://www.usesynth.ai/download"
+        },
+        {
+          "label": "Download Workshop",
+          "url": "https://www.usesynth.ai/download?utm_source=landing&utm_campaign=workshop&utm_content=workshop_download"
+        },
+        {
+          "label": "How it works",
+          "url": "https://www.usesynth.ai/workshop"
+        },
+        {
+          "label": "Start a run",
+          "url": "https://www.usesynth.ai/signup?product=managed-research&utm_source=landing&utm_campaign=smr-launch"
+        },
+        {
+          "label": "Open dashboard",
+          "url": "https://www.usesynth.ai/smr"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.usesynth.ai/managed-research/quickstart"
+        },
+        {
+          "label": "Optimizers",
+          "url": "https://www.usesynth.ai/oss/optimizers"
+        },
+        {
+          "label": "Containers",
+          "url": "https://www.usesynth.ai/oss/containers"
+        },
+        {
+          "label": "Cookbooks",
+          "url": "https://github.com/synth-laboratories/synth-cookbooks-public"
+        },
+        {
+          "label": "Explore OSS",
+          "url": "https://www.usesynth.ai/oss"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.usesynth.ai/"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(18, 18, 18)",
+      "rendered_body_font": "Inter, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "tellurio",
+      "name": "Tellurio and Afnio",
+      "cohort": "historical_comparison",
+      "requested_url": "https://tellurio.ai/",
+      "observed_at": "2026-09-20T04:43:37.547Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://tellurio.ai/",
+      "title": "Tellurio - Build, Optimize & Scale Self-Improving AI Agents",
+      "h1": [
+        "Infrastructure for self-improving AI agents"
+      ],
+      "headings": [
+        "Designed to help AI teams maximize agent output quality",
+        "Built from the elements up to power agent development",
+        "Built with Tellurio",
+        "Ship your first self-improving agent in minutes"
+      ],
+      "links": [
+        {
+          "label": "Tellurio",
+          "url": "https://tellurio.ai/"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://tellurio.ai/pricing"
+        },
+        {
+          "label": "Docs",
+          "url": "https://afnio.ai/docs/"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/Tellurio-AI/afnio"
+        },
+        {
+          "label": "Get started in 5 minutes →",
+          "url": "https://afnio.ai/docs/getting_started/quickstart_tutorial.html"
+        },
+        {
+          "label": "Start for free",
+          "url": "https://platform.tellurio.ai/"
+        },
+        {
+          "label": "View on GitHub",
+          "url": "https://github.com/Tellurio-AI/afnio"
+        },
+        {
+          "label": "Start for free →",
+          "url": "https://platform.tellurio.ai/"
+        },
+        {
+          "label": "Explore Afnio →",
+          "url": "https://afnio.ai/"
+        },
+        {
+          "label": "Build self-improving browser agents Browser agents that learn to solve new challenges from",
+          "url": "https://tellurio.ai/#"
+        },
+        {
+          "label": "Align complex evaluation harness Design multi-step evaluation pipelines, score agent outpu",
+          "url": "https://tellurio.ai/#"
+        },
+        {
+          "label": "Optimize classifier accuracy Auto-optimize prompts using textual gradients. Reach producti",
+          "url": "https://afnio.ai/docs/getting_started/quickstart_tutorial.html"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/company/tellurio/"
+        },
+        {
+          "label": "X",
+          "url": "https://x.com/Tellurio_AI"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/Tellurio-AI"
+        },
+        {
+          "label": "Tellurio Studio",
+          "url": "https://platform.tellurio.ai/"
+        },
+        {
+          "label": "Afnio",
+          "url": "https://github.com/Tellurio-AI/afnio"
+        },
+        {
+          "label": "Documentation",
+          "url": "https://afnio.ai/docs/"
+        },
+        {
+          "label": "Blog",
+          "url": "https://tellurio.ai/blog"
+        },
+        {
+          "label": "Contact",
+          "url": "https://tellurio.ai/contact-sales"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(245, 245, 245)",
+      "rendered_body_font": "Geist, \"Geist Fallback\"",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "langwatch",
+      "name": "LangWatch",
+      "cohort": "historical_comparison",
+      "requested_url": "https://langwatch.ai/",
+      "observed_at": "2026-09-20T04:43:37.560Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://langwatch.ai/",
+      "title": "AI Agent Testing and Evaluation | LangWatch",
+      "h1": [
+        "When your agents get complex"
+      ],
+      "headings": [
+        "AI agents are still tested by hand, breaking in production. LangWatch brings loop engineering to age",
+        "Simulate",
+        "Evaluate",
+        "Observe",
+        "Our AI tests your AI",
+        "Where it runs. Who controls it. What certifies it.",
+        "Trusted by teams shipping mission-critical AI.",
+        "Ship agents with confidence."
+      ],
+      "links": [
+        {
+          "label": "LangWatch home",
+          "url": "https://langwatch.ai/"
+        },
+        {
+          "label": "Platform",
+          "url": "https://langwatch.ai/#platform"
+        },
+        {
+          "label": "Enterprise",
+          "url": "https://langwatch.ai/enterprise"
+        },
+        {
+          "label": "Customers",
+          "url": "https://langwatch.ai/customers"
+        },
+        {
+          "label": "Blog",
+          "url": "https://langwatch.ai/blog"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.langwatch.ai/"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://langwatch.ai/pricing"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/langwatch/langwatch"
+        },
+        {
+          "label": "Book a demo",
+          "url": "https://langwatch.ai/get-a-demo"
+        },
+        {
+          "label": "Sign in",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "Sign Up",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "Why LangWatch",
+          "url": "https://langwatch.ai/#why"
+        },
+        {
+          "label": "Langy",
+          "url": "https://langwatch.ai/#langy"
+        },
+        {
+          "label": "Enterprise",
+          "url": "https://langwatch.ai/#enterprise"
+        },
+        {
+          "label": "Customers",
+          "url": "https://langwatch.ai/#customers"
+        },
+        {
+          "label": "Introducing Langy",
+          "url": "https://langwatch.ai/langy"
+        },
+        {
+          "label": "Self-host in 15 min",
+          "url": "https://langwatch.ai/docs/self-hosting/overview"
+        },
+        {
+          "label": "Run a scenario",
+          "url": "https://langwatch.ai/scenario/basics/user-simulator"
+        },
+        {
+          "label": "Write a scenario",
+          "url": "https://langwatch.ai/docs/skills/directory"
+        },
+        {
+          "label": "Add to CI",
+          "url": "https://langwatch.ai/scenario/basics/ci-cd-integration"
+        },
+        {
+          "label": "Red team it",
+          "url": "https://langwatch.ai/scenario/advanced/red-teaming"
+        },
+        {
+          "label": "Meet the judge",
+          "url": "https://langwatch.ai/scenario/basics/judge-agent"
+        },
+        {
+          "label": "Trace tool calls",
+          "url": "https://langwatch.ai/scenario/testing-guides/tool-calling"
+        },
+        {
+          "label": "See integrations",
+          "url": "https://langwatch.ai/scenario/agent-integration"
+        },
+        {
+          "label": "Build an eval",
+          "url": "https://langwatch.ai/docs/evaluations/evaluators/overview"
+        },
+        {
+          "label": "Open the workbench",
+          "url": "https://langwatch.ai/docs/evaluations/experiments/overview"
+        },
+        {
+          "label": "Go online",
+          "url": "https://langwatch.ai/docs/evaluations/online-evaluation/overview"
+        },
+        {
+          "label": "Compare outputs",
+          "url": "https://langwatch.ai/docs/evaluations/experiments/overview"
+        },
+        {
+          "label": "Evaluate images",
+          "url": "https://langwatch.ai/docs/evaluations/experiments/multimodal-evaluation"
+        },
+        {
+          "label": "Instrument in minutes",
+          "url": "https://langwatch.ai/docs/integration/opentelemetry/guide"
+        },
+        {
+          "label": "Try Cmd K",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "See the breakdown",
+          "url": "https://langwatch.ai/docs/integration/python/tutorials/tracking-llm-costs"
+        },
+        {
+          "label": "Build a view",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "Open a trace",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "Explore topics",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "Build a graph",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "See what Langy does",
+          "url": "https://langwatch.ai/langy"
+        },
+        {
+          "label": "Book a call",
+          "url": "https://langwatch.ai/get-a-demo"
+        },
+        {
+          "label": "watch Langy work →",
+          "url": "https://langwatch.ai/langy"
+        },
+        {
+          "label": "Deployment options",
+          "url": "https://langwatch.ai/enterprise"
+        },
+        {
+          "label": "Full trust center",
+          "url": "https://langwatch.ai/trust-center"
+        },
+        {
+          "label": "All customer stories Read them",
+          "url": "https://langwatch.ai/customers"
+        },
+        {
+          "label": "Talk to an engineer",
+          "url": "https://langwatch.ai/get-a-demo"
+        },
+        {
+          "label": "or start free in 5 minutes",
+          "url": "https://app.langwatch.ai/"
+        },
+        {
+          "label": "LangWatch",
+          "url": "https://langwatch.ai/"
+        },
+        {
+          "label": "Langy, your AI engineer",
+          "url": "https://langwatch.ai/langy"
+        },
+        {
+          "label": "Instant Evals",
+          "url": "https://langwatch.ai/instant-evals"
+        },
+        {
+          "label": "Agent simulation testing",
+          "url": "https://langwatch.ai/agentic-ai-testing"
+        },
+        {
+          "label": "LLM evaluation",
+          "url": "https://langwatch.ai/llm-evaluation"
+        },
+        {
+          "label": "LLM observability",
+          "url": "https://langwatch.ai/llm-observability"
+        },
+        {
+          "label": "AI Governance",
+          "url": "https://langwatch.ai/gateway"
+        },
+        {
+          "label": "Prompt management",
+          "url": "https://langwatch.ai/prompt-management"
+        },
+        {
+          "label": "Track your Claude Code usage",
+          "url": "https://langwatch.ai/claude-code-usage"
+        },
+        {
+          "label": "Feature comparison",
+          "url": "https://langwatch.ai/comparison"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.langwatch.ai/introduction"
+        },
+        {
+          "label": "Research",
+          "url": "https://langwatch.ai/research"
+        },
+        {
+          "label": "AI Agents Guide",
+          "url": "https://langwatch.ai/guides/ai-agent-guide"
+        },
+        {
+          "label": "Evals Golden Guide",
+          "url": "https://langwatch.ai/guides/evals-guide"
+        },
+        {
+          "label": "Agent Governance Playbook",
+          "url": "https://langwatch.ai/agent-governance-playbook"
+        },
+        {
+          "label": "Changelog",
+          "url": "https://langwatch.ai/changelog"
+        },
+        {
+          "label": "RSS",
+          "url": "https://langwatch.ai/blog/rss.xml"
+        },
+        {
+          "label": "Evals training",
+          "url": "https://langwatch.ai/ai-agent-testing-training"
+        },
+        {
+          "label": "SDKs",
+          "url": "https://langwatch.ai/sdks"
+        },
+        {
+          "label": "Switch from Langfuse",
+          "url": "https://langwatch.ai/langfuse-alternative"
+        },
+        {
+          "label": "Switch from Braintrust",
+          "url": "https://langwatch.ai/braintrust-alternative"
+        },
+        {
+          "label": "Switch from LangSmith",
+          "url": "https://langwatch.ai/langsmith-alternative"
+        },
+        {
+          "label": "Switch from Arize",
+          "url": "https://langwatch.ai/arize-alternative"
+        },
+        {
+          "label": "Switch from Humanloop",
+          "url": "https://langwatch.ai/humanloop-alternative"
+        },
+        {
+          "label": "Better Agents Manifesto",
+          "url": "https://langwatch.ai/better-agents-manifesto"
+        },
+        {
+          "label": "llms.txt",
+          "url": "https://langwatch.ai/llms.txt"
+        },
+        {
+          "label": "All integrations",
+          "url": "https://langwatch.ai/integrations"
+        },
+        {
+          "label": "Python SDK",
+          "url": "https://docs.langwatch.ai/integration/python/guide"
+        },
+        {
+          "label": "TypeScript SDK",
+          "url": "https://docs.langwatch.ai/integration/typescript/guide"
+        },
+        {
+          "label": "Go SDK",
+          "url": "https://langwatch.ai/docs/integration/go/guide"
+        },
+        {
+          "label": "OpenTelemetry",
+          "url": "https://docs.langwatch.ai/integration/opentelemetry/guide"
+        },
+        {
+          "label": "OpenAI Agents",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/open-ai-agents"
+        },
+        {
+          "label": "AWS Bedrock",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/aws-bedrock"
+        },
+        {
+          "label": "Azure OpenAI",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/azure"
+        },
+        {
+          "label": "Vertex AI",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/vertex-ai"
+        },
+        {
+          "label": "LangGraph",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/langgraph"
+        },
+        {
+          "label": "LangChain",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/langchain"
+        },
+        {
+          "label": "CrewAI",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/crew-ai"
+        },
+        {
+          "label": "DSPy",
+          "url": "https://docs.langwatch.ai/integration/python/integrations/dspy"
+        },
+        {
+          "label": "About",
+          "url": "https://langwatch.ai/about-us"
+        },
+        {
+          "label": "Careers",
+          "url": "https://langwatchdata.notion.site/langwatchcareers"
+        },
+        {
+          "label": "Become a partner",
+          "url": "https://langwatch.ai/partners"
+        },
+        {
+          "label": "Trust center",
+          "url": "https://langwatch.ai/trust-center"
+        },
+        {
+          "label": "Status",
+          "url": "https://status.langwatch.ai/"
+        },
+        {
+          "label": "Privacy",
+          "url": "https://langwatch.ai/legal/privacy-policy"
+        },
+        {
+          "label": "Terms",
+          "url": "https://langwatch.ai/legal/terms-conditions"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(255, 255, 255)",
+      "rendered_body_font": "Inter, ui-sans-serif, system-ui, sans-serif",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/langwatch.png",
+      "mobile_overflow": true,
+      "mobile_menu_controls": 3
+    },
+    {
+      "id": "notdiamond",
+      "name": "Not Diamond",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.notdiamond.ai/",
+      "observed_at": "2026-09-20T04:43:46.178Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.notdiamond.ai/",
+      "title": "Not Diamond - Model Routing for Coding Agents",
+      "h1": [
+        "Not Diamond is the world's most powerful intelligent model router for coding agents.",
+        "We help engineering teams achieve frontier quality at a fraction of the price."
+      ],
+      "headings": [
+        "FOR DEVELOPERS AT THE FRONTIER",
+        "1. SOLVING THE AGENT COST PROBLEM",
+        "Coding agents require choosing between many complex variables. As a result, most developers simply d",
+        "2. INTELLIGENT MODEL ROUTING",
+        "Not Diamond intelligently predicts which model to use for each input, reducing costs while maintaini",
+        "3. SEAMLESS INTEGRATION",
+        "Our router securely and seamlessly integrates with your existing harnesses and gateway, protecting y",
+        "DESIGNED FOR PRODUCTION-GRADE WORKLOADS",
+        "How much could you save?",
+        "Frontier quality at a fraction of the price"
+      ],
+      "links": [
+        {
+          "label": "Pricing",
+          "url": "https://www.notdiamond.ai/pricing"
+        },
+        {
+          "label": "Docs",
+          "url": "https://code.notdiamond.ai/docs/"
+        },
+        {
+          "label": "About",
+          "url": "https://www.notdiamond.ai/about"
+        },
+        {
+          "label": "Blog",
+          "url": "https://www.notdiamond.ai/blog"
+        },
+        {
+          "label": "Log in",
+          "url": "https://code.notdiamond.ai/"
+        },
+        {
+          "label": "Book a demo",
+          "url": "https://calendly.com/not-diamond-gtm/intro-from-web"
+        },
+        {
+          "label": "Talk to us",
+          "url": "https://calendly.com/not-diamond-gtm/intro-from-web"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://www.notdiamond.ai/pricing-old"
+        },
+        {
+          "label": "Careers",
+          "url": "https://notdiamond.notion.site/"
+        },
+        {
+          "label": "Legal",
+          "url": "https://www.notdiamond.ai/legal"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(248, 248, 248)",
+      "rendered_body_font": "Signifier, \"Signifier Fallback\", Georgia, \"Times New Roman\", serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "typesafe",
+      "name": "TypeSafe (Jev)",
+      "cohort": "historical_comparison",
+      "requested_url": "https://typesafe.ai/",
+      "observed_at": "2026-09-20T04:43:46.189Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://typesafe.ai/",
+      "title": "Home - TypeSafe AI",
+      "h1": [
+        "The First (Public) System One Model; Jev Gives AI The Properties Of Code",
+        "We Took The Opposite Research Direction",
+        "193.6x Faster, 444.6x Cheaper."
+      ],
+      "headings": [
+        "Join Waitlist",
+        "Join Discord",
+        "Jev’s Intelligence Per Dollar Is Literally Off The Charts.",
+        "$42",
+        "238x",
+        "Come Build With Us",
+        "Open Roles",
+        "We Give A FAQ"
+      ],
+      "links": [
+        {
+          "label": "TypeSafe AI",
+          "url": "https://typesafe.ai/"
+        },
+        {
+          "label": "Manifesto",
+          "url": "https://typesafe.ai/manifesto"
+        },
+        {
+          "label": "Our Team",
+          "url": "https://typesafe.ai/team"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.typesafe.ai/"
+        },
+        {
+          "label": "Sign In",
+          "url": "https://console.typesafe.ai/"
+        },
+        {
+          "label": "Sept 15, 2026 • TypeSafe News 🎉 TypeSafe announces System One models and Jev Read more",
+          "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev"
+        },
+        {
+          "label": "Join Discord",
+          "url": "https://discord.gg/typesafe"
+        },
+        {
+          "label": "(Proof)",
+          "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev"
+        },
+        {
+          "label": "Open Roles",
+          "url": "https://jobs.ashbyhq.com/typesafe-ai?utm_source=QLrx0vq4BW"
+        },
+        {
+          "label": "Company News Introducing System One Models & Jev Read More",
+          "url": "https://typesafe.ai/blog/introducing-system-one-models-and-jev"
+        },
+        {
+          "label": "The Bitterest Lesson Read More TL;DR: Compute drives progress in AI, but what good is prog",
+          "url": "https://typesafe.ai/blog/bitterest-lesson"
+        },
+        {
+          "label": "AI: Too Good To Be True, Too Bad To Be Useful | TypeSafe AI Read More RLHF-trained languag",
+          "url": "https://typesafe.ai/blog/ai-too-good-to-be-true-too-bad-to-be-useful-typesafe-ai"
+        },
+        {
+          "label": "Terms of Use",
+          "url": "https://typesafe.ai/legal/terms"
+        },
+        {
+          "label": "Privacy Policy",
+          "url": "https://typesafe.ai/legal/privacy-policy"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/company/typesafe-ai/"
+        },
+        {
+          "label": "X",
+          "url": "https://x.com/typesafeai"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(254, 254, 254)",
+      "rendered_body_font": "sans-serif",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "prismml",
+      "name": "PrismML (Bonsai)",
+      "cohort": "historical_comparison",
+      "requested_url": "https://prismml.com/",
+      "observed_at": "2026-09-20T04:43:53.147Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://prismml.com/",
+      "title": "PrismML — Concentrating intelligence",
+      "h1": [
+        "Concentrating intelligence"
+      ],
+      "headings": [
+        "Centering AI research on efficiency"
+      ],
+      "links": [
+        {
+          "label": "About",
+          "url": "https://prismml.com/about"
+        },
+        {
+          "label": "Blog",
+          "url": "https://prismml.com/blog"
+        },
+        {
+          "label": "News",
+          "url": "https://prismml.com/news"
+        },
+        {
+          "label": "Careers",
+          "url": "https://prismml.com/careers"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.prismml.com/"
+        },
+        {
+          "label": "LAUNCH 0100110001 010010 1 110",
+          "url": "https://prismml.com/news/bonsai-2-27b"
+        },
+        {
+          "label": "About Bonsai 2 27B →",
+          "url": "https://prismml.com/news/bonsai-2-27b"
+        },
+        {
+          "label": "Download models ↗",
+          "url": "https://huggingface.co/collections/prism-ml/bonsai-2"
+        },
+        {
+          "label": "Try demo ↗",
+          "url": "https://huggingface.co/spaces/webml-community/ternary-bonsai-2-webgpu-kernels"
+        },
+        {
+          "label": "whitepaper",
+          "url": "https://github.com/PrismML-Eng/Bonsai-demo/blob/main/bonsai-2-27b-whitepaper.pdf"
+        },
+        {
+          "label": "1-bit ↗",
+          "url": "https://huggingface.co/prism-ml/bonsai-image-binary-4B-mlx-1bit"
+        },
+        {
+          "label": "Ternary ↗",
+          "url": "https://huggingface.co/prism-ml/bonsai-image-ternary-4B-mlx-2bit"
+        },
+        {
+          "label": "1-bit ↗",
+          "url": "https://huggingface.co/prism-ml/Bonsai-8B-gguf"
+        },
+        {
+          "label": "Ternary ↗",
+          "url": "https://huggingface.co/prism-ml/Ternary-Bonsai-8B-gguf"
+        },
+        {
+          "label": "1-bit ↗",
+          "url": "https://huggingface.co/prism-ml/Bonsai-4B-gguf"
+        },
+        {
+          "label": "Ternary ↗",
+          "url": "https://huggingface.co/prism-ml/Ternary-Bonsai-4B-gguf"
+        },
+        {
+          "label": "1-bit ↗",
+          "url": "https://huggingface.co/prism-ml/Bonsai-1.7B-gguf"
+        },
+        {
+          "label": "Ternary ↗",
+          "url": "https://huggingface.co/prism-ml/Ternary-Bonsai-1.7B-gguf"
+        },
+        {
+          "label": "Try Bonsai Studio ↗",
+          "url": "https://apps.apple.com/us/app/bonsai-studio-by-prismml/id6767042620"
+        },
+        {
+          "label": "Contact",
+          "url": "https://prismml.com/#"
+        },
+        {
+          "label": "Terms",
+          "url": "https://prismml.com/terms"
+        },
+        {
+          "label": "Privacy",
+          "url": "https://prismml.com/privacy"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(232, 228, 223)",
+      "rendered_body_font": "\"Rethink Sans\", Arial, sans-serif",
+      "visible_form_count": 1,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "osmosis",
+      "name": "Osmosis (Gulp AI)",
+      "cohort": "historical_comparison",
+      "requested_url": "https://osmosis.ai/",
+      "observed_at": "2026-09-20T04:43:53.148Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://osmosis.ai/",
+      "title": "Osmosis | Forward Deployed Reinforcement Learning Platform",
+      "h1": [
+        "Forward Deployed Reinforcement Learning"
+      ],
+      "headings": [
+        "PLATFORM DETAILS",
+        "USE CASES"
+      ],
+      "links": [
+        {
+          "label": "home",
+          "url": "https://osmosis.ai/"
+        },
+        {
+          "label": "HOME HOME",
+          "url": "https://osmosis.ai/"
+        },
+        {
+          "label": "PLATFORM PLATFORM",
+          "url": "https://osmosis.ai/platform"
+        },
+        {
+          "label": "ABOUT US ABOUT US",
+          "url": "https://osmosis.ai/about"
+        },
+        {
+          "label": "BLOG BLOG",
+          "url": "https://osmosis.ai/blog"
+        },
+        {
+          "label": "BOOK A DEMO",
+          "url": "https://osmosis.ai/contact"
+        },
+        {
+          "label": "Hands on Deployments We work directly with customers to support the entire post-training w",
+          "url": "https://osmosis.ai/#hands-on-deployment"
+        },
+        {
+          "label": "Reinforcement Fine-Tuning Osmosis is a comprehensive post-training platform that allows en",
+          "url": "https://osmosis.ai/#reinforcement-fine-tuning"
+        },
+        {
+          "label": "Continuous Improvement We integrate with your evaluation solutions to monitor performance ",
+          "url": "https://osmosis.ai/#continuous-improvement"
+        },
+        {
+          "label": "DATA EXTRACTION",
+          "url": "https://osmosis.ai/#data-extraction"
+        },
+        {
+          "label": "TOOL USE EXPERTISE",
+          "url": "https://osmosis.ai/#tool-use-experience"
+        },
+        {
+          "label": "CODE GENERATION",
+          "url": "https://osmosis.ai/#code-generation"
+        },
+        {
+          "label": "CONTACT US CONTACT US",
+          "url": "https://osmosis.ai/contact"
+        },
+        {
+          "label": "PRIVACY POLICY PRIVACY POLICY",
+          "url": "https://osmosis.ai/legal/privacy-policy"
+        },
+        {
+          "label": "TERMS OF SERVICE TERMS OF SERVICE",
+          "url": "https://osmosis.ai/legal/terms-of-service"
+        },
+        {
+          "label": "COOKIE POLICY COOKIE POLICY",
+          "url": "https://osmosis.ai/legal/cookie-policy"
+        },
+        {
+          "label": "SECURITY SECURITY",
+          "url": "https://trust.osmosis.ai/"
+        },
+        {
+          "label": "DATA PROCESSING AGREEMENT DATA PROCESSING AGREEMENT",
+          "url": "https://osmosis.ai/legal/data-processing-agreement"
+        },
+        {
+          "label": "SUBPROCESSORS SUBPROCESSORS",
+          "url": "https://osmosis.ai/legal/subprocessors"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(26, 26, 26)",
+      "rendered_body_font": "Neuehaasgroteskdisplay, Arial, sans-serif",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "adaptive",
+      "name": "Adaptive ML",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.adaptive-ml.com/",
+      "observed_at": "2026-09-20T04:43:55.468Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.adaptive-ml.com/",
+      "title": "Adaptive ML",
+      "h1": [],
+      "headings": [
+        "Adaptive Engine: The RLOps platform for Industrialized Intelligence",
+        "Bootstrap with Reinforcement Learning",
+        "Evaluate with bespoke AI judges",
+        "Guarantee performance with A/B testing",
+        "Optimize with production feedback",
+        "Bridge the last mile to production with Adaptive Engine",
+        "Token-by-token",
+        "All about"
+      ],
+      "links": [
+        {
+          "label": "Visit CookieYes website",
+          "url": "https://www.cookieyes.com/product/cookie-consent/?ref=cypbcyb&utm_source=cookie-banner&utm_medium=fl-branding"
+        },
+        {
+          "label": "Adaptive ML has been acquired by Datadog",
+          "url": "https://www.adaptive-ml.com/post/joining-datadog"
+        },
+        {
+          "label": "home",
+          "url": "https://www.adaptive-ml.com/"
+        },
+        {
+          "label": "PRODUCT",
+          "url": "https://www.adaptive-ml.com/#"
+        },
+        {
+          "label": "USE CASES",
+          "url": "https://www.adaptive-ml.com/#"
+        },
+        {
+          "label": "TECHNOLOGY",
+          "url": "https://www.adaptive-ml.com/technology"
+        },
+        {
+          "label": "COMPANY",
+          "url": "https://www.adaptive-ml.com/#"
+        },
+        {
+          "label": "Contact",
+          "url": "https://www.adaptive-ml.com/contact-us"
+        },
+        {
+          "label": "book a demo",
+          "url": "https://www.adaptive-ml.com/book-a-demo"
+        },
+        {
+          "label": "USE CASES",
+          "url": "https://www.adaptive-ml.com/#w-tabs-0-data-w-pane-0"
+        },
+        {
+          "label": "ADAPT",
+          "url": "https://www.adaptive-ml.com/#w-tabs-0-data-w-pane-1"
+        },
+        {
+          "label": "EVALUATE",
+          "url": "https://www.adaptive-ml.com/#w-tabs-0-data-w-pane-2"
+        },
+        {
+          "label": "SERVE",
+          "url": "https://www.adaptive-ml.com/#w-tabs-0-data-w-pane-3"
+        },
+        {
+          "label": "CASE STUDY",
+          "url": "https://www.adaptive-ml.com/use-case/rag"
+        },
+        {
+          "label": "CASE STUDY",
+          "url": "https://www.adaptive-ml.com/post/sk-telecom-tunes-for-multilingual-customer-support-moderation"
+        },
+        {
+          "label": "CASE STUDY",
+          "url": "https://www.adaptive-ml.com/post/att-selects-adaptive-engine"
+        },
+        {
+          "label": "explore",
+          "url": "https://www.adaptive-ml.com/engine"
+        },
+        {
+          "label": "talk with AN EXPERT",
+          "url": "https://www.adaptive-ml.com/contact-us"
+        },
+        {
+          "label": "our blog",
+          "url": "https://www.adaptive-ml.com/blog"
+        },
+        {
+          "label": "Adaptive Engine",
+          "url": "https://www.adaptive-ml.com/engine"
+        },
+        {
+          "label": "Adapt",
+          "url": "https://www.adaptive-ml.com/engine#adapt"
+        },
+        {
+          "label": "Evaluate",
+          "url": "https://www.adaptive-ml.com/engine#evaluate"
+        },
+        {
+          "label": "Serve",
+          "url": "https://www.adaptive-ml.com/engine#serve"
+        },
+        {
+          "label": "Use Cases",
+          "url": "https://www.adaptive-ml.com/#"
+        },
+        {
+          "label": "RAG",
+          "url": "https://www.adaptive-ml.com/use-case/rag"
+        },
+        {
+          "label": "Text-to-SQL",
+          "url": "https://www.adaptive-ml.com/use-case/text-to-sql"
+        },
+        {
+          "label": "Customer Support",
+          "url": "https://www.adaptive-ml.com/use-case/customer-support"
+        },
+        {
+          "label": "Company",
+          "url": "https://www.adaptive-ml.com/#"
+        },
+        {
+          "label": "Technology",
+          "url": "https://www.adaptive-ml.com/technology"
+        },
+        {
+          "label": "About",
+          "url": "https://www.adaptive-ml.com/about"
+        },
+        {
+          "label": "Blog",
+          "url": "https://www.adaptive-ml.com/blog"
+        },
+        {
+          "label": "Socials",
+          "url": "https://www.adaptive-ml.com/#"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/company/adaptive-ml"
+        },
+        {
+          "label": "Twitter",
+          "url": "https://x.com/AdaptiveML"
+        },
+        {
+          "label": "YouTube",
+          "url": "https://www.youtube.com/channel/UCq50SQx1uvKRMVbK3B4pIoQ"
+        },
+        {
+          "label": "PRIVACY POLICY",
+          "url": "https://www.adaptive-ml.com/privacy"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgba(0, 0, 0, 0)",
+      "rendered_body_font": "Diatype, Arial, sans-serif",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "distyl",
+      "name": "Distyl",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.distyl.ai/",
+      "observed_at": "2026-09-20T04:43:55.480Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.distyl.ai/",
+      "title": "Distyl — Architecting the AI-Native Enterprise",
+      "h1": [
+        "Architecting the AI-Native Enterprise"
+      ],
+      "headings": [
+        "Recent Media",
+        "Thinking from the frontier",
+        "Signals from the frontier"
+      ],
+      "links": [
+        {
+          "label": "Skip to main content",
+          "url": "https://www.distyl.ai/#main-content"
+        },
+        {
+          "label": "Distyl – home",
+          "url": "https://www.distyl.ai/"
+        },
+        {
+          "label": "TECHNOLOGY TECHNOLOGY",
+          "url": "https://www.distyl.ai/technology/distillery"
+        },
+        {
+          "label": "CASE STUDIES CASE STUDIES",
+          "url": "https://www.distyl.ai/case-studies"
+        },
+        {
+          "label": "BLOG BLOG",
+          "url": "https://www.distyl.ai/blog/all"
+        },
+        {
+          "label": "COMPANY COMPANY",
+          "url": "https://www.distyl.ai/about"
+        },
+        {
+          "label": "Watch Panel: Internet Up for Grabs: How AI Is Reshaping Value, Distribution, and Growth",
+          "url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2026/sessions/internet-up-for-grabs/"
+        },
+        {
+          "label": "Read Article: Why Won't the Next Decade of Business Resemble the Last Century?",
+          "url": "https://www.weforum.org/stories/2026/01/next-decade-of-business-resemble-the-last-century/"
+        },
+        {
+          "label": "Watch Interview: AI Consulting Startup Founded by Ex-Palantir Raises at $1.8B Valuation",
+          "url": "https://www.theinformation.com/titv/l7l9p?utm_campaign=&utm_content=&utm_medium=organic_social&utm_source=facebook%2Clinkedin%2Cthreads%2Ctwitter&rc=mnnjfd"
+        },
+        {
+          "label": "SEE ALL POSTS",
+          "url": "https://www.distyl.ai/blog/all"
+        },
+        {
+          "label": "Learning Where to Begin ENGINEERING ↗",
+          "url": "https://www.distyl.ai/blog/engineering/learning-where-to-begin"
+        },
+        {
+          "label": "No One Hands You the Right Answer ENGINEERING ↗",
+          "url": "https://www.distyl.ai/blog/engineering/no-one-hands-you-the-right-answer"
+        },
+        {
+          "label": "Your AI Feedback Loop Is Only as Strong as Your Evaluation Infrastructure ENGINEERING ↗",
+          "url": "https://www.distyl.ai/blog/engineering/your-ai-feedback-loop-is-only-as-strong-as-your-evaluation-infrastructure"
+        },
+        {
+          "label": "VoicEmu: Simulating the Tails of Human Speech RESEARCH ↗",
+          "url": "https://www.distyl.ai/blog/research/voicemu-simulating-the-tails-of-human-speech"
+        },
+        {
+          "label": "The Validation Gap in Self-Improving AI ENGINEERING ↗",
+          "url": "https://www.distyl.ai/blog/engineering/the-validation-gap-in-self-improving-ai"
+        },
+        {
+          "label": "Your Superpower Feels Easy. That’s the Point. FRONTIER ↗",
+          "url": "https://www.distyl.ai/blog/frontier/your-superpower-feels-easy-thats-the-point"
+        },
+        {
+          "label": "Distyl — home page",
+          "url": "https://www.distyl.ai/"
+        },
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/company/distylai"
+        },
+        {
+          "label": "HOME HOME",
+          "url": "https://www.distyl.ai/"
+        },
+        {
+          "label": "TECHNOLOGY TECHNOLOGY",
+          "url": "https://www.distyl.ai/technology"
+        },
+        {
+          "label": "ABOUT ABOUT",
+          "url": "https://www.distyl.ai/about"
+        },
+        {
+          "label": "NEWS NEWS",
+          "url": "https://www.distyl.ai/news"
+        },
+        {
+          "label": "CAREERS CAREERS",
+          "url": "https://www.distyl.ai/careers"
+        },
+        {
+          "label": "RESEARCH RESEARCH",
+          "url": "https://www.distyl.ai/research"
+        },
+        {
+          "label": "PRIVACY PRIVACY",
+          "url": "https://www.distyl.ai/privacy"
+        },
+        {
+          "label": "TERMS TERMS",
+          "url": "https://www.distyl.ai/terms"
+        },
+        {
+          "label": "DISTILLERY DISTILLERY The operating system for enterprise AI",
+          "url": "https://www.distyl.ai/technology/distillery"
+        },
+        {
+          "label": "WEAVE WEAVE Autonomous AI system construction",
+          "url": "https://www.distyl.ai/technology/weave"
+        },
+        {
+          "label": "CONTEXT MESH CONTEXT MESH Enterprise knowledge, structured for AI",
+          "url": "https://www.distyl.ai/technology/context-mesh"
+        },
+        {
+          "label": "CONTEXT VIEWS CONTEXT VIEWS Enterprise semantic layer for agents",
+          "url": "https://www.distyl.ai/technology/context-views"
+        },
+        {
+          "label": "JOURNEY JOURNEY AI voice layer for digital experiences",
+          "url": "https://www.distyl.ai/technology/journey"
+        },
+        {
+          "label": "PERSONALIZATION PERSONALIZATION 1:1 customer engagement at enterprise scale",
+          "url": "https://www.distyl.ai/technology/personalization"
+        },
+        {
+          "label": "CAPTURE CAPTURE Tacit knowledge capture at scale",
+          "url": "https://www.distyl.ai/technology/capture"
+        },
+        {
+          "label": "CANARY CANARY Self-improvement for AI systems",
+          "url": "https://www.distyl.ai/technology/canary"
+        },
+        {
+          "label": "ABOUT ABOUT Who we are and how we build",
+          "url": "https://www.distyl.ai/about"
+        },
+        {
+          "label": "NEWS NEWS Announcements, partnerships, and press",
+          "url": "https://www.distyl.ai/news"
+        },
+        {
+          "label": "RESEARCH RESEARCH How we explore and advance AI systems",
+          "url": "https://www.distyl.ai/research"
+        },
+        {
+          "label": "CAREERS CAREERS Who we’re looking for and how we hire",
+          "url": "https://www.distyl.ai/careers"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(247, 242, 232)",
+      "rendered_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 1,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "tensorzero",
+      "name": "TensorZero",
+      "cohort": "historical_comparison",
+      "requested_url": "https://www.tensorzero.com/",
+      "observed_at": "2026-09-20T04:43:57.671Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://www.tensorzero.com/",
+      "title": "TensorZero",
+      "h1": [
+        "TensorZero"
+      ],
+      "headings": [],
+      "links": [
+        {
+          "label": "TensorZero",
+          "url": "https://www.tensorzero.com/"
+        },
+        {
+          "label": "Blog",
+          "url": "https://www.tensorzero.com/blog/"
+        },
+        {
+          "label": "GitHub",
+          "url": "https://github.com/tensorzero/tensorzero"
+        },
+        {
+          "label": "Terms of Use",
+          "url": "https://www.tensorzero.com/terms/"
+        },
+        {
+          "label": "Privacy Policy",
+          "url": "https://www.tensorzero.com/privacy/"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgba(0, 0, 0, 0)",
+      "rendered_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe connection documentation",
+      "cohort": "onboarding_reference",
+      "requested_url": "https://docs.stripe.com/mcp",
+      "observed_at": "2026-09-20T04:43:57.680Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://docs.stripe.com/mcp",
+      "title": "Model Context Protocol (MCP) | Stripe Documentation",
+      "h1": [
+        "Model Context Protocol (MCP)Public preview"
+      ],
+      "headings": [
+        "Let your AI agents interact with the Stripe API by using our MCP server.",
+        "Set up Stripe MCP with a plugin Recommended",
+        "Manually set up Stripe MCP",
+        "Manage MCP access and sessions",
+        "Tools",
+        "Confirm actions by agents acting on your behalf",
+        "Use MCP with connected accounts",
+        "See also"
+      ],
+      "links": [
+        {
+          "label": "Skip to content",
+          "url": "https://docs.stripe.com/mcp#main-content"
+        },
+        {
+          "label": "Create account",
+          "url": "https://dashboard.stripe.com/register"
+        },
+        {
+          "label": "Sign in",
+          "url": "https://dashboard.stripe.com/login?redirect=https%3A%2F%2Fdocs.stripe.com%2Fmcp"
+        },
+        {
+          "label": "Get started",
+          "url": "https://docs.stripe.com/get-started"
+        },
+        {
+          "label": "Payments",
+          "url": "https://docs.stripe.com/payments"
+        },
+        {
+          "label": "Revenue",
+          "url": "https://docs.stripe.com/revenue"
+        },
+        {
+          "label": "Platforms and marketplaces",
+          "url": "https://docs.stripe.com/connect"
+        },
+        {
+          "label": "Money management",
+          "url": "https://docs.stripe.com/money-management"
+        },
+        {
+          "label": "Developer resources",
+          "url": "https://docs.stripe.com/development"
+        },
+        {
+          "label": "Overview",
+          "url": "https://docs.stripe.com/development"
+        },
+        {
+          "label": "Upgrade your API version",
+          "url": "https://docs.stripe.com/upgrades"
+        },
+        {
+          "label": "Provisioning",
+          "url": "https://docs.stripe.com/provisioning"
+        },
+        {
+          "label": "Stripe for Visual Studio Code",
+          "url": "https://docs.stripe.com/stripe-vscode"
+        },
+        {
+          "label": "Stripe Discord server",
+          "url": "https://docs.stripe.com/discord"
+        },
+        {
+          "label": "Stripe health alerts",
+          "url": "https://docs.stripe.com/health-alerts"
+        },
+        {
+          "label": "Stripe Signals",
+          "url": "https://docs.stripe.com/signals"
+        },
+        {
+          "label": "File uploads",
+          "url": "https://docs.stripe.com/file-upload"
+        },
+        {
+          "label": "Agent plugins",
+          "url": "https://docs.stripe.com/agents/plugin"
+        },
+        {
+          "label": "Agent skills",
+          "url": "https://docs.stripe.com/skills"
+        },
+        {
+          "label": "Stripe Directory",
+          "url": "https://docs.stripe.com/directory"
+        },
+        {
+          "label": "Custom objects",
+          "url": "https://docs.stripe.com/custom-objects"
+        },
+        {
+          "label": "Activity logs",
+          "url": "https://docs.stripe.com/activity-logs"
+        },
+        {
+          "label": "Stripebot web crawler",
+          "url": "https://docs.stripe.com/stripebot-crawler"
+        },
+        {
+          "label": "Partner certification",
+          "url": "https://docs.stripe.com/partners/training-and-certification"
+        },
+        {
+          "label": "Home",
+          "url": "https://docs.stripe.com/"
+        },
+        {
+          "label": "Public preview",
+          "url": "https://docs.stripe.com/release-phases"
+        },
+        {
+          "label": "skills",
+          "url": "https://docs.stripe.com/skills"
+        },
+        {
+          "label": "agent plugins",
+          "url": "https://docs.stripe.com/agents/plugin"
+        },
+        {
+          "label": "Cursor’s MCP documentation",
+          "url": "https://docs.cursor.com/context/model-context-protocol"
+        },
+        {
+          "label": "https://mcp.stripe.com",
+          "url": "https://mcp.stripe.com/"
+        },
+        {
+          "label": "MCP specification",
+          "url": "https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#2-1-1-oauth-grant-types"
+        },
+        {
+          "label": "enable or disable MCP access",
+          "url": "https://dashboard.stripe.com/settings/mcp-and-cli-access"
+        },
+        {
+          "label": "user settings",
+          "url": "https://dashboard.stripe.com/settings/user"
+        },
+        {
+          "label": "Team and security",
+          "url": "https://dashboard.stripe.com/settings/team"
+        },
+        {
+          "label": "MCP tools",
+          "url": "https://modelcontextprotocol.io/docs/concepts/tools"
+        },
+        {
+          "label": "Retrieve account",
+          "url": "https://docs.stripe.com/api/accounts/retrieve"
+        },
+        {
+          "label": "Analytics",
+          "url": "https://docs.stripe.com/data/analyze-with-ai"
+        },
+        {
+          "label": "Connect platform",
+          "url": "https://docs.stripe.com/connect"
+        },
+        {
+          "label": "restricted API key",
+          "url": "https://docs.stripe.com/keys/restricted-api-keys#create-a-restricted-api-key"
+        },
+        {
+          "label": "Plugin for agents",
+          "url": "https://docs.stripe.com/agents/plugin"
+        },
+        {
+          "label": "View MCP tool call logs in Workbench",
+          "url": "https://docs.stripe.com/workbench/overview#mcp-tool-call-logs"
+        },
+        {
+          "label": "Contact Support",
+          "url": "https://support.stripe.com/"
+        },
+        {
+          "label": "Discord",
+          "url": "https://stripe.com/go/developer-chat"
+        },
+        {
+          "label": "changelog",
+          "url": "https://docs.stripe.com/changelog"
+        },
+        {
+          "label": "Contact Sales",
+          "url": "https://stripe.com/contact/sales"
+        },
+        {
+          "label": "Read llms.txt",
+          "url": "https://docs.stripe.com/llms.txt"
+        },
+        {
+          "label": "Markdoc",
+          "url": "https://markdoc.dev/"
+        },
+        {
+          "label": "Set up Stripe MCP with a plugin",
+          "url": "https://docs.stripe.com/mcp#plugin"
+        },
+        {
+          "label": "Manually set up Stripe MCP",
+          "url": "https://docs.stripe.com/mcp#manual"
+        },
+        {
+          "label": "Manage MCP access and sessions",
+          "url": "https://docs.stripe.com/mcp#oauth"
+        },
+        {
+          "label": "Manage MCP access for all team members",
+          "url": "https://docs.stripe.com/mcp#access"
+        },
+        {
+          "label": "Manage your sessions",
+          "url": "https://docs.stripe.com/mcp#manage"
+        },
+        {
+          "label": "Manage sessions as an administrator",
+          "url": "https://docs.stripe.com/mcp#administrator"
+        },
+        {
+          "label": "Tools",
+          "url": "https://docs.stripe.com/mcp#tools"
+        },
+        {
+          "label": "Confirm actions by agents acting on your behalf",
+          "url": "https://docs.stripe.com/mcp#confirm-actions-by-agents-acting-on-your-behalf"
+        },
+        {
+          "label": "Use MCP with connected accounts",
+          "url": "https://docs.stripe.com/mcp#stripe-connect"
+        },
+        {
+          "label": "See also",
+          "url": "https://docs.stripe.com/mcp#see-also"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgba(0, 0, 0, 0)",
+      "rendered_body_font": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Ubuntu, sans-serif",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/stripe.png",
+      "mobile_overflow": true,
+      "mobile_menu_controls": 0
+    },
+    {
+      "id": "n8n",
+      "name": "n8n",
+      "cohort": "workflow_reference",
+      "requested_url": "https://n8n.io/",
+      "observed_at": "2026-09-20T04:44:01.890Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://n8n.io/",
+      "title": "AI Workflow Automation Platform - n8n",
+      "h1": [],
+      "headings": [
+        "AI agents and workflows you can see and control",
+        "Plug AI into your own data & over 500 integrations",
+        "Build AI agents you can actually follow",
+        "Code when you need it, UI when you don't",
+        "Move fast. Break nothing.",
+        "Case Studies",
+        "Reliable. Scalable. Secure.",
+        "Simple enough to see. Powerful enough to ship."
+      ],
+      "links": [
+        {
+          "label": "Get your ticket →",
+          "url": "https://n8n.io/intheloop/?utm_source=site&utm_medium=organic&utm_campaign=2026_in_the_loop&utm_content=ecosystemday&utm_term=banner"
+        },
+        {
+          "label": "n8n.io",
+          "url": "https://n8n.io/"
+        },
+        {
+          "label": "Product",
+          "url": "https://n8n.io/features/"
+        },
+        {
+          "label": "Docs",
+          "url": "https://docs.n8n.io/"
+        },
+        {
+          "label": "Enterprise",
+          "url": "https://n8n.io/enterprise/"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://n8n.io/pricing/"
+        },
+        {
+          "label": "205,355",
+          "url": "https://github.com/n8n-io/n8n"
+        },
+        {
+          "label": "Sign in",
+          "url": "https://app.n8n.cloud/login"
+        },
+        {
+          "label": "Get Started",
+          "url": "https://app.n8n.cloud/register"
+        },
+        {
+          "label": "llms.txt",
+          "url": "https://n8n.io/llms.txt"
+        },
+        {
+          "label": "Get started for free",
+          "url": "https://app.n8n.cloud/register"
+        },
+        {
+          "label": "Talk to sales",
+          "url": "https://n8n-community.typeform.com/to/y9X2YuGa?ld_bookit_log_id=00DKB000000IOni2AG_1789879442965_3819484526028385"
+        },
+        {
+          "label": "Top 50 Github. 205.4k stars. Read the source that earned them.",
+          "url": "https://github.com/n8n-io/n8n"
+        },
+        {
+          "label": "4.7/5 stars on G2. To quote: \"I can move fast and never feel boxed in.\"",
+          "url": "https://www.g2.com/products/n8n/reviews"
+        },
+        {
+          "label": "200k+ community members. This wouldn't be possible without you.",
+          "url": "https://community.n8n.io/"
+        },
+        {
+          "label": "Browse all integrations",
+          "url": "https://n8n.io/integrations/"
+        },
+        {
+          "label": "Explore AI",
+          "url": "https://n8n.io/ai/"
+        },
+        {
+          "label": "See full product overview",
+          "url": "https://n8n.io/features/"
+        },
+        {
+          "label": "Read Case Study",
+          "url": "https://n8n.io/case-studies/huel/"
+        },
+        {
+          "label": "Read Case Study",
+          "url": "https://n8n.io/case-studies/vodafone/"
+        },
+        {
+          "label": "Explore n8n for enterprise",
+          "url": "https://n8n.io/enterprise/"
+        },
+        {
+          "label": "@igordisco",
+          "url": "https://x.com/@igordisco"
+        },
+        {
+          "label": "@robm",
+          "url": "https://x.com/@robm"
+        },
+        {
+          "label": "@Anderoav",
+          "url": "https://x.com/anderoav"
+        },
+        {
+          "label": "@Luiza Vidal",
+          "url": "https://www.linkedin.com/in/luiza-vidal-po/"
+        },
+        {
+          "label": "@maximpoulsen",
+          "url": "https://x.com/@maximpoulsen"
+        },
+        {
+          "label": "@olliescheers",
+          "url": "https://www.linkedin.com/in/olliescheers/"
+        },
+        {
+          "label": "@felixleber",
+          "url": "https://www.linkedin.com/in/felixleber/"
+        },
+        {
+          "label": "@1ronben",
+          "url": "https://x.com/1ronben"
+        },
+        {
+          "label": "@francois-laßl",
+          "url": "https://www.linkedin.com/in/francois-la%C3%9Fl-817937243/"
+        },
+        {
+          "label": "@jodiem",
+          "url": "https://x.com/@jodiem"
+        },
+        {
+          "label": "Start building",
+          "url": "https://app.n8n.cloud/register"
+        },
+        {
+          "label": "Careers Hiring",
+          "url": "https://n8n.io/careers/"
+        },
+        {
+          "label": "Contact",
+          "url": "https://n8n.io/contact/"
+        },
+        {
+          "label": "Merch",
+          "url": "https://merch.n8n.io/"
+        },
+        {
+          "label": "Press",
+          "url": "https://n8n.io/press/"
+        },
+        {
+          "label": "Legal",
+          "url": "https://n8n.io/legal/"
+        },
+        {
+          "label": "In The Loop Oct 2026",
+          "url": "https://n8n.io/intheloop/"
+        },
+        {
+          "label": "Case Studies",
+          "url": "https://n8n.io/case-studies/"
+        },
+        {
+          "label": "AI agent report",
+          "url": "https://n8n.io/reports/2026-ai-agent-development-tools/"
+        },
+        {
+          "label": "AI benchmark",
+          "url": "https://n8n.io/ai-benchmark/"
+        },
+        {
+          "label": "n8n alternatives",
+          "url": "https://n8n.io/vs/"
+        },
+        {
+          "label": "Events",
+          "url": "https://luma.com/n8n-events"
+        },
+        {
+          "label": "n8n on SAP",
+          "url": "https://n8n.io/sap-partnership/"
+        },
+        {
+          "label": "Partners",
+          "url": "https://n8n.io/partners/"
+        },
+        {
+          "label": "Affiliate program",
+          "url": "https://n8n.io/affiliates/"
+        },
+        {
+          "label": "Hire an expert",
+          "url": "https://experts.n8n.io/"
+        },
+        {
+          "label": "Join user tests, get a gift",
+          "url": "https://internal.users.n8n.cloud/form/n8n-usability-test-signup"
+        },
+        {
+          "label": "Brand guidelines",
+          "url": "https://n8n.io/brandguidelines/"
+        },
+        {
+          "label": "Education",
+          "url": "https://n8n.io/education/"
+        },
+        {
+          "label": "Imprint",
+          "url": "https://n8n.io/imprint/"
+        },
+        {
+          "label": "Security",
+          "url": "https://n8n.io/legal/security/"
+        },
+        {
+          "label": "Privacy",
+          "url": "https://n8n.io/legal/privacy/"
+        },
+        {
+          "label": "Report a vulnerability",
+          "url": "https://n8n.io/report-a-vulnerability/"
+        },
+        {
+          "label": "Read more",
+          "url": "https://n8n.io/legal/?eco_features=CAMPAIGN_PERSONALIZATION#privacy"
+        },
+        {
+          "label": "Shopify",
+          "url": "https://www.shopify.com/legal/privacy"
+        },
+        {
+          "label": "CookieScript",
+          "url": "https://cookie-script.com/privacy-policy.html"
+        },
+        {
+          "label": "Shopify",
+          "url": "https://www.shopify.com/de/legal/datenschutz"
+        },
+        {
+          "label": "Google LLC",
+          "url": "https://policies.google.com/privacy"
+        },
+        {
+          "label": "Shopify Inc.",
+          "url": "https://www.shopify.com/legal/privacy"
+        },
+        {
+          "label": "LinkedIn Corporation",
+          "url": "https://www.linkedin.com/legal/privacy-policy"
+        },
+        {
+          "label": "Meta Platform Inc.",
+          "url": "https://www.facebook.com/policy.php"
+        },
+        {
+          "label": "Google Privacy Policy",
+          "url": "https://business.safety.google/privacy/"
+        },
+        {
+          "label": "report",
+          "url": "https://cookie-script.com/cookie-report?identifier=a05a23e2e5a8d515ee5edc7d44a27746"
+        },
+        {
+          "label": "CookieScript",
+          "url": "https://cookie-script.com/"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(14, 9, 24)",
+      "rendered_body_font": "geomanist, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/n8n.png",
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "retool",
+      "name": "Retool",
+      "cohort": "workflow_reference",
+      "requested_url": "https://retool.com/",
+      "observed_at": "2026-09-20T04:44:01.906Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://retool.com/",
+      "title": "Build internal software better, with AI. | Retool",
+      "h1": [
+        "Secure your vibe-coded apps"
+      ],
+      "headings": [
+        "Apps that mean business",
+        "",
+        "",
+        "Start today",
+        ""
+      ],
+      "links": [
+        {
+          "label": "Skip to main content",
+          "url": "https://retool.com/#main-content"
+        },
+        {
+          "label": "Retool",
+          "url": "https://retool.com/"
+        },
+        {
+          "label": "Use cases",
+          "url": "https://retool.com/use-cases"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://retool.com/pricing"
+        },
+        {
+          "label": "Sign in",
+          "url": "https://login.retool.com/auth/login?source=navbarcta"
+        },
+        {
+          "label": "Book a demo",
+          "url": "https://retool.com/demo?meeting_page_source=navbarcta"
+        },
+        {
+          "label": "Start for free",
+          "url": "https://login.retool.com/auth/signup?source=navbarcta"
+        },
+        {
+          "label": "View app gallery",
+          "url": "https://retool.com/app-gallery"
+        },
+        {
+          "label": "Learn about the app builder",
+          "url": "https://retool.com/build-enterprise-apps/apps"
+        },
+        {
+          "label": "Read the MCP server docs",
+          "url": "https://docs.retool.com/agents/guides/tools/connect-to-mcp-server"
+        },
+        {
+          "label": "Read the app import docs",
+          "url": "https://docs.retool.com/build/apps/guides/import"
+        },
+        {
+          "label": "See the full list of integrations",
+          "url": "https://retool.com/integrations"
+        },
+        {
+          "label": "Learn about security and governance",
+          "url": "https://retool.com/govern-enterprise-apps"
+        },
+        {
+          "label": "Build",
+          "url": "https://retool.com/build-enterprise-apps"
+        },
+        {
+          "label": "Launch",
+          "url": "https://retool.com/launch-enterprise-apps"
+        },
+        {
+          "label": "Scale",
+          "url": "https://retool.com/scale-enterprise-apps"
+        },
+        {
+          "label": "Govern",
+          "url": "https://retool.com/govern-enterprise-apps"
+        },
+        {
+          "label": "AI app security",
+          "url": "https://retool.com/secure-vibe-coding"
+        },
+        {
+          "label": "AppGen",
+          "url": "https://retool.com/ai-app-generation"
+        },
+        {
+          "label": "Agents",
+          "url": "https://retool.com/build-enterprise-apps/agents"
+        },
+        {
+          "label": "AI primitives",
+          "url": "https://retool.com/ai"
+        },
+        {
+          "label": "App builder",
+          "url": "https://retool.com/build-enterprise-apps/apps"
+        },
+        {
+          "label": "Mobile apps",
+          "url": "https://retool.com/launch-enterprise-apps/mobile"
+        },
+        {
+          "label": "Workflows",
+          "url": "https://retool.com/build-enterprise-apps/workflows"
+        },
+        {
+          "label": "Database",
+          "url": "https://retool.com/build-enterprise-apps/database"
+        },
+        {
+          "label": "External apps",
+          "url": "https://retool.com/launch-enterprise-apps/external"
+        },
+        {
+          "label": "Self-hosting",
+          "url": "https://retool.com/govern-enterprise-apps/self-hosted"
+        },
+        {
+          "label": "Data",
+          "url": "https://retool.com/for/data-teams"
+        },
+        {
+          "label": "Engineering",
+          "url": "https://retool.com/for/engineering-teams"
+        },
+        {
+          "label": "Operations",
+          "url": "https://retool.com/for/operations-teams"
+        },
+        {
+          "label": "Financial services",
+          "url": "https://retool.com/for/financial-services"
+        },
+        {
+          "label": "Manufacturing",
+          "url": "https://retool.com/for/manufacturing"
+        },
+        {
+          "label": "Enterprise",
+          "url": "https://retool.com/enterprise"
+        },
+        {
+          "label": "Startups",
+          "url": "https://retool.com/startups"
+        },
+        {
+          "label": "App gallery",
+          "url": "https://retool.com/app-gallery"
+        },
+        {
+          "label": "Integrations",
+          "url": "https://retool.com/integrations"
+        },
+        {
+          "label": "Templates",
+          "url": "https://retool.com/templates"
+        },
+        {
+          "label": "Utilities",
+          "url": "https://retool.com/utilities"
+        },
+        {
+          "label": "Blog",
+          "url": "https://retool.com/blog"
+        },
+        {
+          "label": "Customer stories",
+          "url": "https://retool.com/customers"
+        },
+        {
+          "label": "Videos",
+          "url": "https://retool.com/resources/videos"
+        },
+        {
+          "label": "Resource hub",
+          "url": "https://retool.com/resources"
+        },
+        {
+          "label": "Documentation",
+          "url": "https://docs.retool.com/"
+        },
+        {
+          "label": "Retool University",
+          "url": "https://university.retool.com/"
+        },
+        {
+          "label": "Hire a developer",
+          "url": "https://retool.com/hire-developer"
+        },
+        {
+          "label": "About",
+          "url": "https://retool.com/about"
+        },
+        {
+          "label": "Careers",
+          "url": "https://retool.com/careers"
+        },
+        {
+          "label": "Partners",
+          "url": "https://retool.com/partners"
+        },
+        {
+          "label": "Newsroom",
+          "url": "https://retool.com/newsroom"
+        },
+        {
+          "label": "Start for free",
+          "url": "https://login.retool.com/auth/login?source=navbarcta"
+        },
+        {
+          "label": "Retool on LinkedIn",
+          "url": "https://www.linkedin.com/company/tryretool/"
+        },
+        {
+          "label": "Retool on Twitter/X",
+          "url": "https://x.com/retool"
+        },
+        {
+          "label": "Retool on Reddit",
+          "url": "https://www.reddit.com/r/Retool/"
+        },
+        {
+          "label": "TERMS OF USE",
+          "url": "https://docs.retool.com/legal"
+        },
+        {
+          "label": "PRIVACY POLICY",
+          "url": "https://docs.retool.com/legal/privacy-policy"
+        },
+        {
+          "label": "SECURITY",
+          "url": "https://docs.retool.com/legal/security"
+        },
+        {
+          "label": "TRUST CENTER",
+          "url": "https://trust.retool.com/"
+        },
+        {
+          "label": "CHANGELOG",
+          "url": "https://docs.retool.com/changelog"
+        },
+        {
+          "label": "STATUS",
+          "url": "https://retool.statuspage.io/"
+        },
+        {
+          "label": "SITE MAP",
+          "url": "https://retool.com/sitemap-page"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(21, 21, 21)",
+      "rendered_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "resend",
+      "name": "Resend",
+      "cohort": "onboarding_reference",
+      "requested_url": "https://resend.com/",
+      "observed_at": "2026-09-20T04:44:06.037Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://resend.com/",
+      "title": "Resend · Email for developers",
+      "h1": [
+        "Email for developers"
+      ],
+      "headings": [
+        "Integrate this weekend",
+        "First-class developer experience",
+        "Test mode",
+        "Modular webhooks",
+        "Write using a delightful editor",
+        "Go beyond editing",
+        "Contact management",
+        "Broadcast analytics",
+        "Develop emails using React",
+        "Welcome to ACME, user!",
+        "Reach humans, not spam folders",
+        "Everything in your control"
+      ],
+      "links": [
+        {
+          "label": "Resend",
+          "url": "https://resend.com/home"
+        },
+        {
+          "label": "Pricing",
+          "url": "https://resend.com/pricing"
+        },
+        {
+          "label": "Log in",
+          "url": "https://resend.com/login"
+        },
+        {
+          "label": "Get started",
+          "url": "https://resend.com/signup"
+        },
+        {
+          "label": "Join us at Resend Forward",
+          "url": "https://resend.com/forward"
+        },
+        {
+          "label": "Documentation",
+          "url": "https://resend.com/docs"
+        },
+        {
+          "label": "Explore Enterprise",
+          "url": "https://resend.com/enterprise"
+        },
+        {
+          "label": "View on GitHub",
+          "url": "https://github.com/resend/resend-node-example"
+        },
+        {
+          "label": "Download ZIP",
+          "url": "https://github.com/resend/resend-node-example/archive/refs/heads/main.zip"
+        },
+        {
+          "label": "Learn more",
+          "url": "https://resend.com/docs/dashboard/emails/send-test-emails"
+        },
+        {
+          "label": "Learn more",
+          "url": "https://resend.com/docs/webhooks/introduction"
+        },
+        {
+          "label": "Learn more",
+          "url": "https://resend.com/features/audiences"
+        },
+        {
+          "label": "Learn more",
+          "url": "https://resend.com/features/broadcasts"
+        },
+        {
+          "label": "Check the docs",
+          "url": "https://react.email/docs"
+        },
+        {
+          "label": "Get Started",
+          "url": "https://resend.com/get-started"
+        },
+        {
+          "label": "Send with Next.js",
+          "url": "https://resend.com/docs/send-with-nextjs"
+        },
+        {
+          "label": "All systems operational",
+          "url": "https://resend.com/status"
+        },
+        {
+          "label": "Automations",
+          "url": "https://resend.com/features/automations"
+        },
+        {
+          "label": "Audiences",
+          "url": "https://resend.com/features/audiences"
+        },
+        {
+          "label": "Broadcasts",
+          "url": "https://resend.com/features/broadcasts"
+        },
+        {
+          "label": "Inbound",
+          "url": "https://resend.com/features/inbound"
+        },
+        {
+          "label": "Templates",
+          "url": "https://resend.com/features/templates"
+        },
+        {
+          "label": "Webhooks",
+          "url": "https://resend.com/features/webhooks"
+        },
+        {
+          "label": "Dedicated IPs",
+          "url": "https://resend.com/features/dedicated-ips"
+        },
+        {
+          "label": "Changelog",
+          "url": "https://resend.com/changelog"
+        },
+        {
+          "label": "Enterprise",
+          "url": "https://resend.com/enterprise"
+        },
+        {
+          "label": "Security",
+          "url": "https://resend.com/security"
+        },
+        {
+          "label": "SOC 2",
+          "url": "https://resend.com/security/soc-2"
+        },
+        {
+          "label": "GDPR",
+          "url": "https://resend.com/security/gdpr"
+        },
+        {
+          "label": "Brand",
+          "url": "https://resend.com/brand"
+        },
+        {
+          "label": "About",
+          "url": "https://resend.com/about"
+        },
+        {
+          "label": "Blog",
+          "url": "https://resend.com/blog"
+        },
+        {
+          "label": "Careers",
+          "url": "https://resend.com/careers"
+        },
+        {
+          "label": "Clubs",
+          "url": "https://resend.com/clubs"
+        },
+        {
+          "label": "Customers",
+          "url": "https://resend.com/customers"
+        },
+        {
+          "label": "Humans",
+          "url": "https://resend.com/humans"
+        },
+        {
+          "label": "Philosophy",
+          "url": "https://resend.com/philosophy"
+        },
+        {
+          "label": "Support",
+          "url": "https://resend.com/support"
+        },
+        {
+          "label": "Status",
+          "url": "https://resend.com/status"
+        },
+        {
+          "label": "Migrate",
+          "url": "https://resend.com/migrate"
+        },
+        {
+          "label": "Knowledge base",
+          "url": "https://resend.com/docs/knowledge-base/introduction"
+        },
+        {
+          "label": "Legal policies",
+          "url": "https://resend.com/legal"
+        },
+        {
+          "label": "Events",
+          "url": "https://resend.com/events"
+        },
+        {
+          "label": "Insiders",
+          "url": "https://resend.com/insiders"
+        },
+        {
+          "label": "Open source",
+          "url": "https://resend.com/open-source"
+        },
+        {
+          "label": "Wallpapers",
+          "url": "https://resend.com/wallpapers"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(0, 0, 0)",
+      "rendered_body_font": "inter, ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "visible_form_count": 0,
+      "mobile_overflow": false,
+      "mobile_menu_controls": 1
+    },
+    {
+      "id": "baltor",
+      "name": "Baltor hosted pilot",
+      "cohort": "own_product",
+      "requested_url": "https://baltor-pilot.fly.dev/",
+      "observed_at": "2026-09-20T04:44:06.052Z",
+      "scope": "signed_out_homepage_only",
+      "state": "public_page_observed",
+      "error": null,
+      "status": 200,
+      "final_url": "https://baltor-pilot.fly.dev/",
+      "title": "Baltor | Reusable solutions with less repeated work",
+      "h1": [
+        "Turn complex problems into reusable solutions."
+      ],
+      "headings": [
+        "Prepare a customer import",
+        "Is your AI spending effort in the wrong places?",
+        "Spend more time on the problem. Less time assembling an optimization stack.",
+        "Put knowledge, code and experience to work.",
+        "Plan, build and review with the information each step needs.",
+        "Start with reusable intelligence."
+      ],
+      "links": [
+        {
+          "label": "Skip to content",
+          "url": "https://baltor-pilot.fly.dev/#main"
+        },
+        {
+          "label": "↗ Baltor",
+          "url": "https://baltor-pilot.fly.dev/"
+        },
+        {
+          "label": "How it works",
+          "url": "https://baltor-pilot.fly.dev/how-it-works"
+        },
+        {
+          "label": "Documentation",
+          "url": "https://baltor-pilot.fly.dev/docs"
+        },
+        {
+          "label": "Workspace",
+          "url": "https://baltor-pilot.fly.dev/app"
+        },
+        {
+          "label": "Account",
+          "url": "https://baltor-pilot.fly.dev/account"
+        },
+        {
+          "label": "Sign in ↗",
+          "url": "https://baltor-pilot.fly.dev/login"
+        },
+        {
+          "label": "Explore the pilot ↗",
+          "url": "https://baltor-pilot.fly.dev/login"
+        },
+        {
+          "label": "See how it works",
+          "url": "https://baltor-pilot.fly.dev/how-it-works#task-breakdown"
+        },
+        {
+          "label": "See the approach →",
+          "url": "https://baltor-pilot.fly.dev/how-it-works#task-breakdown"
+        },
+        {
+          "label": "Explore an example task",
+          "url": "https://baltor-pilot.fly.dev/how-it-works#task-breakdown"
+        },
+        {
+          "label": "Open the workspace",
+          "url": "https://baltor-pilot.fly.dev/login"
+        },
+        {
+          "label": "Connection and privacy guide",
+          "url": "https://baltor-pilot.fly.dev/docs"
+        }
+      ],
+      "desktop_overflow": false,
+      "rendered_body_color": "rgb(255, 255, 255)",
+      "rendered_body_font": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif",
+      "visible_form_count": 0,
+      "screenshot": "public-websites-1-screenshots/baltor.png",
+      "mobile_overflow": false,
+      "mobile_menu_controls": 0
+    }
+  ],
+  "limits": [
+    "Signed-out public pages only; links are discovered, not destination qualification",
+    "No sign-ups, purchases, native client connections or authenticated product flows were attempted",
+    "Design observations are not conversion, accessibility certification or feature-quality rankings",
+    "A blocked or failed page is unknown, not an absent capability",
+    "Viewport findings are this browser observation, not a universal device result"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "record_type": "domain_setup_observation/v1",
+  "observed_at": "2026-09-20T17:02:06.742247+00:00",
+  "domain": {
+    "total": 1,
+    "items": [
+      {
+        "name": "baltor.ai",
+        "lifecycleStatus": "registered",
+        "nameservers": {
+          "provider": "basic",
+          "hosts": [
+            "dns1.registrar-servers.com",
+            "dns2.registrar-servers.com"
+          ]
+        },
+        "expirationDate": "2028-04-23T00:00:00.000Z"
+      }
+    ]
+  },
+  "dns": {
+    "items": [
+      {
+        "type": "CNAME",
+        "name": "www",
+        "cname": "parkingpage.namecheap.com.",
+        "ttl": 1800
+      }
+    ],
+    "total": 2,
+    "omittedRecords": [
+      {
+        "type": "URL",
+        "name": "@"
+      }
+    ]
+  },
+  "writes_performed": false,
+  "limits": [
+    "Typed DNS listing omits the root URL redirect value and provider-managed mail settings; it is not a complete account backup.",
+    "Public apex MX and SPF were separately read from the authoritative nameserver; nameservers will remain unchanged."
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "record_type": "publication_review_questions/v1",
+  "date": "2026-09-19",
+  "questions": [
+    {"id":"PUBLICATION-001","question":"Can the complete internal HTML be published unchanged?","status":"answered_not_approved","answer":"No. The 23.5 MB file embeds source inventory archives, owner setup and internal work. Public pages require a release-bound content allowlist.","evidence":"publication-adversarial-review.md"},
+    {"id":"PUBLICATION-002","question":"Does metadata search stop disclosing references if its grants change while ranking?","status":"repaired_local_regression","answer":"The original loopback probe disclosed two references after revocation and is retained. The repair binds the initial grant revision and revalidates it at completion; revocation, replacement and entitlement changes refuse. Local checks and a removed-guard control pass. Hosted behavior and recalling bytes already sent are not claimed.","evidence":"launch-slice-verification-3.json"},
+    {"id":"PUBLICATION-003","question":"Do generated harness folders prove native context loading?","status":"answered_integration_open","answer":"No. The current provisioner writes instructions, task.json, provisioning.json and empty contracts/artifacts folders. Bodies are not included by default, and offered, placed, loaded, used and helpful are different observations.","evidence":"docs/guides/harness-instance-context-layout.md"},
+    {"id":"PUBLICATION-004","question":"Is a self-improving retrieval engine already integrated and qualified?","status":"answered_integration_open","answer":"No. AutoRAG 2 is the leading documented trial candidate. Its external adapter, original-source mapping and held-out feedback benefit remain unqualified.","evidence":"artifacts/continuation-research-2026-09-19/improving-retrieval-systems.md"},
+    {"id":"PUBLICATION-005","question":"Must a new domain be purchased before continuing?","status":"owner_brand_decision","answer":"The owner reports owning baltor.ai. Baltor is a candidate public brand; Loop Engine repository and runtime names remain unchanged. Naming and ownership checks precede any deployment or rebrand.","evidence":"docs/guides/public-website-content-and-domain.md"}
+  ]
+}

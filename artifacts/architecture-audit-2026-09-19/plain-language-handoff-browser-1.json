@@ -1,0 +1,70 @@
+{
+  "record_type": "service_workspace_browser_checks/v1",
+  "scope": "real browser and loopback service; provider fixtures only",
+  "external_provider_calls": 0,
+  "checks": [
+    {
+      "name": "public_landing_has_real_routes_and_configured_brand",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_four_persistent_intelligence_layers_are_visible",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_leads_with_reusable_solutions_not_deployment",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_explains_token_value_without_invented_savings",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "light_is_default_even_when_operating_system_is_dark",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "operating_system_does_not_override_explicit_light_default",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_five_owner_pain_points_are_present",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "optimization_message_does_not_guarantee_daily_improvement",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_journey_completed",
+      "passed": false,
+      "detail": {
+        "error": "TimeoutError: locator.textContent: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-view=\"docs\"] [data-layer-notes]')\u001b[22m\n"
+      }
+    }
+  ],
+  "passed": 8,
+  "total": 9,
+  "all_passed": false,
+  "source_sha256": {
+    "src/loop_engine/core/service_runtime/http.py": "4051cba47631eba93c09acdf4efef3749407a71cd618c76ccbe3559a80999c6d",
+    "src/loop_engine/core/service_runtime/records.py": "5170cc8b19619c0f4d52d0161b16736b4fbc4af424dbed0d78f62bc12a73387b",
+    "src/loop_engine/core/service_runtime/access.py": "28b8fead744a63af3faf535a03d4d6e6a0306fc9c145af3947b020db0c4f75e8",
+    "src/loop_engine/core/service_runtime/access_checks.py": "99467debd507233caf455ae234fd4a89a26821424cf5a92c9124e98ad8fa1969",
+    "src/loop_engine/core/service_runtime/http_entrypoint.py": "f3a052c69b16a2da7147da231b051ca996039e163d469c435d00f7ac9dc01cb3",
+    "src/loop_engine/core/service_runtime/web_assets/index.html": "7e6b67e68c99b098cb546e53d6872d832221eaef9e8acaf2e06c877c822e0394",
+    "src/loop_engine/core/service_runtime/web_assets/service.css": "642274c13a8f8730c1253e9b1aaadc80055ad0c7eeda1cd688df17f962afebd9",
+    "src/loop_engine/core/service_runtime/web_assets/service.js": "c15a0d6b090e01b68cbe4ca5a9e4cc3ef8c75910d8eba7166c77cd6c7a17679f",
+    "src/loop_engine/core/service_runtime/web_assets/architecture-story.js": "dece31c1c8022098aa38268a1d4d8237a59e7fae6bf7aa08aab1596e01ff2619",
+    "src/loop_engine/core/service_runtime/web_assets/architecture.css": "cb086cfa4dedbdf21d7178bb37310c11c8f2dd2f8d9bab41dfa20ecabeb7d994",
+    "src/loop_engine/core/service_runtime/web_assets/client-recipes.json": "3d976e2ffed89ba3339c01dcb795be485b6dc6ee23dc43c2d897d50bed40bb60"
+  }
+}

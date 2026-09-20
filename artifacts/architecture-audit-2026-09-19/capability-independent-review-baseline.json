@@ -1,0 +1,127 @@
+{
+  "record_type": "capability_independent_review_baseline/v1",
+  "date": "2026-09-19",
+  "source_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "worktree_state": "Concurrent uncommitted changes before the root agent's three follow-up fixes.",
+  "source_sha256": null,
+  "source_hash_limitation": "Hashes were not captured during these initial probes. They are not reconstructed from the later repaired tree.",
+  "first_probe_batch": {
+    "loop_engine.core.capability_directory": {
+      "total": 36,
+      "failed": []
+    },
+    "loop_engine.loop.capability_loops": {
+      "total": 16,
+      "failed": []
+    },
+    "loop_engine.core.host_completion_checks": {
+      "total": 21,
+      "failed": []
+    },
+    "contract_replacement_after_selected_reference_check": {
+      "calls": [
+        "replacement"
+      ],
+      "ok": true,
+      "reported_effects": [
+        "pure"
+      ],
+      "current_effects": [
+        "writes_fs"
+      ]
+    },
+    "governed_unsupported_version": {
+      "error": "ValueError: unsupported capability protocol version",
+      "calls": []
+    },
+    "unsupported_fallback": {
+      "error": "ValueError: unsupported capability protocol version",
+      "calls": []
+    },
+    "installed_model_callback_declaration": {
+      "calls": [
+        "model_adapter"
+      ],
+      "effects": [
+        "pure"
+      ],
+      "model_use": "none",
+      "model_calls": 0
+    }
+  },
+  "second_probe_batch": {
+    "mutable_scalar_declaration": {
+      "accepted": true,
+      "held": [
+        "internal",
+        "public"
+      ],
+      "digest_changed": true
+    },
+    "fallback_version-A": {
+      "error": "ValueError: unsupported capability protocol version",
+      "calls": [
+        "a"
+      ]
+    },
+    "fallback_version-A,version-B": {
+      "ok": true,
+      "used_fallback": true,
+      "calls": [
+        "a",
+        "b"
+      ]
+    },
+    "two_surface_cycle": {
+      "error": "HandshakeError: capability fallback cycle refused before repeated execution",
+      "calls": [
+        "a",
+        "b"
+      ]
+    },
+    "replacement_cleanup": {
+      "ok": false,
+      "called": [],
+      "fallback": null
+    },
+    "invalid_replacement_atomic_validation": {
+      "error": "HandshakeError",
+      "same_handshake": true,
+      "same_endpoints": true
+    },
+    "missing_model_executor": {
+      "ok": false,
+      "value": {
+        "ok": false,
+        "error_code": "model_executor_unavailable",
+        "asked_model": false
+      },
+      "attempts": 1,
+      "model_calls": 0,
+      "capability_terminal_code": "EFFECT_FAILED"
+    }
+  },
+  "runner_correction": "The first invocation attempted host_completion_checks.self_test, which does not exist. It was rerun through that helper's run_checks before collecting these observations; no runtime check was weakened.",
+  "findings": [
+    {
+      "severity": "high",
+      "boundary": "loop/capability_loops.py",
+      "observation": "A ledger spec callback replaced the selected endpoint and handshake before dispatch. The replacement executed once while the result retained effects=['pure'] and the current declaration had effects=['writes_fs']."
+    },
+    {
+      "severity": "medium",
+      "boundary": "core/capability_directory.py default_directory",
+      "observation": "A supplied llm_invoke trace callback ran under effects=['pure'], model_use='none', model_calls=0. No actual model or provider call occurred."
+    },
+    {
+      "severity": "medium",
+      "boundary": "core/capability_directory.py CapabilityHandshake",
+      "observation": "A caller-owned privacy_class list was retained. Mutating that list changed the registered declaration and its digest."
+    }
+  ],
+  "limitations": [
+    "Local trace callbacks only; no network, model, or real filesystem-writing endpoint executed.",
+    "The original review executed 36 directory checks,16 Loop checks,and21 host-completion helper checks; the broader45 host-runtime suite is included in the recheck.",
+    "Read-only review of runtime source; baseline observations are not a full-system audit."
+  ]
+}

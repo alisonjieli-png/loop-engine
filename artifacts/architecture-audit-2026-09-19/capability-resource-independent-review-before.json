@@ -1,0 +1,103 @@
+{
+  "record_type": "capability_resource_independent_review/v1",
+  "owning": {
+    "record_type": "capability_resources_test/v1",
+    "tests": [
+      {
+        "test": "capability_instruction_retains_the_reviewed_text_bytes",
+        "passed": true
+      },
+      {
+        "test": "capability_instruction_binds_version_and_content",
+        "passed": true
+      },
+      {
+        "test": "capability_instruction_refuses_undeclared_slots",
+        "passed": true
+      }
+    ]
+  },
+  "observations": [
+    {
+      "name": "same_976_utf8_bytes_as_previous_owned_description",
+      "passed": true
+    },
+    {
+      "name": "descriptor_carries_exact_render_metadata",
+      "passed": true
+    },
+    {
+      "name": "schema_reference_matches_existing_candidate_contract",
+      "passed": true
+    },
+    {
+      "name": "static_resource_has_no_slots_or_dynamic_provenance",
+      "passed": true
+    },
+    {
+      "name": "unknown_slot_refused",
+      "passed": true
+    },
+    {
+      "name": "unknown_provenance_refused",
+      "passed": true
+    },
+    {
+      "name": "version_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "output_schema_ref_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "interpreter_profile_ref_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "policy_ref_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "changed_text_changes_bundle_and_render_identity",
+      "passed": true
+    },
+    {
+      "name": "component_is_frozen",
+      "passed": true
+    }
+  ],
+  "text_sha256": "f96ca4656100e386022b2125a11f6bbed0171c724388ebd262a10544c819f1db",
+  "characters": 976,
+  "bundle_ref": "adaptive.generated_project.purpose@1.0.0",
+  "bundle_digest": "237d958c0059eb08239cdf06c545fda8f863add87e4b376a96f70ad7b17a8e0b",
+  "slot_schema_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "render": {
+    "record_type": "prompt_resource_render/v1",
+    "bundle_ref": "adaptive.generated_project.purpose@1.0.0",
+    "bundle_digest": "237d958c0059eb08239cdf06c545fda8f863add87e4b376a96f70ad7b17a8e0b",
+    "slot_schema_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "render_digest": "f96ca4656100e386022b2125a11f6bbed0171c724388ebd262a10544c819f1db",
+    "slot_value_digests": [],
+    "slot_provenance": [],
+    "trust_classes": []
+  },
+  "source_sha256": {
+    "src/loop_engine/strings/capability_resources.py": "627d28791534fdb9ccf84120f1e2588ca4e82e790caa1ce425f4bc106e55dce2",
+    "src/loop_engine/strings/prompt_fragments.py": "25af2abb99979e5a5146859f061f734619d21dccd7c5c1ec396615228dcb5c18",
+    "src/loop_engine/core/practitioner_runtime/capabilities.py": "be11006de2de6517b5ae2985ff5506a0da233a09c410def7c8c4b356149ff05a",
+    "src/loop_engine/core/adaptive_practitioner_records.py": "73711ba862fae45e337a6b211be6052f622aa26fc11c51e97f54b751ab2d1c57"
+  },
+  "passed": true,
+  "descriptor_projection_finding": {
+    "status": "reproduced_before_owner_repair",
+    "observation": {
+      "same_descriptor_object": true,
+      "new_discovery_purpose": "Changed returned discovery description",
+      "resource_render_digest": "f96ca4656100e386022b2125a11f6bbed0171c724388ebd262a10544c819f1db",
+      "actual_text_digest": "56a6a806e8b5ea8eee41c933c28d4a8ed74795675ab71cf91d5b5271049f9f49",
+      "matches_resource": false
+    },
+    "classification": "work defect in existing mutable descriptor projection; separate from detector exception"
+  }
+}

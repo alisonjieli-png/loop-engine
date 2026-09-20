@@ -1,0 +1,55 @@
+{
+  "record_type": "http_service_checkpoint/v1",
+  "review_date": "2026-09-19",
+  "revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "scope": "Focused acceptance on the current shared working tree, not frozen whole-product qualification.",
+  "entrypoint": "python -m loop_engine.core.service_runtime.http_entrypoint",
+  "commands": ["serve", "configure", "issue-key", "smoke"],
+  "runner": "http-service-verification.py",
+  "baseline": {"passed": 39, "total": 39, "all_passed": true},
+  "mutants": [
+    {"name": "ignore_current_request_version", "detected": true},
+    {"name": "ignore_token_audience", "detected": true},
+    {"name": "ignore_token_issuer", "detected": true},
+    {"name": "ignore_token_expiry", "detected": true},
+    {"name": "broaden_external_token_to_all_user_scopes", "detected": true},
+    {"name": "follow_unconfigured_key_endpoint_redirect", "detected": true},
+    {"name": "ignore_key_set_byte_limit", "detected": true},
+    {"name": "inline_a_body_requiring_separate_authorization", "detected": true},
+    {"name": "call_hash_vectors_semantic_embeddings", "detected": true},
+    {"name": "remove_Host_validation", "detected": true},
+    {"name": "remove_Origin_validation", "detected": true},
+    {"name": "drop_selected_body_precondition", "detected": true},
+    {"name": "free_capacity_while_callback_is_still_running", "detected": true},
+    {"name": "ignore_incoming_body_byte_limit", "detected": true},
+    {"name": "acknowledge_unreconciled_billing_as_HTTP_success", "detected": true},
+    {"name": "acknowledge_unknown_billing_commit_as_HTTP_success", "detected": true},
+    {"name": "admit_changed_host_artifact_bytes", "detected": true}
+  ],
+  "mutant_detection": {"detected": 17, "total": 17, "all_by_named_failing_checks": true},
+  "protocol": {"sdk": "mcp", "sdk_version": "1.29.1", "supported": ["2025-11-25"], "transport": "streamable_http", "sessions": "stateless"},
+  "installed_versions": {
+    "starlette": "1.6.0", "uvicorn": "0.52.4", "httpx": "0.28.1", "PyJWT": "2.13.0",
+    "cryptography": "50.0.1", "anyio": "4.14.2", "httpx-sse": "0.4.3", "sse-starlette": "3.4.8",
+    "pydantic": "2.13.4", "pydantic-settings": "2.15.0", "jsonschema": "4.26.0", "python-multipart": "0.0.32"
+  },
+  "source_sha256": {
+    "src/loop_engine/core/service_runtime/http.py": "bd9b82f1be7476d7731084cc4d9721bf901afa4694acfdb3d67f8a834608833b",
+    "src/loop_engine/core/service_runtime/http_auth.py": "2cd37eeb79545d1b12b91d4e49bc06f49154e38310c4b80942d780a3c2fa0879",
+    "src/loop_engine/core/service_runtime/http_boundary_checks.py": "04a39455cc9894aed7758ad707bff14d0595d67c9edd43bbd5536e572abd52fc",
+    "src/loop_engine/core/service_runtime/http_checks.py": "bc30bc3421c133540d300d13472b459356b100330d2ceb8564e1691dc0470c13",
+    "src/loop_engine/core/service_runtime/http_entrypoint.py": "77ed4e4e0db1bbc2d89e365e0d35f3f795424eeb8c074a79c2139a7c446a6f48",
+    "src/loop_engine/core/service_runtime/http_test_fixtures.py": "c156db61763e7cbbcd07bfac66fac0e9414012b62a213f55ec0c1aec6eab2720"
+  },
+  "runner_corrections": [
+    "The unknown-commit injection patches the frozen catalogue type rather than assigning an instance method.",
+    "Isolated boundary fixtures receive a not-yet-created scratch child path; every isolated fixture passes before mutation.",
+    "Property mutants unwrap the compiled property getter before rebuilding the property."
+  ],
+  "provider_calls": 0,
+  "external_network_calls": 0,
+  "live_identity_provider_qualified": false,
+  "live_payment_provider_qualified": false,
+  "public_deployment_performed": false,
+  "checkout_portal_installed_at_this_checkpoint": false
+}

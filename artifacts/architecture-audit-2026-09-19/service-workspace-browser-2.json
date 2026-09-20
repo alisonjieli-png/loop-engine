@@ -1,0 +1,196 @@
+{
+  "record_type": "service_workspace_browser_checks/v1",
+  "scope": "real browser and loopback service; provider fixtures only",
+  "external_provider_calls": 0,
+  "checks": [
+    {
+      "name": "anonymous_workspace_has_real_setup_and_no_active_search",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "wrong_key_does_not_enter_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "real_durable_tenant_authentication_reaches_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "credentials_are_not_persisted_in_browser_storage",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_search_reaches_the_real_authorized_retriever",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_download_checks_actual_bytes_against_the_selected_digest",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage_is_read_from_durable_service_state",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unconfigured_billing_is_not_a_fake_purchase_flow",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "retrieved_metadata_is_text_not_executable_HTML",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "changed_download_is_refused_by_the_browser",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "responsive_1440_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "disconnect_clears_identity_results_and_controls",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "configured_billing_offers_only_host_defined_plans",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "checkout_uses_the_real_domain_with_a_local_provider_fixture",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "portal_uses_the_real_domain_without_navigating_to_a_provider",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "no_browser_runtime_errors",
+      "passed": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "name": "no_external_provider_requests",
+      "passed": true,
+      "detail": {
+        "network": []
+      }
+    }
+  ],
+  "passed": 28,
+  "total": 28,
+  "all_passed": true,
+  "source_sha256": {
+    "src/loop_engine/core/service_runtime/http.py": "0b02bf1b18532824f6768d01b1c1729e8a94a7f9b99b178a2ef796cf6f22129a",
+    "src/loop_engine/core/service_runtime/web_assets/index.html": "3d17c6cf968c3e136f066c825b7998b6f9088bffcd257fc9e27a91f5696319f5",
+    "src/loop_engine/core/service_runtime/web_assets/service.css": "7e2bdcafc0ce803ab97baace3a6964d876b33361bd31bde795f32b9a8397adac",
+    "src/loop_engine/core/service_runtime/web_assets/service.js": "f063978b299da8b869e94e99bdb753872b60d750f5111be8a8417dc4019c0a0f"
+  }
+}

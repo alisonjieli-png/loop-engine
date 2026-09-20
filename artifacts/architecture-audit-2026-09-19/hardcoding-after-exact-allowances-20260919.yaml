@@ -1,0 +1,49 @@
+schema: hardcoding_triage_worklist/v1
+audit_id: hardcoding_audit.sha256_ec5933907d54b6138f4cb061ee01da27ec1e491d96f9c5e2c2e3f53cd9265d48
+severity_threshold: high
+decisions:
+- allowlist
+- abstract
+- fix
+- exclude_file
+- undecided
+summary:
+  findings: 2
+  owners: 1
+  by_classification:
+    DEPLOYMENT_CONFIGURATION: 1
+    SECRET_OR_CREDENTIAL_REFERENCE: 1
+  top_paths:
+  - path: src/loop_engine/core/adaptive_practitioner_records.py
+    findings: 2
+owners:
+- owner: loop_engine.core.adaptive_practitioner_records:AdaptiveRunServices.available_capabilities
+  findings:
+  - finding_id: hardcoding.8de926d98e45cde2536b3b73
+    path: src/loop_engine/core/adaptive_practitioner_records.py
+    line: 1323
+    symbol_ref: AdaptiveRunServices.available_capabilities
+    severity: high
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    literal_kind: string
+    literal_preview: '''OLLAMA_API_KEY'''
+    proposed_abstraction_kind: approved_secret_reference
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A credential reference must resolve through approved secret infrastructure.
+    decision: undecided
+    reason: ''
+  - finding_id: hardcoding.a25d5d79f2a5357aad9d772c
+    path: src/loop_engine/core/adaptive_practitioner_records.py
+    line: 1323
+    symbol_ref: AdaptiveRunServices.available_capabilities
+    severity: high
+    classification: DEPLOYMENT_CONFIGURATION
+    literal_kind: string
+    literal_preview: ''''''
+    proposed_abstraction_kind: typed_runtime_settings
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction. Matching
+      text alone does not prove shared meaning.
+    audit_rationale: A deployment value is read at a source boundary.
+    decision: undecided
+    reason: ''

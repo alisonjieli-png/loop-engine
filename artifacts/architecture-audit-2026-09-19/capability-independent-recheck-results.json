@@ -1,0 +1,174 @@
+{
+  "limitations": [
+    "Local callback and declaration tests only; no provider or model call occurred.",
+    "Reentrant replacement is deterministic concurrency scheduling, not a multi-process stress test.",
+    "Registration remains trusted host configuration, not an operating-system sandbox.",
+    "This is not full repository conformance, installation, or production qualification."
+  ],
+  "passed": true,
+  "probes": [
+    {
+      "name": "replacement_after_selection_spec",
+      "observation": {
+        "calls": [],
+        "error": "ValueError: capability handshake changed before invocation"
+      },
+      "passed": true
+    },
+    {
+      "name": "replacement_after_selection_tool_invocation_started",
+      "observation": {
+        "calls": [],
+        "error": "ValueError: capability callable changed before invocation"
+      },
+      "passed": true
+    },
+    {
+      "name": "mutable_scalar_declaration",
+      "observation": {
+        "accepted": false,
+        "error": "privacy_class must be text"
+      },
+      "passed": true
+    },
+    {
+      "name": "obsolete_arbitrary_model_callback",
+      "observation": {
+        "calls": [],
+        "error": "default_directory() got an unexpected keyword argument 'llm_invoke'"
+      },
+      "passed": true
+    },
+    {
+      "name": "invalid_timeout_inf",
+      "observation": {
+        "refused": true,
+        "value": "inf"
+      },
+      "passed": true
+    },
+    {
+      "name": "invalid_timeout_nan",
+      "observation": {
+        "refused": true,
+        "value": "nan"
+      },
+      "passed": true
+    },
+    {
+      "name": "invalid_timeout_True",
+      "observation": {
+        "refused": true,
+        "value": "True"
+      },
+      "passed": true
+    },
+    {
+      "name": "governed_unsupported_version",
+      "observation": {
+        "calls": [],
+        "refused": true
+      },
+      "passed": true
+    },
+    {
+      "name": "fallback_versions_version-A",
+      "observation": {
+        "calls": [
+          "a"
+        ],
+        "error": "unsupported capability protocol version"
+      },
+      "passed": true
+    },
+    {
+      "name": "fallback_versions_version-A,version-B",
+      "observation": {
+        "calls": [
+          "a",
+          "b"
+        ],
+        "ok": true,
+        "used_fallback": true
+      },
+      "passed": true
+    },
+    {
+      "name": "two_surface_cycle",
+      "observation": {
+        "calls": [
+          "a",
+          "b"
+        ],
+        "refused": true
+      },
+      "passed": true
+    },
+    {
+      "name": "replacement_cleanup",
+      "observation": {
+        "calls": [],
+        "fallback": null,
+        "ok": false
+      },
+      "passed": true
+    },
+    {
+      "name": "invalid_replacement_preserves_registration",
+      "observation": {
+        "calls": [],
+        "refused": true
+      },
+      "passed": true
+    },
+    {
+      "name": "missing_model_executor",
+      "observation": {
+        "attempts": 1,
+        "capability_terminal_code": "EFFECT_FAILED",
+        "model_calls": 0,
+        "ok": false,
+        "value": {
+          "asked_model": false,
+          "error_code": "model_executor_unavailable",
+          "ok": false
+        }
+      },
+      "passed": true
+    }
+  ],
+  "record_type": "capability_independent_recheck/v1",
+  "source_sha256": {
+    "src/loop_engine/core/capability_directory.py": "5818da8f86bd4ee4336bd4a350b1e357e213f95bb9ea4dbf0cef1568b4c8b960",
+    "src/loop_engine/core/capability_directory_checks.py": "2e8c66a9cb70b34498e233455b6e5a059258155e32d82ab3c5ccf0321a5398db",
+    "src/loop_engine/core/capability_invocation.py": "051f8f4b89972f4a22c99fa729c8d908568c4baa87275fa0e926f6702b2dcdd5",
+    "src/loop_engine/core/host_completion_checks.py": "cc79cf69727d8bef8ae98d2b7c7d2f04ceaa5b354ae3c67f8e9603a3982bd6e0",
+    "src/loop_engine/core/host_runtime.py": "7f37dd192ebad3252cd84a88805f4012ae482d85e0453052a119ebf59d0fa489",
+    "src/loop_engine/loop/capability_loops.py": "9b585f824bee84d9908392dae561b4e7170dedfa16ffd7f1ce562a729ea9d670"
+  },
+  "suites": [
+    {
+      "failed": [],
+      "module": "loop_engine.core.capability_directory",
+      "not_tested": [],
+      "total": 39
+    },
+    {
+      "failed": [],
+      "module": "loop_engine.loop.capability_loops",
+      "not_tested": [],
+      "total": 16
+    },
+    {
+      "failed": [],
+      "module": "loop_engine.core.host_runtime",
+      "not_tested": [],
+      "total": 45
+    }
+  ],
+  "date": "2026-09-19",
+  "source_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "baseline_artifact": "capability-independent-review-baseline.json",
+  "probe_source": "capability-independent-recheck.py",
+  "conclusion": "All three reproduced findings are refused before endpoint execution in the repaired checkpoint. The fourteen independent probe outcomes and one hundred owning/dependent checks pass."
+}

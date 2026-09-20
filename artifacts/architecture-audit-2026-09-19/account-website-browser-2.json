@@ -1,0 +1,765 @@
+{
+  "record_type": "service_workspace_browser_checks/v1",
+  "scope": "real browser and loopback service; provider fixtures only",
+  "external_provider_calls": 0,
+  "checks": [
+    {
+      "name": "public_landing_has_real_routes_and_configured_brand",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_four_persistent_intelligence_layers_are_visible",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_leads_with_reusable_solutions_not_deployment",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_explains_token_value_without_invented_savings",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "light_is_default_even_when_operating_system_is_dark",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "operating_system_does_not_override_explicit_light_default",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_five_owner_pain_points_are_present",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "optimization_message_does_not_guarantee_daily_improvement",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "harness_intelligence_and_temporary_memory_are_not_new_layers",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "hosted_service_and_local_execution_have_distinct_responsibilities",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "client_server_exchange_names_sent_and_returned_data",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "external_model_connection_is_separate_from_intelligence_service",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "benefits_are_explicit_without_invented_benchmark_numbers",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_deep_link_opens_task_explorer",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_inspect",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_decide",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_build",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_verify",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "verifier_does_not_receive_builders_entire_context",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_home",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_arrows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_end",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "illustrative_step_selection_launches_no_network_or_model_work",
+      "passed": true,
+      "detail": {
+        "requests": 0
+      }
+    },
+    {
+      "name": "architecture_keeps_live_evidence_separate_from_illustration",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "selected_assignment_has_no_mobile_overflow",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unfinished_signup_is_explicit_and_collects_no_email",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "anonymous_workspace_has_real_setup_and_no_active_search",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "guided_setup_uses_current_origin_and_no_embedded_token",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "anonymous_protocol_test_is_disabled",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "client_selection_changes_real_secret_free_configuration",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "wrong_key_does_not_enter_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "real_durable_tenant_authentication_reaches_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "credentials_are_not_persisted_in_browser_storage",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "sign_in_returns_to_requested_setup_page",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "protocol_connection_check_reports_actual_success",
+      "passed": true,
+      "detail": {
+        "message": "Service connection passed. Protocol 2025-11-25; 5 tools available. No file bodies fetched or models called. Native client loading is not tested here."
+      }
+    },
+    {
+      "name": "browser_runs_real_initialize_notification_and_tools_list",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_check_does_not_claim_native_harness_qualification",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "mismatched_protocol_response_never_becomes_success",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "first_example_prepares_query_without_submitting",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_search_reaches_the_real_authorized_retriever",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_download_checks_actual_bytes_against_the_selected_digest",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "account_route_retains_same_in_memory_connection",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage_is_read_from_durable_service_state",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unconfigured_billing_is_not_a_fake_purchase_flow",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "retrieved_metadata_is_text_not_executable_HTML",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "changed_download_is_refused_by_the_browser",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "responsive_1440_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "items": []
+      }
+    },
+    {
+      "name": "disconnect_clears_identity_results_and_controls",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "configured_billing_offers_only_host_defined_plans",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "checkout_uses_the_real_domain_with_a_local_provider_fixture",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "portal_uses_the_real_domain_without_navigating_to_a_provider",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "email_free_administrator_login_reaches_dashboard",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "dashboard_creates_real_usable_test_token",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "generated_secret_not_in_page_text_or_browser_storage",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "one_time_token_clear_removes_secret",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "dashboard_revocation_refuses_next_service_call",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "sign_in_during_public_configuration_loading_preserves_setup",
+      "passed": true,
+      "detail": {
+        "heldPublic": 2
+      }
+    },
+    {
+      "name": "sign_out_still_aborts_credential_bound_protocol_requests",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "dark_appearance_remains_an_explicit_option",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "no_browser_runtime_errors",
+      "passed": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "name": "no_external_provider_requests",
+      "passed": true,
+      "detail": {
+        "network": []
+      }
+    }
+  ],
+  "passed": 114,
+  "total": 114,
+  "all_passed": true,
+  "source_sha256": {
+    "src/loop_engine/core/service_runtime/http.py": "4051cba47631eba93c09acdf4efef3749407a71cd618c76ccbe3559a80999c6d",
+    "src/loop_engine/core/service_runtime/records.py": "5170cc8b19619c0f4d52d0161b16736b4fbc4af424dbed0d78f62bc12a73387b",
+    "src/loop_engine/core/service_runtime/access.py": "28b8fead744a63af3faf535a03d4d6e6a0306fc9c145af3947b020db0c4f75e8",
+    "src/loop_engine/core/service_runtime/access_checks.py": "99467debd507233caf455ae234fd4a89a26821424cf5a92c9124e98ad8fa1969",
+    "src/loop_engine/core/service_runtime/http_entrypoint.py": "f3a052c69b16a2da7147da231b051ca996039e163d469c435d00f7ac9dc01cb3",
+    "src/loop_engine/core/service_runtime/web_assets/index.html": "446c2784761fa44cbae099e272c4742310e3c6d7531c12292e8e4c5a2087387f",
+    "src/loop_engine/core/service_runtime/web_assets/service.css": "642274c13a8f8730c1253e9b1aaadc80055ad0c7eeda1cd688df17f962afebd9",
+    "src/loop_engine/core/service_runtime/web_assets/service.js": "297e886ab25cf65c118bcc4b9889e8c4df0cd01b0ec971de01d3f436d12750e0",
+    "src/loop_engine/core/service_runtime/web_assets/architecture-story.js": "ccdb7eeed22e28087d5a03db3f50b2f3ea8fb22264eb6224875c68d5a46f989b",
+    "src/loop_engine/core/service_runtime/web_assets/architecture.css": "cb086cfa4dedbdf21d7178bb37310c11c8f2dd2f8d9bab41dfa20ecabeb7d994",
+    "src/loop_engine/core/service_runtime/web_assets/client-recipes.json": "3d976e2ffed89ba3339c01dcb795be485b6dc6ee23dc43c2d897d50bed40bb60"
+  }
+}

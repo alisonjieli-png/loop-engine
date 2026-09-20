@@ -1,0 +1,20 @@
+{
+  "record_type": "fly_service_container_failure_note/v1",
+  "evidence_kind": "operator_record_of_observed_failure",
+  "image_reference": "loop-engine-service:fly-pilot-local-20260920",
+  "completion_state": "failed_check",
+  "all_passed": false,
+  "observed_before_failure": {
+    "installed_doctor": "passed",
+    "installed_service_smoke_passed": 48,
+    "installed_service_smoke_total": 48
+  },
+  "failure": "The default-startup probe looked for health fields at the response top level instead of inside the versioned result envelope and reached its timeout.",
+  "classification": "check_defect",
+  "source_evidence": "src/loop_engine/core/service_runtime/http.py wraps the health payload in the result field.",
+  "correction": "Read result.healthy and result.readiness_checked; retain the unauthenticated-access refusal check. Apply the same correction to the workflow's post-deployment health probe.",
+  "additional_initial_failure": "The first workflow-test invocation could not import tomllib on the supported Python 3.10 environment. The test now uses the already declared tomli dependency on that interpreter.",
+  "fly_deployed": false,
+  "external_provider_calls": 0,
+  "disposable_container_and_volume_removed": true
+}

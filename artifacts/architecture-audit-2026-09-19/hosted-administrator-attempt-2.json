@@ -1,0 +1,64 @@
+{
+  "record_type": "hosted_administrator_acceptance/v1",
+  "observed_at": "2026-09-20T02:56:08.982913+00:00",
+  "origin": "https://baltor-pilot.fly.dev",
+  "administrator": "baltor-admin",
+  "test_key_id": "2c0b7a818a2a4a1b8154a764b93fffdd",
+  "issue_request_id": "bff5f4d3c0bd458cb8dc697babb93847",
+  "revoke_request_id": "479626da0f09456eb1ac76cf162155fa",
+  "checks": [
+    {
+      "name": "anonymous_administration_refused",
+      "passed": true
+    },
+    {
+      "name": "administrator_identity_and_scope_verified",
+      "passed": true
+    },
+    {
+      "name": "configured_test_token_limits_available",
+      "passed": true
+    },
+    {
+      "name": "authorized_token_creation_committed",
+      "passed": true
+    },
+    {
+      "name": "credential_response_not_cacheable",
+      "passed": true
+    },
+    {
+      "name": "duplicate_creation_does_not_mint_or_reveal_another_token",
+      "passed": true
+    },
+    {
+      "name": "new_token_authenticates_with_exact_scope",
+      "passed": true
+    },
+    {
+      "name": "new_token_cannot_manage_administration",
+      "passed": true
+    },
+    {
+      "name": "new_token_can_search_authorized_references",
+      "passed": true
+    },
+    {
+      "name": "listing_never_returns_raw_token",
+      "passed": true
+    },
+    {
+      "name": "test_credential_revoked",
+      "passed": true
+    },
+    {
+      "name": "revoked_credential_is_refused",
+      "passed": true
+    }
+  ],
+  "passed": 12,
+  "total": 12,
+  "all_passed": true,
+  "checker_sha256": "fb9194ca28e37a624e318b7ff55b3487289be625247fb7f3dc89f94a2071fc39",
+  "limitations": "No email, payment, model or native harness qualification."
+}

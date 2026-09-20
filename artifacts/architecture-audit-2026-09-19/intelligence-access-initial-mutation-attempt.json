@@ -1,0 +1,17 @@
+{
+  "record_type": "intelligence_access_verification_attempt/v1",
+  "date": "2026-09-19",
+  "attempt": "initial_mutation_run",
+  "passed": false,
+  "baseline_checks_passed": 168,
+  "mutants_tested": 11,
+  "mutants_detected": 10,
+  "undetected_mutant": "permit_stale_legacy_qualification",
+  "classification": "test_harness_error",
+  "evidence": "The defining module was patched but code_intelligence_asset_checks held a direct-import alias to the original admit_code_asset function. The legacy refusal test therefore still exercised the unmutated function.",
+  "correction": "Patch the exact already-imported aliases in the check helper and reusable-capability authority during the mutant. The product refusal and the known-wrong test expectation are unchanged.",
+  "source_sha256": {
+    "src/loop_engine/core/code_intelligence_assets.py": "0469385f92e47753204ebcdb61bcd55083f34f98a304adaeca7d61d3f3cc0a57",
+    "src/loop_engine/core/code_intelligence_asset_checks.py": "6b4f41e578af5ab4ad084113981b8f5226ce67895a3a10c743ea7c0e54b16142"
+  }
+}

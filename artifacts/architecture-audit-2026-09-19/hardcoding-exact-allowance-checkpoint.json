@@ -1,0 +1,246 @@
+{
+  "record_type": "hardcoding_exact_allowance_checkpoint/v1",
+  "date": "2026-09-19",
+  "phases": [
+    {
+      "phase": "initial_triage",
+      "artifact": "hardcoding-triage-current.json",
+      "audit_id": "hardcoding_audit.sha256_552e41120261b189da56a580556e3c35e8b324a1b985275ca834491621085596",
+      "repository_snapshot_id": "hardcoding_source.sha256_a302811c7790173e4c927cb09d0ea6d595f8c2003ceb2dbdb423f80a1be7a646",
+      "new_high_count": 20,
+      "findings": [
+        {
+          "finding_id": "hardcoding.53438b7213f3f26b6e4d37f6",
+          "path": "docs/roadmap/roadmap.yaml",
+          "line": null,
+          "literal": "'https://claude.ai/code/artifact/a9e49f80-1fa5-4acc-af02-71e2dfa6786d'",
+          "classification": "STRATEGY_OR_PROVIDER_BINDING"
+        },
+        {
+          "finding_id": "hardcoding.4e5609a24c68b3b905665d53",
+          "path": "src/loop_engine/code_nodes/solution_operation_identity.py",
+          "line": 36,
+          "literal": "'process_bound'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.d2adc0249355b2f16397a1c8",
+          "path": "src/loop_engine/code_nodes/solution_operation_identity.py",
+          "line": 36,
+          "literal": "'portable_code'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.603ad0e404e9a21098eb45e7",
+          "path": "src/loop_engine/core/adaptive_practitioner_records.py",
+          "line": 1394,
+          "literal": "'model.step.started'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.6771355211e247046c8dfbd7",
+          "path": "src/loop_engine/core/adaptive_practitioner_scope.py",
+          "line": 96,
+          "literal": "'reason'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.099da64db3cc3df32fb42cbb",
+          "path": "src/loop_engine/core/capability_directory.py",
+          "line": 74,
+          "literal": "'str'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.74bb173406938b94438d17be",
+          "path": "src/loop_engine/core/code_intelligence_assets.py",
+          "line": 323,
+          "literal": "'code_asset_spec/v2'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.28480020c7028977313583be",
+          "path": "src/loop_engine/core/node_provisioning.py",
+          "line": 78,
+          "literal": "'non_deterministic'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.6d32db3e7c3adb44ac1f925b",
+          "path": "src/loop_engine/core/node_provisioning.py",
+          "line": 78,
+          "literal": "'deterministic'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.966633971dbd425ea722744c",
+          "path": "src/loop_engine/core/node_provisioning.py",
+          "line": 78,
+          "literal": "'hybrid'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.f67116c66ce7ef75d743980c",
+          "path": "src/loop_engine/core/practitioner_runtime/capabilities.py",
+          "line": 84,
+          "literal": "\"Create files, execute Python commands in a confined Docker workspace, run tests, and verify expected artifacts. Put every source file you want in 'files' wi...",
+          "classification": "RESOURCE_OR_TEMPLATE"
+        },
+        {
+          "finding_id": "hardcoding.7c8caf2630173802d1c64cd9",
+          "path": "src/loop_engine/core/practitioner_runtime/observations.py",
+          "line": 470,
+          "literal": "'record_type'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.86322e44eb95347b74b539aa",
+          "path": "src/loop_engine/core/practitioner_runtime/observations.py",
+          "line": 470,
+          "literal": "'stage_occurrence_id'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.fc98f0029f63d5dde8eadf77",
+          "path": "src/loop_engine/core/provisioning_server.py",
+          "line": 127,
+          "literal": "'approved'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.03c6ecb3589a80f5508cf223",
+          "path": "src/loop_engine/core/provisioning_server.py",
+          "line": 356,
+          "literal": "'approved'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.69b552ec4fb29eed845a3bd8",
+          "path": "src/loop_engine/core/spawned_provisioning.py",
+          "line": 43,
+          "literal": "'build'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.493c57ae252a4ab022f30d7f",
+          "path": "src/loop_engine/loop/spawned_deadline.py",
+          "line": 28,
+          "literal": "'before_dispatch'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.6dc3ca5518e82e59a846ccbe",
+          "path": "src/loop_engine/loop/spawned_deadline.py",
+          "line": 28,
+          "literal": "'after_return'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.bf1e0b0e4105eb940581dbcf",
+          "path": "src/loop_engine/loop/spawned_deadline.py",
+          "line": 28,
+          "literal": "'after_exception'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.69230a95492ca3f433322aaf",
+          "path": "src/loop_engine/loop/spawned_deadline.py",
+          "line": 44,
+          "literal": "'before_dispatch'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        }
+      ],
+      "allowlist_problems": []
+    },
+    {
+      "phase": "before_exact_allowances",
+      "artifact": "hardcoding-before-exact-allowances-20260919.json",
+      "audit_id": "hardcoding_audit.sha256_14329c4dc14cbb8c6b30ee1f0e9e632d7d46ac45107e10541d006e7ecc6b96d1",
+      "repository_snapshot_id": "hardcoding_source.sha256_80fd504b43141af79808ab9fbd4494cc1948f327752fd14141694b5ddc0bec46",
+      "new_high_count": 4,
+      "findings": [
+        {
+          "finding_id": "hardcoding.53438b7213f3f26b6e4d37f6",
+          "path": "docs/roadmap/roadmap.yaml",
+          "line": null,
+          "literal": "'https://claude.ai/code/artifact/a9e49f80-1fa5-4acc-af02-71e2dfa6786d'",
+          "classification": "STRATEGY_OR_PROVIDER_BINDING"
+        },
+        {
+          "finding_id": "hardcoding.7c8caf2630173802d1c64cd9",
+          "path": "src/loop_engine/core/practitioner_runtime/observations.py",
+          "line": 470,
+          "literal": "'record_type'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.86322e44eb95347b74b539aa",
+          "path": "src/loop_engine/core/practitioner_runtime/observations.py",
+          "line": 470,
+          "literal": "'stage_occurrence_id'",
+          "classification": "CLOSED_CONTROLLED_VOCABULARY"
+        },
+        {
+          "finding_id": "hardcoding.0c9114d720b507d67cc4afd0",
+          "path": "src/loop_engine/strings/capability_resources.py",
+          "line": 14,
+          "literal": "\"Create files, execute Python commands in a confined Docker workspace, run tests, and verify expected artifacts. Put every source file you want in 'files' wi...",
+          "classification": "RESOURCE_OR_TEMPLATE"
+        }
+      ],
+      "allowlist_problems": []
+    },
+    {
+      "phase": "after_exact_allowances_before_final_source_repair",
+      "artifact": "hardcoding-after-exact-allowances-20260919.json",
+      "audit_id": "hardcoding_audit.sha256_ec5933907d54b6138f4cb061ee01da27ec1e491d96f9c5e2c2e3f53cd9265d48",
+      "repository_snapshot_id": "hardcoding_source.sha256_954536c8bbc41da7977ec4184b83d361c10b00baee9bfe66a02ce28ff88c5b48",
+      "new_high_count": 2,
+      "findings": [
+        {
+          "finding_id": "hardcoding.8de926d98e45cde2536b3b73",
+          "path": "src/loop_engine/core/adaptive_practitioner_records.py",
+          "line": 1323,
+          "literal": "'OLLAMA_API_KEY'",
+          "classification": "SECRET_OR_CREDENTIAL_REFERENCE"
+        },
+        {
+          "finding_id": "hardcoding.a25d5d79f2a5357aad9d772c",
+          "path": "src/loop_engine/core/adaptive_practitioner_records.py",
+          "line": 1323,
+          "literal": "''",
+          "classification": "DEPLOYMENT_CONFIGURATION"
+        }
+      ],
+      "allowlist_problems": []
+    }
+  ],
+  "added_allowance_ids": [
+    "hardcoding.0c9114d720b507d67cc4afd0",
+    "hardcoding.53438b7213f3f26b6e4d37f6",
+    "hardcoding.7c8caf2630173802d1c64cd9",
+    "hardcoding.86322e44eb95347b74b539aa"
+  ],
+  "previous_entries_preserved": true,
+  "baseline_unchanged": true,
+  "detector_unchanged": true,
+  "canary_result": "hardcoding-exact-allowance-canary-results.json",
+  "resource_review_before": "capability-resource-independent-review-before.json",
+  "resource_review_after": "capability-resource-independent-review-after.json",
+  "outstanding": {
+    "new_high_count": 2,
+    "owner": "loop_engine.core.adaptive_practitioner_records:AdaptiveRunServices.available_capabilities",
+    "path": "src/loop_engine/core/adaptive_practitioner_records.py",
+    "line": 1323,
+    "cause": "The root agent's descriptor-availability correction moved an existing environment read into a new audit identity. Both credential-reference and empty-default findings remain blocking and were not allowlisted.",
+    "next_action": "Owning source correction through existing WebSearchAuthority credential-reference boundary, then a new full delta audit and frozen-tree regression."
+  },
+  "verification_runner_corrections": [
+    {
+      "observed": "TypeError: _load_allowlist() missing 1 required keyword-only argument: 'require_present'",
+      "classification": "canary runner invocation defect",
+      "correction": "Call the existing exact allowlist loader with require_present=False for intentionally partial in-memory canary trees. No detector or source rule was changed."
+    }
+  ],
+  "status": "allowance_scope_complete; full_gate_still_has_two_source_findings"
+}

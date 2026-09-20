@@ -1,0 +1,714 @@
+{
+  "baseline": {
+    "failed_records": [],
+    "runtime_errors": [],
+    "suites": [
+      {
+        "executed": 39,
+        "module": "loop_engine.core.capability_directory",
+        "passed": 39
+      },
+      {
+        "executed": 16,
+        "module": "loop_engine.loop.capability_loops",
+        "passed": 16
+      }
+    ]
+  },
+  "killed": 14,
+  "limits": [
+    "Deterministic local fixture callbacks only; no provider call or endpoint filesystem effect.",
+    "Mutation setup failures and unexplained exceptions are never counted as kills.",
+    "Trace capture preserves explicit failing regression rows when a later validation aborts a suite.",
+    "Not a concurrency stress test, sandbox qualification, or full release gate."
+  ],
+  "mutants": [
+    {
+      "expected_regressions": [
+        "unknown_protocol_version_refuses_negotiation_and_dispatch"
+      ],
+      "independent_bad_behavior": {
+        "known_wrong_observed": true,
+        "negotiation": {
+          "fallbacks": {},
+          "missing": [],
+          "ok": true,
+          "protocol_version": "future/v99",
+          "supported_protocol_versions": [
+            "1.0.0"
+          ],
+          "surface": "fixture",
+          "version_supported": true
+        }
+      },
+      "mutant": "negotiation_version_guard",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "unknown_protocol_version_refuses_negotiation_and_dispatch"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "version_supported = h.protocol_version in policy.supported_protocol_versions",
+      "replacement": "version_supported = True",
+      "setup": {
+        "mutated_function_sha256": "8cc9aec1f5f7b0715482ce6ed8f46fe33a0dd0ad78a16feb7ce6ea02beb17188",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityDirectory.negotiate"
+    },
+    {
+      "expected_regressions": [
+        "unknown_protocol_version_refuses_negotiation_and_dispatch"
+      ],
+      "independent_bad_behavior": {
+        "calls": [
+          "original"
+        ],
+        "known_wrong_observed": true,
+        "refused": false
+      },
+      "mutant": "dispatch_version_guard",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "unknown_protocol_version_refuses_negotiation_and_dispatch"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "if handshake.protocol_version not in self.supported_protocol_versions:",
+      "replacement": "if False:",
+      "setup": {
+        "mutated_function_sha256": "c59607cb3072c403d4ea8ce80a26400a0774f71137a8d09facf08b33482f7595",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityInvocationPolicy.bind"
+    },
+    {
+      "expected_regressions": [
+        "handshake_copies_caller_owned_sequences"
+      ],
+      "independent_bad_behavior": {
+        "held": [
+          "pure",
+          "writes_fs"
+        ],
+        "known_wrong_observed": true
+      },
+      "mutant": "handshake_sequence_copy",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "handshake_copies_caller_owned_sequences"
+          }
+        ],
+        "runtime_errors": [
+          {
+            "message": "pure excludes every other effect",
+            "module": "loop_engine.core.capability_directory",
+            "type": "ValueError"
+          }
+        ],
+        "suites": [
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "object.__setattr__(self, name, tuple(values))",
+      "replacement": "pass",
+      "setup": {
+        "mutated_function_sha256": "6fd179a21ca93ff99fe1eeb85e1c2849d0f0a7c31d8a18211c20bd532ea84e20",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityHandshake.__post_init__"
+    },
+    {
+      "expected_regressions": [
+        "explicit_supported_version_is_required_and_immutable"
+      ],
+      "independent_bad_behavior": {
+        "held": [
+          "1.0.0",
+          "future"
+        ],
+        "known_wrong_observed": true
+      },
+      "mutant": "invocation_version_sequence_copy",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "explicit_supported_version_is_required_and_immutable"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "object.__setattr__(self, \"supported_protocol_versions\", tuple(versions))",
+      "replacement": "pass",
+      "setup": {
+        "mutated_function_sha256": "c7b42d2193b3f3f9b77874dfda735b50321cbcdd9203ccdde21f1dad23369620",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityInvocationPolicy.__post_init__"
+    },
+    {
+      "expected_regressions": [
+        "all_scalar_handshake_fields_refuse_mutable_or_unbounded_values"
+      ],
+      "independent_bad_behavior": {
+        "accepted_invalid_field": "privacy_class",
+        "known_wrong_observed": true
+      },
+      "mutant": "scalar_text_validation",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "all_scalar_handshake_fields_refuse_mutable_or_unbounded_values"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "descriptor.type == \"str\" and",
+      "replacement": "False and",
+      "setup": {
+        "mutated_function_sha256": "9500661ee4c0e12ef81d2966b4b09834e2d986502a04cc1a46f7b5f0bbac314d",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityHandshake.__post_init__"
+    },
+    {
+      "expected_regressions": [
+        "all_scalar_handshake_fields_refuse_mutable_or_unbounded_values"
+      ],
+      "independent_bad_behavior": {
+        "accepted_invalid_field": "timeout_seconds",
+        "known_wrong_observed": true
+      },
+      "mutant": "finite_timeout_validation",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "all_scalar_handshake_fields_refuse_mutable_or_unbounded_values"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "not math.isfinite(self.timeout_seconds)",
+      "replacement": "False",
+      "setup": {
+        "mutated_function_sha256": "2c232dd217147e49fed93ab7a151a0a0385167dfff69da256524d38fb33dcf56",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityHandshake.__post_init__"
+    },
+    {
+      "expected_regressions": [
+        "replacement_removes_old_endpoints_and_fallbacks"
+      ],
+      "independent_bad_behavior": {
+        "known_wrong_observed": true,
+        "stale_endpoint": true,
+        "stale_fallback": false
+      },
+      "mutant": "stale_endpoint_cleanup",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "replacement_removes_old_endpoints_and_fallbacks"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "self._ep = {key: value for key, value in self._ep.items() if key[0] != handshake.surface}",
+      "replacement": "pass",
+      "setup": {
+        "mutated_function_sha256": "fa28cd3ac78dbdb9f182f4711d4f960cdbc878c10623c834d4fae00f2da407a5",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityDirectory.register"
+    },
+    {
+      "expected_regressions": [
+        "replacement_removes_old_endpoints_and_fallbacks"
+      ],
+      "independent_bad_behavior": {
+        "known_wrong_observed": true,
+        "stale_endpoint": false,
+        "stale_fallback": true
+      },
+      "mutant": "stale_fallback_cleanup",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "replacement_removes_old_endpoints_and_fallbacks"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "self._default_fallback.pop(handshake.surface, None)",
+      "replacement": "pass",
+      "setup": {
+        "mutated_function_sha256": "ed6aed9a7ef0817efe7eb90cd30aa15d14ade44bee9d936253737de282073f63",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityDirectory.register"
+    },
+    {
+      "expected_regressions": [
+        "handshake_drift_refuses_before_any_endpoint_or_fallback"
+      ],
+      "independent_bad_behavior": {
+        "calls": [
+          "original"
+        ],
+        "known_wrong_observed": true,
+        "refused": false
+      },
+      "mutant": "dispatch_handshake_digest_pin",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "handshake_drift_refuses_before_any_endpoint_or_fallback"
+          },
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "no_fallback_policy_refuses_missing_endpoint"
+          },
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "default_missing_endpoint_fallback_is_unchanged"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 39
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 13
+          }
+        ]
+      },
+      "removed": "if (self.expected_handshake_digest and self.expected_handshake_digest",
+      "replacement": "if (False and self.expected_handshake_digest",
+      "setup": {
+        "mutated_function_sha256": "f1e0a9e84ee53d912fb07b641313469402a3475e4b6649399c60a0c171c04f0a",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityInvocationPolicy.bind"
+    },
+    {
+      "expected_regressions": [
+        "callable_swap_refuses_before_any_endpoint_or_fallback"
+      ],
+      "independent_bad_behavior": {
+        "calls": [
+          "alternate"
+        ],
+        "known_wrong_observed": true,
+        "refused": false
+      },
+      "mutant": "dispatch_callable_pin",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "callable_swap_refuses_before_any_endpoint_or_fallback"
+          },
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "handshake_drift_refuses_before_any_endpoint_or_fallback"
+          },
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "no_fallback_policy_refuses_missing_endpoint"
+          },
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "default_missing_endpoint_fallback_is_unchanged"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 39
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 12
+          }
+        ]
+      },
+      "removed": "if self.expected_callable is not None and function is not self.expected_callable:",
+      "replacement": "if False:",
+      "setup": {
+        "mutated_function_sha256": "7ae06ca280201ec3a894ac74716d5649d86a87d604b4a9c17398da3f724567bf",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityInvocationPolicy.bind"
+    },
+    {
+      "expected_regressions": [
+        "directory_binds_the_callable_locally_only_once"
+      ],
+      "independent_bad_behavior": {
+        "calls": [
+          "alternate"
+        ],
+        "known_wrong_observed": true,
+        "refused": false
+      },
+      "mutant": "single_callable_lookup",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "directory_binds_the_callable_locally_only_once"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 39
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 15
+          }
+        ]
+      },
+      "removed": "value = function(**kwargs)",
+      "replacement": "value = ep.fn(**kwargs)",
+      "setup": {
+        "mutated_function_sha256": "e10affd2ed2645cf81caae83a854ac935288839b667c7971d3cd97210208cad5",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "CapabilityDirectory._call"
+    },
+    {
+      "expected_regressions": [
+        "an_absent_model_executor_is_unavailable_not_a_canned_success"
+      ],
+      "independent_bad_behavior": {
+        "known_wrong_observed": true,
+        "ok": true,
+        "value": {
+          "asked_model": false,
+          "error_code": "model_executor_unavailable",
+          "ok": true
+        }
+      },
+      "mutant": "model_absence_cannot_succeed",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "detail": "a declared model path is not an installed model implementation",
+            "passed": false,
+            "test": "an_absent_model_executor_is_unavailable_not_a_canned_success"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 38
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": "\"ok\": False, \"error_code\": \"model_executor_unavailable\"",
+      "replacement": "\"ok\": True, \"error_code\": \"model_executor_unavailable\"",
+      "setup": {
+        "mutated_function_sha256": "174035292f9910fa6036fca371b6b99a40f1390b7293e62d7d25d1428aac2144",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "loop_engine.core.capability_directory.default_directory"
+    },
+    {
+      "expected_regressions": [
+        "canonical_capability_loop_forwards_pinned_no_fallback_policy",
+        "a_governed_attempt_does_not_silently_select_a_fallback"
+      ],
+      "independent_bad_behavior": {
+        "calls": [
+          "failed-primary",
+          "alternate"
+        ],
+        "known_wrong_observed": true,
+        "refused": false
+      },
+      "mutant": "governed_policy_forwarding",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "a_governed_attempt_does_not_silently_select_a_fallback"
+          },
+          {
+            "passed": false,
+            "test": "a_single_attempt_refuses_automatic_fallback_authority"
+          },
+          {
+            "passed": false,
+            "test": "a_selected_reference_remains_pinned_through_dispatch_callbacks"
+          },
+          {
+            "passed": false,
+            "test": "the_pure_directory_constructor_cannot_install_an_unaccounted_model_callback"
+          },
+          {
+            "detail": "offline pinned invocation and fallback contract",
+            "passed": false,
+            "test": "canonical_capability_loop_forwards_pinned_no_fallback_policy"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 35
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 15
+          }
+        ]
+      },
+      "removed": "ledger=_LoopScopedLedger(lp.ledger, lp.loop_id), policy=invocation_policy,",
+      "replacement": "ledger=_LoopScopedLedger(lp.ledger, lp.loop_id), policy=None,",
+      "setup": {
+        "mutated_function_sha256": "4118b04cfd69079fd8a3e0114039e0ccbd28d862ba18d1809552617f19f629b9",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "loop_engine.loop.capability_loops.run_capability_as_loop"
+    },
+    {
+      "expected_regressions": [
+        "a_single_attempt_refuses_automatic_fallback_authority"
+      ],
+      "independent_bad_behavior": {
+        "calls": [
+          "failed-primary",
+          "alternate"
+        ],
+        "known_wrong_observed": true,
+        "refused": false
+      },
+      "mutant": "governed_explicit_auto_fallback_refusal",
+      "owning_checks": {
+        "failed_records": [
+          {
+            "passed": false,
+            "test": "a_single_attempt_refuses_automatic_fallback_authority"
+          },
+          {
+            "passed": false,
+            "test": "a_selected_reference_remains_pinned_through_dispatch_callbacks"
+          },
+          {
+            "passed": false,
+            "test": "the_pure_directory_constructor_cannot_install_an_unaccounted_model_callback"
+          }
+        ],
+        "runtime_errors": [],
+        "suites": [
+          {
+            "executed": 39,
+            "module": "loop_engine.core.capability_directory",
+            "passed": 36
+          },
+          {
+            "executed": 16,
+            "module": "loop_engine.loop.capability_loops",
+            "passed": 16
+          }
+        ]
+      },
+      "removed": " or invocation_policy.allow_fallback",
+      "replacement": "",
+      "setup": {
+        "mutated_function_sha256": "6dae06d0848a8c347652de369b217842c8155142d62477747137a200ad82c01f",
+        "sites": 1,
+        "status": "installed"
+      },
+      "status": "killed_by_named_regression",
+      "target": "loop_engine.loop.capability_loops.run_capability_as_loop"
+    }
+  ],
+  "passed": true,
+  "record_type": "capability_mutation_controls/v1",
+  "restored": {
+    "failed_records": [],
+    "runtime_errors": [],
+    "suites": [
+      {
+        "executed": 39,
+        "module": "loop_engine.core.capability_directory",
+        "passed": 39
+      },
+      {
+        "executed": 16,
+        "module": "loop_engine.loop.capability_loops",
+        "passed": 16
+      }
+    ]
+  },
+  "runtime_sources_unchanged": true,
+  "setup_failures": 0,
+  "source_sha256": {
+    "artifacts/architecture-audit-2026-09-19/capability-independent-recheck.py": "8522da37cbb1b56c4e0dcbcd98d5cb5a3bfeb8911db2fbad9d202ee83770fa8b",
+    "src/loop_engine/core/capability_directory.py": "5818da8f86bd4ee4336bd4a350b1e357e213f95bb9ea4dbf0cef1568b4c8b960",
+    "src/loop_engine/core/capability_directory_checks.py": "2e8c66a9cb70b34498e233455b6e5a059258155e32d82ab3c5ccf0321a5398db",
+    "src/loop_engine/core/capability_invocation.py": "051f8f4b89972f4a22c99fa729c8d908568c4baa87275fa0e926f6702b2dcdd5",
+    "src/loop_engine/loop/capability_loops.py": "9b585f824bee84d9908392dae561b4e7170dedfa16ffd7f1ce562a729ea9d670"
+  },
+  "total_mutants": 14
+}

@@ -1,0 +1,33 @@
+schema: hardcoding_triage_worklist/v1
+audit_id: hardcoding_audit.sha256_36a96c446c09f165f9bac5a52ca0be3f010cee91cce64aa513e0366b6100ba19
+severity_threshold: high
+decisions:
+- allowlist
+- abstract
+- fix
+- exclude_file
+- undecided
+summary:
+  findings: 1
+  owners: 1
+  by_classification:
+    STRATEGY_OR_PROVIDER_BINDING: 1
+  top_paths:
+  - path: tools/architecture_report/app.js
+    findings: 1
+owners:
+- owner: tools.architecture_report.app.js:url
+  findings:
+  - finding_id: hardcoding.1e8eaa28b82cba8bf4ed8d8a
+    path: tools/architecture_report/app.js
+    line: 51
+    symbol_ref: url
+    severity: high
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    literal_kind: string
+    literal_preview: '''http://www.w3.org/2000/svg'''
+    proposed_abstraction_kind: admitted_strategy_or_provider_binding
+    suggested_next_action: Review the owner and migrate through the proposed typed abstraction.
+    audit_rationale: An endpoint or external identity should be bound at its owner.
+    decision: undecided
+    reason: ''

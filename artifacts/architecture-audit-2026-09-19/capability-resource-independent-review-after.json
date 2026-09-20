@@ -1,0 +1,101 @@
+{
+  "record_type": "capability_resource_independent_review_after/v1",
+  "date": "2026-09-19",
+  "original_description_sha256": "f96ca4656100e386022b2125a11f6bbed0171c724388ebd262a10544c819f1db",
+  "characters": 976,
+  "bundle_ref": "adaptive.generated_project.purpose@1.0.0",
+  "bundle_digest": "237d958c0059eb08239cdf06c545fda8f863add87e4b376a96f70ad7b17a8e0b",
+  "slot_schema_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "resource_boundary_checks": [
+    {
+      "name": "same_976_utf8_bytes_as_previous_owned_description",
+      "passed": true
+    },
+    {
+      "name": "descriptor_carries_exact_render_metadata",
+      "passed": true
+    },
+    {
+      "name": "schema_reference_matches_existing_candidate_contract",
+      "passed": true
+    },
+    {
+      "name": "static_resource_has_no_slots_or_dynamic_provenance",
+      "passed": true
+    },
+    {
+      "name": "unknown_slot_refused",
+      "passed": true
+    },
+    {
+      "name": "unknown_provenance_refused",
+      "passed": true
+    },
+    {
+      "name": "version_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "output_schema_ref_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "interpreter_profile_ref_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "policy_ref_is_part_of_identity",
+      "passed": true
+    },
+    {
+      "name": "changed_text_changes_bundle_and_render_identity",
+      "passed": true
+    },
+    {
+      "name": "component_is_frozen",
+      "passed": true
+    }
+  ],
+  "descriptor_recheck": {
+    "record_type": "capability_resource_descriptor_recheck/v1",
+    "same_descriptor_object": false,
+    "same_nested_metadata_object": false,
+    "text_matches_resource": true,
+    "metadata_matches_resource": true,
+    "permissions_preserved": true,
+    "actual_text_digest": "f96ca4656100e386022b2125a11f6bbed0171c724388ebd262a10544c819f1db",
+    "recorded_render_digest": "f96ca4656100e386022b2125a11f6bbed0171c724388ebd262a10544c819f1db",
+    "resource_checks": [
+      {
+        "test": "capability_instruction_retains_the_reviewed_text_bytes",
+        "passed": true
+      },
+      {
+        "test": "capability_instruction_binds_version_and_content",
+        "passed": true
+      },
+      {
+        "test": "capability_instruction_refuses_undeclared_slots",
+        "passed": true
+      }
+    ],
+    "orientation_checks": {
+      "total": 18,
+      "failed": []
+    },
+    "passed": true
+  },
+  "source_sha256": {
+    "src/loop_engine/strings/capability_resources.py": "627d28791534fdb9ccf84120f1e2588ca4e82e790caa1ce425f4bc106e55dce2",
+    "src/loop_engine/strings/prompt_fragments.py": "25af2abb99979e5a5146859f061f734619d21dccd7c5c1ec396615228dcb5c18",
+    "src/loop_engine/core/practitioner_runtime/capabilities.py": "33f17f0e213aa5d23d5d370edf79454fe159546412457f84491afd0fa737f991",
+    "src/loop_engine/core/adaptive_practitioner_records.py": "3ebe7d3d9fb4fa843f04e6a677e4cb9bd3ae9f41a22e0a5463c16f770bb0d4a4",
+    "src/loop_engine/core/adaptive_practitioner_orientation_capabilities.py": "ceb204cdc13f764911cc766d9ccf34bdc8e60e382b9c1f3900ab5cb22f5931d9"
+  },
+  "passed": true,
+  "limitations": [
+    "Tests use trusted local descriptions and no model or generated-project execution.",
+    "The descriptor mutation defect was repaired by the root agent, not waived by an audit exception.",
+    "The exact literal allowance does not exempt an entire resource file; bundle version and policy identity remain owning runtime checks."
+  ]
+}
