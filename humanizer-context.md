@@ -5,6 +5,12 @@ skill.
 
 ## Reader
 
+For Baltor's homepage and How it works, address a person who wants useful
+results without learning the internal architecture. Use task, each step,
+information, tools, models and checks. Omit Loop, Loop node and Loop Engine
+from those pages and their shared footer. Preserve exact implementation names
+and complete definitions in technical documentation and GitHub.
+
 Write for a developer who is seeing Loop Engine for the first time. The reader
 may use English as a second language. They should not need project history or
 internal vocabulary to understand one page.

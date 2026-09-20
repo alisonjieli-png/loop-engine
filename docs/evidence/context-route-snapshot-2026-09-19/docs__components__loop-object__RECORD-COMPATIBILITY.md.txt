@@ -1,0 +1,92 @@
+# Loop contract cardinality and record compatibility
+
+The [September 19 pre-launch version policy](../../architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md)
+supersedes the historical-reader requirements below. The cleanup must retain
+current cardinality and integrity checks while removing unsupported older
+encodings. The tables below describe the pre-cleanup implementation and must
+not be used to add new legacy support. Current removal evidence is tracked
+in the continuation review.
+
+Input cardinality is a property of the consuming input port. A consumer that
+produces several outputs does not therefore accept several inputs. The
+current `LoopContract` keeps these decisions separate.
+
+## Input and output cardinality
+
+`LoopContract.output_type` and `max_outputs` describe producer emissions.
+`LoopInputCardinality` describes one named input role. An unspecified input
+role accepts a single item. A multiple-item input requires an explicit
+positive `max_items` bound.
+
+```python
+from loop_engine import LoopContract, LoopInputCardinality
+
+consumer = LoopContract(
+    name="compare candidate summaries",
+    execution_mode="code_only",
+    input_roles=("candidate_summaries",),
+    output_roles=("selected_summary",),
+    input_cardinalities=(
+        LoopInputCardinality("candidate_summaries", "multiple", max_items=4),
+    ),
+)
+```
+
+A multiple-output producer can connect directly only when its declared bound
+fits the consuming input. A single-item input needs an explicit selecting
+Adapter Loop when the producer can emit multiple items. An adapter on one
+connection does not authorize incompatible input on another connection.
+
+These checks cover declared emission cardinality at a connection. They do
+not establish arbitrary fan-in scheduling or complete value compatibility for
+shapes, units, encodings, and field constraints. Those remain separate work.
+
+## Supported record encodings
+
+| Record | New writes | Historical reads and round trips |
+|---|---|---|
+| `LoopDefinition` | `loop_definition/v2`, including input cardinality | Version 1 accepts the exact original contract shape and the later version 1 shape with output metadata. The original encoding and digest remain intact. |
+| `SpawnedTaskCheckpoint` | `spawned_task_checkpoint/v3`, retaining input and output cardinality | Version 2 remains readable and preserves its old encoding and digest. It cannot encode the newer cardinality semantics. Version 1 remains unsupported. |
+
+The record encoding version is separate from the semantic version of a Loop
+definition or profile. Do not change historical semantic versions to hide a
+serialization migration.
+
+`LoopDefinition.from_dict` verifies the supplied digest against the exact
+historical body before reconstructing the definition. Its private legacy
+encoding fields are reader state, not public constructor options. A new
+definition, including one constructed with `dataclasses.replace`, emits the
+current encoding. Historical input cardinality defaults to single; it is
+never inferred from a consumer's output count.
+
+The checkpoint serializer retains the declared contract rather than silently
+dropping output metadata. A version 2 checkpoint with non-default cardinality
+is refused because its old shape cannot preserve that meaning.
+
+A stored checkpoint must carry its SHA-256 digest, and its counters and
+identities must already be stored as integers and text. The reader does not
+recompute a blank digest and does not narrow a value such as `2.9` to `2`
+before verifying, because the digest is computed over the decoded body and a
+coerced body is not the record that was stored. Only in-process construction
+may leave the digest blank for the record to compute. The same rule applies to
+`InformationStorageBinding.from_storage_dict`, which refuses a stored binding
+without its digest. A stored definition whose contract is invalid raises
+`LoopDefinitionError`, and its input cardinalities must be sorted by role in
+the stored encoding.
+
+The older ontology record with `kind: loop_node` remains a separate exact
+migration into `LoopDefinitionRecord`. This compatibility reader does not
+create another runtime type or permit new legacy records.
+
+## Verification and preservation
+
+The owning checks cover unchanged historical digest round trips, tampered
+historical bodies, current encodings, explicit multiple-item inputs, bound
+overflow, incompatible connections, and independent per-port adapter checks.
+Use `loop_contract.self_test()`, `loop_definition_checks.self_test()`, and
+`delegation_checkpoint_checks.run_checkpoint_checks()` through the standard
+package self-test entry point.
+
+Do not rewrite old Run History, checkpoints, or managed reports to make them
+look current. Preserve failed reads as failures. New records use current
+contracts, while immutable older records retain their exact identity.

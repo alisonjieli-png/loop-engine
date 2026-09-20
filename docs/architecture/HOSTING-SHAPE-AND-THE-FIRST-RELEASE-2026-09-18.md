@@ -231,6 +231,222 @@ A release with no hard ceiling on the most expensive services is a release
 that needs its own admission and reservation limits, which this system already
 has, rather than a reliance on the platform to stop.
 
+## Configuring it programmatically, read on 2026-09-19
+
+A second research pass read the configuration and operation documentation for
+five platforms. The question was narrow: which one stands up and maintains a
+single containerized service with a managed Postgres database using the fewest
+manual steps in a web console, and what can be driven from a file, an
+interface, or an agent facing server. Nothing was deployed, so every finding
+below is documented behavior rather than observed behavior.
+
+| Platform | One file defines it | Full interface | Terraform | Agent facing server | Prebuilt image from a registry | One step rollback |
+|---|---|---|---|---|---|---|
+| DigitalOcean App Platform | services and databases together | yes | in the vendor's own organization | yes, covering applications and databases | a first class registry type, public and private | one call, restoring code, configuration, and the specification |
+| Render | services and databases together | yes | vendor calls it official, registry calls it partner | yes, but it cannot deploy a prebuilt registry image | yes, with credentials added in the console or through the interface | one call |
+| Cloud Run | one service per file, no database | yes | the only official tier provider | yes | a public registry image directly, a private one through a remote repository | one command |
+| Fly | one application per file, no database and no secrets | yes | none, withdrawn deliberately | yes, every command marked experimental | yes, private external registry authentication not documented | no rollback command by design |
+| Hetzner Cloud | no application definition | yes | yes | none published | not applicable | disk level rebuild only |
+
+Four findings decide it for this system.
+
+The first is specific to us and settles more than the general comparison does.
+We already publish a digest pinned image, so the release is a prebuilt image
+pulled from a registry rather than a build from source. Render's agent facing
+server documents that it cannot deploy prebuilt registry images, which is
+precisely the operation we would want it for. Cloud Run deploys a public
+registry image directly but requires a remote repository for a private one.
+DigitalOcean treats that registry as a first class type for both.
+
+The second is that a rollback is not one thing. DigitalOcean restores the
+code, the configuration, and the specification together. Cloud Run shifts
+traffic back to a whole earlier revision. Fly documents that it has no
+rollback command deliberately, and that redeploying an older image runs it
+against today's configuration, environment variables, and secrets. For a
+service meant to be operated without thinking, that difference matters more
+than a price.
+
+The third is that one file covering the service and its database is rarer than
+it sounds. Render and DigitalOcean do it. Cloud Run's service definition holds
+one service and cannot express the database or a scheduled job at all, so the
+equivalent needs either an infrastructure tool or several coordinated calls.
+Fly's file can express neither the database nor its secrets.
+
+The fourth is that an agent facing server is not a single standard of support.
+One ships in a vendor's own organization under a permissive license, one lives
+in an organization whose profile disclaims support, one ships inside a command
+line tool with every command marked experimental, and one platform publishes
+none. Treating those four as the same capability would be a mistake.
+
+On the evidence read, DigitalOcean App Platform needs the fewest manual
+console steps for this exact goal, with Render close behind and better on
+preview environments and on published database limits. One ambiguity sits
+directly under that conclusion and is recorded rather than resolved: whether
+declaring a production database in the application specification creates a
+managed cluster or only attaches to one that already exists was not settled by
+the pages read. If it only attaches, the gap between the two narrows.
+
+## Questions the first pass left open, resolved on 2026-09-19
+
+A page that returns not found is not an answer, and neither is a page that
+does not mention the thing. A second pass resolved the open questions through
+the vendors' own machine readable sources: published interface schemas, the
+source of their command line tools, their documentation repositories, their
+release notes, and posts written by their own staff. Each finding below names
+which kind of source produced it.
+
+Two of these change what we would choose.
+
+**Fly cannot pull a private image from an outside registry.**
+Three independent vendor sources agree: the published machine interface schema
+carries no credential field on an image, the command line tool passes no
+credentials when resolving an image reference, and the vendor's own guide
+scopes private images to its own registry and external registries to public
+ones. Staff posts say the same. Our image is public today, so this does not
+block us now, but it removes a platform from consideration the moment a
+release needs to be private, and that vendor's own registry is documented as
+collecting unused images rather than keeping them.
+
+**Public images from the registry we already publish to deploy directly on
+Cloud Run, and that reached general availability on 2026-07-14**
+according to its release notes. A private one there needs a remote repository
+rather than a credential. Images are cached for up to an hour, which is a trap
+for a moving tag and irrelevant to us because we deploy by digest.
+
+Four more resolutions worth keeping.
+
+The sixty second idle timeout that Fly was once documented as enforcing was
+retracted by the same staff member in a dated edit in April 2024. There is now
+no documented maximum request duration there, and the one timeout setting is
+documented with neither a default nor a unit, so the effective value is
+undocumented rather than absent. On Cloud Run the maximum is stated plainly:
+five minutes by default, extendable to sixty.
+
+Managed Postgres on Fly left technical preview on 2025-04-29,
+established by the commit that removed the preview banner from the
+documentation source rather than by any announcement, and no statement that it
+is generally available was ever published. Its second version is explicitly in
+beta and available in one region. For a database a service depends on, that is
+a status worth knowing before choosing.
+
+Zero downtime deployment there is documented and conditional, and the
+conditions are specific enough to get wrong: the health checks must be the
+service level ones rather than the top level block, which the vendor states
+plainly does not affect routing; at least two machines must run; and the
+proxy stops sending new requests to a draining machine but does not wait for
+the ones in flight, so the application itself must finish its work inside the
+kill timeout.
+
+Automated backup retention on Cloud SQL for Postgres defaults
+to seven backups on the standard edition and fifteen on the higher one, with
+transaction logs kept seven and fourteen days. That figure is not on the
+backup page; it is in the command line reference, which is generated from the
+tool's own argument definitions.
+
+Two vendor documentation defects were found while resolving these, and both
+matter if someone reads the page rather than the schema. Cloud Run's quota
+page states a maximum of one hundred instances per project and region, which
+contradicts its own footnote and its own worked example; the real per revision
+default is one hundred and the regional ceiling is derived from the processor
+and memory quota. Fly's page for its agent facing server lists nine command
+groups, omits a tenth, and names a tool that does not exist; the source has
+sixty tools at the version read.
+
+## The database question, resolved on 2026-09-19, and what it changes
+
+The ambiguity recorded above is resolved, and the answer corrects a claim this
+document made. A DigitalOcean application specification that declares a
+database creates one in exactly one case and attaches in every other. The
+schema sentence is identical across five vendor artifacts, including the
+published interface schema, the vendor's own generated client, and the
+infrastructure tool's source: the cluster name is required for production
+databases, and for development databases, if it is not set, a new cluster is
+provisioned.
+
+The structural proof is stronger than the sentence. The database object has
+exactly seven fields and none of them is size, region, or node count. The
+specification has no vocabulary for saying how large a cluster should be or
+where it should live, so it cannot describe one into existence. The only thing
+it can create is the fixed development database, and that one is PostgreSQL
+only, one size, region locked to the application, without permission to create
+further databases inside it, at seven dollars each month. The vendor's own
+migration guide instructs the reader not to use it for anything that must
+restore a real dump, and to create the managed cluster first.
+
+So the earlier claim that one file covers the service and its database is true
+for DigitalOcean only at the development tier. At the production tier the work
+is three objects rather than one: create the cluster, attach it by name, and
+add the application as a trusted source. Render needs two. On step count alone
+for a production database, Render is now ahead, which reverses what this
+document said yesterday.
+
+**That comparison does not decide our first release, because our first release
+does not need a managed database at all.** The storage measurement already
+made that choice: the default is an embedded analytical database file over
+packaged records, with a server database behind the same contract only when a
+rollout needs one. The intelligence a client pulls is a catalogue and a set of
+bodies, both of which ship inside the image we already publish by digest. A
+release that serves them needs a container, a hostname, and a way to put a
+newer image behind the same hostname. Every one of the five platforms does
+that. Choosing between them on how they provision Postgres is answering a
+question the first release does not ask.
+
+What the first release does ask is narrower, and two findings answer it.
+
+The first is that DigitalOcean's documentation names the Model Context
+Protocol directly, which no other platform read here does. Its edge settings
+page states that disabling the content delivery cache is required to use
+server sent events or the Model Context Protocol over GET requests, and that
+POST requests work with the cache enabled. That is a precise and useful fact
+rather than a marketing mention. Because the protocol's GET channel is
+optional, a first release that answers on POST alone runs on the default
+hostname with nothing disabled. A later release that wants the server to push
+notifications turns the cache off, which requires a custom domain and does not
+work on the starter hostname. That is a known step with a known cost, recorded
+now rather than discovered during an outage.
+
+The second is that Render documents inbound WebSocket connections with no
+maximum duration and no limit on their number, and documents server sent
+events nowhere at all. DigitalOcean is the mirror image: server sent events
+documented with a named prerequisite, WebSockets absent from every page, the
+published schema, and the generated client, where the only occurrence of the
+word describes the vendor's own console. Neither platform publishes a maximum
+duration for an ordinary request, and both put the same content delivery
+network in front of the application, so neither absence should be read as
+permission to hold a request open for minutes.
+
+The decision therefore stands where it was, for a corrected reason.
+DigitalOcean App Platform remains the first choice for this release, not
+because one file provisions a production database, which it does not, but
+because the release is a prebuilt image behind a hostname, that platform
+treats our registry as a first class source for both public and private
+images, its rollback restores code, configuration, and specification together,
+and it is the only one of the five whose documentation has considered the
+protocol we intend to serve. Render remains the alternative, ahead on managed
+Postgres step count and on documented streaming over WebSockets, behind on
+deploying a prebuilt registry image through its agent facing server and on
+publishing anything about encryption at rest for environment variables and
+secret files, which it calls plaintext.
+
+Three further facts are recorded because they bear on operation rather than
+choice. DigitalOcean's automatic deployment keeps the previous container
+serving until the new one passes its readiness check, then drains and
+terminates the old one, and rolls back to the last healthy deployment when the
+check fails; high availability still needs two containers. Its managed
+PostgreSQL keeps one backup a day for seven days with point in time recovery
+across the same seven days, and restores by creating a new cluster rather than
+rewinding in place; backend connections run from twenty two on the smallest
+plan to nine hundred and ninety seven on the largest. And a documentation
+defect worth knowing: the published interface schema carries example values
+for health check fields but no defaults, and the examples differ from the real
+defaults, so reading an example as a default gives the wrong number in every
+field.
+
+Per pull request environments exist on DigitalOcean only as a recipe using the
+vendor's own automation action, which creates a separate fully billed
+application for each request and deletes it on close. That is worth having and
+is not a platform feature.
+
 ## How to choose the host when the time comes
 
 The choice is between request billed compute, an always running instance, a

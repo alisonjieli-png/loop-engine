@@ -3,6 +3,1255 @@
 # offline_verified, builds it, runs its verification, records the evidence path,
 # and moves the status. Keep it in step with FABRIC-ROADMAP-2026-09-18.md.
 schema_version: roadmap/v1
+# The continuation track takes precedence over legacy list order. This is
+# development planning data, not an executable runtime configuration.
+continuation:
+  schema_version: continuation_plan/v1
+  title: First release and continued system development
+  started_at: "2026-09-19T14:12:54Z"
+  target_at: "2026-09-20T14:12:54Z"
+  updated_at: "2026-09-20T21:30:00Z"
+  baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
+  plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
+  artifact: docs/roadmap/CONTINUATION-STATUS.md
+  review: artifacts/claude-session-review-2026-09-19/README.md
+  system_map: artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html
+  client_server_diagram: artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html
+  architecture_review: artifacts/architecture-audit-2026-09-19/README.md
+  verification_report: artifacts/architecture-audit-2026-09-19/verification-deployment-account-code-1.json
+  checkpoint: docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md
+  developer_handoff: docs/context/FABLE-5-1-HANDOFF-2026-09-20.md
+  launch_messaging: docs/guides/launch-benefits-and-evidence.md
+  candidate_managed_profile: docs/guides/supabase-and-vercel-launch-profile.md
+  previous_artifact: https://claude.ai/code/artifact/a9e49f80-1fa5-4acc-af02-71e2dfa6786d
+  previous_artifact_write_access: unavailable_in_this_session
+  launch_shape: subscription_website_dashboard_payments_and_harness_intelligence_service
+  hosting_preference: owner_prefers_fly_io_compute_with_supabase_candidate_data_services
+  customer_execution: local_or_customer_managed
+  orchestration_requirement: canonical_Loop_no_required_LangGraph_dependency
+  report_delivery: one_self_contained_HTML_with_embedded_diagrams_comparisons_worklist_and_source_inventory
+  schedule_status: historical_target_not_a_release_forecast
+  delivery_planning_note: These packages expand existing steps into implementation and verification work. They are not another status authority, runtime scheduler, permission grant, or completion percentage. Dependencies apply to acceptance; independent local work can proceed earlier.
+  launch_benefits:
+    - id: overnight
+      title: Put your models to work overnight
+      draft: Give a complex task time to make progress with models running on your own machine, within the limits you set.
+      state: draft_requires_qualification
+      steps: [S-6.8, S-6.9, S-6.24]
+      evidence_needed: A declared long-running local-model task population, exact hardware and models, restart and cancellation tests, independent task checks, and a useful morning report. Local execution alone does not prove local inference or completion by morning.
+    - id: tokens
+      title: Spend fewer tokens on repeated work
+      draft: Reuse suitable code and pass relevant information to each step instead of regenerating everything or resending the whole history.
+      state: draft_requires_qualification
+      steps: [S-6.3, S-6.6, S-6.11, S-6.19]
+      evidence_needed: Matched task comparisons with a quality floor, complete input and output accounting including retries and helpers, failures, cache categories, and total cost. No significant or percentage savings claim before measured results.
+    - id: expertise
+      title: Give each step the expertise it needs
+      draft: Select useful guidance, tools and past findings for the work at hand, and request more information when a gap appears.
+      state: draft_requires_qualification
+      steps: [S-6.4, S-6.7, S-6.9, S-6.10]
+      evidence_needed: Reviewed domain material, permission and compatibility checks, actual loading evidence, and independent outcomes against absent, excessive, stale and misleading context. Right-sized does not mean always minimal or always correct.
+  delivery_batches:
+    - id: D-01
+      title: Freeze the handoff and repair release blockers
+      stage: initial_service
+      steps: [S-6.17, S-6.26, S-6.27]
+      depends_on: []
+      actions:
+        - Record the exact deployed image separately from the dirty working tree and preserve all unrelated changes.
+        - Preserve the reviewed exact identity network registrations and recheck conformance after further changes; earlier failures remain in their original reports.
+        - Review browser identity session lifetime, logout, duplicate account activation, provider outages, token audience and registration limits.
+        - Review browser dependency licenses and include all required distribution notices.
+        - Run focused checks and removed-guard controls before a frozen full-suite capture; do not reuse stale green reports.
+        - "Record which files are being changed by each active developer and keep unrelated work outside the release batch."
+        - "Bind each evidence artifact to the source, dependencies, host settings and exact test population it actually exercised."
+        - "Classify a failed check as implementation, test or environment failure before repair; keep the original result and a discriminating control."
+      acceptance: The exact candidate tree passes its declared local checks and conformance, with all failed attempts and untested provider journeys retained.
+      adversarial: Removing audience validation, subject binding or network authority must fail a named check. Registering a module must not hide a real ungoverned call.
+      authority_note: Local source and tests only. Deployment and publication require their own exact release decision.
+      owning_paths: ["src/loop_engine/core/service_runtime/http_auth.py","src/loop_engine/forbidden_paths.json","tools/capture_architecture_checks.py"]
+      rollback: "Keep the deployed image and configuration until the replacement passes. Preserve failed source snapshots and never reset the shared worktree."
+      verification_cases:
+        - id: D-01-T01
+          proof_level: "source_review"
+          scenario: "Review changed files and concurrent work before a release batch."
+          pass_condition: "Every changed behavior has an owning boundary and resolved edit ownership."
+          negative_control: "An unexplained dirty file cannot enter a publish command."
+        - id: D-01-T02
+          proof_level: "local_contract"
+          scenario: "Remove issuer, audience or subject binding from identity validation."
+          pass_condition: "The corresponding negative authentication test fails."
+          negative_control: "A correctly signed token for another service must still be refused."
+        - id: D-01-T03
+          proof_level: "local_contract"
+          scenario: "Remove an exact network registration or introduce an ungoverned call."
+          pass_condition: "Conformance detects the boundary change without a broad exception."
+          negative_control: "A loopback fixture does not authorize an external destination."
+        - id: D-01-T04
+          proof_level: "operational_drill"
+          scenario: "Change a package file while a full check capture runs."
+          pass_condition: "The report records source drift and is not used for release."
+          negative_control: "A green subprocess exit alone cannot establish matching source."
+        - id: D-01-T05
+          proof_level: "source_review"
+          scenario: "Review transitive browser and server dependency notices."
+          pass_condition: "The distributed image contains the notices for its pinned dependencies."
+          negative_control: "A top-level license alone does not satisfy a dependency with separate terms."
+    - id: D-02
+      title: Finish domain and authentication email
+      stage: initial_service
+      steps: [S-6.12, S-6.15, S-6.24]
+      depends_on: []
+      actions:
+        - Reuse the created auth.baltor.ai sender, its exact records and the running verification request; confirm success before enabling authentication mail.
+        - Reuse the approved Cloudflare write grant and existing Free zone; verify activation and all records without recreating resources.
+        - Verify registry publication of the nameserver change already accepted by Namecheap. The owner confirms no existing mail or forwarding; preserve the old delegation in the rollback record.
+        - Configure the exact website record and certificate, then exact identity redirects and private sender settings under a permitted management connection.
+        - Test confirmation, recovery, expired and reused links, duplicate submissions, delivery failure and sender authentication with controlled recipients.
+        - "Record authoritative and recursive DNS observations separately, including negative caching, DNSSEC state and certificate renewal."
+        - "Add sender failure, suppression, bounce and complaint handling without storing raw account email content in general traces."
+        - "Move canonical service and callback addresses only through an explicit migration that preserves accepted old connections until their retirement."
+      acceptance: The chosen hostname and sender work through the real customer path without disrupting existing website or mail behavior.
+      adversarial: A missing management permission, wrong host, unverified sender or unknown DNS-change outcome prevents a readiness claim and triggers reconciliation.
+      authority_note: Existing pilot limits apply. Registrar and Cloudflare write access are authorized. Supabase authentication-settings access remains a separate permission gap; do not bypass refusals.
+      owning_paths: ["docs/guides/launch-setup-runbook.md","tools/operator_credentials.py","src/loop_engine/core/service_runtime/browser_identity.py"]
+      rollback: "Keep the verified Fly origin available. Reconcile uncertain DNS writes before retrying and never restore obsolete mail records without review."
+      verification_cases:
+        - id: D-02-T01
+          proof_level: "real_provider"
+          scenario: "Read the registrar, registry and both authoritative DNS servers."
+          pass_condition: "All identify the intended delegation and exact website and sender records."
+          negative_control: "A cached recursive answer cannot establish the registrar state."
+        - id: D-02-T02
+          proof_level: "real_provider"
+          scenario: "Verify all advertised hostnames with ordinary HTTPS clients."
+          pass_condition: "Hostname validation succeeds and the served source matches the candidate image."
+          negative_control: "An insecure TLS bypass or pinned-address probe alone is insufficient."
+        - id: D-02-T03
+          proof_level: "end_to_end"
+          scenario: "Deliver confirmation and recovery messages to controlled recipients."
+          pass_condition: "The intended recipient receives a valid, expiring link for the selected environment."
+          negative_control: "A verified sender domain alone is not proof of inbox delivery."
+        - id: D-02-T04
+          proof_level: "real_provider"
+          scenario: "Expire, reuse or change a confirmation or recovery link."
+          pass_condition: "The provider and application refuse the changed or consumed authority."
+          negative_control: "A forged tenant claim or redirect cannot grant another account."
+        - id: D-02-T05
+          proof_level: "operational_drill"
+          scenario: "Interrupt sender or DNS configuration after a possible write."
+          pass_condition: "Read-back establishes the outcome before another mutation."
+          negative_control: "Repeating an unknown write or silently changing providers fails the drill."
+    - id: D-03
+      title: Connect customer accounts and client access
+      stage: initial_service
+      steps: [S-6.5, S-6.12, S-6.24]
+      depends_on: [D-01, D-02]
+      actions:
+        - Exercise the real identity provider with two ordinary test identities and server-owned tenant creation.
+        - Complete confirmation, password recovery, session expiry, logout and account-disable behavior without accepting editable tenant metadata.
+        - Add scoped self-service client credentials through the existing access boundary, with short lifetime, one-time display and revocation.
+        - Qualify native client authorization separately from browser sign-in; never accept a generic browser audience as the service resource audience.
+        - Test account switching, delayed responses, concurrent activation, request limits and two supported client implementations.
+        - "Require a verified browser session for personal credential management; service tokens cannot mint more credentials or delegate billing and administration."
+        - "Bind personal tokens to their issuing subject, account state, explicit scopes and expiry; cap active tokens and retained token history."
+        - "Test logout during pending reads and writes, provider outages, account disablement and subject revocation without leaking stale results."
+      acceptance: A new customer signs in, obtains only permitted client access and loses that access when revoked, across browser and native clients.
+      adversarial: Cross-tenant requests, old sessions, anonymous identities, server keys in browsers and repeated activation cannot restore or expand authority.
+      authority_note: Disposable test identities and exact selected project only. No opening public registration before delivery and abuse controls work.
+      owning_paths: ["src/loop_engine/core/service_runtime/access.py","src/loop_engine/core/service_runtime/runtime.py","src/loop_engine/core/service_runtime/http_auth.py","src/loop_engine/core/service_runtime/web_assets/client-access.js"]
+      rollback: "Disable new account admission or personal token issuance independently. Keep existing revocation records and do not restore discarded secrets."
+      verification_cases:
+        - id: D-03-T01
+          proof_level: "end_to_end"
+          scenario: "Two verified customers create and revoke their own client credentials."
+          pass_condition: "Each token authenticates only its server-assigned account and is shown once."
+          negative_control: "Supplying another tenant or using a service token to mint must fail."
+        - id: D-03-T02
+          proof_level: "local_contract"
+          scenario: "Race two requests against the last available token slot."
+          pass_condition: "At most one credential commits under the tenant quota."
+          negative_control: "Removing the transaction guard must expose the excess issue."
+        - id: D-03-T03
+          proof_level: "local_contract"
+          scenario: "Lose the write acknowledgment and retry the same request identity."
+          pass_condition: "The existing result reconciles without another key or recovered plaintext."
+          negative_control: "Changing scope or label under that identity must fail."
+        - id: D-03-T04
+          proof_level: "end_to_end"
+          scenario: "Sign out while a credential response is delayed."
+          pass_condition: "Local data clears immediately and the late result cannot repopulate the page."
+          negative_control: "The test must hold a real response, not only clear a static form."
+        - id: D-03-T05
+          proof_level: "real_provider"
+          scenario: "Disable an account or revoke its mapped subject."
+          pass_condition: "New management requests and linked client tokens lose authority within the declared revocation policy."
+          negative_control: "Browser logout alone must not be misreported as revoking all independent client tokens."
+    - id: D-04
+      title: Complete sandbox subscriptions
+      stage: initial_service
+      steps: [S-6.21, S-6.12, S-6.16]
+      depends_on: [D-01, D-03]
+      actions:
+        - Bind all test operations to the approved Baltor sandbox account and privately stored runtime test credential.
+        - Create the test product, recurring Price and portal settings with idempotency and reconcile uncertain outcomes.
+        - Implement server-owned customer creation through the existing billing boundary; customers cannot choose another customer's identifier.
+        - Register the exact test webhook and separate signing-secret reference; complete periodic reconciliation and outage recovery.
+        - Exercise activation, failed payment, cancellation, reactivation, duplicate and reordered events, and access revocation in website and client requests.
+        - "Separate customer creation, checkout session creation, subscription state and material entitlement, with durable identities for each effect."
+        - "Handle multiple subscriptions, changed prices, trials, refunds and payment disputes through explicit owner-approved entitlement policy."
+        - "Verify checkout return and cancellation destinations against configured origins; never accept a browser-supplied customer, Price or redirect."
+      acceptance: One complete real test-mode subscription lifecycle changes the same durable entitlement used by both transports.
+      adversarial: A checkout redirect, forged event, wrong account, old success event or lost response cannot grant access or create duplicate customer actions.
+      authority_note: Test mode only. Public prices, terms and live customer charging remain owner decisions.
+      owning_paths: ["src/loop_engine/core/service_runtime/billing.py","src/loop_engine/core/service_runtime/stripe_sessions.py","src/loop_engine/core/service_runtime/stripe_provider.py"]
+      rollback: "Keep live charging disabled. Preserve provider identifiers and reconcile payments before restoring an older application or entitlement projection."
+      verification_cases:
+        - id: D-04-T01
+          proof_level: "real_provider"
+          scenario: "Create a disposable customer and subscription in the selected Stripe sandbox."
+          pass_condition: "Account identity and test mode match every stored provider object."
+          negative_control: "A different sandbox or live-mode response must be refused."
+        - id: D-04-T02
+          proof_level: "end_to_end"
+          scenario: "Complete test checkout, cancel and reactivate a subscription."
+          pass_condition: "The same durable entitlement governs browser and client delivery."
+          negative_control: "A success redirect without verified provider state grants nothing."
+        - id: D-04-T03
+          proof_level: "local_contract"
+          scenario: "Deliver duplicate and reordered signed events."
+          pass_condition: "Current provider state wins and every event identity remains traceable."
+          negative_control: "An older paid event cannot restore canceled access."
+        - id: D-04-T04
+          proof_level: "real_provider"
+          scenario: "Lose a customer or session creation response."
+          pass_condition: "A durable idempotency identity prevents duplicate effects during reconciliation."
+          negative_control: "A new random request identity is not an acceptable automatic retry."
+        - id: D-04-T05
+          proof_level: "operational_drill"
+          scenario: "Pause webhook processing and resume with periodic reconciliation."
+          pass_condition: "Missed changes are recovered without expanding grants or discarding failures."
+          negative_control: "A healthy webhook endpoint with a stuck reconciliation queue fails readiness."
+    - id: D-05
+      title: Connect cloud records, files and retrieval
+      stage: initial_service
+      steps: [S-6.4, S-6.5, S-6.6]
+      depends_on: [D-01]
+      actions:
+        - Implement PostgreSQL behind the existing catalogue transaction contract, including read-set guards and unknown-commit reconciliation.
+        - Create the private bucket under the existing project; map immutable references to exact bytes without a second source of truth.
+        - Add one versioned semantic embedding profile beside exact and lexical retrieval; separate filters, candidate generation, fusion and optional ranking.
+        - Preserve missing-feature and incompatible-embedding-space states, deletion, grant revocation and index rebuild behavior.
+        - Measure permission-filtered recall, search and delivery latency, cold starts, payload sizes and concurrency on a declared corpus.
+        - "Define migration rehearsal, cutover, rollback and consistency checks before replacing the live SQLite authority."
+        - "Keep index projections rebuildable and file objects immutable; record versions, deletion state and access decisions outside provider-owned indexes."
+        - "Test object size limits, partial transfers, expiry, cache isolation and tampered bytes across inline, streamed and signed delivery."
+      acceptance: Two tenants retrieve only permitted exact revisions through real shared-state and storage adapters; search indexes can be rebuilt from authoritative records.
+      adversarial: Stale grants, cross-tenant caches, wrong digests, partial writes, leaked signed URLs and missing embedding features must refuse or remain explicitly unavailable.
+      authority_note: Existing project and pilot allowance only. No extra search cluster or model embedding calls without exact authority.
+      owning_paths: ["src/loop_engine/catalog/protocol.py","src/loop_engine/catalog/stores/sqlite_store.py","src/loop_engine/core/service_runtime/storage.py","src/loop_engine/core/service_runtime/provisioning.py"]
+      rollback: "Retain the authoritative source and a verified export. Stop writes during an unresolved cutover; do not run divergent stores as simultaneous authorities."
+      verification_cases:
+        - id: D-05-T01
+          proof_level: "local_contract"
+          scenario: "Run identical catalogue transactions against each supported store."
+          pass_condition: "Read-set guards, unique ownership and commit acknowledgments preserve the same semantics."
+          negative_control: "An adapter without atomic batch support must refuse mutation."
+        - id: D-05-T02
+          proof_level: "real_provider"
+          scenario: "Store and fetch selected immutable objects in a private bucket."
+          pass_condition: "Bytes and digests match and anonymous retrieval fails."
+          negative_control: "A public bucket or permanent bearer URL fails qualification."
+        - id: D-05-T03
+          proof_level: "end_to_end"
+          scenario: "Revoke a grant after search but before object delivery."
+          pass_condition: "Delivery reauthorizes and refuses the stale selection."
+          negative_control: "A cached search result cannot preserve revoked access."
+        - id: D-05-T04
+          proof_level: "operational_drill"
+          scenario: "Rebuild the search projection and rehearse a store migration."
+          pass_condition: "Counts, identities, grants and exact revisions reconcile before cutover."
+          negative_control: "An index match count alone cannot establish data completeness."
+        - id: D-05-T05
+          proof_level: "held_out_comparison"
+          scenario: "Compare retrieval on a frozen permission-scoped corpus."
+          pass_condition: "Report recall, latency, payload size, exclusions and missing embedding features."
+          negative_control: "Character similarity cannot be labeled learned semantic retrieval."
+    - id: D-06
+      title: Prove selected material reaches each step
+      stage: core_proof
+      steps: [S-6.1, S-6.2, S-6.7, S-6.9]
+      depends_on: [D-01, D-05]
+      actions:
+        - Connect search, selection, authorized download and digest verification through the existing provisioner.
+        - Resolve required dependencies and compile a versioned native layout for one named client version.
+        - Record offered, selected, downloaded, placed, loaded and used material separately, including inherited user-level instructions and truncation.
+        - Compare useful material with withheld, changed and malicious material; preserve relevant limits across a permitted harness change.
+        - Run one complete task through independent verification and preserve the exact files and outputs consumed by each step.
+        - "Resolve dependency closure, license state, executable effects and layout compatibility before writing a selected bundle."
+        - "Give instructions, reusable material, writable outputs and host-owned authority separate filesystem scopes."
+        - "Track inherited configuration, actual discovery, truncation and use independently from successful download and placement."
+      acceptance: A supported client demonstrably loads selected material and completes a checked task; file presence and connection success are insufficient.
+      adversarial: Disabled discovery, incompatible native versions, traversal, symbolic links, unexpected inherited instructions and missing required files must be detected.
+      authority_note: Offline preparation can proceed now. Model-backed task proof needs an exact model-call allowance, including for local inference.
+      owning_paths: ["src/loop_engine/core/node_provisioning.py","src/loop_engine/core/instance_instructions.py","src/loop_engine/core/harness_process.py"]
+      rollback: "Keep exact prior bundles and outputs. Stop before execution if the compiled layout or permission boundary cannot be verified."
+      verification_cases:
+        - id: D-06-T01
+          proof_level: "end_to_end"
+          scenario: "Materialize an exact selected bundle into one supported native client."
+          pass_condition: "Observed loading identifies every required revision and its declared native path."
+          negative_control: "A file existing on disk without loading evidence is not a pass."
+        - id: D-06-T02
+          proof_level: "local_contract"
+          scenario: "Try traversal, symbolic links, archive escapes and conflicting paths."
+          pass_condition: "Preparation refuses before overwriting or exposing unrelated files."
+          negative_control: "A friendly filename cannot replace path confinement."
+        - id: D-06-T03
+          proof_level: "end_to_end"
+          scenario: "Compare useful material with withheld, changed and misleading material."
+          pass_condition: "Independent checks distinguish actual use and task effect."
+          negative_control: "A model claiming it read the material is not sufficient evidence."
+        - id: D-06-T04
+          proof_level: "local_contract"
+          scenario: "Resolve a missing dependency or incompatible native layout."
+          pass_condition: "The response names the unsupported requirement without silently dropping it."
+          negative_control: "A fallback cannot replace an exact contract with prose."
+        - id: D-06-T05
+          proof_level: "operational_drill"
+          scenario: "Interrupt preparation or change harness after a failed attempt."
+          pass_condition: "The manifest, outputs and consumed authority remain bound and recoverable."
+          negative_control: "A new process cannot erase a previous effect or renew its budget."
+    - id: D-07
+      title: Qualify overnight local work and recovery
+      stage: core_proof
+      steps: [S-6.8, S-6.9, S-6.24, S-6.13]
+      depends_on: [D-01, D-06]
+      actions:
+        - Connect an existing local model endpoint and one supported development tool; record hardware, model identity, context capacity and effective settings.
+        - Bind resource admission, scoped credential use and cancellation to the existing process lifetime owner.
+        - Compare fresh processes, retained workers and trust-group sandboxes; do not require a separate operating-system image for every step or assume Python for every tool.
+        - Persist work and remaining limits across process crash, machine restart, sleep, network loss and unavailable model service; uncertain effects require reconciliation.
+        - Test a declared overnight duration with multiple real task types, an independently checked result and a morning report that distinguishes complete, blocked and unfinished work.
+        - "Set explicit maximum running processes, memory reservations, disk use, output growth and slow-consumer behavior for each supported execution profile."
+        - "Keep external model serving separate from worker placement; accept user-operated endpoints without taking ownership of their model processes."
+        - "Test operating-system-specific shutdown, signal handling and checkpoint restoration with the same declared task authority."
+      acceptance: A named local configuration performs bounded unattended work and resumes or stops honestly, without hidden cloud-model fallback or repeated external effects.
+      adversarial: Lost contact cannot free reserved capacity, a restart cannot reset the budget, and a failed verifier cannot be reported as overnight completion.
+      authority_note: Model calls remain disabled until approved. Existing endpoints are user-operated; this does not authorize installing weights or launching model servers.
+      owning_paths: ["src/loop_engine/core/local_resources.py","src/loop_engine/core/instance_hibernation.py","src/loop_engine/core/credential_leases.py","src/loop_engine/loop/delegation_runtime.py"]
+      rollback: "Stop new admissions, reconcile active effects and retain checked work. Resume only a supported checkpoint with the original remaining authority."
+      verification_cases:
+        - id: D-07-T01
+          proof_level: "end_to_end"
+          scenario: "Run the declared unattended duration on a real local endpoint."
+          pass_condition: "The final report distinguishes accepted, provisional and unfinished work."
+          negative_control: "Local execution with hidden remote inference fails the local-model claim."
+        - id: D-07-T02
+          proof_level: "operational_drill"
+          scenario: "Restart after a process crash, machine sleep or network interruption."
+          pass_condition: "Safe work resumes without duplicated effects or lost output identities."
+          negative_control: "A new attempt with reset time or token allowance fails."
+        - id: D-07-T03
+          proof_level: "local_contract"
+          scenario: "Cancel a worker that still owns descendants or reservations."
+          pass_condition: "Capacity is released only after observed termination."
+          negative_control: "Sending a signal alone cannot count as stopped execution."
+        - id: D-07-T04
+          proof_level: "held_out_comparison"
+          scenario: "Compare fresh processes, warm workers and shared trust-group sandboxes."
+          pass_condition: "Measure whole-task memory, startup, cost, cancellation and isolation."
+          negative_control: "A cheaper shared environment that leaks another task's files is ineligible."
+        - id: D-07-T05
+          proof_level: "real_provider"
+          scenario: "Lose an optional decision or model endpoint during work."
+          pass_condition: "The configured refusal or authorized fallback is recorded distinctly."
+          negative_control: "No undeclared provider, model server or paid route is started."
+    - id: D-08
+      title: Build useful expertise and reusable outputs
+      stage: core_proof
+      steps: [S-6.10, S-6.20, S-6.11, S-6.23]
+      depends_on: [D-05, D-06]
+      actions:
+        - Select a small useful starter population across the four persistent intelligence layers, with licenses, provenance and coverage gaps recorded.
+        - Independently review the existing twelve candidate records; distinguish code reference cards from executable packages.
+        - Add expert methods, mistakes, constraints, code and example outputs where actual task coverage is missing, through existing catalogue writes.
+        - Exercise bounded generation, review, promotion, later-task retrieval and withdrawal; a generator cannot approve its own work.
+        - Export an accepted solution into a clean environment and run fresh inputs without the builder conversation or undeclared dependencies.
+        - "Specify applicability, contraindications, version validity and dependency limits for each reusable item rather than promoting generic descriptions."
+        - "Preserve rejected candidates and corrective findings so later retrieval can distinguish failure evidence from approved guidance."
+        - "Bind consumer feedback to the exact item and output revision used; never overwrite a consumed result with a later improvement."
+      acceptance: Reviewed material helps a declared task population, and at least one accepted solution is independently reusable on changed inputs.
+      adversarial: A mislabeled generic file, incompatible dependency, changed source, unsupported license or builder-only test cannot qualify a package.
+      authority_note: Distribution rights and independent review are required. No automatic promotion or bulk model generation under the zero-call allowance.
+      owning_paths: ["src/loop_engine/core/code_intelligence_assets.py","src/loop_engine/core/reusable_capability_flywheel.py","src/loop_engine/code_nodes/solution_export.py"]
+      rollback: "Withdraw a bad item by lifecycle state and keep its history. Restore an approved prior revision only after current rights and compatibility checks."
+      verification_cases:
+        - id: D-08-T01
+          proof_level: "source_review"
+          scenario: "Review the starter population across all four persistent layers."
+          pass_condition: "Each item has a responsible source, rights, purpose and explicit qualification state."
+          negative_control: "A Markdown format or vector representation is not a new intelligence layer."
+        - id: D-08-T02
+          proof_level: "end_to_end"
+          scenario: "Use a reviewed item in a fresh task and export the result."
+          pass_condition: "The consumer records the exact revision and independently checked outcome."
+          negative_control: "Retrieval rank or placement alone cannot establish benefit."
+        - id: D-08-T03
+          proof_level: "local_contract"
+          scenario: "Attempt to promote a producer's own generated candidate."
+          pass_condition: "The separate review requirement prevents activation."
+          negative_control: "A high model confidence or passing producer test cannot waive review."
+        - id: D-08-T04
+          proof_level: "operational_drill"
+          scenario: "Withdraw an item after a license or correctness finding."
+          pass_condition: "Future selection refuses it while previous consumption records remain intact."
+          negative_control: "Deleting history to hide an earlier bad result fails the record contract."
+        - id: D-08-T05
+          proof_level: "end_to_end"
+          scenario: "Run an exported solution on changed inputs in a clean environment."
+          pass_condition: "Declared dependencies and checks suffice without the builder conversation."
+          negative_control: "Undeclared local files or cached credentials must not make the example pass."
+    - id: D-09
+      title: Measure token savings and context usefulness
+      stage: core_proof
+      steps: [S-6.3, S-6.6, S-6.19, S-6.23]
+      depends_on: [D-06, D-08]
+      actions:
+        - Capture each physical model attempt exactly once across retries, helpers and native sessions, with unknown usage kept unknown.
+        - Freeze matched tasks, evaluator, quality tolerance, model and non-treatment settings before measuring changes.
+        - Compare selected versus full, insufficient, expanded and misleading context, and code reuse versus generation where both meet the task.
+        - Report input, cached input, output, reasoning usage when available, cost, elapsed time, memory and failures separately; include retrieval and verification overhead.
+        - Use repeated trials and uncertainty estimates; record task-specific regressions, withheld cases and the exact limits of any public claim.
+        - "Track retrieval, feature generation, model startup, context transfer, execution, retries and verification in the same route-cost accounting."
+        - "Separate optimization search cost from later serving savings and report the workload needed to recover that investment."
+        - "Predeclare quality floors and task-group regression limits; publish absolute outcomes and uncertainty as well as relative savings."
+      acceptance: A source-bound report can support or reject each launch benefit without changing the quality standard to make savings appear.
+      adversarial: Dropped failed calls, missing usage treated as zero, cheaper unfinished work, mismatched models and evaluation-set tuning invalidate the comparison.
+      authority_note: No benchmark model calls are authorized by writing this plan. Telemetry defaults to structural records; content reuse requires separate consent.
+      owning_paths: ["src/loop_engine/core/model_gateway.py","src/loop_engine/core/model_call_records.py","src/loop_engine/core/run_history.py","src/loop_engine/core/stage_evidence_records.py"]
+      rollback: "Keep the prior qualified policy and raw observations. Reject unsupported claims rather than repairing the held-out benchmark from its own failures."
+      verification_cases:
+        - id: D-09-T01
+          proof_level: "held_out_comparison"
+          scenario: "Compare complete routes on frozen tasks and independently checked outputs."
+          pass_condition: "Include useful outcomes, failures, confidence intervals and all charged work."
+          negative_control: "A lower bill caused by unfinished tasks fails the capability floor."
+        - id: D-09-T02
+          proof_level: "local_contract"
+          scenario: "Omit usage from one physical call or count a retry twice."
+          pass_condition: "Accounting reports missing or duplicate evidence explicitly."
+          negative_control: "Unknown cost cannot become zero."
+        - id: D-09-T03
+          proof_level: "held_out_comparison"
+          scenario: "Vary selected, expanded, insufficient and misleading context."
+          pass_condition: "Record both improvements and regressions by task group."
+          negative_control: "Minimum context is not assumed to be universally optimal."
+        - id: D-09-T04
+          proof_level: "source_review"
+          scenario: "Review a proposed public efficiency claim."
+          pass_condition: "Its task population, source, model, harness, evaluator and limitations are traceable."
+          negative_control: "Borrowed vendor percentages do not become Baltor results."
+        - id: D-09-T05
+          proof_level: "operational_drill"
+          scenario: "Discover leakage between search tasks and evaluation tasks."
+          pass_condition: "The affected result is invalidated and the frozen split remains unchanged."
+          negative_control: "A repaired candidate cannot reuse the same exposed holdout as independent proof."
+    - id: D-10
+      title: Simplify the website and finish customer journeys
+      stage: initial_service
+      steps: [S-6.12, S-6.24, S-6.22]
+      depends_on: [D-03, D-04]
+      actions:
+        - Use Baltor, task, step, model, tools and results on public pages; keep runtime names in technical documentation and GitHub.
+        - Keep How it works focused on the example and benefits, with a short honest pilot limitation instead of a runtime taxonomy.
+        - Complete sign-in, account, client setup, first successful retrieval, usage, access revocation, billing and clear failure states.
+        - Check keyboard navigation, small screens, enlarged text, loading races and expired sessions; test whether a new reader understands the page.
+        - Plan public documentation, examples and approved showcase subdomains without presenting an unconfigured docs hostname as live.
+        - "Show connection, authentication, material loading, task success and subscription state as separate observable stages."
+        - "Make one-time secrets, ambiguous outcomes, expired links, empty results and unavailable features understandable without support intervention."
+        - "Compare public pages and setup journeys against the existing competitor matrix without copying claims or hiding current product limits."
+      acceptance: A new user can understand the product and complete the supported journey without knowing internal architecture terms or copying a secret into the wrong field.
+      adversarial: Hidden unfinished features, misleading benefit claims, missing error recovery and technical vocabulary leaking into public explanations fail the page review.
+      authority_note: Copy can be improved independently. Public deployment must use a qualified exact source; no customer testimonials or performance numbers may be invented.
+      owning_paths: ["src/loop_engine/core/service_runtime/web_assets","docs/guides/product-style-guide.md","tools/check_service_workspace.mjs"]
+      rollback: "Retain the last qualified customer interface and feature flags. Disable an incomplete flow visibly instead of leaving a working-looking control."
+      verification_cases:
+        - id: D-10-T01
+          proof_level: "end_to_end"
+          scenario: "A new reader completes the declared account and client journey."
+          pass_condition: "They can identify the next action without internal runtime vocabulary."
+          negative_control: "A static mock control or undocumented manual workaround fails."
+        - id: D-10-T02
+          proof_level: "local_contract"
+          scenario: "Display malicious labels, retrieved text and provider errors."
+          pass_condition: "The page renders text without script execution or credential disclosure."
+          negative_control: "Unsafe HTML insertion must be detected."
+        - id: D-10-T03
+          proof_level: "end_to_end"
+          scenario: "Use keyboard-only navigation, narrow screens and enlarged text."
+          pass_condition: "All required controls remain operable and readable."
+          negative_control: "A desktop screenshot alone cannot establish accessibility."
+        - id: D-10-T04
+          proof_level: "local_contract"
+          scenario: "Switch accounts while responses are delayed."
+          pass_condition: "Late results cannot reveal or modify the previous account's state."
+          negative_control: "Clearing labels without aborting or invalidating requests fails."
+        - id: D-10-T05
+          proof_level: "source_review"
+          scenario: "Review homepage benefits, docs and showcase examples."
+          pass_condition: "Every current claim has matching evidence or a clear qualification limit."
+          negative_control: "An illustrative task must not look like a recorded successful customer run."
+    - id: D-11
+      title: Exercise operations and make the release decision
+      stage: public_launch
+      steps: [S-6.14, S-6.15, S-6.16, S-6.6, S-6.13]
+      depends_on: [D-02, D-03, D-04, D-05, D-06, D-08, D-10, D-13, D-14, D-15, D-16]
+      actions:
+        - Freeze the exact source, image, database migration and host settings; run clean installation, full checks, examples and real customer journeys.
+        - Test backup, restored revocations, rollback, secret rotation, payment reconciliation, abuse limits, tenant deletion and retention.
+        - Establish alerts, support contact, incident ownership and a tested maintenance path; record single-machine availability limitations.
+        - Review security boundaries, dependencies, license obligations, privacy settings, terms, cancellation and public claims.
+        - Obtain the separate paid-release decision and publish only reviewed source under explicit commit and push authority.
+        - "Define the supported pilot contract separately from optional research engines and later enterprise features."
+        - "Require exact evidence for every release gate and an explicit owner decision for live charging and source publication."
+        - "Rehearse a failed release with account and payment state changing during rollback, not only a clean image replacement."
+      acceptance: Every required launch gate has current reviewed evidence, a supported-customer scope and a rehearsed recovery path; otherwise remain a named private pilot.
+      adversarial: A health check, account connection, plan checkbox or old test count cannot stand in for the complete release record.
+      authority_note: No live charges or source publication without owner approval. An overnight or savings claim additionally requires D-07 or D-09 respectively.
+      owning_paths: ["Dockerfile.service","fly.toml",".github/workflows/fly-pilot.yml","tools/check_pilot_backup_restore.py"]
+      rollback: "Pause admission and writes where necessary, restore a compatible image and reconcile newer revocations and payment state before serving protected material."
+      verification_cases:
+        - id: D-11-T01
+          proof_level: "operational_drill"
+          scenario: "Deploy and roll back a frozen candidate with matching settings."
+          pass_condition: "The expected image, schema and configuration are observed after each transition."
+          negative_control: "A rollback that resurrects revoked access fails."
+        - id: D-11-T02
+          proof_level: "end_to_end"
+          scenario: "Complete the supported journey from a clean customer environment."
+          pass_condition: "Account, client access, retrieval, execution, acceptance and revocation have actual evidence."
+          negative_control: "A collection of unrelated component checks cannot substitute."
+        - id: D-11-T03
+          proof_level: "source_review"
+          scenario: "Review all launch gates against their source identities."
+          pass_condition: "Every required gate has current independent review or remains open."
+          negative_control: "A plan checkbox or an expired green report cannot approve release."
+        - id: D-11-T04
+          proof_level: "operational_drill"
+          scenario: "Restore while subscription or credential state changed after backup."
+          pass_condition: "Fresh authority is reconciled before protected delivery resumes."
+          negative_control: "Restoring old database bytes alone is insufficient."
+        - id: D-11-T05
+          proof_level: "real_provider"
+          scenario: "Inspect the final selected accounts, region and charging mode."
+          pass_condition: "They match approved limits and live charging remains separately authorized."
+          negative_control: "A configured test Price must never silently become a live offer."
+    - id: D-12
+      title: Continue interchangeable engines and governed improvement
+      stage: continued_improvement
+      steps: [S-6.18, S-6.19, S-6.22, S-6.25]
+      depends_on: [D-01]
+      actions:
+        - Review exact, hybrid and bounded agentic retrieval profiles behind the same reference-first interface; qualify challengers only for demonstrated gaps.
+        - Compare configured decision endpoints, including Jev, Circuit and a separately specified SemIf score adapter, without assuming confidence is calibrated.
+        - Keep SoL-Pi mechanisms optional within the existing harness boundary; compare whole-task quality, cost and omission failures before promotion.
+        - Compare direct requests, scripted browsers and native tool access under the same permission and outcome rules.
+        - Stage proposed routing, context and intelligence changes for independent replay and review, with rollback and the existing learned-adoption policy preserved.
+        - "Record each engine's license, supported protocol, actual feature coverage, initialization cost and unavailable states in configuration."
+        - "Compare configured preference with learned selection, keeping confidence calibration, downstream utility and factual verification distinct."
+        - "Preserve one owner for retries, cancellation and cumulative budgets across nested wrappers and native harness controls."
+      acceptance: New engines replace implementations at existing typed boundaries without new runtimes, stores or silent authority changes; supported combinations have specific evidence.
+      adversarial: Incompatible handshakes, invented conversion rules, tenant-leaking learning, self-promotion and cheaper but lower-quality routes must not become defaults.
+      authority_note: Research and offline adapters can proceed independently; provider experiments, automatic adoption and external outreach need their own authority.
+      owning_paths: ["src/loop_engine/core/retrieval_backends.py","src/loop_engine/core/decisions","src/loop_engine/core/harness_semantic.py","src/loop_engine/core/harness_layering.py"]
+      rollback: "Retain the last qualified engine profile and stop on unsupported semantics. Never invent protocol conversions or reset authority during fallback."
+      verification_cases:
+        - id: D-12-T01
+          proof_level: "local_contract"
+          scenario: "Negotiate versions, schemas and optional features at initialization."
+          pass_condition: "The selected binding is explicit and checked again at use."
+          negative_control: "Equal vector dimensions or similar field names do not establish compatibility."
+        - id: D-12-T02
+          proof_level: "real_provider"
+          scenario: "Call an owner-configured decision endpoint with typed alternatives."
+          pass_condition: "Actual provider output, uncertainty and usage remain distinct from verification."
+          negative_control: "No canned result is substituted for a failed call."
+        - id: D-12-T03
+          proof_level: "held_out_comparison"
+          scenario: "Evaluate a retrieval or harness challenger on matched tasks."
+          pass_condition: "Whole-route quality, cost, startup and failure behavior determine eligibility."
+          negative_control: "A vendor benchmark or low token count alone cannot promote the engine."
+        - id: D-12-T04
+          proof_level: "local_contract"
+          scenario: "Race native and outer retries or cancellation."
+          pass_condition: "One policy owns the transition and each physical call is counted once."
+          negative_control: "Nested wrappers cannot multiply attempts or duplicate an uncertain effect."
+        - id: D-12-T05
+          proof_level: "held_out_comparison"
+          scenario: "Promote and later roll back a candidate improvement."
+          pass_condition: "Independent evidence, consent scope and the existing adoption threshold are enforced."
+          negative_control: "Production interactions cannot directly rewrite global policy."
+    - id: D-13
+      title: "Qualify execution and service security boundaries"
+      stage: core_proof
+      steps: ["S-6.8","S-6.9","S-6.14","S-6.24"]
+      depends_on: ["D-01","D-03","D-06"]
+      actions:
+        - "Write a threat model for browser accounts, service tokens, retrieved material, plugins, local workers and operator infrastructure access."
+        - "Separate trusted control state and credential brokers from model-editable workspaces and retrieved instructions."
+        - "Test filesystem, archive, network, process and resource confinement for each supported isolation profile."
+        - "Make prompt injection and malicious tool output tests cross the actual retrieval-to-execution path."
+        - "Apply request limits, exact origins, redirect refusal and destination checks at the existing transport boundaries."
+        - "Review package installation, executable dependencies and native user-level configuration before allowing a harness profile."
+        - "Document credential rotation, account revocation and incident containment without exporting raw secrets."
+        - "Keep unsupported sandbox, provider and protocol combinations unavailable instead of silently weakening isolation."
+      acceptance: "The supported client and service profiles withstand declared adversarial cases without crossing tenant, workspace, credential or effect boundaries."
+      adversarial: "Malicious retrieved instructions, a forged principal, a symbolic-link escape or a stale approval cannot expand authority."
+      authority_note: "Security fixtures and isolated local checks are permitted; no attack on unrelated infrastructure or unapproved external service is authorized."
+      owning_paths: ["src/loop_engine/core/action_fence.py","src/loop_engine/loop/effect_approval.py","src/loop_engine/core/workspace_contracts.py","src/loop_engine/core/service_runtime/http.py"]
+      rollback: "Disable the affected capability or admission path while preserving evidence. Do not replace a failed sandbox with raw-host execution."
+      verification_cases:
+        - id: D-13-T01
+          proof_level: "end_to_end"
+          scenario: "Retrieve a malicious instruction or plugin candidate."
+          pass_condition: "It remains untrusted and cannot acquire tools, secrets or network permission."
+          negative_control: "A label claiming approval must not alter authority."
+        - id: D-13-T02
+          proof_level: "local_contract"
+          scenario: "Forge tenant, subject, origin and permission fields."
+          pass_condition: "Typed authentication and current grants refuse the request."
+          negative_control: "A signed token with editable tenant metadata still fails."
+        - id: D-13-T03
+          proof_level: "operational_drill"
+          scenario: "Cancel untrusted code with descendants and open handles."
+          pass_condition: "Owned processes stop and unrelated work remains intact."
+          negative_control: "Killing by a shared process name is not acceptable cleanup."
+        - id: D-13-T04
+          proof_level: "local_contract"
+          scenario: "Attempt path, archive, symlink and redirect escapes."
+          pass_condition: "The exact boundary refuses before the effect."
+          negative_control: "Passing a harmless filename test is not a substitute for adversarial paths."
+        - id: D-13-T05
+          proof_level: "operational_drill"
+          scenario: "Contain a leaked test credential and restore service."
+          pass_condition: "Revocation is durable, rotation is scoped and records contain no secret values."
+          negative_control: "A restored snapshot cannot reactivate the leaked credential."
+    - id: D-14
+      title: "Operate intelligence ingestion, review and withdrawal"
+      stage: core_proof
+      steps: ["S-6.4","S-6.10","S-6.11","S-6.20","S-6.23"]
+      depends_on: ["D-05","D-06"]
+      actions:
+        - "Define the supported source formats, size limits, provenance fields and trust classifications for intake."
+        - "Preserve immutable source revisions, license evidence and dependency identities before extraction or chunking."
+        - "Stage imported and generated material through existing catalogue contracts with candidate-only lifecycle state."
+        - "Keep prompts, skills, contracts, code packages and history distinct as content families within the four persistent layers."
+        - "Route semantic review and executable verification to an independent process with a fixed subject digest."
+        - "Track applicability, freshness, contradictions and withdrawal reasons without silently rewriting consumed history."
+        - "Propagate deletion and revocation to indexes, caches and delivery while preserving legally permitted audit metadata."
+        - "Build a useful starter population from real task gaps and measure coverage rather than the number of generated files."
+      acceptance: "Every served starter item has traceable rights, exact bytes, an appropriate review basis and a tested withdrawal path."
+      adversarial: "Leaked proprietary prompts, poisoned context, stale licenses and producer-approved executable packages must not enter the active catalogue."
+      authority_note: "Use owned or distributable material. Private customer content, model generation and publication require their separate authority and consent."
+      owning_paths: ["tools/stage_intelligence_candidates.py","src/loop_engine/core/code_intelligence_assets.py","src/loop_engine/core/intelligence_layers.py"]
+      rollback: "Withdraw affected revisions and invalidate projections. Keep immutable provenance and previous consumer bindings; do not edit historical outcomes."
+      verification_cases:
+        - id: D-14-T01
+          proof_level: "source_review"
+          scenario: "Admit representative prompts, skills, code and historical records."
+          pass_condition: "Each has its correct layer, rights, source identity and qualification basis."
+          negative_control: "A public repository URL is not proof of redistribution permission."
+        - id: D-14-T02
+          proof_level: "local_contract"
+          scenario: "Ingest changed bytes under an existing immutable identity."
+          pass_condition: "The mismatch refuses rather than replacing the active body."
+          negative_control: "Updating only a title cannot conceal a changed executable."
+        - id: D-14-T03
+          proof_level: "end_to_end"
+          scenario: "Review, activate, retrieve and withdraw one exact revision."
+          pass_condition: "Each stage records a distinct authorized transition."
+          negative_control: "Successful execution cannot silently promote its producer's candidate."
+        - id: D-14-T04
+          proof_level: "operational_drill"
+          scenario: "Delete or revoke material after indexing and caching."
+          pass_condition: "Future search and delivery respect the change within the declared window."
+          negative_control: "A stale cache cannot outlive the authorization contract."
+        - id: D-14-T05
+          proof_level: "held_out_comparison"
+          scenario: "Evaluate domain coverage on frozen tasks."
+          pass_condition: "Report useful, missing, harmful and unused material separately."
+          negative_control: "Title-matching probes alone do not demonstrate intelligence quality."
+    - id: D-15
+      title: "Operate reliability, telemetry and customer data lifecycle"
+      stage: public_launch
+      steps: ["S-6.6","S-6.13","S-6.14","S-6.15","S-6.16"]
+      depends_on: ["D-03","D-04","D-05"]
+      actions:
+        - "Define availability, latency, recovery and data-loss objectives for the supported pilot without promising unmeasured guarantees."
+        - "Measure cold and reused connections, simultaneous customers, large files and slow clients with failures retained."
+        - "Add alerts for identity outages, failed delivery, reconciliation backlog, storage growth and exhausted capacity."
+        - "Use structural telemetry by default and separate raw-content retention, embeddings and training reuse behind explicit settings and consent."
+        - "Implement customer export, deletion, retention and backup-expiry procedures across records, files, indexes and logs."
+        - "Rehearse private backups, restore, secret rotation and incident response using exact manifests and owner-selected limits."
+        - "Split stateless serving, workers, indexes or storage onto separate resources only when measurements and consistency contracts justify it."
+        - "Keep infrastructure budgets, model budgets and customer subscription entitlements separately enforced and observable."
+      acceptance: "Operators can detect, diagnose and recover declared failures without leaking private content, reviving revoked access or exceeding approved resources."
+      adversarial: "Missing telemetry is unknown, embeddings are not anonymous, alerts are not hard spending caps, and additional SQLite replicas are not a scaling strategy."
+      authority_note: "Remain within the existing infrastructure allowance. No new paid cluster, model experiment, retention policy or training reuse is approved by the plan."
+      owning_paths: ["src/loop_engine/core/service_runtime","tools/measure_service_latency.py","tools/check_pilot_backup_restore.py"]
+      rollback: "Use a rehearsed degraded mode or maintenance response. Restore only compatible state and reconcile post-backup revocations before admission."
+      verification_cases:
+        - id: D-15-T01
+          proof_level: "operational_drill"
+          scenario: "Stop the service or one external dependency during requests."
+          pass_condition: "Failures, recovery time and uncertain effects are recorded accurately."
+          negative_control: "A health endpoint alone cannot establish customer availability."
+        - id: D-15-T02
+          proof_level: "end_to_end"
+          scenario: "Load the declared corpus with concurrent, slow and canceled clients."
+          pass_condition: "Latency, memory, errors and backpressure stay within the chosen profile."
+          negative_control: "Failed requests cannot be dropped from the denominator."
+        - id: D-15-T03
+          proof_level: "local_contract"
+          scenario: "Disable raw-content telemetry and inspect all exported records."
+          pass_condition: "Credentials and disallowed content are absent; missing cost stays unknown."
+          negative_control: "Embedding vectors cannot be relabeled anonymous telemetry."
+        - id: D-15-T04
+          proof_level: "operational_drill"
+          scenario: "Export and delete a disposable customer's data."
+          pass_condition: "Every configured store and projection follows the retention contract."
+          negative_control: "Deleting the primary row alone does not complete erasure."
+        - id: D-15-T05
+          proof_level: "operational_drill"
+          scenario: "Restore a backup with newer revocation and payment events."
+          pass_condition: "The restored service refuses stale authority until reconciliation."
+          negative_control: "A successful archive extraction is not a complete restore test."
+    - id: D-16
+      title: "Qualify installation, distribution and compatibility"
+      stage: public_launch
+      steps: ["S-6.1","S-6.2","S-6.9","S-6.15","S-6.24","S-6.26"]
+      depends_on: ["D-01","D-06","D-13"]
+      actions:
+        - "Choose and document the exact operating systems, Python versions, native clients and transport profiles supported by the pilot."
+        - "Test clean installation and upgrade without relying on developer caches, user-level instructions or untracked packages."
+        - "Keep model endpoints user-operated and credential references local; do not require installing a model server to connect an existing endpoint."
+        - "Provide container and process profiles that separate dependency images, workers, workspaces and inference services."
+        - "Pin distributed dependencies, retain notices and produce source and image identities that match the tested release."
+        - "Verify protocol negotiation and explicit unsupported states across independently deployed client and server versions."
+        - "Document uninstall, credential removal, workspace retention and rollback without broad filesystem deletion."
+        - "Publish packages, source and images only after reviewed ownership and explicit release authority, keeping automatic deployment disabled until then."
+      acceptance: "A new customer can install the supported profile, connect securely, run the documented task and recover or uninstall without hidden dependencies or data loss."
+      adversarial: "An operator's warm cache, privileged shell, global model key or old unpublished interface cannot be required for a passing clean installation."
+      authority_note: "Local packaging and isolated checks are permitted. Public package publication, Git commits and pushes need their exact authority; model calls remain separately bounded."
+      owning_paths: ["pyproject.toml","Dockerfile.service","examples/29_intelligence_service","src/loop_engine/core/harness_execution_contracts.py"]
+      rollback: "Retain the prior qualified distribution and explicit data migration path. Never reset customer workspaces or reinstall incompatible versions silently."
+      verification_cases:
+        - id: D-16-T01
+          proof_level: "end_to_end"
+          scenario: "Install the supported package and client in a clean environment."
+          pass_condition: "Only declared dependencies and credential references are needed."
+          negative_control: "A developer checkout on the import path must not make the test pass."
+        - id: D-16-T02
+          proof_level: "local_contract"
+          scenario: "Connect clients with missing features or incompatible versions."
+          pass_condition: "Negotiation selects a qualified common profile or refuses explicitly."
+          negative_control: "Similar field names cannot trigger an invented conversion."
+        - id: D-16-T03
+          proof_level: "end_to_end"
+          scenario: "Run equivalent trusted work through process and container profiles."
+          pass_condition: "Contracts and outcomes agree while isolation differences remain explicit."
+          negative_control: "One directory per task cannot be called a security sandbox."
+        - id: D-16-T04
+          proof_level: "source_review"
+          scenario: "Inspect the distributable image, dependency lock and notices."
+          pass_condition: "They match the tested source and required licenses."
+          negative_control: "A newly downloaded unpinned executable invalidates the release identity."
+        - id: D-16-T05
+          proof_level: "operational_drill"
+          scenario: "Upgrade, roll back and uninstall with retained customer work."
+          pass_condition: "Credentials and scoped state follow the documented lifecycle."
+          negative_control: "Recursive deletion of a broad home or workspace directory fails the procedure."
+    - id: D-17
+      title: Open a private beta for invited users
+      stage: initial_service
+      steps: [S-6.5, S-6.10, S-6.12, S-6.15, S-6.24]
+      depends_on: [D-01, D-03]
+      actions:
+        - "Release only from a committed revision whose continuous integration run passed, through the guarded pilot workflow, so that the deployed image can always be rebuilt from the repository."
+        - "Enable browser sign-in on the pilot for accounts that the operator prepared in advance, with public registration closed, and supply the identity provider's publishable key as a deployment secret reference."
+        - "Give the operator one command that prepares an invited account and returns a single-use link for setting a password, so that an invitation does not depend on outgoing email."
+        - "Let each invited person create, label, see and revoke personal client keys, and show copy-ready connection settings for OpenCode, Codex and Claude Code."
+        - "Compile a starter catalogue of useful, skill-sized material from existing repository sources across the four persistent intelligence layers, refuse an item without a known licence, keep every item a candidate until the owner approves it, then publish the approved items with exact digests."
+        - "Prove with one supported native client that selected material is downloaded, placed in that client's native layout and actually loaded, and record what the client received."
+        - "Bound the cost of anonymous requests before inviting anyone: limit sign-in and activation attempts for each address and keep the pause between identity key reads."
+        - "Run the invited-user journey with two people outside engineering, record every obstacle as roadmap work, and repeat the restore and rollback drills on the release that they used."
+      acceptance: "An invited person signs in, creates a client key, connects a supported client, finds and downloads useful starter material, sees usage, and loses access when the operator disables the account. Every release comes from a committed revision and has a rehearsed rollback."
+      adversarial: "An uninvited visitor, a disabled account, a key whose owner was disabled, an older release reading newer records, and a burst of forged sign-in tokens must all be refused without exhausting the service."
+      authority_note: "No public registration, no live charges and no model calls. Candidate material is never published without the owner's approval. Provider changes use only the prepared connections."
+      owning_paths: [".github/workflows/fly-pilot.yml","tools/check_rollback_key_version.py","src/loop_engine/core/service_runtime/browser_identity.py","src/loop_engine/core/service_runtime/http_entrypoint.py","src/loop_engine/core/service_runtime/web_assets/client-recipes.json","tools/stage_intelligence_candidates.py"]
+      rollback: "Redeploy the previous release image by digest. Personal keys use a record version that the previous release refuses, so a rollback cannot honor a key whose owner was disabled. Remove browser sign-in from the host configuration to return to operator-issued keys."
+      verification_cases:
+        - id: D-17-T01
+          proof_level: "operational_drill"
+          scenario: "Deploy a release from a committed revision through the guarded workflow and compare the running image with the image built from that revision."
+          pass_condition: "The running image digest equals the built digest and the revision's continuous integration run passed."
+          negative_control: "A working tree with uncommitted changes, or a revision whose checks failed, must be refused before anything is deployed."
+        - id: D-17-T02
+          proof_level: "operational_drill"
+          scenario: "Write service state with the new release, including a personal key whose owner is then disabled, and read it with the previous release image."
+          pass_condition: "The previous release refuses the personal key and still accepts operator-issued keys."
+          negative_control: "State written without the record version change must be shown to be accepted, so the drill can detect the defect."
+        - id: D-17-T03
+          proof_level: "end_to_end"
+          scenario: "A person outside engineering completes sign-in, key creation, client connection, search, download and usage review on the deployed service."
+          pass_condition: "Every step succeeds without help and the record names the release that served it."
+          negative_control: "An address that was not invited and a disabled account must both be refused at sign-in."
+        - id: D-17-T04
+          proof_level: "end_to_end"
+          scenario: "A supported native client downloads selected starter material and loads it from its native layout."
+          pass_condition: "The client's own record shows that it loaded the material, with matching digests."
+          negative_control: "Tool discovery alone, or a file that exists but is never read, must not count as loading."
+        - id: D-17-T05
+          proof_level: "local_contract"
+          scenario: "Send a burst of forged sign-in tokens that carry unknown key identifiers."
+          pass_condition: "At most one identity key read happens inside the pause and ordinary requests keep working."
+          negative_control: "With the pause removed, the number of key reads must grow with the burst."
+  owner_actions:
+    - id: OWNER-01
+      title: Review the selected private pilot limits
+      phase: now
+      depends_on: []
+      steps: [S-6.13, S-6.15, S-6.16]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - Choose a private test group and the tasks the first release must support. The broader requested product remains on the engineering worklist.
+        - The owner delegated reasonable deployment choices. The selected region is iad, with 50 United States dollars per month for infrastructure and up to 10 dollars for setup. Model calls and live customer charges remain disabled.
+        - One Fly Machine and one encrypted volume have been created. Request a change if these limits do not fit the intended pilot. Account access alone still does not authorize unrelated resources.
+      return_fields: [pilot scope, deployment region, monthly infrastructure ceiling, model test allowance, permitted resource actions]
+      completion: The limits and pilot scope are written down and approved by you.
+      safety: Do not grant unlimited spending or treat alerts as hard spending caps.
+    - id: OWNER-02
+      title: Fly account and private pilot are prepared
+      phase: prepared
+      depends_on: [OWNER-01]
+      steps: [S-6.13, S-6.15]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - The Baltor organization, existing Fly Machine and command-line access are verified. Do not recreate accounts or transfer the token again.
+        - The pilot runs in iad under the recorded limits. Automatic GitHub deployment remains disabled; direct deployment used the tested service image.
+        - Engineering owns later deployment and restore checks. No action is needed unless the selected region or limits should change.
+      return_fields: ["Only a requested change to the selected region or allowance"]
+      completion: Account access and the private diagnostic deployment are observed; the complete release decision remains separate.
+      safety: The current SQLite profile requires one instance and persistent storage. Do not use an ephemeral function filesystem.
+    - id: OWNER-03
+      title: Supabase project access is prepared; authentication settings need a separate grant
+      phase: now
+      depends_on: [OWNER-01]
+      steps: [S-6.5, S-6.12, S-6.24]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - The existing project qfzxmjznlwiopgvfgtsw is connected for database, storage and key access. Do not create another account or project.
+        - The owner confirmed Site URL https://baltor-pilot.fly.dev and redirect https://baltor-pilot.fly.dev/auth/callback. Engineering has not independently read back those settings.
+        - The current management connection refuses authentication-settings changes. Engineering must supply a fresh authorization or protected credential request for that exact work instead of asking for repeated manual configuration.
+        - Two controlled ordinary test identities will be needed for email delivery tests. No project administrator role or disabled email confirmation is required.
+      return_fields: ["Approve an exact authentication-settings permission request when supplied","Controlled test-recipient labels when delivery testing is ready"]
+      completion: Existing project access is prepared. Authentication-settings access and real customer-journey qualification remain separate.
+      safety: A publishable application key, user access token and privileged server key have different authority. Never interchange them.
+    - id: OWNER-04
+      title: Engineering prepares private intelligence storage
+      phase: engineering
+      depends_on: [OWNER-03]
+      steps: [S-6.4, S-6.10]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - Project-scoped storage access is available. Engineering owns creating the private bucket and qualifying the existing artifact adapter.
+        - Public access stays disabled. Do not upload private customer data or unreviewed third-party packages to complete setup.
+        - No owner bucket-creation task remains; engineering records the resulting identifier and real delivery tests.
+      return_fields: ["No routine action; answer only a specific data-rights or access question"]
+      completion: The empty private bucket and its actual delivery adapter are separately verified by engineering.
+      safety: Creating the bucket does not mean cloud delivery is implemented or qualified.
+    - id: OWNER-05
+      title: Stripe sandbox credentials are prepared
+      phase: engineering
+      depends_on: [OWNER-01]
+      steps: [S-6.21, S-6.16]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - Stripe command-line authorization succeeded for Baltor sandbox, account acct_1UHZ9KCCxLfArYED. The runtime test key is in the workstation keyring.
+        - Use this account, not the older operator connection acct_1UHZ972IF9bCskLc or the unrelated temporary sandbox. Do not repeat account creation or key transfer.
+        - Engineering owns test products, prices, customers, portal settings, webhooks and lifecycle checks. Live charges stay disabled.
+      return_fields: ["Only business constraints or a later public-pricing decision"]
+      completion: The runtime test credential and account are verified. The subscription journey is not yet qualified.
+      safety: Keep live mode off. Do not provide real payment-card data or secret values.
+    - id: OWNER-06
+      title: Domain and registrar access are prepared
+      phase: engineering
+      depends_on: []
+      steps: [S-6.12, S-6.15]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - The new Cloudflare write grant created the Free baltor.ai zone. Namecheap accepted dana.ns.cloudflare.com and nile.ns.cloudflare.com, and the registry now publishes them.
+        - Cloudflare reports the zone active. The app, root and www website records and certificates are installed; engineering verifies browsers and protocol behavior.
+        - The owner confirms no existing email or forwarding. The complete Resend record set is installed; sender verification and real authentication email remain engineering work.
+        - Do not recreate the zone, repeat authorization or manually change nameservers. Engineering keeps the previous settings in the cutover record.
+      return_fields: ["No domain setup action; only an explicitly requested new permission"]
+      completion: Domain and registrar authority are prepared and the nameserver change is confirmed. Customer account and email qualification remain separate.
+      safety: DNS control and a working website do not establish trademark clearance, email delivery or paid-release readiness.
+    - id: OWNER-07
+      title: Existing credentials are privately stored
+      phase: prepared
+      depends_on: [OWNER-02, OWNER-03, OWNER-05]
+      steps: [S-6.5, S-6.21, S-6.24]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - Fly, Stripe test, Supabase application and server credentials, and the Resend sending key are stored privately in the workstation keyring. Operator authorization records are also private.
+        - Engineering should reuse the named references in the setup runbook. Do not repeat secret transfer or put values in this HTML, chat, source, logs or screenshots.
+        - Local model keys remain with the customer-controlled executor. Missing Supabase authentication-settings permission is distinct from storing the existing keys; registrar access is already authorized.
+      return_fields: ["Only an explicitly requested new grant or inaccessible reference"]
+      completion: Existing credential storage is prepared; this does not grant a missing provider permission.
+      safety: This checklist records preparation only. It is not a secret vault or an access grant.
+    - id: OWNER-08
+      title: Choose the first local harness and building model
+      phase: now
+      depends_on: [OWNER-01]
+      steps: [S-6.9, S-6.24]
+      guide: docs/guides/jev-and-harness-decision-tools.md
+      instructions:
+        - Choose one installed harness for the first qualification, such as OpenCode or Codex, and record its exact version and operating system.
+        - Prepare its model-provider account and local key or approved login. Keep the model allowance separate from the intelligence subscription.
+        - Identify the local workspace that may hold the test files and the allowed file, command and network effects.
+      return_fields: [operating system, harness and version, building model, local credential reference, workspace and permitted effects]
+      completion: One exact customer-controlled execution profile is available for testing.
+      safety: Installing or connecting the harness does not prove it loaded retrieved material or completed a task.
+    - id: OWNER-09
+      title: Choose optional decision engines and fallback order
+      phase: optional
+      depends_on: [OWNER-01]
+      steps: [S-6.19, S-6.24]
+      guide: docs/guides/jev-and-harness-decision-tools.md
+      instructions:
+        - Choose Jev, a separately served Circuit model, another compatible endpoint, or no decision provider for the first trial.
+        - For Jev, prepare a TypeSafe secret reference and exact supported model. For Circuit or another service, provide an existing compatible endpoint, its exact reported model identity and a separate credential reference.
+        - State the initial engine and whether cross-provider fallback is allowed. Assign separate credentials to different provider origins.
+        - Keep live model tests disabled until the allowance and permitted context are approved.
+      return_fields: [decision engine choices, exact models or deployment digests, endpoint references, separate credential references, ordered fallback policy]
+      completion: The optional engine configuration and trial authority are explicit.
+      safety: You or the provider operate the model service. Loop Engine connects to it; it does not install, launch or manage the model. A compatible response is not proof of decision quality.
+    - id: OWNER-10
+      title: Choose real pilot tasks and distributable starter material
+      phase: now
+      depends_on: []
+      steps: [S-6.10, S-6.9, S-6.23]
+      guide: docs/guides/launch-owner-checklist.md
+      instructions:
+        - Supply a small set of real tasks with expected outputs and checks. Include at least one task that should refuse or request missing information.
+        - Identify instructions, skills and reusable code you own or have rights to distribute. Keep provenance and license information.
+        - Remove private customer information from the initial pilot material. Engineering will independently review and package the material.
+      return_fields: [task descriptions, acceptance checks, material locations, provenance and license records]
+      completion: The first useful test population and review inputs are identified.
+      safety: Uploading or generating a file does not make it qualified intelligence.
+    - id: OWNER-11
+      title: Approve privacy, retention and support choices
+      phase: before_public
+      depends_on: [OWNER-01]
+      steps: [S-6.6, S-6.12, S-6.16]
+      guide: docs/guides/launch-owner-checklist.md
+      instructions:
+        - Choose the support contact, account recovery policy, cancellation behavior and proposed service terms; obtain appropriate review.
+        - Decide retention and deletion expectations for accounts, usage records and optional telemetry.
+        - Keep raw prompts, task files and outputs out of default telemetry. Any training reuse needs explicit consent.
+      return_fields: [support contact, policy documents or decisions, retention periods, raw-content and training-consent policy]
+      completion: Engineering has approved product-policy inputs to implement and test.
+      safety: Embeddings are confidential derived data, not automatically anonymous.
+    - id: OWNER-12
+      title: Resend management is authorized; engineering completes email
+      phase: engineering
+      depends_on: []
+      steps: [S-6.12, S-6.24]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - The Resend account and sending credential exist. Fresh management authorization succeeded and listing domains returned none. Do not repeat signup or authorization without a new failure.
+        - Engineering creates auth.baltor.ai, prepares the exact verification records and configures accounts@auth.baltor.ai after the required DNS and identity-management permissions are available.
+        - Engineering tests confirmation, recovery and failure handling with tracking disabled. The sender domain and delivery are not yet verified.
+      return_fields: ["Controlled test-recipient labels when requested"]
+      completion: A real confirmation and recovery journey succeeds; authorization alone is not email delivery.
+      safety: Do not disable verification to bypass delivery problems.
+    - id: OWNER-13
+      title: Engineering applies exact hosted settings
+      phase: engineering
+      depends_on: [OWNER-02, OWNER-03, OWNER-05, OWNER-06]
+      steps: [S-6.15, S-6.21, S-6.5]
+      guide: docs/guides/launch-setup-runbook.md
+      instructions:
+        - Use the current Fly origin until the custom hostname and certificate pass. The owner-reported identity callback values are recorded, not independently verified.
+        - Engineering registers the test webhook and stores its signing secret separately. Engineering applies approved domain records and verifies the exact origins.
+        - Request missing permission through authorization or a protected credential reference. Do not repeat manual dashboard tasks when the permitted management interface can perform them.
+      return_fields: ["Only a missing consent or exact authority request"]
+      completion: The selected deployment has observed callback, webhook, sender and domain bindings.
+      safety: This task waits for the endpoint; checking this box does not deploy software.
+    - id: OWNER-14
+      title: Run the invited-user acceptance journey
+      phase: after_endpoint
+      depends_on: [OWNER-08, OWNER-10, OWNER-13]
+      steps: [S-6.14, S-6.15, S-6.24]
+      guide: docs/guides/launch-owner-checklist.md
+      instructions:
+        - Use an ordinary account to sign in, take a test subscription, connect the supported client and retrieve the selected material.
+        - Run the task locally, inspect the independent result and confirm the exact usage record.
+        - Repeat with the second tenant, then revoke access and confirm both website and protocol requests refuse.
+        - Return failures and missing information as well as successful observations.
+      return_fields: [test-user labels, exact client versions, run and request references, observed failures and successes]
+      completion: Engineering has a recorded real-user journey to compare with release gates.
+      safety: A successful payment page or process exit is not a verified task result.
+    - id: OWNER-15
+      title: Make the paid-release decision
+      phase: before_charging
+      depends_on: [OWNER-11, OWNER-12, OWNER-14]
+      steps: [S-6.16]
+      guide: docs/guides/launch-owner-checklist.md
+      instructions:
+        - Review the exact release record, unresolved limitations, restore and rollback evidence, and all required launch gates.
+        - Approve the public price, terms, customer group and live-payment scope separately from the sandbox settings.
+        - Authorize publication and activation only for that qualified release. Keep the ability to revoke access and roll back.
+      return_fields: [release identity, approved pricing and terms, activation scope, explicit publication and live-payment decision]
+      completion: You have made a recorded release decision after the required evidence exists.
+      safety: No checkbox, elapsed target date or passing component count can substitute for this approval.
+  recurring_reviews:
+    - id: quarterly_retrieval_landscape
+      title: Review agentic retrieval and improvement systems quarterly
+      requested: true
+      scheduling_state: not_scheduled
+      reason: No recurring-task scheduler is exposed in this session; the prompt is prepared for the Scheduled interface.
+      prompt: docs/prompts/QUARTERLY-RETRIEVAL-LANDSCAPE-REVIEW.md
+      proposed_timezone: America/New_York
+      proposed_recurrence: "FREQ=YEARLY;BYMONTH=1,4,7,10;BYMONTHDAY=1;BYHOUR=9;BYMINUTE=0;BYSECOND=0"
+      proposed_next_run: "2026-10-01T09:00:00-04:00"
+      effect_policy: research_and_draft_reports_only_no_automatic_adoption
+  outcome: A subscription website and dashboard with payments, all intelligence layers and templates served through one authenticated service, and a verified internal graph-to-harness architecture; customers run their harnesses.
+  selection_rule: First ready continuation step with verified dependencies and satisfied authority requirements; otherwise continue independent eligible work.
+  evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
+  evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
+  eligible_dependency_states: [offline_verified, live_qualified, published]
+  launch_order: [S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
+  milestones:
+    - title: Establish the plan, product contract, and durable catalogue
+      hours: [0, 3]
+      steps: [S-6.17, S-6.4, S-6.1, S-6.2, S-6.3]
+    - title: Authentication, payments, and deployment preparation
+      hours: [3, 7]
+      steps: [S-6.13, S-6.21]
+    - title: Connect the intelligence service and durable usage
+      hours: [7, 12]
+      steps: [S-6.5, S-6.6, S-6.7, S-6.8]
+    - title: Website, subscriber dashboard, and qualified starter packages
+      hours: [12, 18]
+      steps: [S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24]
+    - title: Qualify the release and rehearse recovery
+      hours: [18, 22]
+      steps: [S-6.14]
+    - title: Authorized hosting, release decision, and paid activation
+      hours: [22, 24]
+      steps: [S-6.15, S-6.16]
+    - title: Continue structural improvements and controlled experiments
+      hours: [0, 24]
+      steps: [S-6.18, S-6.19, S-6.22, S-6.25, S-6.26, S-6.27]
+      scheduling: Independent work only; continue after the launch window when release dependencies need the time.
+  launch_gates:
+    - id: product
+      title: A visitor can subscribe, use the dashboard, connect a client, and manage access
+      steps: [S-6.12, S-6.21]
+    - id: service
+      title: An authenticated client retrieves qualified material with durable accounting
+      steps: [S-6.4, S-6.5, S-6.6]
+    - id: intelligence
+      title: The declared starter catalogue is qualified, versioned, and retrievable by supported clients
+      steps: [S-6.10]
+    - id: internal_integration
+      title: Task graphs, atomic harness assignments, every intelligence layer, templates, and existing internal capability paths are connected and tested
+      steps: [S-6.1, S-6.2, S-6.3, S-6.7, S-6.8, S-6.9, S-6.20, S-6.11, S-6.23]
+    - id: onboarding
+      title: A new user can install, authenticate, configure a provider, and use the supported harness architecture
+      steps: [S-6.24]
+    - id: operations
+      title: Tenant operations, restart, restore, upgrade, and rollback are exercised
+      steps: [S-6.12, S-6.13, S-6.14]
+    - id: hosted_pilot
+      title: The chosen authorized hosting target passes the same acceptance suite
+      steps: [S-6.15]
+    - id: paid_launch
+      title: Approved pricing and payment integration reconcile with durable usage
+      steps: [S-6.16]
+  decisions:
+    - id: hosting_authority
+      state: approved
+      requirement: The owner delegated a real private pilot. Scope is recorded in artifacts/architecture-audit-2026-09-19/pilot-deployment-authority.json; Fly Baltor, iad, one Machine, 50 dollars monthly infrastructure, 10 dollars setup, no model calls or live customer charges.
+      independent_work: Qualify the existing target, preserve domain and mail records, and keep other deployment families separate.
+    - id: live_model_authority
+      state: pending
+      requirement: An available exact model route and declared call, time, token, and spending authority for the live harness qualification.
+      independent_work: Run offline protocol, storage, client, confinement, and failure checks.
+    - id: payment_authority
+      state: pending
+      requirement: The runtime sandbox and test credential are prepared. Public prices, product terms, live charging and exact paid-release activation still need owner approval.
+      independent_work: Implement entitlements, durable usage, reconciliation, and a test payment adapter.
+    - id: layer_classification
+      state: pending
+      requirement: Resolve dedicated Harness Intelligence and external service views versus changing the canonical persistent-layer vocabulary.
+      independent_work: Keep the dedicated components and references over the current four layers; prepare a migration decision with compatibility tests.
+  research_tracks:
+    - topic: Model Context Protocol transport and authorization
+      owner_steps: [S-6.5]
+      status: partial
+      evidence: The 2026-07-28 transport and authorization specifications were read on 2026-09-19; installed client and library compatibility still need qualification.
+    - topic: Release, versioning, environments, and every deployment family
+      owner_steps: [S-6.13, S-6.14, S-6.15]
+      status: partial
+      evidence: Provider deployment procedures are documented in docs/guides/hosting-and-deployment-procedures.md; no cloud profile is live qualified.
+    - topic: Telemetry, privacy, retention, and training records
+      owner_steps: [S-6.3, S-6.6]
+      status: ready
+      evidence: Ten local review observations are retained in artifacts/claude-session-review-2026-09-19/probe-results.json.
+    - topic: Occupation and industry taxonomies and licenses
+      owner_steps: [S-6.10]
+      status: ready
+      evidence: Existing six hand-authored occupations and source mappings are a starting population, not a completed industry library.
+    - topic: Actual hosted request path
+      owner_steps: [S-6.4, S-6.5, S-6.12]
+      status: partial
+      evidence: Real loopback HTTP and Model Context Protocol share durable tenant and metering authority. Hosted accounts and external authorization flows remain unqualified.
+    - topic: Classification grid through qualification and packaging
+      owner_steps: [S-6.10, S-6.11]
+      status: ready
+      evidence: Coverage and need records exist; the full applied pipeline remains open.
+  workstreams:
+    - title: Reusable capabilities and detection
+      legacy_steps: [S-0.5, S-1.10]
+      continuation_steps: [S-6.10, S-6.20, S-6.11]
+    - title: Intelligence, storage, classification, and qualification
+      legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23]
+    - title: Harnesses, provisioning, loaded-file evidence, and authentication
+      legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24]
+    - title: Models, decisions, efficiency, cost, and learning
+      legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
+      continuation_steps: [S-6.3, S-6.6, S-6.19]
+    - title: Flexible composition, solutions, configuration search, and research
+      legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
+      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23]
+    - title: Resource management, hibernation, and cloud capacity
+      legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
+      continuation_steps: [S-6.8, S-6.12, S-6.13]
+    - title: Hosted service, portability, packaging, and paid operation
+      legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24]
+    - title: Organization, architecture artifact, and adversarial review
+      legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
+      continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27]
+    - title: Branding, business paths, and later career research
+      legacy_steps: [S-5.1, S-5.2, S-5.3]
+      continuation_steps: [S-6.16, S-6.22]
+  hosting_targets:
+    - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
+    - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
+    - {id: supabase, family: managed_backend, title: Supabase authentication and durable data, procedure: supabase, status: documented}
+    - {id: local-compose, family: containers, title: Local containers and a single server, procedure: local-containers-and-single-server, status: documented}
+    - {id: fly-machines, family: managed_application, title: Fly.io Machines, procedure: flyio-machines, status: documented}
+    - {id: render, family: managed_application, title: Render, procedure: render, status: documented}
+    - {id: digitalocean-app, family: managed_application, title: DigitalOcean App Platform, procedure: digitalocean-app-platform, status: documented}
+    - {id: google-cloud-run, family: cloud_containers, title: Google Cloud Run, procedure: google-cloud-run, status: documented}
+    - {id: aws-ecs, family: cloud_containers, title: Amazon Elastic Container Service and Fargate, procedure: amazon-elastic-container-service-and-fargate, status: documented}
+    - {id: aws-apprunner, family: managed_application, title: AWS App Runner, procedure: aws-app-runner, status: documented}
+    - {id: azure-container-apps, family: cloud_containers, title: Azure Container Apps, procedure: azure-container-apps, status: documented}
+    - {id: kubernetes, family: kubernetes, title: Kubernetes on any qualified distribution, procedure: kubernetes-on-any-qualified-distribution, status: documented}
+    - {id: virtual-servers, family: virtual_machine, title: Hetzner and other virtual server providers, procedure: virtual-servers, status: documented}
+    - {id: dedicated-servers, family: dedicated_machine, title: Dedicated servers and on-premises hosting, procedure: dedicated-servers-and-on-premises-hosting, status: documented}
+    - {id: cloudflare-containers, family: edge_containers, title: Cloudflare Containers, procedure: cloudflare-containers, status: documented}
+    - {id: static-frontends, family: static_delivery, title: Static frontend hosting with a separate service, procedure: static-frontends, status: documented}
+    - {id: additional-providers, family: extension, title: Additional providers through the same deployment contract, procedure: additional-providers, status: proposed}
+  activity:
+    - at: "2026-09-20T17:54:30Z"
+      event: cloudflare_active_and_all_website_hostnames_verified
+      evidence: artifacts/architecture-audit-2026-09-19/domain-cutover-verification-2.json; artifacts/architecture-audit-2026-09-19/hosted-root-domain-1.json; artifacts/architecture-audit-2026-09-19/hosted-www-domain-1.json; artifacts/architecture-audit-2026-09-19/hosted-custom-domain-cutover-1.json
+      outcome: The registry publishes Cloudflare's assigned nameservers and the Free zone reports active. Root, www and app hostnames each pass 45 live website checks with valid HTTPS and source-matching assets. DNS-only records are configured; no Cloudflare proxy or web firewall claim is made. Some recursive resolvers still retain old nameservers or negative mail-record answers. Resend remains pending except its provider CNAME, which is verified. No email was sent and no paid-release gate is closed. The credential helper passes 23 checks and both new required-scope guards fail under removal controls. Owner domain cards now show prepared access and engineering-owned verification, not another manual setup request.
+    - at: "2026-09-20T17:45:57Z"
+      event: cloudflare_records_and_registrar_nameservers_configured
+      evidence: artifacts/architecture-audit-2026-09-19/domain-cutover-progress-1.json; artifacts/architecture-audit-2026-09-19/hosted-custom-domain-cutover-1.json; tools/test_operator_credentials.py
+      outcome: Corrected the invalid OAuth scope request and verified a new Cloudflare grant with write permissions. Created the Free baltor.ai zone and 14 website, certificate and sender records. Namecheap accepted and read back dana.ns.cloudflare.com and nile.ns.cloudflare.com. Registry publication and Cloudflare activation remain pending. The owner confirms no existing mail or forwarding. The app hostname passes all 45 live browser checks after a validated host-configuration update and restart. Root and www certificates are requested but not yet qualified. Resend sender verification has started; no email was sent. Claude handoff includes native Namecheap authorization and the current Cloudflare grant, with 23 local credential checks. No extra machine, model call, live charge, source commit or push occurred.
+    - at: "2026-09-20T16:39:02Z"
+      event: account_code_and_plain_language_site_deployed
+      evidence: artifacts/architecture-audit-2026-09-19/verification-deployment-account-code-1.json; artifacts/architecture-audit-2026-09-19/deployment-account-launch-slice-1.json; artifacts/architecture-audit-2026-09-19/hosted-account-code-2.json; artifacts/architecture-audit-2026-09-19/hosted-account-service-1.json; artifacts/architecture-audit-2026-09-19/hosted-account-admin-1.json
+      outcome: Deployed Fly release 7 on the existing machine and volume after 5938 package checks, 284 focused launch checks, 120 local browser checks, seven container checks and 104 installed-service checks. Fifteen optional package checks remain untested. Exact identity network registration passes conformance. Hosted website, service and administrator checks pass 45, 16 and 12 cases respectively; the temporary administrator-test token was revoked. The first hosted browser attempt retained a stale-copy assertion and its failure; the repaired assertion also rejects a wrong secret destination. Public registration, billing and complete task execution remain unqualified and disabled where applicable.
+    - at: "2026-09-20T16:13:38Z"
+      event: claude_code_provider_access_handoff_verified
+      evidence: docs/guides/developer-credential-handoff.md; tools/operator_credentials.py; tools/test_operator_credentials.py; artifacts/architecture-audit-2026-09-19/credential-handoff-verification-1.json
+      outcome: Installed five local-project Claude Code connections using dynamic keyring-backed headers and the existing Fly helper. Claude Code 2.1.271 reports all five connected. Thirteen named credential references are available; expired Resend and Cloudflare access tokens refreshed within existing grants. Fifteen offline helper checks pass and the selected Stripe sandbox was confirmed through the command wrapper. The first isolated Fly probe lacked the desktop session bus and the first Stripe command used an unsupported flag; corrected checks pass. The private export is permission-restricted and contains references, not raw secrets. Missing domain, authentication-settings and registrar permissions remain missing. No model session, domain change, deployment, payment or source publication occurred.
+    - at: "2026-09-20T15:54:22Z"
+      event: plain_language_site_and_broader_takeover_plan_checked_locally
+      evidence: artifacts/architecture-audit-2026-09-19/plain-language-handoff-browser-2.json; artifacts/architecture-audit-2026-09-19/handoff-focused-checks-1.json; docs/context/FABLE-5-1-HANDOFF-2026-09-20.md
+      outcome: Public How it works now uses steps, useful information and checked results in local source. Complete runtime definitions remain in technical documentation. All 120 local browser checks pass; the first failed route-placement attempt is retained. Focused checks pass 104 HTTP and 31 durable-runtime cases against an unchanged package identity. The current conformance run still fails on two undeclared identity network boundaries. Thirty-seven planning and architecture tests, documentation lint and 125 local file links pass. The main document now has twelve delivery packages, sixty actions, three benefit drafts and a downloadable Fable handoff. No new deployment, source commit, push, model call or live charge occurred.
+    - at: "2026-09-20T15:32:00Z"
+      event: provider_access_checkpoint_and_fable_handoff_plan
+      evidence: docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md; docs/context/FABLE-5-1-HANDOFF-2026-09-20.md; artifacts/architecture-audit-2026-09-19/account-website-browser-2.json
+      outcome: Resend management access and Stripe runtime sandbox access are confirmed; the existing Supabase project responds with email confirmation enabled. Sender domains and Cloudflare zones are absent. New browser identity work is local only and two network-boundary conformance findings remain. Twelve delivery packages expand existing engineering steps; three launch benefit drafts have explicit evidence requirements. Public How it works copy is being simplified without renaming canonical runtime contracts. No deployment, model call, live charge, source commit or push is performed by this checkpoint.
+    - at: "2026-09-20T05:12:58Z"
+      event: guided_website_deployed_and_live_regression_checks_passed
+      evidence: artifacts/architecture-audit-2026-09-19/hosted-website-journey-1.json; artifacts/architecture-audit-2026-09-19/hosted-service-attempt-7.json; artifacts/architecture-audit-2026-09-19/hosted-administrator-attempt-5.json; artifacts/architecture-audit-2026-09-19/native-opencode-connection-2.json; artifacts/architecture-audit-2026-09-19/verification-website-journey-2.json
+      outcome: Deployed the frozen website-journey image to the existing single Fly machine in iad without changing its resources or volume. All 5914 executed package checks passed, with 15 optional checks untested. The deployed website passed 42 checks, the service passed 16 and administrator lifecycle passed 12; the temporary test token was revoked. OpenCode 1.17.9 reconnected without a model turn. A second 84-request read-only latency sample had no failures; median lexical and character-similarity hybrid round trips were 62.3 and 57.0 milliseconds on the small diagnostic catalogue. The single HTML serialization guard was extended after its browser test caught missing new comparison data. No paid-release gate was closed, no model spending was enabled, and no source commit or push was made.
+    - at: "2026-09-20T05:03:00Z"
+      event: measured_website_journeys_native_connection_and_candidate_review
+      evidence: docs/research/WEBSITE-JOURNEY-REVIEW-2026-09-20.md; artifacts/architecture-audit-2026-09-19/guided-connection-browser-6.json; artifacts/architecture-audit-2026-09-19/native-opencode-connection-1.json; artifacts/architecture-audit-2026-09-19/service-latency-1.json; artifacts/architecture-audit-2026-09-19/candidate-intelligence-staging-1.json
+      outcome: Reviewed signed-out pages for all nineteen identified original vendors, four adjacent references and Baltor. The main development file contains the current page comparison without changing historical feature claims. Guided client configuration, an actual browser protocol check, a first retrieval example and an access/data page pass 114 local browser checks. An adversarial delayed-response case reproduced and repaired cancellation of public setup data during sign-in, while sign-out still aborts credential-bound requests. OpenCode 1.17.9 connected to the live service without starting a model turn or changing permanent client settings. Eighty-four bounded read-only requests succeeded; the small diagnostic catalogue does not establish production capacity. Twelve records across four persistent layers and ten content families were staged through the existing atomic catalogue contract; normal search excludes them and no hosted publication or independent qualification occurred. Broad release gates remain open.
+    - at: "2026-09-20T04:08:13Z"
+      event: lighter_benefit_led_website_and_developer_checkpoint
+      evidence: docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md; artifacts/architecture-audit-2026-09-19/verification-light-benefits-checkpoint-1.json; artifacts/architecture-audit-2026-09-19/hosted-light-benefits-1.json; artifacts/architecture-audit-2026-09-19/pilot-backup-restore-2.json
+      outcome: The light-default website leads with reusable solutions and five customer problems. Server and client diagrams remain on How it works. All 5914 executed offline checks passed with 15 optional checks not tested; 85 local browser, 28 hosted browser, 16 hosted service and 12 administrator checks passed. A deployed backup was restored in a network-isolated local container with 15 passing checks, including restart and idempotency. The private archive remains outside Git and the temporary test container and volume were removed. The checkpoint routes future developers to existing owners, exact evidence and remaining work. All eight broad launch gates remain open.
+    - at: "2026-09-20T03:26:32Z"
+      event: public_website_intelligence_and_client_server_explanation_deployed
+      evidence: artifacts/architecture-audit-2026-09-19/hosted-intelligence-website-1.json; artifacts/architecture-audit-2026-09-19/intelligence-website-browser-4.json; artifacts/architecture-audit-2026-09-19/intelligence-site-container-2.json
+      outcome: The redesigned Baltor website is deployed. It separates hosted intelligence from customer-controlled execution, labels request and response data, explains the four persistent intelligence layers and provides an interactive task-specific context example. All 78 local browser checks and 25 hosted browser checks passed, including narrow layouts, keyboard interaction, exact deployed assets and 200 percent text sizing locally. The existing hosted service and administrator checks still pass. The example is not an observed native harness run; public email registration and paid subscriptions remain incomplete.
+    - at: "2026-09-20T02:56:08Z"
+      event: email_free_administrator_and_prepared_supabase_project
+      evidence: artifacts/architecture-audit-2026-09-19/hosted-administrator-attempt-2.json; artifacts/architecture-audit-2026-09-19/pilot-deployment-progress.json
+      outcome: The administrator can issue, inspect and revoke scoped testing credentials without email. The default limit is 20 active tokens; secrets are shown once and only digests persist. Twelve live administrator checks passed. Supabase project qfzxmjznlwiopgvfgtsw is healthy in us-east-1 on the quoted free profile. Resend Free is selected for authentication mail and Cloudflare Free is recommended for DNS; neither selection claims a completed connection.
+    - at: "2026-09-20T01:40:10Z"
+      event: real_private_pilot_and_operator_connections
+      evidence: artifacts/architecture-audit-2026-09-19/hosted-service-attempt-3.json; artifacts/architecture-audit-2026-09-19/pilot-deployment-progress.json
+      outcome: The website responds over HTTPS on baltor-pilot.fly.dev. Sixteen live transport checks passed for authentication, metadata search, digest-bound body delivery, tenant isolation and retry accounting. Stripe Model Context Protocol access is verified for Baltor in test mode; Fly inspection tools are configured and checked. The Supabase account has been created and a fresh authorization is pending. Signup, production email, shared storage, Stripe runtime integration, native harness use and paid launch remain incomplete.
+    - at: "2026-09-20T00:40:05Z"
+      event: baltor_github_fly_connection_prepared
+      evidence: docs/guides/launch-setup-runbook.md; .github/workflows/fly-pilot.yml; tools/test_fly_deployment.py
+      outcome: Fly access to Baltor and the saved system-keyring credential were verified. The GitHub pilot environment holds the protected token, accepts only main and has deployment disabled. A separate service image and manual workflow are prepared locally. No Fly application or paid resource was created; the workflow is not published or live qualified.
+    - at: "2026-09-19T23:58:38Z"
+      event: whole_system_document_and_fly_hosting_guidance
+      evidence: tools/architecture_report/diagrams.json; tools/architecture_report/hosting.json
+      outcome: The main document covers eighteen architecture areas, including frontend, backend, all Loop roles, intelligence, retrieval, wrappers, verification, resources and improvement. Fly.io is the owner's preferred compute host; Supabase is the recommended data and identity target. Six concrete setup steps separate owner preparation from incomplete engineering. No resource was created and no purchase or deployment was authorized.
+    - at: "2026-09-19T14:12:54Z"
+      event: continuation_planned
+      evidence: The September 19 review, ten local reproductions, current source checks, and the recovered Claude workstreams.
+      outcome: Planning and artifact management are being installed; implementation findings remain open.
+    - at: "2026-09-19T19:17:24Z"
+      event: local_service_and_report_integration
+      evidence: The durable checkpoint records 153 owning and dependent checks with 11 detected mutants. The local HTTP checkpoint records 39 checks with 17 detected mutants. Root command dispatch and nested architecture-map integration are under verification.
+      outcome: Local serving is implemented without hosted customer execution or a required LangGraph dependency. One self-contained HTML report is being generated from the roadmap, source inventory and preserved Claude matrices. Provider accounts, native materialization and paid launch remain open.
+    - at: "2026-09-19T23:07:18Z"
+      event: website_and_decision_tools_locally_checked
+      evidence: artifacts/architecture-audit-2026-09-19/launch-slice-checkpoint.md
+      outcome: The earlier frozen source passed 5852 executed checks, 204 focused checks and five removed-guard controls; the workspace passed 28 browser checks. A clean wheel install passed the 48-check service smoke test. These results belong to that source, not later changes or real providers.
+    - at: "2026-09-19T23:07:18Z"
+      event: owner_checklist_and_configurable_external_decisions
+      evidence: docs/guides/jev-and-harness-decision-tools.md; tools/architecture_report/development.js
+      outcome: Fifteen owner preparation tasks and full embedded guides are being added to the main development file. Jev, Circuit and compatible decision endpoints use named host settings and shared gateway contracts. The owner clarified that model services are externally operated; no model launcher remains in this work.
+    - at: "2026-09-19T23:29:29Z"
+      event: endpoint_verification_and_primary_source_research
+      evidence: artifacts/architecture-audit-2026-09-19/decision-endpoints-checkpoint.md; docs/research/SOL-PI-HARNESS-REVIEW-2026-09-19.md; docs/research/SEMIF-DECISION-READOUT-REVIEW-2026-09-19.md
+      outcome: Current frozen source passes 5876 executed offline checks with 15 optional checks untested; 228 focused checks and five removed-guard controls pass. SoL-Pi is a candidate Pi extension profile, not a default or a new runtime. SemIf exposes uncalibrated scores and needs a distinct endpoint and confidence contract before integration. No model servers or weights were launched.
+    - at: "2026-09-20T21:30:00Z"
+      event: takeover_review_gate_repairs_and_release_blockers
+      evidence: docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md; artifacts/architecture-audit-2026-09-19/rollback-key-version-1.json
+      outcome: Claude Code reviewed the September 19 and 20 work after the previous developer reached its usage limit before deploying a release candidate. Read-only checks confirmed Fly release 7, host-key sign-in only, and closed registration and billing. An isolated rerun reproduced 30 of 30 conformance gates, 5,990 self-test checks, 206 tool tests, 336 focused checks and 131 browser checks. Two continuous integration suites failed and were repaired without weakening a check. A dropped link to the dimension discovery addendum was restored. 120 unregistered hardcoding findings in new files received exact reviewed entries, and the packaged browser library received one exclusion bound to its contents. The release candidate's rollback defect was proven against the real release 7 image and fixed with an owner-bound key record version. Identity key reads are now paused between attempts, the subscription reader ignores proxy settings from the environment, a durable write with a tuple is confirmed instead of reported unknown, two loosened negative controls are restored, and the browser library's licence terms are served. Package D-17 defines the private beta.
 statuses: [proposed, ready, building, offline_verified, live_qualified, published, blocked, superseded]
 verification_aliases:
   CONF: "python -m loop_engine --conformance"
@@ -363,6 +1612,14 @@ steps:
     verify: ["a deployed instance answering the four provisioning operations", "a deterministic family run end to end on supplied data", MUTANT]
     adversarial: "a completion the service did not run must never be metered as a verified completion; client reported telemetry must never be counted as independent verification; an unfiltered listing must not be the default way to ask"
     evidence: "docs/architecture/HOSTING-SHAPE-AND-THE-FIRST-RELEASE-2026-09-18.md: the serving side holds 20,000 capabilities in 65 megabytes and answers a manifest in 6 microseconds, one body is 2.8 kilobytes against a 240 kilobyte unfiltered listing of 500, the detection and correction families resolve with no model call, and execution already sits behind an adapter registry so hosted execution stays a later configuration"
+  - id: S-4.16
+    phase: 4
+    title: Define the deployment in the repository, not in a console
+    status: ready
+    depends_on: [S-4.13]
+    verify: ["the service and its database stand up from a committed file and an interface call, with no console step"]
+    adversarial: "a deployment that exists only as console actions cannot be rebuilt or reviewed; a rollback that restores the image but not the configuration is not a rollback"
+    evidence: "docs/architecture/HOSTING-SHAPE-AND-THE-FIRST-RELEASE-2026-09-18.md records what five platforms document about declarative definition, interfaces, infrastructure tooling, agent facing servers, prebuilt registry images, and rollback. The release is a prebuilt digest pinned image, which is the operation one vendor's agent facing server documents that it cannot perform and another requires a remote repository for"
   - id: S-4.14
     phase: 4
     title: Measure occupancy and egress from one instrumented deployment before choosing a host
@@ -409,8 +1666,16 @@ steps:
     status: offline_verified
     depends_on: [S-2.32]
     verify: [SELF, MUTANT]
-    adversarial: "a reason node must never hold write authority; a slice without a declared kind must be refused rather than guessed; a plan that fails partway must leave nothing behind; a record must never claim to carry bodies"
-    evidence: "core/node_provisioning: reason and build with different authority ceilings, the instruction file plus a typed assignment plus a provisioning record in every folder, offered and exposed bytes counted separately, and a plan provisioned whole or rolled back; thirteen killed mutants"
+    adversarial: "an assignment kind must never grant write authority, and a write beyond the owning task's authority must be refused; a slice without a declared kind must be refused rather than guessed; a plan that fails partway must leave nothing behind; a record must never claim to carry bodies"
+    evidence: "Changed on 2026-09-19 after the owner said that reasoning work may need to build and run code to reach an informed decision: the fixed per-kind ceiling was replaced by the owning task's authority, the live path stays read-only by default, and spawned_provisioning refuses writes that exceed that authority. The earlier control that a reason assignment can never declare a write was inverted, not dropped silently. core/node_provisioning: reason and build assignments, the instruction file plus a typed assignment plus a provisioning record in every folder, offered and exposed bytes counted separately, and a plan provisioned whole or rolled back; thirteen killed mutants"
+  - id: S-2.41
+    phase: 2
+    title: Keep what a run's model calls can teach, without keeping what must not be kept
+    status: offline_verified
+    depends_on: [S-2.40]
+    verify: [SELF, MUTANT]
+    adversarial: "a prompt or a response body must not survive retention; a collection past its ceiling must say it is truncated rather than pass as complete; every event must still reach the caller's own listener"
+    evidence: "core/model_call_collection sits in front of the caller's progress listener, forwards every event unchanged, and retains only the five kinds the learning join reads, dropping the prompt text a started event carries when the run is not quiet. code_nodes/solve_runtime installs it on every run and carries the report out with the result, so a run states what its model calls can teach instead of dropping it. This closes the last module that was imported by a run without being called; twelve killed mutants"
   - id: S-2.40
     phase: 2
     title: A spawned node's folder is filled before the node starts
@@ -591,16 +1856,15 @@ steps:
   - id: S-4.4
     phase: 4
     title: Deployment to the owner's cloud account
-    status: blocked
-    blocked_on: "the owner's cloud account and region"
+    status: building
     depends_on: [S-4.2]
     verify: [a public health endpoint answers, a recorded run]
-    evidence: ""
+    evidence: "The owner's Fly organization and the iad region exist and a private pilot answers its public health endpoint (see S-6.15). A recorded run through the hosted path is still open."
   - id: S-4.5
     phase: 4
     title: Billing with metered usage
     status: blocked
-    blocked_on: "the owner's payment provider account and prices"
+    blocked_on: "approved public prices and product terms; the Stripe sandbox account exists and nothing has been created in it"
     depends_on: [S-4.4]
     verify: [a test-mode charge recorded]
     evidence: ""
@@ -633,3 +1897,305 @@ steps:
     depends_on: [S-5.2]
     verify: [LINT]
     evidence: ""
+  - id: S-6.1
+    phase: 6
+    title: Confine the complete provisioning write set
+    status: building
+    depends_on: [S-6.17]
+    boundary: [core.node_provisioning, core.instance_instructions, core.workspace_contracts]
+    related_steps: [S-2.37, S-2.40]
+    verify: [owning checks, public provisioning traversal and symbolic-link refusals, SELF, CONF, MUTANT]
+    adversarial: Removing identifier or destination validation must admit the recorded escape and fail the new check.
+    acceptance: Safe identifiers, confined destinations, no unsafe overwrite, and recoverable partial-write handling apply to every provisioned file.
+    evidence: Path, link, overwrite, immutable authority, and guardrail repairs have owning and independent checks in artifacts/architecture-audit-2026-09-19/root-changes-independent-review.md; full frozen-tree integration pending.
+  - id: S-6.2
+    phase: 6
+    title: Make unresolved guardrail decisions stop dependent effects
+    status: building
+    depends_on: [S-6.17]
+    boundary: [core.guardrail_intelligence, core.node_provisioning, loop.effect_approval]
+    related_steps: [S-2.39]
+    verify: [owning checks, public unavailable-judge and escalation checks, SELF, CONF, MUTANT]
+    adversarial: Removing the unresolved-decision guard must allow the recorded write and fail its check.
+    acceptance: An unavailable blocking rule records pending review and prevents the effect; review cannot grant authority or weaken a protected contract.
+    evidence: Before-provisioning blocking and unresolved decisions refuse writes. Supplied unsupported enforcement points refuse; before-effect text is explicitly guidance only. Runtime audit records the public-path checks.
+  - id: S-6.3
+    phase: 6
+    title: Repair model-call occurrence identity, retention, and training persistence
+    status: building
+    depends_on: [S-6.17]
+    boundary: [core.model_call_records, core.model_call_collection, core.adaptive_practitioner_records, code_nodes.solve_runtime, core.heuristic_adoption]
+    related_steps: [S-2.41, S-2.5]
+    verify: [repeated and interleaved call joins, metadata-only export, stored-row reload, correct outcome labels, SELF, CONF, MUTANT]
+    adversarial: Removing occurrence identity must duplicate a record; retaining output_preview or failing the store write must fail the corresponding check.
+    acceptance: Every physical call has one distinct record; prohibited bodies are excluded; failures and unknowns survive; acknowledged typed rows reload by exact reference.
+    evidence: Unique model-step occurrence records, metadata privacy, accepted-incumbent labels, Unicode byte counts, and persisted product outcomes are tested. Capture currently counts model-step invocations, not every physical gateway attempt; complete physical-call capture remains open.
+  - id: S-6.4
+    phase: 6
+    title: Bind the provisioning catalogue to durable records and tenant disclosure authority
+    status: building
+    depends_on: [S-6.17]
+    boundary: [catalog, core.harness_intelligence, core.provisioning_server, core.shared_memory_scopes, core.record_operations]
+    related_steps: [S-2.10, S-2.11, S-2.32, S-2.33, S-4.12]
+    verify: [two-tenant isolation, explicit candidate review, revoked access, stale digest refusal, restart and restore, adapter conformance]
+    adversarial: A candidate or restricted body must not enter ordinary provisioning merely because the caller omits tags or buys a bodies entitlement.
+    acceptance: All four intelligence layers, templates, and the harness catalogue use existing record authority and can be served through scoped operations; tenant access, qualification, license state, and body integrity are checked before disclosure.
+    evidence: The SQLite-backed service persists tenants, key digests, subject bindings, exact grants, revocation and usage. The durable checkpoint records 153 owning and dependent checks and 11 detected mutants. Canonical all-layer qualification adapters and hosted database deployment remain open.
+    next_local_work: Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification.
+  - id: S-6.5
+    phase: 6
+    title: Expose provisioning through a versioned Model Context Protocol service
+    status: building
+    depends_on: [S-6.4]
+    boundary: [core.provisioning_server, core.service_api, core.mcp_adapter, code_nodes.service_endpoints]
+    related_steps: [S-4.2, S-4.12, S-2.8]
+    verify: [exact protocol and library versions, two real client implementations, authorization refusal, pagination, bounded requests, disconnect and retry]
+    adversarial: Wrong audience, expired credentials, invalid origin, incompatible version, and changed body must fail before disclosure.
+    acceptance: A supported client authenticates, discovers, searches all permitted intelligence layers and templates, selects, and reads qualified material over the documented protocol; incompatible clients get a typed refusal. Task-planning operations return canonical graph references without hosting customer harness execution.
+    evidence: The live pilot supports host-key Model Context Protocol access and OpenCode 1.17.9 discovery. Browser identity and account-activation code ships in Fly release 7 and is switched off by host configuration. Personal client keys are local only; they use an owner-bound record version that an older release refuses, shown by a rollback drill against the real release 7 image. Generic browser tokens remain invalid for the protocol resource audience. OAuth client consent and complete typed package serving remain unqualified.
+    next_local_work: Verify the installed command and package, a second supported client, and exact protocol refusal; qualify live authorization only after owner setup.
+  - id: S-6.6
+    phase: 6
+    title: Persist usage and telemetry with acknowledgments and reconciliation
+    status: building
+    depends_on: [S-6.4]
+    boundary: [core.service_api, core.provisioning_server, core.operation_cost_records, core.run_history, catalog]
+    related_steps: [S-1.5, S-4.15, S-4.10]
+    verify: [restart, duplicate requests, unknown commit, collector outage, retention, tenant export, privacy checks]
+    adversarial: Missing accounting cannot return metered=true; duplicate delivery cannot double-charge; client claims cannot become independent verification.
+    acceptance: Service usage survives restart, idempotent retries reconcile, unknowns remain unknown, and client-reported and server-verified events stay distinct. Engine model-call collection is separately repaired by S-6.3.
+    evidence: Exact usage identity, atomic authority read sets, restart and unknown-commit reconciliation are implemented in core.service_runtime. HTTP and protocol retries share one durable usage acknowledgment. Complete telemetry retention, consent, export and collector-outage behavior remain open.
+    next_local_work: Exercise retention, tenant export and telemetry outage behavior with raw-content collection disabled; preserve unknown cost and commit outcomes.
+  - id: S-6.7
+    phase: 6
+    title: Wire public solving to the declared provisioning dependencies
+    status: building
+    depends_on: [S-6.1, S-6.2, S-6.4]
+    boundary: [code_nodes.solve_runtime, core.adaptive_practitioner_records, core.adaptive_practitioner_scope, core.spawned_provisioning]
+    related_steps: [S-2.40, S-2.37, S-2.31]
+    verify: [public solve fixture, actual assignment folder, offered and loaded references, required-dependency refusal]
+    adversarial: Removing the catalogue from solve_dependencies must fail the public-path acceptance check.
+    acceptance: A public solve decomposes a task into canonical graphs, subgraphs, and atomic assignments, supplies the exact catalogue and applicable guardrails, and records what each Spawned Loop receives. The local/client execution placement is explicit.
+    evidence: Immutable digest-bound public provisioning configuration reaches scoped assignments; public solve has nine dedicated integration checks and fourteen provisioning mutants. Preparation does not establish native loading, full resource admission, or arbitrary completed task decomposition.
+  - id: S-6.8
+    phase: 6
+    title: Connect credential leases and resource admission to harness lifetime
+    status: proposed
+    depends_on: [S-6.7]
+    boundary: [core.credential_leases, core.local_resources, core.instance_hibernation, core.harness_process]
+    related_steps: [S-2.36, S-2.22, S-2.24]
+    verify: [shared authentication, scoped use, expiry and revocation, owned process cleanup, admission reservation, cancellation]
+    adversarial: Revoked access must refuse; a second start cannot exceed reservations; lost contact cannot free capacity or repeat an uncertain effect.
+    acceptance: One host authentication yields scoped leases; starts, waits, stops, and optional resume preserve accounting and authority.
+    evidence: Components exist; ordinary harness lifetime integration remains open.
+  - id: S-6.9
+    phase: 6
+    title: Qualify actual instruction and capability use in native harnesses
+    status: proposed
+    depends_on: [S-6.5, S-6.7, S-6.8]
+    authority_requirements: [live_model_authority]
+    boundary: [core.harness_semantic, core.instance_instructions, core.external_harness, core.independent_verification]
+    related_steps: [S-2.2, S-2.29, S-2.30]
+    verify: [real harness load evidence, absent-resource control, incompatible-version refusal, independent output verification]
+    adversarial: A file that exists but is not loaded cannot satisfy the check; native completion cannot accept the task.
+    acceptance: At least one exact native harness profile completes the supported launch path; a second client/profile proves interchangeability or remains explicitly unqualified.
+    evidence: No new live harness qualification is claimed by this plan.
+  - id: S-6.10
+    phase: 6
+    title: Publish qualified starter packages and prove client retrieval
+    status: proposed
+    depends_on: [S-6.4, S-6.5]
+    boundary: [core.intelligence_tagging, core.capability_needs, core.seeded_generation, core.reusable_capability_flywheel, core.harness_intelligence]
+    related_steps: [S-1.11, S-2.35, S-2.38, S-2.27]
+    verify: [declared starter population, provenance and licenses, independent checks, digest-bound packaging, supported-client retrieval, exact denominators]
+    adversarial: Generated or imported code must not qualify itself; general material cannot count as specific coverage; missing writes cannot count as staged records.
+    acceptance: Subscribers retrieve a small declared catalogue of useful, independently reviewed skills, instructions, tool references, and reusable code. Missing combinations remain visible; automatic bulk generation is S-6.20.
+    evidence: Twelve source-bound candidate records across four persistent layers and ten content families are staged in an isolated catalogue through the existing atomic contract, with acknowledged export and canonical review-search probes. Normal search excludes every candidate. Code references are not executable packages; independent qualification and hosted publication remain incomplete. See artifacts/architecture-audit-2026-09-19/candidate-intelligence-staging-2.json.
+  - id: S-6.11
+    phase: 6
+    title: Publish solutions and verify standalone reuse on fresh inputs
+    status: proposed
+    depends_on: [S-6.9, S-6.20]
+    boundary: [code_nodes.solutions_space, code_nodes.solution_export, core.solution_library, loop.canvas]
+    related_steps: [S-0.5, S-2.3]
+    verify: [multiple members retained, exact consumer references, clean export environment, fresh-input run, regression refusal]
+    adversarial: Exported work must fail qualification if it relies on the builder conversation, missing files, stale verification, or an undeclared engine import.
+    acceptance: A supported workflow publishes a verified reusable solution and runs it independently with declared dependencies and new input.
+    evidence: Existing standalone example establishes a starting mechanism; the full public lifecycle remains open.
+  - id: S-6.12
+    phase: 6
+    title: Build the website, subscriber dashboard, and operator workflows
+    status: building
+    depends_on: [S-6.5, S-6.6, S-6.21]
+    boundary: [core.service_api, code_nodes.service_endpoints, studio_server, showcase]
+    related_steps: [S-4.9, S-4.2]
+    verify: [public website, sign-in, subscribe and manage billing, connect a client, browse and fetch material, inspect usage, revoke access, inspect a failure, export permitted records]
+    adversarial: A tenant cannot inspect another tenant's records or change an operator-only limit.
+    acceptance: A subscriber can sign in, manage the subscription, connect a client, use harness intelligence, and inspect usage. An operator can diagnose and recover the service through declared controls.
+    evidence: Fly release 7 includes account forms, browser identity validation, server-owned tenant activation and the plain-language website. Conformance passes. Local browser checks pass 120 cases; both the Fly origin and app.baltor.ai pass 45 hosted website checks. Provider account registration is not enabled or qualified. Real confirmation, recovery, self-service client tokens, billing and complete native task loading remain open.
+  - id: S-6.13
+    phase: 6
+    title: Prepare portable deployment definitions and procedures for every hosting family
+    status: building
+    depends_on: [S-6.17]
+    boundary: [Dockerfile, examples/28_containerized_worker, .github/workflows/publish-image.yml, core.workspace_backends, catalog]
+    related_steps: [S-4.1, S-4.7, S-4.16, S-4.13]
+    verify: [manifest validation, explicit launch inputs, provider capability checks, dry-run plans, exact image/configuration identity, same acceptance contract]
+    adversarial: Ephemeral storage cannot claim durability; an unavailable platform capability or missing budget must refuse a deployment plan.
+    acceptance: Local containers, application platforms, cloud containers, Kubernetes, virtual servers, dedicated servers, and edge containers have documented deploy, verify, upgrade, rollback, restore, and retirement procedures.
+    evidence: One tested service image runs on the existing Fly Machine and encrypted volume. A prior deployed backup passed 15 local restore checks. Release 7 carries the account code, switched off by host configuration. Releases one to seven were built on one workstation from an uncommitted working tree, so none can be rebuilt from the repository. From release 8 a release needs a committed revision whose continuous integration run passed. Shared-state scaling, current-image rollback and other hosting profiles remain unqualified.
+  - id: S-6.14
+    phase: 6
+    title: Qualify the release candidate on the exact exported tree
+    status: proposed
+    depends_on: [S-6.4, S-6.5, S-6.6, S-6.10, S-6.12, S-6.13, S-6.21, S-6.23, S-6.24, S-6.26, S-6.27]
+    boundary: [.github/workflows/ci.yml, tools, examples/28_containerized_worker, core.run_history]
+    verify: [owning tests, SELF, CONF, HARD, LINT, clean installation, examples, browser and playback, failure injection, backup restore, rollback]
+    adversarial: Each new guard must reject a known-wrong result when its required behavior is removed; import presence alone cannot satisfy integration.
+    acceptance: The release record covers the subscription service and the required internal graph, intelligence, template, harness, and solution paths. It names every gate and limitation. Hosting customer harness execution remains optional; internal integration is required.
+    evidence: Existing 5316-check baseline is preserved as history, not reused as qualification for changed code.
+  - id: S-6.15
+    phase: 6
+    title: Deploy an authorized pilot and qualify its real request path
+    status: building
+    depends_on: [S-6.14]
+    authority_requirements: [hosting_authority]
+    boundary: [examples/28_containerized_worker, core.service_api, core.provisioning_server]
+    related_steps: [S-4.4, S-4.14]
+    verify: [real hostname, authenticated client, durable records, traffic and egress observations, restart, rollback, restore]
+    adversarial: Healthy process status without a successful authorized capability fetch is not a hosted acceptance result.
+    acceptance: One explicitly chosen target is observed working; every other prepared target retains its own qualification state.
+    evidence: The private diagnostic Fly pilot runs release 7, image sha256:7b45d327faba2e65829230e8ee4f91109207183b4575cdab08c545aae6af55e8, confirmed by a read-only platform query on 2026-09-20, and is healthy. Public read-only status checks returned successful homepage, login, connection, health and capability responses. Live capabilities still disable public registration, checkout, portal and webhooks. Complete customer and native task journeys remain open.
+  - id: S-6.16
+    phase: 6
+    title: Activate approved paid access and publish the release decision
+    status: proposed
+    depends_on: [S-6.6, S-6.15, S-6.21]
+    authority_requirements: [payment_authority]
+    boundary: [core.service_api, core.provisioning_server, .github/workflows]
+    related_steps: [S-4.3, S-4.5, S-4.6]
+    verify: [approved product and prices, test payment lifecycle, idempotent usage reconciliation, entitlement change and revocation, release notes]
+    adversarial: A delayed or duplicated payment event cannot grant unapproved access or double bill; missing payment qualification prevents a paid-launch claim.
+    acceptance: The release is classified honestly as a prepared candidate, hosted pilot, or paid launch according to observed gates.
+    evidence: The selected Stripe sandbox and runtime test credential are prepared. Real subscription qualification, public prices, terms and live activation authority remain pending.
+  - id: S-6.17
+    phase: 6
+    title: Maintain one continuation plan and regenerate its status artifact
+    status: offline_verified
+    depends_on: []
+    boundary: [docs/roadmap/roadmap.yaml, tools/build_continuation_status.py]
+    related_steps: [S-1.9, S-2.17]
+    verify: [plan validation, known next step, dependency and authority refusal, legacy initiative coverage, generated artifact freshness]
+    adversarial: An unknown dependency, cycle, omitted legacy initiative, missing evidence, or unsatisfied authority must not produce an executable next step or green launch gate.
+    acceptance: Every existing initiative is retained; the next eligible task and unmet launch gates are computed from the same plan; the artifact is regenerated after every completed batch.
+    evidence: The original ten planning checks cover dependencies, transitive evidence, authority, omitted initiatives and stale views. Two additional regression checks require active work to be visible without becoming a verified dependency. This verifies planning behavior, not a release gate.
+  - id: S-6.18
+    phase: 6
+    title: Reorganize coherent code families and update current callers
+    status: building
+    depends_on: [S-6.17, S-6.1, S-6.2, S-6.3]
+    boundary: [core, architecture_map, core.boundary_registry, _self_test]
+    related_steps: [S-2.18, S-2.19, S-3.7]
+    verify: [import graph, public imports, string references, conformance, owning tests, source and installed package behavior]
+    adversarial: A missed current reference or forbidden dependency direction must fail; obsolete forwarding imports must not be required by active callers.
+    acceptance: Physical folders match a stable owning boundary, with a README and contract; behavior changes are reviewed separately from moves.
+    evidence: Practitioner runtime, Solution execution and export templates have separate modules. Typed decision contracts, provider mapping and gateway support now live under core/decisions with import-boundary tests. Website assets live inside service_runtime. The larger flat core still needs measured reorganization; no whole-repository cleanliness claim is made.
+  - id: S-6.19
+    phase: 6
+    title: Continue flexible composition and controlled improvement research
+    status: proposed
+    depends_on: [S-6.3, S-6.20, S-6.14]
+    boundary: [generation, core.configuration_optimizer, core.step_efficiency_review, core.model_ontology, core.harness_layering]
+    related_steps: [S-2.1, S-2.6, S-2.7, S-2.13, S-3.2, S-3.3, S-3.4, S-3.5]
+    verify: [initial and fallback settings applied, matched controls, added and removed steps, held-out evaluation, complete failures and cost accounting]
+    adversarial: A tuned validation set cannot be called an untouched holdout; a selector cannot approve itself or adopt an unqualified learned heuristic.
+    acceptance: Additional models, prompts, wrappers, cognitive steps, intelligence, and optimizers are tested without removing supported alternatives or claiming a universal winner.
+    evidence: Jev, Circuit and compatible external endpoints are selected through versioned host settings and the existing gateway, with direct and protocol-tool checks. Model services remain externally operated. SoL-Pi and SemIf have pinned-source reviews, not qualified runtime integration. Controlled learning and broad comparisons remain proposed; live trials need separate exact authority.
+    next_local_work: Qualify an explicit Pi extension profile for SoL-Pi without changing the text-only default; keep its four mechanisms separately configured. Define an honest uncalibrated-score contract and actual endpoint mapping before any SemIf adapter. Preserve independent evaluation and shared budgets.
+  - id: S-6.20
+    phase: 6
+    title: Complete the classification-grid generation and improvement pipeline
+    status: proposed
+    depends_on: [S-6.3, S-6.7, S-6.10]
+    boundary: [core.intelligence_tagging, core.capability_needs, core.seeded_generation, core.reusable_capability_flywheel, generation]
+    related_steps: [S-1.11, S-2.35, S-2.38, S-2.27]
+    verify: [bounded generation manifest, provenance and licenses, candidate isolation, independent review, package versioning, later-assignment use]
+    adversarial: A generator cannot count generic material as specific coverage, reuse evaluation answers, approve its own code, or count unknown writes as success.
+    acceptance: A declared set of industry, occupation, language, geography, and task combinations becomes reviewed reusable material with failures and exclusions retained.
+    evidence: Starter packages may be independently curated, but the internal generation and qualification mechanism must also be connected and tested for the requested release.
+  - id: S-6.21
+    phase: 6
+    title: Connect payment lifecycle to durable subscription entitlements
+    status: building
+    depends_on: [S-6.4]
+    boundary: [core.service_api, core.provisioning_server, catalog, code_nodes.service_endpoints]
+    related_steps: [S-4.3, S-4.5]
+    verify: [hosted checkout and billing portal adapter, signed event validation, replay and ordering, past-due and cancellation policy, periodic reconciliation]
+    adversarial: A forged or repeated payment event cannot grant access or create a duplicate charge; an old success cannot override a newer revocation.
+    acceptance: Website and protocol requests read the same durable entitlement decision. Local fixtures test the adapter; provider test-mode and live activation require their exact account authority.
+    evidence: Checkout and portal creation have 52 local checks and 18 detected mutants; signed-event reconciliation has separate local checks. The newly approved Baltor sandbox acct_1UHZ9KCCxLfArYED is reachable with the runtime test credential. No real test checkout or webhook lifecycle has been completed; live charging stays disabled.
+    next_local_work: Dashboard session routes have local browser checks. Complete periodic reconciliation, automatic customer bootstrap and qualified deployment, then exercise the owner's Stripe test account under explicit authority.
+  - id: S-6.22
+    phase: 6
+    title: Maintain sourced competitor, prior-art, funding, and strategic-path research
+    status: building
+    depends_on: []
+    boundary: [docs/research, docs/roadmap/roadmap.yaml]
+    related_steps: [S-1.9, S-5.2, S-5.3]
+    verify: [primary-source links, current dates and revisions, claimed versus observed capability, independent counterexamples, uncertainty labels]
+    adversarial: Missing documentation cannot become proof of absence; strategic fit cannot become claimed acquisition or funding interest.
+    acceptance: A dated research comparison informs product differentiation and qualified next actions without changing runtime authority or contacting organizations.
+    evidence: Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. Ongoing research and broader comparison refresh remain open; no outreach occurred.
+  - id: S-6.23
+    phase: 6
+    title: Exercise every required internal component through its actual owning entry point
+    status: proposed
+    depends_on: [S-6.3, S-6.7, S-6.8, S-6.9, S-6.20, S-6.11]
+    boundary: [core.boundary_registry, core.intelligence_layers, templates, generation, core.adaptive_practitioner, code_nodes.solutions_space, core.run_history]
+    related_steps: [S-1.12, S-2.12, S-2.14, S-2.33, S-2.4]
+    verify: [task decomposition, subgraph and typed-port compatibility, four-layer query and materialization, template selection, harness provisioning and loading, capability execution, evaluation, solution publication and reuse, Run History and playback]
+    adversarial: Removing a caller binding must fail its integration check even when the isolated module tests pass. A proposed or unavailable implementation must never be labeled verified.
+    acceptance: Every existing required capability is mapped to an owning public or internal entry point, observed invocation, positive and refusal case, and saved evidence. Broad future research remains distinct from this versioned integration inventory.
+    evidence: The September 19 owner explicitly requires internal functionality to work even when it is not exposed in the initial user interface.
+  - id: S-6.24
+    phase: 6
+    title: Deliver client, authentication, endpoint-based model and native-harness onboarding
+    status: building
+    depends_on: [S-6.5, S-6.9, S-6.12]
+    boundary: [docs/guides, examples, showcase, core.provider_configuration, solve_cli]
+    related_steps: [S-4.2, S-2.29]
+    verify: [fresh-user walkthrough, clean installation, browser instructions, authenticated protocol client, local provider configuration, cloud-provider authority, Kaggle credential and competition access refusal]
+    adversarial: Documentation must not use nonexistent commands, imply that subscription grants model or dataset access, or treat a listed model as a successful provider probe.
+    acceptance: Frontend instructions guide a new user from installation through a supported implementation for each governed assignment. Existing local and cloud endpoints, credentials and model authority remain distinct. Customers need not host models. Optional Kaggle access and per-competition terms remain explicit.
+    evidence: Guided website setup provides secret-free Codex and OpenCode 1.x configuration, an actual protocol handshake and tool-list check, a first retrieval example and access/data boundaries. OpenCode 1.17.9 connected to the deployed pilot using a scoped key with no model turn and no permanent configuration change. This proves native connection and discovery only. Native material loading, model-backed task success, Kaggle access and the complete fresh-user journey remain open. See artifacts/architecture-audit-2026-09-19/native-opencode-connection-2.json.
+  - id: S-6.25
+    phase: 6
+    title: Expand the system map to every source file with explicit evidence limits
+    status: building
+    depends_on: [S-6.17]
+    boundary: [core.component_inventory, reachability_report, tools/export_component_inventory.py, tools/architecture_audit.py]
+    verify: [complete file population, source hashes, typed symbols and signatures, dependency edges, owning checks, question registers, browser readability, current evidence binding]
+    adversarial: Source imports cannot become observed calls, record literals cannot become supported encodings, stale checks cannot turn green, and missing vendor documentation cannot become proof of absence.
+    acceptance: The file-level map, focused-review scope, unresolved relationships, current tests, comparative evidence, and hundreds of review questions remain inspectable and reproducible.
+    evidence: artifacts/architecture-audit-2026-09-19/ contains the source graph, file coverage, component rows, review registers, and client/server diagrams. Structural enumeration is complete for its declared population; every-file semantic review is not claimed.
+  - id: S-6.26
+    phase: 6
+    title: Remove unused pre-launch compatibility while retaining versioned handshakes
+    status: building
+    depends_on: [S-6.17]
+    boundary: [loop, ontology, catalog, core.product_outcome_store, core.capability_directory, _self_test]
+    verify: [current producers and consumers, older and unknown version refusal, no silent field aliases, preserved historical evidence, exact digest and implementation binding]
+    adversarial: Unsupported input must refuse before effects; matching versions cannot bypass permissions or qualification.
+    acceptance: Active contracts serve current callers without compatibility-only readers, aliases, or forwarders. Component and subcomponent versions and compatibility handshakes remain explicit.
+    evidence: Current-only Code, references, graph/spec, product outcome, export, model-learning and test reports are implemented. The memory repository forwarder is removed. Loop definition, checkpoint, ontology, fingerprint, skill and other aliases remain inventoried work.
+  - id: S-6.27
+    phase: 6
+    title: Close independently reproduced contract and data-integrity defects
+    status: building
+    depends_on: [S-6.17]
+    boundary: [loop.runtime_context, code_nodes.solution_graph, core.capability_directory, catalog, core.intelligence_layers, code_nodes.solution_export]
+    verify: [public positive and refusal paths, exact graph dataflow, authority attenuation, transactional writes, selected body identity, export integrity, independent counterexamples]
+    adversarial: Restore each reproduced bad behavior and require the owning check to fail; retain failures and excluded attempts.
+    acceptance: Every confirmed defect has a current owning repair and independent evidence, with unresolved or broader integration requirements still named.
+    evidence: Runtime, storage, retrieval, export, test collection, and capability-dispatch repair reports are saved in artifacts/architecture-audit-2026-09-19/. Complete source qualification remains a separate release gate.
+    next_local_work: Metadata disclosure now binds the initial grant revision and revalidates it at completion. Revocation, replacement and entitlement changes refuse in local tests, and removing the guard is detected. Preserve the original counterexample; qualify hosted behavior and remaining defects separately.

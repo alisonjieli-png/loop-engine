@@ -1,0 +1,31 @@
+{
+  "record_type": "website_comparison_population/v1",
+  "historical_population_source": "docs/research/COMPETITIVE-LANDSCAPE-AND-MONETIZATION-2026-09-18.md",
+  "unresolved_identities": ["Overmind", "Lemma"],
+  "sites": [
+    {"id":"mem0","name":"Mem0","cohort":"historical_comparison","url":"https://mem0.ai/","screenshot":true},
+    {"id":"zep","name":"Zep and Graphiti","cohort":"historical_comparison","url":"https://www.getzep.com/","screenshot":true},
+    {"id":"supermemory","name":"Supermemory","cohort":"historical_comparison","url":"https://supermemory.ai/","screenshot":true},
+    {"id":"cognee","name":"Cognee","cohort":"historical_comparison","url":"https://www.cognee.ai/"},
+    {"id":"honcho","name":"Honcho (Plastic Labs)","cohort":"historical_comparison","url":"https://honcho.dev/"},
+    {"id":"memos","name":"MemOS (MemTensor)","cohort":"historical_comparison","url":"https://memos.openmem.net/"},
+    {"id":"hindsight","name":"Hindsight (Vectorize)","cohort":"historical_comparison","url":"https://hindsight.vectorize.io/"},
+    {"id":"senselab","name":"SenseLab (AMFS)","cohort":"historical_comparison","url":"https://www.sense-lab.ai/","screenshot":true},
+    {"id":"letta","name":"Letta","cohort":"historical_comparison","url":"https://www.letta.com/"},
+    {"id":"synth","name":"Synth","cohort":"historical_comparison","url":"https://www.usesynth.ai/"},
+    {"id":"tellurio","name":"Tellurio and Afnio","cohort":"historical_comparison","url":"https://tellurio.ai/"},
+    {"id":"langwatch","name":"LangWatch","cohort":"historical_comparison","url":"https://langwatch.ai/","screenshot":true},
+    {"id":"notdiamond","name":"Not Diamond","cohort":"historical_comparison","url":"https://www.notdiamond.ai/"},
+    {"id":"typesafe","name":"TypeSafe (Jev)","cohort":"historical_comparison","url":"https://typesafe.ai/"},
+    {"id":"prismml","name":"PrismML (Bonsai)","cohort":"historical_comparison","url":"https://prismml.com/"},
+    {"id":"osmosis","name":"Osmosis (Gulp AI)","cohort":"historical_comparison","url":"https://osmosis.ai/"},
+    {"id":"adaptive","name":"Adaptive ML","cohort":"historical_comparison","url":"https://www.adaptive-ml.com/"},
+    {"id":"distyl","name":"Distyl","cohort":"historical_comparison","url":"https://www.distyl.ai/"},
+    {"id":"tensorzero","name":"TensorZero","cohort":"historical_comparison","url":"https://www.tensorzero.com/"},
+    {"id":"stripe","name":"Stripe connection documentation","cohort":"onboarding_reference","url":"https://docs.stripe.com/mcp","screenshot":true},
+    {"id":"n8n","name":"n8n","cohort":"workflow_reference","url":"https://n8n.io/","screenshot":true},
+    {"id":"retool","name":"Retool","cohort":"workflow_reference","url":"https://retool.com/"},
+    {"id":"resend","name":"Resend","cohort":"onboarding_reference","url":"https://resend.com/"},
+    {"id":"baltor","name":"Baltor hosted pilot","cohort":"own_product","url":"https://baltor-pilot.fly.dev/","screenshot":true}
+  ]
+}

@@ -17,6 +17,64 @@ separate project and may be consulted as a design reference. Do not merge the
 repositories or copy whole files, registries, naming systems, or governance
 documents from Taedri.
 
+## North star and current initiatives
+
+Baltor is the public brand. Loop Engine is the repository, the Python package
+and the technical name. The product is a hosted intelligence service plus a
+local engine. Customers run their own harness and their own models. The
+service gives each step of a task the information, skills, tools and reusable
+code that the step needs, within the budget and permissions the customer sets.
+
+The north star is one sentence: turn a complex problem into a solution that
+can be used again. The engine breaks the work into focused steps. Each step
+is a discrete cognitive or act step Loop node; read the
+[complete behavioral explanation](ASTRA.md#complete-behavioral-explanation)
+before describing one. Success means accepted work under the customer's
+constraints. It does not mean the fewest tokens, steps or model calls.
+
+The product answers five customer problems: too much context for a small
+task, an expensive model for every decision, missing domain expertise, paying
+to rewrite code that already exists, and the same mistakes appearing again.
+Three launch benefits are drafts, not measured claims: overnight work with
+local models, fewer tokens spent on repetition, and useful expertise for each
+step. Read the [benefit evidence guide](docs/guides/launch-benefits-and-evidence.md)
+before writing a stronger claim.
+
+```text
+Current initiatives, in priority order
+├── 1. Private beta for invited users (roadmap package D-17)
+│   ├── Releases only from a committed revision whose checks passed
+│   ├── Personal accounts and personal client keys, registration closed
+│   ├── A reviewed starter catalogue across the four intelligence layers
+│   └── One native client that demonstrably loads selected material
+├── 2. Join the hosted service to the local solving path (D-06)
+├── 3. Accounts, authentication email and test subscriptions (D-02 to D-04)
+├── 4. Evidence for the three launch benefits, under explicit model authority (D-07 to D-09)
+├── 5. Durable cloud records, files and retrieval (D-05)
+└── 6. Continuing work: interchangeable engines, research, removal of unused
+       pre-launch compatibility, and reproduced defects (D-12, S-6.26, S-6.27)
+```
+
+The authoritative task state is [roadmap.yaml](docs/roadmap/roadmap.yaml) and
+its [generated status](docs/roadmap/CONTINUATION-STATUS.md). The
+[takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md) records
+the verified live state, the open findings, the private beta definition and
+the working cycle for changes, tests, checkpoints and releases. Follow that
+cycle. In short:
+
+- Write the check for the known-wrong case before the repair. A removed guard
+  must fail a named check.
+- Record state in the roadmap and regenerate the status file. Do not start a
+  second task list, dashboard or plan.
+- Save every report under a new name. Keep failed attempts beside their
+  successors.
+- Release only from a committed revision whose continuous integration run
+  passed, deploy by image digest, and keep the previous image for rollback.
+- A record that an older release must not honor needs a new record version,
+  so that the older release refuses it.
+- Offered, fetched, loaded, used and verified are separate facts. A count of
+  passing checks is not a working customer journey.
+
 ## Start here
 
 Before material work, inspect the current branch, revision, dirty state,
@@ -31,13 +89,35 @@ for the task:
 6. `docs/components/README.md`
 7. the relevant component README
 8. `humanizer-context.md` for public prose
-9. `docs/context/CODEX-START-HERE.md` after a new or compacted session
+9. `docs/context/CODEX-START-HERE.md` after a new or compacted session, then
+   `docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md` for the verified live state
 10. `docs/context/REFERENCE-SOURCES.md` before consulting an older repository
 11. `ASTRA.md` for the current advisory comments and suggestions for continued
     development and Claude Fable 5.1 review
 
 Treat existing changes as user or concurrent-agent work. Do not discard,
 restore, reformat, commit, or publish changes without resolving ownership.
+
+## Pre-launch version policy
+
+The owner confirmed on September 19 that Loop Engine has not launched and
+has no users requiring old interfaces. Do not add or retain compatibility
+code solely for pre-launch record shapes, imports, aliases, or constructors.
+Update in-repository callers and tests to the current contract together.
+Keep explicit component, profile, record, and adapter versions, exact digests,
+and compatibility handshakes. Reject unsupported versions before effects.
+An incompatible version is not permission to silently downgrade or reinterpret
+fields. Preserve historical evidence bytes without making them active runtime
+inputs. See the [version policy](docs/architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md)
+for the distinction between contract versioning and legacy support.
+
+The owner's later September 19 clarification also requires deliberate runtime
+compatibility between independently deployed component versions. Negotiate
+the mutually supported protocol, schema, capabilities, and qualified adapter
+at initialization and validate the selected binding at use. Continuous
+integration tests this logic; it does not replace runtime negotiation. This
+does not revive obsolete pre-launch formats or permit automatic field guessing.
+Refuse a downgrade that loses required semantics, integrity, or authority checks.
 
 ## One Loop runtime
 
@@ -51,8 +131,8 @@ Before creating a class whose name ends in `Node`:
 3. Represent the concept as a typed object consumed by `Loop`, a
    `LoopProfileSpec`, a payload, a reference, a result, a report, a policy,
    a contract, an artifact, or a RepositoryEntity.
-4. Historical serialized `kind: loop_node` records may be read only through
-   the exact migration into `LoopDefinitionRecord`.
+4. Retired serialized `kind: loop_node` records are unsupported runtime input.
+   Preserve historical files without an automatic migration reader.
 5. Do not create a Node subclass. The canonical Loop class refuses subclassing
    at class-creation time.
 
@@ -92,8 +172,8 @@ Loop
 A Starting Loop has no incoming Loop relationship. A Spawned Loop records one
 spawning Loop ID. A spawning Loop and a Loop it spawns may use different
 modes. A mode never grants file, network, secret, model, spending, or
-external-effect authority. Retired topology fields may appear only inside an
-explicit reader for immutable legacy records. New records must not emit them.
+external-effect authority. Active readers and writers must reject retired
+topology fields. Historical evidence may retain them without runtime support.
 
 Keep semantic relationships distinct. A Starting Practitioner may spawn a
 Practitioner subproblem Loop and query an Intelligence Query Loop. That Query
@@ -344,6 +424,12 @@ differ.
 
 Follow `humanizer-context.md`.
 
+- The owner-facing marketing website uses Baltor and plain words such as
+  task, each step, tools, model, information and results. Do not display Loop,
+  Loop node, Loop Engine, runtime classification or role profiles on the
+  homepage, How it works or their shared footer. Keep exact runtime terms and
+  complete behavioral explanations in technical documentation and GitHub.
+  This presentation rule does not rename classes, contracts or the repository.
 - Do not use shorthand or introduce abbreviated aliases in explanations,
   documentation, prompts, or handoffs. Repeat the full descriptive term even
   after defining it. Preserve exact existing code identifiers and contract

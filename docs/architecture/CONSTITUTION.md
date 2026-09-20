@@ -12,6 +12,21 @@ machine-readable entry in `architecture.yaml`.
   has stronger evidence.
 - MAY: optional behavior that must remain interoperable when absent.
 
+## Pre-launch contract direction
+
+The owner's September 19 direction removes the requirement to support
+pre-launch legacy interfaces. Versioned contracts and compatibility
+handshakes remain required. Current callers must name supported record,
+component, profile, and adapter versions; unknown versions must fail before
+execution or mutation. Do not infer compatibility from a similar field shape.
+
+The [pre-launch version decision](ADR-PRELAUNCH-VERSIONED-CONTRACTS.md)
+records this direction and its verification requirements. It supersedes
+older instructions to retain historical readers and forwarding imports.
+Historical evidence remains unchanged. This policy does not assert that all
+existing compatibility paths have already been removed; the continuation
+review tracks their removal and current-contract checks.
+
 ## One operational runtime
 
 ### LE-NODE-001

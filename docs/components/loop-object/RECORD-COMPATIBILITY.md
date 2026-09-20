@@ -1,8 +1,14 @@
 # Loop contract cardinality and record compatibility
 
-Input cardinality is a property of the consuming input port. A consumer that
-produces several outputs does not therefore accept several inputs. The
-current `LoopContract` keeps these decisions separate.
+The [version policy](../../architecture/ADR-PRELAUNCH-VERSIONED-CONTRACTS.md)
+separates two obligations: remove accidental support for unpublished formats,
+and retain deliberate runtime version, capability, and schema negotiation
+between independently deployed releases. Select an explicitly supported
+implementation shared by both sides. Never silently downgrade security,
+permissions, evidence requirements, or effect authority.
+
+Continuous integration tests negotiation. It does not replace the runtime
+handshake or make an incompatible record executable.
 
 ## Input and output cardinality
 
@@ -36,50 +42,46 @@ shapes, units, encodings, and field constraints. Those remain separate work.
 
 ## Supported record encodings
 
-| Record | New writes | Historical reads and round trips |
+The following is a source checkpoint for September 19, 2026. Recheck the
+owning reader and its negative tests before changing a contract or claiming
+cleanup is complete.
+
+| Boundary | Current encoding | Observed implementation and remaining work |
 |---|---|---|
-| `LoopDefinition` | `loop_definition/v2`, including input cardinality | Version 1 accepts the exact original contract shape and the later version 1 shape with output metadata. The original encoding and digest remain intact. |
-| `SpawnedTaskCheckpoint` | `spawned_task_checkpoint/v3`, retaining input and output cardinality | Version 2 remains readable and preserves its old encoding and digest. It cannot encode the newer cardinality semantics. Version 1 remains unsupported. |
+| [Loop definition](../../../src/loop_engine/loop/loop_definition.py) | `loop_definition/v2` | The reader still accepts version 1 shapes. Removal of this unpublished reader is pending, not a promise to support it for new integrations. |
+| [Spawned task checkpoint](../../../src/loop_engine/loop/spawned_task_checkpoint.py) | `spawned_task_checkpoint/v3` | The reader still accepts version 2. Preserve cardinality and integrity checks while completing the tracked cleanup. |
+| [Ontology definition record](../../../src/loop_engine/ontology/loop_definition_record.py) | `LoopDefinitionRecord` | The reader still maps the retired serialized kind into the current record. This unpublished conversion remains cleanup work. |
+| [Saved product outcome](../../../src/loop_engine/core/product_outcome_store.py) | `solve_outcome/v6` | The current reader refuses older outcome versions. Historical files remain unchanged. |
+| [Code asset and admission](../../../src/loop_engine/core/code_intelligence_assets.py) | `code_asset_spec/v2`, `code_asset_admission/v2` | Current qualification binds exact data, dependencies, contracts, effects, and independent evidence. Old evidence requires requalification, not automatic promotion. |
+| [Intelligence item reference](../../../src/loop_engine/loop/loop_capsule.py) | `intelligence_item_ref/v2` | The wire reader requires the current shape. Remaining Python aliases are separate cleanup work. |
 
-The record encoding version is separate from the semantic version of a Loop
-definition or profile. Do not change historical semantic versions to hide a
-serialization migration.
+A serialized record version, semantic component version, role-profile version,
+and external protocol version identify different contracts. An older number
+does not establish incompatibility by itself, and a matching number does not
+grant authority. Each deployed adapter must declare its supported versions
+and capabilities; selection must use their actual shared supported contract.
 
-`LoopDefinition.from_dict` verifies the supplied digest against the exact
-historical body before reconstructing the definition. Its private legacy
-encoding fields are reader state, not public constructor options. A new
-definition, including one constructed with `dataclasses.replace`, emits the
-current encoding. Historical input cardinality defaults to single; it is
-never inferred from a consumer's output count.
-
-The checkpoint serializer retains the declared contract rather than silently
-dropping output metadata. A version 2 checkpoint with non-default cardinality
-is refused because its old shape cannot preserve that meaning.
-
-A stored checkpoint must carry its SHA-256 digest, and its counters and
-identities must already be stored as integers and text. The reader does not
-recompute a blank digest and does not narrow a value such as `2.9` to `2`
-before verifying, because the digest is computed over the decoded body and a
-coerced body is not the record that was stored. Only in-process construction
-may leave the digest blank for the record to compute. The same rule applies to
-`InformationStorageBinding.from_storage_dict`, which refuses a stored binding
-without its digest. A stored definition whose contract is invalid raises
-`LoopDefinitionError`, and its input cardinalities must be sorted by role in
-the stored encoding.
-
-The older ontology record with `kind: loop_node` remains a separate exact
-migration into `LoopDefinitionRecord`. This compatibility reader does not
-create another runtime type or permit new legacy records.
+Do not add an old-format reader merely because an immutable artifact exists.
+A separately authorized conversion can create a new artifact with provenance
+if a real use case requires it. It must not become an automatic runtime
+fallback.
 
 ## Verification and preservation
 
-The owning checks cover unchanged historical digest round trips, tampered
-historical bodies, current encodings, explicit multiple-item inputs, bound
-overflow, incompatible connections, and independent per-port adapter checks.
-Use `loop_contract.self_test()`, `loop_definition_checks.self_test()`, and
-`delegation_checkpoint_checks.run_checkpoint_checks()` through the standard
-package self-test entry point.
+Test a valid supported record, an unsupported old shape, an unknown future
+version, malformed fields, changed content with an old digest, and a compatible
+request without required authority. Every failed admission must precede
+writes, model calls, and external effects. Keep a known-wrong control that
+fails when the guard is removed.
 
-Do not rewrite old Run History, checkpoints, or managed reports to make them
-look current. Preserve failed reads as failures. New records use current
-contracts, while immutable older records retain their exact identity.
+Use the owning Loop definition, contract, checkpoint, outcome, and admission
+checks, then dependent and full release checks on the exact source tree.
+The [continuation status](../../roadmap/CONTINUATION-STATUS.md) tracks the
+remaining removals and release gates; this guide does not mark them complete.
+
+Do not rewrite old Run History, checkpoints, benchmark evidence, or managed
+reports to make them look current. A current reader's explicit refusal does
+not destroy the stored evidence. The
+[preserved guide](../../evidence/context-route-snapshot-2026-09-19/docs__components__loop-object__RECORD-COMPATIBILITY.md.txt)
+retains the previous historical-reader requirements as a non-authoritative
+snapshot.

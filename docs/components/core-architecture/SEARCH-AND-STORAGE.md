@@ -39,6 +39,20 @@ python -m pip install "https://github.com/alisonjieli-png/loop-engine/archive/re
 Missing declared dependencies fail clearly. The Retrieval Engine does not
 silently replace a selected backend with a different one.
 
+An embedding host can provide `RetrievalBackendBinding` objects to the
+`Retriever` constructor. Each binding uses the existing `CapabilityHandshake`
+and declares its lexical or vector stage, input and output contracts, effects,
+and exact embedding space when applicable. Authority is checked before the
+factory runs. Result admission rejects unknown or repeated identities and
+nonfinite scores. This is explicit dependency injection, not plugin discovery
+or permission to import a module named by a query.
+
+`RetrievalRankingPolicy` carries the fusion offset, facet preference weight,
+candidate-pool multiplier and hashing similarity floor. Existing initial
+values remain available; changing them requires an explicit policy. These
+contracts make additional engines replaceable without claiming that Qdrant,
+Elasticsearch, AutoRAG or a learned ranking policy is installed today.
+
 ## Flexible records
 
 Each card has stable common fields and a namespaced metadata object. Search

@@ -111,6 +111,24 @@ docs/evidence/architecture-mesh-audit-20260904/registered-conversation-sources.j
 /artifacts/**/*.png
 node_modules/
 
+# Large structural projections are versioned as compressed, lossless archives
+# and are also embedded in the single self-contained HTML system map.
+/artifacts/architecture-audit-2026-09-19/inventory.json
+/artifacts/architecture-audit-2026-09-19/graph.json
+!/artifacts/architecture-audit-2026-09-19/inventory.json.gz
+!/artifacts/architecture-audit-2026-09-19/graph.json.gz
+
+# Complete hardcoding audit dumps are about 37 MB each and can be regenerated
+# from any revision with the development tools. Their small summaries, triage
+# records and canary results beside them are tracked.
+/artifacts/architecture-audit-2026-09-19/decision-endpoints-hardcoding-[0-9].json
+/artifacts/architecture-audit-2026-09-19/launch-hardcoding-attempt-[0-9].json
+/artifacts/architecture-audit-2026-09-19/hardcoding-service-integration-attempt-[0-9].json
+/artifacts/architecture-audit-2026-09-19/hardcoding-triage-current.json
+/artifacts/architecture-audit-2026-09-19/hardcoding-before-exact-allowances-20260919.json
+/artifacts/architecture-audit-2026-09-19/hardcoding-after-source-repairs.json
+/artifacts/architecture-audit-2026-09-19/hardcoding-after-exact-allowances-20260919.json
+
 # Run workspaces and batch outputs inside dated evidence trees. The
 # summaries, reports, and manifests next to them are tracked and are what
 # the documentation links.

@@ -4,6 +4,12 @@ Date: 2026-09-18. Owner question: if we wanted to implement Jev to help
 with reasoning and decisions, could that help, and do we have the
 architecture to integrate other models, endpoints, and model types?
 
+Current implementation follow-up, September 19: the
+[decision-tool operating guide](../guides/jev-and-harness-decision-tools.md)
+now describes the implemented typed adapter, gateway, session and local
+protocol tool. These paths have local contract checks, not live Jev quality
+evidence. The original September 18 observations below remain historical.
+
 ## What Jev is, as verified on 2026-09-18
 
 TypeSafe describes Jev as a "System One Model, optimized for automation"

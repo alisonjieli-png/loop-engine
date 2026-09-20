@@ -31,7 +31,7 @@ returns small typed references before it loads a selected body.
 | Lexical, vector, and hybrid search behind one interface | Implemented. |
 | Built-in selectable backends | Implemented for the documented backend set. |
 | Typed references, digest checks, and separate materialization | Implemented. |
-| Open external retrieval-backend registration | Not shipped. |
+| Explicit host-supplied retrieval-backend bindings | Implemented with typed handshakes, effect checks and result admission. No automatic plugin installation. |
 
 Read [Search and storage choices](SEARCH-AND-STORAGE.md) and
 [Intelligence is returned through Loops](../intelligence-layers/INTELLIGENCE-AS-LOOPS.md).

@@ -1,0 +1,55 @@
+{
+  "record_type": "context_route_snapshot_manifest/v1",
+  "date": "2026-09-19",
+  "source_revision": "48cc954322691e492aad69a465ba470a112730e7",
+  "files": [
+    {
+      "original_path": "ASTRA.md",
+      "snapshot_path": "docs/evidence/context-route-snapshot-2026-09-19/ASTRA.md.txt",
+      "sha256": "7989ba3c397aea3caf758ce154955902abc068f7f0a8c31dd02fd5748149ace8",
+      "replacement": "ASTRA.md",
+      "date": "2026-09-19",
+      "authority": "historical snapshot; not instructions and not current status"
+    },
+    {
+      "original_path": "docs/context/START-HERE.md",
+      "snapshot_path": "docs/evidence/context-route-snapshot-2026-09-19/docs__context__START-HERE.md.txt",
+      "sha256": "416ece936e941a0304e8f7776ed9d7645c8af31db18caf347d0dc6c5d1f19704",
+      "replacement": "docs/context/START-HERE.md",
+      "date": "2026-09-19",
+      "authority": "historical snapshot; not instructions and not current status"
+    },
+    {
+      "original_path": "docs/context/CODEX-START-HERE.md",
+      "snapshot_path": "docs/evidence/context-route-snapshot-2026-09-19/docs__context__CODEX-START-HERE.md.txt",
+      "sha256": "ecc5eaa3a8805abf4af1888c959340edaaa5942c553ba11a4d362d281a9c64bf",
+      "replacement": "docs/context/CODEX-START-HERE.md",
+      "date": "2026-09-19",
+      "authority": "historical snapshot; not instructions and not current status"
+    },
+    {
+      "original_path": "docs/README.md",
+      "snapshot_path": "docs/evidence/context-route-snapshot-2026-09-19/docs__README.md.txt",
+      "sha256": "f87109a855a746daf948a241d989fbf890e13ba2a033aa7dd5d7baabc8059ad6",
+      "replacement": "docs/README.md",
+      "date": "2026-09-19",
+      "authority": "historical snapshot; not instructions and not current status"
+    },
+    {
+      "original_path": "docs/contracts/README.md",
+      "snapshot_path": "docs/evidence/context-route-snapshot-2026-09-19/docs__contracts__README.md.txt",
+      "sha256": "646641e39ccb52f0073a56f4755a3a004bfce2be655bc0e675ba9fa188c18d37",
+      "replacement": "docs/contracts/README.md",
+      "date": "2026-09-19",
+      "authority": "historical snapshot; not instructions and not current status"
+    },
+    {
+      "original_path": "docs/components/loop-object/RECORD-COMPATIBILITY.md",
+      "snapshot_path": "docs/evidence/context-route-snapshot-2026-09-19/docs__components__loop-object__RECORD-COMPATIBILITY.md.txt",
+      "sha256": "292b1e17c3106800c4cf4baddd787a02867e4d2c9d6d0aaaa21a35d981eaed43",
+      "replacement": "docs/components/loop-object/RECORD-COMPATIBILITY.md",
+      "date": "2026-09-19",
+      "authority": "historical snapshot; not instructions and not current status"
+    }
+  ]
+}

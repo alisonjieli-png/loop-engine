@@ -1,0 +1,180 @@
+# First-release client and server architecture
+
+Kind: product architecture with measured local implementation and proposed hosting.
+Date: 2026-09-19.
+
+The hosted product manages accounts, subscriptions, and access to intelligence.
+The customer runs Loop Engine and the selected harnesses. A hosted intelligence
+service is required; hosted execution of customer tasks is not.
+
+The diagrams use C4-style software boundaries. A box represents a person,
+application, service, or store, not an additional executable Loop vertex.
+
+## Runtime classification
+
+```text
+Operational runtime type
+└── Loop
+    ├── Operational relationship
+    │   ├── Starting
+    │   ├── Spawned by
+    │   ├── Queried by
+    │   ├── Retrieved by
+    │   └── Connected from
+    ├── Role: Practitioner, Intelligence, or Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Run mode: deterministic, hybrid, or non-deterministic
+    ├── Step profile
+    ├── Typed input and output contract
+    ├── Loop condition
+    ├── Exit condition
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when the selected mode permits a model
+    └── Run History records
+```
+
+## Container diagram
+
+The vendor allocation is a proposed deployment profile, not an operated
+service. Vercel can be evaluated for the website and the Python serving
+application. A container host remains an alternative for the same Python
+application. Supabase is the proposed identity, Postgres, and object-storage
+provider. Read the [profile and limits](../guides/supabase-and-vercel-launch-profile.md).
+
+```mermaid
+flowchart TB
+    subgraph customer["Customer-controlled environment"]
+        direction LR
+        browser["Browser"]
+        client["Local client and harnesses<br/>task graphs and execution<br/>history and verification"]
+    end
+    subgraph product["Loop Engine hosted product: proposed"]
+        direction LR
+        website["Website and dashboard<br/>Vercel candidate"]
+        service["Intelligence service<br/>Portable Python<br/>Model Context Protocol + web"]
+    end
+    platform["Supabase candidate<br/>Auth + Postgres<br/>private artifact storage"]
+    payments["Stripe candidate<br/>subscriptions"]
+    remoteprovider["External model provider<br/>customer-selected and authorized"]
+    browser -->|"Sign-in and account management"| website
+    client <-->|"Authorized references and material"| service
+    website -->|"Same access rules"| service
+    service -->|"Identity, rights, metadata, bodies, usage"| platform
+    website -->|"Checkout"| payments
+    payments -->|"Verified subscription events"| service
+    client -->|"Optional remote model calls"| remoteprovider
+```
+
+The service does not receive a customer's complete task folder, prompts,
+credentials, or Run History merely because the customer connects a client.
+Any telemetry or submitted feedback needs an explicit data-sharing policy.
+Access to a downloaded program is separate from permission to execute it.
+An ordinary protocol client can retrieve material without installing the full
+Loop Engine runtime. Enforced canonical task graphs and independent acceptance
+require that runtime on the execution side. Connecting a native harness to
+the service alone does not turn its internal steps into governed Loop Engine
+work.
+
+## Subscriber setup and payment
+
+```mermaid
+sequenceDiagram
+    actor Subscriber
+    participant Website as Website and dashboard
+    participant Identity as Identity provider
+    participant Service as Python service
+    participant Payment as Payment provider
+    participant Records as Durable records
+    Subscriber->>Website: Sign in
+    Website->>Identity: Authenticate the user
+    Identity-->>Website: Authenticated session
+    Subscriber->>Website: Choose an approved subscription
+    Website->>Service: Request checkout for this identity
+    Service->>Payment: Create checkout session
+    Payment-->>Subscriber: Hosted checkout
+    Payment->>Service: Signed subscription event
+    Service->>Service: Verify signature, event identity and ordering
+    Service->>Records: Idempotently update entitlement
+    Website->>Service: Read current subscription and setup instructions
+    Service-->>Website: Current state from durable records
+```
+
+The checkout return page cannot grant access. Both the dashboard and the
+protocol service read the same durable entitlement. Duplicate, delayed,
+failed-payment, cancellation, and reactivation events need explicit tests.
+
+## Intelligence retrieval and customer execution
+
+```mermaid
+sequenceDiagram
+    actor Subscriber
+    participant Client as Customer's Loop Engine client
+    participant Identity as Identity provider
+    participant Service as Hosted intelligence service
+    participant Records as Catalog and entitlement records
+    participant Bodies as Private artifact storage
+    participant Harness as Customer's installed harness
+    Subscriber->>Client: Connect the service
+    Client->>Identity: Request user-approved authorization
+    Identity-->>Client: Scoped access token
+    Client->>Service: Search permitted intelligence
+    Service->>Records: Validate identity, tenant, entitlement and qualification before disclosure
+    Records-->>Service: Small metadata and exact references
+    Service-->>Client: Permitted references, no large bodies
+    Client->>Service: Select an exact version and request its body
+    Service->>Records: Recheck access, qualification, version and usage identity
+    Service->>Bodies: Load the exact selected artifact
+    Bodies-->>Service: Artifact bytes
+    Service->>Service: Verify digest and obtain required usage acknowledgment
+    Service-->>Client: Authorized material and its exact manifest
+    Client->>Client: Verify identity, bind scoped context and task graph
+    Client->>Harness: Start a separately governed assignment
+    Harness-->>Client: Output and observations
+    Client->>Client: Independently verify, continue or complete, record Run History
+```
+
+The client can decompose a large task into small graphs and subgraphs while
+fetching only the intelligence each assignment needs. The service supplies
+material; it does not grant file, network, model, or spending authority.
+The customer may use a remote model without moving harness execution into
+the Loop Engine hosted product.
+Paid retrieval retries retain the same usage request identity. A lost response
+does not undo a committed usage record or authorize a second charge.
+
+## Intelligence served by the same boundary
+
+```text
+Intelligence service
+├── Context Intelligence
+├── Code Intelligence
+├── Runtime History and Solution Intelligence
+├── User Feedback Intelligence
+└── Provisioning views and templates over those layers
+    ├── Harness Intelligence
+    ├── versioned instruction and resource manifests
+    └── reusable templates and packages
+```
+
+Runtime Memory remains temporary and run-scoped on the execution side.
+Imported or generated intelligence stays candidate-only until its required
+independent approval. Payment never promotes a candidate.
+
+## Implementation status
+
+| Boundary | State at this checkpoint |
+|---|---|
+| Canonical Loop, typed graphs, local harness mechanics, search and export | Existing implementations with repaired local contract checks. Complete native/provider qualification is not established. |
+| Public solve provisioning | Current integration and verification work. Exact configuration reaches scoped assignments; preparation is not proof of native loading. |
+| Tenant-safe provisioning domain | Local versioned policy and qualification binding implemented with contract checks. The qualification resolver is a trusted host callback; authoritative adapters across all four layers are not wired. Host attestation is not independent qualification. |
+| Protocol transport | Real local HTTP and Streamable HTTP sessions use protocol `2025-11-25` and `mcp==1.29.1`. The official client exercises discovery, metadata retrieval, exact body delivery and idempotent usage. Live end-user OAuth and the current 2026 protocol are not qualified. |
+| Authenticated template, graph, and package delivery | Required integration, not yet complete. Current provisioning has four declared resource kinds and returns text bodies; that does not establish the full typed package and graph-delivery workflow. |
+| Identity and billing domain | Durable tenants, key and subject revocation, scoped grants, signed Stripe events and current-state reconciliation have local checks. Website sign-in and real provider accounts remain unqualified. Checkout and portal adapters are a separate integration slice. |
+| Website, dashboard and Supabase adapters | Required implementation and live integration remain open. The diagram is not deployment evidence. |
+| Durable storage and recovery | SQLite atomic batches, restart, duplicate requests and unknown-commit recovery have local checks. Shared hosted Postgres, private object storage and complete restore qualification remain open. |
+
+Follow the [single-file system map](../../artifacts/architecture-audit-2026-09-19/mvp-client-server.html)
+for source-level detail and the [continuation status](../roadmap/CONTINUATION-STATUS.md)
+for required work. No account or paid resource was created to draw these
+diagrams.
