@@ -17,7 +17,7 @@ that behavior and does not replace the runtime handshake.
 | Need | Current route |
 |---|---|
 | Verified live state, repairs, open findings, the private beta definition and the working cycle | [Takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md). Start here after [AGENTS.md](../../AGENTS.md). |
-| What runs and where, and where each name may appear | [Current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment) and the [names table](../guides/product-style-guide.md#names-and-where-they-may-appear). Baltor is the public brand. Loop Engine is the repository, the Python package and the technical name. |
+| What runs and where, and where each name may appear | [Current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment) and the table [Names and where they may appear](../guides/product-style-guide.md#names-and-where-they-may-appear). Baltor is the public brand. Loop Engine is the repository, the Python package and the technical name. |
 | Product priorities, open decisions, and release gates | [Continuation plan](../roadmap/CONTINUATION-AND-LAUNCH.md) and [generated status](../roadmap/CONTINUATION-STATUS.md) |
 | Delivery, exact checks, owner actions and handoff of the previous developer session | [September 20 checkpoint](DEVELOPMENT-CHECKPOINT-2026-09-20.md), a dated snapshot that is also embedded in the main development HTML. Recheck the live source and deployment before continuing. |
 | Claude Code takeover and broader delivery plan | [Fable 5.1 handoff](FABLE-5-1-HANDOFF-2026-09-20.md), with existing owning boundaries, prepared access and launch-benefit evidence requirements. |

@@ -101,11 +101,11 @@ does not remove its data from the downloaded file.
 The owner reports owning `baltor.ai`, inspired by Balto, and selected Baltor
 as the public-facing brand. Loop Engine remains the engine and repository
 identity. The Python command, import, schemas and profiles must not change
-merely to match marketing copy. The
-[names table](product-style-guide.md#names-and-where-they-may-appear) lists
-where each name may appear. It also lists the technical identifiers that a
-customer can see and that still carry the engine name. Those identifiers are
-an open owner decision.
+merely to match marketing copy. The table
+[Names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
+lists where each name may appear. It also lists the technical identifiers
+that a customer can see and that still carry the engine name. Those
+identifiers are an open owner decision.
 
 Baltor is short and pronounceable, and the existing domain avoids a new
 purchase. Its meaning needs a short product description. Test whether people
@@ -120,7 +120,8 @@ search is not trademark clearance or a guarantee of exclusive use.
 The pilot answers on four hostnames. All four serve the same release with
 valid certificates. The
 [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
-section is the single record of these facts.
+section is the current statement of these facts. Follow that section when
+this guide differs from it.
 
 | Address | State on September 20, 2026 | Purpose |
 |---|---|---|

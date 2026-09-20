@@ -10,7 +10,8 @@ Coding agents should also follow the [context route](context/START-HERE.md),
 The [client and server map](architecture/MVP-CLIENT-SERVER.md) separates
 implemented local and private-pilot boundaries from the remaining subscription
 service work. Its [current deployment](architecture/MVP-CLIENT-SERVER.md#current-deployment)
-section is the single statement of what runs and where.
+section is the current statement of what runs and where. Follow that section
+when another document differs from it.
 
 The [takeover checkpoint](context/TAKEOVER-CHECKPOINT-2026-09-20.md) records
 the verified live state, the open findings, the private beta definition and
@@ -18,8 +19,8 @@ the working cycle. The earlier September 20 checkpoint and handoff remain
 valid as dated snapshots.
 
 Baltor is the public brand. Loop Engine is the repository, the Python package
-and the technical name. The
-[names table](guides/product-style-guide.md#names-and-where-they-may-appear)
+and the technical name. The table
+[Names and where they may appear](guides/product-style-guide.md#names-and-where-they-may-appear)
 says where each name may appear.
 
 ## Learn the system in order

@@ -9,12 +9,15 @@ so.
 
 Note added on September 20, 2026. This record is dated research and its text
 below is unchanged. It names DigitalOcean App Platform as the first choice of
-host. That recommendation was not adopted. The owner selected Fly.io for the
-private pilot, and Fly.io is what runs. This record also says that the first
-release does not need a managed database. That matches the pilot and the
-private beta, which keep their records in SQLite on one Fly volume. A
+host. That recommendation was not adopted. The owner prefers Fly.io for
+compute and delegated the infrastructure choices of the private pilot, and
+the pilot was deployed on Fly.io under that authority. The
+[deployment authority record](../../artifacts/architecture-audit-2026-09-19/pilot-deployment-authority.json)
+is the place to check this. Fly.io is what runs. This record also says that
+the first release does not need a managed database. That matches the pilot
+and the private beta, which keep their records in SQLite on one Fly volume. A
 PostgreSQL adapter is planned work for the paid public launch. The current
-facts are stated once, in
+facts are stated in
 [current deployment](MVP-CLIENT-SERVER.md#current-deployment).
 
 ## The assumption worth challenging first

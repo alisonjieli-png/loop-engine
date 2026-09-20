@@ -9,9 +9,9 @@ add a runtime, or approve publication.
 
 Decision recorded on September 20, 2026: the owner selected Baltor as the
 public brand. Loop Engine remains the repository, the Python package and the
-technical name. The
-[names table](product-style-guide.md#names-and-where-they-may-appear) records
-where each name may appear. Where this document calls Baltor a candidate
+technical name. The table
+[Names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
+records where each name may appear. Where this document calls Baltor a candidate
 brand, read it as the option that the owner chose. The copy candidates, the
 product positions and the technical options below remain explorations that
 need owner approval.

@@ -2,7 +2,7 @@
 
 Kind: product architecture with measured local implementation and proposed hosting.
 Date: 2026-09-19. The [current deployment](#current-deployment) section was
-added on 2026-09-20.
+added on 2026-09-20 and checked again on the same day after release 8.
 
 The hosted product manages accounts, subscriptions, and access to intelligence.
 The customer runs Loop Engine and the selected harnesses. A hosted intelligence
@@ -40,25 +40,35 @@ Operational runtime type
 
 ## Current deployment
 
-This section is the single current statement of what runs and where. Other
-documents link to it and do not repeat these facts. The facts were checked on
-September 20, 2026 against the
-[takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md), against
-the source named in each row, and with one read of each public hostname
-without credentials. Update this section in the same change that records a
-new release. It describes a private pilot. It does not describe a qualified
-paid service.
+This section is the current statement of what runs and where. Other documents
+may summarize these facts. When another document differs from this section,
+follow this section and correct the other document. When this section differs
+from the newest release record, follow the release record and correct this
+section. Update this section in the same change that records a new release.
+It describes a private pilot. It does not describe a qualified paid service.
+
+The facts were checked on September 20, 2026, after release 8 was deployed.
+The check used three sources. The first source is the release record
+`artifacts/architecture-audit-2026-09-19/pilot-release-8.json`. The second
+source is the source file named in each row. The third source is one read of
+the public capabilities record `/api/v1/capabilities` on each of the four
+hostnames, without credentials, at 21:48 UTC, and one public lookup of the
+domain name records. No provider account was queried for this check. A fact
+that names only the
+[takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md) as its
+place to check was observed at the takeover on the same day and was not read
+again.
 
 | Subject | Current fact | Where to check it |
 |---|---|---|
-| Public brand | Baltor. Loop Engine remains the repository, the Python package, the `loop-engine` command and the technical name. | [Names and where they may appear](../guides/product-style-guide.md#names-and-where-they-may-appear) |
-| Host | Fly.io. One Machine in region `iad`, with one shared processor and 2 GB of memory, runs release 7. The owner selected Fly.io for the pilot. No other hosting profile has been deployed. | The takeover checkpoint, the [Fly profile](../../fly.toml) and the [current host note](../guides/hosting-and-deployment-procedures.md#current-host) |
-| Hostnames | `baltor.ai`, `www.baltor.ai`, `app.baltor.ai` and `baltor-pilot.fly.dev` serve the same release. Each one has a valid certificate. Cloudflare answers the domain zone and does not proxy the records. The host configuration still names the Fly hostname as the canonical protocol and account origin. | The takeover checkpoint and the [launch setup runbook](../guides/launch-setup-runbook.md#recommended-starting-setup) |
+| Public brand | Baltor. Loop Engine remains the repository, the Python package, the `loop-engine` command and the technical name. The public capabilities record reports the display name `Baltor`. | [Names and where they may appear](../guides/product-style-guide.md#names-and-where-they-may-appear) |
+| Host | Fly.io. One Machine in region `iad`, with one shared processor and 2 GB of memory, runs release 8. The guarded release workflow built release 8 from the committed revision `e63f614`, after the continuous integration run for that revision passed, and deployed it by image digest. It is the first release that can be rebuilt from the repository. Release 7 is kept for rollback. The owner prefers Fly.io for compute and delegated the region, spending and infrastructure choices of the pilot on September 19, 2026. The pilot was deployed on Fly.io under that authority. No other hosting profile has been deployed. | The release record `artifacts/architecture-audit-2026-09-19/pilot-release-8.json` for the release number, the revision, the image digest and the release kept for rollback. The [deployment authority record](../../artifacts/architecture-audit-2026-09-19/pilot-deployment-authority.json) and the field `hosting_preference` in [roadmap.yaml](../roadmap/roadmap.yaml) for the owner's preference and delegation. The [Fly profile](../../fly.toml) and the [current host note](../guides/hosting-and-deployment-procedures.md#current-host). |
+| Hostnames | `baltor.ai`, `www.baltor.ai`, `app.baltor.ai` and `baltor-pilot.fly.dev` serve the same release. Each one has a valid certificate, each one returned the same public capabilities record, and each one passed 46 of 46 hosted website checks after release 8. Cloudflare answers the domain zone and does not proxy the records: every name resolves to the address of the Fly application. The launch setup runbook records that the host configuration still names the Fly hostname as the canonical protocol and account origin. The host configuration was not read for this check. | The release record, the four hosted website check reports that it names, and the [launch setup runbook](../guides/launch-setup-runbook.md#recommended-starting-setup) |
 | Product service | The command `loop-engine service serve`, from `src/loop_engine/core/service_runtime/`, built by [`Dockerfile.service`](../../Dockerfile.service). One process serves the website, the workspace, the `/api/v1/` interface and the Model Context Protocol endpoint `/mcp` from one origin. | [Two service commands](#two-service-commands) |
-| Durable records | One SQLite database and the served files on one encrypted 1 GB Fly volume, with daily snapshots kept for five days. No managed database is in use. The Supabase project exists and holds no tables, migrations or buckets. | The takeover checkpoint and [durable records today and planned](#durable-records-today-and-planned) |
-| Protocol version | The service accepts exactly Model Context Protocol version `2025-11-25`. It refuses every other version with the error code `unsupported_protocol_version`. This includes the newer published version `2026-07-28`. | `PROTOCOL_VERSION` in [`provisioning_mcp.py`](../../src/loop_engine/core/provisioning_mcp.py) and the check `remote_protocol_refuses_unqualified_versions_without_silent_negotiation` in [`http_checks.py`](../../src/loop_engine/core/service_runtime/http_checks.py) |
-| Access | Keys issued by the operator only. Browser sign-in, registration, the billing webhook, checkout and the customer portal are switched off. The service makes no model call. | The takeover checkpoint |
-| Catalogue | One diagnostic record. It is not a starter catalogue for real tasks. | The takeover checkpoint |
+| Durable records | One SQLite database and the served files on one encrypted 1 GB Fly volume, with daily snapshots kept for five days. A snapshot of the volume was requested before release 8. No managed database is in use. The Supabase project exists and holds no tables, migrations or buckets. | The takeover checkpoint for the volume, the snapshots and the empty Supabase project. The release record for the snapshot request. [Durable records today and planned](#durable-records-today-and-planned) |
+| Protocol version | The service accepts exactly Model Context Protocol version `2025-11-25`. It refuses every other version with the error code `unsupported_protocol_version`. This includes the newer published version `2026-07-28`. The public capabilities record lists `2025-11-25` as the only version. | `PROTOCOL_VERSION` in [`provisioning_mcp.py`](../../src/loop_engine/core/provisioning_mcp.py) and the check `remote_protocol_refuses_unqualified_versions_without_silent_negotiation` in [`http_checks.py`](../../src/loop_engine/core/service_runtime/http_checks.py) |
+| Access | Keys issued by the operator only. The public capabilities record lists `host_key` as the only authentication mode. It reports `browser_identity_available`, `registration_available` and `client_access_available` as false, and the billing webhook, checkout and the customer portal as off. The code for browser sign-in, personal client keys, registration and billing is in the image of release 8 and is switched off by host configuration. The service makes no model call. | The release record, and the public capabilities record at `/api/v1/capabilities` on any of the four hostnames |
+| Catalogue | One diagnostic record. It is not a starter catalogue for real tasks. | The release record and the takeover checkpoint |
 
 ### Two service commands
 
@@ -250,7 +260,7 @@ What is deployed is recorded in [current deployment](#current-deployment).
 | Protocol transport | Real local HTTP and Streamable HTTP sessions use protocol `2025-11-25` and `mcp==1.29.1`. The official client exercises discovery, metadata retrieval, exact body delivery and idempotent usage. Live end-user OAuth is not qualified. The newer published protocol version `2026-07-28` is refused, not negotiated. |
 | Authenticated template, graph, and package delivery | Required integration, not yet complete. Current provisioning has four declared resource kinds and returns text bodies; that does not establish the full typed package and graph-delivery workflow. |
 | Identity and billing domain | Durable tenants, key and subject revocation, scoped grants, signed Stripe events and current-state reconciliation have local checks. Website sign-in and real provider accounts remain unqualified. Checkout and portal adapters are a separate integration slice. |
-| Website, dashboard and Supabase adapters | Updated on September 20, 2026: the website, the token-based workspace and the administrator dashboard run in the pilot. The account and personal key code is in the release and was checked against the real identity provider, and browser sign-in stays switched off. Supabase database and storage adapters remain open work. The diagram is not deployment evidence. |
+| Website, dashboard and Supabase adapters | Updated on September 20, 2026: the website, the token-based workspace and the administrator dashboard run in the pilot. Release 7 carried the browser identity and account-activation code, switched off by host configuration. The personal client key code first shipped in release 8 and is also switched off. The public capabilities record of release 8 reports `browser_identity_available` false and `client_access_available` false. The takeover checkpoint records that the account and personal key code was checked against the real identity provider. The release record states that release 8 qualifies no customer journey. Supabase database and storage adapters remain open work. The diagram is not deployment evidence. |
 | Durable storage and recovery | SQLite atomic batches, restart, duplicate requests and unknown-commit recovery have local checks. Shared hosted Postgres, private object storage and complete restore qualification remain open. |
 
 Follow the [single-file system map](../../artifacts/architecture-audit-2026-09-19/mvp-client-server.html)

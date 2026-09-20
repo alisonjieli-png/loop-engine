@@ -5,12 +5,11 @@ No account, region, paid plan, or production deployment is selected by this
 document. The [portable hosting procedures](hosting-and-deployment-procedures.md)
 remain the common operating contract.
 
-Current state on September 20, 2026: the private pilot does not use this
-profile. One Python service on Fly.io serves the website and the intelligence
-service from one origin, and it keeps its records in SQLite. A Supabase
-project exists and holds no tables, migrations or buckets. Vercel is not in
-use. The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
-section records what runs. This document stays a proposal for the paid
+Note added on September 20, 2026: the private pilot does not use this
+profile, and Vercel is not in use. The
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section records the host, the storage and the state of the Supabase project.
+Read that section for the facts. This document stays a proposal for the paid
 release.
 
 Vercel, Supabase, and Stripe are a strong candidate combination for the first

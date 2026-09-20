@@ -20,9 +20,10 @@ that time. It is also embedded in the single development HTML. Recheck source
 and deployment facts before acting.
 
 The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
-section states once what runs and where. Baltor is the public brand, and Loop
-Engine is the repository, the Python package and the technical name. The
-[names table](../guides/product-style-guide.md#names-and-where-they-may-appear)
+section is the current statement of what runs and where. Follow that section
+when another document differs from it. Baltor is the public brand, and Loop
+Engine is the repository, the Python package and the technical name. The table
+[Names and where they may appear](../guides/product-style-guide.md#names-and-where-they-may-appear)
 says where each name may appear.
 
 1. Read the [continuation plan](../roadmap/CONTINUATION-AND-LAUNCH.md) and its

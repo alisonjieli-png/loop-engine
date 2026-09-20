@@ -197,6 +197,7 @@ codex mcp add baltor --url https://YOUR_SERVICE_HOST/mcp --bearer-token-env-var 
 The second command connects the intelligence service, using a separate scoped
 service token. Do not substitute the Jev key. Reconnect and inspect the tool
 inventory. Registration alone does not prove native tool use.
+[Official connection documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
 
 The entry name `baltor` and the variable `BALTOR_SERVICE_TOKEN` match the
 settings that the Connect page of the website offers. Both names exist only on
@@ -204,7 +205,6 @@ the customer's machine. The service does not read them. An earlier version of
 this guide used the entry name `loop-intelligence` and the variable
 `LOOP_ENGINE_ACCESS_TOKEN`. They were aligned with the website on September
 20, 2026.
-[Official connection documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
 
 ### OpenCode
 

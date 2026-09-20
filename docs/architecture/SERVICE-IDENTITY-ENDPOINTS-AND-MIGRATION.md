@@ -70,8 +70,9 @@ migration or client-compatibility problem.
 The pilot answers on `baltor.ai`, `www.baltor.ai`, `app.baltor.ai` and
 `baltor-pilot.fly.dev`. Each hostname has its domain records and a valid
 certificate, and each origin serves `/mcp`. The
-[current deployment](MVP-CLIENT-SERVER.md#current-deployment) section records
-these facts once.
+[current deployment](MVP-CLIENT-SERVER.md#current-deployment) section is the
+current statement of these facts. Follow that section when this document
+differs from it.
 
 The remaining work is the identity migration, not the certificate. The host
 configuration still names the Fly hostname as the canonical protocol resource

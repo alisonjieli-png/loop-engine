@@ -10,7 +10,7 @@ Note added on September 20, 2026. The text below is unchanged. It says that
 the current Model Context Protocol version is `2026-07-28`. That is the newest
 published specification version. It is not the version that the Loop Engine
 service accepts. The service accepts exactly `2025-11-25` and refuses
-`2026-07-28`. The current fact is stated once, in
+`2026-07-28`. The current fact is stated in
 [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment).
 
 ## Why this was read

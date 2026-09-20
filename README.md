@@ -29,11 +29,13 @@ code that the step is permitted to load. It serves them through an
 authenticated Model Context Protocol endpoint. The service does not run
 customer tasks and does not call a model.
 
-Current behavior: a private pilot of the service runs for invited testing.
-Access uses keys that the operator issues. Public registration, browser
-sign-in and payments are switched off. The pilot catalogue holds one
-diagnostic record. The service accepts Model Context Protocol version
-`2025-11-25` only.
+Current behavior: a private pilot of the service runs. It is not open to the
+public, and it is not a paid service. The service accepts Model Context
+Protocol version `2025-11-25` only. The
+[current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section of the client and server map records the running release, the kinds
+of access that are switched on and what the catalogue holds. Follow that
+section when this README differs from it.
 
 Planned behavior: a private beta with personal accounts, personal client keys
 and a reviewed starter catalogue, and subscriptions after that. None of this
@@ -41,8 +43,6 @@ is available yet.
 
 You can run the same service on your own machine without a cloud account.
 Follow the [local intelligence service example](examples/29_intelligence_service/README.md).
-The [client and server map](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
-records what is deployed.
 
 ## Solve with human-like loops
 

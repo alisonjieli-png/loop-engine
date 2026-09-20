@@ -7,7 +7,12 @@ deployed and qualified.
 
 ## Current host
 
-The private pilot runs on Fly.io. The owner selected Fly.io for the pilot. The
+The private pilot runs on Fly.io. The owner prefers Fly.io for compute and
+delegated the region, spending and infrastructure choices of the pilot on
+September 19, 2026. The pilot was deployed on Fly.io under that authority. The
+[deployment authority record](../../artifacts/architecture-audit-2026-09-19/pilot-deployment-authority.json)
+and the field `hosting_preference` in [roadmap.yaml](../roadmap/roadmap.yaml)
+are the places to check this. The
 [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
 section records the Machine, the hostnames, the storage and the release. Read
 that section for the facts. This guide does not repeat them.
