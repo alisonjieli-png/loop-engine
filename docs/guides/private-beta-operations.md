@@ -55,8 +55,10 @@ These statements describe the source at the revision named above.
 - [`tools/invite_beta_user.py`](../../tools/invite_beta_user.py) prepares an
   invited account and shows one recovery link. It sends at most two requests
   and repeats nothing.
-- The running release 7 has browser sign-in switched off. It accepts
-  operator-issued keys only.
+- The running release has browser sign-in switched off. It accepts
+  operator-issued keys only. The takeover checkpoint names the running
+  release. It was release 7 at revision `381efec`, and `main` recorded
+  release 8 later on September 20.
 - The website cannot complete the invited person's journey yet. Its callback
   view removes the returned session from the address bar and shows the
   sign-in form. It has no form for a new password. A link that is opened
@@ -346,7 +348,7 @@ Failures after the first request:
 | `user_is_not_confirmed` | The existing user has no confirmed address. The link was withheld. | Ask the owner to confirm or remove that user in the provider's dashboard, then run the command again. |
 | `user_cannot_sign_in_at_the_provider` | The user is banned, removed, anonymous or has another role. The link was withheld. | A disabled account stays disabled. Lift the ban at the provider first if the account should return. |
 | `user_identity_mismatch` | The link answer describes another user or another address than the request. The link was withheld. | Stop and report it. Do not deliver any link for this address. |
-| `redirect_not_honoured_by_the_provider` | The provider replaced the redirect address, which happens when the address is not on its allow list. The link was withheld. | Use an address that is on the allow list, or ask the owner to add the exact address. |
+| `redirect_replaced_by_the_provider` | The provider replaced the redirect address, which happens when the address is not on its allow list. The link was withheld. | Use an address that is on the allow list, or ask the owner to add the exact address. |
 | `link_shape_refused` | The link does not point at the identity project's verification path with exactly one token, one kind and one redirect address. | Stop and report it. The provider's answer shape may have changed. |
 | `link_kind_mismatch` | The provider returned another kind of link than a recovery link. | Stop and report it. |
 | `secret_in_output_refused` | The report or the summary would have contained the link, the code or the credential. The link was withheld. | Stop and report it. This is a defect in the command. |

@@ -128,7 +128,7 @@ class InvitationFailure(str, Enum):
     USER_NOT_CONFIRMED = "user_is_not_confirmed"
     USER_CANNOT_SIGN_IN = "user_cannot_sign_in_at_the_provider"
     IDENTITY_MISMATCH = "user_identity_mismatch"
-    REDIRECT_NOT_HONOURED = "redirect_not_honoured_by_the_provider"
+    REDIRECT_REPLACED = "redirect_replaced_by_the_provider"
     LINK_SHAPE = "link_shape_refused"
     LINK_KIND_MISMATCH = "link_kind_mismatch"
     SECRET_IN_OUTPUT = "secret_in_output_refused"
@@ -576,11 +576,11 @@ def _require_sign_in_allowed(payload, now):
         raise _Stop(InvitationOutcome.REFUSED, InvitationFailure.USER_CANNOT_SIGN_IN)
 
 
-def _require_redirect_honoured(redirect, payload, request):
+def _require_redirect_kept(redirect, payload, request):
     """The provider replaces a redirect address that is not on its allow list."""
     stated = payload.get("redirect_to")
     if redirect != request.redirect_to or (stated is not None and stated != request.redirect_to):
-        raise _Stop(InvitationOutcome.REFUSED, InvitationFailure.REDIRECT_NOT_HONOURED)
+        raise _Stop(InvitationOutcome.REFUSED, InvitationFailure.REDIRECT_REPLACED)
 
 
 def _link_parts(link, request, limits):
@@ -679,7 +679,7 @@ def _generate_link(request, credential, transport, limits, progress, now):
         progress.user_id = payload["id"]
     _require_confirmed_user(payload, limits, now)
     _require_sign_in_allowed(payload, now)
-    _require_redirect_honoured(redirect, payload, request)
+    _require_redirect_kept(redirect, payload, request)
     return link
 
 

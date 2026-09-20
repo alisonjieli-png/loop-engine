@@ -497,7 +497,7 @@ class InvitationChecks(unittest.TestCase):
             with self.subTest(name=name):
                 run = self.run_command(created(), answer)
                 self.assertEqual((run.code, run.stdout), (1, ""))
-                self.assertEqual(run.record["failure"], "redirect_not_honoured_by_the_provider")
+                self.assertEqual(run.record["failure"], "redirect_replaced_by_the_provider")
         escaped = link_for(redirect="https%3A%2F%2Fapp.example.test%2Fauth%2Fcallback")
         run = self.run_command(created(), linked(escaped))
         self.assertEqual((run.code, run.stdout), (0, escaped + "\n"), run.stderr)
@@ -708,7 +708,7 @@ class RemovedGuardControls(unittest.TestCase):
         ("_require_confirmed_user", "test_unconfirmed_existing_account_gets_no_link"),
         ("_require_sign_in_allowed", "test_disabled_or_unsupported_accounts_get_no_link"),
         ("_require_same_identity", "test_link_for_another_identity_is_withheld"),
-        ("_require_redirect_honoured", "test_redirect_replaced_by_the_provider_is_refused"),
+        ("_require_redirect_kept", "test_redirect_replaced_by_the_provider_is_refused"),
         ("_require_link_at_project", "test_link_shape_is_checked_before_display"),
         ("_require_link_kind", "test_other_link_kinds_are_withheld"),
         ("_require_no_secret", "test_output_guard_refuses_a_report_that_would_hold_a_secret"),
@@ -895,13 +895,16 @@ class OperatorGuideChecks(unittest.TestCase):
             self.assertIn("`" + value + "`", self.text, value)
 
     def test_guide_prose_follows_the_public_language_rules(self):
-        """The same patterns as the repository's prose rules and its retired-language check."""
-        long_dashes = "[" + chr(0x2013) + chr(0x2014) + "]"
-        retired = (r"\bchild(?:ren)?\b|\breceipts?\b|\bchronicles?\b|\bstop conditions?\b|\bloop[ _-]intelligence\b"
-                   r"|\bintelligence pillars?\b|\bstring intelligence\b|\broot[\s_-]+(?:loop|practitioner|intelligence|solution)\b"
-                   r"|what[\s_-]*is[\s_-]*next|what[\s_-]+next|whats[\s_-]*next|whatnext")
-        for pattern in (long_dashes, retired):
-            self.assertIsNone(re.search(pattern, self.text, re.I))
+        """Apply the repository's own rule files, so that no retired term is repeated here."""
+        tokens = []
+        for style in sorted((ROOT / ".vale" / "styles" / "LoopEngine").glob("*.yml")):
+            tokens.extend(re.findall(r"^\s+- '(.+)'$", style.read_text("utf-8"), re.M))
+        policy = json.loads((ROOT / "src" / "loop_engine" / "forbidden_paths.json").read_text("utf-8"))
+        tokens.extend(r"\b" + re.escape(term) + r"\b" for term in policy["retired_source_nomenclature"]["terms"])
+        self.assertGreaterEqual(len(tokens), 25)
+        for token in tokens:
+            with self.subTest(token=token):
+                self.assertIsNone(re.search(token, self.text, re.I))
         self.assertIn("\n## Current behavior\n", self.text)
         self.assertIn("\n## Planned behavior\n", self.text)
 
