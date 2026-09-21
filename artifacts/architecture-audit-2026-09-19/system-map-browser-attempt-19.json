@@ -1,0 +1,100 @@
+{
+  "record_type": "system_map_browser_checks/v1",
+  "checks": [
+    {
+      "name": "development_log_is_the_default_working_surface",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "three_launch_benefits_are_drafts_with_required_evidence",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "delivery_packages_embed_all_actions_and_failure_controls",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "delivery_cases_keep_proof_levels_owners_and_rollback_visible",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "handoff_separates_deployed_code_from_enabled_customer_behavior",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "handoff_guard_rejects_false_registration_claim",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "developer_download_matches_the_embedded_repository_handoff",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_fifteen_owner_tasks_have_instructions_and_handoff_fields",
+      "passed": false,
+      "detail": {}
+    },
+    {
+      "name": "owner_marks_are_preparation_not_software_completion",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_marks_survive_reload",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "changed_checklist_instructions_invalidate_old_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "malformed_owner_import_preserves_existing_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_export_contains_only_bound_preparation_marks",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "owner_checklist_filters_later_setup",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "routine_setup_is_owned_by_engineering",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "engineering_filter_rejects_an_omitted_prepared_provider",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_acceptance_completed",
+      "passed": false,
+      "detail": {
+        "error": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#owner-items .owner-item .text-button').first()\u001b[22m\n\u001b[2m    - locator resolved to <button type=\"button\" class=\"text-button\">Read the complete guide</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n"
+      }
+    }
+  ],
+  "passed": 15,
+  "total": 17,
+  "all_passed": false,
+  "source_sha256": "0be6e9b1862e6e2773327db5239a251f7c8437f8b75a1c4577e9a25b1bcb0adf",
+  "roadmap_sha256": "f40580cdf7267da855542375d47abb0315eb2695d5f4e0b5a291db4daf915201",
+  "screenshots": [],
+  "errors": [],
+  "remote_requests": []
+}
