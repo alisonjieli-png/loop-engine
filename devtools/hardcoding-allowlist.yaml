@@ -3748,6 +3748,26 @@ entries:
     classification: SECRET_OR_CREDENTIAL_REFERENCE
     created_on: 2026-09-21
     expires_on: 2027-09-21
+  - finding_id: hardcoding.b6492ccc5e937b41c9bb912e
+    owner: tools.operator_credentials.json:api_keys.stripe-live-webhook-secret.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.stripe-live-webhook-secret.environment is the environment
+      variable name under which the signing secret of the live subscription
+      webhook endpoint reaches the running service. It is a name, not a value:
+      the secret itself lives in the system keyring and is staged into the
+      deployment by tools/stage_service_secrets.py, which sends it on a
+      child's standard input and never puts it on a command line. The running
+      service reads it through the reference env:STRIPE_WEBHOOK_SECRET
+      declared in its host configuration, so the name has to be written down
+      once where the reference is declared, and there is no further place to
+      move it. Reviewed on 2026-09-21. Only this exact finding is allowed; a
+      changed or added value has a different finding identity and stays
+      blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
