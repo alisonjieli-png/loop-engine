@@ -15,7 +15,7 @@ A record-type literal can occur in a reader, writer, or refusal test. It is not 
 | `src/loop_engine/_self_test.py` | 450 | command_line | not recorded for this source | focused_review_recorded |
 | `src/loop_engine/adaptive_practitioner_cli.py` | 273 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/architecture_contract.py` | 186 | solve_path, command_line | not recorded for this source | focused_review_recorded |
-| `src/loop_engine/architecture_map.py` | 485 | solve_path, command_line | not recorded for this source | focused_review_recorded |
+| `src/loop_engine/architecture_map.py` | 486 | solve_path, command_line | not recorded for this source | focused_review_recorded |
 | `src/loop_engine/backend_isolation.py` | 137 | not in measured closures | not recorded for this source | focused_review_recorded |
 | `src/loop_engine/campaign.py` | 212 | not in measured closures | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/catalog/__init__.py` | 49 | not in measured closures | not recorded for this source | not_yet_recorded |
@@ -431,21 +431,23 @@ A record-type literal can occur in a reader, writer, or refusal test. It is not 
 | `src/loop_engine/core/service_runtime/billing_effects.py` | 265 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/billing_records.py` | 180 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/browser_identity.py` | 195 | command_line | not recorded for this source | not_yet_recorded |
-| `src/loop_engine/core/service_runtime/browser_identity_checks.py` | 161 | command_line | not recorded for this source | not_yet_recorded |
-| `src/loop_engine/core/service_runtime/http.py` | 767 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/browser_identity_checks.py` | 174 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/http.py` | 800 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/http_auth.py` | 294 | command_line | not recorded for this source | not_yet_recorded |
-| `src/loop_engine/core/service_runtime/http_boundary_checks.py` | 227 | command_line | not recorded for this source | not_yet_recorded |
-| `src/loop_engine/core/service_runtime/http_checks.py` | 368 | command_line | not recorded for this source | not_yet_recorded |
-| `src/loop_engine/core/service_runtime/http_entrypoint.py` | 238 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/http_boundary_checks.py` | 437 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/http_checks.py` | 438 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/http_entrypoint.py` | 359 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/http_test_fixtures.py` | 137 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/provisioning.py` | 82 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/records.py` | 208 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/request_limit_checks.py` | 644 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/request_limits.py` | 204 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/runtime.py` | 488 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/runtime_checks.py` | 390 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/storage.py` | 113 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/stripe_provider.py` | 153 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/stripe_session_checks.py` | 286 | command_line | not recorded for this source | not_yet_recorded |
-| `src/loop_engine/core/service_runtime/stripe_session_transport_checks.py` | 305 | command_line | not recorded for this source | not_yet_recorded |
+| `src/loop_engine/core/service_runtime/stripe_session_transport_checks.py` | 315 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/service_runtime/stripe_sessions.py` | 399 | command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/settings_loader.py` | 621 | solve_path, command_line | not recorded for this source | not_yet_recorded |
 | `src/loop_engine/core/shared_memory_scopes.py` | 336 | solve_path, command_line | not recorded for this source | focused_review_recorded |

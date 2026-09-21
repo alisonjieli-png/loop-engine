@@ -2,6 +2,14 @@
 
 Status: current public naming guidance.
 
+The single structured source for names is
+[terminology.yaml](../../terminology.yaml), and
+[the developer language guide](../guides/developer-language.md) explains how
+to read it. That file states where each term may appear and where it must
+not, and the conformance gate reads the same fields. This page explains what
+the architecture terms mean and gives the step profile labels. When the two
+disagree, terminology.yaml is the source and this page is the mistake.
+
 Use the terms on this page in the README, guides, examples, Studio, command
 output, and diagrams. Internal code tokens may remain stable when renaming
 them would break compatibility.
@@ -29,7 +37,8 @@ them would break compatibility.
 | Self-improvement Practitioner task | A task that reviews history and intelligence, seeds domains, and stages candidates. |
 | Core Architecture | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
 | Retrieval Engine | One search interface with lexical, vector, and hybrid modes. |
-| Intelligence Library | One searchable view across the four persistent layers. |
+| Intelligence Library | One searchable view across the four persistent layers, served by `query_intelligence`. It is not Harness Intelligence. |
+| Harness Intelligence | One provisioning view that serves authorized material from the four persistent layers to a single harness assignment. It is not a fifth layer and not the Intelligence Library. |
 | Runtime Memory | Temporary notes shared inside the current run. |
 | Run History | Saved event history for reports and playback. |
 | Loop Engine Studio | The local interface for live runs, playback, intelligence, and solutions. |
@@ -52,17 +61,23 @@ Always show the modes in this order.
 A Loop profile may allow more than one mode. A Loop instance selects one mode
 for its run. A spawning Loop cannot grant permissions that it does not have.
 
-## Three settings that must not be confused
+## Settings that must not be confused
 
 | Public term | Current code | Meaning |
 |---|---|---|
 | Role profile | `LoopProfileSpec` | Versioned purpose, required fields, capabilities, and mode support. |
 | Step profile | `framework`, `custom_steps`, Loop Template | Number, order, and repetition of steps. |
-| Effort setting | `power` | Bounded work limits. Public values are light, standard, deep, and max. |
+| Effort setting | `LoopConfig.power` | Bounded work limits for one Loop. Public values are light, standard, deep, and max. |
+| Thinking power | `llm_thinking_power`, `MODEL_THINKING_POWER_LEVELS` | The model effort a provider is asked for. Values are small, medium, high, max, and specialized. |
 | Operating settings | `OperatingProfile` | Permissions, access, providers, and optimization preferences. |
 
 Use "step profile" only for the sequence a loop follows. Do not use "profile"
 alone when the meaning could be effort or operating settings.
+
+Effort setting and thinking power are two different fields that share the
+word power in the code. Write the full public term for each. Do not write
+"effort budget" for the effort setting and do not write the bare word power
+for either.
 
 ## Step profile labels
 

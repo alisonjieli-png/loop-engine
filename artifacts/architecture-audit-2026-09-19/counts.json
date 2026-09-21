@@ -1,17 +1,17 @@
 {
-  "files": 2576,
-  "python_files": 1047,
-  "component_rows": 645,
-  "entities": 140749,
-  "relationships": 152580,
-  "call_sites": 127034,
-  "test_declarations": 5836,
+  "files": 2923,
+  "python_files": 1081,
+  "component_rows": 647,
+  "entities": 148936,
+  "relationships": 161175,
+  "call_sites": 134022,
+  "test_declarations": 6159,
   "focused_review_files": 174,
   "review_questions": 285,
   "inspection": {
-    "text_read_structurally": 869,
-    "metadata_only": 13,
-    "structured_text_read": 647,
-    "python_syntax_analyzed": 1047
+    "text_read_structurally": 972,
+    "metadata_only": 16,
+    "structured_text_read": 854,
+    "python_syntax_analyzed": 1081
   }
 }
