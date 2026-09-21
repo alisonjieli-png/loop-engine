@@ -47,11 +47,16 @@ A request carries exactly one `Authorization` header of the form
 refuses a missing header, a repeated header, white space inside the
 credential and a header above 16,384 characters.
 
-| Mode | Credential | State |
+| Mode | Credential | What switches it on |
 |---|---|---|
-| `host_key` | A service key that starts with `le_`. Only its SHA-256 digest is stored. | The mode that the pilot lists. |
-| `browser_identity` | A sign-in token from the identity provider, accepted only on `/api/` routes. | Implemented and checked against the real identity provider. Not switched on in the running release. |
-| `external_jwt` | A JSON Web Token from a configured issuer, with the audience bound to `/mcp`. | Implemented. The authorization flow is not qualified; the capabilities record says so. |
+| `host_key` | A service key that starts with `le_`. Only its SHA-256 digest is stored. | The `modes` field of `ServiceHttpAuthentication`, whose default is `(HOST_KEY_AUTHENTICATION,)`. |
+| `browser_identity` | A sign-in token from the identity provider, accepted only on `/api/` routes. | A host configuration block for the identity provider. `capabilities()` then reports `browser_identity_available` as true. |
+| `external_jwt` | A JSON Web Token from a configured issuer, with the audience bound to `/mcp`. | A configured issuer added to `modes`. The source sets `external_authorization_flow_qualified` to false, so the authorization flow is not qualified. |
+
+Which modes a running release has switched on is deployment state, not a
+standard. Read it in the
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section, or ask the running service itself with `GET /api/v1/capabilities`.
 
 - Authenticating is not authorization to act. The adapter calls
   `revalidate` again inside the worker, at use. Key expiry, tenant state,
@@ -110,9 +115,12 @@ A lost acknowledgment is not a success and not a failure.
   with `meter_commit_unknown` and no body
   (`src/loop_engine/core/provisioning_server.py`). The client repeats the
   same `request_id`.
-- A billing session answers `billing_session_uncertainty/v1` with
-  `retry_same_request: true`. The client repeats the same `request_id` and
-  the service reconciles.
+- A billing session answers `billing_session_uncertainty/v1`, which carries
+  `retry_same_request` and `retry_before`. The value is conditional:
+  `BillingSessionError` sets `retry_same_request` to `reservation is not None`
+  (`stripe_sessions.py` line 55). The client repeats the same `request_id`
+  only when that field is true, and it honors `retry_before`. When the field
+  is false, repeating the request is not permitted.
 - When the response deadline passes, the adapter answers `deadline_exceeded`
   with status 504. The running callback may still commit, and its worker slot
   stays held until it ends (`ServiceHttpApplication._work`).

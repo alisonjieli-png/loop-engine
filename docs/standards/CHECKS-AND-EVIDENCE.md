@@ -86,18 +86,43 @@ first confirm that `loop_engine.__file__` resolves inside that worktree.
 | Rollback drill | `.venv/bin/python tools/check_rollback_key_version.py --older-image IMAGE --output NEW_REPORT_PATH` | An older image refuses records it must not honor. | The deployed volume. |
 | Browser checks | `node tools/check_service_workspace.mjs NEW_REPORT_PATH` | The website in a real browser against a local service. | Live hostnames. `tools/check_hosted_website.mjs` reads those. |
 
-For documents, continuous integration runs three steps
-([ci.yml](../../.github/workflows/ci.yml)):
+For documents, the `docs` job of
+[ci.yml](../../.github/workflows/ci.yml) runs four gates over prose. Each one
+lints a fixed set of paths, not the paths you touched. A local run over your
+own files does not predict the gate, so run the declared set before you
+commit. The set is `AGENTS.md README.md CHANGELOG.md CONTRIBUTING.md
+SECURITY.md humanizer-context.md showcase/README.md 'docs/**/*.md'
+'case-studies/*.md' 'examples/**/*.md'`.
 
-```bash
-npx --yes markdownlint-cli2@0.23.2 PATHS_YOU_TOUCHED
-vale --config .vale.ini PATHS_YOU_TOUCHED
-```
+| Gate | Command or action | Scope |
+|---|---|---|
+| Markdown structure | `npx --yes markdownlint-cli2@0.23.2 DECLARED_SET` | The declared set above. |
+| Public language | vale 3.18.0 with `.vale.ini`, run by `vale-cli/vale-action@v3` with `sync: false` | `AGENTS.md`, `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `humanizer-context.md`, `showcase/README.md`, and the `docs`, `case-studies` and `examples` folders. |
+| Refuse retired public language | Two `rg` searches, case insensitive | `README.md`, `CHANGELOG.md`, `humanizer-context.md`, `docs`, `examples`, `case-studies`, `showcase`, and `benchmarks` for the first search. |
+| Local links and section anchors | `lycheeverse/lychee-action@v2` with `--offline --include-fragments --root-dir` | The declared set above. A renamed heading breaks every link to it. |
 
-The third step is an offline link check that also checks section anchors, so
-a renamed heading breaks every link to it. After you add a document under
-`docs/`, run `PYTHONPATH=src:tools .venv/bin/python tools/build_records_index.py`
-and commit `docs/RECORDS-INDEX.md`.
+The third gate is worth reading before you write. Its first search refuses the
+two retired evidence words that this repository replaced with Run History,
+event log, record, report and evidence, in the singular and the plural. Its
+second search refuses the two retired topology words, the one for a Spawned
+Loop and the one for a Starting Loop, and a family of four retired decision
+phrases built from the words for "what" and "next", which the repository
+replaced with "select next action". That decision family is refused here and
+nowhere else: the three rules in `.vale/styles/LoopEngine` do not carry it, so
+a developer who reads only the vale folder will be blocked by a gate they
+never saw. Both searches ignore case and exempt `docs/prompts`,
+`docs/evidence` and `docs/verification`, because those are dated evidence and
+a report whose finding is that a retired term was used has to quote it.
+
+Read the two regular expressions in the `Refuse retired public language` step
+of `ci.yml`. No document under `docs/` can quote the refused words, because
+the gate would then refuse that document.
+
+The same job also validates the benchmark registry and renders the Mermaid
+diagrams. Those cover data files and diagrams rather than prose. After you add
+a document under `docs/`, run
+`PYTHONPATH=src:tools .venv/bin/python tools/build_records_index.py` and commit
+`docs/RECORDS-INDEX.md`.
 
 ## Continuous integration traps
 

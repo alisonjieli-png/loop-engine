@@ -48,14 +48,23 @@ that it stores, and the HTTP adapter wraps every answer in
 
 ## 3. Validate in the constructor and refuse before any effect
 
-A record that exists is valid. Each `__post_init__` checks its fields and
-raises `ServiceRuntimeError` with a stable code. No database is opened and no
-request is sent before that.
+A record that exists is valid. Each `__post_init__` checks its fields before
+any database is opened and before any request is sent.
 
-- `ServiceRuntimeConfig` refuses a relative path, a symbolic link and a
-  write flag that is not a Boolean. Its default is `writes_authorized=False`.
-- `ServiceHttpConfiguration` refuses a wildcard host, an origin with a path
-  and a limit that is not a positive whole number.
+Which exception it raises follows the kind of record:
+
+- A wire record or a stored record raises `ServiceRuntimeError` or
+  `ServiceHttpError` with a stable code, because a caller reads that code.
+  `ServiceRuntimeConfig` raises `ServiceRuntimeError("unsupported_version")`
+  for a `record_type` it does not support, and refuses a relative path, a
+  symbolic link and a write flag that is not a Boolean. Its default is
+  `writes_authorized=False`.
+- Host transport configuration raises a plain `ValueError` with message text
+  and no code, because it is host configuration rather than a record on the
+  wire. Nobody outside the host process ever sees it, and the process does not
+  start. `ServiceHttpConfiguration.__post_init__` in `http.py` works this way
+  while it refuses a wildcard host, an origin with a path and a limit that is
+  not a positive whole number.
 - `ServiceRuntime.issue_key` checks the request type, the expiry, the tenant
   state and scope escalation before it commits the key row.
 

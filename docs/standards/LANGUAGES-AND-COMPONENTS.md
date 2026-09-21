@@ -58,9 +58,20 @@ framework import and no database driver import.
   `service_domain_uses_catalog_authority_without_transport_or_database_inversion`
   in [runtime_checks.py](../../src/loop_engine/core/service_runtime/runtime_checks.py)
   parses `records.py`, `runtime.py`, `storage.py`, `provisioning.py`,
-  `billing.py`, `billing_records.py` and `stripe_provider.py`, and fails when
-  one of them imports `sqlite3`, `duckdb`, `httpx`, `fastapi`, or any module
-  whose name starts with `http`.
+  `billing.py`, `billing_records.py` and `stripe_provider.py`. It treats the
+  two import forms differently, and it also requires a `README.md` beside
+  them.
+
+  | Import form | Refused today |
+  |---|---|
+  | `import NAME` | Only `sqlite3`, `duckdb`, `httpx` and `fastapi`, compared on the first part of the name. |
+  | `from NAME import ...` | Any module name that starts with `http` or with `loop_engine_devtools`. |
+
+  So `from http.client import HTTPConnection` in `runtime.py` fails the check,
+  while a plain `import http.client` in the same file passes it today. Do not
+  read the check as a complete guard against the standard library transport
+  modules. The conformance gate `direct_model_or_network_calls_outside_gateway`
+  is the wider net.
 - The web framework is imported where it is used and nowhere else.
   `ServiceHttpApplication.create_app` imports Starlette inside the function
   ([http.py](../../src/loop_engine/core/service_runtime/http.py)), and
@@ -88,9 +99,10 @@ There is no framework, no bundler and no build step for the pages themselves.
   configuration or an internal report
   ([web assets README](../../src/loop_engine/core/service_runtime/web_assets/README.md)).
 - `index.html` loads two stylesheets and four scripts with the `defer`
-  attribute, all from `/assets/`. The four scripts are `supabase-client.js`,
-  `client-access.js`, `service.js` and `architecture-story.js`. Together they
-  are under 600 lines.
+  attribute, all from `/assets/`. Three are written by hand:
+  `architecture-story.js`, `client-access.js` and `service.js`, 563 lines
+  together. The fourth, `supabase-client.js`, is a generated bundle of
+  223,189 bytes. Its line count means nothing, because it is minified.
 - The response header `Content-Security-Policy` is
   `default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'`
   plus the configured identity origin, with `base-uri`, `frame-ancestors` and
@@ -133,11 +145,15 @@ the command line. Do not add a package that the checks can do without.
 | Worker | [Dockerfile](../../Dockerfile) | Installs the default engine and runs the `loop-engine` command in a mounted work folder. |
 | Benchmark sandbox | `benchmarks/ds1000/Dockerfile` | Installs a hash checked requirement lock for a bounded benchmark. |
 
-Rules that all three follow: the base image is `python:3.12-slim` pinned by a
-`sha256` digest, the container runs as a user that is not root, and no provider
-key, model or customer data is written into the image. Change a digest
-deliberately and record the new value in the deployment manifest, as the
-comment at the top of `Dockerfile` says. Deploy by digest, never by a tag.
+Rules that all three follow: the base image is pinned by a `sha256` digest,
+the container runs as a user that is not root, and no provider key, model or
+customer data is written into the image. The service image and the worker
+image share the same base, `python:3.12-slim` at digest `sha256:78387bc3...`.
+The benchmark sandbox pins a different digest of the unqualified `python`
+repository and names no tag, so read its first line before you assume the
+base. Change a digest deliberately and record the new value in the deployment
+manifest, as the comment at the top of `Dockerfile` says. Deploy by digest,
+never by a tag.
 
 ## Development commands
 

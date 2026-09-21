@@ -49,12 +49,48 @@ In technical prose:
   with its [complete behavioral explanation](../../ASTRA.md#complete-behavioral-explanation).
 - Do not use dash punctuation. The rule `.vale/styles/LoopEngine/NoDashes.yml`
   refuses it, and two more rules in the same folder refuse retired terms.
+  Those three rules are not the whole vocabulary gate. A separate step in
+  continuous integration refuses a family of retired phrases that the vale
+  folder does not carry. Read
+  [the four document gates](CHECKS-AND-EVIDENCE.md#what-each-gate-covers)
+  before you write.
 
 ## Runtime terms
 
-The only operational runtime type is `Loop`. Role (Practitioner, Intelligence,
-Solution), run mode, step profile and relationship are separate fields of a
-Loop, not new types. The complete classification tree is in
+The only operational runtime type is `Loop`. Everything else in this tree is a
+separate field of a Loop, not a new type. Use these exact words, and start
+from the complete tree before you write about one branch.
+
+```text
+Operational runtime type
+└── Loop
+    ├── Operational relationship
+    │   ├── Starting
+    │   ├── Spawned by
+    │   ├── Queried by
+    │   ├── Retrieved by
+    │   └── Connected from
+    ├── Role
+    │   ├── Practitioner
+    │   ├── Intelligence
+    │   └── Solution
+    ├── Versioned role profile
+    ├── Purpose and domain categories
+    ├── Run mode
+    │   ├── deterministic
+    │   ├── hybrid
+    │   └── non-deterministic, with model-led semantic work
+    ├── Step profile
+    ├── Typed input and output contract
+    ├── Loop condition
+    ├── Exit condition
+    ├── Graph relationships
+    ├── Budget, permissions, and effect policy
+    ├── Model settings when the selected mode permits a model
+    └── Run History records
+```
+
+The same tree, with the meaning of each word, is in
 [AGENTS.md](../../AGENTS.md#required-architecture-trees). Do not create a
 class whose name ends in `Node`; `forbidden_class_names` in terminology.yaml
 lists the refused names.
