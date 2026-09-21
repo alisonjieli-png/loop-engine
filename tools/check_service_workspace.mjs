@@ -222,7 +222,7 @@ try {
   const commandRecords=wrongNamed("recipe_with_a_command_line_that_is_not_plain_words_is_refused","recipe_with_key_in_a_command_is_refused");
   /* The page accepts the one top-level https $schema value whatever host it names, so these two records are checked at source level only and are not served to the page. */
   const schemaRecords=[{name:"record_with_a_schema_address_on_another_host",served:changedRecipe("opencode",item=>{item.configuration.$schema="https://"+otherHost+"/config.json";})},
-    {name:"record_with_a_schema_address_on_a_second_host_of_the_cited_vendor",served:changedRecipe("opencode",item=>{item.configuration.$schema="https://files."+new URL(item.source_url).host+"/config.json";})}];
+    {name:"record_with_a_schema_address_on_a_second_host_of_the_cited_vendor",served:changedRecipe("opencode",item=>{const address=new URL(item.configuration.$schema);address.host="files."+address.host;item.configuration.$schema=address.href;})}];
   const keyPlaces=keyRecords.map(wrong=>[wrong.name,recordProblems(wrong.served).keys]),addressPlaces=addressRecords.map(wrong=>[wrong.name,recordProblems(wrong.served).addresses]);
   const repeatsPlantedText=places=>[plantedKey,standardKey,shapedName].some(text=>JSON.stringify(places).includes(text));
   check("no_key_check_of_the_record_fails_for_every_known_wrong_record",keyPlaces.every(([,places])=>places.length>0)&&!repeatsPlantedText(keyPlaces),{records:keyPlaces.length,missed:keyPlaces.filter(([,places])=>places.length===0).map(([name])=>name)});
