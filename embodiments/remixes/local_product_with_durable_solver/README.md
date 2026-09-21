@@ -2,7 +2,7 @@
 
 Status: planned remix, not a working integrated solver.
 
-Sources: speculative_prompting + Loop Engine reactive runtime. Exact available source snapshots are in [mirrors](../../mirrors/README.md).
+Sources: speculative_prompting + Loop Engine reactive runtime. Exact available source snapshots are in the local working copies under `embodiments/mirrors/`, which the repository does not distribute.
 
 Invariant: Retain the local agent and sync contract; install exact host operations; use finite durable activations and versioned verified portfolios.
 

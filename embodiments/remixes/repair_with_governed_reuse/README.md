@@ -2,7 +2,7 @@
 
 Status: planned remix, not a working integrated solver.
 
-Sources: vigil + new_overnight_build + Loop Engine. Exact available source snapshots are in [mirrors](../../mirrors/README.md).
+Sources: vigil + new_overnight_build + Loop Engine. Exact available source snapshots are in the local working copies under `embodiments/mirrors/`, which the repository does not distribute.
 
 Invariant: Keep CI intake, worktrees and regression grading; use schema-derived patches; stage reusable code under the existing capability authority.
 

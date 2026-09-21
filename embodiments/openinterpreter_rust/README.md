@@ -22,7 +22,9 @@ Enabling native command tools caused refusal before the scripted callback.
 An injected undeclared `exec_command` produced an unsupported-call error and
 created no file. The text codec refused the following tool-result request.
 
-The [saved probes](../../artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/)
+The saved probes, written on the machine that ran this work to
+`artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/` and not
+distributed with the repository,
 preserve both successful and failed attempts. They prove this bounded local
 transport configuration, not task quality or a full-system benchmark. Any real
 model integration must use the separately authorized Ollama Cloud broker,

@@ -67,7 +67,7 @@ API-key-header variants.
 | SambaNova Cloud | [API overview](https://docs.sambanova.ai/cloud/docs/api-reference/overview) | Limits depend on the account and model. |
 | OpenCode Zen | [Zen models](https://opencode.ai/docs/zen/) | The service generally charges per request. Loop Engine accepts a zero-cost route only when the live list and typed metadata both establish it for that run. |
 | NVIDIA NIM | [API reference](https://docs.api.nvidia.com/nim/reference/) | Developer endpoints and limits are model dependent. |
-| Hugging Face Inference Providers | [OpenAI client guide](https://huggingface.co/docs/inference-providers/guides/openai) | Monthly credit and routed providers can change. |
+| Hugging Face Inference Providers | [First API call guide](https://huggingface.co/docs/inference-providers/guides/first-api-call) | Monthly credit and routed providers can change. |
 | Pollinations | [Official repository](https://github.com/pollinations/pollinations) | Treat account, Pollen, and model terms as changing provider facts. |
 | DeepInfra | [OpenAI-compatible API](https://docs.deepinfra.com/api-reference/introduction) | The current docs describe usage-priced inference. Do not label it free without account evidence. |
 | Fireworks AI | [API concepts](https://docs.fireworks.ai/getting-started/concepts) | OpenAI and Anthropic shapes exist. Current serverless routes are priced unless a separate plan says otherwise. |

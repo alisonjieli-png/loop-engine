@@ -17,7 +17,7 @@ The original locations of the external catalogs are:
 - `/home/username/new_overnight_build/embodiments/`
 - `/home/username/UNIVERSAL-TASK-SOLVER.md`, Part 20, is a derived narrative reference, not execution authority.
 
-The [overnight mirror](mirrors/overnight/README.md) includes a newer frozen catalog snapshot at `8a6c4214c1cfaea4ab6b7f22468843d419310df2`. The earlier source snapshot remains available. Other mirrors deliberately exclude uncommitted work; the uncommitted speculative_prompting catalog remains a source-linked candidate, not a silently included part of its committed product mirror.
+The overnight mirror, a local working copy under `embodiments/mirrors/overnight/` that the repository does not distribute, includes a newer frozen catalog snapshot at `8a6c4214c1cfaea4ab6b7f22468843d419310df2`. The earlier source snapshot remains available. Other mirrors deliberately exclude uncommitted work; the uncommitted speculative_prompting catalog remains a source-linked candidate, not a silently included part of its committed product mirror.
 
 ## Learning across the collections
 
