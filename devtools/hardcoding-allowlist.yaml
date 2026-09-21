@@ -3674,6 +3674,60 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-20
     expires_on: 2027-09-20
+  - finding_id: hardcoding.09a7ae1c2fe8b01d5ee23900
+    owner: tools.setup_stripe_sandbox:main
+    rationale: >-
+      The fixed official payment provider origin. The request carries the
+      account key in an authorization header, so the destination must not be
+      settable by a configuration value, an environment proxy or a redirect.
+      The same pin already exists at the runtime boundary in
+      src/loop_engine/core/service_runtime/stripe_provider.py for the same
+      reason. A changed origin has a different finding identity and stays
+      blocking. Reviewed on 2026-09-21. Only this exact finding is allowed; a
+      changed or added value has a different finding identity and stays
+      blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.dcf08939757e7aaba6414bb0
+    owner: tools.setup_stripe_sandbox:main
+    rationale: >-
+      The name of an environment variable, not a value. The setup command
+      saves the signing secret the provider returns once straight into the
+      system keyring and never prints it; the running service reads it through
+      this reference. Declaring the name where the reference is created is the
+      abstraction the audit proposes, so there is no further place to move it.
+      Reviewed on 2026-09-21. Only this exact finding is allowed; a changed or
+      added value has a different finding identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.de0597ea9aaeaead742ae431
+    owner: tools.setup_stripe_sandbox:main
+    rationale: >-
+      The default of a command line argument that names where the provider
+      should deliver events. Any other address can be passed, and the command
+      validates whatever is supplied: it requires HTTPS, refuses a query, a
+      fragment and credentials in the address, and refuses to create a second
+      endpoint for one that already exists. It configures the provider, not
+      this engine. Reviewed on 2026-09-21. Only this exact finding is allowed;
+      a changed or added value has a different finding identity and stays
+      blocking.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.1d994154c4a8d36b01e00304
+    owner: loop_engine.core.service_runtime.web_assets.client-recipes.json:recipes
+    rationale: >-
+      The public documentation page that one connection recipe cites as its
+      source, shown to the reader as a link on the Connect page. The website
+      never contacts it, and it selects no provider, endpoint or route for the
+      service. A named browser check requires the citation to be visible.
+      Reviewed on 2026-09-21. Only this exact finding is allowed; a changed or
+      added value has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
