@@ -789,7 +789,7 @@ continuation:
       acceptance: "An invited person signs in, creates a client key, connects a supported client, finds and downloads useful starter material, sees usage, and loses access when the operator disables the account. Every release comes from a committed revision and has a rehearsed rollback."
       adversarial: "An uninvited visitor, a disabled account, a key whose owner was disabled, an older release reading newer records, and a burst of forged sign-in tokens must all be refused without exhausting the service."
       authority_note: "No public registration, no live charges and no model calls. Candidate material is never published without the owner's approval. Provider changes use only the prepared connections."
-      owning_paths: [".github/workflows/fly-pilot.yml","tools/check_rollback_key_version.py","src/loop_engine/core/service_runtime/browser_identity.py","src/loop_engine/core/service_runtime/http_entrypoint.py","src/loop_engine/core/service_runtime/web_assets/client-recipes.json","tools/stage_intelligence_candidates.py"]
+      owning_paths: [".github/workflows/fly-pilot.yml","tools/check_rollback_key_version.py","src/loop_engine/core/service_runtime/browser_identity.py","src/loop_engine/core/service_runtime/http_entrypoint.py","src/loop_engine/core/service_runtime/web_assets/client-recipes.json","tools/stage_intelligence_candidates.py","tools/build_host_catalogue_manifest.py","tools/carry_catalogue_approvals.py","examples/29_intelligence_service/starter-catalogue/reviews.json"]
       rollback: "Redeploy the previous release image by digest. Personal keys use a record version that the previous release refuses, so a rollback cannot honor a key whose owner was disabled. Remove browser sign-in from the host configuration to return to operator-issued keys."
       verification_cases:
         - id: D-17-T01
@@ -817,6 +817,11 @@ continuation:
           scenario: "Send a burst of forged sign-in tokens that carry unknown key identifiers."
           pass_condition: "At most one identity key read happens inside the pause and ordinary requests keep working."
           negative_control: "With the pause removed, the number of key reads must grow with the burst."
+        - id: D-17-T06
+          proof_level: "local_contract"
+          scenario: "Anchor the catalogue to a new revision, which rewrites the trailing anchor line of every body, and carry the independent approvals across the move."
+          pass_condition: "An approval carries only when the sole difference between the bytes its reviewers read and the body today is that line and the revision it names. A carried approval keeps its reviewers, their decisions and the digest they judged, and records that it was carried rather than freshly approved."
+          negative_control: "A body with a changed sentence beside the changed anchor line, a removed anchor line, a second anchor-looking line, a changed word inside the anchor line other than the revision, changed trailing whitespace, and a body whose recorded digest does not match it must each refuse the carry and return the item to candidate state, and a comparison that always carries must let every one of those cases through."
   owner_actions:
     - id: OWNER-01
       title: "Private pilot limits are recorded"

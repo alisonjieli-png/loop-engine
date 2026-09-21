@@ -37,4 +37,4 @@ An extraction pipeline fails on 8 percent of documents. The team adds general re
 - `src/loop_engine/strings/interrogation.py`: the question bank, category `error_patterns`.
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the perspective of the error analyst.
 
-Licence: MIT. Compiled from revision 0cf19eb.
+Licence: MIT. Compiled from revision 7ed4e85.

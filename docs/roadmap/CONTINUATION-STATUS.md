@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `f40580cdf7267da855542375d47abb0315eb2695d5f4e0b5a291db4daf915201`.
+Plan fingerprint: `001c6db7444f62ae96575a8489142753c681e2bc0eefa41972506a0ec1a49228`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -593,7 +593,7 @@ Verification cases are required evidence, not recorded passes.
 
 Owning steps: S-6.5, S-6.10, S-6.12, S-6.15, S-6.24. Acceptance dependencies: D-01, D-03.
 
-Owning boundaries: `.github/workflows/fly-pilot.yml`; `tools/check_rollback_key_version.py`; `src/loop_engine/core/service_runtime/browser_identity.py`; `src/loop_engine/core/service_runtime/http_entrypoint.py`; `src/loop_engine/core/service_runtime/web_assets/client-recipes.json`; `tools/stage_intelligence_candidates.py`.
+Owning boundaries: `.github/workflows/fly-pilot.yml`; `tools/check_rollback_key_version.py`; `src/loop_engine/core/service_runtime/browser_identity.py`; `src/loop_engine/core/service_runtime/http_entrypoint.py`; `src/loop_engine/core/service_runtime/web_assets/client-recipes.json`; `tools/stage_intelligence_candidates.py`; `tools/build_host_catalogue_manifest.py`; `tools/carry_catalogue_approvals.py`; `examples/29_intelligence_service/starter-catalogue/reviews.json`.
 
 - Release only from a committed revision whose continuous integration run passed, through the guarded pilot workflow, so that the deployed image can always be rebuilt from the repository.
 - Enable browser sign-in on the pilot for accounts that the operator prepared in advance, with public registration closed, and supply the identity provider's publishable key as a deployment secret reference.
@@ -621,6 +621,7 @@ Verification cases are required evidence, not recorded passes.
 | D-17-T03 | end_to_end | A person outside engineering completes sign-in, key creation, client connection, search, download and usage review on the deployed service. | Every step succeeds without help and the record names the release that served it. | An address that was not invited and a disabled account must both be refused at sign-in. |
 | D-17-T04 | end_to_end | A supported native client downloads selected starter material and loads it from its native layout. | The client's own record shows that it loaded the material, with matching digests. | Tool discovery alone, or a file that exists but is never read, must not count as loading. |
 | D-17-T05 | local_contract | Send a burst of forged sign-in tokens that carry unknown key identifiers. | At most one identity key read happens inside the pause and ordinary requests keep working. | With the pause removed, the number of key reads must grow with the burst. |
+| D-17-T06 | local_contract | Anchor the catalogue to a new revision, which rewrites the trailing anchor line of every body, and carry the independent approvals across the move. | An approval carries only when the sole difference between the bytes its reviewers read and the body today is that line and the revision it names. A carried approval keeps its reviewers, their decisions and the digest they judged, and records that it was carried rather than freshly approved. | A body with a changed sentence beside the changed anchor line, a removed anchor line, a second anchor-looking line, a changed word inside the anchor line other than the revision, changed trailing whitespace, and a body whose recorded digest does not match it must each refuse the carry and return the item to candidate state, and a comparison that always carries must let every one of those cases through. |
 
 ## Launch benefit drafts
 

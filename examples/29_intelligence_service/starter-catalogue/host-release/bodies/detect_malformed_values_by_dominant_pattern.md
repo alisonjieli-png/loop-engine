@@ -37,4 +37,4 @@ A checker always flags every value that differs from the most common pattern. In
 - `src/loop_engine/code_nodes/field_recovery.py`: `detect_malformed`.
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `induce_pattern`.
 
-Licence: MIT. Compiled from revision 381efec. The two modules depend only on each other and on the Python standard library.
+Licence: MIT. Compiled from revision 7ed4e85. The two modules depend only on each other and on the Python standard library.

@@ -40,4 +40,4 @@ A page calls three services with no deadline set. One of them slows to sixty sec
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 0cf19eb.
+Licence: MIT. Written for this catalogue at revision 7ed4e85.

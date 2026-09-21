@@ -46,33 +46,73 @@ def _rejected():
 
 
 class ReviewRecordTest(unittest.TestCase):
-    """The review record covers the catalogue and records a reason for every rejection."""
+    """The review record covers the catalogue and records a reason for every rejection.
 
-    def test_every_candidate_is_judged_by_every_named_reviewer(self):
+    The record names every catalogue item, including the ones no reviewer has
+    judged. An item with no verdict is a written fact, not an absence, so a row
+    that quietly disappears is a difference this check reports.
+    """
+
+    def test_the_record_names_every_item_of_the_catalogue(self):
         record = _review()
         catalogue = json.loads((CATALOGUE / "items.json").read_text("utf-8"))
-        reviewers = [row["reviewer_id"] for row in record["reviewers"]]
-        self.assertEqual(len(reviewers), 3)
         self.assertEqual(sorted(row["identity"] for row in record["rows"]),
                          sorted(row["reference"]["identity"] for row in catalogue["items"]))
-        for row in record["rows"]:
-            self.assertEqual(sorted(d["reviewer_id"] for d in row["decisions"]), sorted(reviewers))
-            for decision in row["decisions"]:
-                if decision["decision"] == "reject":
-                    self.assertTrue(decision["reason"].strip(), row["identity"])
-        self.assertEqual(record["totals"]["approved"], 43)
-        self.assertEqual(record["totals"]["rejected"], 6)
+        self.assertEqual(record["totals"]["items_in_catalogue"], len(catalogue["items"]))
+        counted = {outcome: sum(1 for row in record["rows"] if row["outcome"] == outcome)
+                   for outcome in tool.OUTCOMES}
+        for outcome, count in counted.items():
+            self.assertEqual(record["totals"][outcome], count, outcome)
+
+    def test_every_judged_candidate_is_judged_by_every_named_reviewer(self):
+        record = _review()
+        reviewers = [row["reviewer_id"] for row in record["reviewers"]]
+        self.assertEqual(len(reviewers), 3)
+        judged = [row for row in record["rows"] if row["outcome"] != tool.NOT_REVIEWED]
+        self.assertTrue(judged)
+        for row in judged:
+            with self.subTest(item=row["identity"]):
+                self.assertEqual(sorted(d["reviewer_id"] for d in row["decisions"]), sorted(reviewers))
+                for decision in row["decisions"]:
+                    if decision["decision"] == "reject":
+                        self.assertTrue(decision["reason"].strip(), row["identity"])
+
+    def test_an_item_with_no_verdict_carries_no_decision_and_no_digest(self):
+        unjudged = [row for row in _review()["rows"] if row["outcome"] == tool.NOT_REVIEWED]
+        self.assertTrue(unjudged)
+        for row in unjudged:
+            with self.subTest(item=row["identity"]):
+                self.assertEqual(row["decisions"], [])
+                self.assertIsNone(row["body_digest"])
+                self.assertIsNone(row["body_size_bytes"])
+                self.assertEqual(row["approval_state"], tool.NO_STATE)
 
     def test_no_reviewer_produced_an_item_it_judged(self):
         for reviewer in _review()["reviewers"]:
             self.assertIs(reviewer["produced_any_item_under_review"], False)
 
-    def test_a_rejected_item_carries_no_approval_reference(self):
+    def test_only_an_approved_item_carries_an_approval_reference(self):
         for row in _review()["rows"]:
-            if row["outcome"] == "rejected":
-                self.assertEqual(row["approval_ref"], "")
-            else:
-                self.assertTrue(row["approval_ref"].strip())
+            with self.subTest(item=row["identity"]):
+                if row["outcome"] == tool.APPROVED:
+                    self.assertTrue(row["approval_ref"].strip())
+                    self.assertIn(row["approval_state"], (tool.REVIEWED_STATE, tool.CARRIED_STATE))
+                else:
+                    self.assertEqual(row["approval_ref"], "")
+                    self.assertEqual(row["approval_state"], tool.NO_STATE)
+
+    def test_a_carried_approval_keeps_the_decisions_and_names_both_digests(self):
+        carried = [row for row in _review()["rows"] if row["approval_state"] == tool.CARRIED_STATE]
+        self.assertTrue(carried)
+        for row in carried:
+            with self.subTest(item=row["identity"]):
+                self.assertEqual(row["carry"]["record_type"], tool.CARRY_RECORD_TYPE)
+                self.assertEqual(row["carry"]["proof"]["record_type"], tool.PROOF_RECORD_TYPE)
+                self.assertEqual(row["carry"]["carried_body_digest"], row["body_digest"])
+                self.assertNotEqual(row["carry"]["reviewed_body_digest"], row["body_digest"])
+                self.assertIs(row["carry"]["decisions_unchanged"], True)
+                self.assertIs(row["carry"]["reviewed_again"], False)
+                self.assertTrue(all(decision["decision"] == "approve" for decision in row["decisions"]))
 
 
 class GeneratedReleaseTest(unittest.TestCase):
@@ -175,20 +215,101 @@ class KnownWrongCaseTest(unittest.TestCase):
                            grants=[], include=(identity,))
             self.assertEqual(held.exception.code, "item_not_approved")
 
-    def test_the_generator_refuses_a_review_record_that_approves_a_rejected_item(self):
-        """An edited summary must not approve an item whose reviewer wrote an objection."""
+    def _tampered(self, change, code):
+        """Apply one change to a copy of the committed record and require the named refusal."""
         with tempfile.TemporaryDirectory(prefix="loop-engine-review-tamper-") as held:
             folder = Path(held).resolve() / "catalogue"
             shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("host-release"))
             record = json.loads((folder / "reviews.json").read_text("utf-8"))
-            for row in record["rows"]:
-                if row["outcome"] == "rejected":
-                    row["outcome"] = "approved"
-                    row["approval_ref"] = "forged"
+            change(record)
             (folder / "reviews.json").write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
             with self.assertRaises(tool.ManifestBuildError) as raised:
                 tool.build(folder, artifact_root=IMAGE_ARTIFACT_ROOT, accepted_licenses=("MIT",), grants=[])
-            self.assertEqual(raised.exception.code, "review_record_inconsistent")
+            self.assertEqual(raised.exception.code, code)
+
+    @staticmethod
+    def _first(record, outcome):
+        return next(row for row in record["rows"] if row["outcome"] == outcome)
+
+    def test_the_generator_refuses_a_review_record_that_approves_a_rejected_item(self):
+        """An edited summary must not approve an item whose reviewer wrote an objection."""
+        def forge(record):
+            for row in record["rows"]:
+                if row["outcome"] == tool.REJECTED:
+                    row["outcome"] = tool.APPROVED
+                    row["approval_state"] = tool.REVIEWED_STATE
+                    row["approval_ref"] = "forged"
+            record["totals"][tool.APPROVED] += record["totals"][tool.REJECTED]
+            record["totals"][tool.REJECTED] = 0
+        self._tampered(forge, "review_record_inconsistent")
+
+    def test_the_generator_refuses_a_record_that_approves_an_item_no_reviewer_judged(self):
+        """A row with no verdict must never become an approval by editing its outcome."""
+        def forge(record):
+            row = self._first(record, tool.NOT_REVIEWED)
+            row.update(outcome=tool.APPROVED, approval_state=tool.REVIEWED_STATE,
+                       approval_ref="forged", body_digest="0" * 64, body_size_bytes=1)
+            record["totals"][tool.APPROVED] += 1
+            record["totals"][tool.NOT_REVIEWED] -= 1
+        self._tampered(forge, "review_record_inconsistent")
+
+    def test_the_generator_refuses_a_record_that_reopens_an_approval_it_returned_to_candidate(self):
+        """An item whose approval did not carry is a candidate; only a new review changes that."""
+        def forge(record):
+            row = self._first(record, tool.APPROVED)
+            row.update(outcome=tool.CARRY_REFUSED, approval_state=tool.NO_STATE, approval_ref="",
+                       body_digest=None, body_size_bytes=None)
+            row.pop("carry", None)
+            record["totals"][tool.APPROVED] -= 1
+            record["totals"][tool.CARRY_REFUSED] += 1
+        self._tampered(forge, "carry_record_inconsistent")
+
+    def test_the_generator_refuses_a_carried_approval_with_no_carry_record(self):
+        def forge(record):
+            self._first(record, tool.APPROVED).pop("carry")
+        self._tampered(forge, "carry_record_unsupported")
+
+    def test_the_generator_refuses_a_carried_approval_whose_proof_is_missing(self):
+        def forge(record):
+            self._first(record, tool.APPROVED)["carry"].pop("proof")
+        self._tampered(forge, "carry_record_unsupported")
+
+    def test_the_generator_refuses_a_carry_that_names_a_digest_its_row_does_not(self):
+        def forge(record):
+            self._first(record, tool.APPROVED)["carry"]["carried_body_digest"] = "0" * 64
+        self._tampered(forge, "carry_record_inconsistent")
+
+    def test_the_generator_refuses_a_carry_that_claims_the_new_bytes_were_reviewed(self):
+        def forge(record):
+            self._first(record, tool.APPROVED)["carry"]["reviewed_again"] = True
+        self._tampered(forge, "carry_record_inconsistent")
+
+    def test_the_generator_refuses_a_carry_that_names_the_same_digest_before_and_after(self):
+        def forge(record):
+            row = self._first(record, tool.APPROVED)
+            row["carry"]["reviewed_body_digest"] = row["body_digest"]
+        self._tampered(forge, "carry_record_inconsistent")
+
+    def test_the_generator_refuses_a_carried_approval_recorded_as_reviewed(self):
+        """A reader must be able to tell the two apart, so the two facts may not disagree."""
+        def forge(record):
+            self._first(record, tool.APPROVED)["approval_state"] = tool.REVIEWED_STATE
+        self._tampered(forge, "carry_record_inconsistent")
+
+    def test_the_generator_refuses_a_totals_summary_that_does_not_count_the_rows(self):
+        def forge(record):
+            record["totals"][tool.NOT_REVIEWED] = 0
+        self._tampered(forge, "review_record_inconsistent")
+
+    def test_the_generator_refuses_an_unsupported_review_record_version(self):
+        def forge(record):
+            record["record_type"] = "starter_catalogue_independent_review/v1"
+        self._tampered(forge, "review_record_unsupported")
+
+    def test_the_generator_refuses_an_outcome_it_does_not_read(self):
+        def forge(record):
+            self._first(record, tool.APPROVED)["outcome"] = "approved_by_the_owner"
+        self._tampered(forge, "review_record_unsupported")
 
     def test_a_body_path_that_escapes_the_artifact_root_is_refused(self):
         with _Staged() as staged:

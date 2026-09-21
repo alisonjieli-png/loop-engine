@@ -43,4 +43,4 @@ One customer spells a brand `ACME-tech`, and someone adds that entry to the pack
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `learn_column_evidence`.
 - `src/loop_engine/data/text_conformance_catalogs.yaml`: the packaged layer.
 
-Licence: MIT. Compiled from revision 0cf19eb. Reading the packaged file and a YAML task file needs the PyYAML package.
+Licence: MIT. Compiled from revision 7ed4e85. Reading the packaged file and a YAML task file needs the PyYAML package.

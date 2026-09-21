@@ -40,4 +40,4 @@ A developer reports that a report generator fails on a file of two hundred thous
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 0cf19eb.
+Licence: MIT. Written for this catalogue at revision 7ed4e85.

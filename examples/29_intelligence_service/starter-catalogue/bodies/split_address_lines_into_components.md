@@ -37,4 +37,4 @@ The optional parser is not installed. A wrapper falls back to its own patterns a
 
 - `src/loop_engine/code_nodes/address_components.py`: `extract_components`, `extract_stdlib`, `map_labels` and the adapters for the `usaddress` and `postal` packages.
 
-Licence: MIT. Compiled from revision 0cf19eb. The standard parser uses only the Python standard library. The two external packages are optional.
+Licence: MIT. Compiled from revision 7ed4e85. The standard parser uses only the Python standard library. The two external packages are optional.

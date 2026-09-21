@@ -40,4 +40,4 @@ A reporting tool lets users store a formula that it evaluates with the language'
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 0cf19eb.
+Licence: MIT. Written for this catalogue at revision 7ed4e85.
