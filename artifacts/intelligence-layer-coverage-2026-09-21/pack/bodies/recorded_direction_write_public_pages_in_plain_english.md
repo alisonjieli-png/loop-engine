@@ -8,7 +8,8 @@ Kind: recorded guidance from a person, held in User Feedback Intelligence.
 | Scope | `project` |
 | Target | public website and public documents |
 | Strength | `instruction` |
-| Timing | before publishing |
+| Timing | `next_safe_boundary` |
+| Timing in the recorded words | before publishing |
 | Recorded | 2026-09-19, by the repository owner |
 
 ## The guidance as recorded

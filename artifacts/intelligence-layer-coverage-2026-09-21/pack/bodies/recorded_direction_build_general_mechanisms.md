@@ -7,7 +7,8 @@ Kind: recorded guidance from a person, held in User Feedback Intelligence.
 | Guidance type | `constraint` |
 | Scope | `organization` |
 | Strength | `instruction` |
-| Timing | before writing new control flow, prompts, or checks |
+| Timing | `next_safe_boundary` |
+| Timing in the recorded words | before writing new control flow, prompts, or checks |
 | Recorded | 2026-09-14, by the repository owner |
 
 ## The guidance as recorded

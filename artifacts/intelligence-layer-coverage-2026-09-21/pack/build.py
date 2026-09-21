@@ -1,10 +1,19 @@
-"""Measure the coverage pack bodies and write its two derived records.
+"""Measure the coverage pack bodies and write its three derived records.
 
 The files in ``bodies`` are the source of truth for the text, the digest and
 the size of every item. The drafts below are the source of truth for every
 other field. This tool measures each body through the engine's own
 ``item_from_body`` function, so no caller invents a digest, and it rewrites
-only ``specifications.json`` and ``items.json`` inside its own folder.
+only ``specifications.json``, ``items.json`` and ``source-tree.json`` inside
+its own folder.
+
+``source-tree.json`` is the git object name of every cited repository path at
+``SOURCE_REVISION``, read with ``git ls-tree``. The check resolves a citation
+there rather than asking whether the path exists in whichever tree it happens
+to run in, which would pass a file added after that revision and fail a file
+moved away from it. Without git, or without that revision in the clone, this
+tool reports the listing as not derived and leaves the held one untouched. It
+never guesses a citation into the pack.
 
 It approves nothing, publishes nothing and grants nothing. Every item stays a
 candidate.
@@ -23,6 +32,7 @@ from dataclasses import dataclass, field
 import json
 import os
 from pathlib import Path
+import subprocess
 
 from loop_engine.core.harness_intelligence import HarnessIntelligenceDraft, item_from_body
 from loop_engine.core.intelligence_tagging import TagSet
@@ -31,13 +41,35 @@ from loop_engine.core.intelligence_tagging import TagSet
 SOURCE_REVISION = "6a489b2eff78d1e7251d65e143edbd89f7250c4e"
 #: The version of every item in this pack. A changed body gets a new version.
 ITEM_VERSION = "1.0.0"
+#: The bodies whose text changed after the first build, and the version each
+#: one carries now. On 2026-09-21 the ten User Feedback bodies were given a
+#: Timing value from ``user_feedback_intelligence.TIMINGS`` in place of the
+#: free prose that was there before. The fourteen Runtime History bodies did
+#: not change, so they keep 1.0.0 rather than being bumped for someone else's
+#: edit.
+ITEM_VERSIONS: dict = {
+    "recorded_direction_build_general_mechanisms": "1.1.0",
+    "recorded_direction_decide_what_you_can_decide": "1.1.0",
+    "recorded_direction_do_not_infer_behaviour_from_names_or_prose": "1.1.0",
+    "recorded_direction_do_not_weaken_a_failing_check": "1.1.0",
+    "recorded_direction_keep_failures_as_visible_as_successes": "1.1.0",
+    "recorded_direction_marketing_language_is_not_a_factual_claim": "1.1.0",
+    "recorded_direction_never_end_on_a_fixed_attempt_count": "1.1.0",
+    "recorded_direction_offered_fetched_loaded_used_and_verified_are_separate": "1.1.0",
+    "recorded_direction_state_observed_inferred_assumed_and_missing_separately": "1.1.0",
+    "recorded_direction_write_public_pages_in_plain_english": "1.1.0",
+}
 SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v1"
 ITEMS_RECORD_TYPE = "layer_coverage_candidate_items/v1"
+SOURCE_TREE_RECORD_TYPE = "layer_coverage_source_tree/v1"
 SPECIFICATIONS_FILE = "specifications.json"
 ITEMS_FILE = "items.json"
+SOURCE_TREE_FILE = "source-tree.json"
 BODIES_FOLDER = "bodies"
 BODY_SUFFIX = ".md"
 TEMPORARY_SUFFIX = ".build"
+#: A git object name: forty lowercase hexadecimal characters.
+OBJECT_NAME_LENGTH = 40
 #: These bodies are prose. None of them executes, reads a file or reaches a network.
 NO_EFFECTS: tuple[str, ...] = ()
 #: The repository is MIT licensed and these bodies were written from its own records.
@@ -395,6 +427,64 @@ def read_bodies(folder: Path) -> dict:
     return bodies
 
 
+def cited_sources() -> tuple:
+    """Every repository path the pack cites, once each, in a stable order."""
+    return tuple(sorted({source for item in ITEMS for source in item.sources}))
+
+
+class SourceTreeUnavailable(CoveragePackError):
+    """The recorded revision could not be read out of this repository."""
+
+
+def source_tree_from_git(root: Path) -> dict:
+    """The object name of every cited path, read out of the recorded revision.
+
+    This is what binds a citation to ``SOURCE_REVISION`` rather than to
+    whatever the working tree happens to hold today. A path that was added
+    after the revision, or moved away from it, is absent here and stays absent.
+    """
+    wanted = cited_sources()
+    try:
+        finished = subprocess.run(
+            ["git", "-C", str(root), "ls-tree", "-r", "-z", SOURCE_REVISION,
+             "--", *wanted],
+            capture_output=True, check=False, timeout=60)
+    except (OSError, subprocess.SubprocessError) as error:
+        raise SourceTreeUnavailable(f"git could not be run: {error}") from error
+    if finished.returncode != 0:
+        raise SourceTreeUnavailable(
+            f"git ls-tree {SOURCE_REVISION} failed with {finished.returncode}")
+    found = {}
+    for entry in finished.stdout.decode("utf-8").split("\0"):
+        if not entry:
+            continue
+        facts, _, path = entry.partition("\t")
+        parts = facts.split()
+        if len(parts) == 3 and parts[1] == "blob":
+            found[path] = parts[2]
+    return found
+
+
+def derive_source_tree(root: Path) -> dict:
+    """The recorded listing, refusing to write a partial or malformed one."""
+    found = source_tree_from_git(root)
+    missing = [path for path in cited_sources() if path not in found]
+    if missing:
+        raise SourceTreeUnavailable(
+            f"{len(missing)} cited path(s) are not in {SOURCE_REVISION}: {missing}")
+    bad = sorted(path for path, name in found.items()
+                 if len(name) != OBJECT_NAME_LENGTH
+                 or any(character not in "0123456789abcdef" for character in name))
+    if bad:
+        raise SourceTreeUnavailable(f"git returned unreadable object names for {bad}")
+    return {"record_type": SOURCE_TREE_RECORD_TYPE,
+            "source_revision": SOURCE_REVISION,
+            "note": "The object name of every cited path at that revision, read "
+                    "with git ls-tree. The check resolves a citation here, so it "
+                    "is bound to the revision and not to the working tree.",
+            "sources": {path: found[path] for path in cited_sources()}}
+
+
 def derive(bodies: dict) -> tuple[dict, dict]:
     """The two derived records, measured from the bodies and the drafts."""
     specifications, items = [], []
@@ -408,7 +498,8 @@ def derive(bodies: dict) -> tuple[dict, dict]:
         items.append({
             "reference": measured.reference(), "body_path":
                 BODIES_FOLDER + "/" + item.body_name,
-            "item_version": ITEM_VERSION, "lifecycle": "candidate",
+            "item_version": ITEM_VERSIONS.get(item.identity, ITEM_VERSION),
+            "lifecycle": "candidate",
             "license_state": LICENSE_STATE,
             "approval": {"approved": False, "approved_by": "", "approval_ref": ""},
             "provenance": {"authoring": AUTHORING,
@@ -492,14 +583,29 @@ def build(folder: Path, *, write: bool = False) -> dict:
     folder = folder.resolve()
     bodies = read_bodies(folder)
     stale = stale_identities(folder, bodies)
+    held_tree = _load(folder, SOURCE_TREE_FILE, SOURCE_TREE_RECORD_TYPE)
+    new_tree, source_tree_state = None, "recorded"
+    try:
+        new_tree = derive_source_tree(folder.parents[2])
+    except SourceTreeUnavailable as error:
+        # Without git the listing cannot be derived. The held record is left
+        # exactly as it is; a build never guesses a citation into the pack.
+        source_tree_state = f"not_derived: {error}"
+    if new_tree is not None and held_tree != new_tree:
+        stale.append("<source tree>")
     if stale and write:
         new_specifications, new_items = derive(bodies)
-        _replace_both([(folder / SPECIFICATIONS_FILE, new_specifications),
-                       (folder / ITEMS_FILE, new_items)])
+        replacements = [(folder / SPECIFICATIONS_FILE, new_specifications),
+                        (folder / ITEMS_FILE, new_items)]
+        if new_tree is not None:
+            replacements.append((folder / SOURCE_TREE_FILE, new_tree))
+        _replace_both(replacements)
     layers = {layer: sum(1 for item in ITEMS if item.layer == layer)
               for layer in LAYER_SOURCE}
     return {"record_type": "layer_coverage_pack_build/v1", "items": len(ITEMS),
             "items_per_layer": layers, "stale": stale,
+            "cited_sources": len(cited_sources()),
+            "source_tree": source_tree_state,
             "written": bool(stale and write), "approved": False, "published": False}
 
 

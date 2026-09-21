@@ -1,5 +1,5 @@
 {
-  "record_type": "intelligence_layer_coverage_measurement/v1",
+  "record_type": "intelligence_layer_coverage_measurement/v2",
   "population": "built-in package population with an empty runs directory and an empty guidance file",
   "search_mode": "lexical",
   "top_n": 3,
@@ -13,6 +13,17 @@
     "answers": [
       {
         "question": "a previous run of this same import that failed and how it was repaired",
+        "include_candidates": true,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "context_intelligence",
@@ -30,6 +41,17 @@
       },
       {
         "question": "what went wrong last time and what fixed it",
+        "include_candidates": true,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "context_intelligence",
@@ -47,6 +69,17 @@
       },
       {
         "question": "what guidance did the user give about dropping rows",
+        "include_candidates": true,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "code_intelligence",
@@ -64,6 +97,17 @@
       },
       {
         "question": "a standing instruction about weakening a check to make the build pass",
+        "include_candidates": true,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "context_intelligence",
@@ -81,6 +125,159 @@
       },
       {
         "question": "a reusable solution for deduplicating customer records",
+        "include_candidates": true,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
+        "hits": [
+          {
+            "layer": "code_intelligence",
+            "record_id": "code.module.solution_records"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.train_or_call"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.analogy_probe"
+          }
+        ]
+      }
+    ],
+    "answers_at_the_service_default": [
+      {
+        "question": "a previous run of this same import that failed and how it was repaired",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.repetition_circuit_breaker"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.analogy_probe"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.context_boundary_probe"
+          }
+        ]
+      },
+      {
+        "question": "what went wrong last time and what fixed it",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.acceptance_inversion"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.worst_way"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.reversibility"
+          }
+        ]
+      },
+      {
+        "question": "what guidance did the user give about dropping rows",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
+        "hits": [
+          {
+            "layer": "code_intelligence",
+            "record_id": "code.module.run_analytics"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "looptmpl.custom_user_supplied"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.smallest_first_step"
+          }
+        ]
+      },
+      {
+        "question": "a standing instruction about weakening a check to make the build pass",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.smallest_first_step"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "improve.mining.0"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.cheapest_check"
+          }
+        ]
+      },
+      {
+        "question": "a reusable solution for deduplicating customer records",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "code_intelligence",
@@ -108,6 +305,11 @@
     "answers": [
       {
         "question": "a previous run of this same import that failed and how it was repaired",
+        "include_candidates": true,
+        "unqueried": [],
+        "unqueried_public": [],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "runtime_history_solution_intelligence",
@@ -125,6 +327,11 @@
       },
       {
         "question": "what went wrong last time and what fixed it",
+        "include_candidates": true,
+        "unqueried": [],
+        "unqueried_public": [],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "user_feedback_intelligence",
@@ -142,6 +349,11 @@
       },
       {
         "question": "what guidance did the user give about dropping rows",
+        "include_candidates": true,
+        "unqueried": [],
+        "unqueried_public": [],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "user_feedback_intelligence",
@@ -159,6 +371,11 @@
       },
       {
         "question": "a standing instruction about weakening a check to make the build pass",
+        "include_candidates": true,
+        "unqueried": [],
+        "unqueried_public": [],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "runtime_history_solution_intelligence",
@@ -176,6 +393,11 @@
       },
       {
         "question": "a reusable solution for deduplicating customer records",
+        "include_candidates": true,
+        "unqueried": [],
+        "unqueried_public": [],
+        "excluded_count": 0,
+        "excluded_reasons": [],
         "hits": [
           {
             "layer": "code_intelligence",
@@ -191,11 +413,164 @@
           }
         ]
       }
+    ],
+    "answers_at_the_service_default": [
+      {
+        "question": "a previous run of this same import that failed and how it was repaired",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 24,
+        "excluded_reasons": [
+          "candidate_or_inactive_requires_review"
+        ],
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.repetition_circuit_breaker"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.analogy_probe"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.context_boundary_probe"
+          }
+        ]
+      },
+      {
+        "question": "what went wrong last time and what fixed it",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 24,
+        "excluded_reasons": [
+          "candidate_or_inactive_requires_review"
+        ],
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.acceptance_inversion"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.worst_way"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.reversibility"
+          }
+        ]
+      },
+      {
+        "question": "what guidance did the user give about dropping rows",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 24,
+        "excluded_reasons": [
+          "candidate_or_inactive_requires_review"
+        ],
+        "hits": [
+          {
+            "layer": "code_intelligence",
+            "record_id": "code.module.run_analytics"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "looptmpl.custom_user_supplied"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.smallest_first_step"
+          }
+        ]
+      },
+      {
+        "question": "a standing instruction about weakening a check to make the build pass",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 24,
+        "excluded_reasons": [
+          "candidate_or_inactive_requires_review"
+        ],
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.smallest_first_step"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "improve.mining.0"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.cheapest_check"
+          }
+        ]
+      },
+      {
+        "question": "a reusable solution for deduplicating customer records",
+        "include_candidates": false,
+        "unqueried": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "unqueried_public": [
+          "runtime_history_solution_intelligence",
+          "user_feedback_intelligence"
+        ],
+        "excluded_count": 24,
+        "excluded_reasons": [
+          "candidate_or_inactive_requires_review"
+        ],
+        "hits": [
+          {
+            "layer": "code_intelligence",
+            "record_id": "code.module.solution_records"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.train_or_call"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.analogy_probe"
+          }
+        ]
+      }
     ]
   },
   "limits": [
     "The pack items are candidates. Adding them to this catalog is a measurement, not a promotion and not a publication.",
-    "Lexical search over the built catalog. This is a coverage measurement, not a relevance benchmark.",
+    "The 'answers' set is measured with include_candidates=True. The service default is False, which every hosted call uses; 'answers_at_the_service_default' is that set, and in it all 24 pack items are excluded as candidate_or_inactive_requires_review and the after answers equal the before answers.",
+    "Lexical search over the built catalog. This is a coverage measurement, not a relevance benchmark. No score floor is applied, so a question whose answer is not in the catalog still receives the three best-ranked items.",
     "No model was called and no network was reached."
   ]
 }

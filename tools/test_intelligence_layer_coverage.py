@@ -16,6 +16,7 @@ from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 import unittest
 
 from loop_engine.core.harness_intelligence import (
@@ -25,29 +26,67 @@ from loop_engine.core.retrieval import Retriever
 from loop_engine.core.service_runtime.http_entrypoint import (
     DEFAULT_ACCEPTED_LICENSES, REVIEW_LICENSE_MARKERS, UNKNOWN_LICENSE_MARKERS)
 from loop_engine.core.store_serve import StoreRecord
+from loop_engine.core.user_feedback_intelligence import (
+    GUIDANCE_TYPES, SCOPES, STRENGTHS, TIMINGS)
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "artifacts" / "intelligence-layer-coverage-2026-09-21" / "pack"
 ITEMS_RECORD_TYPE = "layer_coverage_candidate_items/v1"
 QUERIES_RECORD_TYPE = "layer_coverage_search_queries/v1"
 SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v1"
+SOURCE_TREE_RECORD_TYPE = "layer_coverage_source_tree/v1"
 #: The two layers this pack exists to fill.
 COVERED_LAYERS = ("runtime_history_solution_intelligence", "user_feedback_intelligence")
 #: The pack is worth shipping only if it carries real material in both layers.
 MINIMUM_PER_LAYER = 5
 MINIMUM_QUERIES = 30
+#: The author wrote the queries against purposes the author also wrote, so the
+#: reviewer-written queries carry the evidence. They get their own floor, and
+#: so does the record of which queries missed before a purpose was widened,
+#: because a suite that can drop either one stops proving what it claims.
+MINIMUM_REVIEWER_QUERIES = 10
+MINIMUM_RECORDED_MISSES = 5
 TOP_N = 3
+#: A User Feedback body states its guidance in a small table. Each of these
+#: rows must carry a value from the owning module's closed vocabulary, so a
+#: table that looks typed is typed. Prose belongs on a separate note row.
+GUIDANCE_FIELD_VOCABULARY = {
+    "Guidance type": GUIDANCE_TYPES,
+    "Scope": SCOPES,
+    "Strength": STRENGTHS,
+    "Timing": TIMINGS,
+}
+USER_FEEDBACK_LAYER = "user_feedback_intelligence"
 
 
 def _read(name: str) -> dict:
     return json.loads(PACK.joinpath(name).read_bytes().decode("utf-8"))
 
 
+def guidance_fields(body: str) -> dict:
+    """The declared value of each guidance row, exactly as the body writes it.
+
+    A row is read only in its backticked form. Prose in the row is not a value
+    and is reported as one that is not in the vocabulary.
+    """
+    found: dict = {}
+    for line in body.split("\n"):
+        parts = [cell.strip() for cell in line.split("|")]
+        if len(parts) == 4 and parts[1] in GUIDANCE_FIELD_VOCABULARY:
+            value = parts[2]
+            found[parts[1]] = (value[1:-1] if value.startswith("`")
+                               and value.endswith("`") and len(value) > 2
+                               else value)
+    return found
+
+
 class Snapshot:
     """One readable copy of the pack, so a rule can be run against a mutant."""
 
-    def __init__(self, items: dict, specifications: dict, bodies: dict):
+    def __init__(self, items: dict, specifications: dict, bodies: dict,
+                 queries: dict, source_tree: dict):
         self.items, self.specifications, self.bodies = items, specifications, bodies
+        self.queries, self.source_tree = queries, source_tree
 
     @classmethod
     def load(cls) -> "Snapshot":
@@ -55,14 +94,19 @@ class Snapshot:
         specifications = _read("specifications.json")
         bodies = {path.name: path.read_bytes().decode("utf-8")
                   for path in sorted((PACK / "bodies").iterdir())}
-        return cls(items, specifications, bodies)
+        return cls(items, specifications, bodies, _read("search-queries.json"),
+                   _read("source-tree.json"))
 
     def copy(self) -> "Snapshot":
         return Snapshot(deepcopy(self.items), deepcopy(self.specifications),
-                        dict(self.bodies))
+                        dict(self.bodies), deepcopy(self.queries),
+                        deepcopy(self.source_tree))
 
     def rows(self):
         return self.items.get("items", [])
+
+    def query_rows(self):
+        return self.queries.get("queries", [])
 
 
 def _digest_matches_its_body(snapshot: Snapshot) -> list:
@@ -157,8 +201,21 @@ def _every_item_declares_a_version_and_its_effects(snapshot: Snapshot) -> list:
 
 
 def _provenance_names_a_revision_and_real_repository_sources(snapshot: Snapshot) -> list:
-    """Every cited source is a file that exists, bound to one recorded revision."""
+    """Every cited source is a file in the recorded revision, not in this tree.
+
+    A citation is resolved through ``source-tree.json``, the listing of object
+    names read out of ``source_revision`` itself. Existence in whatever tree
+    the check happens to run in proves nothing about the revision an item is
+    bound to: a file added after it would pass, and a file moved away from it
+    would fail for a reason that has nothing to do with the item.
+    """
     revision = snapshot.items.get("source_revision", "")
+    listing = snapshot.source_tree
+    if (listing.get("record_type") != SOURCE_TREE_RECORD_TYPE
+            or listing.get("source_revision") != revision
+            or not isinstance(listing.get("sources"), dict)):
+        return ["<source tree>"]
+    at_revision = listing["sources"]
     found = []
     for row in snapshot.rows():
         provenance = row.get("provenance", {})
@@ -167,12 +224,61 @@ def _provenance_names_a_revision_and_real_repository_sources(snapshot: Snapshot)
             isinstance(source, str) and not Path(source).is_absolute()
             and ".." not in Path(source).parts
             and not any(part.startswith(".") for part in Path(source).parts)
-            and (ROOT / source).is_file() for source in sources)
+            and source in at_revision for source in sources)
         if (not sources or not confined
                 or provenance.get("source_revision") != revision
                 or not str(provenance.get("authoring", "")).strip()
                 or not row["reference"]["source_ref"].endswith("@" + revision)):
             found.append(row["reference"]["identity"])
+    return found
+
+
+def _guidance_fields_use_the_engine_vocabularies(snapshot: Snapshot) -> list:
+    """A User Feedback body states its guidance in the engine's own values.
+
+    ``user_feedback_intelligence`` refuses an unknown strength or timing at the
+    store boundary. A body that a reviewer approves, or that a later change
+    turns into an ``AdviceStore`` record, must not carry a field the store
+    would reject, and a row that looks typed must not be free prose.
+    """
+    found = []
+    for row in snapshot.rows():
+        if row["reference"]["source_layer"] != USER_FEEDBACK_LAYER:
+            continue
+        identity = row["reference"]["identity"]
+        body = snapshot.bodies.get(Path(row.get("body_path", "")).name)
+        if body is None:
+            found.append(identity)
+            continue
+        declared = guidance_fields(body)
+        for field_name, vocabulary in GUIDANCE_FIELD_VOCABULARY.items():
+            if declared.get(field_name) not in vocabulary:
+                found.append(f"{identity}:{field_name}")
+    return found
+
+
+def _the_query_set_keeps_its_adversarial_record(snapshot: Snapshot) -> list:
+    """The reviewer queries and the recorded misses both keep a floor.
+
+    The author-written queries were written against purposes the same author
+    wrote, so they are the weaker half of the evidence. Five reviewer queries
+    missed on their first run and were kept, with the purpose widened rather
+    than the query softened. Both facts have to survive an edit to this file.
+    """
+    rows = snapshot.query_rows()
+    written_by = [row.get("written_by") for row in rows]
+    misses = [row for row in rows if row.get("missed_before_purpose_was_widened")]
+    found = []
+    if snapshot.queries.get("record_type") != QUERIES_RECORD_TYPE:
+        found.append("<query record type>")
+    if len(rows) < MINIMUM_QUERIES:
+        found.append(f"<{len(rows)} queries, {MINIMUM_QUERIES} required>")
+    if written_by.count("reviewer") < MINIMUM_REVIEWER_QUERIES:
+        found.append(f"<{written_by.count('reviewer')} reviewer queries, "
+                     f"{MINIMUM_REVIEWER_QUERIES} required>")
+    if len(misses) < MINIMUM_RECORDED_MISSES:
+        found.append(f"<{len(misses)} recorded misses, "
+                     f"{MINIMUM_RECORDED_MISSES} required>")
     return found
 
 
@@ -188,6 +294,10 @@ RULES = {
         _every_item_declares_a_version_and_its_effects,
     "provenance_names_a_revision_and_real_repository_sources":
         _provenance_names_a_revision_and_real_repository_sources,
+    "guidance_fields_use_the_engine_vocabularies":
+        _guidance_fields_use_the_engine_vocabularies,
+    "the_query_set_keeps_its_adversarial_record":
+        _the_query_set_keeps_its_adversarial_record,
 }
 
 
@@ -219,6 +329,51 @@ def _edit_a_body_without_rebuilding(snapshot: Snapshot) -> Snapshot:
     mutant = snapshot.copy()
     name = Path(mutant.rows()[0]["body_path"]).name
     mutant.bodies[name] = mutant.bodies[name] + "\nAn edit nobody measured.\n"
+    return mutant
+
+
+def _first_user_feedback_row(snapshot: Snapshot) -> dict:
+    for row in snapshot.rows():
+        if row["reference"]["source_layer"] == USER_FEEDBACK_LAYER:
+            return row
+    raise AssertionError("the pack holds no User Feedback item to mutate")
+
+
+def _rewrite_a_guidance_row(snapshot: Snapshot, field_name: str,
+                            value: str) -> Snapshot:
+    """Put a value the owning module does not accept in one guidance row."""
+    mutant = snapshot.copy()
+    name = Path(_first_user_feedback_row(mutant)["body_path"]).name
+    rewritten = []
+    for line in mutant.bodies[name].split("\n"):
+        parts = [cell.strip() for cell in line.split("|")]
+        if len(parts) == 4 and parts[1] == field_name:
+            rewritten.append(f"| {field_name} | {value} |")
+        else:
+            rewritten.append(line)
+    mutant.bodies[name] = "\n".join(rewritten)
+    return mutant
+
+
+def _drop_the_source_tree_entry(snapshot: Snapshot) -> Snapshot:
+    """Cite a path that is not in the recorded revision."""
+    mutant = snapshot.copy()
+    cited = mutant.rows()[0]["provenance"]["repository_sources"][0]
+    mutant.source_tree["sources"].pop(cited, None)
+    return mutant
+
+
+def _keep_only_author_queries(snapshot: Snapshot) -> Snapshot:
+    mutant = snapshot.copy()
+    kept = [row for row in mutant.query_rows() if row.get("written_by") != "reviewer"]
+    mutant.queries["queries"] = kept + kept[:MINIMUM_QUERIES - len(kept)]
+    return mutant
+
+
+def _forget_which_queries_missed(snapshot: Snapshot) -> Snapshot:
+    mutant = snapshot.copy()
+    for row in mutant.query_rows():
+        row.pop("missed_before_purpose_was_widened", None)
     return mutant
 
 
@@ -284,6 +439,35 @@ KNOWN_WRONG = {
          lambda s: _edit_provenance(s, source_revision="0" * 40)),
         ("the source reference lost its revision",
          lambda s: _edit_first_reference(s, source_ref="AGENTS.md")),
+        ("a cited source is not in the recorded revision",
+         _drop_the_source_tree_entry),
+        ("the recorded listing is bound to another revision",
+         lambda s: _edit_source_tree(s, source_revision="0" * 40)),
+        ("the recorded listing lost its record type",
+         lambda s: _edit_source_tree(s, record_type="a listing")),
+    ),
+    "guidance_fields_use_the_engine_vocabularies": (
+        ("the timing is prose rather than a value the store accepts",
+         lambda s: _rewrite_a_guidance_row(
+             s, "Timing", "before verification, and again when a check fails")),
+        ("the guidance type is not in GUIDANCE_TYPES",
+         lambda s: _rewrite_a_guidance_row(s, "Guidance type", "`reminder`")),
+        ("the scope is not in SCOPES",
+         lambda s: _rewrite_a_guidance_row(s, "Scope", "`company`")),
+        ("the strength is not in STRENGTHS",
+         lambda s: _rewrite_a_guidance_row(s, "Strength", "`strong`")),
+        ("a guidance row was removed altogether",
+         lambda s: _rewrite_a_guidance_row(s, "Timing", "")),
+    ),
+    "the_query_set_keeps_its_adversarial_record": (
+        ("the reviewer queries were dropped and the count padded with the "
+         "author's own", _keep_only_author_queries),
+        ("the record of which queries first missed was dropped",
+         _forget_which_queries_missed),
+        ("the query set was trimmed below its floor",
+         lambda s: _trim_queries(s, 5)),
+        ("the query record lost its record type",
+         lambda s: _edit_query_header(s, record_type="some queries")),
     ),
 }
 
@@ -306,6 +490,24 @@ def _edit_provenance(snapshot: Snapshot, **fields) -> Snapshot:
     return mutant
 
 
+def _edit_source_tree(snapshot: Snapshot, **fields) -> Snapshot:
+    mutant = snapshot.copy()
+    mutant.source_tree.update(fields)
+    return mutant
+
+
+def _edit_query_header(snapshot: Snapshot, **fields) -> Snapshot:
+    mutant = snapshot.copy()
+    mutant.queries.update(fields)
+    return mutant
+
+
+def _trim_queries(snapshot: Snapshot, keep: int) -> Snapshot:
+    mutant = snapshot.copy()
+    mutant.queries["queries"] = mutant.query_rows()[:keep]
+    return mutant
+
+
 def _pack_build():
     """The pack's own build tool, loaded from its folder rather than copied."""
     import sys
@@ -322,6 +524,34 @@ def _pack_build():
 def problems(snapshot: Snapshot) -> dict:
     """Every rule that reports something, with what it reported."""
     return {name: found for name, rule in RULES.items() if (found := rule(snapshot))}
+
+
+def git_mismatches(snapshot: Snapshot):
+    """The cited paths whose recorded object name is not what git holds.
+
+    Returns ``None`` when git or the revision is unavailable, so a caller
+    reports an unconfirmed listing rather than an empty list of problems.
+    """
+    revision = snapshot.source_tree.get("source_revision", "")
+    listed = snapshot.source_tree.get("sources") or {}
+    try:
+        finished = subprocess.run(
+            ["git", "-C", str(ROOT), "ls-tree", "-r", "-z", revision,
+             "--", *sorted(listed)],
+            capture_output=True, check=False, timeout=60)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if finished.returncode != 0:
+        return None
+    held = {}
+    for entry in finished.stdout.decode("utf-8").split("\0"):
+        if not entry:
+            continue
+        facts, _, path = entry.partition("\t")
+        parts = facts.split()
+        if len(parts) == 3 and parts[1] == "blob":
+            held[path] = parts[2]
+    return sorted(path for path, name in listed.items() if held.get(path) != name)
 
 
 def first_three(rows, query) -> list:
@@ -357,17 +587,34 @@ class LayerCoverageChecks(unittest.TestCase):
         self.assertEqual(_pack_build().build(PACK)["stale"], [])
 
     def test_plain_customer_queries_find_their_item(self):
-        record = _read("search-queries.json")
-        self.assertEqual(record.get("record_type"), QUERIES_RECORD_TYPE)
-        rows = record["queries"]
-        self.assertGreaterEqual(len(rows), MINIMUM_QUERIES)
-        self.assertIn("reviewer", {row["written_by"] for row in rows})
+        rows = self.snapshot.query_rows()
         identities = {row["reference"]["identity"] for row in self.snapshot.rows()}
         self.assertLessEqual({row["expected"] for row in rows}, identities)
         for row in rows:
             with self.subTest(query=row["query"]):
                 self.assertIn(row["expected"],
                               first_three(self.snapshot.rows(), row["query"]))
+
+    def test_the_recorded_source_tree_is_what_git_holds_at_that_revision(self):
+        """The listing the provenance rule trusts is not the pack's own word.
+
+        Without git, or without the revision in this clone, the listing cannot
+        be confirmed here and the check says so instead of passing quietly.
+        """
+        mismatched = git_mismatches(self.snapshot)
+        if mismatched is None:
+            self.skipTest(f"git could not read {self.snapshot.items['source_revision']} "
+                          "in this checkout, so the recorded listing is unconfirmed")
+        self.assertEqual(mismatched, [])
+
+    def test_a_planted_object_name_is_reported_against_git(self):
+        """The known-wrong case for the listing: a name nobody could produce."""
+        if git_mismatches(self.snapshot) is None:
+            self.skipTest("git could not read the recorded revision in this checkout")
+        mutant = self.snapshot.copy()
+        cited = mutant.rows()[0]["provenance"]["repository_sources"][0]
+        mutant.source_tree["sources"][cited] = "0" * 40
+        self.assertEqual(git_mismatches(mutant), [cited])
 
     def test_a_pack_of_vague_purposes_finds_nothing(self):
         """The known-wrong case for the query check: without real purposes,

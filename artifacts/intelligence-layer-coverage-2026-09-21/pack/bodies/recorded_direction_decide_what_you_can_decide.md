@@ -7,7 +7,8 @@ Kind: recorded guidance from a person, held in User Feedback Intelligence.
 | Guidance type | `priority_change` |
 | Scope | `organization` |
 | Strength | `instruction` |
-| Timing | before asking a question |
+| Timing | `immediately_if_safe` |
+| Timing in the recorded words | before asking a question |
 | Recorded | 2026-09-20, in the evening, by the repository owner |
 
 ## The guidance as recorded

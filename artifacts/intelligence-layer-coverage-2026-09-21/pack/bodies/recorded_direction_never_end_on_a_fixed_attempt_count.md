@@ -7,7 +7,8 @@ Kind: recorded guidance from a person, held in User Feedback Intelligence.
 | Guidance type | `instruction` |
 | Scope | `organization` |
 | Strength | `instruction` |
-| Timing | when the same failure repeats |
+| Timing | `before_next_retry` |
+| Timing in the recorded words | when the same failure repeats |
 | Recorded | 2026-09-14, by the repository owner |
 
 ## The guidance as recorded

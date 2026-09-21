@@ -10,8 +10,11 @@ column is empty on purpose.
 Twenty-four items for the two persistent intelligence layers that hold
 nothing in the built-in population. Fourteen are recorded runs, decisions,
 failures, repairs and one measurement, taken from this repository's own saved
-evidence. Ten are guidance a person recorded, each with its scope, strength
-and timing.
+evidence. Ten are guidance a person recorded, each stating its guidance type,
+scope, strength and timing as values from the owning module's closed
+vocabularies, `user_feedback_intelligence.GUIDANCE_TYPES`, `SCOPES`,
+`STRENGTHS` and `TIMINGS`. The words the direction was recorded in are kept on
+a separate note row beside the timing.
 
 ```text
 Layer coverage pack candidates (24)
@@ -35,7 +38,8 @@ Layer coverage pack candidates (24)
 | `build.py` | The drafts, and the tool that measures each body through the engine's own `item_from_body` and rewrites the two derived records. It approves nothing and publishes nothing. |
 | `specifications.json` | The items in the exact format `tools/stage_intelligence_candidates.py` accepts. The `text` of each row equals its body. |
 | `items.json` | Identity, kind, purpose, source layer, source reference with revision, licence, declared effects, lifecycle tag, digest, size, item version, licence state, an empty approval record and the provenance. Each `reference` object has the shape `HarnessIntelligenceItem.reference()` returns. |
-| `search-queries.json` | Thirty-four plain customer queries, each with the item it must find and who wrote it. |
+| `search-queries.json` | Thirty-four plain customer queries, each with the item it must find and who wrote it. Ten are reviewer-written and five of those are marked `missed_before_purpose_was_widened`. The check holds a floor under both counts. |
+| `source-tree.json` | The git object name of each of the eighteen distinct cited paths at revision `6a489b2eff78d1e7251d65e143edbd89f7250c4e`. The provenance rule resolves a citation here, so it is bound to that revision rather than to whichever tree the check runs in. A separate check reads the same paths back out of git and compares. |
 | `REVIEW.md` | This sheet. |
 
 ## What each item carries before it could become active
@@ -45,7 +49,7 @@ Layer coverage pack candidates (24)
 | Immutable source identity | `reference.source_ref`, a repository path with the revision `6a489b2eff78d1e7251d65e143edbd89f7250c4e` appended. |
 | Provenance | `provenance.authoring`, `provenance.source_revision`, `provenance.note` and `provenance.repository_sources`. The staging tool independently records `assistant_authored_from_repository_sources` and `not_independently_qualified`. |
 | Licence state | `license_state` is `declared` and `reference.license` is `MIT`, the licence of this repository, which is the only identifier the default host policy accepts. The staging tool separately records `pending_review` in its own staged payload. |
-| Version | `item_version` is `1.0.0` for every item. A changed body needs a new version. The staging tool also computes a content-derived `record_version`. |
+| Version | `item_version` is `1.0.0` for the fourteen Runtime History items and `1.1.0` for the ten User Feedback items, whose bodies changed on 2026-09-21 when Timing was given a value from `TIMINGS` in place of free prose. A changed body needs a new version, and an unchanged body is not bumped for someone else's edit. The staging tool also computes a content-derived `record_version`. |
 | Typed contract | `reference.record_type` is `harness_intelligence_item/v1`. The file carries `layer_coverage_candidate_items/v1`. A check rebuilds every reference through the engine's own typed item and refuses a malformed one. |
 | Declared effects | `reference.declared_effects` is empty for every item. These bodies are prose. None executes, reads a file or reaches a network. |
 | Digest | `reference.digest`, the SHA-256 of the body bytes, measured by `item_from_body` and recomputed independently by the check. |
@@ -110,7 +114,7 @@ the reason, or the change needed.
 
 ## What a reviewer should challenge first
 
-Three honest weaknesses, stated before anyone finds them.
+Four honest weaknesses, stated before anyone finds them.
 
 1. **The guidance in the User Feedback layer is this project's own owner's
    guidance.** It reads as transferable engineering direction and it is real,
@@ -123,14 +127,28 @@ Three honest weaknesses, stated before anyone finds them.
    decision or measurement with its evidence file named. They are priors, not
    proof that the same choice suits another task.
 3. **Nobody independent has read a body against its source.** The check
-   verifies that the cited files exist and that the derived records match the
-   bodies. It cannot verify that a sentence in a body is a fair summary of
-   the file it cites. That is the review being asked for.
+   verifies that each cited path is in the recorded revision and that the
+   derived records match the bodies. It cannot verify that a sentence in a
+   body is a fair summary of the file it cites. That is the review being
+   asked for.
+4. **A search with these items in it still answers a question it has no
+   material for.** The retrieval path has no score floor, so a customer
+   question that none of these twenty-four items addresses still receives
+   three of them, ranked and confidently written. Approving an item is not a
+   judgement that the search will only offer it when it fits. The measurement
+   in [the folder README](../README.md#3-what-is-missing-and-why) records this
+   as an open gap.
 
 ## After any edit of a body
 
 Run these from the repository root. The first reports what is stale. The
-second rewrites the derived records. The third runs the checks.
+second rewrites the derived records, which are `specifications.json`,
+`items.json` and `source-tree.json`. The third runs the checks.
+
+The source tree listing is read with `git ls-tree` at the recorded revision.
+Without git, or without that revision in the clone, the build reports
+`"source_tree": "not_derived: ..."` and leaves the held listing exactly as it
+is. It never guesses a citation into the pack.
 
 ```bash
 PYTHONPATH=src python \

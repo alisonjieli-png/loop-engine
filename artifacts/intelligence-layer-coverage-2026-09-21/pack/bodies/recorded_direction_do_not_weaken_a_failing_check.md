@@ -7,7 +7,8 @@ Kind: recorded guidance from a person, held in User Feedback Intelligence.
 | Guidance type | `instruction` |
 | Scope | `organization` |
 | Strength | `instruction` |
-| Timing | before verification, and again when a check fails |
+| Timing | `before_verification` |
+| Timing in the recorded words | before verification, and again when a check fails |
 | Recorded | 2026-09-14, by the repository owner |
 
 ## The guidance as recorded

@@ -5,8 +5,9 @@ This tool answers three questions with executed evidence instead of a guess:
 1. How many items does each of the four layers hold on a fresh installation,
    with no saved runs and no saved user guidance?
 2. What does a search of those layers return for a question that is aimed at a
-   layer which holds nothing?
-3. What changes when the candidate coverage pack in ``pack/`` is added?
+   layer which holds nothing, and what does the response say about that layer?
+3. What changes when the candidate coverage pack in ``pack/`` is added, both
+   with candidates admitted and at the service default that excludes them?
 
 It creates a temporary empty runs directory and an empty guidance file, so the
 "before" numbers are the built-in population and not this workstation's saved
@@ -60,17 +61,35 @@ def pack_records(pack: Path) -> dict:
     return layers
 
 
-def searched(catalog: dict) -> list:
-    """What each customer question returns from this catalog."""
+def searched(catalog: dict, *, include_candidates: bool) -> list:
+    """What each customer question returns from this catalog.
+
+    ``unqueried`` and ``unqueried_public`` are recorded beside the hits because
+    they are how the response says a layer held nothing. A reader comparing the
+    before and after tables needs that field to see that the empty layers were
+    named, not silently skipped.
+
+    ``include_candidates`` is recorded with every answer because it decides
+    whether a candidate item can be ranked at all. The hosted boundary
+    ``saas_routes.intelligence_surface`` leaves it at its ``False`` default.
+    """
     answers = []
     for question in QUESTIONS:
         result = query_intelligence(
             IntelligenceSearchRequest(question, catalog, mode="lexical",
-                                      top_n=TOP_N, include_candidates=True),
+                                      top_n=TOP_N,
+                                      include_candidates=include_candidates),
             IntelligenceSearchContext(ledger=LoopLedger()))
-        answers.append({"question": question, "hits": [
-            {"layer": hit["layer"], "record_id": hit["record_id"]}
-            for hit in result["hits"]]})
+        excluded = [row["reason"] for row in result["excluded"]]
+        answers.append({
+            "question": question,
+            "include_candidates": result["candidates_included"],
+            "unqueried": list(result["unqueried"]),
+            "unqueried_public": list(result["unqueried_public"]),
+            "excluded_count": len(excluded),
+            "excluded_reasons": sorted(set(excluded)),
+            "hits": [{"layer": hit["layer"], "record_id": hit["record_id"]}
+                     for hit in result["hits"]]})
     return answers
 
 
@@ -89,17 +108,33 @@ def measure(pack: Path) -> dict:
                                             advice_path=str(advice))
         after = {layer: list(records) + list(pack_records(pack)[layer])
                  for layer, records in before.items()}
-        return {"record_type": "intelligence_layer_coverage_measurement/v1",
+        return {"record_type": "intelligence_layer_coverage_measurement/v2",
                 "population": "built-in package population with an empty runs "
                               "directory and an empty guidance file",
                 "search_mode": "lexical", "top_n": TOP_N,
-                "before": {"counts": counts(before), "answers": searched(before)},
-                "after": {"counts": counts(after), "answers": searched(after)},
+                "before": {
+                    "counts": counts(before),
+                    "answers": searched(before, include_candidates=True),
+                    "answers_at_the_service_default":
+                        searched(before, include_candidates=False)},
+                "after": {
+                    "counts": counts(after),
+                    "answers": searched(after, include_candidates=True),
+                    "answers_at_the_service_default":
+                        searched(after, include_candidates=False)},
                 "limits": [
                     "The pack items are candidates. Adding them to this catalog "
                     "is a measurement, not a promotion and not a publication.",
+                    "The 'answers' set is measured with include_candidates=True. "
+                    "The service default is False, which every hosted call uses; "
+                    "'answers_at_the_service_default' is that set, and in it all "
+                    "24 pack items are excluded as "
+                    "candidate_or_inactive_requires_review and the after answers "
+                    "equal the before answers.",
                     "Lexical search over the built catalog. This is a coverage "
-                    "measurement, not a relevance benchmark.",
+                    "measurement, not a relevance benchmark. No score floor is "
+                    "applied, so a question whose answer is not in the catalog "
+                    "still receives the three best-ranked items.",
                     "No model was called and no network was reached."]}
 
 

@@ -7,7 +7,8 @@ Kind: recorded guidance from a person, held in User Feedback Intelligence.
 | Guidance type | `constraint` |
 | Scope | `organization` |
 | Strength | `instruction` |
-| Timing | before acting on anything read from a document or a name |
+| Timing | `immediately_if_safe` |
+| Timing in the recorded words | before acting on anything read from a document or a name |
 | Recorded | 2026-09-19, by the repository owner |
 
 ## The guidance as recorded
