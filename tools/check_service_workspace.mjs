@@ -743,9 +743,35 @@ try {
   const plainContext=await browser.newContext();
   const servedAsset=await plainContext.request.get(fixture.browse_base+"/assets/catalogue-browser.js");
   const servedAssetText=servedAsset.status()===200?await servedAsset.text():"";
-  await plainContext.close();
   check("catalogue_browser_asset_is_served",servedAsset.status()===200&&(servedAsset.headers()["content-type"]||"").includes("javascript")&&servedAssetText===browseSource,
     {status:servedAsset.status(),same_bytes_as_the_source_file:servedAssetText===browseSource});
+  /* Every internal address the page names, asked for over the running service. A script the service does
+     not serve is worse than a broken link: the request falls through to the interface router and comes
+     back as a refusal, so the page loads and then quietly does nothing. That is exactly how the browsing
+     module first shipped. The addresses are read from the page the service sent, so a script, stylesheet
+     or image added later is covered on the day it is added, with no list to keep up to date here. */
+  const internalAddresses=text=>[...new Set([...text.matchAll(/(?:href|src)="(\/[^"#?]*)"/g)].map(found=>found[1]))]
+    .filter(value=>!value.startsWith("/api/")&&!value.startsWith("/.well-known/")&&value!=="/mcp");
+  const servedPage=await plainContext.request.get(fixture.browse_base+"/app");
+  const pageText=servedPage.status()===200?await servedPage.text():"";
+  const namedScripts=[...new Set([...pageText.matchAll(/src="(\/[^"#?]*)"/g)].map(found=>found[1]))];
+  const answered=[];
+  for(const address of internalAddresses(pageText)) answered.push({address,status:(await plainContext.request.get(fixture.browse_base+address)).status()});
+  check("every_address_the_page_names_is_answered_by_the_service",
+    answered.length>=2&&namedScripts.includes("/assets/catalogue-browser.js")&&answered.every(item=>item.status===200),
+    {refused:answered.filter(item=>item.status!==200),named:answered.length,scripts:namedScripts.length});
+  /* The known-wrong case for the reading above. A reading that looked at link targets only, or a service
+     that answered every address with 200, would pass that check without proving anything. Here the same
+     reading is given a page that names one more script, and that address is asked for over the same
+     service, which must refuse it. */
+  const plantedAddress="/assets/an-address-this-service-does-not-serve.js";
+  const plantedPage=pageText.replace("</head>",'<script defer src="'+plantedAddress+'"></script></head>');
+  const plantedStatus=(await plainContext.request.get(fixture.browse_base+plantedAddress)).status();
+  check("an_address_the_page_names_but_the_service_refuses_is_found",
+    internalAddresses(plantedPage).includes(plantedAddress)
+    &&!internalAddresses(pageText).includes(plantedAddress)&&plantedStatus!==200,
+    {status:plantedStatus,planted_is_read:internalAddresses(plantedPage).includes(plantedAddress)});
+  await plainContext.close();
   const browseList=async (target,fields={})=>(await (await target.request.post(fixture.browse_base+"/api/v1/provisioning",
     {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
      data:{record_type:"service_provisioning_request/v1",operation:"list",...fields}})).json()).result;
