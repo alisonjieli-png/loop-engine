@@ -141,6 +141,19 @@ def run_checks(check, root: Path):
                 except HttpAuthenticationError:
                     blocked = True
                 check("disabled_identity_network_resolves_no_key_and_calls_no_provider", blocked and state["provider_calls"] == before)
+                # A visitor must be told that account creation is closed, not
+                # that their request was malformed, so the page can point them
+                # at the waiting list instead of showing a fault.
+                from ..service_runtime.http import _status
+                closed = BrowserIdentityAdapter(fixture.runtime, replace(policy, registration_enabled=False),
+                    lambda _: "sb_publishable_local_fixture", transport=user)
+                try:
+                    closed.activate(token(sub="waiting")); refusal = None
+                except ServiceRuntimeError as error:
+                    refusal = error
+                check("closed_account_creation_is_reported_as_unavailable_not_as_a_bad_request",
+                      refusal is not None and refusal.code == "account_registration_unavailable"
+                      and _status(refusal) == (503, "account_registration_unavailable"))
                 wrong_key = BrowserIdentityAdapter(fixture.runtime, policy, lambda _: "sb_secret_local_fixture", transport=user)
                 try:
                     wrong_key.public_configuration(); hidden = False

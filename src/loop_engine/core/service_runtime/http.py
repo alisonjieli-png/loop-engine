@@ -193,7 +193,9 @@ def _status(error):
     code = getattr(error, "code", "operation_failed")
     if isinstance(error, ServiceHttpError):
         return error.status, code
-    if code in ("identity_provider_unavailable", "identity_key_set_unavailable"):
+    # Closed account creation is a state of the service, not a bad request.
+    if code in ("identity_provider_unavailable", "identity_key_set_unavailable",
+                "account_registration_unavailable"):
         return 503, code
     if isinstance(error, HttpAuthenticationError) or code in (
             "unauthorized", "key_expired", "key_revoked", "tenant_disabled", "subject_unbound"):
