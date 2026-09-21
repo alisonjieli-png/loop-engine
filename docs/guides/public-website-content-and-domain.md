@@ -135,9 +135,10 @@ waiting list form is being built.
 
 The page answers at `/connect`, which the serving route table lists. The
 address `/get-started` opens the same page through the navigation, and a
-direct visit to it is not served yet, exactly as with `/pricing`. Both need
-one entry each in `WEB_ASSETS` in
-`src/loop_engine/core/service_runtime/http.py`.
+direct visit to it is not served yet. It needs one entry in `WEB_ASSETS` in
+`src/loop_engine/core/service_runtime/http.py`, next to the entry that
+`/pricing` received on September 21, 2026. Until it has one, every link on
+the website points at `/connect`, so no customer reaches a refused address.
 
 The account action has two states and the page never chooses between them by
 itself. It reads `website.registration_available` from `/api/v1/capabilities`.
@@ -268,11 +269,10 @@ view says plainly that payment is not open yet and shows no purchase button.
 `tools/check_service_workspace.mjs` holds both states, and two removed-guard
 controls prove that a page which always claims one state fails a named check.
 
-Two things are still missing on September 21, 2026. The serving route table
-does not yet list `/pricing` or `/get-started`, so both addresses work through
-the navigation and a direct visit to either is not served. Each needs one
-entry in `WEB_ASSETS` in `src/loop_engine/core/service_runtime/http.py`. The
-account page holds the subscription controls, and those remain behind the
+The serving route table now lists `/pricing`, so a direct visit to it is
+served. The address `/get-started` still is not, so it works through the
+navigation only and every link on the website points at `/connect` instead.
+The account page holds the subscription controls, and those remain behind the
 payment state.
 
 Keep the internal report available to the owner, and build the public content

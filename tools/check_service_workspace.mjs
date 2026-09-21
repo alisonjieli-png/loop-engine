@@ -345,7 +345,7 @@ try {
   await plain.close();await withoutScript.close();
   /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
      The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
-  const servedRoutes=["/","/how-it-works","/connect","/signup","/login","/examples","/security","/app","/account","/docs"];
+  const servedRoutes=["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/app","/account","/docs"];
   /* One sentence still carries the retired word, and it is written in client-access.js, which belongs to another
      workstream. It is named here rather than hidden, so every other occurrence anywhere still fails this check, and
      the place it appears is reported. */
@@ -359,9 +359,11 @@ try {
     if(path!=="/docs"&&publicVocabulary.test(shownText))vocabularyProblems.push({path,rule:"runtime word",found:shownText.match(publicVocabulary)[0]});
   };
   for(const path of servedRoutes){await page.goto(fixture.base+path);scanShownText(path,await readShownText(page));}
-  // The pricing view is reached through the navigation, because the serving route table does not list its address yet.
-  await page.goto(fixture.base+"/");await page.locator('header a[data-page="pricing"]').click();
-  scanShownText("/pricing",await readShownText(page));
+  /* The Get started page also answers at "/get-started", which the serving route table does not list yet, so that
+     address is reached through the navigation. Every link on the website points at "/connect", which is served. */
+  await page.goto(fixture.base+"/");
+  await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
+  scanShownText("/get-started",await readShownText(page));
   check("the_recorded_trial_word_appears_only_where_it_is_recorded",exceptionSeen.every(path=>path==="/account"),{sentence:recordedException,file:"src/loop_engine/core/service_runtime/web_assets/client-access.js",seen_on:exceptionSeen});
   const servedMarkup=await (await page.request.get(fixture.base+"/")).text(),servedScript=await (await page.request.get(fixture.base+"/assets/service.js")).text();
   if(retiredAccessWords.test(servedMarkup))vocabularyProblems.push({path:"the served page source",rule:"retired access word",found:servedMarkup.match(retiredAccessWords)[0]});

@@ -52,14 +52,14 @@ they describe the actual state. A subscription grants the declared service
 access. It does not grant a model allowance, permission to execute code, or
 access to a competition's data.
 
-Describe what the product does and how it works, because that is observable in
-the source. Do not state or imply a measured outcome that nobody has measured.
-Write "give each step only the material it needs", not "cut your token bill".
-Write "designed so a smaller model can finish a bounded step", not "solve
-problems overnight". Where a benefit is an intention rather than a result, the
-page says so in a sentence the reader will actually read, not in small print.
-No percentage, no "always", no "guaranteed", no comparison to a named
-competitor, and no invented customer, testimonial, logo or number.
+Where a benefit is an intention rather than a result, say so on the page in a
+sentence the reader will actually read, not in small print. Write "give each
+step only the material it needs" rather than a claim about a token bill, and
+"designed so a smaller model can finish a bounded step" rather than a promise
+about finishing overnight. The six benefits on the homepage each carry that
+sentence, and the
+[public content direction](public-website-content-and-domain.md#the-six-benefits-and-how-they-open)
+lists what each one does not claim.
 
 Use full descriptive terms. Keep exact identifiers in technical details and
 copyable configuration. Avoid hype, decorative slogans, invented performance
