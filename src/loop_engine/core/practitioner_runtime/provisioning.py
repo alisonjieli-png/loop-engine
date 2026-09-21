@@ -56,7 +56,10 @@ def _item(value):
     expected = {"record_type", "identity", "kind", "purpose", "digest", "source_layer",
                 "source_ref", "family", "size_bytes", "license", "declared_effects", "styles",
                 "tags", "exposure", "availability", "body_included"}
-    if (not isinstance(value, dict) or set(value) != expected
+    legacy = {"record_type", "identity", "kind", "purpose", "digest", "source_layer",
+              "source_ref", "size_bytes", "license", "declared_effects", "styles",
+              "tags", "exposure", "availability", "body_included"}
+    if (not isinstance(value, dict) or set(value) not in (expected, legacy)
             or value["record_type"] != ITEM_RECORD_TYPE or value["body_included"] is not False):
         raise ProvisioningConfigurationError("catalogue snapshots require current body-free item references")
     return HarnessIntelligenceItem(
@@ -65,7 +68,7 @@ def _item(value):
         size_bytes=value["size_bytes"], license_name=value["license"],
         declared_effects=tuple(value["declared_effects"]), styles=tuple(value["styles"]),
         default_exposure=value["exposure"], availability=value["availability"],
-        family=value["family"], tags=_tags(value["tags"]))
+        family=value.get("family", ""), tags=_tags(value["tags"]))
 
 
 def _rule(value):

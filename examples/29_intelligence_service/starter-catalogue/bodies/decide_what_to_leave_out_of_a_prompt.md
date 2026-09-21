@@ -40,4 +40,4 @@ A step builds the prompt by adding parts until the window is full, in the order 
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 7ed4e85.
+Licence: MIT. Written for this catalogue at revision eb757bc.

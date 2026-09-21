@@ -57,8 +57,8 @@ The check refuses a body whose text disagrees with that declaration.
 
 | Grounding in `provenance` | Authoring in `provenance` | What it means | Closing sentence in the body |
 |---|---|---|---|
-| `restates_cited_source` | `assistant_authored_from_repository_sources` | The body says what the cited file says or does. Read the file to review it. | `Compiled from revision 7ed4e85.` |
-| `general_practice_beside_cited_source` | `assistant_authored_from_general_practice` | The body is ordinary engineering practice written here in its own words. The cited file is a related practice in this repository, not the source of the words. | `Written for this catalogue at revision 7ed4e85.` |
+| `restates_cited_source` | `assistant_authored_from_repository_sources` | The body says what the cited file says or does. Read the file to review it. | `Compiled from revision eb757bc.` |
+| `general_practice_beside_cited_source` | `assistant_authored_from_general_practice` | The body is ordinary engineering practice written here in its own words. The cited file is a related practice in this repository, not the source of the words. | `Written for this catalogue at revision eb757bc.` |
 
 Both values carry the licence `MIT` and the same licence sentence. They differ
 only in where the words come from, and the check refuses an item whose two
@@ -153,7 +153,7 @@ the comparison is replaced by one that always carries.
 
 ## Current state and planned steps
 
-Current state on 21 September 2026 at revision `7ed4e85`:
+Current state on 21 September 2026 at revision `eb757bc`:
 
 - The takeover checkpoint (`docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md`) records that the hosted service serves one diagnostic record. The author of this folder did not observe the live service. None of these 123 items is in a host manifest in this repository.
 - The items exist only in this folder. The staging tool accepts one bounded population of at most 50 rows, so the catalogue is committed as 3 population files and the check hands each committed file to the tool as it stands. Every row is accepted as a candidate in an isolated database. A named check also runs the tool on all 123 rows in one population and requires the refusal `One bounded population of specifications is required`, so the bound is a measured fact here and not a number this sheet repeats.

@@ -146,7 +146,8 @@ def _reference_loads_through_the_engine_contract(snapshot: Snapshot) -> list:
                 reference["license"], tuple(reference["declared_effects"]),
                 tuple(reference["styles"]), reference["exposure"],
                 reference["availability"],
-                TagSet({key: value for key, value in reference["tags"].items()
+                family=reference.get("family", ""),
+                tags=TagSet({key: value for key, value in reference["tags"].items()
                         if key != "record_type"})))
         except (HarnessIntelligenceError, KeyError, TypeError):
             found.append(reference.get("identity", "<unreadable>"))

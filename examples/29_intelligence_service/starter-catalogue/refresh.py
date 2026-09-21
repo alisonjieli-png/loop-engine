@@ -198,7 +198,8 @@ def measured_reference(reference: dict, body: str) -> dict:
     draft = HarnessIntelligenceDraft(
         reference["identity"], reference["kind"], reference["purpose"], reference["source_layer"],
         reference["source_ref"], reference["license"], tuple(reference["declared_effects"]),
-        tuple(reference["styles"]), reference["exposure"], reference["availability"], TagSet(tags))
+        tuple(reference["styles"]), reference["exposure"], reference["availability"],
+        tags=TagSet(tags))
     return item_from_body(draft, body).reference()
 
 

@@ -38,4 +38,4 @@ Two rows share an email and a phone, so a matcher merges them. One row is `Beta 
 
 - `src/loop_engine/code_nodes/duplicate_detection.py`: `name_key`, `address_key`, `email_key`, `phone_key`, `compare_keys`, `field_similarity`, `pair_confidence` and `classify`.
 
-Licence: MIT. Compiled from revision 7ed4e85. The sequence ratio comes from the Python standard library module `difflib`.
+Licence: MIT. Compiled from revision eb757bc. The sequence ratio comes from the Python standard library module `difflib`.

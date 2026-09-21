@@ -42,4 +42,4 @@ A database migration is split into three parts that run in parallel. Part two si
 - `src/loop_engine/strings/interrogation.py`: the decomposition questions about parts, ensembles and staging.
 - `src/loop_engine/strings/question_engine.py`: the question forms named `decompose` and `outline_to_detail`.
 
-Licence: MIT. Compiled from revision 7ed4e85.
+Licence: MIT. Compiled from revision eb757bc.

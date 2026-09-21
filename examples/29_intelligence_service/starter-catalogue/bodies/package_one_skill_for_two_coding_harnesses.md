@@ -47,4 +47,4 @@ A team copies the planning logic of its tool into the skill text for one harness
 - `integrations/codex/plugins/loop-engine/skills/loop-engine-run/SKILL.md`: a run skill for Codex.
 - `integrations/codex/plugins/loop-engine/skills/loop-engine-run/agents/openai.yaml`: the interface metadata for Codex.
 
-Licence: MIT. Compiled from revision 7ed4e85. The plugin manifests sit in hidden folders beside these files.
+Licence: MIT. Compiled from revision eb757bc. The plugin manifests sit in hidden folders beside these files.

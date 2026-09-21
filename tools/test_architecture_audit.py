@@ -104,7 +104,7 @@ class StructureTests(unittest.TestCase):
         self.assertIn("developer_handoff", result["documents"])
         self.assertIn("launch_benefits", result["documents"])
         self.assertEqual(len(result["roadmap"]["delivery_batches"]), 17)
-        self.assertEqual(sum(len(row["verification_cases"]) for row in result["roadmap"]["delivery_batches"]), 85)
+        self.assertEqual(sum(len(row["verification_cases"]) for row in result["roadmap"]["delivery_batches"]), 86)
         self.assertIn("D-17", [row["id"] for row in result["roadmap"]["delivery_batches"]])
         self.assertEqual(len(result["roadmap"]["launch_benefits"]), 3)
 
