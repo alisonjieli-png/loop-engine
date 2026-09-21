@@ -180,7 +180,9 @@ HTTP 401 with the JSON body
 served web assets into the authenticated dispatcher. A visitor read that raw
 text where the website should be. The entry
 `"/pricing": ("index.html", HTML_MEDIA_TYPE)` in `WEB_ASSETS` in
-`src/loop_engine/core/service_runtime/http.py` is now on the main branch, so
+`src/loop_engine/core/service_runtime/web_pages.py`, which held that table in
+`http.py` until the table moved on September 21, 2026, is now on the main
+branch, so
 the source serves the address. Four named checks hold it:
 `pricing_address_is_served_on_a_direct_visit`,
 `pricing_address_opens_the_pricing_view_after_a_reload`, and `/pricing` in the

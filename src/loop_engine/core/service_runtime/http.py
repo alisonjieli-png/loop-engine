@@ -25,6 +25,7 @@ from .http_auth import (
 )
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
+from .web_pages import WEB_ASSETS, web_asset_body, web_asset_headers
 
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
@@ -35,28 +36,6 @@ DISCOVER_OPERATION, LIST_OPERATION, MANIFEST_OPERATION, READ_OPERATION = OPERATI
 BILLING_PLANS_PATH = "/api/v1/billing/plans"
 BILLING_CHECKOUT_PATH = "/api/v1/billing/checkout"
 BILLING_PORTAL_PATH = "/api/v1/billing/portal"
-HTML_MEDIA_TYPE = "text/html"
-WEB_ASSETS = {
-    "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
-    "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),
-    "/account": ("index.html", HTML_MEDIA_TYPE),
-    "/admin": ("index.html", HTML_MEDIA_TYPE),
-    "/connect": ("index.html", HTML_MEDIA_TYPE),
-    "/examples": ("index.html", HTML_MEDIA_TYPE),
-    "/security": ("index.html", HTML_MEDIA_TYPE),
-    "/auth/callback": ("index.html", HTML_MEDIA_TYPE),
-    "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
-    "/pricing": ("index.html", HTML_MEDIA_TYPE),
-    "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
-    "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
-    "/assets/service.css": ("service.css", "text/css"),
-    "/assets/architecture.css": ("architecture.css", "text/css"),
-    "/assets/client-access.js": ("client-access.js", "text/javascript"),
-    "/assets/service.js": ("service.js", "text/javascript"),
-    "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
-    # The licence terms of the packaged browser library travel with it.
-    "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
-}
 
 
 class ServiceHttpError(ValueError):
@@ -664,17 +643,9 @@ class ServiceHttpApplication:
     async def _web_route(self, request, Response, JSONResponse):
         path, method = request.url.path, request.method
         if method == "GET" and path in WEB_ASSETS:
-            from html import escape
-            from importlib.resources import files
-            name, media_type = WEB_ASSETS[path]
-            body = files("loop_engine").joinpath("core", "service_runtime", "web_assets", name).read_bytes()
-            if media_type == HTML_MEDIA_TYPE:
-                body = body.replace(b"{{SERVICE_NAME}}", escape(self.configuration.display_name, quote=True).encode("utf-8"))
+            body, media_type = web_asset_body(path, self.configuration.display_name)
             identity_origin = " " + self.browser_identity.configuration.project_url if self.browser_identity else ""
-            return Response(body, media_type=media_type, headers={
-                "Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'" + identity_origin + "; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
-                "Referrer-Policy": "no-referrer", "X-Frame-Options": "DENY",
-                "Permissions-Policy": "camera=(), microphone=(), geolocation=()"})
+            return Response(body, media_type=media_type, headers=web_asset_headers(identity_origin))
         if path in ("/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp") and method == "GET":
             if EXTERNAL_JWT_AUTHENTICATION not in self.authentication.modes:
                 raise ServiceHttpError("external_authorization_not_configured", 404)

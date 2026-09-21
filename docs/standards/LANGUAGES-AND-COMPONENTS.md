@@ -93,7 +93,7 @@ framework import and no database driver import.
 The website is plain JavaScript served from the same origin as the service.
 There is no framework, no bundler and no build step for the pages themselves.
 
-- The served files are a fixed map, `WEB_ASSETS` in `http.py`. Every page path
+- The served files are a fixed map, `WEB_ASSETS` in `web_pages.py`. Every page path
   returns `index.html`, and `/assets/` returns the named stylesheet, script or
   data file. The adapter never serves the repository, the source inventory,
   configuration or an internal report
