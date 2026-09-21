@@ -17,6 +17,23 @@ language each component uses).
 Start with [getting started](../getting-started.md) and the
 [documentation index](../README.md).
 
+## For a paying customer of the hosted service
+
+These four pages take a customer from no account to a working connection and a
+useful answer. Every command, address, record type and refusal code in them is
+held to the service source by `tools/check_service_documentation.py`, and every
+request and answer shown in them was run and marked deployed or local.
+
+| Page | Scope |
+|---|---|
+| [Getting set up](service-getting-set-up.md) | Account, client token, where the token is kept, the settings entry for each supported client, and how to tell the connection succeeded. |
+| [Searching and retrieving](service-searching-and-retrieving.md) | What a search returns, how to read and select a reference, how to download a body, and what one measured unit is. |
+| [Serving and connections](service-serving-and-connections.md) | Protocol, transport, handshake, version mismatch, session behaviour and the complete refusal table. |
+| [Troubleshooting](service-troubleshooting.md) | The failures a customer meets first, with what they see, what it means and what to do. |
+
+The saved requests and answers are in
+[the service usage transcripts](../evidence/service-usage-2026-09-21/README.md).
+
 The first-release guides are [hosting procedures](hosting-and-deployment-procedures.md),
 [owner actions](launch-owner-checklist.md),
 [product style](product-style-guide.md), and

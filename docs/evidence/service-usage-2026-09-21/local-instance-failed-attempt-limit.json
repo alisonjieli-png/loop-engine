@@ -1,0 +1,130 @@
+{
+ "origin": "http://127.0.0.1:8099",
+ "calls": [
+  {
+   "name": "refused_attempt_1",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 401,
+   "response_headers": {
+    "www-authenticate": "Bearer"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unauthorized"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refused_attempt_2",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 401,
+   "response_headers": {
+    "www-authenticate": "Bearer"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unauthorized"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refused_attempt_3",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 429,
+   "response_headers": {
+    "retry-after": "21"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "failed_attempt_limit_reached",
+     "details": {
+      "record_type": "service_request_limit_refusal/v1",
+      "retry_after_seconds": 21
+     }
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refused_attempt_4",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 429,
+   "response_headers": {
+    "retry-after": "21"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "failed_attempt_limit_reached",
+     "details": {
+      "record_type": "service_request_limit_refusal/v1",
+      "retry_after_seconds": 21
+     }
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refused_attempt_5",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 429,
+   "response_headers": {
+    "retry-after": "21"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "failed_attempt_limit_reached",
+     "details": {
+      "record_type": "service_request_limit_refusal/v1",
+      "retry_after_seconds": 21
+     }
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  }
+ ],
+ "record_type": "service_usage_transcript/v1",
+ "recorded_on": "2026-09-21",
+ "credentials_recorded": false
+}
