@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 649,
+ "files_scanned": 652,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "docs_folders_without_a_charter_readme": 0,
@@ -9,7 +9,8 @@
   "legacy_flat_imports_on_live_paths": 0,
   "public_parallel_runtime_surfaces": 0,
   "retired_decision_spine_terms": 0,
-  "direct_model_or_network_calls_outside_gateway": 0,
+  "undefined_terms_retired_names_and_misplaced_words": 0,
+  "direct_model_or_network_calls_outside_gateway": 1,
   "subprocess_outside_declared_adapters": 0,
   "direct_writes_to_intelligence_files_outside_adapters": 0,
   "eval_or_exec_anywhere": 0,
@@ -111,7 +112,56 @@
    "passed": true
   },
   "retired_decision_spine_terms": [],
+  "undefined_terms_retired_names_and_misplaced_words": [],
   "scan_violations": [
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 365,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 370,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 406,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 409,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 436,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 462,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 470,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "network_outside_gateway",
+    "file": "core/service_runtime/promotion_checks.py",
+    "line": 0,
+    "detail": "imports ['httpx']"
+   },
    {
     "rule": "dependency_direction",
     "file": "core/adaptive_host_runtime_checks.py",
@@ -568,5 +618,5 @@
   "max_power_grants_no_permissions: power scales budgets only"
  ],
  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
- "all_gates_pass": true
+ "all_gates_pass": false
 }
