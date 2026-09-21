@@ -98,16 +98,17 @@ SECURITY.md humanizer-context.md showcase/README.md 'docs/**/*.md'
 |---|---|---|
 | Markdown structure | `npx --yes markdownlint-cli2@0.23.2 DECLARED_SET` | The declared set above. |
 | Public language | vale 3.18.0 with `.vale.ini`, run by `vale-cli/vale-action@v3` with `sync: false` | `AGENTS.md`, `README.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `SECURITY.md`, `humanizer-context.md`, `showcase/README.md`, and the `docs`, `case-studies` and `examples` folders. |
-| Refuse retired public language | Two `rg` searches, case insensitive | `README.md`, `CHANGELOG.md`, `humanizer-context.md`, `docs`, `examples`, `case-studies`, `showcase`, and `benchmarks` for the first search. |
+| Refuse retired public language | Two `rg` searches, case insensitive | `README.md`, `CHANGELOG.md`, `humanizer-context.md`, `docs`, `examples`, `case-studies` and `showcase`. The first search also covers `benchmarks`; the second does not. Neither covers `AGENTS.md`. |
 | Local links and section anchors | `lycheeverse/lychee-action@v2` with `--offline --include-fragments --root-dir` | The declared set above. A renamed heading breaks every link to it. |
 
 The third gate is worth reading before you write. Its first search refuses the
 two retired evidence words that this repository replaced with Run History,
 event log, record, report and evidence, in the singular and the plural. Its
-second search refuses the two retired topology words, the one for a Spawned
-Loop and the one for a Starting Loop, and a family of four retired decision
-phrases built from the words for "what" and "next", which the repository
-replaced with "select next action". That decision family is refused here and
+second search refuses the retired word for a Spawned Loop, in the singular
+and the plural, the retired two word phrase for a Starting Loop, and a family
+of four retired decision phrases built from the words for "what" and "next",
+which the repository replaced with "select next action". That family is
+refused here and
 nowhere else: the three rules in `.vale/styles/LoopEngine` do not carry it, so
 a developer who reads only the vale folder will be blocked by a gate they
 never saw. Both searches ignore case and exempt `docs/prompts`,
