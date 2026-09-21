@@ -27,6 +27,15 @@ they describe the actual state. A subscription grants the declared service
 access. It does not grant a model allowance, permission to execute code, or
 access to a competition's data.
 
+Describe what the product does and how it works, because that is observable in
+the source. Do not state or imply a measured outcome that nobody has measured.
+Write "give each step only the material it needs", not "cut your token bill".
+Write "designed so a smaller model can finish a bounded step", not "solve
+problems overnight". Where a benefit is an intention rather than a result, the
+page says so in a sentence the reader will actually read, not in small print.
+No percentage, no "always", no "guaranteed", no comparison to a named
+competitor, and no invented customer, testimonial, logo or number.
+
 Use full descriptive terms. Keep exact identifiers in technical details and
 copyable configuration. Avoid hype, decorative slogans, invented performance
 claims, em dashes, and en dashes. Artificial general intelligence remains a
@@ -45,12 +54,36 @@ name and word may appear. It renames nothing.
 | Building with Loops | README title | The title of the public README. | The README. | Anywhere as a product name. | Decided by the owner. |
 | task, each step, information, tools, model, checks, results, reusable solution | Public words | The work as a customer describes it. | Every page. On the homepage, How it works and their shared footer, only these words describe the work. | In technical documentation, in place of an exact runtime term. | Decided by the owner. |
 | Loop, Loop node, discrete cognitive or act step Loop node, runtime classification, role profile, Practitioner, Intelligence, Solution, run mode, step profile | Technical words | The exact runtime terms with their complete definitions. | Technical documentation, the Documentation view of the website, GitHub and source code. Keep the full phrase [discrete cognitive or act step Loop node](../../ASTRA.md#complete-behavioral-explanation) together with its complete behavioral explanation. | The homepage, How it works and their shared footer. | Decided by the owner. |
-| agent, harness, prompt cycle | Technical words | The customer's own tools and how they call a model. | Technical documentation, connection guidance and GitHub. | The homepage and How it works. | Decided by the owner. The [public content direction](public-website-content-and-domain.md#current-positioning-and-presentation) records it. |
+| agent, AI agent | Customer words | The thing the customer runs, in the words the customer already uses for it. | Every page a customer reads, including the homepage and How it works. | In place of a code identifier, a record type or the exact runtime term in technical documentation. | Changed on September 21, 2026. The reason is below the table. |
+| harness, prompt cycle | Technical words | The customer's own tools and how they call a model, in the words this repository uses for them. | Technical documentation, connection guidance and GitHub. | The homepage, How it works, Get started and their shared footer. Write "your coding tool". | Decided by the owner. The [public content direction](public-website-content-and-domain.md#current-positioning-and-presentation) records it. |
+| pilot, beta, private beta, early access | Retired words | A trial. Being invited changes only who can create an account. | Nowhere on a page a customer reads. Dated records and historical evidence keep their original wording. | Every page a customer reads. Write "accounts open in small groups", "invited member", "join the waiting list" and "X is being built". | Changed on September 21, 2026, on the owner's direction. |
 | `le_` | Customer-visible technical identifier: key prefix | The first characters of every client key that the service issues. | Issued keys, and technical documentation that explains them. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 | `loop-engine-intelligence` | Customer-visible technical identifier: protocol server name | The server name that a Model Context Protocol client shows after it connects. | The protocol handshake and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 | `X-Loop-Engine-Record-Type` | Customer-visible technical identifier: response header | The header on a downloaded body that names its record type. A browser client can read it. | Service responses and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 | `Loop Engine Intelligence` | Customer-visible technical identifier: protected resource name | The `resource_name` field of the protected resource metadata at `/.well-known/oauth-protected-resource`. A client can show this name to the person who authorizes it. The service returns that record only when the host configuration lists the authentication mode `external_jwt`. The pilot lists only `host_key`, so the pilot does not return it today. | The protected resource metadata and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 | `loop-engine` | Customer-visible technical identifier: command and package name | The command that a customer types and the package that a customer installs. | Installation and setup instructions, the Documentation view of the website and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
+
+### Why the word agent is now allowed on a customer page
+
+An earlier row of this table kept "agent" off the homepage and How it works,
+next to "harness" and "prompt cycle". That row was changed on September 21,
+2026, and the reason is recorded here rather than left as a silent break.
+
+1. It is the word the buyer already uses for the thing they run. The owner's
+   own direction for the homepage proposes "Give your AI agents what they
+   need", and the reader is a developer who calls their tool an agent.
+2. It is a customer word, not a runtime word. The rule that matters keeps
+   Loop, Loop node, Loop Engine, runtime classification, role profiles and
+   Practitioner off the public pages, and that rule is unchanged.
+3. "harness" stays off the public pages. It is jargon that only this
+   repository and a small group use. Write "your coding tool".
+
+The category line "Harness and agent optimized operation" was retired from
+the homepage in the same change, because it carried "harness" and because the
+owner's later direction rewrites the top of the page. The recorded decision
+table in `CLAUDE.md` still names that phrase under public positioning. An
+operator should update that row so the record and the page agree. Engineering
+does not edit that file.
 
 ### Open owner decision: identifiers that carry the engine name
 
