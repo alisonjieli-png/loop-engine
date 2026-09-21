@@ -35,7 +35,7 @@ Starter catalogue candidates (123)
 | `items.json` | The facts a harness item carries: identity, kind, purpose, source layer, source reference, licence, declared effects, harness styles, lifecycle tag, digest and size. Each `reference` object has the shape that `HarnessIntelligenceItem.reference()` returns. The record also names the anchor revision and, under `source_digests`, the digest of every cited file at that revision. |
 | `search-queries.json` | The plain customer queries that the check runs against the purposes, each with the item it must find and who wrote it. |
 | `executed-examples.json` | 54 executed examples over 12 of the 21 Code Intelligence items. Each row names its item, the quote as the body writes it, the cited module and function, the arguments and the fields the body claims. The check runs each listed call against the cited module. It covers the rows in this file, not every value that a body quotes. |
-| `refresh.py` | Recomputes the derived fields after a body was edited. It approves nothing and publishes nothing. |
+| `refresh.py` | Recomputes the derived fields after a body was edited, and with `--anchor` moves the catalogue to a new source revision after checking that every cited file at that revision equals the file in the tree. It approves nothing and publishes nothing. |
 | `REVIEW.md` | This sheet. |
 
 ## Two kinds of body, and how to tell them apart
