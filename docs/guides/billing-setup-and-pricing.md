@@ -81,6 +81,14 @@ source as a host grant, an expiry and an approval reference. That record says
 plainly that it is a host grant and not evidence of a Stripe payment, so a
 free invited account is never confused with a paying one in the records.
 
+A person can also grant themselves the same free access by redeeming a
+promotion code, which records the source as a promotion code grant with the
+code identity and the approval reference. A promotion code is not a Stripe
+discount: it creates no payment and no subscription, and a comped account is
+never counted as revenue. `ServiceRuntime.access_source_report` separates
+paying accounts from comped accounts. See
+[the promotion code guide](promotion-codes.md).
+
 ## The live account is a separate account
 
 Everything below prepares the Stripe test environment. Test mode takes no real

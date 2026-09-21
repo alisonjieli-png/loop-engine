@@ -30,12 +30,14 @@ from .records import (
 from .storage import ServiceCatalogBinding
 
 (TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER, CUSTOMER_EFFECT, TENANT_NAMESPACE, BILLING_POLICY,
- SESSION_REVOCATION) = (
+ SESSION_REVOCATION, PROMOTION_CODE, PROMOTION_REDEMPTION, PROMOTION_ACCOUNT) = (
     "service_tenant", "service_key", "service_subject", "service_entitlement",
     "service_grants", "service_usage", "service_billing_customer", "service_billing_customer_effect",
-    "service_tenant_namespace", "service_billing_policy", "service_browser_session_revocation")
+    "service_tenant_namespace", "service_billing_policy", "service_browser_session_revocation",
+    "service_promotion_code", "service_promotion_redemption", "service_promotion_code_account")
 SCHEMAS = {kind: kind + "/v1" for kind in (TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER,
-                                           CUSTOMER_EFFECT, TENANT_NAMESPACE, BILLING_POLICY, SESSION_REVOCATION)}
+                                           CUSTOMER_EFFECT, TENANT_NAMESPACE, BILLING_POLICY, SESSION_REVOCATION,
+                                           PROMOTION_CODE, PROMOTION_REDEMPTION, PROMOTION_ACCOUNT)}
 CUSTOMER_IDEMPOTENCY_PREFIX = "le-customer-"
 # A customer-issued key is valid only while its owning sign-in stays enabled.
 # It has its own record version, so a server that predates the owner rule
@@ -45,6 +47,18 @@ KEY_SCHEMAS = (SCHEMAS[KEY], OWNER_BOUND_KEY_SCHEMA)
 METADATA, BODIES = ENTITLEMENTS
 HOST_GRANT_SOURCE = "explicit_host_grant"
 STRIPE_SNAPSHOT_SOURCE = "stripe_snapshot"
+#: Access that one person gave themselves by redeeming a promotion code. It is
+#: written by `promotions.py` through the same entitlement record as a host
+#: grant, and it is never evidence of a payment. A release that predates this
+#: source reads an unknown source as metadata only, so an older server refuses
+#: the access instead of honoring a record whose rules it does not know.
+CODE_GRANT_SOURCE = "promotion_code_grant"
+#: Money comes from one source only. Everything else is comped access. A usage
+#: or billing report reads these two tuples instead of guessing from a record.
+REVENUE_BEARING_SOURCES = (STRIPE_SNAPSHOT_SOURCE,)
+COMPED_SOURCES = (HOST_GRANT_SOURCE, CODE_GRANT_SOURCE)
+ENTITLEMENT_SOURCES = (*REVENUE_BEARING_SOURCES, *COMPED_SOURCES)
+ACCESS_SOURCE_REPORT_VERSION = "service_access_source_report/v1"
 PROVISIONING_METADATA_SCOPE, PROVISIONING_READ_SCOPE, USAGE_READ_SCOPE = (
     "provisioning:metadata", "provisioning:read", "usage:read")
 
@@ -101,7 +115,7 @@ class ServiceRuntime:
             configured = self._payload(policy, BILLING_POLICY) if policy is not None else {}
             if not configured.get("policy_digest") or configured["policy_digest"] != value.get("policy_digest"):
                 return METADATA
-        elif value.get("source") != HOST_GRANT_SOURCE:
+        elif value.get("source") not in COMPED_SOURCES:
             return METADATA
         until = value.get("valid_until")
         if (value.get("enabled") is True and value.get("entitlement") == BODIES
@@ -382,6 +396,55 @@ class ServiceRuntime:
                               "payload": {**tenant["payload"], "body_access_revoked": False}}
             self._catalog.commit(store, (row, updated_tenant), (self._catalog.guard(tenant), self._catalog.guard(previous, row["record_id"])))
         return {"committed": True, "source": HOST_GRANT_SOURCE}
+
+    def access_source_report(self):
+        """Host-side report that separates paying accounts from comped accounts.
+
+        One account's paid access comes from exactly one recorded source. Only a
+        provider subscription snapshot is evidence of money, so only that source
+        is revenue bearing. A host grant and a promotion code grant are comped
+        and are counted separately. The classification reads the recorded
+        `source` field; it never infers money from an expiry, a grant or a name.
+        """
+        now = self._now()
+        with self._catalog.store() as store:
+            policy = self._catalog.read(store, BILLING_POLICY, "stripe")
+            accounts = []
+            for row in self._catalog.rows_all(store, ENTITLEMENT):
+                value = self._payload(row, ENTITLEMENT)
+                tenant_id = value.get("tenant_id", "")
+                tenant_row = self._catalog.read(store, TENANT, tenant_id)
+                # The tenant record is read through the same version check every
+                # other reader uses. A record this release does not support is
+                # refused here rather than reinterpreted, because a miscounted
+                # account is worse than a report that stops and names the fault.
+                tenant = self._payload(tenant_row, TENANT) if tenant_row is not None else {}
+                source = value.get("source", "")
+                effective = (self._entitlement(row, policy)
+                             if tenant.get("enabled") is True and tenant.get("body_access_revoked") is False
+                             else METADATA)
+                accounts.append({"tenant_id": tenant_id, "source": source,
+                    "revenue_bearing": source in REVENUE_BEARING_SOURCES,
+                    "comped": source in COMPED_SOURCES, "entitlement": effective,
+                    "active": effective == BODIES, "valid_until": value.get("valid_until"),
+                    "promotion_code_id": value.get("promotion_code_id", ""),
+                    "approval_ref": value.get("approval_ref", "") or value.get("evidence_ref", ""),
+                    "subscription_ids": list(value.get("subscription_ids", ()))})
+        accounts.sort(key=lambda row: (row["source"], row["tenant_id"]))
+        paying = [row for row in accounts if row["revenue_bearing"] and row["active"]]
+        comped = [row for row in accounts if row["comped"] and row["active"]]
+        return {"record_type": ACCESS_SOURCE_REPORT_VERSION, "observed_at": now,
+            "revenue_bearing_sources": list(REVENUE_BEARING_SOURCES), "comped_sources": list(COMPED_SOURCES),
+            "accounts": accounts,
+            "counts": {"records": len(accounts), "revenue_bearing": len(paying), "comped": len(comped),
+                       "without_paid_access": len(accounts) - len(paying) - len(comped)},
+            "revenue_bearing_tenants": sorted(row["tenant_id"] for row in paying),
+            "comped_tenants": sorted(row["tenant_id"] for row in comped),
+            "limitations": [
+                "This report counts accounts, not money. The amount invoiced is held by the payment provider.",
+                "An account whose access came from a promotion code or a host grant is comped. It is never "
+                "counted as revenue, whatever its expiry or its grants say.",
+                "An account with no entitlement record has no row here; it has free access only."]}
 
     def configure_billing_policy(self, policy, *, expected_version=None):
         from .billing_records import StripeEntitlementPolicy

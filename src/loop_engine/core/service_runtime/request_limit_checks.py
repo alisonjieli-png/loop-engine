@@ -573,7 +573,8 @@ def _transport_checks(check, root):
               status == 200 and PROXY_HEADER.lower() not in json.dumps(body).lower()
               and body["result"]["limits"]["failed_attempts_per_address"] == {
                   "record_type": PUBLISHED_LIMIT_RECORD_TYPE, "active": True,
-                  "counted": ["refused_authentication", "refused_account_activation"],
+                  "counted": ["refused_authentication", "refused_account_activation",
+                              "refused_promotion_redemption"],
                   "failures_allowed": 3, "window_seconds": 60, "client_address_source": HEADER_SOURCE,
                   "ipv6_prefix_bits": 64, "refusal_code": LIMIT_REACHED_CODE,
                   "state": "memory_of_one_service_process"})
