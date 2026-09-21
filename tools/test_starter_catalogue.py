@@ -45,10 +45,17 @@ NAMESPACE = "starter.catalogue"
 MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 109, 150, 600, 8
 #: A required part that holds fewer words than this is a heading without content.
 MINIMUM_PART_WORDS = 8
-#: ``compile_candidates`` accepts one bounded population of at most this many rows, so a
-#: larger catalogue is staged as several populations taken in file order. The number is
-#: the bound the staging tool states; a population larger than it is refused there.
+#: ``compile_candidates`` accepts one bounded population of at most this many rows, so the
+#: catalogue is committed as several population files that the tool accepts as they stand.
+#: A separate check proves that the tool refuses a population larger than this bound.
 STAGING_POPULATION = 50
+#: The message the staging tool gives when one population is empty or larger than the bound.
+POPULATION_REFUSAL = "One bounded population of specifications is required"
+#: The committed population files and the contract they carry. A check requires that the
+#: refresh tool beside the catalogue uses the same three values, so they cannot drift apart.
+SPECIFICATIONS_PREFIX = "specifications-"
+SPECIFICATIONS_GLOB = SPECIFICATIONS_PREFIX + "[0-9][0-9][0-9].json"
+SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v1"
 QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 100
 EXAMPLES_FILE, EXAMPLES_RECORD_TYPE = "executed-examples.json", "starter_catalogue_executed_examples/v1"
 #: How much of the catalogue the executed examples must cover. A body may quote a
@@ -116,20 +123,38 @@ REVIEW_FORBIDDEN = RETIRED_PUBLIC_LANGUAGE
 class CatalogueSnapshot:
     """Everything the rules read, held in memory so a known-wrong copy is cheap."""
 
-    specifications: dict
+    populations: tuple
     items: dict
     bodies: dict
     review: str
     repository: Path
     examples: dict
 
+    @property
+    def specifications(self) -> dict:
+        """Every committed population's rows in file order, under one record.
+
+        The staging tool refuses this combined record, because it holds more rows
+        than one population may hold. It exists so that a rule about the whole
+        catalogue reads one list. A rule about staging reads ``populations``.
+        """
+        return {"record_type": SPECIFICATIONS_RECORD_TYPE,
+                "specifications": [row for _name, record in self.populations
+                                   for row in record.get("specifications") or ()]}
+
     def rows(self):
-        return list(zip(self.specifications.get("specifications") or (), self.items.get("items") or ()))
+        return list(zip(self.specifications["specifications"], self.items.get("items") or ()))
+
+
+def load_populations(folder: Path) -> tuple:
+    """The committed population files with their records, in file name order."""
+    return tuple((path.name, json.loads(path.read_text(encoding="utf-8")))
+                 for path in sorted(folder.glob(SPECIFICATIONS_GLOB)))
 
 
 def load_snapshot(folder: Path = CATALOGUE) -> CatalogueSnapshot:
     bodies = {path.stem: path.read_bytes() for path in sorted((folder / "bodies").iterdir())}
-    return CatalogueSnapshot(json.loads((folder / "specifications.json").read_text(encoding="utf-8")),
+    return CatalogueSnapshot(load_populations(folder),
                              json.loads((folder / "items.json").read_text(encoding="utf-8")), bodies,
                              (folder / "REVIEW.md").read_text(encoding="utf-8"), ROOT,
                              json.loads((folder / EXAMPLES_FILE).read_text(encoding="utf-8")))
@@ -265,27 +290,42 @@ def rule_bodies_stay_in_the_word_range(snapshot):
             for identity, count in sorted(counts.items()) if not MINIMUM_WORDS <= count <= MAXIMUM_WORDS]
 
 
-def populations(specifications: dict) -> list:
-    """The specification split into the bounded populations the staging tool accepts."""
-    rows = specifications.get("specifications") or []
-    return [{**specifications, "specifications": rows[start:start + STAGING_POPULATION]}
-            for start in range(0, len(rows), STAGING_POPULATION)] or [specifications]
+def compile_every_population(populations: tuple, request) -> tuple[list, list]:
+    """Every compiled record, with the refusal of any committed population file the tool rejects.
 
-
-def compile_every_population(specifications: dict, request) -> tuple[list, list]:
-    """Every compiled record, with the refusal of any population that the tool rejects."""
+    Each file is handed to the staging tool exactly as it is committed, which is
+    what an operator does with the command in the review sheet. Nothing is split
+    here, so a file the tool would refuse is reported instead of being worked around.
+    """
     records, refusals = [], []
-    for number, population in enumerate(populations(specifications), start=1):
+    for name, record in populations:
         try:
-            records += compile_candidates(population, request)
+            records += compile_candidates(record, request)
         except ValueError as error:
-            refusals.append(f"population {number}: the staging tool refuses the specification: {error}")
+            refusals.append(f"{name}: the staging tool refuses the population: {error}")
     return records, refusals
 
 
-def rule_specification_loads_through_the_staging_tool(snapshot):
+def rule_every_population_file_loads_through_the_staging_tool(snapshot):
+    """Every committed population file is accepted by the staging tool as it stands."""
+    found = []
+    names = [name for name, _record in snapshot.populations]
+    expected = [f"{SPECIFICATIONS_PREFIX}{number:03d}.json" for number in range(1, len(names) + 1)]
+    if names != expected:
+        return [f"the population files must be numbered from one without a gap: {expected}, not {names}"]
+    for number, (name, record) in enumerate(snapshot.populations, start=1):
+        rows = record.get("specifications")
+        if record.get("record_type") != SPECIFICATIONS_RECORD_TYPE:
+            found.append(f"{name}: record type {record.get('record_type')!r} is not the one the staging tool accepts")
+        if record.get("population") != number or record.get("populations") != len(names):
+            found.append(f"{name}: the record must say that it is population {number} of {len(names)}")
+        if not isinstance(rows, list) or not 1 <= len(rows) <= STAGING_POPULATION:
+            found.append(f"{name}: a population holds one to {STAGING_POPULATION} rows, "
+                         f"not {len(rows) if isinstance(rows, list) else 'a list'}")
+    if found:
+        return found
     records, found = compile_every_population(
-        snapshot.specifications, CandidateStageRequest(snapshot.repository, NAMESPACE))
+        snapshot.populations, CandidateStageRequest(snapshot.repository, NAMESPACE))
     if found:
         return found
     if len(records) != len(snapshot.specifications["specifications"]):
@@ -496,7 +536,7 @@ RULES = {function.__name__[5:]: function for function in (
     rule_identities_are_unique, rule_digests_and_sizes_match_the_bodies, rule_every_item_carries_a_licence,
     rule_bodies_say_how_they_relate_to_their_source,
     rule_every_item_is_a_candidate, rule_no_forbidden_vocabulary, rule_bodies_stay_in_the_word_range,
-    rule_specification_loads_through_the_staging_tool, rule_bodies_have_the_required_parts,
+    rule_every_population_file_loads_through_the_staging_tool, rule_bodies_have_the_required_parts,
     rule_layers_kinds_effects_and_styles_are_declared, rule_source_references_are_pinned,
     rule_model_generated_material_is_bounded, rule_the_review_sheet_lists_every_item,
     rule_the_catalogue_is_large_enough, rule_quoted_examples_reproduce)}
@@ -522,23 +562,57 @@ def _refresh_module():
     return sys.modules[name]
 
 
-def _changed(snapshot, *, specifications=None, items=None, body=None, review=None, examples=None):
+def _repack(populations: tuple, rows: list) -> tuple:
+    """The rows put back into population files of at most the bound, keeping the file names.
+
+    A change that adds rows past the last committed file gets one more file, named
+    after its number, so a known-wrong copy still looks like a committed catalogue.
+    """
+    names = [name for name, _record in populations]
+    chunks = [rows[start:start + STAGING_POPULATION] for start in range(0, len(rows), STAGING_POPULATION)] or [[]]
+    while len(names) < len(chunks):
+        names.append(f"{SPECIFICATIONS_PREFIX}{len(names) + 1:03d}.json")
+    return tuple((names[number - 1],
+                  {"record_type": SPECIFICATIONS_RECORD_TYPE, "population": number, "populations": len(chunks),
+                   "specifications": chunk})
+                 for number, chunk in enumerate(chunks, start=1))
+
+
+def _changed(snapshot, *, specifications=None, populations=None, items=None, body=None, review=None,
+             examples=None):
     """A deep copy with one deliberate defect; the committed files are never touched."""
-    new_specifications, new_items = deepcopy(snapshot.specifications), deepcopy(snapshot.items)
+    new_populations, new_items = deepcopy(snapshot.populations), deepcopy(snapshot.items)
     new_examples = deepcopy(snapshot.examples)
     bodies = dict(snapshot.bodies)
     if specifications:
-        specifications(new_specifications["specifications"])
+        rows = [row for _name, record in new_populations for row in record["specifications"]]
+        specifications(rows)
+        new_populations = _repack(new_populations, rows)
+    if populations:
+        new_populations = populations(new_populations)
     if items:
         items(new_items)
     if examples:
         examples(new_examples["examples"])
     if body:
-        identity = new_specifications["specifications"][0]["id"]
+        identity = new_populations[0][1]["specifications"][0]["id"]
         bodies[identity] = body(bodies[identity].decode("utf-8")).encode("utf-8")
-    return replace(snapshot, specifications=new_specifications, items=new_items, bodies=bodies,
+    return replace(snapshot, populations=new_populations, items=new_items, bodies=bodies,
                    examples=new_examples,
                    review=snapshot.review if review is None else review(snapshot.review))
+
+
+def _one_oversized_population(populations: tuple) -> tuple:
+    """Every row in one population file, which is the shape the staging tool refuses."""
+    rows = [row for _name, record in populations for row in record["specifications"]]
+    return ((populations[0][0], {"record_type": SPECIFICATIONS_RECORD_TYPE, "population": 1, "populations": 1,
+                                 "specifications": rows}),)
+
+
+def _first_population_emptied(populations: tuple) -> tuple:
+    """The first population file with no rows left in it, which the staging tool also refuses."""
+    name, record = populations[0]
+    return ((name, {**record, "specifications": []}),) + populations[1:]
 
 
 def _generated(items):
@@ -678,7 +752,7 @@ KNOWN_WRONG = {
     "bodies_stay_in_the_word_range": (
         ("a body is one sentence long", lambda s: _changed(s, body=lambda text: "# Short\n\nOne sentence only.\n")),
         ("a body is an essay", lambda s: _changed(s, body=lambda text: text + "more words " * 400 + "\n"))),
-    "specification_loads_through_the_staging_tool": (
+    "every_population_file_loads_through_the_staging_tool": (
         ("a row carries a field the staging tool does not accept", lambda s: _changed(
             s, specifications=lambda rows: _set(rows[0], "license", "MIT"))),
         ("a row claims to be active", lambda s: _changed(
@@ -687,7 +761,16 @@ KNOWN_WRONG = {
             s, specifications=lambda rows: _set(rows[0], "sources", ["src/loop_engine/no_such_file.py"]))),
         ("the same identity is staged again in a later population", lambda s: _changed(
             s, specifications=lambda rows: rows.append(deepcopy(rows[0])),
-            items=lambda items: items["items"].append(deepcopy(items["items"][0]))))),
+            items=lambda items: items["items"].append(deepcopy(items["items"][0])))),
+        ("a population file holds more rows than the staging tool accepts", lambda s: _changed(
+            s, populations=_one_oversized_population)),
+        ("a population file is empty", lambda s: _changed(s, populations=_first_population_emptied)),
+        ("a population file does not say which population it is", lambda s: _changed(
+            s, populations=lambda populations: tuple(
+                (name, {**record, "population": record["population"] + 1}) if number == 1 else (name, record)
+                for number, (name, record) in enumerate(populations, start=1)))),
+        ("a population file is missing from the middle of the set", lambda s: _changed(
+            s, populations=lambda populations: populations[:1] + populations[2:]))),
     "bodies_have_the_required_parts": (
         ("the known-wrong example is missing", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Known-wrong example\n", "\n## Another part\n"))),
@@ -779,9 +862,42 @@ class StarterCatalogueChecks(unittest.TestCase):
                 self.assertEqual(len(mutant.failures), len(cases), f"{check} survived the removal of {name}")
                 self.assertEqual(mutant.errors, [])
 
+    def test_the_staging_tool_refuses_the_whole_catalogue_as_one_population(self):
+        """The bound is an asserted fact, not a number this file repeats.
+
+        The combined record of every committed population holds more rows than one
+        population may hold, so the staging tool refuses it by name. This is why the
+        catalogue is committed as population files instead of as one file.
+        """
+        combined = self.snapshot.specifications
+        self.assertGreater(len(combined["specifications"]), STAGING_POPULATION)
+        with self.assertRaises(ValueError) as refusal:
+            compile_candidates(combined, CandidateStageRequest(ROOT, NAMESPACE))
+        self.assertEqual(str(refusal.exception), POPULATION_REFUSAL)
+        # The same refusal for an empty population, so the bound is proven at both ends.
+        with self.assertRaises(ValueError) as empty:
+            compile_candidates({**combined, "specifications": []}, CandidateStageRequest(ROOT, NAMESPACE))
+        self.assertEqual(str(empty.exception), POPULATION_REFUSAL)
+        # Every committed file stays inside the bound and is accepted as it stands.
+        for name, record in self.snapshot.populations:
+            with self.subTest(population=name):
+                self.assertLessEqual(len(record["specifications"]), STAGING_POPULATION)
+                self.assertEqual(len(compile_candidates(record, CandidateStageRequest(ROOT, NAMESPACE))),
+                                 len(record["specifications"]))
+
+    def test_the_refresh_tool_and_this_check_name_the_same_population_files(self):
+        """One contract for the committed population files, so the two tools cannot drift apart."""
+        refresh = _refresh_module()
+        self.assertEqual(
+            (refresh.SPECIFICATIONS_PREFIX, refresh.SPECIFICATIONS_GLOB, refresh.SPECIFICATIONS_RECORD_TYPE,
+             refresh.POPULATION_SIZE),
+            (SPECIFICATIONS_PREFIX, SPECIFICATIONS_GLOB, SPECIFICATIONS_RECORD_TYPE, STAGING_POPULATION))
+        self.assertEqual([name for name, _record in self.snapshot.populations],
+                         refresh.population_names(CATALOGUE))
+
     def test_the_specification_stages_and_review_search_finds_every_item(self):
         request = CandidateStageRequest(ROOT, NAMESPACE, True)
-        records, refusals = compile_every_population(self.snapshot.specifications, request)
+        records, refusals = compile_every_population(self.snapshot.populations, request)
         self.assertEqual(refusals, [])
         self.assertEqual(len(records), len(self.snapshot.rows()))
         with tempfile.TemporaryDirectory() as directory:
@@ -895,7 +1011,8 @@ class StarterCatalogueChecks(unittest.TestCase):
         refresh = _refresh_module()
         with tempfile.TemporaryDirectory() as directory:
             folder, _body = self._stale_copy(directory)
-            before = {name: (folder / name).read_bytes() for name in ("specifications.json", "items.json")}
+            names = [name for name, _record in self.snapshot.populations] + ["items.json"]
+            before = {name: (folder / name).read_bytes() for name in names}
             leftover = folder / ("items.json" + refresh.TEMPORARY_SUFFIX)
             leftover.write_text("left by an interrupted write", encoding="utf-8")
             with self.assertRaisesRegex(refresh.CatalogueRefreshError, "interrupted write"):
@@ -903,7 +1020,8 @@ class StarterCatalogueChecks(unittest.TestCase):
             # Neither record changed, the file of the other run is kept, and this run's own file is gone.
             self.assertEqual(before, {name: (folder / name).read_bytes() for name in before})
             self.assertEqual(leftover.read_text(encoding="utf-8"), "left by an interrupted write")
-            self.assertFalse((folder / ("specifications.json" + refresh.TEMPORARY_SUFFIX)).exists())
+            for name in names[:-1]:
+                self.assertFalse((folder / (name + refresh.TEMPORARY_SUFFIX)).exists())
             leftover.unlink()
             self.assertTrue(refresh.refresh(refresh.RefreshRequest(folder, True))["written"])
             self.assertEqual(problems(load_snapshot(folder)).get("digests_and_sizes_match_the_bodies"), None)
@@ -920,7 +1038,9 @@ class StarterCatalogueChecks(unittest.TestCase):
         """Path confinement: a link in place of a record, the bodies folder or one body is refused."""
         refresh = _refresh_module()
         identity = self.snapshot.rows()[0][0]["id"]
-        for relative in ("items.json", "specifications.json", "bodies", f"bodies/{identity}.md"):
+        planted = ["items.json", "bodies", f"bodies/{identity}.md"]
+        planted += [name for name, _record in self.snapshot.populations]
+        for relative in planted:
             with self.subTest(planted=relative), tempfile.TemporaryDirectory() as directory:
                 folder, _body = self._stale_copy(directory)
                 moved = self._plant_link(folder, relative, Path(directory).resolve() / "outside")

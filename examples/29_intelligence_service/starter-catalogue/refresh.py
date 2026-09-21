@@ -2,9 +2,16 @@
 
 The files in ``bodies`` are the source of truth for the text, the digest and
 the size of every item. This tool measures each body through the engine's own
-``item_from_body`` function and rewrites only ``specifications.json`` and
-``items.json`` in its own folder. It approves nothing, publishes nothing and
-grants nothing. Every item stays a candidate.
+``item_from_body`` function and rewrites only the committed population files
+``specifications-001.json`` and the ones after it, together with ``items.json``,
+in its own folder. It approves nothing, publishes nothing and grants nothing.
+Every item stays a candidate.
+
+The staging tool accepts one bounded population of at most ``POPULATION_SIZE``
+rows, so the catalogue is committed as several population files that the tool
+accepts as they stand. A row keeps the population file it is already in. When a
+population file is full, add the next file by hand with an empty row list and
+put the new rows in it; this tool never moves a row between files.
 
 Check without writing (the default), then write with explicit authority:
 
@@ -25,7 +32,13 @@ from loop_engine.core.intelligence_tagging import RECORD_TYPE as TAG_RECORD_TYPE
 
 SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v1"
 ITEMS_RECORD_TYPE = "starter_catalogue_candidate_items/v1"
-SPECIFICATIONS_FILE = "specifications.json"
+#: The committed population files, named by their number. ``tools/stage_intelligence_candidates.py``
+#: accepts one such file as it stands, so nothing has to be split before staging.
+SPECIFICATIONS_PREFIX = "specifications-"
+SPECIFICATIONS_GLOB = SPECIFICATIONS_PREFIX + "[0-9][0-9][0-9].json"
+#: The bound that the staging tool states. A population file larger than this is refused there,
+#: so it is refused here as well, before anything is rewritten.
+POPULATION_SIZE = 50
 ITEMS_FILE = "items.json"
 BODIES_FOLDER = "bodies"
 BODY_SUFFIX = ".md"
@@ -70,12 +83,49 @@ def _record(folder: Path, name: str) -> dict:
             f"{name} is not valid JSON (line {error.lineno}); repair the file or restore it from the repository") from error
 
 
-def load_catalogue(folder: Path) -> tuple[dict, dict, dict]:
-    """The two records and the body text for every identity, or a typed refusal."""
+def population_names(folder: Path) -> list[str]:
+    """The committed population file names in number order, or a typed refusal."""
+    names = sorted(path.name for path in folder.glob(SPECIFICATIONS_GLOB))
+    if not names:
+        raise CatalogueRefreshError(
+            f"no population file is present; the catalogue needs {SPECIFICATIONS_PREFIX}001.json")
+    expected = [f"{SPECIFICATIONS_PREFIX}{number:03d}.json" for number in range(1, len(names) + 1)]
+    if names != expected:
+        raise CatalogueRefreshError(f"the population files must be numbered from one without a gap: {expected}")
+    return names
+
+
+def load_populations(folder: Path) -> list[tuple[str, dict]]:
+    """Every committed population file with its record, in number order, or a typed refusal."""
+    names = population_names(folder)
+    populations = []
+    for number, name in enumerate(names, start=1):
+        record = _record(folder, name)
+        rows = record.get("specifications") if isinstance(record, dict) else None
+        if (not isinstance(record, dict) or record.get("record_type") != SPECIFICATIONS_RECORD_TYPE
+                or record.get("population") != number or record.get("populations") != len(names)):
+            raise CatalogueRefreshError(
+                f"{name} must be a {SPECIFICATIONS_RECORD_TYPE} record that names population "
+                f"{number} of {len(names)}")
+        if not isinstance(rows, list) or not 1 <= len(rows) <= POPULATION_SIZE:
+            raise CatalogueRefreshError(
+                f"{name} holds {len(rows) if isinstance(rows, list) else 'no'} rows; the staging tool accepts "
+                f"one to {POPULATION_SIZE}")
+        populations.append((name, record))
+    return populations
+
+
+def combined(populations: list) -> dict:
+    """Every population's rows in file order, under one record the staging tool would refuse."""
+    return {"record_type": SPECIFICATIONS_RECORD_TYPE,
+            "specifications": [row for _name, record in populations for row in record["specifications"]]}
+
+
+def load_catalogue(folder: Path) -> tuple[list, dict, dict]:
+    """The population files, the items record and the body text for every identity, or a typed refusal."""
     folder = folder.resolve()
-    specifications, items = _record(folder, SPECIFICATIONS_FILE), _record(folder, ITEMS_FILE)
-    if not isinstance(specifications, dict) or specifications.get("record_type") != SPECIFICATIONS_RECORD_TYPE:
-        raise CatalogueRefreshError("unsupported specifications record")
+    populations, items = load_populations(folder), _record(folder, ITEMS_FILE)
+    specifications = combined(populations)
     if not isinstance(items, dict) or items.get("record_type") != ITEMS_RECORD_TYPE:
         raise CatalogueRefreshError("unsupported items record")
     spec_ids = [row.get("id") for row in specifications.get("specifications") or ()]
@@ -94,7 +144,7 @@ def load_catalogue(folder: Path) -> tuple[dict, dict, dict]:
         if path.is_symlink() or not path.is_file():
             raise CatalogueRefreshError(f"the body of {identity} must be a regular file")
         bodies[identity] = _text(path)
-    return specifications, items, bodies
+    return populations, items, bodies
 
 
 def measured_reference(reference: dict, body: str) -> dict:
@@ -109,23 +159,29 @@ def measured_reference(reference: dict, body: str) -> dict:
     return item_from_body(draft, body).reference()
 
 
-def derive(specifications: dict, items: dict, bodies: dict) -> tuple[dict, dict]:
-    """Copies of both records with the text, digest, size and body path taken from the bodies."""
-    new_specifications, new_items = deepcopy(specifications), deepcopy(items)
-    for row, item in zip(new_specifications["specifications"], new_items["items"]):
+def derive(populations: list, items: dict, bodies: dict) -> tuple[list, dict]:
+    """Copies of both records with the text, digest, size and body path taken from the bodies.
+
+    A row keeps the population file it is already in, so the committed files stay
+    the ones the staging tool has already accepted.
+    """
+    new_populations, new_items = deepcopy(populations), deepcopy(items)
+    rows = [row for _name, record in new_populations for row in record["specifications"]]
+    for row, item in zip(rows, new_items["items"]):
         identity = row["id"]
         row["text"] = bodies[identity]
         item["reference"] = measured_reference(item["reference"], bodies[identity])
         item["body_path"] = f"{BODIES_FOLDER}/{identity}{BODY_SUFFIX}"
-    return new_specifications, new_items
+    return new_populations, new_items
 
 
-def stale_identities(specifications: dict, items: dict, bodies: dict) -> list[str]:
+def stale_identities(populations: list, items: dict, bodies: dict) -> list[str]:
     """The identities whose stored derived fields differ from their body."""
-    new_specifications, new_items = derive(specifications, items, bodies)
+    new_populations, new_items = derive(populations, items, bodies)
+    old_rows = [row for _name, record in populations for row in record["specifications"]]
+    new_rows = [row for _name, record in new_populations for row in record["specifications"]]
     return [row["id"] for row, new_row, item, new_item in zip(
-        specifications["specifications"], new_specifications["specifications"],
-        items["items"], new_items["items"]) if row != new_row or item != new_item]
+        old_rows, new_rows, items["items"], new_items["items"]) if row != new_row or item != new_item]
 
 
 def _prepare(path: Path, value: dict, created: list) -> Path:
@@ -163,13 +219,14 @@ def refresh(request: RefreshRequest) -> dict:
     if not isinstance(request, RefreshRequest):
         raise CatalogueRefreshError("a typed refresh request is required")
     folder = request.folder.resolve()
-    specifications, items, bodies = load_catalogue(folder)
-    stale = stale_identities(specifications, items, bodies)
+    populations, items, bodies = load_catalogue(folder)
+    stale = stale_identities(populations, items, bodies)
     if stale and request.write:
-        new_specifications, new_items = derive(specifications, items, bodies)
-        _replace_both([(_regular_file(folder, SPECIFICATIONS_FILE), new_specifications),
-                       (_regular_file(folder, ITEMS_FILE), new_items)])
-    return {"record_type": "starter_catalogue_refresh/v1", "items": len(bodies), "stale": stale,
+        new_populations, new_items = derive(populations, items, bodies)
+        _replace_both([(_regular_file(folder, name), record) for name, record in new_populations]
+                      + [(_regular_file(folder, ITEMS_FILE), new_items)])
+    return {"record_type": "starter_catalogue_refresh/v1", "items": len(bodies),
+            "populations": [name for name, _record in populations], "stale": stale,
             "written": bool(stale and request.write), "approved": False, "published": False}
 
 

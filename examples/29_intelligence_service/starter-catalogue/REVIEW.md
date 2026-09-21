@@ -31,7 +31,7 @@ Starter catalogue candidates (123)
 | File | Purpose |
 |---|---|
 | `bodies/` | One body for each item. The body is the source of truth for the text, the digest and the size. |
-| `specifications.json` | The items in the exact format that `tools/stage_intelligence_candidates.py` accepts. The `text` of each row equals its body. |
+| `specifications-001.json` to `specifications-003.json` | The items in the exact format that `tools/stage_intelligence_candidates.py` accepts, one bounded population in each file. The `text` of each row equals its body. The tool accepts one to 50 rows in one run, so each file is committed in the shape it accepts and nothing has to be split before staging. |
 | `items.json` | The facts a harness item carries: identity, kind, purpose, source layer, source reference, licence, declared effects, harness styles, lifecycle tag, digest and size. Each `reference` object has the shape that `HarnessIntelligenceItem.reference()` returns. |
 | `search-queries.json` | The plain customer queries that the check runs against the purposes, each with the item it must find and who wrote it. |
 | `executed-examples.json` | 54 executed examples over 12 of the 21 Code Intelligence items. Each row names its item, the quote as the body writes it, the cited module and function, the arguments and the fields the body claims. The check runs each listed call against the cited module. It covers the rows in this file, not every value that a body quotes. |
@@ -57,7 +57,7 @@ this catalogue in its own words."
 Current state on 21 September 2026 at revision `381efec`:
 
 - The takeover checkpoint (`docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md`) records that the hosted service serves one diagnostic record. The author of this folder did not observe the live service. None of these 123 items is in a host manifest in this repository.
-- The items exist only in this folder. The staging tool accepts one bounded population of at most 50 rows, so the check stages this catalogue as 3 populations taken in file order, and every row is accepted as a candidate in an isolated database.
+- The items exist only in this folder. The staging tool accepts one bounded population of at most 50 rows, so the catalogue is committed as 3 population files and the check hands each committed file to the tool as it stands. Every row is accepted as a candidate in an isolated database. A named check also runs the tool on all 123 rows in one population and requires the refusal `One bounded population of specifications is required`, so the bound is a measured fact here and not a number this sheet repeats.
 - The serving path now refuses an item whose licence is empty, unknown, waiting for review, or not on the host's accepted list. The refusal happens before the item is registered and before its body is opened, and the message names the item. The default host policy accepts the identifier `MIT` and nothing else.
 - Two items cannot be served. `check_a_table_join_before_trusting_it` and `make_a_data_pipeline_safe_to_run_again` are compiled from model generated statements and record the licence `unknown`, so the reader refuses a manifest that carries either of them, with the code `item_license_unknown`. Approving the text of those two items would not make them servable. Their rights must be settled first: either the licence of the generated statements is established and written into the item, or the item is rewritten from material whose licence is known, or the item is dropped. No host may list `unknown` as an accepted licence; the engine refuses such a policy.
 - The other 121 items record the licence `MIT`, which the default host policy accepts. The check in `tools/test_starter_catalogue.py` builds its manifest from those 121, loads them through the real reader, and requires that each of the two refused items is refused by name.
@@ -84,17 +84,23 @@ PYTHONPATH=src:tools python -m unittest tools.test_starter_catalogue
 ```
 
 To look at the candidates in an isolated review catalogue, stage them with the
-existing tool. It needs three new output paths and writes nothing else. It
-accepts at most 50 rows in one run, so split `specifications.json` into
-populations of that size before staging, or stage the population you want to
-read.
+existing tool. It needs three new output paths for each run and writes nothing
+else. It accepts one population file as it is committed, so there is nothing to
+split. Run it once for each population, into its own database, export and
+report. Run these commands from the repository root, with an empty folder of
+your own in place of `REVIEW_OUTPUT_FOLDER`.
 
 ```bash
-PYTHONPATH=src python tools/stage_intelligence_candidates.py \
-  --specifications ONE_POPULATION_FILE \
-  --database NEW_DATABASE_PATH --namespace starter.catalogue \
-  --authorize-isolated-staging --export NEW_EXPORT_PATH --report NEW_REPORT_PATH
+for population in 001 002 003; do
+  PYTHONPATH=src python tools/stage_intelligence_candidates.py \
+    --specifications "examples/29_intelligence_service/starter-catalogue/specifications-$population.json" \
+    --database "REVIEW_OUTPUT_FOLDER/$population.db" --namespace starter.catalogue \
+    --authorize-isolated-staging --export "REVIEW_OUTPUT_FOLDER/$population-export.json" \
+    --report "REVIEW_OUTPUT_FOLDER/$population-report.json"
+done
 ```
+
+Each run prints how many records it committed: 50, 50 and 23.
 
 The existing host manifest reader accepts an approved item in this form: the
 `reference` object from `items.json`, the `body_path`, an `approval_ref` that
@@ -130,7 +136,7 @@ feedback, from records that name the exact run or the exact statement.
 - Lifecycle tag. Every reference carries the tag `lifecycle: candidate`. A request that names no lifecycle still matches a tagged item, so the tag alone does not hide a candidate. Approval and the host manifest remain the gate.
 - Vocabulary. The bodies use no internal runtime vocabulary. The cited paths contain the package name `loop_engine`, and the integration item cites paths that contain the command name of this repository. The check removes cited source paths before it looks for forbidden words.
 - Search. The purpose of each item is the text that the hosted search reads. Every one of the 123 title probes of the staging tool finds its own item among the first three. The file `search-queries.json` keeps 105 plain customer queries, and the check requires that each one finds its item among the first three results of a local emulation of the hosted search. Of those, a reviewer wrote 15 unseen queries against the first 49 purposes and 10 found their item; the five that missed are kept, and synonyms such as dedupe, skewed, umlauts, unreachable and ask the user were added to the purposes until they passed. The author wrote 74 more queries for the new items before running any of them; 20 missed on the first run, and the purposes were given the words those queries used until every one passed. No query was changed to fit a purpose. Because the purposes were adjusted to the queries, this is a smoke check and not a relevance benchmark.
-- Size. The staging tool accepts at most 50 rows in one population. This catalogue holds 123 rows and is staged as 3 populations.
+- Size. The staging tool accepts one to 50 rows in one population. This catalogue holds 123 rows, so it is committed as 3 population files that the tool accepts as they stand. The refresh tool keeps every row in the population file it is already in. When the last file is full, add the next one by hand with an empty row list and put the new rows in it.
 - Omitted on purpose: ontology values, context policies, templates of the runtime, module references, `terminology.yaml`, benchmark evidence and anything about this project's own internals.
 
 ## Review table
