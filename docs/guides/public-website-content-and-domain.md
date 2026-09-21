@@ -45,12 +45,25 @@ leads to `/signup`. Otherwise it reads "Request access" and leads to
 `/signup#request-access`, where the page explains that access is by
 invitation. Before the service answers, and if it never answers, the page
 keeps the careful state. The same rule drives the payment state on the
-pricing view, which reads `billing.checkout`.
+pricing view, which reads `billing.checkout`, and the personal-key wording
+on the homepage and the pricing view, which reads
+`website.client_access_available`. While that field is false, both places say
+that creating and revoking a key for each device is being prepared and that
+the person who runs the service issues the key. The deployed release reports
+it as false, so the page may not state the control as working today.
 
-`tools/check_service_workspace.mjs` holds both states as named checks. Each
+The page reads those three fields only from the record version it was written
+against, `service_capabilities/v1`. Any other record version keeps the careful
+state, because another version may rename a field or give it a different
+meaning. The careful wording is also the wording the server sends, so a
+visitor whose browser does not run the page script reads the honest statement
+instead of "Checking payment".
+
+`tools/check_service_workspace.mjs` holds every state as a named check. Each
 state is produced by a real service on its own loopback origin, not by a
-rewritten reply, and four removed-guard controls prove that a page which
-ignores the reported state fails a named check.
+rewritten reply, and nine removed-guard controls prove that a page which
+ignores the reported state, or which ignores the record version, fails a
+named check.
 
 Do not position Baltor as a context-layer product. Context is one input to
 work whose execution can also use an existing function, a small decision
@@ -152,11 +165,32 @@ The payment state is not written into the page. The view reads
 view says plainly that payment is not open yet and shows no purchase button.
 `tools/check_service_workspace.mjs` holds both states, and two removed-guard
 controls prove that a page which always claims one state fails a named check.
+The named check `pricing_view_offers_no_purchase_control_while_checkout_is_closed`
+owns the rule against a purchase control in the closed state. It reads every
+button, link, form and submit control inside the pricing view, and its
+known-wrong case plants a "Subscribe now" control and requires the check to
+report it.
 
-Two things are still missing on September 21, 2026. The serving route table
-does not yet list `/pricing`, so the address works through the navigation but
-a direct visit is not served. The account page holds the subscription
-controls, and those remain behind the payment state.
+Two things are still missing on September 21, 2026.
+
+The serving route table does not yet list `/pricing`. A direct visit to
+`https://baltor.ai/pricing`, a shared link, a bookmark and a reload while the
+pricing view is open therefore return HTTP 401 with the JSON body
+`{"record_type":"service_http_error/v1","error":{"code":"unauthorized"}}` and a
+`WWW-Authenticate: Bearer` header, because an unknown address falls past the
+served web assets into the authenticated dispatcher. The address works only
+through a click inside the page, which the page handles itself. The exact
+repair is one entry in `WEB_ASSETS` in
+`src/loop_engine/core/service_runtime/http.py`:
+`"/pricing": ("index.html", HTML_MEDIA_TYPE)`. That file belongs to the
+service route owner, so the gap is held by the failing named checks
+`pricing_address_is_served_on_a_direct_visit`,
+`pricing_address_opens_the_pricing_view_after_a_reload`,
+`responsive_<width>_/pricing` and `enlarged_text_<width>_/pricing`. Do not
+release the navigation entries while those checks fail.
+
+The account page holds the subscription controls, and those remain behind the
+payment state.
 
 The live public page describes a private pilot and the broader product direction.
 Keep the internal report available to the owner, and build the public content
@@ -177,6 +211,22 @@ does not remove its data from the downloaded file.
 6. Keep candidate, locally tested, native-client tested and live-provider
    qualified statuses distinct. Self-improvement remains an evaluated
    candidate workflow, not a promise of continuous gains.
+
+Two check tools read the public pages. `tools/check_service_workspace.mjs`
+reads a local service in a real browser. `tools/check_hosted_website.mjs`
+reads a deployed origin. They enforce the same rule about the words that may
+not appear on the homepage, How it works, the pricing view and the shared
+footer, so both carry the same line, and the named check
+`both_public_page_checks_use_one_plain_word_rule` compares the two. Change the
+rule in both files together, or that check fails.
+
+The text-size survey of September 21, 2026 recorded overflow that this work
+did not introduce and does not own. At 200 percent text the workspace view
+`/app` overflows by 74 pixels at 390 pixels wide, 104 pixels at 360 and 144
+pixels at 320, and the sign-in view `/login` overflows by 22 pixels at 320.
+The pages this guide covers, the homepage, How it works, the pricing view,
+Connect, Examples and Access and data, showed no overflow at any measured
+width or text size.
 
 ## Brand and existing domain
 
