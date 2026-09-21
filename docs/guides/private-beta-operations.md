@@ -8,10 +8,9 @@ disable an account. Reading this guide changes nothing. Every command here
 that changes something asks for an explicit confirmation.
 
 Written on September 20, 2026. The statements below were checked again on
-September 21, 2026 against revision `16b838e`, which merges the current
-`main` and carries the invitation command in its current form. Check the
-current source and the current provider state before you rely on a dated
-statement. The private beta itself is defined by package D-17 in
+September 21, 2026 against revision `16b838e`, which carries the current
+`main` and the invitation command in its current form. Check the current
+source and the current provider state before you rely on a dated statement. The private beta itself is defined by package D-17 in
 [roadmap.yaml](../roadmap/roadmap.yaml) and in the
 [takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md).
 
