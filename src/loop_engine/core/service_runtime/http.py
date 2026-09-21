@@ -24,6 +24,7 @@ from .http_auth import (
     EXTERNAL_JWT_AUTHENTICATION,
 )
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
+from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
@@ -58,12 +59,12 @@ WEB_ASSETS = {
 
 
 class ServiceHttpError(ValueError):
-    """A bounded versioned transport refusal with no private exception text."""
+    """A bounded versioned transport refusal with no private exception text; no other failure adds details or headers."""
 
-    def __init__(self, code, status=400, *, details=None):
+    def __init__(self, code, status=400, *, details=None, headers=None):
         super().__init__(code)
         self.code, self.status = code, status
-        self.details = details
+        self.details, self.headers = details, headers
 
 
 @dataclass(frozen=True)
@@ -82,6 +83,7 @@ class ServiceHttpConfiguration:
     maximum_concurrent_operations: int = 8
     request_timeout_seconds: float = 30.0
     allow_loopback_http: bool = False
+    request_limits: ServiceRequestLimits = ServiceRequestLimits()
     protocol_version: str = PROTOCOL_VERSION
     record_type: str = HTTP_CONFIGURATION_RECORD_TYPE
 
@@ -115,6 +117,7 @@ class ServiceHttpConfiguration:
         if (type(self.request_timeout_seconds) not in (int, float)
                 or not math.isfinite(self.request_timeout_seconds) or self.request_timeout_seconds <= 0):
             raise ValueError("HTTP request deadline must be finite and positive")
+        object.__setattr__(self, "request_limits", ServiceRequestLimits.from_host(self.request_limits))
         object.__setattr__(self, "public_base_url", base)
         object.__setattr__(self, "allowed_hosts", hosts)
         # The declared public service origin owns the packaged browser client.
@@ -256,6 +259,7 @@ class ServiceHttpApplication:
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
+        self.request_limiter = FailedAttemptLimiter(self.configuration.request_limits)
 
     def capabilities(self):
         from importlib.metadata import version
@@ -287,12 +291,37 @@ class ServiceHttpApplication:
                 "limits": {"request_bytes": self.configuration.maximum_request_bytes,
                            "response_bytes": self.configuration.maximum_response_bytes,
                            "search_results": self.configuration.maximum_search_results,
-                           "concurrent_operations": self.configuration.maximum_concurrent_operations},
+                           "concurrent_operations": self.configuration.maximum_concurrent_operations,
+                           "failed_attempts_per_address": self.configuration.request_limits.published()},
                 "billing": {"webhook": self.billing_processor is not None,
                             "checkout": session_options.get("checkout_available", False),
                             "portal": session_options.get("portal_available", False),
                             "plans_endpoint": BILLING_PLANS_PATH},
                 "cancellation": "bounded_response_wait; running callbacks may finish; no automatic replay"}
+
+    @asynccontextmanager
+    async def _limited(self, request):
+        """Refuse an address over its failed-attempt limit before any work; count only a refused attempt."""
+        name = self.configuration.request_limits.client_address_header
+        key = self.request_limiter.address_key(request.client.host if request.client else None,
+                                               request.headers.getlist(name) if name else ())
+        refusal = self.request_limiter.refusal(key)
+        if refusal is not None:
+            raise ServiceHttpError(LIMIT_REACHED_CODE, 429, details=refusal,
+                                   headers={"Retry-After": str(refusal["retry_after_seconds"])})
+        try:
+            yield
+        except Exception as error:
+            if 400 <= _status(error)[0] < 500:
+                self.request_limiter.record_failure(key)
+            raise
+
+    async def _authenticated(self, request):
+        """Sign in one request: no credential uses no worker slot, and a refused credential is counted."""
+        if len(request.headers.getlist("authorization")) != 1:
+            raise HttpAuthenticationError()
+        async with self._limited(request):
+            return await self._work(lambda: self._authenticate_request(request))
 
     async def _work(self, function):
         if not self._slots.acquire(blocking=False):
@@ -565,7 +594,7 @@ class ServiceHttpApplication:
                         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
                         "Access-Control-Allow-Headers": "Authorization, Content-Type, MCP-Protocol-Version, Stripe-Signature"})
                 elif request.url.path == "/mcp":
-                    context = await self._work(lambda: self._authenticate_request(request))
+                    context = await self._authenticated(request)
                     body = await self._body(request) if request.method == "POST" else b""
                     payload = _parse_json(body) if body else {}
                     if payload.get("method") == "initialize":
@@ -595,8 +624,8 @@ class ServiceHttpApplication:
                     response.headers.update(cors)
             except Exception as error:
                 status, code = _status(error)
-                response = JSONResponse(_error_record(code, error.details if isinstance(error, ServiceHttpError) else None),
-                                        status_code=status, headers=cors)
+                details, added = (error.details, error.headers) if isinstance(error, ServiceHttpError) else (None, None)
+                response = JSONResponse(_error_record(code, details), status_code=status, headers={**cors, **(added or {})})
                 if status == 401:
                     response.headers["WWW-Authenticate"] = ("Bearer resource_metadata=\""
                         + config.public_base_url + "/.well-known/oauth-protected-resource/mcp\""
@@ -676,17 +705,18 @@ class ServiceHttpApplication:
         elif path == "/api/v1/account/activate" and method == "POST":
             if self.browser_identity is None:
                 raise ServiceHttpError("browser_identity_unavailable", 503)
-            fields = _parse_json(await self._body(request))
-            if fields != {"record_type": "service_account_activation_request/v1"}:
-                raise ServiceHttpError("invalid_account_activation")
-            if (len(request.headers.getlist("authorization")) != 1
-                    or not request.headers["authorization"].startswith("Bearer ")
-                    or request.headers["authorization"].count(" ") != 1):
-                raise HttpAuthenticationError()
-            output = await self._work(lambda: invoke_http_service_as_loop("account_activation",
-                lambda: self.browser_identity.activate(request.headers["authorization"][7:])))
+            async with self._limited(request):
+                fields = _parse_json(await self._body(request))
+                if fields != {"record_type": "service_account_activation_request/v1"}:
+                    raise ServiceHttpError("invalid_account_activation")
+                if (len(request.headers.getlist("authorization")) != 1
+                        or not request.headers["authorization"].startswith("Bearer ")
+                        or request.headers["authorization"].count(" ") != 1):
+                    raise HttpAuthenticationError()
+                output = await self._work(lambda: invoke_http_service_as_loop("account_activation",
+                    lambda: self.browser_identity.activate(request.headers["authorization"][7:])))
         else:
-            context = await self._work(lambda: self._authenticate_request(request))
+            context = await self._authenticated(request)
             if path == "/api/v1/session" and method == "GET":
                 output = {"record_type": "service_session/v1", "principal": context.principal.to_dict(),
                           "authentication_mode": context.mode, "token_expires_at": context.expires_at}

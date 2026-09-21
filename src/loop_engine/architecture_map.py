@@ -56,6 +56,7 @@ MODULE_MAP = {
         "http", "http_auth", "http_entrypoint", "http_checks", "http_boundary_checks",
         "http_test_fixtures", "access", "access_checks",
         "browser_identity", "browser_identity_checks",
+        "request_limits", "request_limit_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "ontology": (
