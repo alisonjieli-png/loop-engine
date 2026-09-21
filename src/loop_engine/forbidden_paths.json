@@ -153,6 +153,7 @@
   "core/brave_search.py",
   "core/web_fetch.py",
   "core/web_search.py",
+  "core/local_model_readiness.py",
   "core/external_harness_adapters.py",
   "core/harness_process.py",
   "core/harness_process_relay.py",
@@ -560,6 +561,7 @@
   "core/decisions/configuration.py": "Uses urllib.parse for effect-free endpoint validation only. Import-boundary checks prohibit HTTP clients and sockets here; outbound requests are owned solely by decisions/http_transport.py.",
   "core/decisions/system_one.py": "Uses urllib.parse for effect-free endpoint validation only. Import-boundary checks prohibit HTTP clients and sockets here; outbound requests are owned solely by decisions/http_transport.py.",
   "core/service_runtime/browser_identity.py": "Host-installed browser identity adapter. Network authority is checked before any key or provider read; the signed issuer, browser-only audience and current user are validated at the configured HTTPS origin. The bounded user request refuses redirects, inherited proxies, oversized or duplicate-key responses. It cannot authorize the MCP resource audience.",
-  "core/service_runtime/browser_identity_checks.py": "Real loopback-only identity acceptance with locally signed tokens, owned temporary listeners and an injected current-user transport. No remote identity account, email, credential or provider request is used."
+  "core/service_runtime/browser_identity_checks.py": "Real loopback-only identity acceptance with locally signed tokens, owned temporary listeners and an injected current-user transport. No remote identity account, email, credential or provider request is used.",
+  "core/local_model_readiness.py": "Reads the operator-declared local inference server's own model listing and model information before an unattended run starts. Bounded GET and POST to the declared address only, no credential read or sent, no generation, and an injectable opener so every check runs offline."
  }
 }

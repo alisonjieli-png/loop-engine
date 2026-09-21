@@ -196,6 +196,20 @@ class CustomEndpoint:
     #: adapters do, instead of sending an unauthenticated request and
     #: reading the refusal as a wrong credential.
     credential_env: str = ""
+    #: How many seconds the server should keep this model's weights loaded
+    #: after a call, for a wire that accepts the instruction. Negative means
+    #: undeclared and nothing is sent, so the server's own default decides.
+    #: A long unattended run declares this deliberately: loading the weights
+    #: is paid once per load, not once per run, and a server that unloads
+    #: between steps pays it again at every step.
+    residency_seconds: int = -1
+    #: The context length this endpoint asks the server to load the model
+    #: with, for a wire that accepts the instruction. Zero means undeclared
+    #: and nothing is sent, so the server's own default decides. A run that
+    #: checked a context length against the memory it has should also ask
+    #: the server for that length, or the check described a different load
+    #: from the one that happens.
+    context_tokens: int = 0
 
     def __post_init__(self):
         if not self.name or not self.name.replace("_", "").isalnum():
@@ -223,6 +237,17 @@ class CustomEndpoint:
         if not isinstance(self.credential_env, str) or "\n" in self.credential_env \
                 or "=" in self.credential_env:
             raise EndpointError("credential_env must be a variable name")
+        if isinstance(self.residency_seconds, bool) \
+                or not isinstance(self.residency_seconds, int):
+            raise EndpointError(
+                "residency_seconds must be a whole number of seconds, or "
+                "negative to leave the server's own default in charge")
+        if isinstance(self.context_tokens, bool) \
+                or not isinstance(self.context_tokens, int) \
+                or self.context_tokens < 0:
+            raise EndpointError(
+                "context_tokens must be a whole number of tokens, or zero to "
+                "leave the server's own default in charge")
         if self.auth_scheme == "header":
             if (not self.auth_header.strip()
                     or not re.fullmatch(
@@ -314,6 +339,31 @@ class CustomEndpoint:
             return None
         return self.think == "on"
 
+    @property
+    def residency_sent(self) -> "int | None":
+        """The residency the wire sends, or None when nothing is sent.
+
+        Only the Ollama wire carries this instruction. On any other wire an
+        undeclared residency and a declared one look the same on the socket,
+        so the record reports None rather than implying the server was told.
+        """
+        if self.wire != "ollama" or self.residency_seconds < 0:
+            return None
+        return int(self.residency_seconds)
+
+    @property
+    def context_tokens_sent(self) -> "int | None":
+        """The context length the wire asks for, or None when nothing is sent.
+
+        Only the Ollama wire carries this instruction. Everywhere else a
+        declared context length and an undeclared one look the same on the
+        socket, so the record reports None rather than implying the server
+        was told which length to load.
+        """
+        if self.wire != "ollama" or self.context_tokens < 1:
+            return None
+        return int(self.context_tokens)
+
     def describe(self) -> dict:
         """Record shape — carries no credential."""
         return {"name": self.name, "base_url": self.base_url,
@@ -331,6 +381,10 @@ class CustomEndpoint:
                 "think_sent": self.think_sent,
                 "credential_env": self.credential_env,
                 "credential_missing": self.credential_missing,
+                "residency_seconds": self.residency_seconds,
+                "residency_sent": self.residency_sent,
+                "context_tokens": self.context_tokens,
+                "context_tokens_sent": self.context_tokens_sent,
                 "tls_verification": self.tls_verification,
                 "tls_ca_file": self.tls_ca_file}
 
@@ -737,6 +791,10 @@ def _chat_once(ep: CustomEndpoint, prompt: str, *, system: str,
                                "temperature": temperature}}
         if ep.think_sent is not None:
             payload["think"] = ep.think_sent
+        if ep.residency_sent is not None:
+            payload["keep_alive"] = ep.residency_sent
+        if ep.context_tokens_sent is not None:
+            payload["options"]["num_ctx"] = ep.context_tokens_sent
     else:
         payload = {"model": ep.model, "messages": messages,
                    "max_tokens": int(max_tokens), "temperature": temperature}
@@ -1098,7 +1156,8 @@ def endpoints_from_env(value: "str | None" = None) -> list:
                                  "wire", "locality", "max_output",
                                  "max_output_source", "evidence",
                                  "auth_scheme", "auth_header", "stream",
-                                 "think", "tls_verification", "tls_ca_file"}
+                                 "think", "tls_verification", "tls_ca_file",
+                                 "residency_seconds", "context_tokens"}
         if unknown:
             raise EndpointError(
                 f"unknown endpoint field(s) {sorted(unknown)} — refused rather "
@@ -1129,6 +1188,8 @@ def endpoints_from_env(value: "str | None" = None) -> list:
             auth_header=fields.get("auth_header", ""),
             stream=fields.get("stream", "auto"),
             think=fields.get("think", "default"),
+            residency_seconds=int(fields.get("residency_seconds", "-1")),
+            context_tokens=int(fields.get("context_tokens", "0")),
             tls_verification=fields.get("tls_verification", "default"),
             tls_ca_file=fields.get("tls_ca_file", ""),
             credential_env=key_env,
@@ -1293,6 +1354,52 @@ def self_test() -> dict:
     except EndpointError:
         refused_stream = True
     check("an_unrecognized_stream_mode_is_refused", refused_stream)
+
+    # Residency: an unattended run declares how long the server keeps the
+    # weights loaded, and a run that declares nothing must not look as
+    # though it told the server something.
+    undeclared = CustomEndpoint(name="res_a", base_url="http://127.0.0.1:9",
+                                model="m", wire="ollama")
+    declared = CustomEndpoint(name="res_b", base_url="http://127.0.0.1:9",
+                              model="m", wire="ollama",
+                              residency_seconds=3600)
+    other_wire = CustomEndpoint(name="res_c", base_url="http://127.0.0.1:9/v1",
+                                model="m", wire="openai",
+                                residency_seconds=3600)
+    check("an_undeclared_residency_sends_nothing_and_says_so",
+          undeclared.residency_sent is None
+          and undeclared.describe()["residency_seconds"] == -1)
+    check("a_declared_residency_is_sent_on_the_wire_that_carries_it",
+          declared.residency_sent == 3600
+          and declared.describe()["residency_sent"] == 3600)
+    check("a_wire_that_carries_no_residency_never_implies_it_was_sent",
+          other_wire.residency_sent is None
+          and other_wire.describe()["residency_seconds"] == 3600)
+    refused_residency = False
+    try:
+        CustomEndpoint(name="res_d", base_url="http://127.0.0.1:9", model="m",
+                       wire="ollama", residency_seconds="1h")
+    except EndpointError:
+        refused_residency = True
+    check("a_residency_that_is_not_a_whole_number_of_seconds_is_refused",
+          refused_residency)
+
+    # A context length the machine was checked against must reach the
+    # server, or the check described a load that never happened.
+    context_declared = CustomEndpoint(
+        name="ctx_a", base_url="http://127.0.0.1:9", model="m",
+        wire="ollama", context_tokens=8192)
+    check("a_declared_context_length_is_sent_on_the_wire_that_carries_it",
+          context_declared.context_tokens_sent == 8192
+          and undeclared.context_tokens_sent is None
+          and other_wire.context_tokens_sent is None)
+    refused_context = False
+    try:
+        CustomEndpoint(name="ctx_b", base_url="http://127.0.0.1:9", model="m",
+                       wire="ollama", context_tokens=-1)
+    except EndpointError:
+        refused_context = True
+    check("a_negative_context_length_is_refused", refused_context)
 
     delta_chunk = {"choices": [{"delta": {"content": "hello "}, }]}
     message_chunk = {"choices": [{"message": {"content": "world"}}]}

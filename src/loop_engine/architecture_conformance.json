@@ -1,9 +1,9 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 647,
+ "files_scanned": 652,
  "zero_tolerance_gates": {
-  "unclassified_files": 0,
+  "unclassified_files": 5,
   "docs_folders_without_a_charter_readme": 0,
   "reachable_legacy_flat_paths": 0,
   "legacy_flat_imports_on_live_paths": 0,
@@ -17,7 +17,7 @@
   "dynamic_import_registration_bypasses": 0,
   "forbidden_model_mentions_outside_guards": 0,
   "empty_placeholder_modules": 0,
-  "modules_over_size_cap_without_declared_exception": 0,
+  "modules_over_size_cap_without_declared_exception": 1,
   "public_interfaces_over_parameter_cap_without_declared_exception": 0,
   "syntax_newer_than_the_declared_minimum_python": 0,
   "modules_missing_llm_context_docstring": 0,
@@ -35,7 +35,13 @@
   "architecture_map_freshness": 0
  },
  "gate_details": {
-  "unclassified_files": [],
+  "unclassified_files": [
+   "overnight_cli.py",
+   "code_nodes/overnight_journal.py",
+   "code_nodes/overnight_authority.py",
+   "code_nodes/overnight_night.py",
+   "core/local_model_readiness.py"
+  ],
   "docs_folders_without_a_charter_readme": [],
   "reachable_legacy_flat_paths": [],
   "stale_current_architecture_documents": [],
@@ -112,6 +118,12 @@
   },
   "retired_decision_spine_terms": [],
   "scan_violations": [
+   {
+    "rule": "module_over_size_cap",
+    "file": "code_nodes/overnight_night.py",
+    "line": 916,
+    "detail": "916 lines > cap 800; declare an exception with a split plan or split it"
+   },
    {
     "rule": "dependency_direction",
     "file": "core/adaptive_host_runtime_checks.py",
@@ -568,5 +580,5 @@
   "max_power_grants_no_permissions: power scales budgets only"
  ],
  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
- "all_gates_pass": true
+ "all_gates_pass": false
 }

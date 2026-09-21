@@ -131,6 +131,9 @@ def main(argv=None) -> int:
     if raw_argv[:1] == ["decisions"]:
         from .decision_cli import decision_command
         return decision_command(raw_argv[1:])
+    if raw_argv[:1] == ["overnight"]:
+        from .overnight_cli import overnight_command
+        return overnight_command(raw_argv[1:])
     parser = argparse.ArgumentParser(
         prog="loop-engine",
         description=__doc__.splitlines()[0],
