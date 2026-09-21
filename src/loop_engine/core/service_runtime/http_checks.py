@@ -41,18 +41,32 @@ def _web_checks(check, root):
                   and public.headers["referrer-policy"] == "no-referrer"
                   and "localStorage" not in script.text
                   and httpx.get(base + "/assets/../http_entrypoint.py", trust_env=False).status_code != 200)
-            # A page that links to an address the server does not serve sends
-            # the reader to a refusal. Every internal link in the page must
+            # A page that points at an address the server does not serve sends
+            # the reader to a refusal. Every internal address in the page must
             # resolve to a served address or to an interface path.
+            #
+            # Both attributes are read, not only href. A script or an image the
+            # service does not serve is worse than a broken link, because the
+            # request falls through to the interface router and comes back as a
+            # refusal rather than a missing file, so the page loads and then
+            # quietly does nothing. This check scanned href alone until
+            # September 21, 2026, and a page shipped with a script tag pointing
+            # at an address that answered 401.
             from importlib.resources import files
             import re as _re
             page = files("loop_engine").joinpath("core", "service_runtime", "web_assets", "index.html").read_text("utf-8")
             from .http import WEB_ASSETS
-            linked = {value for value in _re.findall(r'href="(/[^"#?]*)"', page)}
+            linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
             unserved = sorted(value for value in linked
                               if value not in WEB_ASSETS and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
-            check("every_internal_link_on_the_page_has_a_served_address", not unserved)
+            check("every_internal_address_on_the_page_is_served", not unserved)
+            # The addresses are read from the page; a page that names none
+            # would pass the check above without proving anything.
+            check("the_page_names_internal_addresses_of_both_kinds",
+                  len(linked) >= 2
+                  and any(_re.findall(r'src="(/[^"#?]*)"', page))
+                  and any(_re.findall(r'href="(/[^"#?]*)"', page)))
             notices = httpx.get(base + "/assets/third-party-notices.txt", trust_env=False)
             check("packaged_browser_library_is_served_with_its_licence_terms",
                   notices.status_code == 200 and "MIT License" in notices.text and "Supabase" in notices.text
