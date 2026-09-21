@@ -1,9 +1,18 @@
 # Loop Engine Glossary
 
 This glossary defines every major component and the differences
-between similar-sounding components. It is normative: when code,
-records, tests, and documentation disagree, this glossary and the
-Constitution are the authority until an ADR changes them.
+between similar-sounding components. It is normative for those
+differences: when code, records, tests, and documentation disagree
+about what a component is and how it differs from its neighbors, this
+glossary and the Constitution are the authority until an ADR changes
+them.
+
+It is not the authority for names. The single structured source for a
+term, its definition, where it may appear, where it must not appear and
+its status is [terminology.yaml](../../terminology.yaml), and
+[the developer language guide](../guides/developer-language.md) explains
+how to read it. A conformance gate reads terminology.yaml, so a name
+here that disagrees with that file is the mistake.
 
 The [component glossary](COMPONENT-GLOSSARY.md) adds the shared passive
 component envelope, `LoopValue`, atomic primitives, `LLMWorkPacket`, and prompt

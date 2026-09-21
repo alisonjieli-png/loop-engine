@@ -17,15 +17,18 @@ language each component uses).
 Start with [getting started](../getting-started.md) and the
 [documentation index](../README.md).
 
+A new developer or a new coding agent starts with
+[developer language](developer-language.md). It is the one page that explains
+the words this repository uses, the surfaces where each word may appear and
+the check that enforces them. The single structured source it points at is
+[terminology.yaml](../../terminology.yaml).
+
 The first-release guides are [hosting procedures](hosting-and-deployment-procedures.md),
 [owner actions](launch-owner-checklist.md),
 [product style](product-style-guide.md), and
 [harness service onboarding](harness-service-onboarding.md). Their planned
 service paths are labeled separately from commands available today. The
 hosting procedures name the [current host](hosting-and-deployment-procedures.md#current-host).
-The product style guide holds the table
-[Names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
-for Baltor, Loop Engine, the public words and the technical words.
 
 The [launch setup runbook](launch-setup-runbook.md) lists the account, hosting,
 identity, storage, payment and secret-reference work for the owner. The
@@ -40,6 +43,12 @@ export credential values into repository files or grant missing access.
 The [harness instance layout](harness-instance-context-layout.md) distinguishes
 the generated instruction and assignment files from proposed native context
 materialization and observed-loading requirements.
+
+The [overnight local solving guide](overnight-solving-on-local-models.md)
+covers the machine tiers a local model needs, the memory arithmetic behind
+them, connecting a local inference server as a custom provider, declaring an
+unattended night's authority, budget and wait, and reading the result in the
+morning. It names the parts that were executed and the parts that were not.
 
 The [public content and domain plan](public-website-content-and-domain.md)
 separates customer pages from the internal engineering report. The

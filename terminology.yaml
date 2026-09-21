@@ -264,9 +264,6 @@ terms:
   LoopProfileRef:
     kind: canonical
     definition: Exact versioned reference to one Loop profile.
-  FunctionalIntelligenceDomain:
-    kind: canonical
-    cardinality: many
   IntelligenceAccessPolicy:
     kind: canonical
     definition: Hard constraints on what may be queried, returned, or exposed.
@@ -307,7 +304,7 @@ qualified_terms:
   memory:
     allowed:
     - RuntimeMemory
-    - ExperienceIntelligence
+    - RunHistory
     - Checkpoint
     - Cache
   store:
@@ -325,6 +322,932 @@ qualified_terms:
     - plugin_version
     - protocol_version
     - implementation_version
+vocabulary_schema_version: vocabulary_placement/v1
+vocabulary_note: >-
+  This file is the single structured source for the words the repository uses.
+  A term states its kind, its definition, where it may appear, where it must
+  not appear and its status. The product style guide, humanizer-context.md and
+  the names and nomenclature standard point here instead of repeating the
+  list. The gate vocabulary_and_placement_violations in
+  loop_engine.nomenclature_conformance reads these sections.
+surfaces:
+  public_website_pages:
+    definition: >-
+      The homepage, the How it works view and the shared footer of the served
+      website. A customer reads these without any technical background.
+    enforcement: checked
+    html_page: src/loop_engine/core/service_runtime/web_assets/index.html
+    html_regions:
+    - view:home
+    - view:about
+    - footer
+  website_documentation_view:
+    definition: >-
+      The Documentation view of the served website and the runtime vocabulary
+      template it shows. Exact runtime terms belong here.
+    enforcement: declared_only
+    html_page: src/loop_engine/core/service_runtime/web_assets/index.html
+    html_regions:
+    - view:docs
+    - template:runtime-vocabulary-template
+  website_application_views:
+    definition: >-
+      The signed-in views of the served website: sign in, registration,
+      workspace, account, administration, client connection, first example and
+      access and data.
+    enforcement: declared_only
+    html_page: src/loop_engine/core/service_runtime/web_assets/index.html
+    html_regions:
+    - view:login
+    - view:signup
+    - view:workspace
+    - view:account
+    - view:admin
+    - view:setup
+    - view:examples
+    - view:security
+  technical_documents:
+    definition: >-
+      Markdown under docs/ and the instruction files in the repository root.
+      These keep the exact runtime terms and their complete definitions.
+    enforcement: checked
+    document_paths:
+    - AGENTS.md
+    - ASTRA.md
+    - CHANGELOG.md
+    - CONTRIBUTING.md
+    - README.md
+    - SECURITY.md
+    - humanizer-context.md
+    - docs
+    document_exclusions:
+    - docs/evidence
+    - docs/prompts
+    - docs/verification
+  source_code:
+    definition: >-
+      Python, JavaScript, YAML and JSON inside src/, tools/ and devtools/.
+      Exact code identifiers live here and prose never renames them.
+    enforcement: declared_only
+  command_output:
+    definition: What the installed loop-engine command prints to a terminal.
+    enforcement: declared_only
+  customer_configuration:
+    definition: >-
+      Client settings a customer copies, the environment variable names in
+      them, and the credentials the service issues.
+    enforcement: declared_only
+placement_defaults:
+  canonical:
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: current
+  internal_only:
+    may_appear:
+    - source_code
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    status: current
+  compatibility_alias:
+    may_appear:
+    - source_code
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: compatibility_only
+  conceptual_only:
+    may_appear:
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+vocabulary:
+  Baltor:
+    kind: public_brand
+    definition: >-
+      The public brand. It names the product, the website and the hosted
+      service as a customer sees them. It never replaces a code identifier, a
+      package name, a record type, a contract field or the repository name.
+    pattern: '\bBaltor\b'
+    case_sensitive: true
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - command_output
+    - customer_configuration
+    must_not_appear: []
+    status: decided_by_the_owner
+  Loop Engine:
+    kind: technical_name
+    definition: >-
+      The repository, the engine, the Python distribution and command
+      loop-engine, and the Python import loop_engine.
+    pattern: '\bLoop Engine\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner
+  Building with Loops:
+    kind: readme_title
+    definition: The title of the public README. It is not a product name.
+    pattern: '\bBuilding with Loops\b'
+    case_sensitive: true
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner
+  Loop:
+    kind: technical_word
+    definition: >-
+      The sole operational runtime type and the only executable graph vertex.
+      A customer-facing page calls the same thing a step.
+    pattern: '\bLoops?\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner
+  Loop node:
+    kind: technical_word
+    definition: >-
+      The graph-vertex wording used inside the phrase discrete cognitive or
+      act step Loop node. It never names a runtime class of its own.
+    pattern: '\bLoop nodes?\b'
+    case_sensitive: true
+    may_appear:
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner
+  discrete cognitive or act step Loop node:
+    kind: technical_phrase
+    definition: >-
+      An independently governed instance of the Loop runtime responsible for
+      one clearly defined cognitive step or action. Write the phrase in full
+      and keep it beside its complete behavioral explanation in ASTRA.md. Do
+      not shorten it, remove the word node or replace the explanation with a
+      label.
+    pattern: '\bdiscrete cognitive or act step Loop node\b'
+    case_sensitive: true
+    may_appear:
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner
+  Practitioner:
+    kind: technical_word
+    definition: >-
+      The Loop role that plans, builds and verifies work. Written in full as
+      Practitioner Loop when the sentence names a running instance.
+    pattern: '\bPractitioners?\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner
+  Intelligence Loop:
+    kind: technical_word
+    definition: >-
+      A Loop in the Intelligence role. The bare word Intelligence is not a
+      reserved technical word, because the four layer names are public.
+    pattern: '\bIntelligence Loops?\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_21
+  Solution Loop:
+    kind: technical_word
+    definition: A Loop in the Solution role, represented in a Solution Canvas.
+    pattern: '\bSolution Loops?\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  Solution Canvas:
+    kind: technical_word
+    definition: The declarative reusable solution that runs for a new input.
+    pattern: '\bSolution Canvas\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  role profile:
+    kind: technical_word
+    definition: >-
+      The versioned behavior preset a Loop uses, carried by LoopProfileSpec.
+      It is not the step profile, the effort setting or the operating
+      settings.
+    pattern: '\brole profiles?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  run mode:
+    kind: technical_word
+    definition: >-
+      How a Loop is allowed to resolve its work: deterministic, hybrid or
+      non-deterministic.
+    pattern: '\brun modes?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  step profile:
+    kind: technical_word
+    definition: >-
+      The number, order and repetition of the steps a Loop may run. Carried by
+      the fields framework and custom_steps.
+    pattern: '\bstep profiles?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  runtime classification:
+    kind: technical_word
+    definition: >-
+      The tree of runtime type, relationship, role, profile, mode, contract,
+      conditions, budget and records.
+    pattern: '\bruntime classification\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  effort setting:
+    kind: technical_word
+    definition: >-
+      Bounded work limits for one Loop. The code field is LoopConfig.power and
+      its values are light, standard, deep and max. It is not thinking power.
+      Write effort setting, not effort budget and not bare power.
+    pattern: '\beffort settings?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_21
+  thinking power:
+    kind: technical_word
+    definition: >-
+      The model effort a hybrid or non-deterministic Loop asks a provider for.
+      The code field is llm_thinking_power and its values are small, medium,
+      high, max and specialized. It is not the effort setting.
+    pattern: '\bthinking power\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_21
+  operating settings:
+    kind: technical_word
+    definition: >-
+      Permissions, access, providers and optimization preferences, carried by
+      OperatingProfile.
+    pattern: '\boperating settings\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    status: current
+  Run History:
+    kind: technical_word
+    definition: The saved event history of a run, used for reports and playback.
+    pattern: '\bRun History\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: current
+  Runtime Memory:
+    kind: technical_word
+    definition: >-
+      The temporary note board scoped to one run. It is separate from the four
+      persistent intelligence layers and is not a fifth layer.
+    pattern: '\bRuntime Memory\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  prompt cycle:
+    kind: technical_word
+    definition: One request and response between a harness and a model provider.
+    pattern: '\bprompt cycles?\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: current
+  harness:
+    kind: customer_word
+    definition: >-
+      The customer's own program that calls a model and runs tools, for
+      example OpenCode, Codex or Claude Code. The owner's category line
+      harness and agent optimized operation puts this word on the public
+      pages, so it is no longer refused there.
+    pattern: '\bharness(?:es)?\b'
+    case_sensitive: false
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    - command_output
+    must_not_appear: []
+    status: decided_by_the_owner_2026_09_20
+  agent:
+    kind: customer_word
+    definition: >-
+      The customer's model-driven program that performs work. The owner's
+      category line puts this word on the public pages.
+    pattern: '\bagents?\b'
+    case_sensitive: false
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    must_not_appear: []
+    status: decided_by_the_owner_2026_09_20
+  harness and agent optimized operation:
+    kind: public_category_line
+    definition: >-
+      The owner's positioning phrase for what Baltor does. Use it in the words
+      the owner chose. It is a category line, not a measured claim.
+    pattern: '\bharness and agent optimized operation\b'
+    case_sensitive: false
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - technical_documents
+    must_not_appear: []
+    status: decided_by_the_owner_2026_09_20
+  public work words:
+    kind: public_word
+    definition: >-
+      The words a customer page uses for the work: task, each step,
+      information, tools, model, checks, results and reusable solution. On the
+      homepage, the How it works view and the shared footer these are the only
+      words that describe the work.
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    must_not_appear: []
+    status: decided_by_the_owner
+  Context Intelligence:
+    kind: public_layer_name
+    definition: >-
+      The first persistent intelligence layer: methods, questions,
+      constraints, examples and output contracts. The layer key is
+      context_intelligence and its public slug is context.
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    must_not_appear: []
+    status: current
+  Code Intelligence:
+    kind: public_layer_name
+    definition: >-
+      The second persistent intelligence layer: reusable functions, tools,
+      packages and workflows with declared inputs, outputs and effects. The
+      layer key is code_intelligence and its public slug is code.
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    must_not_appear: []
+    status: current
+  Runtime History and Solution Intelligence:
+    kind: public_layer_name
+    definition: >-
+      The third persistent intelligence layer: saved outcomes, failures,
+      repairs, measurements and solution information. The layer key is
+      runtime_history_solution_intelligence and its public slug is history.
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    must_not_appear: []
+    status: current
+  User Feedback Intelligence:
+    kind: public_layer_name
+    definition: >-
+      The fourth persistent intelligence layer: scoped corrections, priorities
+      and instructions supplied by a person. The layer key is
+      user_feedback_intelligence and its public slug is user.
+    may_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    - source_code
+    must_not_appear: []
+    status: current
+  Harness Intelligence:
+    kind: technical_word
+    definition: >-
+      The provisioning view that serves authorized material from the four
+      persistent layers to one harness assignment. It is a view, not a fifth
+      persistent layer, and it is not the Intelligence Library, which is the
+      searchable view every Loop uses.
+    pattern: '\bHarness Intelligence\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_21
+  Intelligence Library:
+    kind: technical_word
+    definition: >-
+      One searchable view across the four persistent intelligence layers,
+      served by query_intelligence. It is not the Harness Intelligence
+      provisioning view and it is not a store.
+    pattern: '\bIntelligence Library\b'
+    case_sensitive: true
+    may_appear:
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_21
+  le_:
+    kind: customer_visible_identifier
+    definition: >-
+      The first characters of every client key the service issues, set in
+      service_runtime/runtime.py and access.py. A rename is a contract change.
+    may_appear:
+    - customer_configuration
+    - source_code
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    status: open_owner_decision
+  loop-engine-intelligence:
+    kind: customer_visible_identifier
+    definition: >-
+      The protocol server name a Model Context Protocol client shows after it
+      connects.
+    may_appear:
+    - customer_configuration
+    - source_code
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    status: open_owner_decision
+  X-Loop-Engine-Record-Type:
+    kind: customer_visible_identifier
+    definition: >-
+      The response header that names the record type of a downloaded body. A
+      browser client can read it.
+    may_appear:
+    - customer_configuration
+    - source_code
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    status: open_owner_decision
+  Loop Engine Intelligence:
+    kind: customer_visible_identifier
+    definition: >-
+      The resource_name field of the protected resource metadata. The service
+      returns that record only when the host configuration lists the
+      authentication mode external_jwt, which the pilot does not.
+    may_appear:
+    - customer_configuration
+    - source_code
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    status: open_owner_decision
+  loop-engine:
+    kind: customer_visible_identifier
+    definition: >-
+      The command a customer types and the Python distribution a customer
+      installs.
+    may_appear:
+    - customer_configuration
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: open_owner_decision
+  BALTOR_SERVICE_TOKEN:
+    kind: customer_visible_identifier
+    definition: >-
+      The environment variable name that holds a customer's service access
+      token in copied client settings. The settings file never holds the value.
+    may_appear:
+    - customer_configuration
+    - website_application_views
+    - source_code
+    - technical_documents
+    must_not_appear: []
+    status: decided_by_engineering
+  baltor:
+    kind: customer_visible_identifier
+    definition: >-
+      The entry name a customer adds to a client's settings file for this
+      service.
+    may_appear:
+    - customer_configuration
+    - website_application_views
+    - source_code
+    - technical_documents
+    must_not_appear: []
+    status: decided_by_engineering
+  pilot:
+    kind: retired_word
+    definition: >-
+      A retired word that describes the product to a customer as a trial.
+      Being invited changes only who can create an account. It does not change
+      how the product looks or how carefully it is built. Technical documents
+      and dated records keep their original wording, and the deployed
+      application is still named baltor-pilot by its host.
+    replacement: accounts open in small groups, invited member, or X is being built.
+    pattern: '\bpilots?\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
+  beta:
+    kind: retired_word
+    definition: >-
+      A retired word that describes the product to a customer as a trial. The
+      tenant identifiers alpha and beta in the check fixtures are test names,
+      not customer copy, and they live in source code.
+    replacement: accounts open in small groups, or invited member.
+    pattern: '\bbetas?\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    - source_code
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
+  private beta:
+    kind: retired_word
+    definition: >-
+      A retired phrase for closed registration. Who may create an account is a
+      matter of configuration, not of copy.
+    replacement: accounts open in small groups, or join the waiting list.
+    pattern: '\bprivate betas?\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
+  early access:
+    kind: retired_word
+    definition: >-
+      A retired phrase that offers a customer a trial rather than the product.
+      It carries neither the word pilot nor the word beta, so a rule written
+      for those two words alone lets it through.
+    replacement: join the waiting list.
+    pattern: '\bearly access\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
+  chronicle:
+    kind: retired_word
+    definition: A retired word for a saved history of events.
+    replacement: Run History, or event log when the sentence means the in-process events.
+    pattern: '\bchronicles?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  receipt:
+    kind: retired_word
+    definition: A retired word for a saved statement that something happened.
+    replacement: record, report or evidence, according to the object.
+    pattern: '\breceipts?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  stop condition:
+    kind: retired_word
+    definition: A retired word for the rule that ends a Loop.
+    replacement: exit condition, and loop condition for the rule that lets it continue.
+    pattern: '\bstop[ _-]conditions?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  child:
+    kind: retired_word
+    definition: A retired topology word for a Loop that another Loop started.
+    replacement: Spawned Loop, or the relationship spawned by.
+    pattern: '\bchild(?:ren)?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  root loop:
+    kind: retired_word
+    definition: A retired topology word for the Loop that begins a run.
+    replacement: Starting Loop.
+    pattern: '\broot[ _-]loops?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  what is next:
+    kind: retired_word
+    definition: A retired name for the step that chooses the following action.
+    replacement: select next action.
+    pattern: '\bwhat[ _''’-]*(?:is|s)?[ _-]*next\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  loop intelligence:
+    kind: retired_word
+    definition: A retired name for searching and retrieving intelligence.
+    replacement: Intelligence Search and Retrieval.
+    pattern: '\bloop[ _-]intelligence\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    quotation_exceptions:
+    - docs/guides/jev-and-harness-decision-tools.md
+    quotation_reason: >-
+      The guide records that the client settings entry was renamed from
+      loop-intelligence to baltor on September 20, 2026. A customer with an
+      old settings file needs to recognize the old name.
+    status: retired
+  intelligence pillar:
+    kind: retired_word
+    definition: A retired word for one of the four persistent intelligence layers.
+    replacement: intelligence layer.
+    pattern: '\bintelligence pillars?\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  String Intelligence:
+    kind: retired_word
+    definition: A retired name for the first persistent intelligence layer.
+    replacement: Context Intelligence.
+    pattern: '\bString Intelligence\b'
+    case_sensitive: false
+    may_appear: []
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    - technical_documents
+    status: retired
+  LoopNode:
+    kind: retired_identifier
+    definition: >-
+      A retired class name. The canonical runtime class is Loop and
+      forbidden_class_names refuses this spelling at class-creation time.
+    replacement: Loop.
+    may_appear:
+    - technical_documents
+    - source_code
+    must_not_appear:
+    - public_website_pages
+    document_mention: permitted
+    document_mention_reason: >-
+      A document has to name the retired spelling to explain what the gate
+      refuses. The class-name rule, not a prose rule, keeps it out of the code.
+    status: retired_identifier
+  CodeNode:
+    kind: retired_identifier
+    definition: A retired class name for a Loop that executes code.
+    replacement: Loop with a code-execution role profile.
+    may_appear:
+    - technical_documents
+    - source_code
+    must_not_appear:
+    - public_website_pages
+    document_mention: permitted
+    document_mention_reason: >-
+      deprecated_terms already refuses it in new code. A document may name it
+      when it explains the refusal.
+    status: retired_identifier
+  'kind: loop_node':
+    kind: retired_record_spelling
+    definition: >-
+      A retired serialized record spelling. It is unsupported runtime input.
+      Historical files keep their original bytes without an automatic reader.
+    replacement: LoopDefinitionRecord.
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    document_mention: permitted
+    document_mention_reason: >-
+      The version policy needs documents that name the retired spelling and
+      state that active readers refuse it.
+    status: retired_record_spelling
+proposed_renames:
+  catalogue_and_catalog:
+    same_idea_two_names: >-
+      Catalogue and Catalog both name a registered collection that can be
+      searched and admitted from.
+    current_names:
+    - StepLayerCatalogue and HarnessIntelligenceCatalogue in
+      src/loop_engine/core/opencode_step_layers.py and
+      src/loop_engine/core/node_provisioning.py
+    - DuckDBCatalogBackend in src/loop_engine/core/duckdb_catalog.py,
+      loop_profile_catalog.py and the catalog/ package
+    proposed_name: catalog, in every identifier
+    reason: >-
+      The package folder, the registry module and the majority of identifiers
+      already spell it catalog. Prose should follow the identifiers.
+    not_performed_because: >-
+      Renaming a public class is a contract change. It needs a new explicit
+      version, updated callers and checks in the same change, and an explicit
+      refusal of the old form. It waits for that separate change.
+    owning_contract: src/loop_engine/catalog/registry.py
+  client_key_and_client_token:
+    same_idea_two_names: >-
+      The credential an invited person creates for one of their own clients.
+    current_names:
+    - client token, six times in the served page
+      src/loop_engine/core/service_runtime/web_assets/index.html
+    - personal client key, in docs/roadmap/CONTINUATION-AND-LAUNCH.md and the
+      takeover checkpoint
+    - key_id and service_client_access_request/v1 in
+      src/loop_engine/core/service_runtime/access.py
+    proposed_name: client key, in prose, to match the record fields
+    reason: >-
+      The record type, the field names and the issued prefix all say key. The
+      page is the only surface that says token for the same object.
+    not_performed_because: >-
+      The served page is being rewritten in the same cycle by the public
+      pages work. Changing the same lines here would discard that work.
+    owning_contract: src/loop_engine/core/service_runtime/access.py
+  user_feedback_layer_slug:
+    same_idea_two_names: >-
+      The public slug of the fourth persistent intelligence layer.
+    current_names:
+    - 'the attribute data-intelligence-layer with the value feedback, on line
+      40 of src/loop_engine/core/service_runtime/web_assets/index.html'
+    - LAYER_PUBLIC_SLUG maps user_feedback_intelligence to user in
+      src/loop_engine/core/intelligence_layers.py
+    proposed_name: user, to match the slug the service publishes
+    reason: >-
+      The served capabilities record and saved records carry user. The page
+      attribute has no reader in any stylesheet or script, so it is the wrong
+      name with no consumer.
+    not_performed_because: >-
+      The served page is being rewritten in the same cycle by the public
+      pages work.
+    owning_contract: src/loop_engine/core/intelligence_layers.py
+  service_display_name_default:
+    same_idea_two_names: >-
+      The name the served header and shared footer show.
+    current_names:
+    - 'ServiceHttpConfiguration.display_name defaults to Loop Engine in
+      src/loop_engine/core/service_runtime/http.py'
+    - The pilot host configuration sets Baltor, so the deployed footer reads
+      Baltor
+    proposed_name: >-
+      No rename. The default belongs to the same open owner decision as the
+      other identifiers that carry the engine name.
+    reason: >-
+      A self-hosted service that sets nothing shows Loop Engine in the shared
+      footer, which the placement rule refuses for that surface. Only the host
+      configuration decides it, so a source check cannot see the value.
+    not_performed_because: >-
+      Changing the default changes what every self-hosted service displays.
+      That is an owner decision, not an engineering one.
+    owning_contract: src/loop_engine/core/service_runtime/http.py
 semantic_schema_version: semantic_constitution/v1
 semantic_categories:
   component:

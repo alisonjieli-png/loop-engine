@@ -4,13 +4,15 @@ Kind: dated evidence record. It reports what happened on one machine with
 one model on that date. It is not a benchmark, and nothing here is a rate
 that another machine will reproduce.
 
-Why it exists: the
-[overnight local model guide](../guides/overnight-solving-on-local-models.md)
-and its example answer the engine's own local endpoint adapter from a
-fixture rather than a socket. That proves the wire format and the token
-accounting and nothing about a physical server. This record closes that gap
-with one call that opened a real socket to a real local server holding real
-weights.
+Why it exists: the overnight local model guide and its example, written on
+the branch `wave3/overnight-local` and not merged when this record was
+written, answer the engine's own local endpoint adapter from a fixture
+rather than a socket. That proves the wire format and the token accounting
+and nothing about a physical server. This record closes that gap with one
+call that opened a real socket to a real local server holding real weights.
+Link the guide from here once it is on the main branch; a link to a file
+that is not there yet fails the link check, which is how this sentence
+came to be written this way.
 
 ## What was run
 

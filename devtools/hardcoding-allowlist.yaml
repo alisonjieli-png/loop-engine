@@ -2556,7 +2556,7 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-20
     expires_on: 2027-09-20
-  - finding_id: hardcoding.57b79b31633e5ad752a6ccd8
+  - finding_id: hardcoding.c1af0f84f9d2984443a80388
     owner: tools.architecture_report.hosting.json:costs[1].source
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2564,12 +2564,12 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
-  - finding_id: hardcoding.8afcfa536f7e9c9dd1dc0693
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.f52d171ef56135b3254cff06
     owner: tools.architecture_report.hosting.json:costs[2].source
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2577,12 +2577,12 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
-  - finding_id: hardcoding.058e878b821d98c6d4b405fb
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.8b3f36fea4570622fad32611
     owner: tools.architecture_report.hosting.json:costs[3].source
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2590,12 +2590,12 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
-  - finding_id: hardcoding.d74fd6b8bad4d31516ca2a5e
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.ca24e46427b4d5f447a3119a
     owner: tools.architecture_report.hosting.json:costs[4].source
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2603,12 +2603,12 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
-  - finding_id: hardcoding.48ab3752466c491a9d3b4a93
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.7caff122845e7b50158bf0eb
     owner: tools.architecture_report.hosting.json:costs[5].source
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2616,12 +2616,12 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
-  - finding_id: hardcoding.40f929fd2d436216d3be7e22
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.1e9cb9853e113206481e1cbb
     owner: tools.architecture_report.hosting.json:costs[6].source
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2629,12 +2629,25 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
-  - finding_id: hardcoding.f91efd62fe65ef26952bdcd6
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.2c871af22b462a2f73fab719
+    owner: tools.architecture_report.hosting.json:costs[7].source
+    rationale: >-
+      tools/architecture_report/hosting.json is the hosting comparison data
+      that the development report renders. The literal at costs[7].source is a
+      citation link to a provider's public documentation or pricing page,
+      shown to the reader as the source of a stated fact. No code contacts it
+      and it selects no provider, endpoint or deployment setting. Reviewed on
+      2026-09-21. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
+  - finding_id: hardcoding.790546f2ae21b89bf74a70f4
     owner: tools.architecture_report.hosting.json:do_now[0].url
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2642,11 +2655,11 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
   - finding_id: hardcoding.9291fe4856fce6e90f26b981
     owner: tools.architecture_report.hosting.json:do_now[1].url
     rationale: >-
@@ -2699,7 +2712,7 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-20
     expires_on: 2027-09-20
-  - finding_id: hardcoding.3f1af12ff6526830bfe7dd56
+  - finding_id: hardcoding.f66293ec2eadfe27672bcdf3
     owner: tools.architecture_report.hosting.json:do_now[5].url
     rationale: >-
       tools/architecture_report/hosting.json is the hosting comparison data
@@ -2707,11 +2720,11 @@ entries:
       citation link to a provider's public documentation or pricing page,
       shown to the reader as the source of a stated fact. No code contacts it
       and it selects no provider, endpoint or deployment setting. Reviewed on
-      2026-09-20. Only this exact finding is allowed; a changed or added value
+      2026-09-21. Only this exact finding is allowed; a changed or added value
       has a different finding identity and stays blocking.
     classification: STRATEGY_OR_PROVIDER_BINDING
-    created_on: 2026-09-20
-    expires_on: 2027-09-20
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
   - finding_id: hardcoding.0e9e829bec77614fecb1e95b
     owner: tools.architecture_report.hosting.json:region_sources[0]
     rationale: >-

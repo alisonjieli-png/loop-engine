@@ -448,5 +448,11 @@ def self_test():
     from .browser_identity_checks import run_checks as identity_account_checks
     with tempfile.TemporaryDirectory(prefix="service-browser-identity-") as directory:
         identity_account_checks(check, Path(directory))
+    from .account_email_checks import run_checks as account_email_checks
+    def account_check(name, passed):
+        tests.append({"test": name, "passed": bool(passed),
+                      "detail": "injected provider transports and owned loopback listeners; no provider is contacted"})
+    with tempfile.TemporaryDirectory(prefix="service-account-email-") as directory:
+        account_email_checks(account_check, Path(directory))
     return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),
             "all_passed": all(row["passed"] for row in tests)}

@@ -197,7 +197,15 @@ jobs:
         python-version: ["3.10", "3.11", "3.12"]
 
     steps:
+      # The starter catalogue records the exact revision its cited bytes
+      # were read at, and the anchor check reads those bytes back out of
+      # git. A shallow checkout does not have that revision, so the check
+      # failed here while passing on any developer's clone. The history is
+      # what the check is about, so it is fetched rather than the check
+      # being loosened.
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v6
         with:
@@ -278,6 +286,7 @@ jobs:
           python examples/26_export_a_standalone_solution/run.py
           python examples/27_optimize_a_node_grid/run.py
           python examples/28_containerized_worker/run.py
+          python examples/30_overnight_local_run/run.py
 
       - name: Product solve acceptance
         run: |

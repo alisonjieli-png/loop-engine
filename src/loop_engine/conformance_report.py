@@ -186,6 +186,21 @@ def _public_retired_nomenclature() -> list:
     return retired_nomenclature_violations(root, policy)
 
 
+def _vocabulary_and_placement() -> list:
+    """Check terminology.yaml against the documents and the served page.
+
+    An installed package carries the contract but not the repository
+    documents, so only the contract's own rules run there.
+    """
+    from .architecture_contract import load_terminology_contract
+    from .nomenclature_conformance import vocabulary_violations
+
+    root, _exclusions = _nomenclature_scan_layout()
+    return vocabulary_violations(
+        root, load_terminology_contract(),
+        scan_files=os.path.abspath(root) != os.path.abspath(_HERE))
+
+
 def operational_graph_vertex_violations(root: "str | None" = None) -> list:
     """Find executable graph-vertex classes competing with Loop.
 
@@ -263,6 +278,7 @@ def run_conformance() -> dict:
     from .semantic_conformance import semantic_conformance_report
     semantics = semantic_conformance_report()
     public_nomenclature = _public_retired_nomenclature()
+    vocabulary = _vocabulary_and_placement()
     unclassified = _unclassified()
     legacy_flat_paths = _legacy_flat_paths_reachable()
     stale = _stale_docs()
@@ -277,6 +293,8 @@ def run_conformance() -> dict:
         "public_parallel_runtime_surfaces": c.get(
             "public_parallel_runtime_surface", 0),
         "retired_decision_spine_terms": len(public_nomenclature),
+        "undefined_terms_retired_names_and_misplaced_words":
+            len(vocabulary),
         "direct_model_or_network_calls_outside_gateway":
             c.get("network_outside_gateway", 0),
         "subprocess_outside_declared_adapters":
@@ -342,6 +360,8 @@ def run_conformance() -> dict:
                          "semantic_identity": semantics,
                          "retired_decision_spine_terms":
                              public_nomenclature,
+                         "undefined_terms_retired_names_and_misplaced_words":
+                             vocabulary,
                          "scan_violations": (scan["violations"]
                                              + api_violations)},
         "direct_resource_access": {
@@ -427,6 +447,20 @@ def self_test() -> dict:
           and installed_exclusions == (
               "forbidden_paths.json", "architecture_conformance.json"),
           f"root={installed_root}; exclusions={installed_exclusions}")
+    import copy as _copy
+
+    from .architecture_contract import load_terminology_contract
+    from .nomenclature_conformance import vocabulary_violations
+    vocabulary_root, _unused = _nomenclature_scan_layout()
+    live_contract = load_terminology_contract()
+    weakened = _copy.deepcopy(live_contract)
+    weakened["vocabulary"]["Loop"]["must_not_appear"] = []
+    weakened["vocabulary"]["Loop"]["definition"] = ""
+    caught = {item["rule"] for item in vocabulary_violations(
+        vocabulary_root, weakened,
+        scan_files=os.path.abspath(vocabulary_root) != os.path.abspath(_HERE))}
+    check("vocabulary_gate_refuses_a_term_whose_definition_was_removed",
+          "term_without_definition" in caught, f"rules={sorted(caught)}")
     passed = sum(1 for x in results if x["passed"])
     return {"tests": results, "passed": passed, "total": len(results),
             "all_passed": passed == len(results)}
