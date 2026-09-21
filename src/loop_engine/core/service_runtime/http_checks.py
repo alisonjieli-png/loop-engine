@@ -55,7 +55,7 @@ def _web_checks(check, root):
             from importlib.resources import files
             import re as _re
             page = files("loop_engine").joinpath("core", "service_runtime", "web_assets", "index.html").read_text("utf-8")
-            from .http import WEB_ASSETS
+            from .web_routes import WEB_ASSETS
             linked = {value for value in _re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
             unserved = sorted(value for value in linked
                               if value not in WEB_ASSETS and not value.startswith("/api/")
