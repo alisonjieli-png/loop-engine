@@ -67,6 +67,50 @@ def _web_checks(check, root):
                   len(linked) >= 2
                   and any(_re.findall(r'src="(/[^"#?]*)"', page))
                   and any(_re.findall(r'href="(/[^"#?]*)"', page)))
+            # An address the service does not serve is a missing page, not a
+            # credential problem. The router authenticated first until
+            # September 21, 2026, so every unknown address answered 401
+            # unauthorized: a mistyped address, a stale bookmark and a client
+            # calling the wrong path all sent the reader looking for a
+            # credential fault that did not exist.
+            unknown_page = httpx.get(base + "/no-such-page", trust_env=False)
+            unknown_api = httpx.post(base + "/api/v1/no-such-route", json={}, trust_env=False)
+            wrong_method = httpx.get(base + "/api/v1/retrieval", trust_env=False)
+            check("an_address_the_service_does_not_serve_answers_missing_not_unauthorized",
+                  unknown_page.status_code == unknown_api.status_code == wrong_method.status_code == 404
+                  and unknown_api.json()["error"]["code"] == "route_unavailable"
+                  and "www-authenticate" not in unknown_page.headers)
+            # A reader who arrives in a browser needs a sentence and a way
+            # back, not a record shape.
+            browser = httpx.get(base + "/no-such-page", trust_env=False,
+                                headers={"Accept": "text/html,application/xhtml+xml,*/*;q=0.8"})
+            check("a_missing_address_tells_a_reader_what_happened_and_where_to_go",
+                  browser.status_code == 404
+                  and browser.headers["content-type"].startswith("text/html")
+                  and 'href="/"' in browser.text and 'href="/docs"' in browser.text
+                  and "route_unavailable" not in browser.text
+                  and "frame-ancestors 'none'" in browser.headers["content-security-policy"])
+            # The guard above must not be satisfiable by answering 404
+            # everywhere: an address the service does serve still asks who is
+            # calling, and a public page still loads.
+            check("an_address_the_service_serves_still_asks_who_is_calling",
+                  httpx.get(base + "/api/v1/session", trust_env=False).status_code == 401
+                  and httpx.get(base + "/app", trust_env=False).status_code == 200)
+            # The table consulted before authentication and the branches that
+            # answer must name the same addresses. A route added to one and
+            # not the other is either unreachable or unauthenticated, and
+            # neither shows up in any other check.
+            import inspect as _inspect
+            from . import http as _http
+            source = _inspect.getsource(_http.ServiceHttpApplication._web_route)
+            answered = set(_re.findall(r'path == "(/[^"]+)"', source))
+            for group in _re.findall(r'path in \(([^)]*)\)', source):
+                answered.update(_re.findall(r'"(/[^"]+)"', group))
+            for name, value in vars(_http).items():
+                if isinstance(value, str) and value.startswith("/api/") and name in source:
+                    answered.add(value)
+            check("the_route_table_names_every_address_the_router_answers",
+                  len(answered) >= 10 and answered == set(_http.API_ROUTES))
             notices = httpx.get(base + "/assets/third-party-notices.txt", trust_env=False)
             check("packaged_browser_library_is_served_with_its_licence_terms",
                   notices.status_code == 200 and "MIT License" in notices.text and "Supabase" in notices.text
