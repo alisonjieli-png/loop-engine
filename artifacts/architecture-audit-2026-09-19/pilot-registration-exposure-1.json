@@ -1,0 +1,40 @@
+{
+ "record_type": "pilot_exposure_and_fix/v1",
+ "observed_at": "2026-09-21T11:13:01.429203+00:00",
+ "found_by": "A development agent repairing the invitation command read the account email probe record and noticed that the identity provider still allows anyone to register.",
+ "exposure": {
+  "statement_we_published": "The service reported registration_available false and the site offered no sign-up form.",
+  "what_was_actually_possible": "Browser sign-in was switched on with account creation allowed. The identity provider's public settings allow self-registration, and the project address and publishable key are served publicly, as they must be for a browser to sign in. A stranger could therefore register at the provider, confirm the address and then ask this service to create an account.",
+  "what_they_would_have_received": "An account with no grants and metadata-only entitlement, so no item is visible and no body can be read. They could create personal client keys within the per-account limits.",
+  "severity": "low in effect, but the published statement was not true, and it is a resource consumption path",
+  "exploited": "No. The account listing at the identity provider holds the same two accounts as before, and no tenant was created."
+ },
+ "attempted_fix_at_the_provider": {
+  "action": "Read the provider's authentication settings with the management credential, intending to close self-registration there.",
+  "result": "403, the grant is missing the authentication settings scope. This is the permission gap already recorded in the takeover checkpoint.",
+  "conclusion": "The provider cannot be changed with the access engineering holds, so the fix had to be on our side."
+ },
+ "fix": {
+  "change": "registration_enabled set to false in the browser identity block of the host configuration.",
+  "effect": "A subject the operator has already bound can still sign in and use personal client keys. Creating a new account is refused, so the published statement is now true.",
+  "not_changed": "Browser sign-in and personal client keys stay installed and available. The image is unchanged.",
+  "procedure": [
+   "The configuration was backed up to /data/host.json.backup-before-closing-registration on the volume.",
+   "The new configuration was loaded with the real loader inside the running machine before anything was replaced.",
+   "Only then was it moved into place, and the machine restarted rather than redeployed, because no secret changed."
+  ],
+  "observed_after": {
+   "registration_enabled": false,
+   "email_signup_enabled": false,
+   "browser_identity_available": true,
+   "client_access_available": true,
+   "activation_with_an_invalid_token": 400,
+   "health": {
+    "baltor.ai": true,
+    "app.baltor.ai": true
+   }
+  }
+ },
+ "when_this_reverses": "Account creation is switched on again with the account email work, which brings its own sign-up journey and a request limit for each address and each email address. Open registration is the intended product behaviour at that point, and the control then is payment and entitlement rather than a closed door.",
+ "related_open_finding": "The website still has no view for setting a password from an invitation link, so an invitation cannot be delivered to a person yet. That is owned by the account views work."
+}
