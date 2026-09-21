@@ -114,6 +114,53 @@ instead of relying on a copied number:
 loop-engine --example intelligence-layers
 ```
 
+### Known contradiction: two manifests disagree about the seed pack
+
+Recorded on September 20, 2026. The data was not changed. Two manifests
+describe the same 1,000-record seed pack, with the same content digest
+`400229d47342e0593fb75d14e210ca04d47407411c8682e0f37c5acdc16e7b36`, and they
+state different lifecycle states for it.
+
+| File | What it states |
+|---|---|
+| `src/loop_engine/intelligence/context/core/records/part-00000.manifest.json` | The manifest of the pack. It says `"status": "candidate"`, `"promotion": "evidence_gate_only"` and `"automatic_preference": "forbidden"`. |
+| `src/loop_engine/intelligence/context/core/manifest.yaml` | The catalogue manifest of the folder. It lists the same payload as `core.context.seed_corpus`, version `2.0.0`, with `lifecycle: registered`. |
+
+Current behavior follows the manifest of the pack. `load_seed_pack()` in
+`src/loop_engine/code_nodes/string_foundry.py` checks the digest and refuses
+the pack when any record has a maturity other than `candidate`. The self-test
+check `seed_pack_1000_records_20x50_all_candidate` protects that rule.
+`seed_pack_store_records()` gives every record the `experimental` tier, so
+normal retrieval excludes the pack. A caller sees it only with
+`include_candidates=True`.
+
+The catalogue record model in `src/loop_engine/ontology/records.py` orders the
+lifecycle states as draft, candidate, validated, registered, preferred,
+deprecated and retired. It treats only draft, candidate and validated as
+candidate states. A `registered` entry therefore claims that an independent
+approval happened. No approval record exists for the seed pack. Imported and
+generated intelligence stays candidate-only until an independent process
+approves it, so the catalogue manifest is the statement that is wrong.
+
+The file that must be corrected is
+`src/loop_engine/intelligence/context/core/manifest.yaml`. The `lifecycle` of
+`core.context.seed_corpus` must say `candidate`. Two dependent files must
+change in the same change:
+
+- `src/loop_engine/ontology/index.json` is generated from the manifests and
+  copies `registered` for this entry. A check fails when it is stale, so it
+  must be regenerated.
+- `src/loop_engine/intelligence/context/core/README.md` says that records in
+  that folder must declare `registered` or a later state. The owner of that
+  path must either amend the folder rule so that it admits a candidate pack
+  whose bytes ship with the package, or move the catalogue entry to a folder
+  whose contract admits candidates.
+
+The pack data and the manifest of the pack do not need to change. This
+document changes none of these files. Until the correction is made, do not
+cite the catalogue manifest as evidence that the seed pack was approved, and
+do not publish seed pack records to the hosted catalogue as approved material.
+
 ## One search across all four layers
 
 `query_intelligence()` sends one need through an `intelligence.search` Loop.
