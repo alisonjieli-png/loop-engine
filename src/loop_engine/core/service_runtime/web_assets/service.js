@@ -288,41 +288,65 @@
   // A connection recipe is reviewed data that a person copies into a client. It may name the environment
   // variable that holds the service token. It may never carry a token, and the only address it may use is
   // the origin that served this page. A record that breaks a rule is refused as a whole and nothing from it is shown.
+  // The rules list the few forms that a configuration text may take and refuse every other text. A new way to
+  // write a key or an address is therefore refused without a rule of its own.
   const recipeRecordType = "website_client_recipes/v2", endpointPlaceholder = "{{ENDPOINT}}";
   const recipeTextFields = ["id", "name", "configuration_location", "configuration_note", "verification_command", "verification_note", "version_note", "removal_note", "source_url"];
-  const recipeStrings = (value, key = "", found = []) => {
-    if (typeof value === "string") found.push({key, text:value, named:false});
-    else if (value && typeof value === "object") for (const [name, item] of Object.entries(value)) {
-      if (!Array.isArray(value)) found.push({key:name, text:name, named:true});
-      recipeStrings(item, Array.isArray(value) ? key : name, found);
-    }
+  const isTable = value => value !== null && typeof value === "object" && !Array.isArray(value);
+  // Every field name and every single value in a record, each with the field names that lead to it.
+  const recipeStrings = (value, path = [], found = []) => {
+    if (value !== null && typeof value === "object") for (const [name, item] of Object.entries(value)) {
+      if (!Array.isArray(value)) found.push({path:[...path, name], key:name, text:name, named:true, string:true});
+      recipeStrings(item, Array.isArray(value) ? path : [...path, name], found);
+    } else found.push({path, key:path[path.length - 1] ?? "", text:String(value), named:false, string:typeof value === "string"});
     return found;
   };
-  const tokenShaped = text => /[A-Za-z0-9_-]{32,}/.test(text) || (text.match(/[A-Za-z0-9_-]{20,}/g) || []).some(run => /[0-9]/.test(run) && /[A-Za-z]/.test(run));
-  const tomlReady = value => Array.isArray(value) ? value.every(item => typeof item !== "object" && tomlReady(item))
-    : value !== null && typeof value === "object" ? Object.values(value).every(tomlReady) : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
+  // Key-shaped text. Keys are written in one of two alphabets. In the alphabet that is safe inside an address: a long unbroken run, or a shorter run
+  // that mixes letters and digits. In the standard base64 alphabet: such a mixed run that also holds a plus sign or padding. A slash alone never joins
+  // a run, because a record type such as name/v2 and the path of an address are not keys.
+  const mixedRun = run => /[0-9]/.test(run) && /[A-Za-z]/.test(run);
+  const tokenShaped = text => /[A-Za-z0-9_-]{32,}/.test(text) || (text.match(/[A-Za-z0-9_-]{20,}/g) || []).some(mixedRun)
+    || (text.match(/[A-Za-z0-9+\/=]{20,}/g) || []).some(run => /[+=]/.test(run) && mixedRun(run));
+  // A configuration holds tables and single settings only. A list is refused, because a list can carry the arguments of a command as plain words.
+  const settingsOnly = value => isTable(value) ? Object.values(value).every(settingsOnly) : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
+  const plainHttps = text => { try { const url = new URL(text); return text.startsWith("https://") && !url.username && !url.password; } catch (_) { return false; } };
+  const settingName = /^\$?[A-Za-z][A-Za-z0-9_-]*$/, settingWord = /^[A-Za-z][A-Za-z0-9_-]*$/, credentialTable = /^(?:.*headers|env|environment)$/i;
+  // The command that a person is told to run is plain words and options: no address, path, pipe, assignment or quotation.
+  const plainCommand = /^[A-Za-z][A-Za-z0-9-]*(?: -{0,2}[A-Za-z][A-Za-z0-9-]*)*$/;
+  // The table that holds the address. Every table above it holds exactly one table, so a configuration names exactly one server entry.
+  const serverEntry = table => { while (!Object.keys(table).includes("url")) { const inner = Object.values(table).filter(isTable); if (inner.length !== 1) return null; table = inner[0]; } return table; };
   function recipeRefusal(record) {
     const variable = record?.credential_variable;
     if (record?.record_type !== recipeRecordType || typeof variable !== "string" || !/^[A-Z][A-Z0-9_]{2,63}$/.test(variable) || typeof record.revocation_note !== "string" || !record.revocation_note
       || !Array.isArray(record.recipes) || !record.recipes.length || new Set(record.recipes.map(recipe => recipe?.id)).size !== record.recipes.length) return "unsupported_record";
+    // This file is public. No text anywhere in it is shaped like a key: not a value, not a field name and not the variable name, in a field that is displayed or in one that is not.
+    if (tokenShaped(variable) || recipeStrings(record).some(item => tokenShaped(item.text.replaceAll(variable, "")))) return "credential_rule";
     const references = [variable, "Bearer {env:" + variable + "}", "Bearer ${" + variable + "}"];
+    // A credential position holds a declared reference to the variable and nothing else. Every value inside a table of headers or of environment values is such a position.
+    const credentialPosition = item => item.path.some(name => credentialTable.test(name)) || item.text.includes(variable) || /\bbearer\b/i.test(item.text) || /^authorization$/i.test(item.key);
     for (const recipe of record.recipes) {
-      if (!recipe || recipeTextFields.some(field => typeof recipe[field] !== "string" || !recipe[field]) || !["toml", "json"].includes(recipe.format) || !recipe.source_url.startsWith("https://")
-        || !recipe.configuration || typeof recipe.configuration !== "object" || Array.isArray(recipe.configuration) || (recipe.format === "toml" && !tomlReady(recipe.configuration))) return "unsupported_record";
-      const values = recipeStrings(recipe.configuration).filter(item => !item.named);
-      const credentialProblem = recipeStrings([record.revocation_note, recipe]).some(item => tokenShaped(item.text.replaceAll(variable, "")))
-        || !values.some(item => item.text.includes(variable))
-        || values.some(item => (item.text.includes(variable) || /\bbearer\b/i.test(item.text) || /^authorization$/i.test(item.key)) && !references.includes(item.text));
+      if (!recipe || recipeTextFields.some(field => typeof recipe[field] !== "string" || !recipe[field]) || !["toml", "json"].includes(recipe.format) || !plainHttps(recipe.source_url)
+        || !plainCommand.test(recipe.verification_command) || !isTable(recipe.configuration) || !settingsOnly(recipe.configuration)) return "unsupported_record";
+      const found = recipeStrings(recipe.configuration), values = found.filter(item => !item.named);
+      if (found.some(item => item.named && !settingName.test(item.text))) return "unsupported_record";
+      const credentialProblem = !values.some(item => item.text.includes(variable))
+        || values.some(item => credentialPosition(item) && !(item.string && references.includes(item.text)));
       if (credentialProblem) return "credential_rule";
-      const addressProblem = values.filter(item => item.text === endpointPlaceholder).length !== 1
-        || values.some(item => item.text !== endpointPlaceholder && (item.text.includes("{{") || (item.text.includes("://") && !(item.key === "$schema" && item.text.startsWith("https://")))));
+      // The address is the placeholder. It is held once, under the url name of the single server entry, and the page fills it with its own origin.
+      // Inside that entry the only tables are tables of headers or of environment values. Every other text is a plain setting word or the one
+      // top-level https $schema value, so no other text can carry an address, a path, an option or a command line.
+      const entry = serverEntry(recipe.configuration);
+      const addressProblem = !entry || entry.url !== endpointPlaceholder
+        || Object.entries(entry).some(([name, item]) => isTable(item) && !credentialTable.test(name))
+        || values.filter(item => item.key === "url" || item.text.includes("{{")).length !== 1
+        || values.some(item => item.string && !credentialPosition(item) && item.text !== endpointPlaceholder && !settingWord.test(item.text) && !(item.path.length === 1 && item.key === "$schema" && plainHttps(item.text)));
       if (addressProblem) return "address_rule";
     }
     return "";
   }
   const tomlKey = key => /^[A-Za-z0-9_-]+$/.test(key) ? key : JSON.stringify(key);
   const tomlText = (table, path = []) => {
-    const entries = Object.entries(table), isTable = item => item && typeof item === "object" && !Array.isArray(item);
+    const entries = Object.entries(table);
     const own = entries.filter(([, item]) => !isTable(item)).map(([key, item]) => tomlKey(key) + " = " + JSON.stringify(item));
     const blocks = own.length ? [(path.length ? "[" + path.map(tomlKey).join(".") + "]\n" : "") + own.join("\n")] : [];
     return blocks.concat(entries.filter(([, item]) => isTable(item)).map(([key, item]) => tomlText(item, [...path, key]))).join("\n\n");
