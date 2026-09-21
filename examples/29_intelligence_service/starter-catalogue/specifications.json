@@ -997,6 +997,280 @@
       "sources": [
         "src/loop_engine/governance/candidates/part-00000.jsonl"
       ]
+    },
+    {
+      "id": "write_a_regression_test_that_pins_a_defect",
+      "layer": "context",
+      "family": "method",
+      "title": "Write a regression test that pins a defect",
+      "tags": [
+        "regression test",
+        "bug fix",
+        "failing first",
+        "test design"
+      ],
+      "text": "# Write a regression test that pins a defect\n\nTurn a reported bug into a small test that fails today, passes after the repair, and keeps failing if anyone removes the repair later.\n\n## When to use it\n\nUse it for every defect you fix, however small. Use it before you write the fix, not after. If you cannot reproduce the defect in a test, you do not yet know what the defect is.\n\n## Steps\n\n1. Write down the report word for word: the input, the environment and the wrong result.\n2. Reproduce the wrong result by hand once, so you know the report is true.\n3. Write the smallest automated test that shows the wrong result. Use the real interface a caller uses, not an internal helper.\n4. Run the test against the unrepaired code and save the exact failure text.\n5. Make the repair.\n6. Run the same test again. It must pass without any change to its expectations.\n7. Remove the repair for one run, or return the old value from the repaired function, and confirm that the test fails again.\n8. Put the repair back, run the full suite, and keep the new test beside the tests of the code it covers.\n\n## Checks\n\n- The test failed before the repair and the failure text is saved.\n- The test passes after the repair with unchanged expectations.\n- With the repair removed, the test fails again.\n- The test names the reported defect in its name or its first comment.\n\n## Known-wrong example\n\nA developer fixes a rounding defect and then writes a test that asserts the new, correct total. The test passes on the first run. Nobody ever saw it fail, so nothing shows that it can detect the defect. Six months later the rounding code is rewritten, the defect returns, and the test still passes because it was written against the repaired behaviour by copying the observed output. A test that was seen to fail first would have caught it.\n\n## What to record\n\n- The original report and the exact failing output before the repair.\n- The test name and where it lives.\n- The result of removing the repair once, which proves the test can fail.\n\n## Source\n\n- `src/loop_engine/core/independent_failure_review.py`: this repository builds a known wrong version of a subject, with the produced files emptied, and requires the check to fail on it before the check is treated as sound.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/independent_failure_review.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "choose_test_cases_from_boundaries_and_classes",
+      "layer": "context",
+      "family": "method",
+      "title": "Choose test cases from boundaries and equivalence classes",
+      "tags": [
+        "test cases",
+        "boundary values",
+        "edge cases",
+        "input validation"
+      ],
+      "text": "# Choose test cases from boundaries and equivalence classes\n\nPick a small set of test inputs that covers the behaviour, instead of many inputs that all exercise the same path.\n\n## When to use it\n\nUse it when you have a function, an endpoint or a form field with a range, a format or a set of allowed values, and you have to decide which inputs to test.\n\n## Steps\n\n1. Write down every rule the input must satisfy: type, range, length, format, allowed set, required or optional.\n2. Split the input space into groups where every member should behave the same way. One valid group, and one group for each way the input can be wrong.\n3. Take one ordinary value from each group.\n4. For each numeric or length rule, take the value just below the limit, the limit itself and the value just above it.\n5. Add the empty value, the missing value and the largest value the interface promises to accept.\n6. Add one value that is valid in shape but wrong in meaning, such as an end date before its start date.\n7. Write the expected result for each case before running anything.\n8. Run them, and add a case for every behaviour you discover that none of the cases covered.\n\n## Checks\n\n- Every rule in step one has at least one case that breaks it.\n- Every numeric or length limit has a case below, at and above it.\n- Each case has a written expected result that came from the rules, not from the output.\n- Two cases from the same group were merged rather than both kept.\n\n## Known-wrong example\n\nA team tests an age field with the values 20, 25, 30, 35 and 40. All pass. The field rejects anything under 18 and over 120, but nobody tested 17, 18, 120 or 121, and the code used a greater than sign where it needed greater than or equal. An 18 year old is refused in production. Three boundary cases would have found it in a second.\n\n## What to record\n\n- The rules you derived the groups from.\n- The groups, the chosen value for each and the expected result.\n- Any behaviour found during the run that no group predicted.\n\n## Source\n\n- `src/loop_engine/core/evaluation_suite.py`: this repository grades work against a frozen set of cases with registered graders and an exact denominator, so that two reports can be compared.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/evaluation_suite.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "isolate_a_flaky_test_before_trusting_it",
+      "layer": "context",
+      "family": "method",
+      "title": "Isolate a test that passes and fails without a code change",
+      "tags": [
+        "flaky test",
+        "unreliable test",
+        "test order",
+        "random seed"
+      ],
+      "text": "# Isolate a test that passes and fails without a code change\n\nFind why a test gives different results on the same code, and repair the cause instead of running the suite again.\n\n## When to use it\n\nUse it as soon as a test fails once and passes on a rerun. A test that is ignored because it is unreliable protects nothing, and it hides real defects behind noise.\n\n## Steps\n\n1. Stop treating the failure as noise. Record the failing output, the machine, the time and the order the tests ran in.\n2. Run the single test on its own, many times. Count the failures.\n3. If it never fails alone, run it after the suite that preceded it. Shared state between tests is the most common cause.\n4. Look for the four usual causes: the current time or date, a random value without a fixed seed, an ordering that the language does not promise, and work that continues in the background after the test returns.\n5. Look for shared resources: one database row, one temporary path, one port, one environment variable.\n6. Change one suspected cause and measure the failure rate again over the same number of runs.\n7. Repair the cause. Fix the test if the test was wrong, fix the code if the code was wrong, and say which it was.\n8. Keep the repeated run as a check until the failure rate is zero over a stated number of runs.\n\n## Checks\n\n- The failure rate before the repair and after it are both measured over the same number of runs.\n- The cause is named, not guessed.\n- The test no longer depends on time, order, a free port or an unseeded random value.\n- The suite passes in a different test order.\n\n## Known-wrong example\n\nA team marks a failing test as one to retry automatically three times. It goes green and stays green for a year. The cause was a cache written after the response was returned, so a reader could see stale data. The same cause produced wrong balances for customers, and the automatic retry hid the only signal anyone had.\n\n## What to record\n\n- The measured failure rate before and after.\n- The named cause and the evidence for it.\n- What was changed: the test, the code or the environment.\n\n## Source\n\n- `src/loop_engine/core/run_validity.py`: this repository decides whether a run may be reasoned about at all, and separates a failure of the infrastructure from a result that can be compared with other results.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/run_validity.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "prove_a_check_can_fail_when_the_behaviour_is_removed",
+      "layer": "context",
+      "family": "method",
+      "title": "Prove a check can fail by removing the behaviour it guards",
+      "tags": [
+        "mutant",
+        "guard",
+        "test quality",
+        "known wrong case"
+      ],
+      "text": "# Prove a check can fail by removing the behaviour it guards\n\nShow that a new check would catch the mistake it exists for, by taking the behaviour away for one run and watching the check fail.\n\n## When to use it\n\nUse it whenever you add a check, a guard, an assertion or an alarm that has never been seen to fail. A check that has only ever passed is an unproven claim.\n\n## Steps\n\n1. Name the exact behaviour the check protects, in one sentence.\n2. Name the check that must report the problem, by its file and its name.\n3. Make one small change that removes the behaviour. Return the wrong value, skip the guard or delete the validation call.\n4. Run the named check alone and require that it fails.\n5. Read the failure text. It must point at the removed behaviour, not at something unrelated such as an import error.\n6. Put the behaviour back and run the check again. It must pass.\n7. Keep the removal as a written case beside the check, so a later reader can repeat it.\n8. Repeat for each separate behaviour the check claims to protect.\n\n## Checks\n\n- With the behaviour removed, the named check fails and no other cause explains the failure.\n- With the behaviour restored, the same check passes.\n- The removal was made in the code, not in the check.\n- Each claimed behaviour has its own removal.\n\n## Known-wrong example\n\nA team adds a check that a settings file holds no plain text password. It passes on every run. A year later a password is added and the check still passes, because the check read a file path that no longer exists and treated the missing file as clean. Removing the guard once, or putting an invented password in the file once, would have shown that the check could never fail.\n\n## What to record\n\n- The behaviour, the check and the exact removal.\n- The failing output with the behaviour removed.\n- The passing output with the behaviour restored.\n\n## Source\n\n- `src/loop_engine/core/independent_failure_review.py`: this repository requires a revised check to fail on a deliberately emptied subject before the revision is accepted, so a weakened check cannot pass as a repair.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/independent_failure_review.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "reduce_a_failure_to_a_minimal_reproduction",
+      "layer": "context",
+      "family": "method",
+      "title": "Reduce a failure to a minimal reproduction",
+      "tags": [
+        "minimal reproduction",
+        "debugging",
+        "shrink input",
+        "bug report"
+      ],
+      "text": "# Reduce a failure to a minimal reproduction\n\nCut a failing case down to the smallest input and the shortest program that still fails, so the cause has nowhere left to hide.\n\n## When to use it\n\nUse it when a failure appears in a large system, a large input file or a long sequence of actions, and reading the code has not found the cause.\n\n## Steps\n\n1. Get one reliable failing case. Write down the exact command, input and observed output.\n2. Save the failing input somewhere safe, unchanged.\n3. Remove half of the input. Run again. If it still fails, keep the smaller half. If it passes, keep the other half.\n4. Repeat until removing anything at all makes the failure disappear.\n5. Do the same with the program: remove settings, remove modules, replace services with fixed values, until only the failing path remains.\n6. After each removal, confirm that the failure text is still the same failure and not a new one.\n7. Write the smallest case as a standalone script or test with no external setup.\n8. Confirm that the minimal case fails on a clean machine and passes when the suspected cause is changed.\n\n## Checks\n\n- The minimal case fails every time it is run.\n- Removing any remaining part makes it pass.\n- The failure text matches the original report.\n- The minimal case runs without the original data set, network access or private credentials.\n\n## Known-wrong example\n\nA developer reports that a report generator fails on a file of two hundred thousand rows and sends the whole file. The file holds customer names and addresses, so it cannot be shared with the library author. Nobody reduces it. The defect is a single row where a quoted field contains a line break. Three rounds of halving would have produced a two row file with no personal data in it, which anyone could read and fix in minutes.\n\n## What to record\n\n- The original case and the minimal case, both runnable.\n- The number of reduction rounds and what was removed.\n- Any private data that was removed and replaced with invented values.\n\n## Source\n\n- `src/loop_engine/core/task_materials.py`: this repository unpacks supplied material into one working folder, identifies inputs by their content rather than their names, and keeps the original supplied files separate from what was derived from them.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/task_materials.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "bisect_a_regression_across_revisions",
+      "layer": "context",
+      "family": "method",
+      "title": "Find the revision that introduced a regression by halving",
+      "tags": [
+        "bisect",
+        "regression",
+        "revision history",
+        "root cause"
+      ],
+      "text": "# Find the revision that introduced a regression by halving\n\nUse a repeatable test and a halving search over the revision list to name the exact change that broke something.\n\n## When to use it\n\nUse it when something worked before and does not work now, you have the history, and reading the changes has not found the cause. It is fastest when the test is quick and reliable.\n\n## Steps\n\n1. Write a test that returns a clear pass or fail for the broken behaviour, with no human judgment.\n2. Find one revision where the test passes and one where it fails. Confirm both by running the test.\n3. Take the revision halfway between them and run the test there.\n4. Keep the half that still contains the change from pass to fail.\n5. Repeat until two neighbouring revisions differ.\n6. Read the change between those two revisions and explain how it produces the failure.\n7. If a revision cannot be built or tested, mark it as unusable and take its neighbour rather than guessing its result.\n8. Confirm the cause by reversing that one change on the current revision and running the test again.\n\n## Checks\n\n- The good revision and the bad revision were both confirmed by running the test, not assumed.\n- The test gives the same result when run twice on the same revision.\n- The named change explains the failure, and reversing it repairs the behaviour.\n- Unusable revisions were recorded as unusable, not counted as passing.\n\n## Known-wrong example\n\nAn engineer assumes the last release is good because nobody complained, and halves between it and today. The search names an unrelated formatting change. The defect had been present for three releases and was only noticed when traffic grew. Running the test on the assumed good revision first would have shown that it already failed, and the search would have started further back.\n\n## What to record\n\n- The test, the first good revision and the first bad revision.\n- The revisions tried and the result at each one.\n- The named change and the result of reversing it.\n\n## Source\n\n- `src/loop_engine/core/run_validity.py`: this repository records when a run cannot answer the question being asked, so an unusable result is excluded instead of being counted as evidence.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/run_validity.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "bisect_a_failure_across_inputs_and_settings",
+      "layer": "context",
+      "family": "method",
+      "title": "Find the setting or input that causes a failure by halving",
+      "tags": [
+        "works on my machine",
+        "environment difference",
+        "settings",
+        "bisect"
+      ],
+      "text": "# Find the setting or input that causes a failure by halving\n\nApply the same halving search to settings, feature switches, data columns and dependency versions, not only to revisions.\n\n## When to use it\n\nUse it when the code has not changed but the behaviour differs between two environments, two customers, two data sets or two machines.\n\n## Steps\n\n1. Write down the working case and the failing case as two complete lists of settings, versions and inputs.\n2. Compute the difference between the lists. If it is empty, you have not captured everything that matters.\n3. Change half of the differing values from the working case to the failing case. Run the test.\n4. Keep the half that reproduces the failure and repeat until one value remains.\n5. Confirm by changing only that value on the working case, and only that value back on the failing case.\n6. If two values cause the failure only together, split them apart and test each pair.\n7. Explain how the value causes the failure before you change any code.\n\n## Checks\n\n- Both cases were captured completely, including versions, locale, time zone and environment variables.\n- The single value reproduces the failure on the working case.\n- Reversing the single value repairs the failing case.\n- A pair was tested when no single value explained the result.\n\n## Known-wrong example\n\nA service works for one customer and fails for another with the same data. The team spends a week reading the parsing code. The difference was the server time zone, which changed how dates near midnight were grouped. It was never written down because nobody thought of the environment as an input. A complete list of both environments would have shown one differing value on the first day.\n\n## What to record\n\n- The two complete environment and input lists.\n- The values tried at each round and the result.\n- The single value or the pair that explains the failure.\n\n## Source\n\n- `src/loop_engine/core/route_health.py`: this repository keeps observations about one provider route as facts of the current run only, and never turns them into settings, so a new run starts from the declared values again.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/route_health.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "read_a_failure_report_and_name_the_first_wrong_value",
+      "layer": "context",
+      "family": "method",
+      "title": "Read a failure report and name the first wrong value",
+      "tags": [
+        "stack trace",
+        "exception",
+        "root cause",
+        "debugging"
+      ],
+      "text": "# Read a failure report and name the first wrong value\n\nWork from the reported failure back to the earliest place where a value was already wrong, instead of patching where the failure surfaced.\n\n## When to use it\n\nUse it for any crash, exception or failed assertion where you have a call trace, a log or an error message with a location.\n\n## Steps\n\n1. Read the last line of the trace first. It names the operation that could not continue.\n2. Read the message and turn it into a sentence about a value: what was expected, what was there instead.\n3. Walk up the frames and find the first one in code you own. Frames inside a library usually report a value your code passed in.\n4. At that frame, write down the value that is wrong and the value that should have been there.\n5. Ask where that value came from. Follow it back one step at a time until you reach the place where it was created or read.\n6. Check whether the wrong value was already wrong when it was created, or became wrong on the way.\n7. Repair at the earliest point where the value is wrong and the code is yours.\n8. Confirm that the original failure is gone and that no other caller depended on the old behaviour.\n\n## Checks\n\n- The first frame in owned code is identified, not only the last frame overall.\n- The wrong value and the expected value are both written down.\n- The repair is at the origin of the wrong value, not at the place where it finally broke something.\n- The original failure no longer reproduces.\n\n## Known-wrong example\n\nA service fails with a message about a missing key deep inside a formatting library. A developer adds a default value at that point. The report now prints the word unknown for thousands of records, because the real cause was an earlier lookup that silently returned nothing when the database was slow. The failure was the only visible sign of a data problem, and the default removed it.\n\n## What to record\n\n- The full trace or error text.\n- The first owned frame and the wrong value there.\n- The origin of the value and the reason it was wrong.\n\n## Source\n\n- `src/loop_engine/core/capability_rejection.py`: this repository records a refusal as typed data that names which part refused, one closed reason code and the arguments involved, and it can report the underlying cause of a wrapped failure.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/capability_rejection.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_a_change_for_correctness",
+      "layer": "context",
+      "family": "review",
+      "title": "Review a change for correctness",
+      "tags": [
+        "code review",
+        "pull request",
+        "correctness",
+        "reviewer"
+      ],
+      "text": "# Review a change for correctness\n\nRead a proposed change against the requirement it claims to satisfy, and decide whether it is right, not whether it looks tidy.\n\n## When to use it\n\nUse it for every change before it is merged, including a change written by an agent. Do it before any style comment, because style comments crowd out correctness comments.\n\n## Steps\n\n1. Read the request or ticket first, then the change. Write one sentence saying what the change is supposed to do.\n2. Read the new tests before the new code. Ask what wrong behaviour each test would catch.\n3. Walk the happy path with one concrete input and predict the output by hand.\n4. Walk the same path with an empty value, a very large value and a value at each boundary.\n5. Check every branch that was added or altered, and ask which input reaches it.\n6. Check the values that cross a boundary: arguments, return values, database columns, message fields. Are units, time zones and currencies stated?\n7. Look for behaviour the change removes by accident: a default, an early return, a validation that no longer runs.\n8. Write findings as a question plus the input that would show the problem, so the author can reproduce it.\n\n## Checks\n\n- The reviewer stated the intended behaviour in their own words before reading the code.\n- Each new branch has a named input that reaches it.\n- Each finding names a concrete failing input, not a feeling.\n- Tests were read and judged, not counted.\n\n## Known-wrong example\n\nA reviewer approves a change because the suite is green and the code is clean. The change swapped two arguments of a function whose parameters are both strings, so the city and the country are stored the other way round. No test passed both, because every fixture used the same value for each. Predicting one concrete output by hand would have shown it immediately.\n\n## What to record\n\n- The one sentence statement of intent.\n- Each finding with the input that demonstrates it.\n- What the reviewer did not check, so the gap is visible.\n\n## Source\n\n- `src/loop_engine/strings/decision_schemas.py`: this repository shapes a review request so that the reviewer must answer specific questions, such as what is missing and why this is the right moment, rather than returning a free opinion.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/strings/decision_schemas.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_a_change_for_what_is_missing",
+      "layer": "context",
+      "family": "review",
+      "title": "Review a change for what is missing from it",
+      "tags": [
+        "code review",
+        "incomplete change",
+        "callers",
+        "follow up"
+      ],
+      "text": "# Review a change for what is missing from it\n\nLook for the work that is absent rather than the work that is present, because absent work leaves no line to comment on.\n\n## When to use it\n\nUse it after a correctness review, and always for a change written by an agent, which tends to satisfy the words of a request and skip the parts that were implied.\n\n## Steps\n\n1. List everything the request asked for, including anything implied by the words used, such as a list needing paging or a write needing a permission check.\n2. Compare that list with the files the change touches. Mark each request item as done, partly done or absent.\n3. Ask which callers of the changed code were not updated. Search for every use, not only the ones in the same folder.\n4. Ask what documentation, settings, migration or alarm the change needs and does not have.\n5. Ask what happens on the paths that were not changed: the old version of the record, the failure branch, the empty result.\n6. Ask who else must act before this change is safe to release.\n7. Turn each absent item into either a required change now or a written follow up with an owner.\n\n## Checks\n\n- Every item of the request is marked done, partly done or absent.\n- Every caller of a changed function was found and judged.\n- Absent items are either fixed or written down with an owner, never silently dropped.\n- The change does not leave two ways of doing the same thing without a reason.\n\n## Known-wrong example\n\nAn agent is asked to add a new field to an order and does so in the create path. The review approves it. The update path, the export and the search filter never learned about the field, so orders edited after creation silently lose it. Nothing in the change shows this, because the missing work is in files the change never touched. Searching for every use of the order record would have found all three.\n\n## What to record\n\n- The request list with a state for each item.\n- The callers found and the ones deliberately left alone.\n- The follow up items with owners.\n\n## Source\n\n- `src/loop_engine/strings/ask_strategies.py`: this repository registers several named ways of asking the same question, including asking again with part of the material hidden and asking whether the first answer still holds, so a single phrasing does not decide the result.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/strings/ask_strategies.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_error_paths_and_partial_failure",
+      "layer": "context",
+      "family": "review",
+      "title": "Review the error paths and the partial failures",
+      "tags": [
+        "error handling",
+        "transaction",
+        "partial failure",
+        "rollback"
+      ],
+      "text": "# Review the error paths and the partial failures\n\nCheck what the code does when one of several steps fails, because that is where data is left in a state nobody designed.\n\n## When to use it\n\nUse it for any change that writes to more than one place, calls more than one service, or does work after it has already told the caller that the work succeeded.\n\n## Steps\n\n1. List every step in the operation that can fail: each write, each call, each parse, each timeout.\n2. For each step, ask what has already happened when it fails, and what state that leaves behind.\n3. Decide for each operation whether all steps must happen together or whether partial completion is acceptable. Write the decision down.\n4. If they must happen together, check that they share one transaction, or that a repair path exists and is tested.\n5. If partial completion is acceptable, check that the caller is told exactly which parts completed.\n6. Check that failures are not swallowed: an empty catch block, a default value on error, or a return that reports success anyway.\n7. Check that an error carries enough to act on: which step, which record, whether repeating is safe.\n8. Write one test for each failure point that leaves work behind.\n\n## Checks\n\n- Every failure point has a written expected state.\n- No error path returns a value that a caller can mistake for success.\n- Operations that must happen together share a transaction or a tested repair path.\n- Each partial result tells the caller which parts completed.\n\n## Known-wrong example\n\nA payment service charges the card, then writes the order, then sends the confirmation. The order write fails once a day when the database is busy, and the code catches the failure and continues so that the customer still gets a confirmation. Customers are charged for orders that do not exist, and support has no way to find them. Writing down the expected state after each failure would have made the missing repair path obvious.\n\n## What to record\n\n- The list of failure points and the expected state after each.\n- The decision for each operation: all together or partial with a report.\n- The tests added for each failure point.\n\n## Source\n\n- `src/loop_engine/catalog/protocol.py`: this repository writes a group of records as one batch with preconditions and an acknowledgement, and an adapter that cannot support an operation refuses it instead of quietly doing something weaker.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/catalog/protocol.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_shared_state_for_ordering_defects",
+      "layer": "context",
+      "family": "review",
+      "title": "Review shared state for ordering defects",
+      "tags": [
+        "race condition",
+        "concurrency",
+        "locking",
+        "duplicate message"
+      ],
+      "text": "# Review shared state for ordering defects\n\nFind the places where two workers can touch the same value at the same time, and decide what happens when they do.\n\n## When to use it\n\nUse it for any code with more than one thread, more than one process, a queue, a scheduled job, or more than one copy of a service behind a balancer.\n\n## Steps\n\n1. List every piece of state two workers can reach: a database row, a cache entry, a file, a counter, a module level variable.\n2. For each one, ask whether a read and a later write can be separated in time by another worker's write.\n3. Find every read then modify then write sequence. These are the usual defects. Replace them with one atomic operation, a conditional update on the value you read, or a lock.\n4. Check that any lock has a timeout, is always released, and is taken in the same order everywhere.\n5. Check that a queue consumer can process the same message twice without harm, because delivery is rarely exactly once.\n6. Check for work started in the background after a response was returned, and decide who waits for it.\n7. Write a test that runs the operation from two workers at once and asserts the final value.\n\n## Checks\n\n- Every read then modify then write sequence is either atomic or protected.\n- Locks are ordered, bounded in time and released on every path.\n- Repeating a message leaves the same result as processing it once.\n- A test exercises two workers at once and passes repeatedly.\n\n## Known-wrong example\n\nA stock counter is decreased by reading the current value, subtracting one and writing it back. Under light traffic it is correct. On a sale day two orders read the same value, both write the same lower number, and the shop sells one more item than it holds. A conditional update that only writes when the value is still the one that was read would have refused the second write.\n\n## What to record\n\n- The list of shared state and the protection chosen for each.\n- The lock order, if locks are used.\n- The result of the test that runs two workers at once.\n\n## Source\n\n- `src/loop_engine/catalog/protocol.py`: this repository applies a group of writes with explicit preconditions, so a write that expected a record to be absent fails rather than overwriting what another writer created.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/catalog/protocol.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_untrusted_input_for_injection",
+      "layer": "context",
+      "family": "review",
+      "title": "Review untrusted input for injection",
+      "tags": [
+        "security review",
+        "injection",
+        "sql",
+        "escaping",
+        "untrusted input"
+      ],
+      "text": "# Review untrusted input for injection\n\nFind every place where text that came from outside is put into something that interprets it, and make the data stay data.\n\n## When to use it\n\nUse it on any change that reads a request, a file, a message, a model answer or a third party response, and then builds a query, a command, a path, a page or another request from it.\n\n## Steps\n\n1. Mark every input that is not fully under your control. Anything from a user, a file, a network call or a language model counts.\n2. Follow each marked value to every place it is used.\n3. At each use, name the interpreter: the database, the shell, the file system, the browser, the template engine, another service.\n4. Replace string building with the safe form for that interpreter: bound parameters for a query, an argument list for a command, a joined and checked path for a file, output escaping for a page.\n5. Validate the value against an allowed set where one exists, and refuse the rest. Refusing a known good list is stronger than removing known bad characters.\n6. Check that validation happens on the server, even when the form also checks it.\n7. Treat a model answer as untrusted input. Do not run it, query with it or follow its instructions without the same checks.\n8. Add a test that sends a value containing the interpreter's own special characters and asserts that it is stored and returned as plain text.\n\n## Checks\n\n- No query, command, path or page is built by joining text.\n- Every input has an allowed set or a stated reason why it cannot have one.\n- A test sends the interpreter's special characters and they survive as data.\n- Model output is checked before it reaches any interpreter.\n\n## Known-wrong example\n\nA search page builds a query by adding the search words into the query text and removes single quotation marks to be safe. A visitor searches for a name containing two hyphens, which the database reads as the start of a comment, and the rest of the query is ignored. The page returns every row in the table. Bound parameters would have made the same input a harmless search for a strange name.\n\n## What to record\n\n- The list of untrusted inputs and their uses.\n- The safe form applied at each use.\n- The tests that prove special characters stay data.\n\n## Source\n\n- `src/loop_engine/core/model_response_admission.py`: this repository treats a model answer as untrusted, admits it through a typed path that may remove only approved wrappers, validates it against a declared shape, and never runs it.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/model_response_admission.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_authorisation_on_every_path",
+      "layer": "context",
+      "family": "review",
+      "title": "Review authorisation on every path",
+      "tags": [
+        "security review",
+        "access control",
+        "permissions",
+        "endpoint"
+      ],
+      "text": "# Review authorisation on every path\n\nCheck that each way into a piece of data asks who is calling and whether they may have it, not only the way the page uses.\n\n## When to use it\n\nUse it for every change that adds an endpoint, a background job, an export, an administrative screen or a new way to reach existing data.\n\n## Steps\n\n1. List every entry point to the data: each endpoint, each message consumer, each scheduled job, each report, each console command.\n2. For each one, write who may use it and on which records.\n3. Check that the identity comes from the session or the signed token, never from a value the caller supplied such as an account number in the request.\n4. Check the record level rule, not only the route level rule. Being allowed to read orders is not being allowed to read this order.\n5. Check that a missing permission is a refusal, not a default allow, and that an unknown role is refused.\n6. Check the listing and search paths. They often return records the detail page would refuse.\n7. Check that the same rule is applied when the caller is another service or an agent acting for a user.\n8. Add one test per entry point that calls as a user who must be refused.\n\n## Checks\n\n- Every entry point has a written rule and a test that proves a refusal.\n- Identity is taken from the session or token, not from request content.\n- Record level rules are applied on list, search, export and detail paths alike.\n- An unknown or missing role is refused.\n\n## Known-wrong example\n\nA team protects the order detail page correctly. The comma separated export of the same orders takes the account number from a query parameter because it was written as an internal tool and later exposed. Any signed in customer can export any account by changing one number. A list of entry points with a rule for each would have caught the export.\n\n## What to record\n\n- The entry point list with the rule for each.\n- The refusal tests and their results.\n- Any entry point deliberately left open and why.\n\n## Source\n\n- `src/loop_engine/core/workspace_operations.py`: this repository maps each write or command to an exact effect description, consumes one approval that is bound to that exact effect, and calls the backend at most once.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/workspace_operations.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_file_paths_for_traversal_and_link_escape",
+      "layer": "context",
+      "family": "review",
+      "title": "Review file paths for traversal and link escape",
+      "tags": [
+        "security review",
+        "path traversal",
+        "upload",
+        "symbolic link",
+        "archive"
+      ],
+      "text": "# Review file paths for traversal and link escape\n\nMake sure a path built from outside input cannot reach a file outside the folder it is supposed to stay in.\n\n## When to use it\n\nUse it for uploads, downloads, archive unpacking, template loading, log file selection, and any place where part of a path comes from a request, a file name or a model answer.\n\n## Steps\n\n1. Name the one folder each operation may read or write inside. Write it down as an absolute path.\n2. Reject any supplied component that is absolute, that contains a parent folder step, or that starts with a dot.\n3. Join the supplied part to the folder, then resolve the result and confirm that the folder is still a parent of it. Do the check after resolving, not before.\n4. Refuse symbolic links and hard links, both in the supplied path and in every folder along the way.\n5. When unpacking an archive, apply the same checks to every entry inside it, and refuse entries that are links or devices.\n6. Set a limit on the number of entries and the total size, and refuse when it is passed.\n7. Refuse to overwrite an existing file unless overwriting was asked for explicitly.\n8. Write tests for each refusal: a parent step, an absolute path, a link that points outside, an oversized archive.\n\n## Checks\n\n- The containment check runs after the path is resolved.\n- Links are refused in the supplied path and in the folders above it.\n- Archive entries are checked one by one with the same rules.\n- Each refusal has a test that would fail if the rule were removed.\n\n## Known-wrong example\n\nAn upload handler removes the text for a parent folder step from the file name and then joins it to the upload folder. A caller sends a name where the parent step is written twice in an overlapping way, so removing it once leaves a valid parent step behind, and the file lands in the settings folder. Resolving the joined path and checking that the upload folder is still a parent would have refused it whatever the spelling.\n\n## What to record\n\n- The allowed folder for each operation.\n- The rules applied and the refusals observed.\n- The limits on entry count and total size.\n\n## Source\n\n- `src/loop_engine/core/task_materials.py`: this repository unpacks supplied archives into one folder, refuses entries whose path is unsafe, refuses link and device entries, and stops when a declared capacity is passed.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/task_materials.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_generated_output_before_it_is_executed",
+      "layer": "context",
+      "family": "review",
+      "title": "Review generated output before anything executes it",
+      "tags": [
+        "security review",
+        "generated code",
+        "sandbox",
+        "deserialisation"
+      ],
+      "text": "# Review generated output before anything executes it\n\nTreat code, queries and settings produced by a generator or a model as material to inspect, never as something to run because it arrived.\n\n## When to use it\n\nUse it whenever a program turns text into behaviour: loading a module by name, evaluating an expression, decoding a serialised object, applying a settings file, or running a script an agent wrote.\n\n## Steps\n\n1. Decide whether the text needs to execute at all. A lookup table, a registered name or a declared shape is usually enough and is always safer.\n2. If execution is needed, keep the list of what may be executed in your own code, and select from it by name. Do not build the name from the input.\n3. Read the generated text before the first run. Look for network calls, file writes outside the working folder, credential reads and long running work.\n4. Run it in a confined place first: a separate process, a clean folder, no credentials, no network unless the task needs it, with limits on time and memory.\n5. Compare what it did with what it declared it would do. Investigate any difference.\n6. Use safe decoding for serialised data. Never decode a format that can construct arbitrary objects from an untrusted source.\n7. Keep the exact text and its digest, so the thing reviewed is the thing that ran.\n8. Require a separate approval for any effect outside the confined place.\n\n## Checks\n\n- Nothing is executed whose name or body came straight from input.\n- The first run happened in a confined place with limits.\n- The digest of the reviewed text matches the digest of what ran.\n- Declared effects and observed effects agree.\n\n## Known-wrong example\n\nA reporting tool lets users store a formula that it evaluates with the language's general evaluation function. A user stores a formula that reads the process environment and posts it to a web address. Every credential the service holds leaves the building. A small parser for the four arithmetic operations, or a registered set of named functions, would have given the same feature with none of the risk.\n\n## What to record\n\n- The exact generated text and its digest.\n- The limits of the confined run and what was observed.\n- The approval for any effect that left the confined place.\n\n## Source\n\n- `src/loop_engine/core/service_runtime/http_entrypoint.py`: this repository serves only a host reviewed manifest of material, checks the size and digest of each file again at load time, and loads no code named by the request.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/service_runtime/http_entrypoint.py"
+      ],
+      "symbols": []
     }
   ]
 }

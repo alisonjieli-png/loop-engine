@@ -6,15 +6,16 @@ manifest. The approval column below is empty on purpose.
 
 ## What this folder holds
 
-The folder holds 49 skill-sized items that a customer's coding harness could
+The folder holds 65 skill-sized items that a customer's coding harness could
 load for one step of a task. Each item is one Markdown body of 150 to 600
 words with the same parts: when to use it, the steps, the checks, one
 known-wrong example, what to record and the cited source.
 
 ```text
-Starter catalogue candidates (49)
-├── Context Intelligence (28)
+Starter catalogue candidates (65)
+├── Context Intelligence (44)
 │   ├── working methods for understanding, deciding, verifying and handing over
+│   ├── everyday software practice: tests, debugging, review, data, releases
 │   ├── question sets for model evaluation and review
 │   └── two checklists compiled from model generated statements
 ├── Code Intelligence (21)
@@ -33,24 +34,38 @@ Starter catalogue candidates (49)
 | `refresh.py` | Recomputes the derived fields after a body was edited. It approves nothing and publishes nothing. |
 | `REVIEW.md` | This sheet. |
 
+## Two kinds of body, and how to tell them apart
+
+Each item declares in `items.json` how its body relates to the file it cites.
+The check refuses a body whose text disagrees with that declaration.
+
+| Grounding in `provenance` | What it means | Closing sentence in the body |
+|---|---|---|
+| `restates_cited_source` | The body says what the cited file says or does. Read the file to review it. | `Compiled from revision 381efec.` |
+| `general_practice_beside_cited_source` | The body is ordinary engineering practice written here in its own words. The cited file is a related practice in this repository, not the source of the words. | `Written for this catalogue at revision 381efec.` |
+
+A body of the second kind also carries this sentence, and a body of the first
+kind must not: "The steps above are ordinary engineering practice, written for
+this catalogue in its own words."
+
 ## Current state and planned steps
 
-Current state on 20 September 2026 at revision `381efec`:
+Current state on 21 September 2026 at revision `381efec`:
 
-- The takeover checkpoint (`docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md`) records that the hosted service serves one diagnostic record. The author of this folder did not observe the live service. None of these 49 items is in a host manifest in this repository.
-- The items exist only in this folder. The staging tool accepts all 49 rows in an isolated database and keeps them as candidates.
-- The serving path does not yet refuse an item without a known licence. That is an open finding in the takeover checkpoint.
+- The takeover checkpoint (`docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md`) records that the hosted service serves one diagnostic record. The author of this folder did not observe the live service. No item here is in a host manifest in this repository.
+- The items exist only in this folder. The staging tool accepts one bounded population of at most 50 rows, so the check stages this catalogue as 2 populations taken in file order, and every row is accepted as a candidate in an isolated database.
+- The serving path refuses an item without a known, accepted licence. Every item here declares one.
 
 Planned steps, not done here and not authorized by this folder:
 
-- The owner approves or rejects each item in the table below.
-- A later change adds each approved item to the host manifest with the owner's approval reference and the tenant grants.
+- The owner, or the independent review the owner delegated this to, approves or rejects each item in the table below.
+- A later change adds each approved item to the host manifest with the approval reference and the tenant grants.
 - A release from a committed revision serves them.
 
 ## How to review one item
 
 1. Open the body from the first column and read it as a customer would.
-2. Open the cited source at revision `381efec` and check that the body says what the source says or does.
+2. Check the grounding in `items.json`. For a body that restates its source, open the cited file at revision `381efec` and check that the body says what the source says or does. For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true.
 3. Check the licence state and the declared effects in `items.json`.
 4. Write the decision in the approval column: approved with a name and a date, rejected with the reason, or the change that is needed.
 5. After any edit of a body, run the refresh tool and then the checks. Run these commands from the repository root. The first command only reports stale items. The second rewrites the derived fields.
@@ -62,21 +77,24 @@ PYTHONPATH=src:tools python -m unittest tools.test_starter_catalogue
 ```
 
 To look at the candidates in an isolated review catalogue, stage them with the
-existing tool. It needs three new output paths and writes nothing else.
+existing tool. It needs three new output paths and writes nothing else. It
+accepts at most 50 rows in one run, so split `specifications.json` into
+populations of that size before staging, or stage the population you want to
+read.
 
 ```bash
 PYTHONPATH=src python tools/stage_intelligence_candidates.py \
-  --specifications examples/29_intelligence_service/starter-catalogue/specifications.json \
+  --specifications ONE_POPULATION_FILE \
   --database NEW_DATABASE_PATH --namespace starter.catalogue \
   --authorize-isolated-staging --export NEW_EXPORT_PATH --report NEW_REPORT_PATH
 ```
 
 The existing host manifest reader accepts an approved item in this form: the
 `reference` object from `items.json`, the `body_path`, an `approval_ref` that
-names the owner's decision, and the tenant grants. Do not copy the lifecycle
+names the approval decision, and the tenant grants. Do not copy the lifecycle
 tag without a decision. Every reference here carries the tag
-`lifecycle: candidate`. When all 49 references are loaded unchanged, a request
-that names `lifecycle: qualified` is offered 0 items and 49 are withheld. The
+`lifecycle: candidate`. When all 65 references are loaded unchanged, a request
+that names `lifecycle: qualified` is offered 0 items and 65 are withheld. The
 value of the tag after approval is an open decision for the later manifest
 change. The reader binds an item by its identity, digest, source layer and
 source reference, so the tag can change without a new digest. The
@@ -95,13 +113,13 @@ feedback, from records that name the exact run or the exact statement.
 
 ## What the owner should know before approving
 
-- Authoring. An assistant (Claude Code) wrote every body from the cited sources. The quoted examples in the Code Intelligence bodies were run against the code at revision `381efec`, and the self tests of the nine cited source modules pass at that revision (113 checks). An adversarial review then found one statement that the code does not have: the capitalisation body said that a mixed case value such as `iPhone` keeps its capitals, and the code rewrites it to `Iphone` at 0.95 and applies that. The body was corrected from the executed behaviour, and 53 quoted examples over 12 items now live in `executed-examples.json`, where a check runs each call and compares the result with the words of the body. The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
-- Licence. 47 items are compiled from material authored in this repository, which its `LICENSE` file places under MIT. Two items are compiled from statements that a language model generated during work in this repository. Their licence is recorded as `unknown` with the state `needs_review`, and their provenance names the generator and the digests of the eight source rows. The task for this catalogue allowed at most eight such rows, and eight are used.
-- Declared effects. The rule: an item declares every effect that one of its steps tells the reader to perform on the reader's own machine, which means reading or listing files, writing files, starting a command or using the network. A method that only transforms values it was given declares nothing. A step that asks a question, or that names an analysis without telling the reader how to run it, declares nothing, and a harness that chooses to run such an analysis needs its own authority for it. An item without effects declares an empty list. Twelve items declare effects under this rule: `layer_exception_catalogs_with_precedence`, `copy_a_table_with_corrections_never_in_place`, `export_a_standalone_python_package`, `verify_an_export_in_an_isolated_interpreter`, `refuse_secrets_and_unsafe_paths_in_generated_files`, `write_a_pinned_container_and_batch_job`, `verify_the_requested_output`, `check_for_existing_work_before_building`, `measure_the_environment_before_relying_on_it`, `make_a_data_pipeline_safe_to_run_again`, `test_driven_change_red_green_refactor` and `package_one_skill_for_two_coding_harnesses`. The environment item declares `reads_fs`, `network` and `spawns_process`, because its steps list files, measure tool versions with commands and test network access. The pipeline item declares `reads_fs`, because its second step reads the statements of an existing pipeline. The other 37 items were read against the same rule and declare nothing. The effect names are the ones the engine defines: `pure`, `reads_fs`, `writes_fs`, `reads_secret`, `network` and `spawns_process`. A write to a database table has no name among them, so the pipeline item records that write in its steps and declares no effect for it. The service lists an item only when the request states every effect that the item declares, and the current web and protocol surfaces send no effects. These twelve items would be withheld today. That needs a decision in the engine. The declared effects were not reduced to avoid it.
+- Authoring. An assistant (Claude Code) wrote every body. 49 of them restate the cited repository sources; the quoted examples in those bodies were run against the code at revision `381efec`, and the self tests of the nine cited source modules pass at that revision (113 checks). An adversarial review then found one statement that the code does not have: the capitalisation body said that a mixed case value such as `iPhone` keeps its capitals, and the code rewrites it to `Iphone` at 0.95 and applies that. The body was corrected from the executed behaviour, and 53 quoted examples over 12 items now live in `executed-examples.json`, where a check runs each call and compares the result with the words of the body. The other 16 bodies are ordinary engineering practice written here in plain words; they quote no code and no other project, and each names one related file in this repository with one sentence about what that file does. The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
+- Licence. 63 items are compiled from, or written beside, material authored in this repository, which its `LICENSE` file places under MIT. 2 items are compiled from statements that a language model generated during work in this repository. Their licence is recorded as `unknown` with the state `needs_review`, and their provenance names the generator and the digests of the eight source rows. The task for this catalogue allowed at most eight such rows, and eight are used.
+- Declared effects. The rule: an item declares every effect that one of its steps tells the reader to perform on the reader's own machine, which means reading or listing files, writing files, starting a command or using the network. A method that only transforms values it was given declares nothing. A step that asks a question, or that names an analysis without telling the reader how to run it, declares nothing, and a harness that chooses to run such an analysis needs its own authority for it. An item without effects declares an empty list. 28 items declare effects under this rule, and `items.json` names them one by one. For example, the environment item declares `reads_fs`, `network` and `spawns_process`, because its steps list files, measure tool versions with commands and test network access; the pipeline item declares `reads_fs`, because its second step reads the statements of an existing pipeline. The effect names are the ones the engine defines: `pure`, `reads_fs`, `writes_fs`, `reads_secret`, `network` and `spawns_process`. A write to a database table has no name among them, so the pipeline item records that write in its steps and declares no effect for it. The service lists an item only when the request states every effect that the item declares, and the current web and protocol surfaces send no effects. Those 28 items would be withheld today. That needs a decision in the engine. The declared effects were not reduced to avoid it.
 - Lifecycle tag. Every reference carries the tag `lifecycle: candidate`. A request that names no lifecycle still matches a tagged item, so the tag alone does not hide a candidate. Approval and the host manifest remain the gate.
 - Vocabulary. The bodies use no internal runtime vocabulary. The cited paths contain the package name `loop_engine`, and the integration item cites paths that contain the command name of this repository. The check removes cited source paths before it looks for forbidden words.
-- Search. The purpose of each item is the text that the hosted search reads. All 49 title probes of the staging tool return their own item first. The file `search-queries.json` keeps 31 plain customer queries, and the check requires that each one finds its item among the first three results of a local emulation of the hosted search. The author of the purposes wrote 26 of them. A reviewer wrote 15 unseen queries afterwards, and 10 of the 15 found their item. The five that missed are kept in the file, and synonyms such as dedupe, skewed, umlauts, unreachable and ask the user were added to the purposes until they passed. The other ten reviewer queries were not saved. The queries were tuned against the purposes, so this is a smoke check and not a relevance benchmark.
-- Size. The staging tool accepts at most 50 rows in one population. This catalogue uses 49.
+- Search. The purpose of each item is the text that the hosted search reads. All 65 title probes of the staging tool return their own item first. The file `search-queries.json` keeps 31 plain customer queries, and the check requires that each one finds its item among the first three results of a local emulation of the hosted search. A reviewer wrote 15 unseen queries against the first 49 purposes, and 10 of the 15 found their item; the five that missed are kept in the file, and synonyms such as dedupe, skewed, umlauts, unreachable and ask the user were added to the purposes until they passed. The queries were written by the author of the purposes or tuned against them, so this is a smoke check and not a relevance benchmark.
+- Size. The staging tool accepts at most 50 rows in one population. This catalogue holds 65 rows and is staged as 2 populations.
 - Omitted on purpose: ontology values, context policies, templates of the runtime, module references, `terminology.yaml`, benchmark evidence and anything about this project's own internals.
 
 ## Review table
@@ -157,3 +175,19 @@ feedback, from records that name the exact run or the exact statement.
 | [package_one_skill_for_two_coding_harnesses](bodies/package_one_skill_for_two_coding_harnesses.md) | Context Intelligence | A working pattern for shipping the same skills to Claude Code and Codex without drift. | `integrations/README.md` | MIT, declared | |
 | [check_a_table_join_before_trusting_it](bodies/check_a_table_join_before_trusting_it.md) | Context Intelligence | Catches joins that multiply or drop rows. Model generated source, so the licence needs review. | `src/loop_engine/governance/candidates/part-00000.jsonl` | unknown, needs review | |
 | [make_a_data_pipeline_safe_to_run_again](bodies/make_a_data_pipeline_safe_to_run_again.md) | Context Intelligence | Makes reruns and backfills safe. Model generated source, so the licence needs review. | `src/loop_engine/governance/candidates/part-00000.jsonl` | unknown, needs review | |
+| [write_a_regression_test_that_pins_a_defect](bodies/write_a_regression_test_that_pins_a_defect.md) | Context Intelligence | Makes a repaired defect stay repaired. The test is seen to fail before the repair. | `src/loop_engine/core/independent_failure_review.py` | MIT, declared | |
+| [choose_test_cases_from_boundaries_and_classes](bodies/choose_test_cases_from_boundaries_and_classes.md) | Context Intelligence | Replaces guesswork about test inputs with a small covering set that includes the limits. | `src/loop_engine/core/evaluation_suite.py` | MIT, declared | |
+| [isolate_a_flaky_test_before_trusting_it](bodies/isolate_a_flaky_test_before_trusting_it.md) | Context Intelligence | Ends the habit of rerunning a suite until it is green, and names the real cause. | `src/loop_engine/core/run_validity.py` | MIT, declared | |
+| [prove_a_check_can_fail_when_the_behaviour_is_removed](bodies/prove_a_check_can_fail_when_the_behaviour_is_removed.md) | Context Intelligence | Shows that a new guard can actually fail, so a passing check means something. | `src/loop_engine/core/independent_failure_review.py` | MIT, declared | |
+| [reduce_a_failure_to_a_minimal_reproduction](bodies/reduce_a_failure_to_a_minimal_reproduction.md) | Context Intelligence | Produces a small shareable failing case with the private data left out. | `src/loop_engine/core/task_materials.py` | MIT, declared | |
+| [bisect_a_regression_across_revisions](bodies/bisect_a_regression_across_revisions.md) | Context Intelligence | Names the change that broke something instead of arguing about it. | `src/loop_engine/core/run_validity.py` | MIT, declared | |
+| [bisect_a_failure_across_inputs_and_settings](bodies/bisect_a_failure_across_inputs_and_settings.md) | Context Intelligence | Explains why the same code behaves differently in two environments. | `src/loop_engine/core/route_health.py` | MIT, declared | |
+| [read_a_failure_report_and_name_the_first_wrong_value](bodies/read_a_failure_report_and_name_the_first_wrong_value.md) | Context Intelligence | Repairs the origin of a wrong value instead of the place where it surfaced. | `src/loop_engine/core/capability_rejection.py` | MIT, declared | |
+| [review_a_change_for_correctness](bodies/review_a_change_for_correctness.md) | Context Intelligence | Puts correctness before style and asks for a failing input with every finding. | `src/loop_engine/strings/decision_schemas.py` | MIT, declared | |
+| [review_a_change_for_what_is_missing](bodies/review_a_change_for_what_is_missing.md) | Context Intelligence | Finds the absent work, which leaves no line for a reviewer to comment on. | `src/loop_engine/strings/ask_strategies.py` | MIT, declared | |
+| [review_error_paths_and_partial_failure](bodies/review_error_paths_and_partial_failure.md) | Context Intelligence | Covers the state that a half finished operation leaves behind. | `src/loop_engine/catalog/protocol.py` | MIT, declared | |
+| [review_shared_state_for_ordering_defects](bodies/review_shared_state_for_ordering_defects.md) | Context Intelligence | Finds the read then write sequences that break under real traffic. | `src/loop_engine/catalog/protocol.py` | MIT, declared | |
+| [review_untrusted_input_for_injection](bodies/review_untrusted_input_for_injection.md) | Context Intelligence | Follows untrusted values to the interpreter that would act on them. | `src/loop_engine/core/model_response_admission.py` | MIT, declared | |
+| [review_authorisation_on_every_path](bodies/review_authorisation_on_every_path.md) | Context Intelligence | Catches the export or search path that skips the rule the page applies. | `src/loop_engine/core/workspace_operations.py` | MIT, declared | |
+| [review_file_paths_for_traversal_and_link_escape](bodies/review_file_paths_for_traversal_and_link_escape.md) | Context Intelligence | Keeps uploads, downloads and archive entries inside one folder. | `src/loop_engine/core/task_materials.py` | MIT, declared | |
+| [review_generated_output_before_it_is_executed](bodies/review_generated_output_before_it_is_executed.md) | Context Intelligence | Treats code written by a model as material to inspect, not to run. | `src/loop_engine/core/service_runtime/http_entrypoint.py` | MIT, declared | |

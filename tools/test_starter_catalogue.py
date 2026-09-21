@@ -40,6 +40,10 @@ NAMESPACE = "starter.catalogue"
 MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 40, 150, 600, 8
 #: A required part that holds fewer words than this is a heading without content.
 MINIMUM_PART_WORDS = 8
+#: ``compile_candidates`` accepts one bounded population of at most this many rows, so a
+#: larger catalogue is staged as several populations taken in file order. The number is
+#: the bound the staging tool states; a population larger than it is refused there.
+STAGING_POPULATION = 50
 QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 26
 EXAMPLES_FILE, EXAMPLES_RECORD_TYPE = "executed-examples.json", "starter_catalogue_executed_examples/v1"
 #: How much of the catalogue the executed examples must cover. A body may quote a
@@ -54,6 +58,13 @@ LICENCE_STATES = {"declared": ("MIT", "assistant_authored_from_repository_source
                   "needs_review": ("unknown", "assistant_compiled_from_model_generated_candidates",
                                    "Licence state: needs review.")}
 REVIEW_LICENCE = {"declared": "MIT, declared", "needs_review": "unknown, needs review"}
+#: How a body relates to the file it cites, and the sentence the body must carry so that a
+#: reader is never told that general engineering practice was read out of the cited code.
+GROUNDINGS = {"restates_cited_source": "Compiled from revision {revision}.",
+              "general_practice_beside_cited_source": "Written for this catalogue at revision {revision}."}
+GENERAL_PRACTICE = "general_practice_beside_cited_source"
+GENERAL_PRACTICE_SENTENCE = ("The steps above are ordinary engineering practice, "
+                             "written for this catalogue in its own words.")
 REVIEW_LAYER = {"context_intelligence": "Context Intelligence", "code_intelligence": "Code Intelligence"}
 EMPTY_LAYERS = ("Runtime History and Solution Intelligence", "User Feedback Intelligence")
 REQUIRED_PARTS = ("## When to use it", "## Steps", "## Checks", "## Known-wrong example",
@@ -176,6 +187,28 @@ def rule_every_item_carries_a_licence(snapshot):
     return found
 
 
+def rule_bodies_say_how_they_relate_to_their_source(snapshot):
+    """A body either restates the file it cites or says that it is general practice beside it."""
+    revision = str(snapshot.items.get("source_revision"))[:7]
+    found = []
+    for row, item in snapshot.rows():
+        identity = row.get("id")
+        grounding = (item.get("provenance") or {}).get("grounding")
+        body = snapshot.bodies.get(identity, b"").decode("utf-8")
+        if grounding not in GROUNDINGS:
+            found.append(f"{identity}: the provenance must say how the body relates to its source, "
+                         f"one of {sorted(GROUNDINGS)}, not {grounding!r}")
+            continue
+        for name, sentence in GROUNDINGS.items():
+            if (sentence.format(revision=revision) in body) != (name == grounding):
+                found.append(f"{identity}: a body declared as {grounding!r} must carry "
+                             f"{GROUNDINGS[grounding].format(revision=revision)!r} and no other grounding sentence")
+                break
+        if (GENERAL_PRACTICE_SENTENCE in body) != (grounding == GENERAL_PRACTICE):
+            found.append(f"{identity}: only a body written from general practice may say that it was")
+    return found
+
+
 def rule_every_item_is_a_candidate(snapshot):
     found = []
     if snapshot.items.get("publication") != "not_published":
@@ -215,14 +248,34 @@ def rule_bodies_stay_in_the_word_range(snapshot):
             for identity, count in sorted(counts.items()) if not MINIMUM_WORDS <= count <= MAXIMUM_WORDS]
 
 
+def populations(specifications: dict) -> list:
+    """The specification split into the bounded populations the staging tool accepts."""
+    rows = specifications.get("specifications") or []
+    return [{**specifications, "specifications": rows[start:start + STAGING_POPULATION]}
+            for start in range(0, len(rows), STAGING_POPULATION)] or [specifications]
+
+
+def compile_every_population(specifications: dict, request) -> tuple[list, list]:
+    """Every compiled record, with the refusal of any population that the tool rejects."""
+    records, refusals = [], []
+    for number, population in enumerate(populations(specifications), start=1):
+        try:
+            records += compile_candidates(population, request)
+        except ValueError as error:
+            refusals.append(f"population {number}: the staging tool refuses the specification: {error}")
+    return records, refusals
+
+
 def rule_specification_loads_through_the_staging_tool(snapshot):
-    try:
-        records = compile_candidates(snapshot.specifications, CandidateStageRequest(snapshot.repository, NAMESPACE))
-    except ValueError as error:
-        return [f"the staging tool refuses the specification: {error}"]
-    found = []
+    records, found = compile_every_population(
+        snapshot.specifications, CandidateStageRequest(snapshot.repository, NAMESPACE))
+    if found:
+        return found
     if len(records) != len(snapshot.specifications["specifications"]):
         found.append("the staging tool did not compile one record for each row")
+    identities = [record["record_id"] for record in records]
+    found += [f"{identity}: the same record identity is staged twice"
+              for identity in sorted(set(identities)) if identities.count(identity) > 1]
     found += [f"{record['record_id']}: staged as something other than an unexecutable candidate"
               for record in records if record["lifecycle"] != "candidate"
               or record["payload"]["lifecycle"] != "candidate" or record["payload"]["execution_available"] is not False
@@ -382,6 +435,7 @@ def rule_quoted_examples_reproduce(snapshot):
 
 RULES = {function.__name__[5:]: function for function in (
     rule_identities_are_unique, rule_digests_and_sizes_match_the_bodies, rule_every_item_carries_a_licence,
+    rule_bodies_say_how_they_relate_to_their_source,
     rule_every_item_is_a_candidate, rule_no_forbidden_vocabulary, rule_bodies_stay_in_the_word_range,
     rule_specification_loads_through_the_staging_tool, rule_bodies_have_the_required_parts,
     rule_layers_kinds_effects_and_styles_are_declared, rule_source_references_are_pinned,
@@ -432,6 +486,18 @@ def _generated(items):
     return next(item for item in items["items"] if item["license_state"] == "needs_review")
 
 
+def _general_practice_identity(snapshot):
+    """The first item whose body is general practice written beside the file it cites."""
+    return next(row["id"] for row, item in snapshot.rows()
+                if item["provenance"]["grounding"] == GENERAL_PRACTICE)
+
+
+def _changed_body(snapshot, identity, change):
+    """A deep copy in which one named body carries a deliberate defect."""
+    text = change(snapshot.bodies[identity].decode("utf-8"))
+    return replace(snapshot, bodies={**snapshot.bodies, identity: text.encode("utf-8")})
+
+
 def _set(target, key, value):
     target[key] = value
 
@@ -472,6 +538,16 @@ KNOWN_WRONG = {
         ("model generated material claims the repository licence", lambda s: _changed(
             s, items=lambda items: (_set(_generated(items), "license_state", "declared"),
                                     _set(_generated(items)["reference"], "license", "MIT"))))),
+    "bodies_say_how_they_relate_to_their_source": (
+        ("an item does not say how its body relates to its source", lambda s: _changed(
+            s, items=lambda items: _set(items["items"][0]["provenance"], "grounding", "read_from_the_source"))),
+        ("general practice claims to be compiled from the file it cites", lambda s: _changed_body(
+            s, _general_practice_identity(s),
+            lambda text: text.replace("Written for this catalogue at revision", "Compiled from revision"))),
+        ("general practice does not say that it is general practice", lambda s: _changed_body(
+            s, _general_practice_identity(s), lambda text: text.replace(GENERAL_PRACTICE_SENTENCE + "\n\n", ""))),
+        ("a body compiled from its source claims to be general practice", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Source\n", f"\n{GENERAL_PRACTICE_SENTENCE}\n\n## Source\n")))),
     "every_item_is_a_candidate": (
         ("an item calls itself qualified", lambda s: _changed(
             s, items=lambda items: _set(_first_reference(items)["tags"], "lifecycle", ["qualified"]))),
@@ -509,7 +585,10 @@ KNOWN_WRONG = {
         ("a row claims to be active", lambda s: _changed(
             s, specifications=lambda rows: _set(rows[0], "lifecycle", "active"))),
         ("a source is not a file in the repository", lambda s: _changed(
-            s, specifications=lambda rows: _set(rows[0], "sources", ["src/loop_engine/no_such_file.py"])))),
+            s, specifications=lambda rows: _set(rows[0], "sources", ["src/loop_engine/no_such_file.py"]))),
+        ("the same identity is staged again in a later population", lambda s: _changed(
+            s, specifications=lambda rows: rows.append(deepcopy(rows[0])),
+            items=lambda items: items["items"].append(deepcopy(items["items"][0]))))),
     "bodies_have_the_required_parts": (
         ("the known-wrong example is missing", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Known-wrong example\n", "\n## Another part\n"))),
@@ -593,7 +672,9 @@ class StarterCatalogueChecks(unittest.TestCase):
 
     def test_the_specification_stages_and_review_search_finds_every_item(self):
         request = CandidateStageRequest(ROOT, NAMESPACE, True)
-        records = compile_candidates(self.snapshot.specifications, request)
+        records, refusals = compile_every_population(self.snapshot.specifications, request)
+        self.assertEqual(refusals, [])
+        self.assertEqual(len(records), len(self.snapshot.rows()))
         with tempfile.TemporaryDirectory() as directory:
             with closing(SQLiteRecordStore(str(Path(directory) / "candidates.db"))) as store:
                 self.assertTrue(stage_candidates(store, records, request).committed)
