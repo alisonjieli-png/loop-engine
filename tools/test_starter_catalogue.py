@@ -500,6 +500,17 @@ def _capitalisation_example(rows):
                 and row["arguments"][0] == "iPhone Repair")
 
 
+def _wording(sentence: str):
+    """A known-wrong case that puts one forbidden sentence into the first body.
+
+    Each sentence is written so that exactly one forbidden pattern matches it.
+    Removing that one pattern then leaves the sentence accepted, which is what
+    the per-pattern control requires.
+    """
+    return lambda snapshot: _changed(
+        snapshot, body=lambda text: text.replace("\n## Steps\n", f"\n{sentence}\n\n## Steps\n"))
+
+
 def _foreign_module_row(snapshot):
     """A call that succeeds in every respect, listed under an item that does not cite the module it runs."""
     cited = _module_source_path(snapshot.examples["modules"]["operations"], snapshot.repository)
@@ -559,8 +570,19 @@ KNOWN_WRONG = {
         ("a body uses a horizontal bar", lambda s: _changed(
             s, body=lambda text: text + f"A pause {chr(0x2015)} then more.\n")),
         ("an identity carries internal runtime vocabulary", _renamed_first_identity),
-        ("a body names a graph relationship and a run record", lambda s: _changed(
-            s, body=lambda text: text.replace("\n## Steps\n", "\nIt was spawned and kept in Run History.\n\n## Steps\n"))),
+        *((f"a body uses the wording {label}", _wording(sentence)) for label, sentence in (
+            ("of the runtime type", "The task runs in a loop until it is done."),
+            ("of a runtime role", "A Practitioner owns this work."),
+            ("of the runtime classification", "The runtime classification decides the shape."),
+            ("of a compiled canvas", "Compile the Solution Canvas first."),
+            ("of the engine's own modules", "Reuse the code nodes of the engine."),
+            ("of a graph relationship", "It was spawned by the step before it."),
+            ("of a starting relationship", "A Starting Solution runs the pipeline."),
+            ("of the run record store", "Keep the outcome in Run History."),
+            ("of a retired condition name", "Write the stop condition before you start."),
+            ("of a retired word for a record", "Keep the receipt of the change."),
+            ("of a retired word for a history", "Add the decision to the chronicle."),
+            ("of a retired heading", "Then decide what is next."))),
         ("a body names the temporary run store", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Steps\n", "\nKeep the value in Runtime Memory.\n\n## Steps\n"))),
         ("a body uses a longer family word", lambda s: _changed(
@@ -799,6 +821,31 @@ class StarterCatalogueChecks(unittest.TestCase):
             leftover.unlink()
             self.assertTrue(refresh.refresh(refresh.RefreshRequest(folder, True))["written"])
             self.assertEqual(problems(load_snapshot(folder)).get("digests_and_sizes_match_the_bodies"), None)
+
+    def _plant_link(self, folder: Path, relative: str, outside: Path) -> Path:
+        """Move one part of a copied catalogue outside the folder and leave a link in its place."""
+        target, moved = folder / relative, outside / Path(relative).name
+        outside.mkdir(parents=True, exist_ok=True)
+        target.rename(moved)
+        target.symlink_to(moved, target_is_directory=moved.is_dir())
+        return moved
+
+    def test_the_refresh_tool_refuses_a_planted_symbolic_link(self):
+        """Path confinement: a link in place of a record, the bodies folder or one body is refused."""
+        refresh = _refresh_module()
+        identity = self.snapshot.rows()[0][0]["id"]
+        for relative in ("items.json", "specifications.json", "bodies", f"bodies/{identity}.md"):
+            with self.subTest(planted=relative), tempfile.TemporaryDirectory() as directory:
+                folder, _body = self._stale_copy(directory)
+                moved = self._plant_link(folder, relative, Path(directory).resolve() / "outside")
+                before = sorted((path.relative_to(moved).as_posix(), path.read_bytes())
+                                for path in (moved.rglob("*") if moved.is_dir() else [moved]) if path.is_file())
+                with self.assertRaises(refresh.CatalogueRefreshError):
+                    refresh.refresh(refresh.RefreshRequest(folder, True))
+                # Nothing was written through the link, so the material outside the folder is untouched.
+                self.assertEqual(before, sorted((path.relative_to(moved).as_posix(), path.read_bytes())
+                                                for path in (moved.rglob("*") if moved.is_dir() else [moved])
+                                                if path.is_file()))
 
     def test_the_refresh_tool_gives_a_typed_refusal_for_unreadable_files(self):
         refresh = _refresh_module()
