@@ -775,7 +775,7 @@ continuation:
     - id: D-17
       title: Open a private beta for invited users
       stage: initial_service
-      steps: [S-6.5, S-6.10, S-6.12, S-6.15, S-6.24]
+      steps: [S-6.5, S-6.10, S-6.12, S-6.15, S-6.24, S-6.28]
       depends_on: [D-01, D-03]
       actions:
         - "Release only from a committed revision whose continuous integration run passed, through the guarded pilot workflow, so that the deployed image can always be rebuilt from the repository."
@@ -1024,7 +1024,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1049,6 +1049,10 @@ continuation:
       hours: [0, 24]
       steps: [S-6.18, S-6.19, S-6.22, S-6.25, S-6.26, S-6.27]
       scheduling: Independent work only; continue after the launch window when release dependencies need the time.
+    - title: Streamline the main line to harness intelligence
+      hours: [0, 24]
+      steps: [S-6.28]
+      scheduling: Owner decision of September 21, 2026. The main line serves harness intelligence first and retires the in-process Loop-native execution path in recorded phases. Parked capabilities keep their folders with PARKED.md marker files. The full tree stays frozen on checkpoint/full-capability-2026-09-21.
   launch_gates:
     - id: product
       title: A visitor can subscribe, use the dashboard, connect a client, and manage access
@@ -1125,7 +1129,7 @@ continuation:
       continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
       continuation_steps: [S-6.3, S-6.6, S-6.19]
@@ -2194,3 +2198,14 @@ steps:
     acceptance: Every confirmed defect has a current owning repair and independent evidence, with unresolved or broader integration requirements still named.
     evidence: Runtime, storage, retrieval, export, test collection, and capability-dispatch repair reports are saved in artifacts/architecture-audit-2026-09-19/. Complete source qualification remains a separate release gate.
     next_local_work: Metadata disclosure now binds the initial grant revision and revalidates it at completion. Revocation, replacement and entitlement changes refuse in local tests, and removing the guard is detected. Preserve the original counterexample; qualify hosted behavior and remaining defects separately.
+  - id: S-6.28
+    phase: 6
+    title: Streamline the main line to harness intelligence and delegate every step to a harness
+    status: building
+    depends_on: [S-6.17]
+    boundary: [core.harness_intelligence, core.service_runtime.http_entrypoint, docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md, docs/architecture/BRANCH-STRATEGY-2026-09-21.md]
+    verify: [family serving policy record, host file policy key, refusal before manifest serving, marker files in parked folders, phased execution delegation behind the typed executor interface]
+    adversarial: A manifest item whose family the host does not declare must be refused before serving; removing the family policy guard must fail a named check; a host file with an unknown family policy key must stop the host loader before it serves.
+    acceptance: The main line serves the harness family by default, every executable step delegates to a standard harness through the existing adapter contracts, parked capabilities keep their folders with marker files naming the checkpoint revision, and the full-capability tree stays frozen on checkpoint/full-capability-2026-09-21.
+    evidence: The family axis and its four known-wrong-case checks are on main (a3bd0f1, 6229/6229). The decision record docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md holds the three-phase plan. The checkpoint branch is pushed at revision a3bd0f1.
+    next_local_work: Phase 1 is the typed family serving policy in the host configuration, mirroring the licence policy record. Phase 2 moves execution behind the HarnessProcessSpec delegation contract. Phase 3 retires the in-process execution modules from main, leaving PARKED.md marker files that name the checkpoint branch and revision.

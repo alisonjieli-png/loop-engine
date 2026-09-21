@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `f40580cdf7267da855542375d47abb0315eb2695d5f4e0b5a291db4daf915201`.
+Plan fingerprint: `66af8286da8403e4381f30d29595f246308e75d111c31a635b059c873471956e`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -31,6 +31,7 @@ These steps are already being built. They are not completed dependencies or perm
 | S-6.3 | Unique model-step occurrence records, metadata privacy, accepted-incumbent labels, Unicode byte counts, and persisted product outcomes are tested. Capture currently counts model-step invocations, not every physical gateway attempt; complete physical-call capture remains open. | Continue the declared acceptance checks |
 | S-6.26 | Current-only Code, references, graph/spec, product outcome, export, model-learning and test reports are implemented. The memory repository forwarder is removed. Loop definition, checkpoint, ontology, fingerprint, skill and other aliases remain inventoried work. | Continue the declared acceptance checks |
 | S-6.27 | Runtime, storage, retrieval, export, test collection, and capability-dispatch repair reports are saved in artifacts/architecture-audit-2026-09-19/. Complete source qualification remains a separate release gate. | Metadata disclosure now binds the initial grant revision and revalidates it at completion. Revocation, replacement and entitlement changes refuse in local tests, and removing the guard is detected. Preserve the original counterexample; qualify hosted behavior and remaining defects separately. |
+| S-6.28 | The family axis and its four known-wrong-case checks are on main (a3bd0f1, 6229/6229). The decision record docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md holds the three-phase plan. The checkpoint branch is pushed at revision a3bd0f1. | Phase 1 is the typed family serving policy in the host configuration, mirroring the licence policy record. Phase 2 moves execution behind the HarnessProcessSpec delegation contract. Phase 3 retires the in-process execution modules from main, leaving PARKED.md marker files that name the checkpoint branch and revision. |
 | S-6.5 | The live pilot supports host-key Model Context Protocol access and OpenCode 1.17.9 discovery. Browser identity and account-activation code ships in Fly release 7 and is switched off by host configuration. Personal client keys are local only; they use an owner-bound record version that an older release refuses, shown by a rollback drill against the real release 7 image. Generic browser tokens remain invalid for the protocol resource audience. OAuth client consent and complete typed package serving remain unqualified. | Verify the installed command and package, a second supported client, and exact protocol refusal; qualify live authorization only after owner setup. |
 | S-6.6 | Exact usage identity, atomic authority read sets, restart and unknown-commit reconciliation are implemented in core.service_runtime. HTTP and protocol retries share one durable usage acknowledgment. Complete telemetry retention, consent, export and collector-outage behavior remain open. | Exercise retention, tenant export and telemetry outage behavior with raw-content collection disabled; preserve unknown cost and commit outcomes. |
 | S-6.21 | Checkout and portal creation have 52 local checks and 18 detected mutants; signed-event reconciliation has separate local checks. The newly approved Baltor sandbox acct_1UHZ9KCCxLfArYED is reachable with the runtime test credential. No real test checkout or webhook lifecycle has been completed; live charging stays disabled. | Dashboard session routes have local browser checks. Complete periodic reconciliation, automatic customer bootstrap and qualified deployment, then exercise the owner's Stripe test account under explicit authority. |
@@ -591,7 +592,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-17: Open a private beta for invited users
 
-Owning steps: S-6.5, S-6.10, S-6.12, S-6.15, S-6.24. Acceptance dependencies: D-01, D-03.
+Owning steps: S-6.5, S-6.10, S-6.12, S-6.15, S-6.24, S-6.28. Acceptance dependencies: D-01, D-03.
 
 Owning boundaries: `.github/workflows/fly-pilot.yml`; `tools/check_rollback_key_version.py`; `src/loop_engine/core/service_runtime/browser_identity.py`; `src/loop_engine/core/service_runtime/http_entrypoint.py`; `src/loop_engine/core/service_runtime/web_assets/client-recipes.json`; `tools/stage_intelligence_candidates.py`.
 
@@ -663,6 +664,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | 18 to 22 | Qualify the release and rehearse recovery | S-6.14 |
 | 22 to 24 | Authorized hosting, release decision, and paid activation | S-6.15, S-6.16 |
 | 0 to 24 | Continue structural improvements and controlled experiments | S-6.18, S-6.19, S-6.22, S-6.25, S-6.26, S-6.27 |
+| 0 to 24 | Streamline the main line to harness intelligence | S-6.28 |
 
 ## Launch work
 
@@ -676,6 +678,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.3 | Repair model-call occurrence identity, retention, and training persistence | building | S-6.17 |
 | S-6.26 | Remove unused pre-launch compatibility while retaining versioned handshakes | building | S-6.17 |
 | S-6.27 | Close independently reproduced contract and data-integrity defects | building | S-6.17 |
+| S-6.28 | Streamline the main line to harness intelligence and delegate every step to a harness | building | S-6.17 |
 | S-6.5 | Expose provisioning through a versioned Model Context Protocol service | building | S-6.4 |
 | S-6.6 | Persist usage and telemetry with acknowledgments and reconciliation | building | S-6.4 |
 | S-6.21 | Connect payment lifecycle to durable subscription entitlements | building | S-6.4 |
@@ -709,7 +712,7 @@ Legacy statuses remain historical component claims until current integration evi
 |---|---|---|
 | Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11 |
 | Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23 |
-| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24 |
+| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28 |
 | Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13 |

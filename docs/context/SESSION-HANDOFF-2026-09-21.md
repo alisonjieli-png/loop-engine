@@ -11,10 +11,38 @@ standing direction stays [CLAUDE.md](../../CLAUDE.md) and
 [AGENTS.md](../../AGENTS.md). Do not start a second task list or dashboard;
 add to this file and to the roadmap.
 
+## Owner decisions made today, late in the session
+
+Two decisions landed after the facts below were written, and they govern the
+next work:
+
+1. **Intelligence material is organized by family** (commit `a3bd0f1`): what
+   the material is built to follow. Loop-native (built for the Loop
+   runtime), harness (drop-in files a standard harness already reads:
+   SKILL.md, AGENTS.md, plugins, protocol server configs), and Open
+   Knowledge Format (open formats shaped by no harness and no runtime). A
+   family is derived from the layer that holds the body, so the axes cannot
+   disagree. The private beta serves harness intelligence first.
+2. **The main line is streamlined to harness intelligence** and the
+   full-capability tree is frozen on
+   `checkpoint/full-capability-2026-09-21` (revision `a3bd0f1`, 6229/6229
+   checks). The in-process Loop-native execution path retires in recorded
+   phases; parked capabilities keep their folders with `PARKED.md` marker
+   files naming the checkpoint revision. Every executable step delegates to
+   a standard harness through the existing adapter contracts, and the typed
+   boundaries stay so any engine or harness can be swapped later. A custom
+   loop-node harness of our own is a future owner decision, added behind
+   the same executor interface.
+
+The records: [the decision record](../architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md),
+[the branch strategy](../architecture/BRANCH-STRATEGY-2026-09-21.md), and
+roadmap step S-6.28.
+
 ## Read these first, in this order
 
 1. [CLAUDE.md](../../CLAUDE.md) for the owner's authority and its limits.
-2. [AGENTS.md](../../AGENTS.md) for the repository rules.
+2. [AGENTS.md](../../AGENTS.md) for the repository rules, including the
+   intelligence families.
 3. This file for where the work stands.
 4. [The takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md) for the
    working cycle, which has not changed.
@@ -86,7 +114,17 @@ running for it on the branches `release/carry-approvals` and
 
 ## The defect that blocks a green build, and why it is not simply fixed
 
-Continuous integration is red on `main`. Three checks fail:
+Update, later the same day: **the four continuous integration failures are
+repaired on `main`** (commit `96d27f7`). Signup, recovery and promotion
+redemption had shipped without their routes in the route table, so all three
+answered 404 on the deployed service; the refusal-wording coverage check read
+success-path statuses as refusal statuses; a transport check expected a
+wrong-method fall-through the router never implemented; and two scan
+registrations were missing. Self-test 6225/6225, then 6229/6229 after the
+family axis landed. What follows is the original finding, kept because the
+design it forced is still the right one.
+
+The earlier three failures were:
 `test_the_committed_catalogue_passes_every_rule`,
 `test_the_pinned_digests_are_read_from_the_tree_and_not_from_the_record` and
 `test_the_anchor_tool_refuses_a_revision_whose_cited_bytes_differ`.
