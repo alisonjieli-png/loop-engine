@@ -14,19 +14,34 @@ for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
 const recipeRecord=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/client-recipes.json"),"utf8"));
-/* The catalogue browser is read from the source tree as well. The service's asset table does not name
-   the file yet, so every page in this run is served those exact source bytes at its own address, and the
-   missing table entry is reported by its own named check with the line the service needs. A removed-guard
-   control changes those bytes in memory only, never the source file. */
+/* The catalogue browser is read from the source tree as well, and a named check compares it with the
+   bytes the service serves. Every ordinary page in this run loads the module from the service itself.
+   A removed-guard control, and only such a control, answers that one address with changed bytes, in
+   memory and never in the source file. */
 const browseSource=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/catalogue-browser.js"),"utf8");
 const routeBrowseAsset=(target,mutation)=>{
   const state={applied:false,errors:[]};
+  if(!mutation)return state;
   target.route("**/assets/catalogue-browser.js",route=>{
-    const body=mutation?browseSource.split(mutation.find).join(mutation.replacement):browseSource;
-    if(mutation)state.applied=body!==browseSource;
+    const body=browseSource.split(mutation.find).join(mutation.replacement);
+    state.applied=body!==browseSource;
     route.fulfill({status:200,contentType:"text/javascript",body});
   });
   return state;
+};
+/* A one-shot hold on the measurement of downloaded bytes, installed only in the checks that name it.
+   The page, the service, the bytes and the digest stay real; only the moment the measurement finishes is
+   held, so a sign-out can land inside the window the guard in fetchBody defends. Nothing else changes. */
+const holdDigestScript=()=>{
+  const measure=crypto.subtle.digest.bind(crypto.subtle);
+  let release=null;
+  window.__digestArmed=false;window.__digestHeld=false;
+  window.__armDigestHold=()=>{window.__digestArmed=true;window.__digestHeld=false;};
+  window.__releaseDigest=()=>{const go=release;release=null;if(go)go();};
+  crypto.subtle.digest=async (...given)=>{
+    const value=await measure(...given);
+    if(window.__digestArmed){window.__digestArmed=false;window.__digestHeld=true;await new Promise(resolve=>{release=resolve;});}
+    return value;};
 };
 const program=`from contextlib import ExitStack
 from pathlib import Path
@@ -69,7 +84,8 @@ with ExitStack() as stack:
     # A fifth real service whose catalogue spans the persistent groups, so browsing is compared with a real
     # reply from a real service. One of the four groups is left empty on purpose, one item is granted
     # without its body, one item names no licence, and two items name the development tool they were
-    # written for. No item declares an effect, because a browser holds no authority to run anything.
+    # written for. One item declares an effect. A browser holds no authority to run anything, so the real
+    # service withholds that item from every reply and the page must say so without blaming a filter.
     browse=HttpDomainFixture(root/"browse")
     published=[
         (HarnessIntelligenceDraft("context.review","skill","Review the supplied inputs before work starts","context_intelligence","fixture:context.review/v1","MIT",(),("claude-code",)),"CONTEXT_REVIEW_BODY",True),
@@ -77,7 +93,8 @@ with ExitStack() as stack:
         (HarnessIntelligenceDraft("code.normalise","reusable_code","Normalise a supplied table of values","code_intelligence","fixture:code.normalise/v1","Apache-2.0",(),("codex",)),"CODE_NORMALISE_BODY",True),
         (HarnessIntelligenceDraft("code.verify","tool","Check an import against its declared contract","code_intelligence","fixture:code.verify/v1","MIT"),"CODE_VERIFY_BODY",False),
         (HarnessIntelligenceDraft("history.retry","instruction_file","What an earlier attempt at this task did","runtime_history_solution_intelligence","fixture:history.retry/v1","MIT"),"HISTORY_RETRY_BODY",True),
-        (HarnessIntelligenceDraft("local.notes","instruction_file","Notes your own setup already holds","harness_local","fixture:local.notes/v1","",(),(),"metadata_only","installed"),"LOCAL_NOTES_BODY",True)]
+        (HarnessIntelligenceDraft("local.notes","instruction_file","Notes your own setup already holds","harness_local","fixture:local.notes/v1","",(),(),"metadata_only","installed"),"LOCAL_NOTES_BODY",True),
+        (HarnessIntelligenceDraft("code.deploy","tool","Start a reviewed deployment command","code_intelligence","fixture:code.deploy/v1","MIT",("spawns_process",)),"CODE_DEPLOY_BODY",True)]
     for draft,body,_allowed in published:
         item=item_from_body(draft,body)
         browse.catalogue.register(item); browse.bodies[item.identity]=body
@@ -728,8 +745,7 @@ try {
   const servedAssetText=servedAsset.status()===200?await servedAsset.text():"";
   await plainContext.close();
   check("catalogue_browser_asset_is_served",servedAsset.status()===200&&(servedAsset.headers()["content-type"]||"").includes("javascript")&&servedAssetText===browseSource,
-    {status:servedAsset.status(),
-     needed_entry:'src/loop_engine/core/service_runtime/http.py, WEB_ASSETS, add "/assets/catalogue-browser.js": ("catalogue-browser.js", "text/javascript")'});
+    {status:servedAsset.status(),same_bytes_as_the_source_file:servedAssetText===browseSource});
   const browseList=async (target,fields={})=>(await (await target.request.post(fixture.browse_base+"/api/v1/provisioning",
     {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
      data:{record_type:"service_provisioning_request/v1",operation:"list",...fields}})).json()).result;
@@ -762,9 +778,10 @@ try {
     note(name,groups.length===0&&await page.locator("#browse-count").innerText()==="Nothing shown"
       &&message.startsWith("This service answered with a catalogue record this page was not written for")
       &&!(await page.locator(".browse").innerText()).includes(planted),{groups:groups.length,message});};
-  async function openBrowseWorkspace(mutation){
+  async function openBrowseWorkspace(mutation,holdDigest=false){
     const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:"reduce"});
     await context.route("**/*",localOnly);
+    if(holdDigest)await context.addInitScript(holdDigestScript);
     const state=routeBrowseAsset(context,mutation);
     const opened=await context.newPage();
     opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
@@ -787,6 +804,13 @@ try {
       const emptyGroup=groups.find(item=>item.layer==="user_feedback_intelligence");
       note("browse_says_plainly_when_a_group_holds_nothing",emptyGroup!==undefined&&emptyGroup.count==="0 items"
         &&emptyGroup.identities.length===0&&emptyGroup.empty==="Nothing is published in this group yet.",{group:emptyGroup});
+      /* The service withheld one item because it declares an effect, and no filter was chosen. Naming the
+         filters here would tell the reader to change something that is not the reason. */
+      const unfilteredMessage=await opened.locator("#browse-message").innerText();
+      note("browse_names_every_reason_material_is_not_offered",reply.withheld.length===1
+        &&reply.withheld[0].reason.includes("spawns_process")
+        &&unfilteredMessage.includes("1 item is not offered here, because of this account's permissions or a declared effect this page holds no authority for.")
+        &&!unfilteredMessage.includes("did not match the filters"),{message:unfilteredMessage,withheld:reply.withheld});
       await openItem(opened,"context.review");
       const detail=await browseDetail(opened),listed=reply.items.find(row=>row.identity==="context.review");
       note("browse_detail_states_purpose_licence_size_digest_and_effects",
@@ -825,7 +849,10 @@ try {
       note("browse_opens_an_item_with_the_keyboard",afterOne==="refresh-browse"&&reached.className==="browse-item"
         &&await opened.locator('.browse-item[data-identity="'+reached.identity+'"]').getAttribute("aria-current")==="true",{afterOne,reached});
       await opened.setViewportSize({width:1440,height:1000});
-      await opened.screenshot({path:output.replace(/\.json$/,"-browse-desktop.png"),fullPage:true});
+      // A removed-guard control runs this same scenario against a changed module. The saved pictures must
+      // show the page as it is, so only the unchanged run writes them.
+      const unchangedRun=note===check;
+      if(unchangedRun)await opened.screenshot({path:output.replace(/\.json$/,"-browse-desktop.png"),fullPage:true});
       const browseFits=[];
       for(const width of [1440,820,390,320]){
         await opened.setViewportSize({width,height:1000});
@@ -838,7 +865,7 @@ try {
         await opened.evaluate(()=>document.documentElement.style.fontSize="");
       }
       await opened.setViewportSize({width:390,height:1000});
-      await opened.screenshot({path:output.replace(/\.json$/,"-browse-mobile.png"),fullPage:true});
+      if(unchangedRun)await opened.screenshot({path:output.replace(/\.json$/,"-browse-mobile.png"),fullPage:true});
       await opened.setViewportSize({width:1440,height:1000});
       note("browse_fits_small_screens_and_enlarged_text",browseFits.length===8&&browseFits.every(item=>!item.overflow),
         {problems:browseFits.filter(item=>item.overflow)});
@@ -852,6 +879,54 @@ try {
         &&await opened.locator("#browse-count").innerText()==="1 of 6 items",{groups});
       note("browse_says_a_filter_hid_a_group_rather_than_calling_it_unpublished",
         groups.find(item=>item.layer==="context_intelligence")?.empty==="Nothing in this group matches your filters.");
+      note("browse_names_the_filters_among_the_reasons_when_one_is_set",
+        (await opened.locator("#browse-message").innerText()).includes(
+          "did not match the filters, this account's permissions, or a declared effect this page holds no authority for."),
+        {message:await opened.locator("#browse-message").innerText()});
+    },
+    /* Pressing "Load the catalogue" asks the service for every item. A control that still named a filter
+       would describe a request the service never received, and a full group would read as an empty one. */
+    refresh_after_filter:async (opened,note)=>{
+      await loadBrowse(opened);
+      await opened.selectOption("#browse-kind","reusable_code");await settleBrowse(opened);
+      await opened.selectOption("#browse-style","codex");await settleBrowse(opened);
+      const filtered=(await browseGroups(opened)).flatMap(item=>item.identities);
+      await loadBrowse(opened);
+      const reply=await browseList(opened),groups=await browseGroups(opened);
+      const kindValue=await opened.inputValue("#browse-kind"),styleValue=await opened.inputValue("#browse-style");
+      note("browse_refresh_shows_the_request_it_actually_sent",kindValue===""&&styleValue===""
+        &&filtered.length===1&&JSON.stringify(groups)===JSON.stringify(expectedGroups(reply.items,false))
+        &&await opened.locator("#browse-count").innerText()===reply.items.length+" items"
+        &&groups.flatMap(item=>item.identities).length===reply.items.length,
+        {kindValue,styleValue,filtered,shown:groups.flatMap(item=>item.identities)});
+      note("browse_refresh_offers_every_filter_choice_again",
+        await opened.locator("#browse-kind option").count()===5&&await opened.locator("#browse-style option").count()===3
+        &&!(await opened.locator("#browse-kind").isDisabled()),
+        {kinds:await opened.locator("#browse-kind option").allInnerTexts()});
+    },
+    /* The service decides. The request that leaves this page names a revision that is not the published
+       one, so the real service refuses it with its own short code, and the reader must be told what to do
+       about it in words rather than shown the code. The same refusal is asked for separately, over the
+       same credential, so the code the page had to translate is recorded and not assumed. */
+    stale_selection:async (opened,note)=>{
+      await loadBrowse(opened);
+      const staleDigest="0".repeat(64);
+      const direct=await opened.request.post(fixture.browse_base+"/api/v1/provisioning",
+        {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
+         data:{record_type:"service_provisioning_request/v1",operation:"manifest",identity:"context.review",expected_digest:staleDigest}});
+      const code=(await direct.json())?.error?.code||"";
+      await opened.route("**/api/v1/provisioning",async route=>{
+        const sent=route.request().postDataJSON();
+        if(sent?.operation!=="manifest")return route.continue();
+        await route.continue({postData:JSON.stringify({...sent,expected_digest:staleDigest})});});
+      await openItem(opened,"context.review");
+      const status=await browseStatus(opened);
+      note("browse_states_a_service_refusal_in_plain_words",direct.status()>=400&&code==="item_unavailable"
+        &&status==="This item is no longer available to this account. Load the catalogue again to see what is there now."
+        &&!status.includes(code)&&!/[a-z]_[a-z]/.test(status)
+        &&await opened.locator("#browse-detail dl").count()===0
+        &&await opened.locator("#browse-download").count()===0,{status,code,refused:direct.status()});
+      await opened.unroute("**/api/v1/provisioning");
     },
     tool_filter:async (opened,note)=>{
       await loadBrowse(opened);
@@ -946,6 +1021,39 @@ try {
       note("browse_names_the_reason_it_refused_a_catalogue",(await opened.locator("#browse-message").innerText()).includes("a group this page does not know"));
       await opened.unroute("**/api/v1/provisioning");
     },
+    /* The count of held-back material is read out of the reply, so its shape is checked like every other
+       field the page reads. A number where a list belongs is a record this page was not written for. */
+    withheld_shape:async (opened,note)=>{
+      await opened.route("**/api/v1/provisioning",async route=>{
+        const sent=route.request().postDataJSON();
+        if(sent?.operation!=="list")return route.continue();
+        const response=await route.fetch(),value=await response.json();
+        value.result.withheld=value.result.withheld.length;
+        await route.fulfill({response,json:value});});
+      await loadBrowse(opened);
+      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_that_counts_held_back_material_the_wrong_way","context.review");
+      await opened.unroute("**/api/v1/provisioning");
+    },
+    /* A download whose bytes are measured after the reader signs out. The service answered the connection
+       that has ended, so no file may reach the disk. The measurement is held by the check, because the
+       sign-out otherwise cancels the request before any bytes exist. */
+    held_download:async (opened,note)=>{
+      await loadBrowse(opened);await openItem(opened,"context.review");
+      await opened.evaluate(()=>window.__armDigestHold());
+      const saving=opened.waitForEvent("download",{timeout:2500}).then(()=>false,()=>true);
+      await opened.click("#browse-download");
+      await opened.waitForFunction(()=>window.__digestHeld===true,null,{timeout:8000});
+      await opened.locator('header a[data-page="login"]').click();
+      await opened.click("#disconnect");
+      await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
+      await opened.evaluate(()=>window.__releaseDigest());
+      const nothingSaved=await saving;
+      note("browse_sign_out_stops_a_download_that_finishes_afterwards",nothingSaved
+        &&await opened.locator("#browse-groups .browse-group").count()===0
+        &&await opened.locator("#browse-count").innerText()==="Sign in to browse"
+        &&await opened.locator("#browse-detail dl").count()===0,
+        {nothingSaved,message:await opened.locator("#browse-message").innerText()});
+    },
     delayed_reply:async (opened,note)=>{
       await loadBrowse(opened);await openItem(opened,"context.review");
       let release;const gate=new Promise(resolve=>{release=resolve;});let held=false;
@@ -970,8 +1078,11 @@ try {
         {message:await opened.locator("#browse-message").innerText()});
       await opened.unroute("**/api/v1/provisioning");
     }};
+  // The held measurement is installed only where a check names it, so every other browse check runs in an
+  // unchanged page served entirely by the service.
+  const browseHoldsDigest=new Set(["held_download"]);
   for(const name of Object.keys(browseScenarios)){
-    const {context:browseContext,page:browsePage}=await openBrowseWorkspace(null);
+    const {context:browseContext,page:browsePage}=await openBrowseWorkspace(null,browseHoldsDigest.has(name));
     await browseScenarios[name](browsePage,check);
     await browseContext.close();
   }
@@ -991,8 +1102,36 @@ try {
      expected:["browse_refuses_an_item_that_changed_since_the_list"]},
     {name:"accept_any_item_record_version",scenario:"wrong_item_version",find:"value.record_type !== manifestVersion",replacement:"false",
      expected:["browse_refuses_an_item_record_version_it_was_not_written_for"]},
-    {name:"keep_a_delayed_catalogue_reply_after_sign_out",scenario:"delayed_reply",find:"if (epoch !== current().generation) return;",replacement:"",
+    /* The guard this removes is the one the scenario reaches. Signing out cancels the request that is in
+       flight, so the catalogue reply arrives as a cancellation and the guard in the failure path decides
+       whether the signed-out page is written to. The matching guard on the success path of the same
+       function stays in place and has no control, because the shared request boundary already refuses a
+       reply whose connection changed before this module is given it, and no page action can reach it. */
+    {name:"keep_a_delayed_catalogue_reply_after_sign_out",scenario:"delayed_reply",
+     find:'if (epoch !== current().generation) return;\n        message("browse-message", error.name === "AbortError"',
+     replacement:'message("browse-message", error.name === "AbortError"',
      expected:["browse_sign_out_clears_a_delayed_catalogue_reply"]},
+    {name:"save_a_download_that_finished_after_sign_out",scenario:"held_download",
+     find:"if (epoch !== current().generation || result.epoch !== current().generation) return;",replacement:"",
+     expected:["browse_sign_out_stops_a_download_that_finishes_afterwards"]},
+    {name:"show_a_filter_the_service_was_not_asked_to_apply",scenario:"refresh_after_filter",
+     find:"function options(select, values, plainName, chosen) {",
+     replacement:"function options(select, values, plainName, chosen) { chosen = select.value;",
+     expected:["browse_refresh_shows_the_request_it_actually_sent"]},
+    {name:"show_a_service_refusal_as_its_code",scenario:"stale_selection",
+     find:"return named && refusals[named[1]] ? refusals[named[1]] : text;",replacement:"return text;",
+     expected:["browse_states_a_service_refusal_in_plain_words"]},
+    {name:"count_held_back_material_from_a_shape_the_page_was_not_written_for",scenario:"withheld_shape",
+     find:"|| !Array.isArray(value.withheld) ",replacement:"",
+     expected:["browse_refuses_a_catalogue_that_counts_held_back_material_the_wrong_way"]},
+    {name:"blame_the_filters_when_no_filter_was_set",scenario:"catalogue",
+     find:'" not offered here, because of this account\'s permissions or a declared effect this page holds no authority for. "',
+     replacement:'" not offered here. "',
+     expected:["browse_names_every_reason_material_is_not_offered"]},
+    {name:"leave_the_declared_effect_out_of_the_filtered_reason",scenario:"kind_filter",
+     find:'" did not match the filters, this account\'s permissions, or a declared effect this page holds no authority for. "',
+     replacement:'" did not match the filters or this account\'s permissions. "',
+     expected:["browse_names_the_filters_among_the_reasons_when_one_is_set"]},
     {name:"hide_a_group_that_holds_nothing",scenario:"catalogue",find:"if (group.outside && !held.length) continue;",replacement:"if (!held.length) continue;",
      expected:["browse_shows_the_four_groups_with_plain_names","browse_counts_and_membership_match_the_service_reply","browse_says_plainly_when_a_group_holds_nothing"]},
     {name:"ignore_the_kind_filter",scenario:"kind_filter",find:"kind ? {kinds:[kind]} : {}",replacement:"{}",
@@ -1003,7 +1142,8 @@ try {
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
     let applied=false,problem="";
     try{
-      const {context:changedContext,page:changedPage,state}=await openBrowseWorkspace({find:control.find,replacement:control.replacement});
+      const {context:changedContext,page:changedPage,state}=await openBrowseWorkspace(
+        {find:control.find,replacement:control.replacement},browseHoldsDigest.has(control.scenario));
       applied=state.applied;
       await browseScenarios[control.scenario](changedPage,note);
       await changedContext.close();
@@ -1026,5 +1166,10 @@ finally{
 }
 const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','catalogue-browser.js','architecture-story.js','architecture.css','client-recipes.json'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
 /* Version 2 of this report carries the removed-guard controls, and all_passed is true only when every check passed and every control was detected. Version 1 had neither. */
-const result={record_type:"service_workspace_browser_checks/v2",scope:"real browser and loopback service; provider fixtures only",external_provider_calls:0,checks,passed:checks.filter(x=>x.passed).length,total:checks.length,mutants,mutants_detected:mutants.filter(x=>x.detected).length,all_passed:checks.every(x=>x.passed)&&mutants.every(x=>x.detected),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
+const result={record_type:"service_workspace_browser_checks/v2",scope:"real browser and loopback service; provider fixtures only; every page asset is served by the service",external_provider_calls:0,
+  /* What the check supplied instead of the running system, named on the face of the report. Offered,
+     fetched, loaded and used are separate facts, and so is substituted. */
+  harness_substitutions:["a removed-guard control answers /assets/catalogue-browser.js with changed bytes, in memory, for that control run only",
+    "the held download checks wrap crypto.subtle.digest in the page so one measurement can be held, which puts the sign-out inside the window the guard defends"],
+  checks,passed:checks.filter(x=>x.passed).length,total:checks.length,mutants,mutants_detected:mutants.filter(x=>x.detected).length,all_passed:checks.every(x=>x.passed)&&mutants.every(x=>x.detected),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
 writeFileSync(output,JSON.stringify(result,null,2)+"\n",{flag:"wx"}); console.log(JSON.stringify({passed:result.passed,total:result.total,mutants_detected:result.mutants_detected,mutants:mutants.length,all_passed:result.all_passed,failures:checks.filter(x=>!x.passed),output})); process.exitCode=result.all_passed?0:1;

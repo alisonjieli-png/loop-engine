@@ -68,9 +68,26 @@ window.BaltorCatalogueBrowser = {
     };
     const refused = "This service answered with a catalogue record this page was not written for, so nothing is shown.";
     const refusalText = value => {
-      if (!value || value.record_type !== listVersion || !Array.isArray(value.items) || !stated(value.tenant_id)) return refused;
+      if (!value || value.record_type !== listVersion || !Array.isArray(value.items)
+          || !Array.isArray(value.withheld) || !stated(value.tenant_id)) return refused;
       const problems = [...new Set(value.items.map(itemProblem).filter(Boolean))];
       return problems.length ? refused + " The catalogue holds entries with " + problems.join(", ") + "." : "";
+    };
+    /* The service names a refusal with a short code. These are the refusals the operations on this view
+       can cause, written out in plain words. A code this page does not know is shown exactly as the
+       service sent it, because inventing a friendly sentence for an unknown refusal would tell the
+       reader something that was never checked. */
+    const refusals = {
+      selected_body_digest_mismatch:"This item changed since the list was loaded. Load the catalogue again before fetching it.",
+      item_withheld:"This item is no longer offered to this account. Load the catalogue again to see what is there now.",
+      item_unavailable:"This item is no longer available to this account. Load the catalogue again to see what is there now.",
+      body_forbidden:"This account may read the details of this item, not the file.",
+      body_reader_unavailable:"This service cannot hand out files at the moment. The details above are unchanged.",
+      meter_unavailable:"This service cannot record usage at the moment, so it did not send the file.",
+      scope_required:"This account may not do that. Ask the person who runs this service for permission."};
+    const plainly = text => {
+      const named = /^Service refused the request: ([a-z_]+)\.$/.exec(text);
+      return named && refusals[named[1]] ? refusals[named[1]] : text;
     };
     const clearDetail = text => $("browse-detail").replaceChildren(element("p", text, "caption"));
     function controls() {
@@ -96,12 +113,14 @@ window.BaltorCatalogueBrowser = {
       else if (current().connected) message("browse-message",
         "This account may not list material. Ask the person who runs this service for permission to search and list.", true);
     }
-    function options(select, values, plainName) {
-      const previous = select.value;
+    /* A control shows the request that was sent, never a request the reader only started to make. The
+       choices come from the unfiltered catalogue, so a filter can always be undone, and the selected
+       value is the one this reply was asked for. */
+    function options(select, values, plainName, chosen) {
       select.replaceChildren(element("option", select.id === "browse-kind" ? "Every kind" : "Every tool"));
       select.options[0].value = "";
       for (const value of values) { const choice = element("option", plainName(value)); choice.value = value; select.append(choice); }
-      select.value = [...select.options].some(choice => choice.value === previous) ? previous : "";
+      select.value = [...select.options].some(choice => choice.value === chosen) ? chosen : "";
     }
     function render(rows, total, filtered) {
       const groupsElement = $("browse-groups");
@@ -184,7 +203,7 @@ window.BaltorCatalogueBrowser = {
       } catch (error) {
         if (epoch !== current().generation || selected !== row.identity) return;
         showDetail(row, null, error.name === "AbortError"
-          ? "The wait for this item ended. Nothing was fetched. Select it again." : error.message);
+          ? "The wait for this item ended. Nothing was fetched. Select it again." : plainly(error.message));
       }
     }
     /* The download repeats the check the service already made: the bytes are measured here, and they
@@ -202,6 +221,9 @@ window.BaltorCatalogueBrowser = {
         if (measured !== row.digest || measured !== result.digest) {
           throw new Error("The bytes that arrived do not match the selected item. Nothing was saved.");
         }
+        /* The bytes arrived and they match, but the reader may have signed out while they were being
+           measured. Nothing is written to disk after that, because the file belongs to a connection the
+           reader has ended. */
         if (epoch !== current().generation || result.epoch !== current().generation) return;
         const objectUrl = URL.createObjectURL(new Blob([result.bytes], {type:"application/octet-stream"}));
         const link = element("a", "Download");
@@ -211,7 +233,7 @@ window.BaltorCatalogueBrowser = {
       } catch (error) {
         status.textContent = error.name === "AbortError"
           ? "The wait ended. Usage may have been recorded. Repeat this exact selection to reconcile it."
-          : error.message;
+          : plainly(error.message);
       } finally { if (epoch === current().generation) button.disabled = false; }
     }
     /* The service applies the filters, because it owns the rule about which material a request may see.
@@ -234,24 +256,28 @@ window.BaltorCatalogueBrowser = {
           message("browse-message", refusal, true);
           return;
         }
-        if (fresh) {
-          listed = value.items;
-          options($("browse-kind"), knownKinds.filter(name => listed.some(row => row.kind === name)), value => kindNames[value]);
-          // A development tool names itself. The page shows that name as it was published, never one it invented.
-          options($("browse-style"), [...new Set(listed.flatMap(row => row.styles))].filter(stated).sort(), value => value);
-          selected = ""; clearDetail("Open an item to read its details.");
-        }
+        if (fresh) { listed = value.items; selected = ""; clearDetail("Open an item to read its details."); }
+        options($("browse-kind"), knownKinds.filter(name => listed.some(row => row.kind === name)), value => kindNames[value], kind);
+        // A development tool names itself. The page shows that name as it was published, never one it invented.
+        options($("browse-style"), [...new Set(listed.flatMap(row => row.styles))].filter(stated).sort(), value => value, style);
         shown = value.items;
         if (selected && !shown.some(row => row.identity === selected)) { selected = ""; clearDetail("Open an item to read its details."); }
         render(shown, listed.length, Boolean(kind || style));
-        const withheld = Array.isArray(value.withheld) ? value.withheld.length : 0;
+        /* The service holds material back for more than one reason, and only some of them are the
+           filters. It also holds back material this account may not see, and material that declares an
+           effect such as running a command, for which this page carries no authority at all. The
+           sentence names the reasons that can apply to the request that was actually sent. */
+        const withheld = value.withheld.length;
         message("browse-message", "Showing " + count(shown.length) + " for " + value.tenant_id + ". "
-          + (withheld ? count(withheld) + " did not match the filters or this account's permissions. " : "")
+          + (withheld ? count(withheld) + (kind || style
+              ? " did not match the filters, this account's permissions, or a declared effect this page holds no authority for. "
+              : (withheld === 1 ? " is" : " are")
+                + " not offered here, because of this account's permissions or a declared effect this page holds no authority for. ") : "")
           + "This list holds descriptions only. No file was fetched.");
       } catch (error) {
         if (epoch !== current().generation) return;
         message("browse-message", error.name === "AbortError"
-          ? "The wait for the catalogue ended. Nothing was loaded. Try again." : error.message, true);
+          ? "The wait for the catalogue ended. Nothing was loaded. Try again." : plainly(error.message), true);
       } finally { if (epoch === current().generation) { active = false; controls(); } }
     }
     $("refresh-browse").addEventListener("click", () => load(true));

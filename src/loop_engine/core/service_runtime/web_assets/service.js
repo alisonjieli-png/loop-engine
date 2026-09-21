@@ -158,7 +158,7 @@
     ? window.BaltorCatalogueBrowser.create({request, element, message,
         current:() => ({connected:!!token, generation, scopes:principalScopes})})
     : null;
-  if (!catalogueBrowser) message("browse-message", "Browsing did not load on this page. Search above still works. Reload the page to try again.", true);
+  if (!catalogueBrowser) message("browse-message", "Browsing is not available on this page. Search above still works.", true);
   async function connectService(supplied, activate = false) {
     disconnect(); token = supplied; message("connection-message", "Checking access…");
     try {
