@@ -9,7 +9,7 @@ licence identifier that the item declares.
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, fields as dataclass_fields
 import hashlib
 import json
 import os
@@ -46,6 +46,13 @@ LICENSE_MISSING = "item_license_missing"
 LICENSE_UNKNOWN = "item_license_unknown"
 LICENSE_NEEDS_REVIEW = "item_license_needs_review"
 LICENSE_NOT_ACCEPTED = "item_license_not_accepted"
+#: An operator message shows at most this many characters of one manifest or
+#: host value, so a large manifest or a long host list cannot make it large.
+#: An item identity gets more room. The longest tenant or namespace identity
+#: that this service supports has 128 characters, and an identity of that
+#: length is shown in full between its two quotation marks.
+PREVIEW_CHARACTERS = 80
+IDENTITY_PREVIEW_CHARACTERS = 130
 
 
 def _license_state(license_name):
@@ -62,10 +69,15 @@ def _license_state(license_name):
     return LICENSE_NEEDS_REVIEW if marker in REVIEW_LICENSE_MARKERS else ""
 
 
-def _preview(value):
-    """Return a short printable form of a manifest value for an operator message."""
-    shown = repr(value)
-    return shown if len(shown) <= 80 else shown[:77] + "..."
+def _preview(value, limit=PREVIEW_CHARACTERS):
+    """Return a short form of a manifest or host value for an operator message.
+
+    Every character outside printable ASCII is shown by its code point, so a
+    hidden character or a letter of another script cannot pass for a name
+    that it only looks like.
+    """
+    shown = ascii(value)
+    return shown if len(shown) <= limit else shown[:limit - 3] + "..."
 
 
 @dataclass(frozen=True)
@@ -74,7 +86,12 @@ class HostLicensePolicy:
 
     Acceptance is host policy. An identifier is compared as written, so a name
     in another letter case or with added spaces is a different, unlisted name.
-    A supplied list replaces the default list; it does not extend it.
+    A supplied list replaces the default list; it does not extend it. Every
+    listed identifier is written in printable ASCII characters, so the person
+    who reviews the host file sees each character of each name that the host
+    accepts. A control or zero width character, a direction override and a
+    letter of another script are refused. An item may still declare such a
+    name; no host list can hold it, so that item is never accepted.
     """
 
     accepted_licenses: tuple[str, ...] = DEFAULT_ACCEPTED_LICENSES
@@ -86,10 +103,11 @@ class HostLicensePolicy:
                 f"this release reads the host licence policy record {LICENSE_POLICY_VERSION} only")
         names = self.accepted_licenses
         if (type(names) not in (tuple, list) or any(
-                not isinstance(name, str) or name != name.strip() or any(ord(ch) < 32 for ch in name)
+                not isinstance(name, str) or name != name.strip() or not (name.isascii() and name.isprintable())
                 or _license_state(name) for name in names) or len(set(names)) != len(names)):
             raise ServiceRuntimeError("invalid_license_policy",
-                "accepted licences are exact, distinct identifiers; a missing, unknown or review state is not a licence")
+                "accepted licences are exact, distinct identifiers written in printable ASCII characters; "
+                "a missing, unknown or review state is not a licence")
         object.__setattr__(self, "accepted_licenses", tuple(names))
 
     def refusal(self, license_name):
@@ -105,7 +123,7 @@ def host_license_policy(configuration):
     if LICENSE_POLICY_KEY not in configuration:
         return DEFAULT_LICENSE_POLICY
     settings = configuration[LICENSE_POLICY_KEY]
-    if not isinstance(settings, dict) or set(settings) != {field.name for field in fields(HostLicensePolicy)}:
+    if not isinstance(settings, dict) or set(settings) != {field.name for field in dataclass_fields(HostLicensePolicy)}:
         raise ServiceRuntimeError("unsupported_license_policy",
             "a host licence policy names its record version and its accepted licences, and nothing else")
     return HostLicensePolicy(**settings)
@@ -142,13 +160,16 @@ def load_host_manifest(path, *, license_policy=DEFAULT_LICENSE_POLICY):
         if not isinstance(row, dict) or set(row) != {"reference", "body_path", "approval_ref", "grants"}:
             raise ServiceRuntimeError("invalid_manifest_item")
         item = _item(row["reference"])
-        # Licence acceptance is decided first, so the body of a refused item is
-        # never opened and the item is never registered or granted.
+        # Licence acceptance is decided first and for every row, with or without
+        # grants, so the body of a refused item is never opened and the item is
+        # never registered, granted or offered as starter material. The message
+        # is built from short previews only, so its length has a fixed limit.
         refused = license_policy.refusal(item.license_name)
         if refused:
-            raise ServiceRuntimeError(refused, f"{refused}: item {item.identity!r} is refused before registration; "
-                f"it declares the licence {_preview(item.license_name)} "
-                f"and this host accepts {list(license_policy.accepted_licenses)}")
+            accepted = license_policy.accepted_licenses
+            raise ServiceRuntimeError(refused, f"{refused}: item {_preview(item.identity, IDENTITY_PREVIEW_CHARACTERS)} "
+                f"is refused before registration; it declares the licence {_preview(item.license_name)} "
+                f"and this host accepts {_preview(list(accepted))} (listed identifiers: {len(accepted)})")
         if item.identity in paths:
             raise ServiceRuntimeError("duplicate_item_identity")
         relative = Path(row["body_path"])
