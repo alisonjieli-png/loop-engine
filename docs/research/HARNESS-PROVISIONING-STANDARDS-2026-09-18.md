@@ -6,6 +6,13 @@ them, and inferred when this record draws a conclusion the page does not state.
 Nothing here is a statement about Loop Engine behavior; the Loop Engine section
 at the end separates what is implemented from what is proposed.
 
+Note added on September 20, 2026. The text below is unchanged. It says that
+the current Model Context Protocol version is `2026-07-28`. That is the newest
+published specification version. It is not the version that the Loop Engine
+service accepts. The service accepts exactly `2025-11-25` and refuses
+`2026-07-28`. The current fact is stated in
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment).
+
 ## Why this was read
 
 Coding harnesses have started to agree on where an instance finds its

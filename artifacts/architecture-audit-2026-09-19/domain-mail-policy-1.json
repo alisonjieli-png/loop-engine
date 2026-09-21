@@ -1,0 +1,49 @@
+{
+ "record_type": "domain_mail_policy_change/v1",
+ "observed_at": "2026-09-20T20:56:55.105338+00:00",
+ "zone": "baltor.ai",
+ "change": {
+  "operation": "create",
+  "type": "TXT",
+  "name": "_dmarc.baltor.ai",
+  "content": "v=DMARC1; p=none;",
+  "ttl": 300,
+  "reason": "The domain had no DMARC record. Major mailbox providers expect one before they reliably accept authentication mail. The policy only monitors; it does not reject or quarantine, so it cannot reduce delivery."
+ },
+ "authority": "Owner instruction of 2026-09-20 to continue the work and get everything working on the domain. Additive record; nothing was changed or deleted.",
+ "readback": {
+  "authoritative": [
+   "\"v=DMARC1; p=none;\""
+  ],
+  "public_resolver": [
+   "\"v=DMARC1; p=none;\""
+  ]
+ },
+ "sender_records_in_public_dns": {
+  "send.auth.baltor.ai MX": [
+   "10 feedback-smtp.us-east-1.amazonses.com."
+  ],
+  "send.auth.baltor.ai TXT": [
+   "\"v=spf1 include:amazonses.com ~all\""
+  ]
+ },
+ "sender_provider_state": {
+  "domain": "auth.baltor.ai",
+  "status_before_recheck": "partially_verified",
+  "verified": [
+   "signing key",
+   "tracking alias"
+  ],
+  "pending": [
+   "return path MX",
+   "return path TXT"
+  ],
+  "recheck_requested": true
+ },
+ "not_done": [
+  "No sender policy on the bare domain.",
+  "No stricter DMARC policy; move to quarantine or reject only after sending is verified and observed.",
+  "No email was sent."
+ ],
+ "rollback": "Delete the single TXT record _dmarc.baltor.ai."
+}

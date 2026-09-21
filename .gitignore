@@ -149,3 +149,6 @@ node_modules/
 /task_database/
 /task-campaign-runs/
 /stub-test/
+
+# Isolated worktrees that parallel development agents create and remove.
+/.claude/worktrees/

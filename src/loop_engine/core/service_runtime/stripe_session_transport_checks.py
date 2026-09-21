@@ -256,8 +256,18 @@ def _timeout_checks(check):
                             break
                         time.sleep(0.01)
                     held.provider.after_read = None
-                    time.sleep(0.03)
+                    # The late callback still holds the only worker slot for a
+                    # moment, and the deadline here is 100 milliseconds. A busy
+                    # or late answer is the documented signal to retry the same
+                    # request identity, so wait for the final answer instead of
+                    # assuming a fixed pause is long enough on a slow machine.
+                    # The assertions are unchanged: the answer must be the
+                    # reconciled session and the provider must see one effect.
+                    deadline = time.monotonic() + 10
                     result = client.post(BILLING_CHECKOUT_PATH, json=body)
+                    while result.status_code in (503, 504) and time.monotonic() < deadline:
+                        time.sleep(0.05)
+                        result = client.post(BILLING_CHECKOUT_PATH, json=body)
                     check("late_session_completion_is_reconciled_under_the_original_identity",
                           result.status_code == 200 and result.json()["result"]["status"] == "reconciled"
                           and len(held.provider.effects) == 1)
