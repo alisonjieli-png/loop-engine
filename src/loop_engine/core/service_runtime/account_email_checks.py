@@ -539,12 +539,18 @@ def _service_checks(check, root):
                   and identity["redirect_url"] == base + "/auth/callback")
             malformed = client.post("/api/v1/account/signup", json={"record_type": "another/v1"})
             page = client.get("/auth/confirm")
-            # Another method on the same path is not this route. It falls through to the standing
-            # answer for a route that needs a credential, so only the exact method reaches a provider.
+            # Another method on the same path is not this route, so only the exact method reaches a
+            # provider. Since September 21, 2026 the router compares the address and the method with
+            # its own table before it asks who is calling, so the answer is a missing route and not a
+            # credential problem; `an_address_the_service_does_not_serve_answers_missing_not_unauthorized`
+            # in http_checks owns that rule and this check follows it.
+            other_method = client.get("/api/v1/account/signup")
             check("a_malformed_request_is_400_another_method_reaches_no_provider_and_the_page_is_served",
                   malformed.status_code == 400 and malformed.json()["error"]["code"] == "invalid_account_signup"
                   and malformed.json()["automatic_retry"] is False and len(provider.identity_requests) == 3
-                  and client.get("/api/v1/account/signup").status_code == 401 and page.status_code == 200
+                  and other_method.status_code == 404
+                  and other_method.json()["error"]["code"] == "route_unavailable"
+                  and "www-authenticate" not in other_method.headers and page.status_code == 200
                   and page.headers["content-type"].startswith("text/html"))
     fixture = _fixture(root, "limited")
     many = _Provider()
