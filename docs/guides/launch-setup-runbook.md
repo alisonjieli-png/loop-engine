@@ -7,6 +7,11 @@ by reading it.
 
 ## Current private pilot
 
+The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section of the client and server map is the current short statement of what
+runs and where. Follow that section when this runbook differs from it. This
+section adds the detail that the owner and the operator need.
+
 The diagnostic service runs at <https://baltor-pilot.fly.dev/app>. One Fly
 Machine in `iad` has one shared processor, 2 GB of memory and a 1 GB encrypted
 persistent volume. The owner delegated the selection of reasonable limits:
@@ -32,14 +37,23 @@ The Supabase organization is connected and the isolated `baltor-pilot` project
 `qfzxmjznlwiopgvfgtsw` is healthy in `us-east-1`. Its quoted setup cost is
 zero dollars per month on the selected free profile. Runtime database,
 identity and private-storage integration remain incomplete. `app.baltor.ai`
-has a valid Fly certificate and passes 45 live website checks. Namecheap has
-accepted Cloudflare's assigned nameservers; the registry confirms them and
-Cloudflare reports the zone active. Root and www also pass 45 browser checks
-each with valid certificates. Some recursive resolvers retain older answers.
-The owner confirms no existing email or forwarding. GitHub deployment
-remains disabled until the reviewed
-release files are published together. Direct deployment used the exact
-locally tested service image; it did not commit the dirty working tree.
+has a valid Fly certificate. Namecheap has accepted Cloudflare's assigned
+nameservers; the registry confirms them and Cloudflare reports the zone
+active. Root and www also have valid certificates. With release 7, each of
+these three hostnames passed 45 hosted website checks. With release 8, each
+of the four hostnames passes 46. Some recursive resolvers retain older
+answers. The owner confirms no existing email or forwarding.
+
+Updated on September 20, 2026: releases one to seven were deployed directly
+from the exact locally tested service image, which was built from a working
+tree that was not committed. Release 8 was built by the guarded GitHub
+workflow from a committed revision and deployed by image digest. The
+deployment switch of that workflow was set to off again after the release.
+The release record
+`artifacts/architecture-audit-2026-09-19/pilot-release-8.json` holds the
+revision, the image digest and the check counts. An earlier version of this
+paragraph said that GitHub deployment remained disabled until the reviewed
+release files were published together.
 
 ## Prepared access and remaining permission gaps
 
@@ -185,8 +199,12 @@ qualification work. Creating a Supabase project does not migrate this store.
 The pilot answers on `baltor.ai`, `www.baltor.ai`, `app.baltor.ai` and
 `baltor-pilot.fly.dev`, each with a valid certificate, and the `/mcp` path
 serves clients. Canonical protocol and account redirects still use the Fly
-origin. The domain had no earlier mail records; the sender records for
-`auth.baltor.ai` are installed and a DMARC record is still to be added.
+origin. The domain had no earlier mail records. The sender records for
+`auth.baltor.ai` are installed. A DMARC record that only monitors,
+`v=DMARC1; p=none;`, was added on September 20, 2026, and a public lookup
+returns it. The bare domain still has no sender policy. Tighten the DMARC
+policy only after sending is verified. The record of that change is
+`artifacts/architecture-audit-2026-09-19/domain-mail-policy-1.json`.
 
 ## What you do and what engineering does
 
@@ -275,13 +293,22 @@ the system keyring. The secret value is not in this guide or in Git.
 `FLY_ORG` is `baltor`, and `FLY_DEPLOY_ENABLED` is `false`.
 These settings were read back from GitHub after creation.
 
-The local [manual workflow](../../.github/workflows/fly-pilot.yml) has two
+The [manual workflow](../../.github/workflows/fly-pilot.yml) has two
 operations. `verify_access` lists permitted Fly resources without creating
 anything. `deploy` requires explicit settings, a matching application
 confirmation and successful source checks for the exact current `main`
-revision. The workflow must be committed and published with its reviewed
-supporting files before GitHub can offer its Run workflow button. Existing
-uncommitted project work is not published by setting an environment secret.
+revision.
+
+Updated on September 20, 2026: the workflow is committed and published, and
+it built and deployed release 8. Its first `deploy` run stopped at a guard
+before anything was built, because the guard compared the application name
+with a padded line of a listing and could never match. Production did not
+change. The guard now reads the structured listing, and the next `deploy` run
+succeeded. The release record
+`artifacts/architecture-audit-2026-09-19/pilot-release-8.json` keeps all three
+runs. `FLY_DEPLOY_ENABLED` was set to `false` again after the release. An
+earlier version of this paragraph said that the workflow still had to be
+committed and published.
 
 The [service image](../../Dockerfile.service) installs the serving dependencies
 and starts the website and Model Context Protocol service as user `65534`.
@@ -292,7 +319,7 @@ that exact image by digest. It does not rebuild after the checks.
 | Pilot environment setting | Required value or current state |
 |---|---|
 | `FLY_ORG` | `baltor`, configured |
-| `FLY_DEPLOY_ENABLED` | `false`, configured; keep disabled until qualification |
+| `FLY_DEPLOY_ENABLED` | `false`, set again after release 8. Follow the release stage of the [working cycle](../context/TAKEOVER-CHECKPOINT-2026-09-20.md#working-cycle) before switching it on. |
 | `FLY_API_TOKEN` | Protected environment secret, configured |
 | `FLY_APP` | Existing application `baltor-pilot`; independently verify the workflow variable before enabling deployment |
 | `FLY_PRIMARY_REGION` | Selected region `iad`; independently verify the workflow variable |
@@ -396,7 +423,7 @@ differ; the approved process must have a documented way to resolve it.
 
 | Name or value | Place | Use |
 |---|---|---|
-| `LOOP_ENGINE_ACCESS_TOKEN` | Customer's local client secret environment | Scoped access to the intelligence service |
+| `BALTOR_SERVICE_TOKEN` | Customer's local client secret environment | Scoped access to the intelligence service. This is the variable that the Connect page of the website offers. An earlier version of this table named it `LOOP_ENGINE_ACCESS_TOKEN`. |
 | `TYPESAFE_API_KEY` | Local decision-service process or approved credential host | Optional Jev calls |
 | `OLLAMA_API_KEY`, `OPENROUTER_API_KEY`, `MISTRAL_API_KEY` | The selected local provider adapter | Only the provider the user chooses |
 | `STRIPE_TEST_SECRET_KEY` | Hosted service's secret environment | Approved Stripe test operations |
