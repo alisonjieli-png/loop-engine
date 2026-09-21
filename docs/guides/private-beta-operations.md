@@ -55,11 +55,15 @@ These statements describe the source at the revision named above.
 - [`tools/invite_beta_user.py`](../../tools/invite_beta_user.py) prepares an
   invited account and shows one recovery link. It sends at most two requests
   and repeats nothing.
-- The running release has browser sign-in switched off. It accepts
-  operator-issued keys only. The
+- Browser sign-in and personal client keys are switched on for the hosted
+  pilot. A separate operator change added the two blocks to the host
+  configuration on September 21, 2026 without building a new image. The
+  applied record is
+  [`pilot-configuration-signin-1.json`](../../artifacts/architecture-audit-2026-09-19/pilot-configuration-signin-1.json).
+  That record, not this guide, states what runs. It also records that no
+  person has signed in through this path yet. The
   [takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md) names
-  the running release and its image digest. Read that record rather than a
-  release number repeated here.
+  the running release and its image digest.
 - The website cannot complete the invited person's journey yet. Its callback
   view removes the returned session from the address bar and shows the
   sign-in form. It has no form for a new password. A link that is opened
@@ -78,7 +82,9 @@ Evidence level of the invitation command: local contract only.
 |---|---|
 | Checks | The checks in [`tools/test_invite_beta_user.py`](../../tools/test_invite_beta_user.py) pass. They use an injected transport and the HTTP library's in-memory transport. No socket is opened. |
 | Removed guards | The 42 removals listed in `RemovedGuardControls` in the checks file were made in memory, one at a time. Each removal makes its named check fail. Three of them remove a guard for the link request only. A guard that is not in that list is not proven in this way. |
-| Real provider | Not contacted. The request and answer shapes come from the provider's published source code and documentation for user creation, link generation and error answers, read on September 20, 2026. |
+| Real provider | Not contacted by this command. The request and answer shapes come from the provider's published source code and documentation for user creation, link generation and error answers, read on September 20, 2026. |
+| Answer shape, observed separately | A separate probe called `POST /auth/v1/admin/generate_link` on September 21, 2026 and recorded the answer in [`account-email-path-probe-1.json`](../../artifacts/architecture-audit-2026-09-19/account-email-path-probe-1.json): status 200, one flat object, with `action_link`, `hashed_token`, `email_otp`, `verification_type`, `id`, `email` and `redirect_to` at the top level and no `properties` object. This command reads exactly those fields at the top level, so that part of its reading is observed rather than inferred. |
+| Answer fields still unobserved | The probe did not record the user fields that this command also checks: `email_confirmed_at`, `app_metadata`, `aud`, `role`, `banned_until`, `deleted_at` and `is_anonymous`. If the provider leaves one of them out, the command withholds the link and reports `user_is_not_confirmed`, `existing_user_was_not_created_by_the_invitation_command` or `user_cannot_sign_in_at_the_provider`. It never issues a link it could not check. |
 | First real use | It is also the first provider qualification of this command. Use an address that you control, and compare the result with the provider's user list. |
 
 ## Planned behavior
@@ -112,19 +118,32 @@ work outside this guide.
 
 ## Enable browser sign-in for prepared accounts
 
+A separate operator change already applied these blocks to the hosted pilot on
+September 21, 2026, on the same image digest. Read
+[`pilot-configuration-signin-1.json`](../../artifacts/architecture-audit-2026-09-19/pilot-configuration-signin-1.json)
+for the exact applied record, which also sets the allowed scopes and the key
+limits for each account. Follow the steps below for another release, after a
+rollback, or for a second service.
+
 Do this once for a release, through the release procedure in the
 [takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md#working-cycle).
 Use release 8 or a later release that was built from a committed revision.
 Do not add these blocks to release 7. Release 7 does not know the rule that
 binds a personal key to the subject that created it.
 
+The `namespace_prefix` in the applied record is `customer`. The prefix is the
+first part of every tenant identity that a first sign-in creates. Do not
+change it on a service where accounts already exist. A different prefix makes
+a different tenant for the same person, and the earlier tenant keeps the
+material and the usage records.
+
 ### Before you start
 
 | Need | Who | State |
 |---|---|---|
-| New sign-ups switched off in the identity provider's settings | Owner, in the provider's dashboard | Not read back. The current grant cannot read or change authentication settings. |
+| New sign-ups switched off in the identity provider's settings | Owner, in the provider's dashboard | Still open. A probe on September 21, 2026 read the provider's public settings and recorded `signup_disabled` as `false` and automatic confirmation as `false`. See [Keep registration closed](#keep-registration-closed). |
 | The callback address on the provider's redirect allow list | Owner, in the provider's dashboard | The owner confirmed `https://baltor-pilot.fly.dev/auth/callback`. No `baltor.ai` address is confirmed. |
-| The publishable key as a deployment secret named `SUPABASE_PUBLISHABLE_KEY` | Operator, through the platform's secret settings | The platform's secret list is empty today. |
+| The publishable key as a deployment secret named `SUPABASE_PUBLISHABLE_KEY` | Operator, through the platform's secret settings | Staged for the hosted pilot on September 21, 2026. Its value never appeared in a command line or a report. |
 | A copy of the current host configuration for rollback | Operator | Make it before the change. |
 
 The publishable key identifies the application to the identity provider. It
@@ -187,23 +206,26 @@ Registration is closed only when
 └── Operator: users are created only with the invitation command
 ```
 
-The publishable key is public by design. If the identity provider still
-accepts new sign-ups, a visitor can ask the provider directly for an account.
-Once the provider counts that address as confirmed, a first sign-in activates
-a tenant. Two provider settings decide whether that can happen, and the
-current grant can read neither of them:
+The second part does not hold today. A probe on September 21, 2026 read the
+provider's public settings and recorded them in
+[`account-email-path-probe-1.json`](../../artifacts/architecture-audit-2026-09-19/account-email-path-probe-1.json):
+`signup_disabled` is `false` and automatic confirmation is `false`. New
+sign-ups are open at the provider, and the provider requires email
+confirmation before it counts an address as confirmed.
 
-- If the provider does not require email confirmation, a new sign-up is
-  confirmed at once.
-- If it does, the visitor needs the confirmation email. The provider's
-  documentation says that its built-in sender delivers only to addresses of
-  the project's team, and only two messages each hour. A connected sender
-  for authentication email removes that limit.
+The publishable key is public by design, so a visitor can ask the provider
+directly for an account. Only the confirmation step stands between that
+request and a confirmed address, and a confirmed address activates a tenant
+on its first sign-in. What limits this today is the provider's built-in
+sender, which its documentation says delivers only to addresses of the
+project's team and only two messages each hour. A connected sender for
+authentication email removes that limit, so this gap must be closed before
+that work lands.
 
-Until the owner confirms that new sign-ups are switched off at the provider,
-treat registration as open to anyone who can get a confirmed address there.
-Ask for that setting before browser sign-in is switched on. User creation
-through the administration interface keeps working when sign-ups are off.
+Treat registration as open to anyone who can get a confirmed address at the
+provider. Ask the owner to switch new sign-ups off. User creation through the
+administration interface keeps working when sign-ups are off, so the
+invitation command is unaffected.
 
 ### Apply, check and roll back
 
@@ -449,7 +471,12 @@ with an address that you control before you invite anyone.
    `false`, `invitation_mark_present` to be `true` and a different link. If
    the second run is refused for a missing mark, the provider did not keep
    or did not return the mark. Stop and report it.
-5. Record what you observed beside the two reports.
+5. A refusal on the first run with `user_is_not_confirmed` or
+   `user_cannot_sign_in_at_the_provider`, for an address that has no user
+   yet, means that the link answer did not carry the user field that the
+   guard reads. The command is right to withhold the link. Record the
+   failure and its detail, and report it, rather than removing the guard.
+6. Record what you observed beside the two reports.
 
 ## What the invited person does
 
