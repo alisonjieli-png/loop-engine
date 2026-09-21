@@ -178,11 +178,14 @@ def _licence_policy(check, root):
           DEFAULT_ACCEPTED_LICENSES == ("MIT",) and HostLicensePolicy().accepted_licenses == ("MIT",))
     # An item without any grant still reaches people. The starter catalogue of
     # the browser sign-in gives such an item to every new personal account, so
-    # the licence decision cannot depend on the grants of a row.
+    # the licence decision cannot depend on the grants of a row. The same holds
+    # under a host list that accepts nothing.
+    ungranted = manifest(row("skill.ungranted", "MIT", granted=False))
     check("item_without_any_grant_is_still_refused_without_an_accepted_licence",
           all(refused(loaded(manifest(row("skill.ungranted", value, granted=False))), code, "skill.ungranted")
               for value, code in (("", "item_license_missing"), ("Apache-2.0", "item_license_not_accepted")))
-          and loaded(manifest(row("skill.ungranted", "MIT", granted=False))) == ("", "", ["skill.ungranted"]))
+          and loaded(ungranted) == ("", "", ["skill.ungranted"])
+          and refused(loaded(ungranted, license_policy=HostLicensePolicy(())), "item_license_not_accepted", "skill.ungranted"))
     def starter_host(license_name):
         return host(manifest(row("skill.starter", license_name, granted=False)), browser_identity={
             "project_url": origin, "publishable_key_ref": "fixture:publishable", "namespace_prefix": "starters",
@@ -265,7 +268,9 @@ def _licence_policy(check, root):
     # An operator message stays short, whatever a manifest or a host list holds,
     # and it still names the refused item. An identity of 128 characters, the
     # longest tenant or namespace identity that the service supports, is shown
-    # in full. A longer one is shown from its start.
+    # in full. A longer one is shown from its start. The limit of 480 characters
+    # is written here and is not read from the loader, so a loader that raises
+    # its own preview limits fails this check.
     crowded = HostLicensePolicy(tuple(f"Licence-{number}" for number in range(5_000)))
     identities = ("skill.refused", "skill." + "n" * 122, "skill." + "x" * 5_000)
     messages = [loaded(manifest(row(identity, "L" * 5_000)), license_policy=crowded) for identity in identities]

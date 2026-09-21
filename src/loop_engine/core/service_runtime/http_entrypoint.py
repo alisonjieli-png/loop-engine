@@ -58,8 +58,9 @@ IDENTITY_PREVIEW_CHARACTERS = 130
 def _license_state(license_name):
     """Name the refusal state of a value that is not a licence name, or return empty text.
 
-    A state is recognised in any letter case, because recognising more states
-    can only refuse more. It never makes a name acceptable.
+    A state is recognised in any letter case, with spaces around it, and with a
+    hyphen or a space in place of the underscore, because recognising more
+    states can only refuse more. It never makes a name acceptable.
     """
     if not isinstance(license_name, str) or not license_name.strip():
         return LICENSE_MISSING
@@ -72,8 +73,8 @@ def _license_state(license_name):
 def _preview(value, limit=PREVIEW_CHARACTERS):
     """Return a short form of a manifest or host value for an operator message.
 
-    Every character outside printable ASCII is shown by its code point, so a
-    hidden character or a letter of another script cannot pass for a name
+    Every character outside printable ASCII is shown as an escape sequence, so
+    a hidden character or a letter of another script cannot pass for a name
     that it only looks like.
     """
     shown = ascii(value)
