@@ -3712,8 +3712,11 @@ entries:
       endpoint for one that already exists. It configures the provider, not
       this engine. Reviewed on 2026-09-21. Only this exact finding is allowed;
       a changed or added value has a different finding identity and stays
-      blocking.
-    classification: DEPLOYMENT_CONFIGURATION
+      blocking. The audit classifies the address as a strategy or provider
+      binding, and this entry repeats that classification rather than a
+      reviewer's own name for it, because the gate refuses an entry whose
+      classification does not match the finding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-21
     expires_on: 2027-09-21
   - finding_id: hardcoding.1d994154c4a8d36b01e00304

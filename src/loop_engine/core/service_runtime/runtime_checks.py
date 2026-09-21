@@ -22,10 +22,32 @@ from ..provisioning_server import (ProvisioningError, ProvisioningGrant, Provisi
     ProvisioningQualification, ProvisioningQualificationResolver)
 from .provisioning import DurableProvisioningBinding
 from .records import (BILLING_MANAGE_SCOPE, DEFAULT_SCOPES, BillingCustomerBindingRequest,
+                       BillingCustomerEffectSpec, EFFECT_CONFIRMED, EFFECT_NOT_ATTEMPTED, EFFECT_UNKNOWN,
                        ServiceRuntimeConfig, ServiceRuntimeError, SubjectBindingRequest,
                        TenantKeyIssue, TenantRegistration, SubjectTenantRegistration)
-from .runtime import ServiceRuntime
+from .runtime import CUSTOMER_EFFECT, ServiceRuntime
 from .storage import ServiceCatalogBinding
+
+BILLING_TENANT, BILLING_ACCOUNT, METADATA_KEY = "billing", "acct_fixture", "loop_engine_tenant_id"
+
+
+def billing_fixture(folder):
+    """One account that may manage billing, with no provider customer yet."""
+    runtime, _app, _key, _other, clock, _reads = fixture(folder)
+    runtime.register_tenant(TenantRegistration(BILLING_TENANT, "billing-space",
+                                               (*DEFAULT_SCOPES, BILLING_MANAGE_SCOPE)))
+    key = runtime.issue_key(TenantKeyIssue(BILLING_TENANT, "explicit billing"))
+    spec = BillingCustomerEffectSpec(BILLING_TENANT, BILLING_ACCOUNT, METADATA_KEY)
+    return runtime, key, runtime.authenticate_key(key.key), spec, clock
+
+
+def reserve(runtime, principal, spec, *, lease_seconds=10, reconciliation_seconds=100):
+    return runtime.begin_billing_customer(principal, spec, lease_seconds=lease_seconds,
+                                          reconciliation_seconds=reconciliation_seconds)
+
+
+def binding(customer_id, tenant_id=BILLING_TENANT, account_id=BILLING_ACCOUNT):
+    return BillingCustomerBindingRequest(tenant_id, customer_id, account_id)
 
 
 def fixture(folder):
@@ -148,6 +170,127 @@ def run_checks():
         return (refused_default and BILLING_MANAGE_SCOPE not in DEFAULT_SCOPES
                 and mapping["provider_account_id"] == "acct_b" and mapping["provider_customer_id"] == "cus_b")
     check("billing_customer_resolution_requires_explicit_non_default_scope", billing_scope)
+
+    def customer_effect_identity(folder):
+        runtime, _key, principal, spec, clock = billing_fixture(folder)
+        first = reserve(runtime, principal, spec)
+        running = refused(lambda: reserve(runtime, principal, spec), "billing_customer_creation_in_progress")
+        runtime.finish_billing_customer(first, attempted=True, diagnostic_code="fixture_lost_answer")
+        second = reserve(runtime, principal, spec)
+        reopened = ServiceRuntime(runtime.config, clock=lambda: clock[0])
+        with reopened._catalog.store() as store:
+            stored = reopened._catalog.rows(store, CUSTOMER_EFFECT, BILLING_TENANT)
+        return (running and second.record_id == first.record_id and second.attempt_number == 2
+                and second.idempotency_key == first.idempotency_key and second.idempotency_cycles == 0
+                and len(stored) == 1 and stored[0]["attributes"]["tenant_id"] == BILLING_TENANT
+                and stored[0]["payload"]["diagnostic_code"] == "fixture_lost_answer")
+    check("one_account_keeps_one_durable_customer_creation_identity_across_attempts", customer_effect_identity)
+
+    def customer_effect_window(folder):
+        runtime, _key, principal, spec, clock = billing_fixture(folder)
+        first = reserve(runtime, principal, spec)
+        runtime.finish_billing_customer(first, attempted=True, diagnostic_code="fixture_lost_answer")
+        clock[0] += 101
+        later = reserve(runtime, principal, spec)
+        return (later.record_id == first.record_id and later.idempotency_cycles == 1
+                and later.idempotency_key != first.idempotency_key
+                and refused(lambda: runtime.bind_billing_customer(binding("cus_stale"), reservation=first),
+                            "billing_customer_reservation_changed"))
+    check("an_exhausted_reconciliation_window_takes_a_new_provider_idempotency_key", customer_effect_window)
+
+    def customer_effect_allowance(folder):
+        runtime, _key, principal, spec, _clock = billing_fixture(folder)
+        return (refused(lambda: reserve(runtime, principal, spec, lease_seconds=100, reconciliation_seconds=100),
+                        "invalid_billing_customer_effect_allowance")
+                and refused(lambda: reserve(runtime, principal, spec, reconciliation_seconds=24 * 3600),
+                            "invalid_billing_customer_effect_allowance")
+                and refused(lambda: runtime.begin_billing_customer(principal, "not a spec", lease_seconds=10,
+                            reconciliation_seconds=100), "invalid_billing_customer_effect"))
+    check("customer_creation_refuses_an_allowance_beyond_the_provider_key_retention", customer_effect_allowance)
+
+    def customer_effect_scope(folder):
+        runtime, key, principal, spec, _clock = billing_fixture(folder)
+        narrow = runtime.issue_key(TenantKeyIssue(BILLING_TENANT, "metadata only", scopes=DEFAULT_SCOPES))
+        other_account = runtime.authenticate_key(key.key)
+        return (BILLING_MANAGE_SCOPE not in DEFAULT_SCOPES
+                and refused(lambda: reserve(runtime, runtime.authenticate_key(narrow.key), spec), "scope_required")
+                and refused(lambda: reserve(runtime, other_account, replace(spec, tenant_id="tenant-a")),
+                            "scope_required")
+                and refused(lambda: runtime.authorize_billing_customer_dispatch(
+                    runtime.authenticate_key(narrow.key), reserve(runtime, principal, spec)), "scope_required"))
+    check("customer_creation_requires_the_explicit_billing_scope_for_its_own_account", customer_effect_scope)
+
+    def customer_reservation_forgery(folder):
+        runtime, _key, principal, spec, clock = billing_fixture(folder)
+        reservation = reserve(runtime, principal, spec)
+        separate = ServiceRuntime(runtime.config, clock=lambda: clock[0])
+        other_spec = replace(spec, tenant_id="tenant-a")
+        return (refused(lambda: runtime.bind_billing_customer(binding("cus_one"),
+                    reservation=replace(reservation, idempotency_key="le-customer-forged")),
+                    "unissued_billing_customer_reservation")
+                and refused(lambda: runtime.bind_billing_customer(binding("cus_one"),
+                    reservation=replace(reservation, authority_guards=())),
+                    "unissued_billing_customer_reservation")
+                and refused(lambda: separate.bind_billing_customer(binding("cus_one"), reservation=reservation),
+                            "unissued_billing_customer_reservation")
+                and refused(lambda: runtime.bind_billing_customer(binding("cus_one"),
+                    reservation=replace(reservation, spec=other_spec)), "invalid_billing_customer_reservation")
+                and refused(lambda: runtime.billing_customer_for(principal), "billing_customer_not_bound"))
+    check("a_customer_binding_cannot_be_committed_with_a_forged_or_borrowed_reservation", customer_reservation_forgery)
+
+    def customer_binding_is_final(folder):
+        runtime, _key, principal, spec, _clock = billing_fixture(folder)
+        reservation = reserve(runtime, principal, spec)
+        runtime.bind_billing_customer(binding("cus_one"), reservation=reservation)
+        with runtime._catalog.store() as store:
+            effect = runtime._catalog.rows(store, CUSTOMER_EFFECT, BILLING_TENANT)[0]["payload"]
+        return (effect["status"] == EFFECT_CONFIRMED and effect["provider_customer_id"] == "cus_one"
+                and refused(lambda: runtime.bind_billing_customer(binding("cus_two")),
+                            "billing_customer_already_bound")
+                and refused(lambda: reserve(runtime, principal, spec), "billing_customer_already_bound")
+                and runtime.billing_customer_for(principal)["provider_customer_id"] == "cus_one")
+    check("a_bound_account_refuses_a_second_customer_and_a_further_creation", customer_binding_is_final)
+
+    def customer_authority_changed(folder):
+        runtime, key, principal, spec, _clock = billing_fixture(folder)
+        reservation = reserve(runtime, principal, spec)
+        runtime.revoke_key(BILLING_TENANT, key.key_id)
+        return (refused(lambda: runtime.authorize_billing_customer_dispatch(principal, reservation), "unauthorized")
+                and refused(lambda: runtime.bind_billing_customer(binding("cus_one"), reservation=reservation),
+                            "billing_customer_authority_changed")
+                and refused(lambda: runtime.billing_customer_for(principal), "unauthorized"))
+    check("authority_removed_during_a_reserved_creation_prevents_the_binding", customer_authority_changed)
+
+    def customer_effect_unknown_commit(folder):
+        from unittest.mock import patch
+        from .records import ServiceCommitUnknown
+        runtime, _key, principal, spec, _clock = billing_fixture(folder)
+        with patch.object(ServiceCatalogBinding, "commit", staticmethod(lambda *args: (_ for _ in ()).throw(ServiceCommitUnknown()))):
+            blocked = refused(lambda: reserve(runtime, principal, spec), "commit_unknown")
+        with runtime._catalog.store() as store:
+            stored = runtime._catalog.rows(store, CUSTOMER_EFFECT, BILLING_TENANT)
+        return blocked and not stored
+    check("an_unknown_reservation_commit_is_not_a_reserved_creation", customer_effect_unknown_commit)
+
+    def customer_effect_outcomes(folder):
+        runtime, _key, principal, spec, _clock = billing_fixture(folder)
+        first = reserve(runtime, principal, spec)
+        not_attempted = runtime.finish_billing_customer(first, attempted=False, diagnostic_code="not_dispatched")
+        second = reserve(runtime, principal, spec)
+        unknown = runtime.finish_billing_customer(second, attempted=True, diagnostic_code="provider_commit_unknown")
+        return (not_attempted["status"] == EFFECT_NOT_ATTEMPTED and unknown["status"] == EFFECT_UNKNOWN
+                and not_attempted["effect_ref"] == unknown["effect_ref"]
+                and refused(lambda: runtime.finish_billing_customer(second, attempted="yes"),
+                            "invalid_effect_outcome"))
+    check("an_attempted_and_a_not_attempted_customer_creation_are_separate_outcomes", customer_effect_outcomes)
+
+    def billing_effect_vocabulary(folder):
+        from . import billing_effects
+        from . import records as service_records
+        return all(getattr(billing_effects, name) == getattr(service_records, name) for name in (
+            "EFFECT_PENDING", "EFFECT_CONFIRMED", "EFFECT_UNKNOWN", "EFFECT_NOT_ATTEMPTED",
+            "PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS"))
+    check("the_session_and_customer_effects_share_one_status_vocabulary", billing_effect_vocabulary)
 
     def host_authority(folder):
         path = Path(folder) / "absent.sqlite"
