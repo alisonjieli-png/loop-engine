@@ -67,6 +67,50 @@ def _web_checks(check, root):
                   len(linked) >= 2
                   and any(_re.findall(r'src="(/[^"#?]*)"', page))
                   and any(_re.findall(r'href="(/[^"#?]*)"', page)))
+            # An address the service does not serve is a missing page, not a
+            # credential problem. The router authenticated first until
+            # September 21, 2026, so every unknown address answered 401
+            # unauthorized: a mistyped address, a stale bookmark and a client
+            # calling the wrong path all sent the reader looking for a
+            # credential fault that did not exist.
+            unknown_page = httpx.get(base + "/no-such-page", trust_env=False)
+            unknown_api = httpx.post(base + "/api/v1/no-such-route", json={}, trust_env=False)
+            wrong_method = httpx.get(base + "/api/v1/retrieval", trust_env=False)
+            check("an_address_the_service_does_not_serve_answers_missing_not_unauthorized",
+                  unknown_page.status_code == unknown_api.status_code == wrong_method.status_code == 404
+                  and unknown_api.json()["error"]["code"] == "route_unavailable"
+                  and "www-authenticate" not in unknown_page.headers)
+            # A reader who arrives in a browser needs a sentence and a way
+            # back, not a record shape.
+            browser = httpx.get(base + "/no-such-page", trust_env=False,
+                                headers={"Accept": "text/html,application/xhtml+xml,*/*;q=0.8"})
+            check("a_missing_address_tells_a_reader_what_happened_and_where_to_go",
+                  browser.status_code == 404
+                  and browser.headers["content-type"].startswith("text/html")
+                  and 'href="/"' in browser.text and 'href="/docs"' in browser.text
+                  and "route_unavailable" not in browser.text
+                  and "frame-ancestors 'none'" in browser.headers["content-security-policy"])
+            # The guard above must not be satisfiable by answering 404
+            # everywhere: an address the service does serve still asks who is
+            # calling, and a public page still loads.
+            check("an_address_the_service_serves_still_asks_who_is_calling",
+                  httpx.get(base + "/api/v1/session", trust_env=False).status_code == 401
+                  and httpx.get(base + "/app", trust_env=False).status_code == 200)
+            # The table consulted before authentication and the branches that
+            # answer must name the same addresses. A route added to one and
+            # not the other is either unreachable or unauthenticated, and
+            # neither shows up in any other check.
+            import inspect as _inspect
+            from . import http as _http
+            source = _inspect.getsource(_http.ServiceHttpApplication._web_route)
+            answered = set(_re.findall(r'path == "(/[^"]+)"', source))
+            for group in _re.findall(r'path in \(([^)]*)\)', source):
+                answered.update(_re.findall(r'"(/[^"]+)"', group))
+            for name, value in vars(_http).items():
+                if isinstance(value, str) and value.startswith("/api/") and name in source:
+                    answered.add(value)
+            check("the_route_table_names_every_address_the_router_answers",
+                  len(answered) >= 10 and answered == set(_http.API_ROUTES))
             notices = httpx.get(base + "/assets/third-party-notices.txt", trust_env=False)
             check("packaged_browser_library_is_served_with_its_licence_terms",
                   notices.status_code == 200 and "MIT License" in notices.text and "Supabase" in notices.text
@@ -87,6 +131,48 @@ def _web_checks(check, root):
             check("missing_and_wrong_credentials_refuse_without_secret_echo",
                   missing.status_code == wrong.status_code == 401
                   and "WRONG_FIXTURE_TOKEN" not in wrong.text and not fixture.reads)
+            # A refusal used to carry a code and nothing else, so a customer
+            # who mistyped a token read "unauthorized" and had to guess what
+            # to do. Every refusal now states what happened and what to do
+            # next, whatever produced it, and neither sentence repeats
+            # anything from the request.
+            refusals = [
+                httpx.get(base + "/api/v1/session", trust_env=False),
+                client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION, "query": ""}),
+                client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION,
+                                                       "query": "alpha", "mode": "telepathy"}),
+                client.post("/api/v1/provisioning", json={"record_type": "service_provisioning_request/v0",
+                                                          "operation": "list"}),
+                client.post("/api/v1/provisioning", json=provisioning_request("list", surprise="FIXTURE_ECHO_PROBE")),
+                client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION,
+                                                       "query": "alpha", "FIXTURE_ECHO_PROBE": 1}),
+                client.post("/api/v1/provisioning", content=b"not json",
+                            headers={"Content-Type": "application/json"}),
+                client.post("/api/v1/provisioning", json=[1, 2, 3]),
+                client.post("/api/v1/provisioning", content=b"{}", headers={"Content-Type": "text/plain"}),
+                client.post("/api/v1/provisioning", json=provisioning_request("read", identity="skill.beta",
+                                                                             request_id="fixture-refusal-1")),
+                httpx.post(base + "/api/v1/no-such-route", json={}, trust_env=False),
+            ]
+            errors = [answer.json()["error"] for answer in refusals]
+            check("every_refusal_states_what_happened_and_what_to_do_next",
+                  len(errors) == 11 and all(answer.status_code >= 400 for answer in refusals)
+                  and all(len(error.get("message", "").split()) >= 5
+                          and len(error.get("next_action", "").split()) >= 5
+                          and error["message"].endswith(".") and error["next_action"].endswith(".")
+                          and error["code"].replace("_", " ") not in error["message"].lower()
+                          for error in errors)
+                  and len({error["code"] for error in errors}) >= 7)
+            check("a_refusal_never_repeats_the_caller_s_own_text_back_to_them",
+                  not any("FIXTURE_ECHO_PROBE" in answer.text or "telepathy" in answer.text
+                          or "skill.beta" in answer.text for answer in refusals))
+            # The guard above must not be satisfiable by one sentence used for
+            # everything: a wrong credential and a malformed search are
+            # different problems and need different next actions.
+            unauthorized = next(error for error in errors if error["code"] == "unauthorized")
+            check("different_refusals_carry_different_next_actions",
+                  len({error.get("next_action", "") for error in errors}) >= 5
+                  and "token" in unauthorized.get("next_action", "").lower())
             listed = client.post("/api/v1/provisioning", json=provisioning_request()).json()["result"]
             search = client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION,
                 "query": "alpha", "mode": "hybrid"}).json()["result"]
@@ -448,6 +534,9 @@ def self_test():
     from .browser_identity_checks import run_checks as identity_account_checks
     with tempfile.TemporaryDirectory(prefix="service-browser-identity-") as directory:
         identity_account_checks(check, Path(directory))
+    from .promotion_checks import run_http_checks as promotion_transport_checks
+    with tempfile.TemporaryDirectory(prefix="service-promotions-http-") as directory:
+        promotion_transport_checks(check, Path(directory))
     from .account_email_checks import run_checks as account_email_checks
     def account_check(name, passed):
         tests.append({"test": name, "passed": bool(passed),

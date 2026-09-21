@@ -33,7 +33,20 @@ same. It does not create another runtime type.
   authenticated principal.
 - Every JSON answer of an `/api/v1/` route is wrapped as `service_http_result/v1` with `operation`
   and `result`. Every refusal is `service_http_error/v1` with `error.code`,
-  `effect_commitment` and `automatic_retry: false` (`_error_record`).
+  `error.message`, `error.next_action`, `effect_commitment` and
+  `automatic_retry: false` (`_error_record`).
+- `error.code` is the exact machine name and does not change. `error.message`
+  says what happened and `error.next_action` says what to do next, both in
+  plain English, for the person or the agent that has to act. The wording is
+  chosen from the code and the status alone in
+  [refusals.py](../../src/loop_engine/core/service_runtime/refusals.py), so no
+  part of a request can be reflected back inside a refusal. A code with no
+  wording of its own falls back to wording chosen by the HTTP status, so every
+  refusal carries both sentences.
+- An address this service does not serve is `404 route_unavailable`, decided
+  before authentication, so a wrong address is never reported as a credential
+  fault. A browser asking for HTML gets a page with that sentence and a link
+  back instead of the record.
 - A downloaded body is returned as bytes with the headers
   `X-Loop-Engine-Record-Type: service_download/v1` and `X-Content-SHA256`.
 - Every response carries `Cache-Control: no-store` and

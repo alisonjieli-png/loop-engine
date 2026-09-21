@@ -24,6 +24,7 @@ from .http_auth import (
     EXTERNAL_JWT_AUTHENTICATION,
 )
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
+from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 
 RESULT_VERSION = "service_http_result/v1"
@@ -39,6 +40,10 @@ DISCOVER_OPERATION, LIST_OPERATION, MANIFEST_OPERATION, READ_OPERATION = OPERATI
 BILLING_PLANS_PATH = "/api/v1/billing/plans"
 BILLING_CHECKOUT_PATH = "/api/v1/billing/checkout"
 BILLING_PORTAL_PATH = "/api/v1/billing/portal"
+#: The one address added for promotion codes. An account posts a code to it and
+#: receives the entitlement the code declares. There is no address that reads a
+#: code back, because the service stores a digest and never the code itself.
+PROMOTION_REDEMPTION_PATH = "/api/v1/account/promotion"
 HTML_MEDIA_TYPE = "text/html"
 WEB_ASSETS = {
     "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
@@ -61,6 +66,50 @@ WEB_ASSETS = {
     # The licence terms of the packaged browser library travel with it.
     "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
 }
+# Every address the interface router answers, with the methods it answers for
+# it. The router reads this before it asks who is calling, so that an address
+# the service does not serve is a missing page rather than a credential
+# problem. `/mcp` is answered earlier, by the protocol transport.
+#
+# A check compares this table with the branches in `_web_route`, because an
+# address named in one and not the other is either unreachable or
+# unauthenticated and neither is visible from anywhere else.
+API_ROUTES = {
+    "/.well-known/oauth-protected-resource": ("GET",),
+    "/.well-known/oauth-protected-resource/mcp": ("GET",),
+    "/api/v1/health": ("GET",),
+    "/api/v1/capabilities": ("GET",),
+    "/api/v1/billing/webhook": ("POST",),
+    "/api/v1/account/identity": ("GET",),
+    "/api/v1/account/activate": ("POST",),
+    "/api/v1/account/logout": ("POST",),
+    "/api/v1/account/access": ("GET", "POST"),
+    "/api/v1/admin/access": ("GET", "POST"),
+    "/api/v1/session": ("GET",),
+    "/api/v1/usage": ("GET",),
+    "/api/v1/provisioning": ("POST",),
+    "/api/v1/download": ("POST",),
+    "/api/v1/retrieval": ("POST",),
+    BILLING_PLANS_PATH: ("GET",),
+    BILLING_CHECKOUT_PATH: ("POST",),
+    BILLING_PORTAL_PATH: ("POST",),
+}
+MISSING_ADDRESS_PAGE = """<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{name} | Address not found</title><link rel="stylesheet" href="/assets/service.css"></head>
+<body><main id="main" class="reading" style="padding:4rem 4vw">
+<p class="eyebrow">Address not found</p>
+<h1>This service has no page at that address.</h1>
+<p class="lede">The address in your browser is not one {name} serves. It may have been
+mistyped, or it may be an older address that has since changed. Nothing is wrong with
+your account or your key.</p>
+<div class="actions"><a class="button primary" href="/">Go to the home page</a>
+<a class="button quiet" href="/docs">Open the setup guide</a></div>
+<p class="caption">If you followed a link from {name} to get here, the link is wrong and
+we would like to know. Tell the person who runs this service which page you came from.</p>
+</main></body></html>
+"""
 
 
 class ServiceHttpError(ValueError):
@@ -178,14 +227,36 @@ def _parse_json(body):
     return value
 
 
-def _error_record(code, details=None):
-    result = {"record_type": ERROR_VERSION, "error": {"code": code},
+def _error_record(code, status, details=None):
+    # The code stays exactly what it was, because a client matches on it. The
+    # two sentences beside it are for whoever has to act: a person reading the
+    # website, and an agent that has to choose a next step without one. They
+    # are chosen from the code and the status alone, so no part of the request
+    # can be reflected back in a refusal.
+    message, next_action = _refusal_guidance(code, status)
+    result = {"record_type": ERROR_VERSION,
+              "error": {"code": code, "message": message, "next_action": next_action},
               "effect_commitment": "not_asserted", "automatic_retry": False}
     if details is not None:
         result["error"]["details"] = details
         if details.get("record_type") == "billing_event_result/v1" and details.get("committed") is True and details.get("status") == "pending":
             result["effect_commitment"] = "durable_pending"
     return result
+
+
+def _status_classes_in_use():
+    """Every HTTP status this transport can put on a refusal.
+
+    Read from this module's own source rather than kept as a second list, so
+    that a status added to a raise or to `_status` has no wording only if the
+    wording check says so.
+    """
+    import inspect
+    import re
+    source = inspect.getsource(inspect.getmodule(_status_classes_in_use))
+    raised = re.findall(r"ServiceHttpError\([^)\n]*?,\s*(\d{3})", source)
+    chosen = re.findall(r"return\s+(\d{3})(?:,|\s|$)", source) + re.findall(r"\s(\d{3})\s+if\s", source)
+    return {int(value) for value in [*raised, *chosen, "400"]}
 
 
 def http_provisioning_schema(operation):
@@ -216,8 +287,19 @@ def _status(error):
         return 403, code
     if code in ("access_request_identity_conflict", "access_token_limit_reached", "concurrent_update",
                 "access_token_history_limit_reached", "access_token_already_revoked",
+                "promotion_request_identity_conflict", "promotion_code_already_redeemed_by_this_account",
+                "paid_subscription_active",
                 "session_request_identity_conflict", "session_selection_changed", "session_policy_changed"):
         return 409, code
+    # Every refusal that depends on the offered code itself answers with one
+    # status and one word, so a guess cannot tell an unknown code from a real
+    # one that has run out.
+    if code in ("promotion_code_unusable", "promotion_redemption_forbidden"):
+        return 403, code
+    if code == "promotion_redemption_requires_an_account":
+        return 401, code
+    if code == "promotion_redemption_unavailable":
+        return 503, code
     if code in ("item_unavailable", "managed_access_token_not_found"):
         return 404, code
     if code in ("meter_commit_unknown", "commit_unknown", "session_operation_in_progress",
@@ -240,6 +322,7 @@ class ServiceHttpApplication:
     access_administration: object | None = field(default=None, repr=False)
     browser_identity: object | None = field(default=None, repr=False)
     client_access: object | None = field(default=None, repr=False)
+    promotions: object | None = field(default=None, repr=False)
     account_email: object | None = field(default=None, repr=False)
 
     def __post_init__(self):
@@ -276,7 +359,9 @@ class ServiceHttpApplication:
                             "browser_identity_available": self.browser_identity is not None,
                             "access_profile": "operator_provisioned",
                             "access_administration_available": self.access_administration is not None,
-                            "client_access_available": self.client_access is not None},
+                            "client_access_available": self.client_access is not None,
+                            "promotion_redemption_available": self.promotions is not None,
+                            "promotion_redemption_endpoint": PROMOTION_REDEMPTION_PATH},
                 "protocol": {"transport": "streamable_http", "versions": [PROTOCOL_VERSION],
                              "sdk_version": version("mcp"), "session_state": "stateless",
                              "oauth_resource_metadata": EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes,
@@ -481,6 +566,11 @@ class ServiceHttpApplication:
         request = ServiceAccessRequest.from_customer_dict(fields, current.principal.tenant_id)
         return self.client_access.apply(current.principal, request, session=session)
 
+    def _redeem_promotion(self, context, request):
+        """Revalidate the signed-in account, then redeem for that account only."""
+        current = self.authenticator.revalidate(context)
+        return self.promotions.redeem(current.principal, request)
+
     def _validate_search(self, payload, *, versioned=True):
         if not isinstance(payload, dict):
             raise ServiceHttpError("object_required")
@@ -556,10 +646,10 @@ class ServiceHttpApplication:
                     raise ServiceHttpError("response_limit_exceeded", 413)
                 return response
             except ValidationError:
-                code = "invalid_request"
+                status, code = 400, "invalid_request"
             except Exception as error:
-                _status_code, code = _status(error)
-            refused = _error_record(code)
+                status, code = _status(error)
+            refused = _error_record(code, status)
             return types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(refused).decode())],
                                         structuredContent=refused, isError=True)
         return sdk
@@ -634,7 +724,20 @@ class ServiceHttpApplication:
             except Exception as error:
                 status, code = _status(error)
                 details, added = (error.details, error.headers) if isinstance(error, ServiceHttpError) else (None, None)
-                response = JSONResponse(_error_record(code, details), status_code=status, headers={**cors, **(added or {})})
+                # A reader who arrived in a browser needs a sentence and a way
+                # back. A record shape is the right answer to a program and the
+                # wrong answer to a person. The page names no address and
+                # repeats nothing from the request, so nothing can be reflected
+                # into it.
+                if status == 404 and "text/html" in request.headers.get("accept", ""):
+                    from html import escape
+                    response = Response(
+                        MISSING_ADDRESS_PAGE.format(name=escape(config.display_name)).encode("utf-8"),
+                        status_code=404, media_type=HTML_MEDIA_TYPE,
+                        headers={**cors, **self._page_headers()})
+                else:
+                    response = JSONResponse(_error_record(code, status, details), status_code=status,
+                                            headers={**cors, **(added or {})})
                 if status == 401:
                     response.headers["WWW-Authenticate"] = ("Bearer resource_metadata=\""
                         + config.public_base_url + "/.well-known/oauth-protected-resource/mcp\""
@@ -667,6 +770,14 @@ class ServiceHttpApplication:
             raise ServiceHttpError("request_body_deadline", 408) from None
         return b"".join(chunks)
 
+    def _page_headers(self):
+        """The headers every served page carries, refusals included."""
+        identity_origin = " " + self.browser_identity.configuration.project_url if self.browser_identity else ""
+        return {"Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'"
+                + identity_origin + "; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
+                "Referrer-Policy": "no-referrer", "X-Frame-Options": "DENY",
+                "Permissions-Policy": "camera=(), microphone=(), geolocation=()"}
+
     async def _web_route(self, request, Response, JSONResponse):
         path, method, status_code = request.url.path, request.method, 200
         if method == "GET" and path in WEB_ASSETS:
@@ -676,11 +787,14 @@ class ServiceHttpApplication:
             body = files("loop_engine").joinpath("core", "service_runtime", "web_assets", name).read_bytes()
             if media_type == HTML_MEDIA_TYPE:
                 body = body.replace(b"{{SERVICE_NAME}}", escape(self.configuration.display_name, quote=True).encode("utf-8"))
-            identity_origin = " " + self.browser_identity.configuration.project_url if self.browser_identity else ""
-            return Response(body, media_type=media_type, headers={
-                "Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'" + identity_origin + "; base-uri 'none'; frame-ancestors 'none'; form-action 'none'",
-                "Referrer-Policy": "no-referrer", "X-Frame-Options": "DENY",
-                "Permissions-Policy": "camera=(), microphone=(), geolocation=()"})
+            return Response(body, media_type=media_type, headers=self._page_headers())
+        # Decide whether this service serves the address before asking who is
+        # calling. An unknown address that is authenticated first answers 401
+        # unauthorized, which sends the reader looking for a credential fault
+        # that does not exist, and hides a wrong address from the person who
+        # published it.
+        if method not in API_ROUTES.get(path, ()):
+            raise ServiceHttpError("route_unavailable", 404)
         if path in ("/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp") and method == "GET":
             if EXTERNAL_JWT_AUTHENTICATION not in self.authentication.modes:
                 raise ServiceHttpError("external_authorization_not_configured", 404)
@@ -755,6 +869,17 @@ class ServiceHttpApplication:
                 fields = _parse_json(await self._body(request)) if method == "POST" else None
                 output = await self._work(lambda: invoke_http_service_as_loop("client_access",
                     lambda: self._client_access(context, fields)))
+            elif path == PROMOTION_REDEMPTION_PATH and method == "POST":
+                from .promotions import PromotionRedemptionRequest
+                if self.promotions is None:
+                    raise ServiceHttpError("promotion_redemption_unavailable", 503)
+                # Guessing a code is a refused attempt from one address, so the
+                # existing failed-attempt limiter counts it and refuses the
+                # address once it is over its allowance.
+                async with self._limited(request):
+                    payload = PromotionRedemptionRequest.from_dict(_parse_json(await self._body(request)))
+                    output = await self._work(lambda: invoke_http_service_as_loop("promotion_redemption",
+                        lambda: self._redeem_promotion(context, payload)))
             elif path == "/api/v1/admin/access" and method in ("GET", "POST"):
                 from .access import ServiceAccessRequest
                 self._require_scope(context, ACCESS_MANAGE_SCOPE)
