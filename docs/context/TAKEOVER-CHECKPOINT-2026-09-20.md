@@ -18,7 +18,8 @@ Observed by read-only queries and by an isolated rerun of the check suites.
 
 | Subject | Result |
 |---|---|
-| Running release | Fly release 7, image `sha256:7b45d327faba2e65829230e8ee4f91109207183b4575cdab08c545aae6af55e8`, one Machine in `iad`, one encrypted 1 GB volume with daily snapshots kept for five days. No later release was started. |
+| Running release at takeover | Fly release 7, image `sha256:7b45d327faba2e65829230e8ee4f91109207183b4575cdab08c545aae6af55e8`, one Machine in `iad`, one encrypted 1 GB volume with daily snapshots kept for five days. |
+| Running release now | Release 8, image `sha256:a2d31be073025fcc4f6f0ad86ef743eeffbd36d8d65671855d7298260862ce0a`, built by the guarded workflow from revision `e63f614` after its continuous integration run passed. See the [release record](../../artifacts/architecture-audit-2026-09-19/pilot-release-8.json). |
 | Live capabilities | Operator-issued keys only. Browser sign-in, registration, billing webhook, checkout and portal are off. Search is text search over granted items. The catalogue holds one diagnostic record. |
 | Hostnames | `baltor.ai`, `www.baltor.ai`, `app.baltor.ai` and `baltor-pilot.fly.dev` serve the same release with valid certificates. Cloudflare answers the zone and records are not proxied. |
 | Providers | Resend sender `auth.baltor.ai` is partially verified. The Supabase project has no tables, migrations or buckets. Nothing has been created in the Stripe sandbox. The GitHub `pilot` environment exists with deployment switched off. |
@@ -59,7 +60,7 @@ These are not repaired yet. Each belongs to an existing roadmap step.
 | The catalogue has one diagnostic record. The packaged records are mostly one sentence long and use internal vocabulary. | S-6.10 and D-17 |
 | The serving path does not refuse an item without a known licence. | D-17 |
 | There is no request limit for each address. | D-13 and D-17 |
-| The domain has no DMARC record and the bare domain has no sender policy. | D-02 |
+| A monitoring-only DMARC record was added on September 20 ([record](../../artifacts/architecture-audit-2026-09-19/domain-mail-policy-1.json)). The bare domain still has no sender policy, the DMARC policy should be tightened only after sending is verified, and two of the sender's four records were still pending at the mail provider. | D-02 |
 | A model-judged guardrail rule at provisioning time refuses with no path to resolve it. | S-6.2 |
 | Derived training rows are kept only inside the outcome document. | S-6.3 |
 | A subscription event removes paid access until the provider's current state is read again, so a short provider outage during a renewal interrupts a paying customer. This is a product decision to make before billing opens. | D-04 |
@@ -179,10 +180,9 @@ needing the owner's confirmation in the current conversation.
 
 ## Next steps in order
 
-1. Commit the reviewed work to `main` and confirm that continuous integration
-   passes for that revision.
-2. Build release 8 from that revision, run the container checks and the
-   rollback drill, deploy, and run the hosted checks on all four hostnames.
+1. Done: the reviewed work is on `main` and continuous integration passes.
+2. Done: release 8 was built from that revision by the guarded workflow and
+   passes the hosted checks on all four hostnames.
 3. Switch on browser sign-in for prepared accounts and add the invitation
    command. Keep registration closed.
 4. Compile the starter catalogue as candidates and ask the owner to approve
