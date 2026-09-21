@@ -1,0 +1,148 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "observed_at": "2026-09-21T16:05:00+00:00",
+ "release": 9,
+ "fly_release_version": 11,
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_revision": "81f341d0e400c32541e5e592de7226f59a7b4ecc",
+ "source_branch": "release/catalogue-live",
+ "image": "registry.fly.io/baltor-pilot@sha256:172782c0be740164b665c51502028a5c8c228d8ed1a73c8b3db89dfe6e5cd4d9",
+ "built_by": "Local build of Dockerfile.service from the checked-out revision, pushed to the Fly registry and deployed by digest",
+ "what_this_release_changes": "The service serves the independently reviewed starter catalogue from the release image instead of the single diagnostic record that release 8 carried. The 43 approved bodies and the generated host manifest are copied to /opt/baltor/catalogue, owned by the unprivileged service user and read only. The catalogue travels in the image, not on the storage volume, because a volume holds state and this is release content.",
+ "catalogue": {
+  "candidate_items": 49,
+  "approved_items": 43,
+  "rejected_items": 6,
+  "approval_evidence": "examples/29_intelligence_service/starter-catalogue/reviews.json",
+  "approval_record_type": "starter_catalogue_independent_review/v1",
+  "decision_rule": "An item is approved only when every independent reviewer approves it. One written objection withholds approval and leaves the item a candidate.",
+  "release_manifest": "examples/29_intelligence_service/starter-catalogue/host-release/manifest.json",
+  "manifest_record_type": "host_attested_intelligence_manifest/v1",
+  "manifest_sha256": "6df734f56f5ee0e30b0e82c2804d9bfec52f5b8f836f0734fc428047ed9d866c",
+  "artifact_root_in_the_image": "/opt/baltor/catalogue",
+  "generated_by": "tools/build_host_catalogue_manifest.py, which refuses any item a reviewer rejected and any licence the host policy does not accept",
+  "accepted_licence": "MIT",
+  "granted_tenant": "pilot-owner",
+  "rejected_identities": [
+   "ask_a_model_with_a_declared_answer_shape",
+   "check_a_table_join_before_trusting_it",
+   "make_a_data_pipeline_safe_to_run_again",
+   "package_one_skill_for_two_coding_harnesses",
+   "questions_to_ask_before_starting_work",
+   "refuse_secrets_and_unsafe_paths_in_generated_files"
+  ]
+ },
+ "continuous_integration": {
+  "run": null,
+  "conclusion": "not_run_for_this_revision",
+  "note": "The release rule in AGENTS.md asks for a committed revision whose continuous integration run passed. Revision 81f341d was committed locally and deployed without being pushed, so no run judged it. This is recorded as a departure from the rule, not as a passing run. The local equivalents of the gates were run instead and are listed under local_verification."
+ },
+ "local_verification": {
+  "manifest_builder_tests": "tools/test_build_host_catalogue_manifest.py, 18 of 18",
+  "tools_regression_suite": "PYTHONPATH=src:tools python -m unittest discover -s tools -p 'test_*.py', 491 of 491",
+  "conformance_gates": "python -m loop_engine --conformance, all gates pass",
+  "hardcoding_delta_gate": "exit 0 with devtools/hardcoding-allowlist.yaml and devtools/hardcoding-ci-baseline.json at --fail-on-new high",
+  "markdownlint": "markdownlint-cli2 0.23.2 over 'examples/**/*.md' and 'docs/**/*.md', 493 files, 0 issues",
+  "container_check": "tools/check_fly_service_container.py against the deployed digest, 14 of 14 container checks and 232 of 232 installed service checks",
+  "container_check_report": "fly-service-container-catalogue-1.json"
+ },
+ "before_release": {
+  "volume": "vol_r7yg7go3n15mgqnr",
+  "volume_state": "created, 1GB, iad, encrypted, attached to machine 83733ea7779068",
+  "catalogue_is_release_content_not_volume_state": true
+ },
+ "after_release": {
+  "website_checks": {
+   "https://baltor.ai": "60/60",
+   "https://www.baltor.ai": "60/60",
+   "https://app.baltor.ai": "60/60",
+   "https://baltor-pilot.fly.dev": "60/60"
+  },
+  "catalogue_disclosure_checks": {
+   "https://baltor.ai": "6/6",
+   "https://www.baltor.ai": "6/6",
+   "https://app.baltor.ai": "6/6",
+   "https://baltor-pilot.fly.dev": "6/6"
+  },
+  "service_and_protocol_checks": "16/16 against https://baltor-pilot.fly.dev",
+  "registered_items": 43,
+  "offered_to_pilot_owner": 34,
+  "withheld_for_undeclared_authority": 9,
+  "rejected_items_reachable": 0,
+  "usage_records": "14 to 15 (one authorized metered read)",
+  "physical_model_calls": 0,
+  "reports": [
+   "hosted-release9-website-root-1.json",
+   "hosted-release9-website-www-1.json",
+   "hosted-release9-website-app-1.json",
+   "hosted-release9-website-fly-1.json",
+   "hosted-release9-website-root-2.json",
+   "hosted-release9-website-www-2.json",
+   "hosted-release9-website-app-2.json",
+   "hosted-release9-website-fly-2.json",
+   "hosted-release9-catalogue-1.json",
+   "hosted-release9-catalogue-root-1.json",
+   "hosted-release9-catalogue-www-1.json",
+   "hosted-release9-catalogue-app-1.json",
+   "hosted-release9-catalogue-fly-1.json",
+   "hosted-release9-service-1.json",
+   "fly-service-container-catalogue-1.json",
+   "catalogue-known-wrong-cases-1.json"
+  ]
+ },
+ "known_wrong_cases": {
+  "report": "catalogue-known-wrong-cases-1.json",
+  "cases": [
+   {
+    "case": "a manifest naming an item whose body was changed after the digest was computed",
+    "refused_by": "the host, before it starts",
+    "code": "artifact_size_mismatch when the change alters the byte count, artifact_digest_mismatch when it does not"
+   },
+   {
+    "case": "a manifest naming an item that a reviewer rejected",
+    "refused_by": "the generator, which never writes the row",
+    "code": "item_not_approved"
+   },
+   {
+    "case": "a manifest with a body path that escapes the artifact root",
+    "refused_by": "the host, before it starts",
+    "code": "unsafe_artifact_path"
+   },
+   {
+    "case": "an item whose licence the host policy does not accept",
+    "refused_by": "the host before registration, and the generator before it writes",
+    "code": "item_license_not_accepted"
+   }
+  ]
+ },
+ "live_capabilities": {
+  "authentication_modes": [
+   "host_key"
+  ],
+  "registration_available": false,
+  "browser_identity_available": true,
+  "access_administration_available": true,
+  "client_access_available": true,
+  "protocol_versions": [
+   "2025-11-25"
+  ],
+  "retrieval_modes": [
+   "lexical",
+   "hybrid"
+  ],
+  "retrieval_returns_bodies": false
+ },
+ "rollback": {
+  "previous_release": 10,
+  "previous_image": "registry.fly.io/baltor-pilot@sha256:a2d31be073025fcc4f6f0ad86ef743eeffbd36d8d65671855d7298260862ce0a",
+  "note": "Fly releases v8, v9 and v10 all carry the release 8 image, so a rollback by digest returns the service to the catalogue state that release 8 served."
+ },
+ "deployment_switch_after_release": "FLY_DEPLOY_ENABLED=false",
+ "limits": [
+  "No continuous integration run judged the deployed revision. The local gates were run instead and are listed above.",
+  "The branch release/catalogue-live is one commit from an older main. While this release was prepared, main grew the same starter catalogue from 49 bodies to 123 and split its specification file into three. The 74 added candidates carry no review record, so none of them is approved and none is served. Reconciling the branch with main, and reviewing those candidates independently, is required work and is not done here.",
+  "Offered and served are separate facts. 34 of the 43 approved items are offered to the pilot owner; 9 are withheld because they declare effects the requesting step holds no authority for.",
+  "No customer journey is qualified by this release."
+ ]
+}

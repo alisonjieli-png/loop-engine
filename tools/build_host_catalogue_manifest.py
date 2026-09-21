@@ -47,6 +47,14 @@ APPROVED = "approved"
 REJECTED = "rejected"
 GRANT_BODY_CHOICES = {"bodies": True, "metadata": False}
 
+#: The three states a run reports, and the two that mean the release folder on
+#: disk is the one the review record and the bodies produce. A drift reports
+#: DIFFERS and fails, so a check run cannot pass while the folder is stale.
+WRITTEN = "written"
+UNCHANGED = "unchanged"
+DIFFERS = "differs"
+ACCEPTED_STATES = (WRITTEN, UNCHANGED)
+
 
 class ManifestBuildError(ValueError):
     """A stable refusal code and an operator message, with no item body."""
@@ -249,9 +257,9 @@ def main(argv=None):
         generated = {MANIFEST_FILE: _rendered(manifest), **bodies}
         if options.write:
             write(output, manifest, bodies)
-            state = "written"
+            state = WRITTEN
         else:
-            state = "unchanged" if _existing(output) == generated else "differs"
+            state = UNCHANGED if _existing(output) == generated else DIFFERS
     except ManifestBuildError as error:
         print(json.dumps({"record_type": "host_catalogue_manifest_build/v1", "refused": True,
                           "code": error.code, "message": str(error)}, ensure_ascii=False))
@@ -261,7 +269,7 @@ def main(argv=None):
                       "tenants_granted": sorted(grant["tenant_id"] for grant in grants),
                       "output": str(output), "bytes": sum(len(value) for value in generated.values())},
                      ensure_ascii=False))
-    return 0 if state in ("written", "unchanged") else 1
+    return 0 if state in ACCEPTED_STATES else 1
 
 
 if __name__ == "__main__":

@@ -1,0 +1,169 @@
+{
+  "record_type": "hosted_catalogue_disclosure_check/v1",
+  "checked_at": "2026-09-21T15:39:26.563643+00:00",
+  "origin": "https://www.baltor.ai",
+  "account": "pilot-owner",
+  "credential_host": "baltor-pilot.fly.dev",
+  "queries": [
+    "find duplicate customer records",
+    "clean a messy text column",
+    "check a result before handing it over"
+  ],
+  "approved_items": 43,
+  "rejected_items": 6,
+  "offered_items": 34,
+  "withheld_for_undeclared_authority": 9,
+  "rejected_identities": [
+    "ask_a_model_with_a_declared_answer_shape",
+    "check_a_table_join_before_trusting_it",
+    "make_a_data_pipeline_safe_to_run_again",
+    "package_one_skill_for_two_coding_harnesses",
+    "questions_to_ask_before_starting_work",
+    "refuse_secrets_and_unsafe_paths_in_generated_files"
+  ],
+  "refusals": {
+    "ask_a_model_with_a_declared_answer_shape": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "check_a_table_join_before_trusting_it": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "make_a_data_pipeline_safe_to_run_again": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "package_one_skill_for_two_coding_harnesses": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "questions_to_ask_before_starting_work": {
+      "status": 404,
+      "code": "item_unavailable"
+    },
+    "refuse_secrets_and_unsafe_paths_in_generated_files": {
+      "status": 404,
+      "code": "item_unavailable"
+    }
+  },
+  "search_hits": {
+    "find duplicate customer records": [
+      "decide_whether_a_step_needs_a_model",
+      "detect_malformed_values_by_dominant_pattern",
+      "find_duplicate_records_with_blocking_keys",
+      "look_for_structure_the_model_missed",
+      "profile_text_column_before_cleaning",
+      "propose_a_dedupe_without_deleting_rows",
+      "score_duplicate_pairs_by_weakest_signal"
+    ],
+    "clean a messy text column": [
+      "apply_hold_or_escalate_each_correction",
+      "audit_data_splits_for_errors_and_leakage",
+      "carry_competing_readings_of_a_request",
+      "check_that_a_result_is_stable_and_generalizes",
+      "choose_metrics_by_task_type_and_industry",
+      "choose_one_next_action",
+      "choose_review_perspectives",
+      "decide_whether_a_step_needs_a_model",
+      "deliver_the_best_available_result_when_blocked",
+      "detect_malformed_values_by_dominant_pattern",
+      "diagnose_a_stall_and_change_strategy",
+      "escalate_uncertain_values_with_candidates",
+      "forecast_an_action_then_compare",
+      "freeze_the_success_metric_before_measuring",
+      "hand_over_a_result_its_consumer_can_use",
+      "look_for_structure_the_model_missed",
+      "normalize_and_recover_email_addresses",
+      "normalize_phone_numbers",
+      "normalize_website_addresses",
+      "normalize_whitespace_and_unicode_text",
+      "orient_on_a_task_and_write_its_contracts",
+      "plan_and_split_work_with_explicit_joins",
+      "profile_text_column_before_cleaning",
+      "propose_a_dedupe_without_deleting_rows",
+      "read_the_train_validation_gap",
+      "resolve_missing_information",
+      "restore_capitalisation_of_names",
+      "review_an_accepted_solution_adversarially",
+      "score_duplicate_pairs_by_weakest_signal",
+      "split_address_lines_into_components"
+    ],
+    "check a result before handing it over": [
+      "apply_hold_or_escalate_each_correction",
+      "audit_data_splits_for_errors_and_leakage",
+      "canonicalize_company_legal_suffixes",
+      "carry_competing_readings_of_a_request",
+      "check_that_a_result_is_stable_and_generalizes",
+      "choose_metrics_by_task_type_and_industry",
+      "choose_one_next_action",
+      "choose_review_perspectives",
+      "decide_whether_a_step_needs_a_model",
+      "deliver_the_best_available_result_when_blocked",
+      "detect_malformed_values_by_dominant_pattern",
+      "diagnose_a_stall_and_change_strategy",
+      "escalate_uncertain_values_with_candidates",
+      "forecast_an_action_then_compare",
+      "freeze_the_success_metric_before_measuring",
+      "hand_over_a_result_its_consumer_can_use",
+      "look_for_structure_the_model_missed",
+      "normalize_phone_numbers",
+      "normalize_website_addresses",
+      "normalize_whitespace_and_unicode_text",
+      "orient_on_a_task_and_write_its_contracts",
+      "plan_and_split_work_with_explicit_joins",
+      "profile_text_column_before_cleaning",
+      "propose_a_dedupe_without_deleting_rows",
+      "read_the_train_validation_gap",
+      "resolve_missing_information",
+      "restore_capitalisation_of_names",
+      "review_an_accepted_solution_adversarially",
+      "score_duplicate_pairs_by_weakest_signal",
+      "split_address_lines_into_components"
+    ]
+  },
+  "checker_sha256": "2e287027cb55c06f6f2f167e9e9bdcc6f0dfba1aeb9039d7ec1f66d307fafd59",
+  "review_record": "examples/29_intelligence_service/starter-catalogue/reviews.json",
+  "release_manifest": "examples/29_intelligence_service/starter-catalogue/host-release/manifest.json",
+  "checks": [
+    {
+      "name": "the_release_manifest_carries_exactly_the_approved_items",
+      "passed": true,
+      "detail": "43 packaged, 43 approved"
+    },
+    {
+      "name": "the_service_registered_exactly_the_approved_items",
+      "passed": true,
+      "detail": "34 offered, 9 withheld for undeclared authority"
+    },
+    {
+      "name": "no_rejected_item_is_registered",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "every_search_returns_approved_items_and_loads_no_body",
+      "passed": true,
+      "detail": "32 distinct items over 3 queries"
+    },
+    {
+      "name": "no_search_returns_a_rejected_item",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "every_rejected_item_is_refused_by_direct_address",
+      "passed": true,
+      "detail": "[\"item_unavailable\"]"
+    }
+  ],
+  "passed": 6,
+  "executed": 6,
+  "planned_checks": 6,
+  "all_passed": true,
+  "http_calls": 10,
+  "body_reads": 0,
+  "usage_records_added": 0,
+  "physical_model_calls": 0,
+  "credential_printed": false
+}
