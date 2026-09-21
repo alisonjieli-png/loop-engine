@@ -31,6 +31,10 @@ ERROR_VERSION = "service_http_error/v1"
 PROVISIONING_REQUEST_VERSION = "service_provisioning_request/v1"
 RETRIEVAL_REQUEST_VERSION = "service_retrieval_request/v1"
 HTTP_CONFIGURATION_RECORD_TYPE = "service_http_configuration/v1"
+#: The account email boundary this release serves. An installed adapter states
+#: the version it speaks, and an adapter that speaks another one is refused
+#: before the application serves either public account route.
+ACCOUNT_EMAIL_PROTOCOL = "account_email/v1"
 DISCOVER_OPERATION, LIST_OPERATION, MANIFEST_OPERATION, READ_OPERATION = OPERATIONS
 BILLING_PLANS_PATH = "/api/v1/billing/plans"
 BILLING_CHECKOUT_PATH = "/api/v1/billing/checkout"
@@ -44,7 +48,7 @@ WEB_ASSETS = {
     "/connect": ("index.html", HTML_MEDIA_TYPE),
     "/examples": ("index.html", HTML_MEDIA_TYPE),
     "/security": ("index.html", HTML_MEDIA_TYPE),
-    "/auth/callback": ("index.html", HTML_MEDIA_TYPE),
+    "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
     "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
@@ -101,8 +105,7 @@ class ServiceHttpConfiguration:
         if urlsplit(base).path not in ("", "/"):
             raise ValueError("public service base URL must be an origin")
         hosts, origins = tuple(self.allowed_hosts), tuple(self.allowed_origins)
-        if (not hosts or any(not isinstance(host, str) or not host or "*" in host or "/" in host
-                             or any(ch.isspace() for ch in host) for host in hosts)):
+        if not hosts or any(not isinstance(host, str) or not host or "*" in host or "/" in host or any(ch.isspace() for ch in host) for host in hosts):
             raise ValueError("exact nonempty Host values are required")
         if urlsplit(base).netloc not in hosts:
             raise ValueError("the public origin must be an allowed Host")
@@ -125,6 +128,11 @@ class ServiceHttpConfiguration:
         # The declared public service origin owns the packaged browser client.
         # Other origins still require an exact host configuration entry.
         object.__setattr__(self, "allowed_origins", tuple(dict.fromkeys((base.rstrip("/"), *origins))))
+
+
+def speaks_the_account_email_boundary(adapter):
+    """True when an installed account email adapter declares the boundary this release serves."""
+    return getattr(adapter, "protocol_version", None) == ACCOUNT_EMAIL_PROTOCOL
 
 
 def invoke_http_service_as_loop(operation, function):
@@ -176,8 +184,7 @@ def _error_record(code, details=None):
               "effect_commitment": "not_asserted", "automatic_retry": False}
     if details is not None:
         result["error"]["details"] = details
-        if (details.get("record_type") == "billing_event_result/v1"
-                and details.get("committed") is True and details.get("status") == "pending"):
+        if details.get("record_type") == "billing_event_result/v1" and details.get("committed") is True and details.get("status") == "pending":
             result["effect_commitment"] = "durable_pending"
     return result
 
@@ -195,36 +202,29 @@ def _status(error):
     code = getattr(error, "code", "operation_failed")
     if isinstance(error, ServiceHttpError):
         return error.status, code
-    # Closed account creation is a state of the service, not a bad request.
+    # Closed account creation is a state of the service, not a bad request. The identity codes stay ahead
+    # of the authentication answer: the identity adapter raises them as an authentication failure, and an
+    # unreachable provider is a service state, not a wrong password.
     if code in ("identity_provider_unavailable", "identity_key_set_unavailable",
                 "account_registration_unavailable"):
         return 503, code
-    if isinstance(error, HttpAuthenticationError) or code in (
-            "unauthorized", "key_expired", "key_revoked", "tenant_disabled", "subject_unbound"):
+    if isinstance(error, HttpAuthenticationError) or code in ("unauthorized", "key_expired", "key_revoked",
+            "tenant_disabled", "subject_unbound", "session_authorization_expired"):
         return 403 if code == "insufficient_scope" else 401, code
-    if code in ("item_unavailable",):
-        return 404, code
-    if code in ("body_forbidden", "scope_denied", "entitlement_required", "forbidden"):
-        return 403, code
-    if code in ("scope_required", "disclosure_grant_changed"):
-        return 403, code
-    if code in ("access_administration_forbidden", "access_target_forbidden", "scope_escalation_refused",
-                "access_writes_not_authorized", "browser_session_required"):
+    if code in ("body_forbidden", "scope_denied", "entitlement_required", "forbidden", "scope_required",
+                "disclosure_grant_changed", "access_administration_forbidden", "access_target_forbidden",
+                "scope_escalation_refused", "access_writes_not_authorized", "browser_session_required"):
         return 403, code
     if code in ("access_request_identity_conflict", "access_token_limit_reached", "concurrent_update",
-                "access_token_history_limit_reached", "access_token_already_revoked"):
+                "access_token_history_limit_reached", "access_token_already_revoked",
+                "session_request_identity_conflict", "session_selection_changed", "session_policy_changed"):
         return 409, code
-    if code == "managed_access_token_not_found":
+    if code in ("item_unavailable", "managed_access_token_not_found"):
         return 404, code
-    if code in ("meter_commit_unknown", "commit_unknown"):
+    if code in ("meter_commit_unknown", "commit_unknown", "session_operation_in_progress",
+                "session_reconciliation_window_exhausted", "session_network_authority_required",
+                "billing_customer_not_bound", "session_record_unavailable"):
         return 503, code
-    if code in ("session_request_identity_conflict", "session_selection_changed", "session_policy_changed"):
-        return 409, code
-    if code in ("session_operation_in_progress", "session_reconciliation_window_exhausted",
-                "session_network_authority_required", "billing_customer_not_bound", "session_record_unavailable"):
-        return 503, code
-    if code == "session_authorization_expired":
-        return 401, code
     return 400 if isinstance(error, (ProvisioningError, ServiceRuntimeError)) else 500, code
 
 
@@ -241,6 +241,7 @@ class ServiceHttpApplication:
     access_administration: object | None = field(default=None, repr=False)
     browser_identity: object | None = field(default=None, repr=False)
     client_access: object | None = field(default=None, repr=False)
+    account_email: object | None = field(default=None, repr=False)
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -260,6 +261,8 @@ class ServiceHttpApplication:
                     or not isinstance(self.client_access.policy, ServiceClientAccessPolicy)
                     or self.client_access.runtime is not self.runtime or self.browser_identity is None):
                 raise ValueError("customer access must bind the same runtime and a browser identity provider")
+        if self.account_email is not None and not speaks_the_account_email_boundary(self.account_email):
+            raise ValueError(f"an installed account email adapter must speak {ACCOUNT_EMAIL_PROTOCOL}")
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -305,7 +308,10 @@ class ServiceHttpApplication:
 
     @asynccontextmanager
     async def _limited(self, request):
-        """Refuse an address over its failed-attempt limit before any work; count only a refused attempt."""
+        """Refuse an address over its failed-attempt limit before any work; count only a refused attempt.
+
+        It yields the counted address key, so that a route with its own allowance counts the same caller.
+        """
         name = self.configuration.request_limits.client_address_header
         key = self.request_limiter.address_key(request.client.host if request.client else None,
                                                request.headers.getlist(name) if name else ())
@@ -314,7 +320,7 @@ class ServiceHttpApplication:
             raise ServiceHttpError(LIMIT_REACHED_CODE, 429, details=refusal,
                                    headers={"Retry-After": str(refusal["retry_after_seconds"])})
         try:
-            yield
+            yield key
         except Exception as error:
             if 400 <= _status(error)[0] < 500:
                 self.request_limiter.record_failure(key)
@@ -663,7 +669,7 @@ class ServiceHttpApplication:
         return b"".join(chunks)
 
     async def _web_route(self, request, Response, JSONResponse):
-        path, method = request.url.path, request.method
+        path, method, status_code = request.url.path, request.method, 200
         if method == "GET" and path in WEB_ASSETS:
             from html import escape
             from importlib.resources import files
@@ -704,7 +710,8 @@ class ServiceHttpApplication:
         elif path == "/api/v1/account/identity" and method == "GET":
             if self.browser_identity is None:
                 raise ServiceHttpError("browser_identity_unavailable", 503)
-            output = {**self.browser_identity.public_configuration(),
+            output = {**self.browser_identity.public_configuration(), **(self.account_email.availability()
+                      if self.account_email else {"signup_available": False, "recovery_available": False}),
                       "redirect_url": self.configuration.public_base_url + "/auth/callback"}
         elif path == "/api/v1/account/activate" and method == "POST":
             if self.browser_identity is None:
@@ -719,6 +726,13 @@ class ServiceHttpApplication:
                     raise HttpAuthenticationError()
                 output = await self._work(lambda: invoke_http_service_as_loop("account_activation",
                     lambda: self.browser_identity.activate(request.headers["authorization"][7:])))
+        elif path in ("/api/v1/account/signup", "/api/v1/account/recovery") and method == "POST":
+            if self.account_email is None:
+                raise ServiceHttpError("account_email_unavailable", 404)
+            async with self._limited(request) as address:
+                prepared = self.account_email.prepare(path.rsplit("/", 1)[-1], _parse_json(await self._body(request)), address)
+                output, status_code = await self._work(lambda: invoke_http_service_as_loop(prepared.operation,
+                    lambda: self.account_email.deliver(prepared))), 202
         else:
             context = await self._authenticated(request)
             if path == "/api/v1/session" and method == "GET":
@@ -798,4 +812,4 @@ class ServiceHttpApplication:
         encoded = _json_bytes(output)
         if len(encoded) > self.configuration.maximum_response_bytes:
             raise ServiceHttpError("response_limit_exceeded", 413)
-        return Response(encoded, media_type="application/json")
+        return Response(encoded, media_type="application/json", status_code=status_code)
