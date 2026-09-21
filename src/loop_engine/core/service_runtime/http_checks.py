@@ -17,7 +17,7 @@ import threading
 import time
 from unittest.mock import patch
 
-from .http import PROVISIONING_REQUEST_VERSION, RETRIEVAL_REQUEST_VERSION
+from .http import PROMOTION_REDEMPTION_PATH, PROVISIONING_REQUEST_VERSION, RETRIEVAL_REQUEST_VERSION
 from .http_auth import ServiceHttpAuthentication
 from .http_test_fixtures import HttpDomainFixture, running_http, running_key_set
 from .records import SubjectBindingRequest
@@ -111,6 +111,25 @@ def _web_checks(check, root):
                     answered.add(value)
             check("the_route_table_names_every_address_the_router_answers",
                   len(answered) >= 10 and answered == set(_http.API_ROUTES))
+            # The check above compares two lists in one file. This one asks the
+            # running service, because the two can only disagree in a way a
+            # customer feels. Between the route table landing ahead of
+            # authentication on September 21, 2026 and this check, sign-up,
+            # password recovery and promotion redemption were answered by
+            # `_web_route` and absent from `API_ROUTES`, so all three replied
+            # `route_unavailable`: creating an account, recovering a password
+            # and redeeming a code were unreachable while every other check
+            # stayed green. Each address must carry its own real refusal. Here
+            # no account email adapter is installed, so sign-up and recovery
+            # report that state, and promotion redemption asks who is calling.
+            reachable = {path: httpx.post(base + path, json={}, trust_env=False)
+                         for path in ("/api/v1/account/signup", "/api/v1/account/recovery",
+                                      PROMOTION_REDEMPTION_PATH)}
+            near_miss = httpx.post(base + "/api/v1/account/signup-typo", json={}, trust_env=False)
+            check("an_address_the_router_answers_is_reachable_over_a_real_socket",
+                  {answer.json()["error"]["code"] for answer in reachable.values()}
+                  == {"account_email_unavailable", "unauthorized"}
+                  and near_miss.json()["error"]["code"] == "route_unavailable")
             notices = httpx.get(base + "/assets/third-party-notices.txt", trust_env=False)
             check("packaged_browser_library_is_served_with_its_licence_terms",
                   notices.status_code == 200 and "MIT License" in notices.text and "Supabase" in notices.text
