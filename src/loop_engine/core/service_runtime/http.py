@@ -239,6 +239,17 @@ def _parse_json(body, *, maximum_depth=MAXIMUM_JSON_NESTING_DEPTH):
     return value
 
 
+def selected_origin(sent_origins):
+    """The one origin a request names, or None when it names none or several.
+
+    A request that names more than one origin names none. Reading the first of
+    them would let a caller pair an allowed origin with another one and still
+    be answered with the allowed origin's sharing headers, on the refusal as
+    well as on a result.
+    """
+    return sent_origins[0] if len(sent_origins) == 1 else None
+
+
 def _error_record(code, details=None):
     result = {"record_type": ERROR_VERSION, "error": {"code": code},
               "effect_commitment": "not_asserted", "automatic_retry": False}
@@ -737,16 +748,16 @@ class ServiceHttpApplication:
 
         async def transport(scope, receive, send):
             request = Request(scope, receive)
-            origin = request.headers.get("origin")
+            sent_origins = request.headers.getlist("origin")
+            origin = selected_origin(sent_origins)
             cors = ({"Access-Control-Allow-Origin": origin, "Vary": "Origin",
                      "Access-Control-Expose-Headers": "X-Content-SHA256, X-Loop-Engine-Record-Type"}
-                    if origin in config.allowed_origins else {})
+                    if origin is not None and origin in config.allowed_origins else {})
             try:
                 if (len(request.headers.getlist("host")) != 1
                         or request.headers["host"] not in config.allowed_hosts):
                     raise ServiceHttpError("invalid_host", 421)
-                if origin is not None and (len(request.headers.getlist("origin")) != 1
-                                           or origin not in config.allowed_origins):
+                if sent_origins and (origin is None or origin not in config.allowed_origins):
                     raise ServiceHttpError("invalid_origin", 403)
                 if request.method == "OPTIONS":
                     if origin not in config.allowed_origins:

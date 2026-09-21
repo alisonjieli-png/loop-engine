@@ -464,6 +464,29 @@ def _outside_failure_holds(seen):
                     "counted": 0, "own_refusal": (404, "route_unavailable")}
 
 
+FOREIGN_ORIGIN = "https://foreign.invalid"
+
+
+def _first_origin(sent_origins):
+    """The known-wrong rule: read the first origin and ignore the rest."""
+    return sent_origins[0] if sent_origins else None
+
+
+def _two_origins(service):
+    """One request naming the declared origin and a foreign one, and one naming each alone."""
+    def sent(*origins):
+        status, headers, _body = service.send("GET", "/api/v1/session", headers=[
+            *service.valid.items(), *[("Origin", value) for value in origins]])
+        return status, headers.get("access-control-allow-origin")
+    return {"both": sent(ORIGIN, FOREIGN_ORIGIN), "reversed": sent(FOREIGN_ORIGIN, ORIGIN),
+            "declared alone": sent(ORIGIN), "foreign alone": sent(FOREIGN_ORIGIN)}
+
+
+def _two_origins_holds(seen):
+    return seen == {"both": (403, None), "reversed": (403, None),
+                    "declared alone": (200, ORIGIN), "foreign alone": (403, None)}
+
+
 def _transport_checks(check, root):
     # Behind a proxy the socket peer is the proxy. A limit that guessed the
     # socket peer would put every caller in one count, so it must not guess.
@@ -511,6 +534,14 @@ def _transport_checks(check, root):
         check("a_request_without_one_credential_uses_no_worker_slot_and_is_not_counted",
               anonymous == [401] * 12 and doubled == 401 and (service.authentications, service.worker_entries) == (0, 0)
               and len(service.application.request_limiter) == 0)
+        # A caller can pair the browser origin the host declared with another
+        # one. Reading the first of them would answer that caller with the
+        # declared origin's sharing headers, on the refusal as well.
+        check("a_request_that_names_two_origins_is_refused_and_shares_with_neither",
+              _two_origins_holds(_two_origins(service)))
+        with patch("loop_engine.core.service_runtime.http.selected_origin", _first_origin):
+            check("removed_single_origin_rule_is_detected",
+                  not _two_origins_holds(_two_origins(_Service(root / "first-origin", _peer()))))
         signed_in = [service.status("GET", "/api/v1/unknown", headers=service.valid) for _attempt in range(5)]
         signed_in += [service.status("GET", "/api/v1/admin/access", headers=service.valid) for _attempt in range(5)]
         check("a_refusal_after_sign_in_is_not_counted",

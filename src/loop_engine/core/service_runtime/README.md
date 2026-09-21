@@ -564,7 +564,7 @@ authentication calls and worker entries. The clock moves between the refused
 requests of a waiting address, so a refusal that was counted would show as a
 wait that stops falling.
 
-Eight guards have a removed-guard control inside the suite. Each control
+Nine guards have a removed-guard control inside the suite. Each control
 reruns a scenario with the guard patched away and requires the scenario's own
 predicate to fail. The other guards have named checks but no such control
 inside the suite.
@@ -579,6 +579,7 @@ inside the suite.
 | An unstated address source leaves the limit inactive | `removed_unstated_source_rule_is_detected` |
 | A body nested past the reader is a counted refusal, not an internal fault | `removed_nesting_limit_is_detected` |
 | Provider reads have their own share of the worker pool | `removed_provider_share_is_detected` |
+| A request that names two origins names none | `removed_single_origin_rule_is_detected` |
 
 `a_caller_controlled_header_is_the_known_wrong_case` runs the forged header
 scenario with a known-wrong configuration. One more check sends a failure
