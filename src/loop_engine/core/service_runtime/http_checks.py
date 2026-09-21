@@ -448,6 +448,9 @@ def self_test():
     from .browser_identity_checks import run_checks as identity_account_checks
     with tempfile.TemporaryDirectory(prefix="service-browser-identity-") as directory:
         identity_account_checks(check, Path(directory))
+    from .promotion_checks import run_http_checks as promotion_transport_checks
+    with tempfile.TemporaryDirectory(prefix="service-promotions-http-") as directory:
+        promotion_transport_checks(check, Path(directory))
     from .account_email_checks import run_checks as account_email_checks
     def account_check(name, passed):
         tests.append({"test": name, "passed": bool(passed),

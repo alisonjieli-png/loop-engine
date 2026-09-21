@@ -57,6 +57,7 @@ MODULE_MAP = {
         "http_test_fixtures", "access", "access_checks",
         "browser_identity", "browser_identity_checks",
         "request_limits", "request_limit_checks",
+        "promotions", "promotion_checks",
         "account_email", "account_email_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
