@@ -410,6 +410,43 @@ def rule_source_references_are_pinned(snapshot):
             found.append(f"{row.get('id')}: the source reference must be the first listed source at the full revision")
         if revision[:7] not in snapshot.bodies.get(row.get("id"), b"").decode("utf-8"):
             found.append(f"{row.get('id')}: the body does not name the revision it was compiled from")
+    named = set(re.findall(r"revision [`]?([0-9a-f]{7})[`]?", snapshot.review))
+    found += [f"REVIEW.md names revision {other!r}, which is not the revision the catalogue is anchored to"
+              for other in sorted(named - {revision[:7]})]
+    if revision[:7] not in named:
+        found.append("REVIEW.md does not name the revision the catalogue is anchored to")
+    return found
+
+
+def rule_cited_source_bytes_are_the_pinned_bytes(snapshot):
+    """Every cited file in the tree is byte for byte the file the record pins.
+
+    ``compile_candidates`` hashes the working tree into ``sources[].sha256`` of the
+    staged record, while ``reference.source_ref`` names a revision. If the tree moves
+    on, one staged record carries two provenance facts about different bytes. The
+    items record therefore pins the digest of every cited file at its own
+    ``source_revision``, and this rule compares those digests with the tree. When a
+    cited file changes, anchor the catalogue again with the refresh tool, which reads
+    the file at the new revision before it writes anything.
+    """
+    digests = snapshot.items.get("source_digests")
+    if not isinstance(digests, dict):
+        return ["the items record must pin the digest of every cited source"]
+    cited = sorted({source for row, _item in snapshot.rows() for source in row.get("sources") or ()})
+    found = [f"{source}: no digest is pinned for a cited source" for source in cited if source not in digests]
+    found += [f"{source}: a digest is pinned for a file that no item cites" for source in sorted(digests)
+              if source not in cited]
+    for source in cited:
+        if source not in digests:
+            continue
+        path = snapshot.repository / source
+        if not path.is_file():
+            found.append(f"{source}: a cited source is not a file of this repository")
+            continue
+        measured = hashlib.sha256(path.read_bytes()).hexdigest()
+        if measured != digests[source]:
+            found.append(f"{source}: the file in the tree is not the file the record pins at "
+                         f"{str(snapshot.items.get('source_revision'))[:7]}; anchor the catalogue again")
     return found
 
 
@@ -551,6 +588,7 @@ RULES = {function.__name__[5:]: function for function in (
     rule_every_item_is_a_candidate, rule_no_forbidden_vocabulary, rule_bodies_stay_in_the_word_range,
     rule_every_population_file_loads_through_the_staging_tool, rule_bodies_have_the_required_parts,
     rule_layers_kinds_effects_and_styles_are_declared, rule_source_references_are_pinned,
+    rule_cited_source_bytes_are_the_pinned_bytes,
     rule_model_generated_material_is_bounded, rule_the_review_sheet_lists_every_item,
     rule_the_catalogue_is_large_enough, rule_quoted_examples_reproduce)}
 
@@ -826,7 +864,22 @@ KNOWN_WRONG = {
             s, items=lambda items: _set(_first_reference(items), "source_ref",
                                         _first_reference(items)["source_ref"].split("@")[0]))),
         ("the revision is abbreviated", lambda s: _changed(
-            s, items=lambda items: _set(items, "source_revision", items["source_revision"][:7])))),
+            s, items=lambda items: _set(items, "source_revision", items["source_revision"][:7]))),
+        ("the review sheet still names an older revision", lambda s: _changed(
+            s, review=lambda text: text.replace(f"revision `{s.items['source_revision'][:7]}`",
+                                                "revision `381efec`", 1))),
+        ("the review sheet names no revision at all", lambda s: _changed(
+            s, review=lambda text: text.replace(s.items["source_revision"][:7], "an earlier commit")))),
+    "cited_source_bytes_are_the_pinned_bytes": (
+        ("a cited file in the tree is not the file the record pins", lambda s: _changed(
+            s, items=lambda items: _set(items["source_digests"],
+                                        sorted(items["source_digests"])[0], "0" * 64))),
+        ("a cited source has no pinned digest", lambda s: _changed(
+            s, items=lambda items: items["source_digests"].pop(sorted(items["source_digests"])[0]))),
+        ("a digest is pinned for a file that no item cites", lambda s: _changed(
+            s, items=lambda items: _set(items["source_digests"], "src/loop_engine/core/facets.py", "0" * 64))),
+        ("the record pins no digests at all", lambda s: _changed(
+            s, items=lambda items: _set(items, "source_digests", None)))),
     "model_generated_material_is_bounded": (
         ("a row that the source does not hold", lambda s: _changed(
             s, items=lambda items: _generated(items)["provenance"]["model_generated_row_digests"].append("f" * 16))),
@@ -1013,6 +1066,50 @@ class StarterCatalogueChecks(unittest.TestCase):
                         load_host_manifest(path)
                     self.assertEqual(refusal.exception.code, code)
                     self.assertIn(changed["reference"]["identity"], str(refusal.exception))
+
+    def _cited_tree(self, directory: str) -> Path:
+        """A tree that holds only the cited files, at their own paths, copied from this repository."""
+        root = Path(directory).resolve() / "tree"
+        for source in self.snapshot.items["source_digests"]:
+            target = root / source
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / source).read_bytes())
+        return root
+
+    def test_the_pinned_digests_are_read_from_the_tree_and_not_from_the_record(self):
+        """The known-wrong tree: one cited file is edited, and the rule names that file.
+
+        The rule hashes the files of the repository it is given, so a copy of the
+        cited files with one byte changed must be reported. Without this the rule
+        could be comparing the record with itself.
+        """
+        rule = RULES["cited_source_bytes_are_the_pinned_bytes"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._cited_tree(directory)
+            self.assertEqual(rule(replace(self.snapshot, repository=root)), [])
+            edited = sorted(self.snapshot.items["source_digests"])[0]
+            (root / edited).write_bytes((root / edited).read_bytes() + b"\n# one more line\n")
+            found = rule(replace(self.snapshot, repository=root))
+            self.assertEqual(len(found), 1)
+            self.assertIn(edited, found[0])
+            # A cited file that is missing from the tree is reported as well, not passed over.
+            (root / edited).unlink()
+            self.assertIn("is not a file of this repository", " ".join(rule(replace(self.snapshot, repository=root))))
+
+    def test_the_anchor_tool_refuses_a_revision_whose_cited_bytes_differ(self):
+        """Anchoring reads each cited file at the named revision before it writes anything."""
+        refresh = _refresh_module()
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory).resolve() / "starter-catalogue"
+            shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("__pycache__"))
+            before = (folder / "items.json").read_bytes()
+            revision = self.snapshot.items["source_revision"]
+            self.assertFalse(refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["written"])
+            with self.assertRaises(refresh.CatalogueRefreshError):
+                refresh.anchor(refresh.AnchorRequest(folder, ROOT, "0" * 40, True))
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, "forty character revision"):
+                refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision[:7], True))
+            self.assertEqual((folder / "items.json").read_bytes(), before)
 
     def test_the_refresh_tool_reports_and_repairs_a_stale_body(self):
         refresh = _refresh_module()
