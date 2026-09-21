@@ -54,6 +54,18 @@ window.BaltorCatalogueBrowser = {
       if (typeof row.body_allowed !== "boolean") return "no plain answer about downloading";
       return "";
     };
+    /* One item, asked for by name. It carries the same facts as a list entry under its own record
+       version, so it is checked the same way before a single value of it is displayed. */
+    const manifestProblem = (value, row) => {
+      if (!value || typeof value !== "object" || value.record_type !== manifestVersion) return "an unsupported item version";
+      if (value.identity !== row.identity) return "another item";
+      if (!/^[0-9a-f]{64}$/.test(String(value.digest))) return "a missing digest";
+      if (!stated(value.source_ref) || !stated(value.qualification_basis)) return "a missing description";
+      if (!Number.isInteger(value.size_bytes) || value.size_bytes < 0) return "an unreadable size";
+      if (!Array.isArray(value.declared_effects) || !Array.isArray(value.styles)) return "an unreadable list of declared values";
+      if (typeof value.body_allowed !== "boolean") return "no plain answer about downloading";
+      return "";
+    };
     const refused = "This service answered with a catalogue record this page was not written for, so nothing is shown.";
     const refusalText = value => {
       if (!value || value.record_type !== listVersion || !Array.isArray(value.items) || !stated(value.tenant_id)) return refused;
@@ -84,11 +96,11 @@ window.BaltorCatalogueBrowser = {
       else if (current().connected) message("browse-message",
         "This account may not list material. Ask the person who runs this service for permission to search and list.", true);
     }
-    function options(select, values, names) {
+    function options(select, values, plainName) {
       const previous = select.value;
       select.replaceChildren(element("option", select.id === "browse-kind" ? "Every kind" : "Every tool"));
       select.options[0].value = "";
-      for (const value of values) { const choice = element("option", names[value] || value); choice.value = value; select.append(choice); }
+      for (const value of values) { const choice = element("option", plainName(value)); choice.value = value; select.append(choice); }
       select.value = [...select.options].some(choice => choice.value === previous) ? previous : "";
     }
     function render(rows, total, filtered) {
@@ -145,8 +157,9 @@ window.BaltorCatalogueBrowser = {
         const value = await request(path, {record_type:requestVersion, operation:"manifest",
           identity:row.identity, expected_digest:row.digest});
         if (epoch !== current().generation || selected !== row.identity) return;
-        if (!value || value.record_type !== manifestVersion || value.identity !== row.identity) {
-          throw new Error("This service answered with an item record this page was not written for. Nothing is shown for it.");
+        const problem = manifestProblem(value, row);
+        if (problem) {
+          throw new Error("This service answered with an item record that holds " + problem + ". Nothing is shown for it.");
         }
         if (value.digest !== row.digest) {
           throw new Error("This item changed since the list was loaded. Load the catalogue again before fetching it.");
@@ -166,7 +179,7 @@ window.BaltorCatalogueBrowser = {
         const button = element("button", "Fetch exact revision", "quiet");
         button.type = "button"; button.id = "browse-download";
         button.addEventListener("click", () => fetchBody(row, button, note));
-        note.textContent = "Fetching records usage. The digest is checked against the bytes that arrive.";
+        note.textContent = "Fetching this file records usage. The digest is checked against the bytes that arrive.";
         $("browse-detail").insertBefore(button, note);
       } catch (error) {
         if (epoch !== current().generation || selected !== row.identity) return;
@@ -223,16 +236,17 @@ window.BaltorCatalogueBrowser = {
         }
         if (fresh) {
           listed = value.items;
-          options($("browse-kind"), knownKinds.filter(name => listed.some(row => row.kind === name)), kindNames);
-          options($("browse-style"), [...new Set(listed.flatMap(row => row.styles))].sort(), {});
+          options($("browse-kind"), knownKinds.filter(name => listed.some(row => row.kind === name)), value => kindNames[value]);
+          // A development tool names itself. The page shows that name as it was published, never one it invented.
+          options($("browse-style"), [...new Set(listed.flatMap(row => row.styles))].filter(stated).sort(), value => value);
           selected = ""; clearDetail("Open an item to read its details.");
         }
         shown = value.items;
-        if (!shown.some(row => row.identity === selected)) { selected = ""; clearDetail("Open an item to read its details."); }
+        if (selected && !shown.some(row => row.identity === selected)) { selected = ""; clearDetail("Open an item to read its details."); }
         render(shown, listed.length, Boolean(kind || style));
         const withheld = Array.isArray(value.withheld) ? value.withheld.length : 0;
         message("browse-message", "Showing " + count(shown.length) + " for " + value.tenant_id + ". "
-          + (withheld ? count(withheld) + " were held back by the filters or by this account's permissions. " : "")
+          + (withheld ? count(withheld) + " did not match the filters or this account's permissions. " : "")
           + "This list holds descriptions only. No file was fetched.");
       } catch (error) {
         if (epoch !== current().generation) return;

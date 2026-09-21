@@ -908,6 +908,21 @@ try {
         &&await opened.locator("#browse-detail dl").count()===0,{status:await browseStatus(opened)});
       await opened.unroute("**/api/v1/provisioning");
     },
+    wrong_item_version:async (opened,note)=>{
+      await loadBrowse(opened);
+      await opened.route("**/api/v1/provisioning",async route=>{
+        const sent=route.request().postDataJSON();
+        if(sent?.operation!=="manifest")return route.continue();
+        const response=await route.fetch(),value=await response.json();
+        value.result.record_type="provisioning_manifest/v3";
+        await route.fulfill({response,json:value});});
+      await openItem(opened,"context.review");
+      note("browse_refuses_an_item_record_version_it_was_not_written_for",
+        (await browseStatus(opened)).includes("an unsupported item version")
+        &&await opened.locator("#browse-detail dl").count()===0
+        &&await opened.locator("#browse-download").count()===0,{status:await browseStatus(opened)});
+      await opened.unroute("**/api/v1/provisioning");
+    },
     wrong_version:async (opened,note)=>{
       await opened.route("**/api/v1/provisioning",async route=>{
         const sent=route.request().postDataJSON();
@@ -974,6 +989,8 @@ try {
      expected:["browse_refuses_a_download_whose_reported_digest_disagrees"]},
     {name:"ignore_an_item_that_changed_since_the_list",scenario:"changed_item",find:"if (value.digest !== row.digest) {",replacement:"if (false) {",
      expected:["browse_refuses_an_item_that_changed_since_the_list"]},
+    {name:"accept_any_item_record_version",scenario:"wrong_item_version",find:"value.record_type !== manifestVersion",replacement:"false",
+     expected:["browse_refuses_an_item_record_version_it_was_not_written_for"]},
     {name:"keep_a_delayed_catalogue_reply_after_sign_out",scenario:"delayed_reply",find:"if (epoch !== current().generation) return;",replacement:"",
      expected:["browse_sign_out_clears_a_delayed_catalogue_reply"]},
     {name:"hide_a_group_that_holds_nothing",scenario:"catalogue",find:"if (group.outside && !held.length) continue;",replacement:"if (!held.length) continue;",
