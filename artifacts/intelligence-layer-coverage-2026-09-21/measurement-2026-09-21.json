@@ -1,0 +1,201 @@
+{
+  "record_type": "intelligence_layer_coverage_measurement/v1",
+  "population": "built-in package population with an empty runs directory and an empty guidance file",
+  "search_mode": "lexical",
+  "top_n": 3,
+  "before": {
+    "counts": {
+      "context_intelligence": 441,
+      "code_intelligence": 81,
+      "runtime_history_solution_intelligence": 0,
+      "user_feedback_intelligence": 0
+    },
+    "answers": [
+      {
+        "question": "a previous run of this same import that failed and how it was repaired",
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.repetition_circuit_breaker"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.analogy_probe"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.context_boundary_probe"
+          }
+        ]
+      },
+      {
+        "question": "what went wrong last time and what fixed it",
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.acceptance_inversion"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.worst_way"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.reversibility"
+          }
+        ]
+      },
+      {
+        "question": "what guidance did the user give about dropping rows",
+        "hits": [
+          {
+            "layer": "code_intelligence",
+            "record_id": "code.module.run_analytics"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "looptmpl.custom_user_supplied"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.smallest_first_step"
+          }
+        ]
+      },
+      {
+        "question": "a standing instruction about weakening a check to make the build pass",
+        "hits": [
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.smallest_first_step"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "improve.mining.0"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.cheapest_check"
+          }
+        ]
+      },
+      {
+        "question": "a reusable solution for deduplicating customer records",
+        "hits": [
+          {
+            "layer": "code_intelligence",
+            "record_id": "code.module.solution_records"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.train_or_call"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.analogy_probe"
+          }
+        ]
+      }
+    ]
+  },
+  "after": {
+    "counts": {
+      "context_intelligence": 441,
+      "code_intelligence": 81,
+      "runtime_history_solution_intelligence": 14,
+      "user_feedback_intelligence": 10
+    },
+    "answers": [
+      {
+        "question": "a previous run of this same import that failed and how it was repaired",
+        "hits": [
+          {
+            "layer": "runtime_history_solution_intelligence",
+            "record_id": "classify_a_failed_check_before_changing_the_work"
+          },
+          {
+            "layer": "runtime_history_solution_intelligence",
+            "record_id": "run_the_restore_before_you_call_the_backup_a_backup"
+          },
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_keep_failures_as_visible_as_successes"
+          }
+        ]
+      },
+      {
+        "question": "what went wrong last time and what fixed it",
+        "hits": [
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_do_not_weaken_a_failing_check"
+          },
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_never_end_on_a_fixed_attempt_count"
+          },
+          {
+            "layer": "runtime_history_solution_intelligence",
+            "record_id": "a_truthy_value_is_not_a_granted_permission"
+          }
+        ]
+      },
+      {
+        "question": "what guidance did the user give about dropping rows",
+        "hits": [
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_marketing_language_is_not_a_factual_claim"
+          },
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_offered_fetched_loaded_used_and_verified_are_separate"
+          },
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_do_not_weaken_a_failing_check"
+          }
+        ]
+      },
+      {
+        "question": "a standing instruction about weakening a check to make the build pass",
+        "hits": [
+          {
+            "layer": "runtime_history_solution_intelligence",
+            "record_id": "build_a_test_fixture_from_the_real_typed_object"
+          },
+          {
+            "layer": "runtime_history_solution_intelligence",
+            "record_id": "classify_a_failed_check_before_changing_the_work"
+          },
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_build_general_mechanisms"
+          }
+        ]
+      },
+      {
+        "question": "a reusable solution for deduplicating customer records",
+        "hits": [
+          {
+            "layer": "code_intelligence",
+            "record_id": "code.module.solution_records"
+          },
+          {
+            "layer": "context_intelligence",
+            "record_id": "qform.train_or_call"
+          },
+          {
+            "layer": "user_feedback_intelligence",
+            "record_id": "recorded_direction_offered_fetched_loaded_used_and_verified_are_separate"
+          }
+        ]
+      }
+    ]
+  },
+  "limits": [
+    "The pack items are candidates. Adding them to this catalog is a measurement, not a promotion and not a publication.",
+    "Lexical search over the built catalog. This is a coverage measurement, not a relevance benchmark.",
+    "No model was called and no network was reached."
+  ]
+}

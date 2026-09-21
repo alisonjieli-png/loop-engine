@@ -1,0 +1,413 @@
+{
+  "record_type": "candidate_intelligence_specifications/v1",
+  "specifications": [
+    {
+      "id": "classify_a_failed_check_before_changing_the_work",
+      "layer": "runtime_history_solution",
+      "family": "decision",
+      "title": "Classify a failed check before changing the work",
+      "tags": [
+        "failure classification",
+        "health check",
+        "deployment",
+        "probe",
+        "repair"
+      ],
+      "text": "# Classify a failed check before changing the work\n\nKind: recorded decision from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it the moment a check fails and you are about to edit the code the check\npoints at. The first question is not how to make the check pass. The first\nquestion is which of three things is wrong: the work, the check, or the\nenvironment the check ran in.\n\n## What was recorded\n\nA container startup probe for the hosted service reached its timeout and the\nrun was recorded as a failed check. The saved record classifies the cause as\n`check_defect`, not a defect in the service. The probe looked for the health\nfields at the top level of the response. The service wraps the health payload\ninside a versioned result field, so the fields the probe wanted were one level\ndown and the probe never saw them.\n\nThe same record notes what had already passed before the failure: the\ninstalled service smoke checks passed 48 of 48. That fact is what made the\n`check_defect` classification credible rather than convenient.\n\n## The repair\n\nThe probe was corrected to read the health value and the readiness value from\ninside the result field. The refusal check for unauthenticated access was kept\nexactly as it was, so the correction did not remove a control. The same\ncorrection was applied to the post-deployment health step in the workflow, so\nthe two places that ask the same question agree.\n\n## The known-wrong case\n\nThe wrong repair is to make the service return the health fields at the top\nlevel as well. That would satisfy the probe, break the versioned result\nenvelope that every other reader depends on, and hide the real fault. A\ncorrected check must still reject a service that is genuinely unhealthy.\n\n## What to record\n\nRecord the classification, the evidence that supports it, what passed before\nthe failure, the correction, and the control you deliberately kept.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/fly-service-container-attempt-1.json`,\nrecord type `fly_service_container_failure_note/v1`, and the later passing\nrecord `fly-service-container-attempt-3.json`.\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/fly-service-container-attempt-1.json",
+        "artifacts/architecture-audit-2026-09-19/fly-service-container-attempt-3.json"
+      ]
+    },
+    {
+      "id": "a_client_reader_that_assumes_one_response_encoding",
+      "layer": "runtime_history_solution",
+      "family": "failure_remedy",
+      "title": "A client reader that assumes one response encoding",
+      "tags": [
+        "protocol",
+        "event stream",
+        "browser",
+        "client",
+        "timeout"
+      ],
+      "text": "# A client reader that assumes one response encoding\n\nKind: recorded failure and its repair, from Runtime History and Solution\nIntelligence.\n\n## When to use this record\n\nUse it when you are writing or debugging a client for a service whose\ntransport is allowed to answer in more than one encoding, and the client\nhangs, times out, or reports that the response could not be parsed.\n\n## What was recorded\n\nA browser check of the guided connection did not complete. Its success\ncondition was never reached, so the run was recorded as a failure rather than\nas a pass with a warning.\n\nInspection found the cause. The service protocol transport is allowed to\nanswer with server-sent events. The first version of the browser reader\nassumed every answer was one complete document of JavaScript Object Notation.\nWhen the service answered with an event stream, the reader waited for a\ndocument that was never going to arrive.\n\n## The repair\n\nThe reader was changed to handle bounded event frames and to match the\nrequest identity carried in each frame, so an answer is paired with the\nrequest that asked for it. The original failing report was kept beside the\nlater passing report instead of being overwritten.\n\n## The known-wrong case\n\nThe wrong repair is to force the service to answer with one complete document\nso the old reader keeps working. That removes a supported transport behaviour\nto protect a client defect. Another wrong repair is to read the frames but\nignore the request identity, which appears to work until two requests are in\nflight and the answers are paired with the wrong questions.\n\n## What to record\n\nRecord the exact success condition that was not reached, the encoding the\nservice actually sent, the repair, and both reports. Keep the failing report.\nIt is the evidence that the later pass means something.\n\n## Limits\n\nThis is local browser evidence against a loopback service with no external\nprovider calls. It does not qualify any named coding harness.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/guided-connection-browser-1.json`\n(the failure), `guided-connection-browser-3.json` (the later pass), and\n`src/loop_engine/core/service_runtime/web_assets/service.js`.\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/guided-connection-browser-1.json",
+        "artifacts/architecture-audit-2026-09-19/guided-connection-browser-3.json",
+        "src/loop_engine/core/service_runtime/web_assets/service.js"
+      ]
+    },
+    {
+      "id": "a_test_producer_that_returns_booleans_hides_which_check_ran",
+      "layer": "runtime_history_solution",
+      "family": "failure_remedy",
+      "title": "A test producer that returns booleans hides which check ran",
+      "tags": [
+        "test collector",
+        "self test",
+        "mutation control",
+        "evidence",
+        "repair"
+      ],
+      "text": "# A test producer that returns booleans hides which check ran\n\nKind: recorded failure and its repair, from Runtime History and Solution\nIntelligence.\n\n## When to use this record\n\nUse it when a test collector refuses the output of a suite that reports itself\nas passing, and you are tempted to relax the collector.\n\n## What was recorded\n\nOne self-test producer returned a mapping from check names to boolean values.\nThe aggregate that collects results requires an explicit, non-empty sequence\nof identified test records. The mapping was refused.\n\nThe producer was changed to return all 35 existing checks as records, each\ncarrying its original boolean value and its counts. The collector was not\nchanged and was not relaxed.\n\n## The repair and its control\n\nAfter the change, the unchanged collector accepted all 35 passing records. Two\ncontrols were run to prove the repair was a repair and not a way around the\nrule:\n\n1. An in-memory mutation restoring the old return shape made the collector\n   raise the error it is supposed to raise. The guard still works.\n2. A separate output extractor that is known to be wrong still failed four\n   positive checks. A formatting correction did not turn wrong behaviour into\n   passing evidence.\n\n## The known-wrong case\n\nThe wrong repair is to teach the collector to accept a mapping of names to\nbooleans. It would pass, and the suite would permanently lose the ability to\nsay which check ran, on what input, and how many times. A collector that\naccepts an unidentified result cannot tell a full run from an empty one.\n\n## What to record\n\nRecord which side you changed and why, the control that shows the guard still\nrejects the old shape, and a second control that shows genuinely wrong work\nstill fails.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/runtime-regression-repairs.md`,\nsection \"Test record producer\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/runtime-regression-repairs.md"
+      ]
+    },
+    {
+      "id": "build_a_test_fixture_from_the_real_typed_object",
+      "layer": "runtime_history_solution",
+      "family": "failure_remedy",
+      "title": "Build a test fixture from the real typed object",
+      "tags": [
+        "test fixture",
+        "typed request",
+        "drift",
+        "default value",
+        "repair"
+      ],
+      "text": "# Build a test fixture from the real typed object\n\nKind: recorded failure and its repair, from Runtime History and Solution\nIntelligence.\n\n## When to use this record\n\nUse it when a test fails with a missing attribute after someone added a\nrequired field to a request type, and the production code is not at fault.\n\n## What was recorded\n\nA self-test supplied a hand-built stand-in object to a function that assembles\nsolve dependencies. A newly required field on the real request type was not\npresent on the stand-in. The test raised a missing attribute error. The\nproduction path was correct. The fixture had drifted away from the type it was\nimitating.\n\nBoth dependency assembly checks were changed to build one real request object\nfrom typed intake, instead of a stand-in. The existing assertions about the\nfamily surfaces and the learning event collector were kept unchanged.\n\n## The repair and its control\n\nAll ten records passed through the unchanged collector after the change.\nRestoring the old fixture reproduced the original missing attribute error, so\nthe fixture was the cause and the repair addressed it. No production fallback,\ninvented default value, or new public behaviour was added to make the test\npass.\n\n## The known-wrong case\n\nThe wrong repair is to give the production code a default for the missing\nfield so the stand-in keeps working. The field was made required on purpose.\nA default would make every caller that forgot it silently take a path nobody\nchose. Another wrong repair is to add the one missing attribute to the\nstand-in, which fixes today and leaves the same drift to be discovered again\nat the next required field.\n\n## What to record\n\nRecord the drifted fixture, the real type it was imitating, the field that\nexposed the drift, and the fact that no production default was added.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/runtime-regression-repairs.md`,\nsection \"Public request fixture\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/runtime-regression-repairs.md"
+      ]
+    },
+    {
+      "id": "two_scanners_that_disagree_may_be_measuring_two_populations",
+      "layer": "runtime_history_solution",
+      "family": "decision",
+      "title": "Two scanners that disagree may be measuring two populations",
+      "tags": [
+        "conformance",
+        "scope",
+        "waiver",
+        "test pollution",
+        "population"
+      ],
+      "text": "# Two scanners that disagree may be measuring two populations\n\nKind: recorded decision from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when two checks that appear to ask the same question return different\nanswers, and someone proposes a waiver for the one that fails.\n\n## What was recorded\n\nA public report returned zero findings for retired wording while a package\nscanner returned eighteen for what looked like the same rule. The first\nexplanation offered was test pollution: that an earlier check in the same\nprocess had left state behind.\n\nThat explanation was tested and rejected. A fresh interpreter, importing a\nfrozen copy of the source, reproduced all nineteen findings before running any\nother test. Running the 28 checks that normally come first left both the count\nand the cached policy value unchanged.\n\nThe real reason was that the two tools measure different populations. The\npublic report selects a configured subset of terms and applies them to an\nexplicit public file scope. The package scanner checks every configured term\nagainst the whole package source. Zero was the correct answer for the first\nquestion. Eighteen was the correct answer for the second. Neither result\njustified a waiver.\n\nThe working tree showed eighteen rather than nineteen because one occurrence\nhad already been corrected by hand. The wording was then cleaned up at its\nowner, and current consumers were updated in the same change with no\nforwarding alias left behind.\n\n## The known-wrong case\n\nThe wrong move is to waive the failing scanner because a neighbouring report\nis green. Before that, compare the two scopes and the two term lists. If they\ndiffer, the disagreement is information, not noise.\n\n## What to record\n\nRecord both populations, both term lists, the pollution test and its result,\nand the reason no waiver was taken.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/runtime-regression-repairs.md`,\nsection \"The conformance discrepancy was not test pollution\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/runtime-regression-repairs.md"
+      ]
+    },
+    {
+      "id": "a_short_candidate_pool_can_hide_an_eligible_match",
+      "layer": "runtime_history_solution",
+      "family": "repair",
+      "title": "A short candidate pool can hide an eligible match",
+      "tags": [
+        "retrieval",
+        "filter",
+        "ranking",
+        "empty result",
+        "tradeoff"
+      ],
+      "text": "# A short candidate pool can hide an eligible match\n\nKind: recorded repair from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when a filtered search returns nothing, or returns a weak result, and\nyou can point at an item in the store that should have matched.\n\n## What was recorded\n\nSearch over the four persistent intelligence layers took a small pool of\ntop-ranked results from the backend and then applied the caller's filters to\nthat pool. When every item in the short pool failed the filter, an eligible\nitem further down the ranking was never considered. The search reported an\nempty result that looked like a genuine absence.\n\nThree changes were made together:\n\n1. Required facets now establish the eligible set before rank fusion, so\n   filtering happens against the whole ranking rather than against a slice.\n2. A filtered search now considers the complete local backend ranking, so a\n   short initial pool cannot hide an eligible match.\n3. The requested result count now limits the combined result list across the\n   four layers, and it must be a positive whole number when supplied.\n\n## The cost, stated plainly\n\nConsidering the complete local ranking can be more work than scanning a small\npool. The recorded repair states this as a correctness tradeoff and claims no\nperformance improvement. Pushing the filter down into the backend is a\nseparate optimisation that has to be qualified against the same result\ncontract before it is used.\n\n## The known-wrong case\n\nThe wrong repair is to enlarge the pool from ten to one hundred. That makes\nthe failure rarer and harder to reproduce without removing it. A rare wrong\nanswer in a search is worse than a frequent one, because nobody investigates\nit.\n\n## What to record\n\nRecord the item that should have matched, the filter that excluded the pool,\nthe ordering of filter and fusion after the repair, and the cost you accepted.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md`,\nsection \"Retrieval behavior\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md",
+        "src/loop_engine/core/retrieval.py"
+      ]
+    },
+    {
+      "id": "an_unavailable_backend_must_not_look_like_an_empty_result",
+      "layer": "runtime_history_solution",
+      "family": "failure_remedy",
+      "title": "An unavailable backend must not look like an empty result",
+      "tags": [
+        "retrieval",
+        "unavailable",
+        "empty result",
+        "typed error",
+        "silent failure"
+      ],
+      "text": "# An unavailable backend must not look like an empty result\n\nKind: recorded failure and its repair, from Runtime History and Solution\nIntelligence.\n\n## When to use this record\n\nUse it when a search, a lookup, or a retrieval step returns nothing, and you\ncannot tell from the return value whether the store was searched and held no\nmatch, or whether the store could not be reached at all.\n\n## What was recorded\n\nThe SQLite and the LanceDB retrieval paths caught their own exceptions and\nreturned an empty list. A caller received the same value for two different\nfacts: \"I searched and found nothing\" and \"I could not search\".\n\nThe repair raises a typed unavailable error instead. The boundary over the\nfour persistent intelligence layers preserves that unavailability after the\ncanonical search records its failure, so the failure reaches the caller and\nalso reaches the event history. A search that ran and matched nothing still\nreturns a normal empty result, because that is a real answer.\n\n## Why this matters more than it looks\n\nA step that treats an unreachable store as an empty store will decide it has\nno prior work to reuse and will redo the work. The redone work looks correct.\nThe cost, the duplicated result and the lost prior decision are invisible,\nbecause nothing ever reported an error.\n\n## The known-wrong case\n\nThe wrong repair is to log the exception and keep returning the empty list.\nThe log satisfies the person reading logs. The calling step still cannot tell\nthe two facts apart, because the return value is still the same. The\ndistinction has to be in the value the caller receives, not only in a message\nbeside it.\n\n## What to record\n\nRecord which of the two facts the step observed, the typed error when the\nstore was unavailable, and the event that carries the failure into the run\nhistory.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md`,\nsection \"Retrieval behavior\", and\n`src/loop_engine/core/retrieval.py`.\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md",
+        "src/loop_engine/core/retrieval.py"
+      ]
+    },
+    {
+      "id": "a_fixture_that_asks_for_less_than_it_requires",
+      "layer": "runtime_history_solution",
+      "family": "decision",
+      "title": "A fixture that asks for less than it requires",
+      "tags": [
+        "test correction",
+        "result limit",
+        "known wrong case",
+        "regression",
+        "search"
+      ],
+      "text": "# A fixture that asks for less than it requires\n\nKind: recorded decision from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when a test starts failing after a limit was corrected, and the test\nwas passing for a reason nobody checked.\n\n## What was recorded\n\nOne test asked a search for three results and then required that all four\npersistent intelligence layers appear in the answer. It passed only because\nthe requested count was being applied per layer rather than to the combined\nanswer, which multiplied the limit. When the limit was corrected to mean what\nit says, the test failed.\n\nThe test was corrected to request four results, because four is the smallest\nnumber that can carry four layers. The correctness requirement was not\nweakened. A separate check that requests one result was added, and that new\ncheck still rejects the old multiplied-limit behaviour.\n\n## The known-wrong case\n\nThe wrong repair is to restore the per-layer meaning of the limit so the old\ntest passes again. A caller who asks for three results and receives twelve has\npaid for twelve. The second wrong repair is to correct the fixture and stop\nthere, leaving nothing in the suite that would catch the multiplied limit if\nit came back. That is why the one-result check exists.\n\n## What to record\n\nRecord why the old test passed, the corrected expectation, and the new check\nthat rejects the behaviour the old test was accidentally tolerating. A\ncorrected test that no longer rejects the known-wrong case is not a corrected\ntest.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md`,\nsection \"Retrieval behavior\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md"
+      ]
+    },
+    {
+      "id": "a_write_is_confirmed_by_an_acknowledgment_and_a_readback",
+      "layer": "runtime_history_solution",
+      "family": "repair",
+      "title": "A write is confirmed by an acknowledgment and a readback",
+      "tags": [
+        "storage",
+        "acknowledgment",
+        "readback",
+        "unknown outcome",
+        "versioning"
+      ],
+      "text": "# A write is confirmed by an acknowledgment and a readback\n\nKind: recorded repair from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when a step reports that it saved something, and you want to know what\nthat report is actually based on.\n\n## What was recorded\n\nShared-memory and catalogue writes were changed so that a successful write\nrequires two things together: a valid acknowledgment from the store, and a\nreadback that matches what was sent. Either one alone is not enough.\n\nThree outcomes are now kept apart:\n\n1. Written. The store acknowledged and the readback matched.\n2. Refused. A named rule rejected the write, for example a version that did\n   not advance, a scope identity that did not match, or a namespace that did\n   not match.\n3. Unknown. A backend failure or an intervening change prevented\n   confirmation.\n\nAn unknown outcome is reported as unknown. It is not reported as a successful\nwrite, and it is not turned into an invented stale-version result.\n\n## The known-wrong case\n\nThe wrong behaviour is to treat \"no exception was raised\" as \"written\". A\nstore that accepts a write and drops it raises nothing. So does a store that\naccepts a write, applies it, and is then overwritten by another writer between\nthe write and the next read. The first case needs the readback to catch it.\nThe second case needs the version rule to catch it.\n\nThe second wrong behaviour is to resolve an unknown outcome by guessing. A\nstep that reports a stale version it never observed has invented a fact, and\nevery later decision built on it inherits the invention.\n\n## What to record\n\nRecord the acknowledgment, the readback comparison, the version that was\nrequired, and which of the three outcomes occurred. An unknown commit is not\na success.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/storage-write-repairs.md`.\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/storage-write-repairs.md"
+      ]
+    },
+    {
+      "id": "say_plainly_when_two_writes_are_not_one_transaction",
+      "layer": "runtime_history_solution",
+      "family": "decision",
+      "title": "Say plainly when two writes are not one transaction",
+      "tags": [
+        "transaction",
+        "revision history",
+        "partial failure",
+        "naming",
+        "storage"
+      ],
+      "text": "# Say plainly when two writes are not one transaction\n\nKind: recorded decision from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when a change writes a history copy and then updates a current record,\nand you are about to describe the pair as atomic in a comment, a document, or\na name.\n\n## What was recorded\n\nSaving a new revision writes the immutable predecessor first, then writes the\nguarded current record. The recorded decision states that these two writes are\ndeliberately not described as one transaction, and it states the exact\nconsequence: if the current update fails, an identical copy of the\nstill-current version may remain behind.\n\nThat consequence is handled rather than hidden. The history view does not\nreport the leftover copy as a second version. A later valid revision can\nconfirm an already-superseded committed version through its exact preserved\npredecessor.\n\n## Why write it down\n\nThe risk of the quiet version is not the leftover row. It is the next reader,\nwho sees two writes next to each other, assumes they succeed or fail together,\nand builds a recovery path on that assumption. Writing the limit next to the\ncode is what stops the assumption forming.\n\n## The known-wrong case\n\nThe wrong move is to name the pair atomically, for example calling the helper\na transactional save, when the store gives no such guarantee across the two\nwrites. A name is read far more often than the implementation under it, and a\nname that promises more than the store delivers is a defect that costs nothing\nto introduce and is expensive to find.\n\n## What to record\n\nRecord which writes share a guarantee and which do not, the exact state that\ncan remain after a partial failure, and what reads that state afterwards.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/storage-write-repairs.md`,\nparagraph beginning \"The immutable predecessor is written before the guarded\ncurrent record\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/storage-write-repairs.md"
+      ]
+    },
+    {
+      "id": "a_truthy_value_is_not_a_granted_permission",
+      "layer": "runtime_history_solution",
+      "family": "repair",
+      "title": "A truthy value is not a granted permission",
+      "tags": [
+        "permission",
+        "capability",
+        "type confusion",
+        "adapters",
+        "guard"
+      ],
+      "text": "# A truthy value is not a granted permission\n\nKind: recorded repair from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when a permission, a capability, or a feature switch is read from\nconfiguration, from a record, or from a request, and the code tests the value\nfor truth rather than comparing it to a value.\n\n## What was recorded\n\nOperation capabilities across three catalogue store adapters were changed to\nrequire the boolean value true. A truthy string or a non-zero number now\ngrants nothing.\n\nThe same repair brought the in-memory adapter and the DuckDB adapter up to the\nabsence and version guards that the SQLite adapter already had, so the three\nadapters answer the same question the same way. In-memory checks and writes\nare protected by a reentrant lock. DuckDB checks and writes share a\ntransaction. Guarded writes across all three adapters reject a record version\nthat did not change.\n\n## Why a truth test is the wrong test here\n\nAlmost every value that reaches a permission field from a file, a form, or a\nwire format is a string. The string \"false\" is true when tested for truth. So\nis \"no\", \"0\" as text, \"disabled\", and an error message that arrived where a\nflag was expected. A truth test converts every one of those into a granted\npermission, and the grant is silent.\n\n## The known-wrong case\n\nThe wrong repair is to add a list of strings that count as false. The list is\nnever complete, and the next unexpected value still grants the permission.\nCompare to the value you mean and refuse everything else.\n\n## What to record\n\nRecord the exact accepted value, the refusal for every other value, and the\nadapters you checked for the same defect. A guard fixed in one adapter and\nmissing in a second is not fixed.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/storage-write-repairs.md`,\nparagraph beginning \"The in-memory and DuckDB adapters now understand the same\nexact absence and version guards as SQLite\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/storage-write-repairs.md"
+      ]
+    },
+    {
+      "id": "run_the_restore_before_you_call_the_backup_a_backup",
+      "layer": "runtime_history_solution",
+      "family": "failure_remedy",
+      "title": "Run the restore before you call the backup a backup",
+      "tags": [
+        "backup",
+        "restore",
+        "recovery",
+        "failed attempt",
+        "limits"
+      ],
+      "text": "# Run the restore before you call the backup a backup\n\nKind: recorded failure and its repair, from Runtime History and Solution\nIntelligence.\n\n## When to use this record\n\nUse it before you tell anyone that a service can be recovered, and before you\nwrite a recovery step into a runbook you have not executed.\n\n## What was recorded\n\nTwo recovery exercises were run against a saved copy of a hosted pilot\nservice, minutes apart. Both are kept.\n\nThe first exercise passed 2 of its 3 checks. The private copy was saved with\nowner-only permissions and the owned volume was removed, but the restore\nexercise itself failed and the record names the error type it raised. The\nrecord states that no production data was changed and that no new cloud\nresource was created.\n\nThe second exercise passed. It checked the copy's integrity and the exact file\ndigests, ran the restore in a container with no network and no published\nports, and then checked the restored service twice: once immediately and once\nafter a restart. Both times it checked that a caller was authenticated, that\nthe tenant scope was preserved, that revoked records stayed revoked, that the\nbody digest was verified, and that repeat-safe behaviour was preserved.\n\n## What the record refuses to claim\n\nThe saved limits are part of the record. This is local point-in-time\nrestoration only, with no cross-region recovery. The private copy is\npermission-restricted rather than separately encrypted by the tool. Old copies\ncan restore old authority, so revocations and external payment state must be\nreconciled before a production restore. The exercise does not establish a\nscheduled off-site copy or any recovery time.\n\n## The known-wrong case\n\nThe wrong move is to keep only the successful exercise. Without the first\nrecord, nobody knows that the restore path failed once, why it failed, or\nwhether the second pass fixed it or avoided it.\n\n## What to record\n\nRecord the copy's digest, the checks by name, the failure and its error type,\nthe state after a restart, and the limits.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/pilot-backup-restore-1.json` (the\nfailure) and `pilot-backup-restore-2.json` (the pass), both record type\n`pilot_backup_restore_check/v1`.\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/pilot-backup-restore-1.json",
+        "artifacts/architecture-audit-2026-09-19/pilot-backup-restore-2.json"
+      ]
+    },
+    {
+      "id": "read_a_latency_report_by_its_population_and_its_limits",
+      "layer": "runtime_history_solution",
+      "family": "measurement",
+      "title": "Read a latency report by its population and its limits",
+      "tags": [
+        "latency",
+        "measurement",
+        "percentile",
+        "population",
+        "limits"
+      ],
+      "text": "# Read a latency report by its population and its limits\n\nKind: recorded measurement from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when someone quotes a response time at you, and before you quote one\nyourself.\n\n## What was recorded\n\nOne saved report measures a hosted service from a development workstation. Its\nown fields state the population exactly: seven request profiles, 12 samples\nfor each profile, a maximum of 84 requests, one request at a time, a fixed\npause between requests, and no automatic retries. The query text is recorded\nby its digest and its character count, so the same query can be identified\nagain. Percentiles are taken by nearest rank over successful samples only.\nEvery individual sample is kept, not just the summary.\n\nOpen the report for the timings. This record deliberately does not copy them,\nbecause a number copied out of its report loses the population it came from\nand becomes a claim.\n\n## What the report states it does not establish\n\nIts own limits list says: these are network round trip and client processing\ntimes, not isolated server execution time; new connections include name lookup\nand transport security setup and are reported separately from reused\nconnections; the catalogue searched is a small diagnostic one, so this is not\na capacity, availability, geographic, or competitor benchmark; and no bodies\nwere downloaded, no model was called, and nothing external was changed.\n\n## The known-wrong case\n\nThe wrong use is to take the fastest recorded value, present it as the typical\nresponse time, and leave out that connections were reused and that the\ncatalogue was small. Reporting first-connection and reused-connection timings\nseparately exists precisely so that the two cannot be blended into one\nflattering number.\n\n## What to record\n\nRecord the vantage point, the sample count per profile, the concurrency, the\nretry policy, the percentile method, whether connections were new or reused,\nand the size of the data searched.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/service-latency-1.json`, record type\n`service_latency_report/v1`.\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/service-latency-1.json"
+      ]
+    },
+    {
+      "id": "paying_for_something_is_not_permission_to_see_it",
+      "layer": "runtime_history_solution",
+      "family": "repair",
+      "title": "Paying for something is not permission to see it",
+      "tags": [
+        "authority",
+        "entitlement",
+        "disclosure",
+        "tenant grant",
+        "access control"
+      ],
+      "text": "# Paying for something is not permission to see it\n\nKind: recorded repair from Runtime History and Solution Intelligence.\n\n## When to use this record\n\nUse it when you are building the part of a service that decides whether a\ncaller may see an item, and more than one fact about the caller is available\nat that point.\n\n## What was recorded\n\nThe serving path was changed to require two separate things before it\ndiscloses any item metadata or any body: an exact host-installed grant for\nthat tenant, and a matching qualification decision.\n\nThe record then names three things that cannot stand in for that authority:\n\n1. Payment entitlement. A caller who has paid has an entitlement, not a grant.\n2. The effect names carried on the request. What a caller says it intends to\n   do is not permission to do it.\n3. Classification tags on the item. How an item is filed says nothing about\n   who may read it.\n\nItems that are unknown or not approved are absent everywhere, not hidden\nselectively: absent from discovery counts, from listing results, from the list\nof withheld identities, from manifests, and from bodies.\n\n## Why absence has to be complete\n\nA count is a disclosure. If an unapproved item is excluded from the list but\nstill counted, the caller learns that something exists which they may not see.\nIf it appears in a list of withheld identities, the caller learns its name.\nThe two facts together are often enough to identify the item.\n\n## The known-wrong case\n\nThe wrong design is to check payment at the edge and treat every later step as\nauthorised. Entitlement answers whether a caller may be billed. It does not\nanswer which tenant's material this caller may read.\n\n## What to record\n\nRecord the grant, the qualification decision, and the refusal reason. Keep the\nentitlement check and the authority check as separate named steps so neither\ncan quietly become the other.\n\n## Source\n\n`artifacts/architecture-audit-2026-09-19/provisioning-access-repairs.md`,\nsection \"Outcome\".\n",
+      "sources": [
+        "artifacts/architecture-audit-2026-09-19/provisioning-access-repairs.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_do_not_weaken_a_failing_check",
+      "layer": "user_feedback",
+      "family": "owner_constraint",
+      "title": "Recorded direction: do not weaken a failing check",
+      "tags": [
+        "owner direction",
+        "verification",
+        "known wrong case",
+        "classification"
+      ],
+      "text": "# Recorded direction: do not weaken a failing check\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `instruction` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | before verification, and again when a check fails |\n| Recorded | 2026-09-14, by the repository owner |\n\n## The guidance as recorded\n\nWhen a check fails, first decide whether the work, the check, or the\nenvironment is wrong, and record why. Do not weaken a check to make it pass. A\nrevised check must still reject a known-wrong answer.\n\n## What it asks a step to do\n\nThree things, in order. Classify the failure before editing anything. Write\ndown the classification and the evidence for it. If the check itself was\nwrong, correct it and then show that the corrected check still refuses the\nanswer everyone agrees is wrong.\n\nThe last part is the one that is usually skipped. A check that was corrected\nand no longer rejects anything has been removed, not corrected, and the suite\nis now smaller in a way that nothing records.\n\n## Response expected from a step\n\nA step that receives this guidance should return the classification it chose,\nthe reason, and, when it changed a check, the known-wrong input it ran and\nwhat the corrected check did with it.\n\n## Limits\n\nThis is guidance, not permission and not proof. It cannot waive a safety,\nlegal, security, permission, secret, network, spending, sandbox, or external\neffect rule, and it does not decide whether any particular check was right.\n\n## Source\n\n`AGENTS.md`, section \"Persistent general solving\", and\n`docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md`.\n",
+      "sources": [
+        "AGENTS.md",
+        "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_build_general_mechanisms",
+      "layer": "user_feedback",
+      "family": "owner_constraint",
+      "title": "Recorded direction: build general mechanisms",
+      "tags": [
+        "owner direction",
+        "generality",
+        "control flow",
+        "benchmark"
+      ],
+      "text": "# Recorded direction: build general mechanisms\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `constraint` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | before writing new control flow, prompts, or checks |\n| Recorded | 2026-09-14, by the repository owner |\n\n## The guidance as recorded\n\nBuild general mechanisms. Do not add control flow, prompts, or checks written\nfor one task, one dataset, or one benchmark.\n\n## What it asks a step to do\n\nBefore adding a branch, ask what the branch is keyed on. If it is keyed on the\nidentity of a particular input, a particular file name, a particular customer,\nor a particular benchmark, the branch is a shortcut that will pass today and\nmislead tomorrow.\n\nThe general version is usually available and is usually shorter. A branch on\none dataset's column names becomes a branch on a declared schema. A prompt\nwritten for one task becomes a prompt with a typed slot for the task. A check\nthat asserts one expected output becomes a check that asserts the property the\noutput must have.\n\n## Response expected from a step\n\nA step that receives this guidance should name what its new mechanism is keyed\non, and confirm that the key is a declared property rather than an identity.\nWhen it cannot find the general version, it should say so plainly and record\nthe specific version as provisional rather than presenting it as the design.\n\n## Limits\n\nThis is guidance, not permission and not proof. Generality is not an excuse to\nbuild something nobody needs. A mechanism with one caller is still allowed to\nexist; a mechanism with one caller and a branch on that caller's name is not.\n\n## Source\n\n`AGENTS.md`, section \"Persistent general solving\", first bullet.\n",
+      "sources": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_never_end_on_a_fixed_attempt_count",
+      "layer": "user_feedback",
+      "family": "owner_instruction",
+      "title": "Recorded direction: never end on a fixed attempt count",
+      "tags": [
+        "owner direction",
+        "persistence",
+        "retry",
+        "stopping condition"
+      ],
+      "text": "# Recorded direction: never end on a fixed attempt count\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `instruction` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | when the same failure repeats |\n| Recorded | 2026-09-14, by the repository owner |\n\n## The guidance as recorded\n\nNever end work on a fixed attempt count. When the same failure repeats, change\nthe approach: quote the failure, narrow the request to the failing part, try\nanother registered method, or carry the best result forward as provisional\nwith its findings recorded.\n\nThe same direction names the only reasons to stop: a verified result,\nexhausted declared authority, a question that only the owner can answer, a\ncancellation, or a provider outage recorded so the work can resume. Record\nwhich one it was.\n\n## What it asks a step to do\n\nThree attempts at the same thing is one attempt repeated. The instruction is\nto change something between attempts, and to say what changed.\n\nThe four listed changes are the registered ones: quote the exact failure back\ninto the next request, shrink the request to only the part that failed, switch\nto a different registered method, or stop and hand over the best result you\nhave with its findings attached and its status marked provisional.\n\n## Response expected from a step\n\nA step that stops should name which of the five ending reasons applied. A step\nthat continues should name what it changed since the last attempt. \"Tried\nagain\" is not one of the four changes.\n\n## Limits\n\nThis is guidance, not permission and not proof. Persisting never enlarges the\nauthority a step already has. Continuing to work is not authority to repeat an\nexternal effect, spend more, or call a model that was not permitted.\n\n## Source\n\n`AGENTS.md`, section \"Persistent general solving\", bullets two and six.\n",
+      "sources": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_decide_what_you_can_decide",
+      "layer": "user_feedback",
+      "family": "owner_priority",
+      "title": "Recorded direction: decide what you can decide",
+      "tags": [
+        "owner direction",
+        "decision",
+        "escalation",
+        "research"
+      ],
+      "text": "# Recorded direction: decide what you can decide\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `priority_change` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | before asking a question |\n| Recorded | 2026-09-20, in the evening, by the repository owner |\n\n## The guidance as recorded\n\nStop bringing back decisions that engineering can make. Decide, write down the\nreason, and move on. When a choice is uncertain, research it, measure it, or\ntest two versions instead of asking.\n\nThe same direction names what must still be asked: a legal commitment,\nspending beyond the recorded allowance, and a destructive operation such as\ndeleting an application, a volume, a domain record, a provider resource, or a\nstored secret. Identity and bank verification are added in the same record,\nbecause engineering cannot perform them.\n\n## What it asks a step to do\n\nBefore forming a question, sort it. If the answer can be found by reading, by\nmeasuring, or by building two versions and comparing them, that is work, not a\nquestion. Do the work and record the choice with its reason, so the next\nperson inherits a decision rather than an open item.\n\nIf the answer is one of the named exceptions, ask, and ask only for that.\n\n## Response expected from a step\n\nA decision, its reason, and the evidence used. Where two versions were built,\nboth and the comparison. A question only when it falls in the named set, and\nscoped to exactly what cannot be resolved.\n\n## Limits\n\nThis is guidance, not permission and not proof. Deciding does not grant\nauthority. A step that decides to take an action it has no permission for has\nmade a plan, not a decision it may execute.\n\n## Source\n\n`CLAUDE.md`, section \"Owner direction recorded on September 20, 2026, in the\nevening\".\n",
+      "sources": [
+        "CLAUDE.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_marketing_language_is_not_a_factual_claim",
+      "layer": "user_feedback",
+      "family": "owner_correction",
+      "title": "Recorded direction: marketing language is not a factual claim",
+      "tags": [
+        "owner direction",
+        "public writing",
+        "claims",
+        "evidence"
+      ],
+      "text": "# Recorded direction: marketing language is not a factual claim\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `correction` |\n| Scope | `project` |\n| Target | public website and product copy |\n| Strength | `instruction` |\n| Timing | before publishing product copy |\n| Recorded | 2026-09-21, by the repository owner |\n\n## The guidance as recorded\n\nMarketing language does not have to be measurable, and treating it as though\nit must produces flat, lifeless copy that says nothing. There are two\ncategories and only one of them needs evidence.\n\nWrite freely: evaluative and aspirational words, energy, and a strong point of\nview. Also write freely about what the product is designed to do and about how\nit works, because the mechanism is real and can be read in the source.\n\nThese need evidence every time: a number nobody measured, a comparison to a\nnamed product, the words guaranteed, always, never, every or any applied to an\noutcome, a customer or testimonial or user count that does not exist, and a\ncapability the product does not have.\n\n## The test\n\nAsk whether a reasonable reader would take the sentence as a fact they could\nverify. If not, it is enthusiasm and it is fine. If yes, it needs data.\n\n## Why the correction was needed\n\nCopy written under the assumption that every word must be measurable ends up\ndescribing nothing, because the interesting sentences all get removed. The\ncorrection restores the distinction rather than lowering the standard: the\nstandard for checkable facts did not move.\n\n## Response expected from a step\n\nA step drafting public copy should be able to point at each sentence that a\nreader could check and name its evidence. It does not have to justify a\nsentence that carries no checkable fact.\n\n## Limits\n\nThis is guidance, not permission and not proof. It does not permit a claim\nabout a benchmark, a provider, or a measured benefit that saved evidence does\nnot support.\n\n## Source\n\n`docs/guides/product-style-guide.md`, section \"Marketing language and factual\nclaims are different things\".\n",
+      "sources": [
+        "docs/guides/product-style-guide.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_keep_failures_as_visible_as_successes",
+      "layer": "user_feedback",
+      "family": "owner_constraint",
+      "title": "Recorded direction: keep failures as visible as successes",
+      "tags": [
+        "owner direction",
+        "evidence",
+        "failed attempt",
+        "reporting"
+      ],
+      "text": "# Recorded direction: keep failures as visible as successes\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `constraint` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | when writing any report or evidence record |\n| Recorded | 2026-09-14, by the repository owner |\n\n## The guidance as recorded\n\nPreserve failures and excluded attempts with the same prominence as successes.\nSave every report under a new name. Keep failed attempts beside their\nsuccessors.\n\n## What it asks a step to do\n\nDo not overwrite a report when you run again. Write the new one under a new\nname and leave the old one in place. When an attempt was excluded from a\nresult, record that it was excluded and why, next to the result, not in a\nfootnote or a separate file nobody opens.\n\nThe prominence part is the part with teeth. A failure recorded in a place\nwhere the reader has to go looking has been recorded and hidden at the same\ntime.\n\n## Why it changes what a later reader can conclude\n\nA single passing report proves that something passed once. A passing report\nnext to the three failures that came before it proves considerably more: that\nthe path was hard, where it broke, and whether the pass came from a repair or\nfrom avoiding the difficulty.\n\n## Response expected from a step\n\nEvery attempt saved under its own name, the exclusions listed beside the\nresult with their reasons, and the count of attempts stated rather than\nimplied.\n\n## Limits\n\nThis is guidance, not permission and not proof. It does not permit editing a\nhistorical report, a private session log, benchmark evidence, a managed\nrecord, or a failure baseline. Preserving failures means adding records, never\nrewriting the ones already there.\n\n## Source\n\n`AGENTS.md`, sections \"Evidence and benchmarks\" and \"North star and current\ninitiatives\".\n",
+      "sources": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_offered_fetched_loaded_used_and_verified_are_separate",
+      "layer": "user_feedback",
+      "family": "owner_constraint",
+      "title": "Recorded direction: offered, fetched, loaded, used and verified are separate",
+      "tags": [
+        "owner direction",
+        "claims",
+        "customer journey",
+        "verification"
+      ],
+      "text": "# Recorded direction: offered, fetched, loaded, used and verified are separate\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `constraint` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | before reporting that something works |\n| Recorded | 2026-09-20, by the repository owner |\n\n## The guidance as recorded\n\nOffered, fetched, loaded, used and verified are separate facts. A count of\npassing checks is not a working customer journey.\n\n## What it asks a step to do\n\nReport the fact you actually observed, and only that one.\n\n1. Offered. The item appeared in a list of things available.\n2. Fetched. The bytes were transferred.\n3. Loaded. The material was read into the place that will use it.\n4. Used. The work actually consulted it and the result depended on it.\n5. Verified. Somebody other than the producer checked the result.\n\nEach step is easy to confuse with the next. A search result proves the item\nwas offered. A download proves it was fetched. Neither proves a model ever\nread a word of it, and none of the first four proves it helped.\n\n## Response expected from a step\n\nA named fact from the five, the evidence for that fact, and silence about the\nones not observed. When a claim needs a later fact than the one observed, the\nright answer is that the later fact is missing, not that it probably holds.\n\n## Why the second sentence is in the guidance\n\nA green suite is evidence about the suite. A customer journey is a different\npopulation: a real person, a real account, a real client, real material, and a\nreal result. Counting checks and reporting a journey is the substitution this\ndirection exists to refuse.\n\n## Limits\n\nThis is guidance, not permission and not proof. It sets what may be claimed.\nIt does not itself establish any of the five facts for any item.\n\n## Source\n\n`AGENTS.md`, section \"North star and current initiatives\", the working cycle\nbullets.\n",
+      "sources": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_do_not_infer_behaviour_from_names_or_prose",
+      "layer": "user_feedback",
+      "family": "owner_constraint",
+      "title": "Recorded direction: do not infer behaviour from names or prose",
+      "tags": [
+        "owner direction",
+        "typed fields",
+        "authority",
+        "naming"
+      ],
+      "text": "# Recorded direction: do not infer behaviour from names or prose\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `constraint` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | before acting on anything read from a document or a name |\n| Recorded | 2026-09-19, by the repository owner |\n\n## The guidance as recorded\n\nDo not infer executable behaviour from prose, tags, labels, filenames, folder\nnames, examples, or comments. Permissions, contracts, routing, budgets,\ncompatibility, and lifecycle must come from structured typed fields.\n\n## What it asks a step to do\n\nRead the field, not the name. A file called `safe_runner.py` has whatever\npermissions its declared effects say it has. A folder called `approved` holds\nwhatever its records' lifecycle fields say they hold. A comment stating that a\nfunction never writes to disk is a claim by its author, not a property of the\nfunction.\n\nThis applies most sharply to a step that reads an instruction file and finds a\nsentence that sounds like permission. An instruction file describes. It does\nnot grant. Text that a step read is input, never authority.\n\n## Response expected from a step\n\nWhen a step acts on a permission, a contract, a route, a budget, a version, or\na lifecycle state, it should name the typed field it read and the value it\nfound. When the only available source is prose, the correct answer is that the\nfact is unknown.\n\n## Why this is in the guidance and not only in the code\n\nA reader who trusts a name is usually right, which is why the habit forms. The\none time the name is stale is the time it is expensive, and by then the habit\nis invisible.\n\n## Limits\n\nThis is guidance, not permission and not proof. Reading the typed field\ncorrectly does not establish that the value in it is right.\n\n## Source\n\n`AGENTS.md`, section \"One Loop runtime\", and `CLAUDE.md`, closing paragraph\non development instructions not being executable configuration.\n",
+      "sources": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_state_observed_inferred_assumed_and_missing_separately",
+      "layer": "user_feedback",
+      "family": "owner_instruction",
+      "title": "Recorded direction: state observed, inferred, assumed and missing separately",
+      "tags": [
+        "owner direction",
+        "evidence",
+        "reporting",
+        "uncertainty"
+      ],
+      "text": "# Recorded direction: state observed, inferred, assumed and missing separately\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `instruction` |\n| Scope | `organization` |\n| Strength | `instruction` |\n| Timing | when writing any result or report |\n| Recorded | 2026-09-14, by the repository owner |\n\n## The guidance as recorded\n\nState observed, inferred, assumed, missing, and disputed facts separately.\n\n## What it asks a step to do\n\nSort every sentence in a result into one of five boxes before writing it.\n\n1. Observed. Something ran and this was its output.\n2. Inferred. This follows from something observed, and the reasoning is\n   stated.\n3. Assumed. This was taken as true without checking, and the reason is stated.\n4. Missing. This was needed and could not be obtained.\n5. Disputed. Two sources disagree, and both are named.\n\nThe five look similar in a finished paragraph, which is exactly the problem.\nProse blends them for free. Separating them costs a little effort once and\nsaves a reader from acting on an assumption they took for a measurement.\n\n## Response expected from a step\n\nA result that labels its facts, or groups them under headings that carry the\nfive labels. A missing fact stated as missing rather than filled with a\nplausible value. A dispute preserved with both sides rather than resolved\nquietly in favour of the more convenient one.\n\n## Why \"missing\" has its own box\n\nA missing fact that is silently dropped becomes an absence in the report, and\nan absence reads as a fact that did not matter. Naming it keeps the gap\nvisible to the next person, who may be able to close it.\n\n## Limits\n\nThis is guidance, not permission and not proof. Labelling a claim as observed\ndoes not make the observation correct, and labelling one as assumed does not\nmake the assumption safe.\n\n## Source\n\n`AGENTS.md`, section \"Evidence and benchmarks\", and `ASTRA.md`, section\n\"Review and verification\".\n",
+      "sources": [
+        "AGENTS.md",
+        "ASTRA.md"
+      ]
+    },
+    {
+      "id": "recorded_direction_write_public_pages_in_plain_english",
+      "layer": "user_feedback",
+      "family": "owner_instruction",
+      "title": "Recorded direction: write public pages in plain English",
+      "tags": [
+        "owner direction",
+        "public writing",
+        "plain english",
+        "naming"
+      ],
+      "text": "# Recorded direction: write public pages in plain English\n\nKind: recorded guidance from a person, held in User Feedback Intelligence.\n\n| Field | Value |\n|---|---|\n| Guidance type | `instruction` |\n| Scope | `project` |\n| Target | public website and public documents |\n| Strength | `instruction` |\n| Timing | before publishing |\n| Recorded | 2026-09-19, by the repository owner |\n\n## The guidance as recorded\n\nUse plain English suitable for a reader using English as a second language.\nStart at the highest level and move toward details. Use direct statements,\nuseful examples, and ordinary names. Avoid hype, decorative slogans, em\ndashes, en dashes, and vague evidence metaphors. In public documents, prefer\nreport, record, log, contract, event history, or evidence when that word is\naccurate. Keep current behaviour separate from planned behaviour.\n\nThe same direction adds a naming rule for this project: the public pages use\nthe product brand and ordinary words such as task, each step, tools, model,\ninformation and results. The exact runtime terms, the full classification and\nthe complete definitions stay in the technical documentation. The rule governs\nwhat a page displays. It renames no class, no contract and no repository.\n\n## What it asks a step to do\n\nWrite the sentence a reader can follow on the first pass. Put the conclusion\nfirst and the mechanism after it. Choose the ordinary word over the impressive\none. Where a technical term is the accurate word, use it in the technical\ndocument and not on the public page.\n\n## Response expected from a step\n\nPublic text that a reader outside the project can follow, with the exact terms\npreserved in the technical documents the public text links to.\n\n## Limits\n\nThis is guidance, not permission and not proof. Simplifying words never\nsimplifies a claim: a plain sentence that states an unmeasured number is still\nan unmeasured number.\n\n## Source\n\n`AGENTS.md`, section \"Public writing\", and\n`docs/guides/product-style-guide.md`.\n",
+      "sources": [
+        "AGENTS.md",
+        "docs/guides/product-style-guide.md"
+      ]
+    }
+  ]
+}
