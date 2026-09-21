@@ -56,9 +56,10 @@ These statements describe the source at the revision named above.
   invited account and shows one recovery link. It sends at most two requests
   and repeats nothing.
 - The running release has browser sign-in switched off. It accepts
-  operator-issued keys only. The takeover checkpoint names the running
-  release. It was release 7 at revision `381efec`, and `main` recorded
-  release 8 later on September 20.
+  operator-issued keys only. The
+  [takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md) names
+  the running release and its image digest. Read that record rather than a
+  release number repeated here.
 - The website cannot complete the invited person's journey yet. Its callback
   view removes the returned session from the address bar and shows the
   sign-in form. It has no form for a new password. A link that is opened
@@ -100,8 +101,9 @@ work outside this guide.
   - Keep `registration_enabled` as `true` and refuse activation for a user
     without the invitation mark. The invitation command marks each user that
     it creates with `baltor_invitation` in the provider's administrator-owned
-    metadata. The service does not read this mark today, and a user that the
-    command only finds does not get the mark.
+    metadata, and it withholds the link for a user that it only finds without
+    that mark. Every account that this command invites therefore carries the
+    mark. The service does not read the mark today.
 - Addresses on a `baltor.ai` hostname as redirect addresses. The owner must
   first add the exact callback address to the provider's redirect allow list.
 - Email confirmation and recovery by email, after the sender domain is fully
