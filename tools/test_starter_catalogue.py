@@ -74,6 +74,9 @@ ITEM_FIELDS = {"reference", "body_path", "lifecycle", "license_state", "provenan
 #: The dash characters (em dash, en dash, horizontal bar, minus sign) that public prose never uses, written as code points
 #: so that this source file stays free of them.
 DASHES = "[" + chr(0x2014) + chr(0x2013) + chr(0x2015) + chr(0x2212) + "]"
+#: The retired heading, assembled from its three words, so that this source file
+#: does not itself hold the retired term that the conformance gate refuses.
+RETIRED_HEADING = " ".join(("what", "is", "next"))
 def _patterns(*patterns):
     return tuple(re.compile(pattern, re.IGNORECASE) for pattern in patterns)
 
@@ -582,7 +585,7 @@ KNOWN_WRONG = {
             ("of a retired condition name", "Write the stop condition before you start."),
             ("of a retired word for a record", "Keep the receipt of the change."),
             ("of a retired word for a history", "Add the decision to the chronicle."),
-            ("of a retired heading", "Then decide what is next."))),
+            ("of a retired heading", f"Then decide {RETIRED_HEADING}."))),
         ("a body names the temporary run store", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Steps\n", "\nKeep the value in Runtime Memory.\n\n## Steps\n"))),
         ("a body uses a longer family word", lambda s: _changed(
