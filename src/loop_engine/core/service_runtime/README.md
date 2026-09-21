@@ -184,6 +184,51 @@ public registration, subscription processing or useful native task execution.
 reference and expiry. It is not evidence of payment. Billing projections do
 not override an administrative access revocation.
 
+## Promotion codes
+
+`promotions.py` adds a second way to reach the same entitlement record: a
+person redeems a code instead of an operator granting access for each person.
+It adds no runtime type and no store. A promotion code is a passive typed
+record, `service_promotion_code/v1`, in the existing catalogue, and redemption
+writes the same `service_entitlement` record with the source
+`promotion_code_grant`.
+
+Three entitlement sources exist and they stay apart. `stripe_snapshot` is the
+only revenue-bearing source. `explicit_host_grant` and `promotion_code_grant`
+are comped. `ServiceRuntime.access_source_report` separates them and counts
+them separately; it reads the recorded source and never infers money from an
+expiry, a grant or a name. A release that predates `promotion_code_grant` reads
+an unknown source as metadata only, so an older server refuses the access
+rather than honoring a record whose rules it does not know.
+
+A code's text decides nothing. Every effect comes from a separate typed field:
+the grant, the total redemptions allowed, whether one account may repeat, the
+window, the approver and the approval reference. The service stores the digest
+of a code and never the code, so no listing can print one.
+
+One redemption commits four records in one atomic batch: the code with its
+exact revision, the per-account record, the request identity and the
+entitlement. Two accounts competing for the last redemption both guard the same
+code revision, so only one commits. A repeated request identity replays the
+first result and spends nothing. The count is compared with the allowance
+twice, once when the state is evaluated and once against the record that is
+about to be written, so a wrong state evaluation cannot commit a count past the
+allowance. The account's entitlement record is in the same read set at the
+revision the redemption read, so a payment that lands during a redemption
+refuses it rather than being replaced by a code grant.
+
+Every refusal that depends on the offered code discloses one word,
+`promotion_code_unusable`, with one status. The exact reason stays in the
+process and reaches an operator. An unknown code is evaluated against a
+stand-in record and reads the same rows, so the two paths do the same work.
+Refused redemptions are counted by the existing failed-attempt limiter for the
+client address.
+
+The transport serves one address, `POST /api/v1/account/promotion`, and only
+when the host configuration installs the `promotions` block. The operator side
+is `tools/promotion_codes.py`. The full procedure is in
+[the promotion code guide](../../../../docs/guides/promotion-codes.md).
+
 ## Failed-attempt limit for each client address
 
 This section describes current behavior. The HTTP transport counts refused
