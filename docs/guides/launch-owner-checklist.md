@@ -11,7 +11,7 @@ prepared accounts, engineering-owned setup and missing consent.
 
 | Current preparation | What remains |
 |---|---|
-| Fly release 7 running in iad under the recorded allowance | Engineering completes customer integration and recovery qualification. |
+| Fly pilot running in `iad` under the recorded allowance. The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment) section names the running release. | Engineering completes customer integration and recovery qualification. |
 | Supabase project, database, storage and key access prepared | Exact authentication-settings management permission, real customer integration and private storage checks. |
 | Baltor sandbox runtime test credential verified | Engineering prepares and tests products, checkout, portal, webhooks and reconciliation. |
 | Resend sender created and verification started | Engineering confirms verification, configures mail and tests controlled recipients. |
