@@ -539,12 +539,13 @@ def _service_checks(check, root):
                   and identity["redirect_url"] == base + "/auth/callback")
             malformed = client.post("/api/v1/account/signup", json={"record_type": "another/v1"})
             page = client.get("/auth/confirm")
-            # Another method on the same path is not this route. It falls through to the standing
-            # answer for a route that needs a credential, so only the exact method reaches a provider.
+            # Another method on the same path is not this route. It answers the
+            # standing missing-page answer rather than asking for a credential,
+            # so only the exact method reaches a provider.
             check("a_malformed_request_is_400_another_method_reaches_no_provider_and_the_page_is_served",
                   malformed.status_code == 400 and malformed.json()["error"]["code"] == "invalid_account_signup"
                   and malformed.json()["automatic_retry"] is False and len(provider.identity_requests) == 3
-                  and client.get("/api/v1/account/signup").status_code == 401 and page.status_code == 200
+                  and client.get("/api/v1/account/signup").status_code == 404 and page.status_code == 200
                   and page.headers["content-type"].startswith("text/html"))
     fixture = _fixture(root, "limited")
     many = _Provider()

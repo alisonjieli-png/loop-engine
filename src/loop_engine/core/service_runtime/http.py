@@ -84,6 +84,9 @@ API_ROUTES = {
     "/api/v1/account/activate": ("POST",),
     "/api/v1/account/logout": ("POST",),
     "/api/v1/account/access": ("GET", "POST"),
+    "/api/v1/account/signup": ("POST",),
+    "/api/v1/account/recovery": ("POST",),
+    PROMOTION_REDEMPTION_PATH: ("POST",),
     "/api/v1/admin/access": ("GET", "POST"),
     "/api/v1/session": ("GET",),
     "/api/v1/usage": ("GET",),
@@ -256,7 +259,16 @@ def _status_classes_in_use():
     source = inspect.getsource(inspect.getmodule(_status_classes_in_use))
     raised = re.findall(r"ServiceHttpError\([^)\n]*?,\s*(\d{3})", source)
     chosen = re.findall(r"return\s+(\d{3})(?:,|\s|$)", source) + re.findall(r"\s(\d{3})\s+if\s", source)
-    return {int(value) for value in [*raised, *chosen, "400"]}
+    # A success answer is not a refusal. The transport's success statuses
+    # appear in the route as a default and as accepted delivery answers, so
+    # reading every numeric literal in the module would name wording for
+    # statuses no refusal ever carries.
+    success_defaults = {int(value) for value in re.findall(
+        r"request\.method,\s*(\d{3})", source)}
+    success_defaults.update(int(value) for value in re.findall(
+        r"\)\)\),\s*(\d{3})", source))
+    return ({int(value) for value in [*raised, *chosen, "400"]}
+            - success_defaults)
 
 
 def http_provisioning_schema(operation):
@@ -792,7 +804,9 @@ class ServiceHttpApplication:
         # calling. An unknown address that is authenticated first answers 401
         # unauthorized, which sends the reader looking for a credential fault
         # that does not exist, and hides a wrong address from the person who
-        # published it.
+        # published it. A known address reached with the wrong method is the
+        # same missing-page answer, so only the exact method reaches a
+        # provider or an effect.
         if method not in API_ROUTES.get(path, ()):
             raise ServiceHttpError("route_unavailable", 404)
         if path in ("/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp") and method == "GET":
