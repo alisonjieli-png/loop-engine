@@ -312,6 +312,8 @@
   // A configuration holds tables and single settings only. A list is refused, because a list can carry the arguments of a command as plain words.
   const settingsOnly = value => isTable(value) ? Object.values(value).every(settingsOnly) : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
   const plainHttps = text => { try { const url = new URL(text); return text.startsWith("https://") && !url.username && !url.password; } catch (_) { return false; } };
+  // Two addresses sit on the same host. An address that cannot be read has no host, so it is never the same host as another one.
+  const sameHost = (left, right) => { try { const host = new URL(left).host; return host !== "" && host === new URL(String(right)).host; } catch (_) { return false; } };
   const settingName = /^\$?[A-Za-z][A-Za-z0-9_-]*$/, settingWord = /^[A-Za-z][A-Za-z0-9_-]*$/, credentialTable = /^(?:.*headers|env|environment)$/i;
   // A name holds a credential when one of its words says so. A capital letter, a hyphen or an underscore divides the words of a name, so oauth and timeout are not such names.
   const credentialWords = ["authorization", "auth", "bearer", "token", "secret", "password", "passphrase", "credential", "credentials", "key", "apikey"];
@@ -340,12 +342,15 @@
       if (credentialProblem) return "credential_rule";
       // The address is the placeholder. It is held once, under the url name of the single server entry, and the page fills it with its own origin.
       // Inside that entry the only tables are tables of headers or of environment values. Every other text is a plain setting word or the one
-      // top-level https $schema value, so no other text can carry an address, a path, an option or a command line.
+      // top-level https $schema value, so no other text can carry an address, a path, an option or a command line. That $schema value must sit on
+      // the host of the source address this recipe cites, so the page cannot send a reader's editor to a host nobody reviewed. This is the rule the
+      // release check applies to the reviewed record, so the page and the release check agree. A vendor that serves its schema from another host
+      // needs a review decision, recorded by changing the record or this rule, not a silent exception.
       const entry = serverEntry(recipe.configuration);
       const addressProblem = !entry || entry.url !== endpointPlaceholder
         || Object.entries(entry).some(([name, item]) => isTable(item) && !credentialTable.test(name))
         || values.filter(item => item.key === "url" || item.text.includes("{{")).length !== 1
-        || values.some(item => item.string && !credentialPosition(item) && item.text !== endpointPlaceholder && !settingWord.test(item.text) && !(item.path.length === 1 && item.key === "$schema" && plainHttps(item.text)));
+        || values.some(item => item.string && !credentialPosition(item) && item.text !== endpointPlaceholder && !settingWord.test(item.text) && !(item.path.length === 1 && item.key === "$schema" && plainHttps(item.text) && sameHost(item.text, recipe.source_url)));
       if (addressProblem) return "address_rule";
     }
     return "";
