@@ -2,29 +2,33 @@
 
 Kind: operator procedure for the Baltor private beta. It explains how to
 switch on browser sign-in for accounts that the operator prepares, how to
-invite a person without outgoing email, how to issue a link again and how to
+invite a person without outgoing email, how to give that person an account
+while account creation is closed, how to issue a link again and how to
 disable an account. Reading this guide changes nothing. Every command here
 that changes something asks for an explicit confirmation.
 
-Written on September 20, 2026 for revision `381efec` plus the invitation
-command. Check the current source and the current provider state before you
-rely on a dated statement. The private beta itself is defined by package D-17
-in [roadmap.yaml](../roadmap/roadmap.yaml) and in the
+Written on September 20, 2026. The statements below were checked again on
+September 21, 2026 against revision `16b838e`, which merges the current
+`main` and carries the invitation command in its current form. Check the
+current source and the current provider state before you rely on a dated
+statement. The private beta itself is defined by package D-17 in
+[roadmap.yaml](../roadmap/roadmap.yaml) and in the
 [takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md).
 
 ```text
 Private beta account procedure
 ├── 1. Enable browser sign-in for prepared accounts (once, by deployment)
-│   ├── browser_identity block: a first sign-in activates a tenant that the service owns
+│   ├── browser_identity block: a signed-in person reaches the account the operator bound
 │   ├── client_access block: a signed-in person creates and revokes personal keys
-│   └── Registration stays closed on the website and at the identity provider
+│   └── Account creation stays closed in the service and on the website
 ├── 2. Invite a person (each time, with one command)
 │   ├── Create the confirmed user, or find the user that this command created earlier
 │   ├── Generate one recovery link, with no email
 │   └── Show the link once and keep a report that does not hold the link
-├── 3. The invited person sets a password and signs in
-├── 4. Reissue a link when it expired or was used by accident
-└── 5. Disable an account
+├── 3. Bind the invited subject on the service host (each time, with one snippet)
+├── 4. The invited person sets a password and signs in
+├── 5. Reissue a link when it expired or was used by accident
+└── 6. Disable an account
     ├── Identity provider: no new browser sessions
     └── Service: subject revocation, which also stops personal keys
 ```
@@ -64,6 +68,21 @@ These statements describe the source at the revision named above.
   person has signed in through this path yet. The
   [takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md) names
   the running release and its image digest.
+- Account creation is closed in the service. A later operator change on the
+  same day set `registration_enabled` to `false` on the running pilot,
+  recorded in
+  [`pilot-registration-exposure-1.json`](../../artifacts/architecture-audit-2026-09-19/pilot-registration-exposure-1.json).
+  The service now refuses to create an account on a first sign-in and answers
+  `account_registration_unavailable`. Browser sign-in and personal client
+  keys stay available for an account that exists.
+- The operator creates each invited person's account with the typed runtime
+  method, from a Python process on the service host. There is no operator
+  command for it. See
+  [Bind the invited subject](#bind-the-invited-subject). The website asks the
+  service to create an account only when the served identity record says that
+  account creation is open, so with creation closed it asks for the session
+  directly. Until the operator has bound the subject, that request is refused
+  with `account_unavailable` and the page shows the connection message.
 - The website cannot complete the invited person's journey yet. Its callback
   view removes the returned session from the address bar and shows the
   sign-in form. It has no form for a new password. A link that is opened
@@ -72,16 +91,17 @@ These statements describe the source at the revision named above.
 - The service can revoke a subject, and that stops the subject's personal
   keys. There is no operator command for it and there is no way to restore a
   revoked subject. See [Disable an account](#disable-an-account).
-- A first sign-in activates a tenant for any confirmed user of the identity
-  project. The service does not check that the user was invited. See
-  [Keep registration closed](#keep-registration-closed).
+- New sign-ups are still open at the identity provider. A confirmed address
+  there no longer reaches a Baltor account, because the service refuses to
+  create one, but the provider still accepts new user records that the owner
+  did not invite. See [Keep registration closed](#keep-registration-closed).
 
 Evidence level of the invitation command: local contract only.
 
 | Fact | State |
 |---|---|
 | Checks | The checks in [`tools/test_invite_beta_user.py`](../../tools/test_invite_beta_user.py) pass. They use an injected transport and the HTTP library's in-memory transport. No socket is opened. |
-| Removed guards | The 42 removals listed in `RemovedGuardControls` in the checks file were made in memory, one at a time. Each removal makes its named check fail. Three of them remove a guard for the link request only. A guard that is not in that list is not proven in this way. |
+| Removed guards | The 46 controls listed in `RemovedGuardControls` in the checks file each remove one guard in memory, or change one stated value in a copy of this guide, one at a time. Each one makes its named check fail. Three of them remove a guard for the link request only. A guard that is not in that list is not proven in this way. |
 | Real provider | Not contacted by this command. The request and answer shapes come from the provider's published source code and documentation for user creation, link generation and error answers, read on September 20, 2026. |
 | Answer shape, observed separately | A separate probe called `POST /auth/v1/admin/generate_link` on September 21, 2026 and recorded the answer in [`account-email-path-probe-1.json`](../../artifacts/architecture-audit-2026-09-19/account-email-path-probe-1.json): status 200, one flat object, with `action_link`, `hashed_token`, `email_otp`, `verification_type`, `id`, `email` and `redirect_to` at the top level and no `properties` object. This command reads exactly those fields at the top level, so that part of its reading is observed rather than inferred. |
 | Answer fields still unobserved | The probe did not record the user fields that this command also checks: `email_confirmed_at`, `app_metadata`, `aud`, `role`, `banned_until`, `deleted_at` and `is_anonymous`. If the provider leaves one of them out, the command withholds the link and reports `user_is_not_confirmed`, `existing_user_was_not_created_by_the_invitation_command` or `user_cannot_sign_in_at_the_provider`. It never issues a link it could not check. |
@@ -95,21 +115,20 @@ work outside this guide.
 - A set-password view on the website. It reads the session that the provider
   returns to the callback address, asks for a new password, sends it to the
   provider, removes the session from the address bar and never logs it.
-- An operator command that disables and restores an account on the hosted
-  service, with a report. The runtime has subject revocation but no restore.
-- Admission of invited subjects only, enforced by the service itself. Two
-  designs are open, and neither is chosen or built:
-  - Keep `registration_enabled` as `false` and let the operator prepare the
-    tenant for each invited subject. The runtime method for this exists and
-    the hosted identity qualification uses it for disposable test identities.
-    An operator command for it does not exist. The issuer and the user
-    identity in the invitation report are its inputs.
-  - Keep `registration_enabled` as `true` and refuse activation for a user
-    without the invitation mark. The invitation command marks each user that
-    it creates with `baltor_invitation` in the provider's administrator-owned
-    metadata, and it withholds the link for a user that it only finds without
-    that mark. Every account that this command invites therefore carries the
-    mark. The service does not read the mark today.
+- An operator command that binds an invited subject, and that disables and
+  restores an account, on the hosted service, with a report. The runtime has
+  the binding method and subject revocation but no restore. Today the
+  operator runs the two snippets in this guide on the service host.
+- Admission of invited subjects only while account creation is open. This is
+  not needed while creation is closed, because the service creates no account
+  by itself. It becomes needed when creation is switched on again with the
+  account email work. The design is to keep `registration_enabled` as `true`
+  and to refuse activation for a user without the invitation mark. The
+  invitation command marks each user that it creates with `baltor_invitation`
+  in the provider's administrator-owned metadata, and it withholds the link
+  for a user that it only finds without that mark. Every account that this
+  command invites therefore carries the mark. The service does not read the
+  mark today.
 - Addresses on a `baltor.ai` hostname as redirect addresses. The owner must
   first add the exact callback address to the provider's redirect allow list.
 - Email confirmation and recovery by email, after the sender domain is fully
@@ -122,8 +141,11 @@ A separate operator change already applied these blocks to the hosted pilot on
 September 21, 2026, on the same image digest. Read
 [`pilot-configuration-signin-1.json`](../../artifacts/architecture-audit-2026-09-19/pilot-configuration-signin-1.json)
 for the exact applied record, which also sets the allowed scopes and the key
-limits for each account. Follow the steps below for another release, after a
-rollback, or for a second service.
+limits for each account, and
+[`pilot-registration-exposure-1.json`](../../artifacts/architecture-audit-2026-09-19/pilot-registration-exposure-1.json)
+for the change later that day that closed account creation. The block below
+carries the value that runs after both changes. Follow the steps below for
+another release, after a rollback, or for a second service.
 
 Do this once for a release, through the release procedure in the
 [takeover checkpoint](../context/TAKEOVER-CHECKPOINT-2026-09-20.md#working-cycle).
@@ -146,7 +168,7 @@ values.
 
 | Need | Who | State |
 |---|---|---|
-| New sign-ups switched off in the identity provider's settings | Owner, in the provider's dashboard | Still open. A probe on September 21, 2026 read the provider's public settings and recorded `signup_disabled` as `false` and automatic confirmation as `false`. See [Keep registration closed](#keep-registration-closed). |
+| New sign-ups switched off in the identity provider's settings | Owner, in the provider's dashboard | Still open at the provider. A probe on September 21, 2026 read the provider's public settings and recorded `signup_disabled` as `false` and automatic confirmation as `false`. The service closes account creation on its own side, so this no longer reaches a Baltor account. See [Keep registration closed](#keep-registration-closed). |
 | The callback address on the provider's redirect allow list | Owner, in the provider's dashboard | The owner confirmed `https://baltor-pilot.fly.dev/auth/callback`. No `baltor.ai` address is confirmed. |
 | The publishable key as a deployment secret named `SUPABASE_PUBLISHABLE_KEY` | Operator, through the platform's secret settings | Staged for the hosted pilot on September 21, 2026. Its value never appeared in a command line or a report. |
 | A copy of the current host configuration for rollback | Operator | Make it before the change. |
@@ -170,7 +192,7 @@ volume). Keep every other member as it is.
     "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
     "publishable_key_ref": "env:SUPABASE_PUBLISHABLE_KEY",
     "namespace_prefix": "customer",
-    "registration_enabled": true,
+    "registration_enabled": false,
     "email_signup_enabled": false,
     "allow_network": true,
     "starter_identities": []
@@ -184,53 +206,83 @@ volume). Keep every other member as it is.
 
 | Field | Meaning |
 |---|---|
-| `registration_enabled` is `true` | A first sign-in activates a tenant. The service derives the tenant from the issuer and the subject. The browser cannot choose a tenant, a namespace or a scope. A later sign-in finds the same tenant. |
-| `email_signup_enabled` is `false` | The website shows no account form, and the capabilities record says that registration is not available. |
+| `registration_enabled` is `false` | The service creates no account by itself. A first sign-in is refused with `account_registration_unavailable`, and the website does not even ask, because the identity record it reads says that account creation is closed. The operator creates each account instead. See [Bind the invited subject](#bind-the-invited-subject). |
+| `email_signup_enabled` is `false` | The website shows no account form, and the capabilities record says that registration is not available. The service refuses the pair `true` with a closed `registration_enabled`, with `email_signup_requires_account_admission`. |
 | `publishable_key_ref` | An environment reference. The key value is never written into the file. |
 | `allow_network` is `true` | The service reads the current user from the provider for every browser request. Without this authority every sign-in is refused with `identity_network_authority_required`. |
 | `namespace_prefix` | The first part of each activated tenant identity and namespace. At most 32 characters. |
 | `starter_identities` | Catalogue items that a new tenant may read. Leave it empty until the owner has approved starter items. An identity that is not in the manifest stops the service at start with `invalid_starter_identities`. |
 | `writes_authorized` is `true` | A signed-in person can create and revoke personal client keys. With `false` the account page lists keys and refuses each change with `access_writes_not_authorized`. |
 
-The other `client_access` fields keep their defaults: at most ten active
-personal keys for an account at a time, a lifetime of one day by default and
-seven days at most. The `client_access` block needs the `browser_identity`
-block. The service refuses to start when `client_access` is present and
-`browser_identity` is absent.
+The other `client_access` fields keep their defaults: the three scopes that
+the applied record lists, at most ten active personal keys for an account at
+a time, a lifetime of one day by default and seven days at most. The
+`client_access` block needs the `browser_identity` block. The service refuses
+to start when `client_access` is present and `browser_identity` is absent.
+
+Setting `registration_enabled` to `true` would let the service create an
+account on the first sign-in of any confirmed user of the identity project.
+That is what ran between the two operator changes of September 21, 2026, and
+it was closed because the identity provider lets anyone register. Do not set
+it to `true` again while new sign-ups are open at the provider. See
+[Keep registration closed](#keep-registration-closed).
 
 ### Keep registration closed
 
-`registration_enabled` does not open public registration by itself, but it
-admits every confirmed user of the identity project. Registration is closed
-only while all three parts below hold.
+Four separate parts keep account creation closed. They sit in different
+places, they are owned by different people, and they fail differently. Read
+each one separately before you conclude that registration is closed.
 
 ```text
-Registration is closed only when
+Account creation is closed only when
+├── Service: registration_enabled is false, so no first sign-in creates an account
 ├── Website: email_signup_enabled is false, so no account form is shown
 ├── Identity provider: new sign-ups are switched off in its settings
 └── Operator: users are created only with the invitation command
 ```
 
-The second part does not hold today. A probe on September 21, 2026 read the
+The first part holds, and it was applied by an operator change, not by this
+guide. The record is
+[`pilot-registration-exposure-1.json`](../../artifacts/architecture-audit-2026-09-19/pilot-registration-exposure-1.json).
+It states what was found, what was attempted and what was changed: an attempt
+to switch self-registration off at the provider answered 403 for a missing
+scope, which is the permission gap that the takeover checkpoint records, so
+the closure was made in the host configuration instead. After the change the
+service reported `registration_enabled` and `email_signup_enabled` as
+`false`, browser sign-in and personal client keys still available, and both
+public addresses healthy. The record also states that nobody had used the
+open path: the provider held the same two accounts as before and no tenant
+had been created.
+
+The third part does not hold today. A probe on September 21, 2026 read the
 provider's public settings and recorded them in
 [`account-email-path-probe-1.json`](../../artifacts/architecture-audit-2026-09-19/account-email-path-probe-1.json):
 `signup_disabled` is `false` and automatic confirmation is `false`. New
 sign-ups are open at the provider, and the provider requires email
 confirmation before it counts an address as confirmed.
 
-The publishable key is public by design, so a visitor can ask the provider
-directly for an account. Only the confirmation step stands between that
-request and a confirmed address, and a confirmed address activates a tenant
-on its first sign-in. What limits this today is the provider's built-in
+Those two facts together: a stranger can still register an address at the
+identity provider and confirm it, because the publishable key is public by
+design, as it must be for a browser to sign in. That confirmed address now
+gets no Baltor account. The service refuses to create one, and the operator
+binds only the subjects that the invitation command prepared. What the open
+provider setting still costs is provider resources and user records that the
+owner did not invite. What limits that today is the provider's built-in
 sender, which its documentation says delivers only to addresses of the
 project's team and only two messages each hour. A connected sender for
-authentication email removes that limit, so this gap must be closed before
-that work lands.
+authentication email removes that limit.
 
-Treat registration as open to anyone who can get a confirmed address at the
-provider. Ask the owner to switch new sign-ups off. User creation through the
+Ask the owner to switch new sign-ups off. User creation through the
 administration interface keeps working when sign-ups are off, so the
-invitation command is unaffected.
+invitation command is unaffected. Until that is done, do not switch
+`registration_enabled` back to `true`, because that one change alone reopens
+the whole path.
+
+The applied record also names when this reverses by design: account creation
+is switched on again with the account email work, which brings its own
+sign-up journey and a request limit for each address. Open registration is
+the intended product behaviour at that point, and the control then is payment
+and entitlement rather than a closed door.
 
 ### Apply, check and roll back
 
@@ -245,15 +297,19 @@ invitation command is unaffected.
 
    Expect `browser_identity_available` and `client_access_available` to be
    `true` and `registration_available` to be `false`. The identity record
-   must show `registration_enabled` as `true`, `email_signup_enabled` as
-   `false` and a key that starts with `sb_publishable_`.
+   must show `registration_enabled` as `false`, `email_signup_enabled` as
+   `false` and a key that starts with `sb_publishable_`. A `true` in either
+   of the first two fields means that the service is not running the
+   configuration in this guide.
 3. To roll back, remove both blocks and restart. The service returns to
    operator-issued keys only.
 
 The hosted mode of
 [`tools/check_identity_customer_access.py`](../../tools/check_identity_customer_access.py)
-requires `registration_enabled` to be `false`. It refuses to run against this
-beta configuration until that tool is changed.
+requires `registration_enabled` to be `false` on the service it tests, and it
+expects an account creation request there to be refused. The applied
+configuration meets both requirements. It would refuse to run against a
+service that has account creation open.
 
 ## Invite a person
 
@@ -279,6 +335,18 @@ of an earlier run. Without the mark the link is withheld with
 registered that account and chose its password. That person may also hold
 browser sessions and personal client keys for it, and a new password ends
 neither of them. The command has no option to accept such an account.
+
+That refusal comes after the link request, not before it, because the mark is
+read from the link answer. So a refused run of this kind has already asked
+the provider for a recovery link for that person's account. The link is never
+written and never shown, and the report records `link_generated` as `true`
+with `link_sha256` as `null`. The provider keeps one recovery token for each
+user, so that request also replaced any recovery token the account already
+had. The order is a deliberate choice: reading the mark first would need a
+third request to the provider, and this command makes at most two and adds no
+request shape that has not been observed. If refusing before any effect
+becomes more important than the two-request contract, that is a change to the
+command, not to this procedure.
 
 ### Run it
 
@@ -323,8 +391,11 @@ history, send standard output to the clipboard. The exit status of a
 pipeline is the status of its last command, so switch on `pipefail` first.
 Without it you see the status of `wl-copy`, which is 0 also after a refusal.
 After a refusal or an unknown outcome the clipboard holds no link, because
-nothing was written to standard output. In every case the `outcome` field on
-standard error is authoritative.
+nothing was written to standard output. Standard error holds one line of
+JSON, and its `outcome` field is authoritative. The one exception is the last
+resort of the summary guard described in
+[Read the result](#read-the-result), when standard error holds only the code
+`secret_in_output_refused` and no field at all.
 
 ```bash
 set -o pipefail
@@ -350,7 +421,9 @@ workstation. The credential and the link never do.
 ### Read the result
 
 The exit status and the `outcome` field of the summary line on standard
-error say what you may conclude.
+error say what you may conclude. The summary line holds `outcome`, `failure`,
+`detail`, `user_created`, `invitation_mark_present`, `provider_requests`,
+`link_displayed`, `report` and `report_written`.
 
 | Exit status | `outcome` | Meaning |
 |---|---|---|
@@ -359,6 +432,18 @@ error say what you may conclude.
 | 1 | `link_issued` with `link_displayed` as `false` | The link was generated and recorded, but standard output could not take it. Nobody has the link. Reissue one. |
 | 2 | none | Refused before any request. Nothing was created and no report exists. Standard error holds one code from the table of early refusals. |
 | 3 | `outcome_unknown` | A request may have taken effect and its answer was lost or unusable. Nothing was repeated. |
+| any | none, the whole line is the bare code `secret_in_output_refused` | The summary line still matched a private value after the report path was removed from it. The exit status still describes the run, and the report file still says what happened. This is a defect in the command. Stop and report it. |
+
+The summary line has a guard of its own, and it is not the same as the guard
+on the report. The report path is the only free text in the line, and the
+operator chooses that path. If the path matches the link, its token, its
+one-time code or the credential, the command keeps every typed field and
+writes `report_path_withheld` in place of the path alone. Nothing else
+changes: the link is still shown, the report is still written and the exit
+status is still the status of the run. Only a reduced line that still matches
+a private value is replaced by the bare code, which is the last row above.
+Choose a report path that repeats no part of a link or a code, and this guard
+never acts.
 
 The report (`beta_invitation_report/v1`) holds these fields: the time, the
 project address and the issuer, the redirect address, a digest of the address
@@ -406,14 +491,14 @@ Failures after the first request:
 | `user_creation_refused_by_provider` | The provider refused to create the user for a reason other than an existing address. | Check the address. Read the provider's log for the refusal. |
 | `user_not_found_at_the_provider` | The provider reported an existing address and then found no user for the link. | The address may belong to another sign-in method or the user was removed. Inspect the provider's user list. |
 | `link_refused_by_provider` | The provider refused to generate the link. | Read the provider's log. Wait before another attempt if it reports a rate limit. |
-| `existing_user_was_not_created_by_the_invitation_command` | The address already has a user, and that user does not carry the `baltor_invitation` mark. Someone else registered it and chose its password. The link was withheld. | Ask the owner to remove that user in the provider's dashboard. If the person has signed in before, also [disable the account](#disable-an-account) at the service with the `user_id` from the report. Then run the command again, so that the command creates the user. |
+| `existing_user_was_not_created_by_the_invitation_command` | The address already has a user, and that user does not carry the `baltor_invitation` mark. Someone else registered it and chose its password. The link was withheld. A recovery link was generated at that account before the refusal, which is why `link_generated` is `true` in the report, and any earlier recovery token for that account was replaced. Nobody holds the new one. | Ask the owner to remove that user in the provider's dashboard. If the person has signed in before, also [disable the account](#disable-an-account) at the service with the `user_id` from the report. Then run the command again, so that the command creates the user. |
 | `user_is_not_confirmed` | The user has no confirmed address. The link was withheld. | Ask the owner to remove that user in the provider's dashboard. Never confirm it: a confirmed account keeps the password that it already has. Then run the command again, so that the command creates the user. |
 | `user_cannot_sign_in_at_the_provider` | The user is banned, removed, anonymous or has another role. The link was withheld. | A disabled account stays disabled. Lift the ban at the provider first if the account should return. |
 | `user_identity_mismatch` | The link answer describes another user or another address than the request. The link was withheld. | Stop and report it. Do not deliver any link for this address. |
 | `redirect_replaced_by_the_provider` | The provider replaced the redirect address, which happens when the address is not on its allow list. The link was withheld. | Use an address that is on the allow list, or ask the owner to add the exact address. |
 | `link_shape_refused` | The link does not point at the identity project's verification path with exactly one token, one kind and one redirect address. | Stop and report it. The provider's answer shape may have changed. |
 | `link_kind_mismatch` | The provider returned another kind of link than a recovery link. | Stop and report it. |
-| `secret_in_output_refused` | The report or the summary would have contained the link, the code or the credential. The link was withheld. | Stop and report it. This is a defect in the command. |
+| `secret_in_output_refused` | The report would have contained the link, its token, its one-time code or the credential. The link was withheld and the report file was left empty. This `failure` value is never set by the guard on the summary line, which is described above the failures table. | Stop and report it. This is a defect in the command. |
 | `report_not_written_link_withheld` | The report could not be written, for example because the disk is full. The link was withheld. | Free space and run the command again with a new report path. |
 | `unexpected_error` | A defect after a request. The detail names the error type only. | Treat as unknown and report it. |
 
@@ -483,6 +568,65 @@ with an address that you control before you invite anyone.
    failure and its detail, and report it, rather than removing the guard.
 6. Record what you observed beside the two reports.
 
+## Bind the invited subject
+
+Account creation is closed in the service, so no sign-in creates an account.
+The operator creates it, once for each invited person, with the typed runtime
+method. Do this after the invitation command has given you a `user_id` and
+before the person signs in. A person who signs in before you do this is
+refused with `account_unavailable` and sees the connection message on the
+page.
+
+Why this and not the other way round: switching `registration_enabled` on for
+the moment of activation and off again would admit every confirmed user of
+the identity project for the whole of that window, which is the exposure that
+was closed on September 21, 2026. It is one switch for the whole service, not
+one for each person. It also needs two configuration changes and two restarts
+for every invited person. Binding the subject touches one person, changes no
+configuration and restarts nothing.
+
+There is no operator command for it yet. The only current route is a Python
+process on the service host that loads the host configuration, which is the
+same route that
+[`tools/identity_qualification_host.py`](../../tools/identity_qualification_host.py)
+uses for disposable test identities. A check runs the snippet below against a
+temporary local service. It has not been run on the hosted service in this
+work. Ask the owner before you use it on the hosted service, and record the
+printed result.
+
+Take `SUBJECT` from the `user_id` field of the invitation report.
+
+```python
+from loop_engine.core.service_runtime.http_entrypoint import load_host_application
+from loop_engine.core.service_runtime.records import ServiceRuntimeError, SubjectTenantRegistration
+
+HOST_CONFIGURATION = "/data/host.json"
+SUBJECT = "the user_id field of the invitation report"
+
+application, _configuration = load_host_application(HOST_CONFIGURATION)
+identity = application.browser_identity.configuration
+issuer = identity.project_url + "/auth/v1"
+account = SubjectTenantRegistration(issuer, SUBJECT, identity.namespace_prefix, identity.allowed_scopes)
+try:
+    print(application.runtime.ensure_subject_tenant(account))
+except ServiceRuntimeError as refusal:
+    raise SystemExit("refused: " + refusal.code)
+```
+
+| Printed result | Meaning |
+|---|---|
+| `'created': True` | The account was created for that subject. The person can sign in now. The line also holds the tenant identity and the namespace. Keep it beside the invitation report. |
+| `'created': False` | That subject already had an account. Nothing changed. Running the snippet again never resets permissions, restores removed grants or restores a revoked subject. |
+| `refused: unauthorized` | The subject was revoked, or its tenant was disabled. A revoked subject cannot be bound again at this revision. |
+| `refused: commit_unknown` | The store did not confirm the write. Run the snippet again and read `created` in the new result. |
+
+Any other refusal code means that nothing was bound. Stop and report it.
+
+The account is created with the scopes in the host configuration and with the
+catalogue grants that `starter_identities` names, which is exactly what a
+first sign-in created while account creation was open. It carries no
+subscription and no body entitlement.
+
 ## What the invited person does
 
 The planned journey, which needs the set-password view:
@@ -493,18 +637,24 @@ The planned journey, which needs the set-password view:
 2. The website asks for a new password and sends it to the identity
    provider. It removes the session from the address bar.
 3. The person signs in on the sign-in page with the address and the new
-   password. The website asks the service to activate the account. The
-   service creates the tenant on this first sign-in only.
+   password. The website asks the service for the session. The service finds
+   the account that the operator bound and answers with its tenant, namespace
+   and scopes.
 4. On the account page the person creates a personal client key, copies it
    once and uses the shown connection settings for a supported client.
 
 What happens at the revision named above: step 1 is the provider's documented
 behavior and does not depend on the website. In step 2 the website removes
 the session and shows the sign-in form with a notice. It offers no password
-form, so the journey ends there and the link is used up. The takeover
-checkpoint records that steps 3 and 4 were checked against the real identity
-provider with disposable accounts that had a password. Nobody has observed
-them with an invited person.
+form, so the journey ends there and the link is used up. In step 3 the
+website asks the service to create an account only when the identity record
+it reads says that account creation is open. With creation closed it asks for
+the session directly, so the step works for a bound subject and is refused
+with `account_unavailable` for a subject that the operator has not bound. The
+takeover checkpoint records that steps 3 and 4 were checked against the real
+identity provider with disposable accounts that had a password, while account
+creation was open. Nobody has observed them with an invited person, and
+nobody has observed step 3 against a service with account creation closed.
 
 The browser keeps the session in page memory only. A reload signs the person
 out, and the sign-in token lasts one hour.
@@ -555,17 +705,16 @@ Subject revocation has these limits:
 - It does not stop a key that the operator issued for the same tenant. To
   stop everything in a tenant, disable the tenant. That runtime method has no
   operator command either.
-- It cannot be undone at this revision. Account activation never restores a
-  revoked subject, and a subject record cannot be bound a second time.
+- It cannot be undone at this revision. Binding the subject again never
+  restores a revoked subject, and a subject record cannot be bound a second
+  time.
 
 There is no operator command for step 2 yet. The only current route is the
-typed runtime method, called from a Python process on the service host that
-loads the host configuration. This is the route that
-[`tools/identity_qualification_host.py`](../../tools/identity_qualification_host.py)
-uses for disposable test identities. A check runs the snippet below against
-a temporary local service. It has not been run on the hosted service in this
-work. Ask the owner before you use it on the hosted service, and record the
-printed result.
+typed runtime method, called from a Python process on the service host, in
+the same way as [Bind the invited subject](#bind-the-invited-subject). A
+check runs the snippet below against a temporary local service. It has not
+been run on the hosted service in this work. Ask the owner before you use it
+on the hosted service, and record the printed result.
 
 Take `SUBJECT` from the `user_id` field of the invitation report.
 
@@ -617,8 +766,10 @@ PYTHONPATH=src:tools .venv/bin/python -m unittest tools/test_invite_beta_user.py
 ```
 
 The checks fail when one of the guards listed in `RemovedGuardControls` is
-removed, when the number of removals stated in this guide differs from that
+removed, when the number of controls stated in this guide differs from that
 list, when this guide names an option that the command does not accept, when
-the two host blocks above no longer load, when the snippet for subject
-revocation stops working against a local service, or when the command can
-report a code that this guide does not explain.
+the two host blocks above no longer load, when the block above reopens
+account creation or changes the namespace prefix or the scopes it grants,
+when the snippet for binding a subject or the snippet for subject revocation
+stops working against a local service, or when the command can report a code
+that this guide does not explain.

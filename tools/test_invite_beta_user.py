@@ -8,6 +8,7 @@ provider accepts the requests.
 """
 from __future__ import annotations
 
+import ast
 from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime, timedelta, timezone
 import hashlib
@@ -979,11 +980,46 @@ class RemovedGuardControls(unittest.TestCase):
             self.assertTrue(self.failed(InvitationChecks, "test_abbreviated_confirmation_flag_is_not_a_confirmation"))
 
     def test_the_number_of_controls_matches_the_guide(self):
-        """The guide states how many removals are proven, so the statement cannot exceed this list."""
+        """The guide states how many controls are proven, so the statement cannot exceed this list."""
         single = [name for name in dir(self) if name.startswith("test_") and name.endswith("_is_detected")]
         count = (len(self.CONTROLS) + len(self.LINK_REQUEST_CONTROLS) + len(self.TRANSPORT_CONTROLS)
                  + len(self.COMMAND_CONTROLS) + len(single))
-        self.assertIn("The " + str(count) + " removals listed in `RemovedGuardControls`", GUIDE.read_text("utf-8"))
+        self.assertIn("The " + str(count) + " controls listed in `RemovedGuardControls`", GUIDE.read_text("utf-8"))
+
+    def assert_guide_drift_detected(self, before, after, name):
+        """Change one stated value in a copy of the guide; its named check must fail.
+
+        The guide itself is never written. The copy stands in for a later edit
+        that would publish a value the running service does not have.
+        """
+        self.assertFalse(self.failed(OperatorGuideChecks, name), name + " must pass before the guide is changed")
+        text = GUIDE.read_text("utf-8")
+        self.assertEqual(text.count(before), 1, before)
+        folder = tempfile.TemporaryDirectory(prefix="baltor-guide-drift-")
+        self.addCleanup(folder.cleanup)
+        copy = Path(folder.name) / GUIDE.name
+        copy.write_text(text.replace(before, after), "utf-8")
+        with patch.object(sys.modules[__name__], "GUIDE", copy):
+            self.assertTrue(self.failed(OperatorGuideChecks, name), "changing the guide was not detected by " + name)
+
+    def test_a_reopened_account_creation_in_the_guide_is_detected(self):
+        self.assert_guide_drift_detected('"registration_enabled": false', '"registration_enabled": true',
+                                         "test_guide_host_blocks_load_through_the_real_host_loader")
+
+    def test_a_changed_namespace_prefix_in_the_guide_is_detected(self):
+        self.assert_guide_drift_detected('"namespace_prefix": "customer"', '"namespace_prefix": "beta"',
+                                         "test_guide_host_blocks_load_through_the_real_host_loader")
+
+    def test_a_narrowed_personal_key_scope_in_the_guide_is_detected(self):
+        self.assert_guide_drift_detected('"record_type": "service_client_access/v1"',
+                                         '"record_type": "service_client_access/v1",\n    '
+                                         '"allowed_scopes": ["usage:read"]',
+                                         "test_guide_host_blocks_load_through_the_real_host_loader")
+
+    def test_a_binding_snippet_that_grants_other_scopes_is_detected(self):
+        self.assert_guide_drift_detected("identity.namespace_prefix, identity.allowed_scopes",
+                                         'identity.namespace_prefix, ("usage:read",)',
+                                         "test_guide_binding_snippet_activates_an_account_while_creation_is_closed")
 
     def test_each_removed_guard_fails_its_named_check(self):
         for guard, name in self.CONTROLS:
@@ -1046,6 +1082,8 @@ class OperatorGuideChecks(unittest.TestCase):
     """
 
     SUBJECT = "00000000-0000-4000-8000-0000000000aa"
+    APPLIED_SIGN_IN = ROOT / "artifacts/architecture-audit-2026-09-19/pilot-configuration-signin-1.json"
+    APPLIED_CLOSURE = ROOT / "artifacts/architecture-audit-2026-09-19/pilot-registration-exposure-1.json"
 
     @classmethod
     def setUpClass(cls):
@@ -1053,6 +1091,21 @@ class OperatorGuideChecks(unittest.TestCase):
         cls.blocks = re.findall(r"^```([a-z]*)\n(.*?)^```$", cls.text, re.M | re.S)
         documents = [json.loads(body) for language, body in cls.blocks if language == "json"]
         cls.hosts = [document for document in documents if "browser_identity" in document]
+
+    def snippet(self, marker):
+        """The one Python snippet in the guide that calls the named runtime method."""
+        found = [body for language, body in self.blocks if language == "python" and marker in body]
+        self.assertEqual(len(found), 1, marker)
+        return found[0]
+
+    def run_snippet(self, source, path, subject):
+        """Run a documented snippet as the operator would: in a separate Python process."""
+        source = source.replace('"/data/host.json"', repr(str(path)))
+        source = source.replace('"the user_id field of the invitation report"', repr(subject))
+        self.assertEqual(source.count(repr(str(path))) + source.count(repr(subject)), 2)
+        return subprocess.run([sys.executable, "-c", source], capture_output=True, text=True, timeout=120,
+                              env={"PATH": os.environ.get("PATH", ""), "PYTHONPATH": str(ROOT / "src"),
+                                   "PYTHONDONTWRITEBYTECODE": "1"})
 
     def local_host(self, *, without=()):
         """A complete local host configuration with the guide's two blocks added."""
@@ -1073,15 +1126,29 @@ class OperatorGuideChecks(unittest.TestCase):
         return path
 
     def test_guide_host_blocks_load_through_the_real_host_loader(self):
+        """The copyable block must load, and it must match the configuration that runs.
+
+        The applied records decide the values. This check only compares, so the
+        guide cannot publish a value that the running service does not have.
+        """
         from loop_engine.core.service_runtime.http_entrypoint import ENVIRONMENT_REFERENCE_PREFIX, load_host_application
-        from loop_engine.core.service_runtime.records import ServiceRuntimeError
+        from loop_engine.core.service_runtime.records import DEFAULT_SCOPES, ServiceRuntimeError
         self.assertEqual(len(self.hosts), 1)
         self.assertEqual(sorted(self.hosts[0]), ["browser_identity", "client_access"])
         self.assertNotIn("sb_publishable_", json.dumps(self.hosts[0]))
+        applied = json.loads(self.APPLIED_SIGN_IN.read_text("utf-8"))["configuration_added"]["browser_identity"]
+        closed = json.loads(self.APPLIED_CLOSURE.read_text("utf-8"))["fix"]["observed_after"]
         application, _ = load_host_application(str(self.local_host()))
         identity = application.browser_identity.configuration
-        self.assertEqual((identity.registration_enabled, identity.email_signup_enabled, identity.allow_network),
-                         (True, False, True))
+        # Account creation was closed on the running pilot. The guide must not reopen it.
+        self.assertEqual((identity.registration_enabled, identity.email_signup_enabled),
+                         (closed["registration_enabled"], closed["email_signup_enabled"]))
+        self.assertIs(identity.allow_network, True)
+        # A different prefix would make a second tenant for the same person.
+        self.assertEqual(identity.namespace_prefix, applied["namespace_prefix"])
+        self.assertEqual(identity.allowed_scopes, tuple(applied["allowed_scopes"]))
+        self.assertEqual(application.client_access.policy.allowed_scopes, DEFAULT_SCOPES)
+        self.assertEqual(tuple(applied["allowed_scopes"]), DEFAULT_SCOPES)
         self.assertTrue(identity.publishable_key_ref.startswith(ENVIRONMENT_REFERENCE_PREFIX))
         self.assertIs(application.client_access.policy.writes_authorized, True)
         website = application.capabilities()["website"]
@@ -1090,7 +1157,7 @@ class OperatorGuideChecks(unittest.TestCase):
         name = identity.publishable_key_ref[len(ENVIRONMENT_REFERENCE_PREFIX):]
         with patch.dict(os.environ, {name: ENVIRONMENT["FIXTURE_IDENTITY_PUBLIC"]}):
             public = application.browser_identity.public_configuration()
-        self.assertEqual((public["registration_enabled"], public["email_signup_enabled"]), (True, False))
+        self.assertEqual((public["registration_enabled"], public["email_signup_enabled"]), (False, False))
         with patch.dict(os.environ, {name: CREDENTIAL}), self.assertRaises(ServiceRuntimeError):
             application.browser_identity.public_configuration()
 
@@ -1100,6 +1167,39 @@ class OperatorGuideChecks(unittest.TestCase):
             load_host_application(str(self.local_host(without=("browser_identity",))))
         application, _ = load_host_application(str(self.local_host(without=("client_access",))))
         self.assertIsNone(application.client_access)
+
+    def test_guide_binding_snippet_activates_an_account_while_creation_is_closed(self):
+        """The known-wrong case first: with creation closed, no sign-in makes an account.
+
+        The operator's snippet is the documented way to make one, so it must work
+        against a service that runs the guide's own configuration.
+        """
+        from loop_engine.core.service_runtime.http_entrypoint import load_host_application
+        from loop_engine.core.service_runtime.records import ServiceRuntimeError, SubjectTenantRegistration
+        path = self.local_host()
+        application, _ = load_host_application(str(path))
+        identity = application.browser_identity.configuration
+        issuer = identity.project_url + "/auth/v1"
+        account = SubjectTenantRegistration(issuer, self.SUBJECT, identity.namespace_prefix, identity.allowed_scopes)
+        # No provider is contacted: the adapter refuses before it looks at the credential.
+        with self.assertRaises(ServiceRuntimeError) as refused:
+            application.browser_identity.activate("fixture-browser-token")
+        self.assertEqual(refused.exception.code, "account_registration_unavailable")
+        with self.assertRaises(ServiceRuntimeError):
+            application.runtime.authenticate_subject(issuer, self.SUBJECT)
+        source = self.snippet("ensure_subject_tenant")
+        done = self.run_snippet(source, path, self.SUBJECT)
+        self.assertEqual(done.returncode, 0, done.stderr)
+        created_account = ast.literal_eval(done.stdout.strip())
+        self.assertEqual((created_account["created"], created_account["committed"], created_account["tenant_id"]),
+                         (True, True, account.tenant_id))
+        principal = application.runtime.authenticate_subject(issuer, self.SUBJECT)
+        self.assertEqual((principal.tenant_id, principal.scopes), (account.tenant_id, identity.allowed_scopes))
+        again = ast.literal_eval(self.run_snippet(source, path, self.SUBJECT).stdout.strip())
+        self.assertEqual(again["created"], False)
+        self.assertEqual(application.runtime.authenticate_subject(issuer, self.SUBJECT).scopes, identity.allowed_scopes)
+        for line in ("`'created': True`", "`'created': False`", "`refused: unauthorized`"):
+            self.assertIn(line, self.text)
 
     def test_guide_revocation_snippet_stops_sign_in_and_personal_keys(self):
         from loop_engine.core.service_runtime.access import ServiceAccessRequest, ServiceAccessSession
@@ -1111,7 +1211,7 @@ class OperatorGuideChecks(unittest.TestCase):
         application, _ = load_host_application(str(path))
         identity = application.browser_identity.configuration
         issuer = identity.project_url + "/auth/v1"
-        # A first sign-in, as the browser identity adapter performs it after it verified the person.
+        # The operator binds the subject, as the documented binding snippet does.
         account = SubjectTenantRegistration(issuer, self.SUBJECT, identity.namespace_prefix)
         self.assertIs(application.runtime.ensure_subject_tenant(account)["created"], True)
         principal = application.runtime.authenticate_subject(issuer, self.SUBJECT)
@@ -1124,13 +1224,7 @@ class OperatorGuideChecks(unittest.TestCase):
         self.assertEqual(application.runtime.authenticate_key(issued["token"]).tenant_id, account.tenant_id)
 
         def run_snippet(subject):
-            """Run the documented snippet as the operator would: in a separate Python process."""
-            source = snippets[0].replace('"/data/host.json"', repr(str(path)))
-            source = source.replace('"the user_id field of the invitation report"', repr(subject))
-            self.assertEqual(source.count(repr(str(path))) + source.count(repr(subject)), 2)
-            return subprocess.run([sys.executable, "-c", source], capture_output=True, text=True, timeout=120,
-                                  env={"PATH": os.environ.get("PATH", ""), "PYTHONPATH": str(ROOT / "src"),
-                                       "PYTHONDONTWRITEBYTECODE": "1"})
+            return self.run_snippet(snippets[0], path, subject)
         done = run_snippet(self.SUBJECT)
         self.assertEqual((done.returncode, done.stdout.strip()), (0, "{'committed': True, 'revoked': True}"), done.stderr)
         self.assertIn("`{'committed': True, 'revoked': True}`", self.text)
@@ -1162,7 +1256,7 @@ class OperatorGuideChecks(unittest.TestCase):
         self.assertGreaterEqual(len(tool.FAILURES), 10)
         self.assertGreaterEqual(len(tool.REFUSALS), 10)
         for value in (*[outcome.value for outcome in tool.InvitationOutcome], *tool.FAILURES, *tool.REFUSALS,
-                      *tool.DETAILS, tool.REPORT_RECORD_TYPE, tool.INVITATION_MARKER):
+                      *tool.DETAILS, tool.REPORT_RECORD_TYPE, tool.INVITATION_MARKER, tool.WITHHELD_REPORT_PATH):
             self.assertIn("`" + value + "`", self.text, value)
 
     def test_guide_prose_follows_the_public_language_rules(self):
