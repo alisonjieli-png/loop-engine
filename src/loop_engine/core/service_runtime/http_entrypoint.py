@@ -226,10 +226,16 @@ def environment_secret(reference):
     return value
 
 
+def signup_matches_the_browser_identity(settings, browser_identity):
+    """True when account creation is open wherever public sign-up email is open."""
+    return not settings.signup_enabled or (browser_identity.configuration.registration_enabled
+                                           and browser_identity.configuration.email_signup_enabled)
+
+
 def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
-               "browser_identity", "client_access", LICENSE_POLICY_KEY}
+               "browser_identity", "client_access", "account_email", LICENSE_POLICY_KEY}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
@@ -251,8 +257,37 @@ def load_host_application(path):
     if configuration.get("client_access"):
         from .access import ServiceAccessAdministration, ServiceClientAccessPolicy
         client_access = ServiceAccessAdministration(runtime, ServiceClientAccessPolicy(**configuration["client_access"]))
-    application = ServiceHttpApplication(runtime, binding, ServiceHttpConfiguration(**configuration["http"]),
-        ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity, client_access=client_access)
+    transport = ServiceHttpConfiguration(**configuration["http"])
+    account_email = None
+    if configuration.get("account_email"):
+        from .account_email import AccountEmailAdapter, AccountEmailConfiguration
+        settings = AccountEmailConfiguration.from_host(configuration["account_email"])
+        # Sign-up and recovery finish at the browser identity routes, and both
+        # must speak to the same identity project. Without that the confirmed
+        # address could never be exchanged for an account of this service.
+        if browser_identity is None:
+            raise ServiceRuntimeError("account_email_requires_browser_identity")
+        if settings.identity_origin != browser_identity.configuration.project_url:
+            raise ServiceRuntimeError("account_email_identity_origin_mismatch")
+        # Sign-up ends at `POST /api/v1/account/activate`, which refuses while
+        # account creation is closed. Opening sign-up against a closed browser
+        # identity would confirm an address at the identity provider and then
+        # leave the person with no account of this service and no record, so
+        # the host file is refused instead. Recovery is not refused here: a
+        # person who already has an account may need a new password while
+        # account creation stays closed, which is the private beta state.
+        if not signup_matches_the_browser_identity(settings, browser_identity):
+            raise ServiceRuntimeError("account_email_signup_needs_open_registration",
+                "account_email.signup_enabled requires browser_identity.registration_enabled and "
+                "browser_identity.email_signup_enabled, because sign-up finishes at account activation")
+        account_email = AccountEmailAdapter(settings, environment_secret,
+            public_base_url=transport.public_base_url, address_limits=transport.request_limits,
+            display_name=transport.display_name)
+    # The adapter is installed through the constructor, so that the declared
+    # `account_email/v1` boundary is validated before the application exists.
+    application = ServiceHttpApplication(runtime, binding, transport,
+        ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
+        client_access=client_access, account_email=account_email)
     if configuration.get("administration"):
         from .access import ServiceAccessAdministration, ServiceAccessPolicy
         application.access_administration = ServiceAccessAdministration(runtime, ServiceAccessPolicy(**configuration["administration"]))
