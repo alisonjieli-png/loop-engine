@@ -146,10 +146,76 @@ the model gateway requires.
 ### Attempt three
 
 Declared authority: 0.5 hours, 14 model calls, `--max-output-tokens 700` as
-a typed allocation, the same folders and the same gate.
+a typed allocation with the capacity read from the server, the same folders
+and the same gate.
 
-The numbers from this attempt are recorded in the section below, together
-with what the night did about each failure.
+| What | Value |
+|---|---|
+| Ending | `declared_authority_spent`, terminal code `DEADLINE_EXHAUSTED` |
+| Elapsed | 1754.2 s |
+| Rounds | 3, each ending with a real run of the declared gate |
+| Physical model calls | 12 |
+| Prompt tokens the server reported | 573 |
+| Output tokens the server reported | 69 |
+| Calls where the server reported no usage | 10 |
+| Gate runs | 3, all exit code 1 |
+| Outcome on the ladder | `narrowed`: the failure was reproduced but not explained |
+
+Two steps answered and ten ran past their time grant. The grants shrink as
+the night runs down, which is visible in the report: 330 seconds early,
+then 159, then the 90 second floor. Each deadline became
+`narrow_the_request` and the run carried on, which is the behaviour the
+first attempt got wrong.
+
+What the night produced that a person can use: the gate's real output is in
+the state as `observed_failure`, quoting both failing cases exactly. That is
+what the outcome ladder calls `narrowed`, and it is a worse morning than a
+repair and a better one than nothing.
+
+The authority held. The first step asked to read
+`/home/username/projects/chunk_list.py`, a path nobody gave it, and the
+night refused and recorded the refusal. The endpoint record reported
+`has_key` false, `residency_sent` 1800 and `context_tokens_sent` 8192.
+
+### The interruption, and the resume
+
+The fourth exercise started a night, waited until the journal held a model
+call written down as intended with no outcome, and stopped the process with
+`SIGKILL`, the signal no handler can catch.
+
+What the journal held at that moment, in order:
+
+| Entry | What it says |
+|---|---|
+| 1 | the night started, with the whole declared authority, the residency and its reason, and the four step names |
+| 2 | a model call was about to be made: step `orient`, prompt digest `7bcf5296...`, 360 second grant, declared repeatable because a local model call costs time and nothing outside this machine |
+
+Nothing followed entry 2, because the process was gone.
+
+A second process then read that journal and answered:
+
+```text
+"may_repeat": ["round-0/orient/call-1"],
+"blocked_on": [],
+"can_resume": true,
+"sentence": "Every unfinished effect was declared repeatable, so this
+             night can be resumed without doing anything twice."
+```
+
+`loop-engine overnight resume` then wrote entry 3, a `resumed` record naming
+exactly what it was about to repeat, and made that one call again. The
+repeated call carries the same prompt digest `7bcf5296...` as the killed
+one, which is how the record shows it is the same request and not a
+different one. It answered in 123.08 seconds, and the server reported 179
+prompt tokens and 30 output tokens.
+
+Had the unfinished effect been a file write instead, the plan would have
+said `can_resume: false` and named the write, because a write is declared
+unrepeatable and only a person can say whether it happened. A write that
+did finish is keyed by its content digest, so a later run that finds the
+file already holding that content records the effect as already done rather
+than writing it again. Both of those are covered by checks rather than by a
+real run.
 
 ## What was observed, and what was not
 
@@ -163,16 +229,23 @@ Observed on this machine, in a real run against a real server:
   asked to read `/home/username/projects/chunk_list.py`, a path it invented,
   and the night refused it and wrote the refusal to the journal.
 - Every model call is written to the journal before it happens and again
-  after, so a process killed in between leaves a record that says the
-  outcome is unknown.
-- Token counts come from the server or stay unknown. Attempt one recorded
-  208 prompt tokens, 29 output tokens and one call with no usage reported,
-  which is the call that timed out.
+  after. A `SIGKILL` between the two left a record that said the outcome was
+  unknown, and the resume repeated exactly that one call and nothing else.
+- Token counts come from the server or stay unknown. Attempt three recorded
+  573 prompt tokens, 69 output tokens and ten calls with no usage reported,
+  which are the ten that ran past their time grant.
+- The declared gate ran three times in attempt three and its real output
+  reached the state, so the morning had the failing cases quoted.
 
 Not observed, and not claimed:
 
 - No night reached a verified result on this machine. The gate that decides
-  success never passed during these attempts.
+  success ran and failed every time, and no repair was written. The best
+  morning any of these nights produced is `narrowed`: the failure
+  reproduced, with the failing cases quoted, and no explanation.
+- No night wrote a file. The write path and its digest keying were
+  exercised by checks, not by a real run, because no step ever returned a
+  whole file within its time grant on this machine.
 - No speed, cost or quality figure is claimed for this model. The elapsed
   times above were measured while the machine was running several other
   suites and while the model was partly outside video memory, so they
