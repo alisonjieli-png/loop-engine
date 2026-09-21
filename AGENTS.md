@@ -478,6 +478,13 @@ Follow `humanizer-context.md`.
   evidence when that word is accurate.
 - Keep current behavior separate from planned behavior.
 - Do not publish benchmark or provider claims that exceed saved evidence.
+- Marketing language and factual claims are different. Evaluative and
+  aspirational words are free: a reader takes them as enthusiasm, not as a
+  measurement. A number, a comparison to a named product, the words
+  guaranteed or always applied to an outcome, an invented customer, or a
+  capability the product lacks are statements of fact and need evidence.
+  The [product style guide](docs/guides/product-style-guide.md) holds the
+  test to apply.
 
 ## Semantic integration from Taedri
 

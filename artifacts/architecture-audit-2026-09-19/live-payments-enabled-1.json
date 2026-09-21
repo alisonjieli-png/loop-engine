@@ -1,0 +1,101 @@
+{
+ "record_type": "live_payments_enabled/v1",
+ "observed_at": "2026-09-21T11:47:14.199755+00:00",
+ "account": {
+  "id": "acct_1UHZ972IF9bCskLc",
+  "country": "US",
+  "currency": "usd",
+  "charges_enabled": true,
+  "payouts_enabled": true,
+  "details_submitted": true,
+  "requirements_outstanding": null,
+  "statement_descriptor": "BALTOR.AI",
+  "note": "Separate from the sandbox acct_1UHZ9KCCxLfArYED. The owner activated it."
+ },
+ "objects_created": {
+  "product": "prod_VIgx0CcSOKXvgs",
+  "price": {
+   "id": "price_1UI5ZH2IF9bCskLc80Biijf3",
+   "amount": "29.00 United States dollars",
+   "interval": "month",
+   "lookup_key": "baltor_pro_monthly_usd"
+  },
+  "portal_configuration": "bpc_1UI5ZH2IF9bCskLchFkSuOSC",
+  "webhook_endpoint": {
+   "id": "we_1UI5ZI2IF9bCskLc19SrJ4lq",
+   "url": "https://app.baltor.ai/api/v1/billing/webhook",
+   "events": [
+    "customer.subscription.created",
+    "customer.subscription.deleted",
+    "customer.subscription.updated",
+    "invoice.paid",
+    "invoice.payment_failed"
+   ],
+   "note": "Exactly the events the service processes, no more."
+  },
+  "product_tax_code": {
+   "value": "txcd_10103101",
+   "name": "Software as a service, electronic download, business use",
+   "why": "The account has managed payments switched on, which refuses a line item whose product has no tax code. Baltor delivers downloadable material to developers, mostly for business use, so this code fits. The refusal and the retry are both recorded below."
+  }
+ },
+ "how_it_was_done": [
+  "Every write searched first and sent an idempotency key, so running it again creates nothing new.",
+  "The signing secret the provider shows once was written to a file that only its owner could read, stored straight into the system keyring under stripe-live-webhook-secret, and the file was removed.",
+  "The credential and the signing secret were staged into the deployment with tools/stage_service_secrets.py, so neither value reached a command line, a log or a report.",
+  "The billing configuration was validated offline with the real classes, together with three known-wrong variants that must be refused: a return address that is not ours, a product identifier where a price identifier belongs, and an empty signing secret list.",
+  "The host configuration was backed up on the volume and loaded with the real loader inside the running machine, including a load with the secrets absent, which proved that a failed deployment could not leave the service unable to start."
+ ],
+ "verified_against_the_live_account": {
+  "capabilities_now_reported": {
+   "webhook": true,
+   "checkout": true,
+   "portal": true
+  },
+  "checkout_session": {
+   "created_by": "the deployed service",
+   "amount_total": 2900,
+   "currency": "usd",
+   "mode": "subscription",
+   "livemode": true,
+   "redirect_host": "checkout.stripe.com"
+  },
+  "portal_session": {
+   "created_by": "the deployed service",
+   "redirect_host": "billing.stripe.com"
+  },
+  "webhook_refusals": {
+   "no_signature": 400,
+   "wrong_signature": 400
+  },
+  "plans_endpoint_without_a_credential": 401,
+  "cleanup": "Every verification object was removed: the sessions were expired, the customers deleted and the verification tenant disabled. The account now holds no customer, no subscription and no open session.",
+  "money_moved": "none"
+ },
+ "first_attempt_kept": {
+  "what_happened": "The first service level attempt reported an uncertain outcome and nothing reached the provider.",
+  "cause": "The account refuses a line item whose product has no tax code, because managed payments is on by default.",
+  "second_cause_found_first": "A probe had passed the customer binding fields in the wrong order, which the service correctly refused as an account or customer mismatch. That was a fault in the probe, not in the service.",
+  "why_it_is_kept": "Both refusals show the service refusing before an effect, which is the behaviour a customer depends on."
+ },
+ "still_missing_for_self_service": [
+  "The service cannot create a payment customer by itself, so a new account cannot subscribe until an operator binds one. This is the last gap in the paid journey and is being built.",
+  "No real card has completed a subscription, so the webhook and the entitlement it grants are not yet proven end to end.",
+  "The catalogue a subscriber would receive is not published yet."
+ ],
+ "account_scopes_changed": {
+  "before": [
+   "provisioning:metadata",
+   "provisioning:read",
+   "usage:read"
+  ],
+  "after": [
+   "provisioning:metadata",
+   "provisioning:read",
+   "usage:read",
+   "billing:manage"
+  ],
+  "why": "A signed-in person could not otherwise reach checkout or the customer portal at all.",
+  "client_keys_unchanged": "A client key a customer creates still cannot manage billing."
+ }
+}
