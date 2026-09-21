@@ -19,9 +19,10 @@ the working cycle. The earlier September 20 checkpoint and handoff remain
 valid as dated snapshots.
 
 Baltor is the public brand. Loop Engine is the repository, the Python package
-and the technical name. The table
-[Names and where they may appear](guides/product-style-guide.md#names-and-where-they-may-appear)
-says where each name may appear.
+and the technical name. [terminology.yaml](../terminology.yaml) is the single
+structured source for every term and where it may appear, and
+[the developer language guide](guides/developer-language.md) explains how to
+read it.
 
 ## Learn the system in order
 

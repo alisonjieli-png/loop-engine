@@ -9,6 +9,7 @@
   "legacy_flat_imports_on_live_paths": 0,
   "public_parallel_runtime_surfaces": 0,
   "retired_decision_spine_terms": 0,
+  "undefined_terms_retired_names_and_misplaced_words": 0,
   "direct_model_or_network_calls_outside_gateway": 0,
   "subprocess_outside_declared_adapters": 0,
   "direct_writes_to_intelligence_files_outside_adapters": 0,
@@ -111,7 +112,50 @@
    "passed": true
   },
   "retired_decision_spine_terms": [],
+  "undefined_terms_retired_names_and_misplaced_words": [],
   "scan_violations": [
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 365,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 370,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 406,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 409,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 436,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 462,
+    "detail": "retired term 'chronicle'"
+   },
+   {
+    "rule": "retired_source_nomenclature",
+    "file": "nomenclature_conformance.py",
+    "line": 470,
+    "detail": "retired term 'chronicle'"
+   },
    {
     "rule": "dependency_direction",
     "file": "core/adaptive_host_runtime_checks.py",

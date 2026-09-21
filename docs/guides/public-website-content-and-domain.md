@@ -18,11 +18,18 @@ explain how the product is intended to produce that result.
 
 Do not position Baltor as a context-layer product. Context is one input to
 work whose execution can also use an existing function, a small decision
-call or a native harness. Keep "agent", "harness", "prompt cycle" and
-precise Loop terminology in technical documentation and GitHub. The owner
-explicitly excludes those internal terms from the homepage and How it works.
-Use each step, selected information, tools and checked results on those pages.
-Do not rename the repository, runtime or serialized contracts.
+call or a native harness. Keep "prompt cycle" and precise Loop terminology in
+technical documentation and GitHub. The owner excludes those internal terms
+from the homepage and How it works. Use each step, selected information,
+tools and checked results on those pages. Do not rename the repository,
+runtime or serialized contracts.
+
+The words "agent" and "harness" were on that excluded list until September
+21, 2026. They came off it because the owner's category line is harness and
+agent optimized operation, and a rule cannot refuse the words the owner's own
+line is made of. [terminology.yaml](../../terminology.yaml) records both words
+as customer words with that decision as their status, and
+[the developer language guide](developer-language.md) explains the surfaces.
 
 The five customer problems are excessive context, expensive models applied
 indiscriminately, missing domain expertise, regenerated code and repeated
@@ -101,11 +108,11 @@ does not remove its data from the downloaded file.
 The owner reports owning `baltor.ai`, inspired by Balto, and selected Baltor
 as the public-facing brand. Loop Engine remains the engine and repository
 identity. The Python command, import, schemas and profiles must not change
-merely to match marketing copy. The table
-[Names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
-lists where each name may appear. It also lists the technical identifiers
-that a customer can see and that still carry the engine name. Those
-identifiers are an open owner decision.
+merely to match marketing copy. [terminology.yaml](../../terminology.yaml)
+records where each name may appear, explained by
+[the developer language guide](developer-language.md). It also carries the
+technical identifiers that a customer can see and that still carry the engine
+name, each with `status: open_owner_decision`.
 
 Baltor is short and pronounceable, and the existing domain avoids a new
 purchase. Its meaning needs a short product description. Test whether people
