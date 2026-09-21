@@ -3728,6 +3728,26 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-21
     expires_on: 2027-09-21
+  - finding_id: hardcoding.6a4f7aa34320222f08f97418
+    owner: tools.operator_credentials.json:api_keys.stripe-live.environment
+    rationale: >-
+      tools/operator_credentials.json is the typed registry of operator
+      credential references (operator_credential_references/v1). The literal
+      at api_keys.stripe-live.environment is the environment variable name
+      under which tools/operator_credentials.py passes the restricted live
+      payment credential to a trusted child command. It is a name, not a
+      value: no credential is stored in the repository. It deliberately
+      matches the name used by the existing stripe-test entry, because the
+      same command reads one or the other depending on which reference the
+      operator selects, and two references cannot be selected together since
+      the tool refuses conflicting environment names. Declaring the name once
+      in this registry is the abstraction the audit proposes, so there is no
+      further place to move it. Reviewed on 2026-09-21. Only this exact
+      finding is allowed; a changed or added value has a different finding
+      identity and stays blocking.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
