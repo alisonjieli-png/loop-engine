@@ -66,9 +66,9 @@ IDENTITY = re.compile(r"[a-z][a-z0-9_]{2,79}")
 #: layers need real runs and real feedback, so an item there would be invented.
 LAYERS = {"context": "context_intelligence", "code": "code_intelligence"}
 MODEL_GENERATED_SOURCE = "src/loop_engine/governance/candidates/part-00000.jsonl"
-LICENCE_STATES = {"declared": ("MIT", "assistant_authored_from_repository_sources", "Licence: MIT."),
-                  "needs_review": ("unknown", "assistant_compiled_from_model_generated_candidates",
-                                   "Licence state: needs review.")}
+#: Each licence state, with the licence the reference must carry and the sentence the body states.
+LICENCE_STATES = {"declared": ("MIT", "Licence: MIT."),
+                  "needs_review": ("unknown", "Licence state: needs review.")}
 REVIEW_LICENCE = {"declared": "MIT, declared", "needs_review": "unknown, needs review"}
 #: How a body relates to the file it cites, and the sentence the body must carry so that a
 #: reader is never told that general engineering practice was read out of the cited code.
@@ -77,6 +77,13 @@ GROUNDINGS = {"restates_cited_source": "Compiled from revision {revision}.",
 GENERAL_PRACTICE = "general_practice_beside_cited_source"
 GENERAL_PRACTICE_SENTENCE = ("The steps above are ordinary engineering practice, "
                              "written for this catalogue in its own words.")
+#: How each licence state and grounding pair was authored. The two facts are decided
+#: together, so a body of general engineering practice cannot record that its words were
+#: taken from a repository source. Both values under the state `declared` carry the
+#: licence MIT and the same licence sentence; they differ only in where the words come from.
+AUTHORING = {("declared", "restates_cited_source"): "assistant_authored_from_repository_sources",
+             ("declared", GENERAL_PRACTICE): "assistant_authored_from_general_practice",
+             ("needs_review", "restates_cited_source"): "assistant_compiled_from_model_generated_candidates"}
 #: The items compiled from model generated statements. They record the licence
 #: `unknown`, so the default host licence policy refuses them before registration
 #: and they cannot be served until their rights are settled. The names are listed
@@ -216,14 +223,20 @@ def rule_every_item_carries_a_licence(snapshot):
         if state not in LICENCE_STATES:
             found.append(f"{identity}: licence state {state!r} is not declared")
             continue
-        licence, authoring, sentence = LICENCE_STATES[state]
+        licence, sentence = LICENCE_STATES[state]
+        grounding = (item.get("provenance") or {}).get("grounding")
+        authoring = AUTHORING.get((state, grounding))
         generated = MODEL_GENERATED_SOURCE in (row.get("sources") or ())
         if item.get("reference", {}).get("license") != licence:
             found.append(f"{identity}: the licence must be {licence!r} in the state {state!r}")
         if generated != (state == "needs_review"):
             found.append(f"{identity}: model generated material needs review, and only such material")
-        if (item.get("provenance") or {}).get("authoring") != authoring:
-            found.append(f"{identity}: the provenance does not say how the body was authored")
+        if authoring is None:
+            found.append(f"{identity}: the licence state {state!r} and the grounding {grounding!r} are not a "
+                         f"pair this catalogue supports, so no authoring value fits them")
+        elif (item.get("provenance") or {}).get("authoring") != authoring:
+            found.append(f"{identity}: a body that is {grounding!r} under the licence state {state!r} was "
+                         f"authored as {authoring!r}, not {(item.get('provenance') or {}).get('authoring')!r}")
         if sentence not in snapshot.bodies.get(identity, b"").decode("utf-8"):
             found.append(f"{identity}: the body does not state its licence")
     return found
@@ -619,6 +632,17 @@ def _generated(items):
     return next(item for item in items["items"] if item["license_state"] == "needs_review")
 
 
+def _general_practice_item(items):
+    """The first item whose body is general engineering practice written beside its cited file."""
+    return next(item for item in items["items"] if item["provenance"]["grounding"] == GENERAL_PRACTICE)
+
+
+def _restating_item(items):
+    """The first item under the licence state `declared` whose body restates the file it cites."""
+    return next(item for item in items["items"] if item["license_state"] == "declared"
+                and item["provenance"]["grounding"] == "restates_cited_source")
+
+
 def _general_practice_identity(snapshot):
     """The first item whose body is general practice written beside the file it cites."""
     return next(row["id"] for row, item in snapshot.rows()
@@ -699,7 +723,16 @@ KNOWN_WRONG = {
             s, items=lambda items: _set(_first_reference(items), "license", ""))),
         ("model generated material claims the repository licence", lambda s: _changed(
             s, items=lambda items: (_set(_generated(items), "license_state", "declared"),
-                                    _set(_generated(items)["reference"], "license", "MIT"))))),
+                                    _set(_generated(items)["reference"], "license", "MIT")))),
+        ("general practice says that its words came from a repository source", lambda s: _changed(
+            s, items=lambda items: _set(_general_practice_item(items)["provenance"], "authoring",
+                                        AUTHORING[("declared", "restates_cited_source")]))),
+        ("a body that restates its source claims to be general practice authoring", lambda s: _changed(
+            s, items=lambda items: _set(_restating_item(items)["provenance"], "authoring",
+                                        AUTHORING[("declared", GENERAL_PRACTICE)]))),
+        ("an authoring value that this catalogue does not know", lambda s: _changed(
+            s, items=lambda items: _set(_general_practice_item(items)["provenance"], "authoring",
+                                        "assistant_authored_from_another_project")))),
     "bodies_say_how_they_relate_to_their_source": (
         ("an item does not say how its body relates to its source", lambda s: _changed(
             s, items=lambda items: _set(items["items"][0]["provenance"], "grounding", "read_from_the_source"))),

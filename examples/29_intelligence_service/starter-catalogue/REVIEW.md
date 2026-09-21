@@ -43,14 +43,30 @@ Starter catalogue candidates (123)
 Each item declares in `items.json` how its body relates to the file it cites.
 The check refuses a body whose text disagrees with that declaration.
 
-| Grounding in `provenance` | What it means | Closing sentence in the body |
-|---|---|---|
-| `restates_cited_source` | The body says what the cited file says or does. Read the file to review it. | `Compiled from revision 381efec.` |
-| `general_practice_beside_cited_source` | The body is ordinary engineering practice written here in its own words. The cited file is a related practice in this repository, not the source of the words. | `Written for this catalogue at revision 381efec.` |
+| Grounding in `provenance` | Authoring in `provenance` | What it means | Closing sentence in the body |
+|---|---|---|---|
+| `restates_cited_source` | `assistant_authored_from_repository_sources` | The body says what the cited file says or does. Read the file to review it. | `Compiled from revision 381efec.` |
+| `general_practice_beside_cited_source` | `assistant_authored_from_general_practice` | The body is ordinary engineering practice written here in its own words. The cited file is a related practice in this repository, not the source of the words. | `Written for this catalogue at revision 381efec.` |
+
+Both values carry the licence `MIT` and the same licence sentence. They differ
+only in where the words come from, and the check refuses an item whose two
+fields disagree. The two items whose licence state is `needs_review` record the
+authoring `assistant_compiled_from_model_generated_candidates` instead.
 
 A body of the second kind also carries this sentence, and a body of the first
 kind must not: "The steps above are ordinary engineering practice, written for
 this catalogue in its own words."
+
+Where the distinction does not travel. `provenance` is a field of this folder.
+The candidate record that `tools/stage_intelligence_candidates.py` writes for an
+independent reviewer records its own `authoring` value,
+`assistant_authored_from_repository_sources`, for every row, because the tool
+sets that value itself and its accepted fields have no place for a grounding.
+The `reference` object that reaches a host manifest carries no provenance at
+all. So a reviewer who is reading a staged candidate record, or a host manifest
+entry, cannot see which of the two kinds a body is. Go back to `items.json` or
+to the closing sentence of the body itself. Changing the staging tool is outside
+the change that wrote this folder.
 
 ## Current state and planned steps
 
@@ -129,7 +145,7 @@ feedback, from records that name the exact run or the exact statement.
 
 ## What the owner should know before approving
 
-- Authoring. An assistant (Claude Code) wrote every body. 49 of them restate the cited repository sources at revision `381efec`, and the self tests of the nine cited source modules pass at that revision (113 checks). An adversarial review then found one statement that the code does not have: the capitalisation body said that a mixed case value such as `iPhone` keeps its capitals, and the code rewrites it to `Iphone` at 0.95 and applies that. The body was corrected from the executed behaviour. The other 74 bodies are ordinary engineering practice written here in plain words; they quote no code and no other project, and each names one related file in this repository with one sentence about what that file does. The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
+- Authoring. An assistant (Claude Code) wrote every body. 49 of them restate the cited repository sources at revision `381efec`, and the self tests of the nine cited source modules pass at that revision (113 checks). An adversarial review then found one statement that the code does not have: the capitalisation body said that a mixed case value such as `iPhone` keeps its capitals, and the code rewrites it to `Iphone` at 0.95 and applies that. The body was corrected from the executed behaviour. The other 74 bodies are ordinary engineering practice written here in plain words; they quote no code and no other project, and each names one related file in this repository with one sentence about what that file does. Those 74 record the authoring `assistant_authored_from_general_practice`, so the record does not say that their words were read out of the cited file. The section above says where that distinction stops travelling. The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
 - Executed examples, and how far they reach. `executed-examples.json` holds 54 rows over 12 of the 21 Code Intelligence items. For each row the check proves four things: the quote stands in its own body word for word, the module the row runs is one of the sources that this item cites, the function is one of the symbols that this item names, and the call produces every field the row lists with the value the body gives. A row that expects no field, or that names a field the result does not have, is refused, so the file cannot be emptied while the check stays green. What the check does not prove: a value that a body quotes without a row here is not executed by anything. Nine Code Intelligence items have no row: `layer_exception_catalogs_with_precedence`, `escalate_uncertain_values_with_candidates`, `find_duplicate_records_with_blocking_keys`, `propose_a_dedupe_without_deleting_rows`, `copy_a_table_with_corrections_never_in_place`, `export_a_standalone_python_package`, `verify_an_export_in_an_isolated_interpreter`, `refuse_secrets_and_unsafe_paths_in_generated_files` and `write_a_pinned_container_and_batch_job`. A row runs one function with arguments written in JSON, and the examples of those nine need a typed object to be built first, such as a field specification, a conformance policy, an exception catalog layer, an export specification or a table location, or they need an effect on the machine, such as a database, files or a separate interpreter. Four of the nine quote concrete values in their text, so a reviewer must check those by hand against the cited source. The 102 Context Intelligence items have no rows either; they describe working methods, engineering practice and question sets, and this check runs nothing for them.
 - Licence. 121 items are compiled from, or written beside, material authored in this repository, which its `LICENSE` file places under MIT. 2 items are compiled from statements that a language model generated during work in this repository. Their licence is recorded as `unknown` with the state `needs_review`, and their provenance names the generator and the digests of the eight source rows. The task for this catalogue allowed at most eight such rows, and eight are used. The hosted service refuses both of them by name, as the section above records, so they cannot be served until their rights are settled.
 - Declared effects. The rule: an item declares every effect that one of its steps tells the reader to perform on the reader's own machine, which means reading or listing files, writing files, starting a command or using the network. A method that only transforms values it was given declares nothing. A step that asks a question, or that names an analysis without telling the reader how to run it, declares nothing, and a harness that chooses to run such an analysis needs its own authority for it. An item without effects declares an empty list. 86 items declare effects under this rule, and `items.json` names them one by one. For example, the environment item declares `reads_fs`, `network` and `spawns_process`, because its steps list files, measure tool versions with commands and test network access; the pipeline item declares `reads_fs`, because its second step reads the statements of an existing pipeline. The effect names are the ones the engine defines: `pure`, `reads_fs`, `writes_fs`, `reads_secret`, `network` and `spawns_process`. A write to a database table has no name among them, so the pipeline item records that write in its steps and declares no effect for it. The service lists an item only when the request states every effect that the item declares, and the current web and protocol surfaces send no effects. Those 86 items would be withheld today. That needs a decision in the engine. The declared effects were not reduced to avoid it.
