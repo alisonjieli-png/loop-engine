@@ -16,7 +16,9 @@ _HERE = os.path.dirname(__file__)
 
 #: documents allowed to present themselves as CURRENT guidance; every other
 #: root .md must carry a SUPERSEDED/HISTORICAL header (stale-doc gate).
-CURRENT_DOCS = ("ARCHITECTURE-MAP.md",)
+#: A PARKED.md marker names a deliberately retired capability and where its
+#: working implementation is frozen; it is a declared record, not guidance.
+CURRENT_DOCS = ("ARCHITECTURE-MAP.md", "PARKED.md")
 
 #: rails that are enforced by runtime guards + proven by paired positive and
 #: adversarial tests in the suite (they cannot be counted by a static scan).
@@ -405,8 +407,10 @@ def self_test() -> dict:
           os.path.exists(os.path.join(_HERE, "architecture_conformance.json"))
           and r["record_type"] == "architecture_conformance/v1")
     check("stale_doc_gate_is_a_real_detector",
-          _stale_docs() == [] and CURRENT_DOCS == ("ARCHITECTURE-MAP.md",),
-          "every non-current root doc carries a SUPERSEDED/HISTORICAL header")
+          _stale_docs() == [] and CURRENT_DOCS == ("ARCHITECTURE-MAP.md", "PARKED.md"),
+          "every non-current root doc carries a SUPERSEDED/HISTORICAL header; "
+          "PARKED.md is a declared marker that names a deliberately retired "
+          "capability, so it is current by definition")
     with tempfile.TemporaryDirectory() as directory:
         fixture = os.path.join(directory, "vertex_canary.py")
         with open(fixture, "w", encoding="utf-8") as stream:
