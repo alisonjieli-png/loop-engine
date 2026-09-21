@@ -9,7 +9,19 @@ Coding agents should also follow the [context route](context/START-HERE.md),
 [generated status](roadmap/CONTINUATION-STATUS.md).
 The [client and server map](architecture/MVP-CLIENT-SERVER.md) separates
 implemented local and private-pilot boundaries from the remaining subscription
-service work.
+service work. Its [current deployment](architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section is the current statement of what runs and where. Follow that section
+when another document differs from it.
+
+The [takeover checkpoint](context/TAKEOVER-CHECKPOINT-2026-09-20.md) records
+the verified live state, the open findings, the private beta definition and
+the working cycle. The earlier September 20 checkpoint and handoff remain
+valid as dated snapshots.
+
+Baltor is the public brand. Loop Engine is the repository, the Python package
+and the technical name. The table
+[Names and where they may appear](guides/product-style-guide.md#names-and-where-they-may-appear)
+says where each name may appear.
 
 ## Learn the system in order
 
@@ -41,7 +53,7 @@ correctness. Read the evidence limits beside each view.
 | [Queryable records and storage](guides/queryable-records-and-storage.md) | Managed-record contracts, revisions, and approved writes. |
 | [Reports](guides/reports.md) | Saved Run History, reports, and playback. |
 | [Harness service onboarding](guides/harness-service-onboarding.md) | Existing local commands and planned subscriber/client acceptance. |
-| [Hosting procedures](guides/hosting-and-deployment-procedures.md) | Preparation for deployment families, not proof of a live deployment. |
+| [Hosting procedures](guides/hosting-and-deployment-procedures.md) | Preparation for deployment families. Only the Fly.io profile is deployed, as a private pilot. The other profiles are not proof of a live deployment. |
 | [Owner launch checklist](guides/launch-owner-checklist.md) | Account, payment, hosting, and live-model decisions that need explicit authority. |
 
 The [guides index](guides/README.md) lists operating documentation.

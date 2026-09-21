@@ -34,6 +34,27 @@ That authority covers this continuing work. It does not cover:
   server delegation, a provider resource or a secret. Ask in the current
   conversation before any such operation, even though the connections allow it.
 
+## Owner direction recorded on September 20, 2026, in the evening
+
+The owner told engineering to stop bringing back decisions that engineering
+can make. Decide, write down the reason, and move on. When a choice is
+uncertain, research it, measure it or test two versions instead of asking.
+The target is a system that is ready for paying customers. These judgment
+calls were made under that direction and stand until the owner changes them:
+
+| Decision | Choice and reason |
+|---|---|
+| Approval of intelligence items | Delegated to an independent review process. Reviewers who did not write an item approve or reject it against written criteria, and the approval record names them. A producer still never approves its own work. The owner can withdraw any item. |
+| Price | One plan, Baltor Pro, 29 United States dollars each month. Comparable entry plans cost 19 to 29 dollars. Search is free, the measured unit is one downloaded item, and there is no overage billing at launch. Invited beta users are free through an operator entitlement. |
+| Payments | Everything is built and qualified in Stripe test mode. A live account needs the owner's identity and bank verification, which engineering cannot do, so going live is one credential change after that. |
+| Sign-up email | The service creates the confirmation link through the identity provider's administration interface and sends its own email, so the whole journey stays on the baltor.ai domain and needs no change to provider settings that engineering cannot reach. |
+| Browsing for signed-in users | The owner's words were heard as browsing the intelligence layers. Signed-in users get a catalogue browser grouped by the four layers. |
+| Public positioning | The category line is harness and agent optimized operation, the owner's phrase. |
+
+Ask the owner only for what engineering truly cannot do: identity or bank
+verification, a legal commitment, spending beyond the recorded allowance, or
+a destructive operation listed above.
+
 Verify current source and provider state before relying on a dated result.
 Read the relevant component guide before implementation and preserve
 concurrent work.

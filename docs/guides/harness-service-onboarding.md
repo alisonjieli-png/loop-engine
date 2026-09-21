@@ -2,10 +2,13 @@
 
 Kind: operating guide and acceptance plan. The local engine commands, Python
 service, authenticated transport, and same-origin subscriber workspace are
-implemented in the working tree. Local checks exercise search, downloads,
-usage, and payment-session routes without real provider accounts. Automated
-account signup, hosted deployment, and live payment qualification remain work
-under the [continuation plan](../roadmap/CONTINUATION-AND-LAUNCH.md).
+implemented. Local checks exercise search, downloads, usage, and
+payment-session routes without real provider accounts. A private pilot of the
+service is deployed for Baltor; the
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section records what runs. Automated account signup and live payment
+qualification remain work under the
+[continuation plan](../roadmap/CONTINUATION-AND-LAUNCH.md).
 
 Start with the [launch setup runbook](launch-setup-runbook.md) for account and
 hosting instructions and the [decision-tool guide](jev-and-harness-decision-tools.md)
@@ -59,10 +62,21 @@ verification, an expired session, and revocation. A successful connection
 does not prove that the harness loaded or used a skill. Record each of those
 observations separately.
 
-The current protocol and its authorization requirements are documented in the
-[transport specification](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
-and [authorization specification](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization).
+Current behavior: the service accepts exactly Model Context Protocol version
+`2025-11-25`. It refuses every other version, including the newer published
+version `2026-07-28`, and it does not negotiate a different version silently.
+The version that the service implements is documented in the
+[transport specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
+and the
+[authorization specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization).
 Client templates must identify their tested compatibility profile.
+
+Planned behavior: support for version `2026-07-28` is separate work. That
+version removes protocol-level sessions and the initialization handshake, so
+it needs its own tested adapter profile, an explicit negotiation of the
+supported versions, and its own qualification. An earlier version of this
+guide linked the `2026-07-28` specification as the current protocol. It was
+corrected on September 20, 2026.
 
 ## Configure local Ollama
 

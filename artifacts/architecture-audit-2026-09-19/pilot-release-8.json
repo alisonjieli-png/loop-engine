@@ -1,0 +1,84 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "observed_at": "2026-09-20T21:42:11.659975+00:00",
+ "release": 8,
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_revision": "e63f61454ca07f67670a2e3d8091ee2bf01b4f98",
+ "image": "registry.fly.io/baltor-pilot@sha256:a2d31be073025fcc4f6f0ad86ef743eeffbd36d8d65671855d7298260862ce0a",
+ "built_by": "GitHub workflow .github/workflows/fly-pilot.yml, run 35539341456, from the checked-out revision",
+ "continuous_integration": {
+  "run": 35538701437,
+  "conclusion": "success",
+  "python": [
+   "3.10",
+   "3.11",
+   "3.12"
+  ],
+  "documentation_job": "success"
+ },
+ "first_release_rebuildable_from_the_repository": true,
+ "workflow_history": [
+  {
+   "run": 35537037531,
+   "operation": "verify_access",
+   "conclusion": "success"
+  },
+  {
+   "run": 35538560531,
+   "operation": "deploy",
+   "conclusion": "failure",
+   "stopped_at": "Require an existing single-Machine storage target",
+   "cause": "the quiet application listing pads names with spaces, so an exact line match could not succeed",
+   "production_changed": false
+  },
+  {
+   "run": 35539341456,
+   "operation": "deploy",
+   "conclusion": "success"
+  }
+ ],
+ "before_release": {
+  "volume_snapshot_requested": true,
+  "volume": "vol_r7yg7go3n15mgqnr",
+  "local_rehearsal": "image built from an export of the revision passed 7 of 7 container checks and 167 of 167 installed service checks"
+ },
+ "after_release": {
+  "website_checks": {
+   "https://baltor.ai": "46/46",
+   "https://www.baltor.ai": "46/46",
+   "https://app.baltor.ai": "46/46",
+   "https://baltor-pilot.fly.dev": "46/46"
+  },
+  "service_and_protocol_checks": "16/16",
+  "usage_records": "8 to 9 (one authorized metered read)",
+  "physical_model_calls": 0,
+  "reports": [
+   "hosted-release8-website-root-1.json",
+   "hosted-release8-website-www-1.json",
+   "hosted-release8-website-app-1.json",
+   "hosted-release8-website-fly-1.json",
+   "hosted-release8-service-1.json"
+  ]
+ },
+ "live_capabilities": {
+  "authentication_modes": [
+   "host_key"
+  ],
+  "browser_identity_available": false,
+  "registration_available": false,
+  "client_access_available": false,
+  "billing": "webhook, checkout and portal off"
+ },
+ "rollback": {
+  "previous_release": 7,
+  "previous_image": "registry.fly.io/baltor-pilot@sha256:7b45d327faba2e65829230e8ee4f91109207183b4575cdab08c545aae6af55e8",
+  "drill": "rollback-key-version-1.json"
+ },
+ "deployment_switch_after_release": "FLY_DEPLOY_ENABLED=false",
+ "limits": [
+  "Browser sign-in, personal client keys, registration and billing are in the image and switched off by host configuration.",
+  "The catalogue still holds one diagnostic record.",
+  "No customer journey is qualified by this release."
+ ]
+}
