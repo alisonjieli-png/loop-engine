@@ -131,11 +131,16 @@ Use release 8 or a later release that was built from a committed revision.
 Do not add these blocks to release 7. Release 7 does not know the rule that
 binds a personal key to the subject that created it.
 
-The `namespace_prefix` in the applied record is `customer`. The prefix is the
-first part of every tenant identity that a first sign-in creates. Do not
-change it on a service where accounts already exist. A different prefix makes
-a different tenant for the same person, and the earlier tenant keeps the
-material and the usage records.
+The block below uses the same `namespace_prefix` as the applied record,
+`customer`. The prefix is the first part of every tenant identity that a
+first sign-in creates. Do not change it on a service where accounts already
+exist. A different prefix makes a different tenant for the same person, and
+the earlier tenant keeps the material and the usage records.
+
+The applied record also writes out the allowed scopes and the key limits.
+Those are the values that the block below gets from the defaults, so the two
+grant the same access. Read the applied record when you need the exact
+values.
 
 ### Before you start
 
@@ -164,7 +169,7 @@ volume). Keep every other member as it is.
     "provider_profile": "supabase_user/v1",
     "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
     "publishable_key_ref": "env:SUPABASE_PUBLISHABLE_KEY",
-    "namespace_prefix": "beta",
+    "namespace_prefix": "customer",
     "registration_enabled": true,
     "email_signup_enabled": false,
     "allow_network": true,
