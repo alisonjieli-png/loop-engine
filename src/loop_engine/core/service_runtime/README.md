@@ -193,9 +193,20 @@ window has passed leave before that.
 
 The defaults are starting values chosen by judgment. They are not measured.
 People behind one shared address share one count, so the default is generous.
-The capabilities record publishes the settings and whether the limit is
-active at `limits.failed_attempts_per_address`. The existing keys under
-`limits` are unchanged.
+
+The capabilities record publishes a projection of the settings at
+`limits.failed_attempts_per_address`. The existing keys under `limits` are
+unchanged. The projection is not the settings record, so it has its own
+record type, `service_failed_attempt_limit/v1`. It holds `active`,
+`client_address_source`, `failures_allowed`, `window_seconds`,
+`ipv6_prefix_bits`, `counted`, `refusal_code` and `state`.
+
+Anyone can read the capabilities record without signing in. The projection
+therefore leaves out `client_address_header` and `maximum_tracked_addresses`.
+No client needs them. If a host ever named a header that callers can set, the
+header name would tell a caller which header to forge. The table size would
+tell a caller how many addresses empty the table. An operator reads both
+values from the host file.
 
 ### Which address is counted
 
@@ -234,11 +245,47 @@ The hosted service runs behind the Fly proxy, so its host file needs the
 
 Observed: the [Fly request header documentation](https://fly.io/docs/networking/request-headers/)
 says that `Fly-Client-IP` holds the client address as the Fly proxy sees it.
-Missing: it does not say what the proxy does with a value that the caller
-sent. Reports from other projects say that the proxy replaces it. This has not
-been checked on the hosted service. Check it after the deployment and before
-the header is relied on: send a forged `Fly-Client-IP` value through the proxy
-and confirm that the count stays with the real address.
+The same page says that with another reverse proxy in front of Fly, the
+header holds the address of that proxy and not the address of the caller.
+Missing: the page does not say what the Fly proxy does with a
+`Fly-Client-IP` value that the caller sent. This has not been checked on the
+hosted service.
+
+### Switching the limit on for the hosted service
+
+This subsection describes operator work that is not done yet. Merging or
+deploying this code does not switch the limit on. The host file of the hosted
+service has no `request_limits` mapping. After a deployment the hosted service
+therefore still accepts unlimited refused sign-in attempts that carry a
+credential, and each one still uses a worker slot. One change needs no
+operator work: a request without exactly one credential no longer uses a
+worker slot.
+
+Do these steps in order, after the release that contains this limit runs:
+
+1. Add the mapping above inside `http` in the host file on the volume. Then
+   restart the service.
+2. Read the capabilities record on every hostname. Confirm that
+   `limits.failed_attempts_per_address.active` is `true` and that
+   `client_address_source` is `header`.
+3. Check a forged header value. From one address, send sign-in requests with a
+   wrong key through the Fly proxy. Send one more request than
+   `failures_allowed`. Give every request a different forged `Fly-Client-IP`
+   value. The last request must be refused with status 429. If every request
+   gets status 401, the proxy passed the forged values on. A caller can then
+   avoid the limit and can name a victim. Remove the mapping in that case.
+4. Check a second address while the first address still waits. Send one
+   sign-in request with a wrong key from another network. It must get status
+   401. If it gets status 429, the header does not arrive in a usable form,
+   and all callers share one count. Remove the mapping in that case.
+5. Do not record the limit as working for the hosted service before steps 2,
+   3 and 4 have passed. Steps 3 and 4 make the first address wait for up to
+   `window_seconds`.
+
+Remove the mapping from the host file before you start a release that was
+built before this limit existed. Such a release refuses a host file that
+contains `request_limits`, and it does not start. At the time of writing these
+are release 8 and every earlier release. A rollback is the usual case.
 
 ### Limits of this design
 
@@ -249,6 +296,22 @@ and confirm that the count stays with the real address.
 - A release from before this limit does not know the `request_limits` mapping
   and refuses a host file that contains it. Remove the mapping from the host
   file before you start such a release, for example during a rollback.
+- The `Fly-Client-IP` mapping is right only while the Fly proxy is the
+  outermost proxy. With another reverse proxy in front of Fly, the header
+  holds the address of that proxy. All callers would then share the few
+  addresses of that proxy, and one caller with a wrong key could make every
+  sign-in wait. Change the mapping before such a proxy is placed in front of
+  Fly. Name a header that the new outermost proxy overwrites, and repeat the
+  hosted checks above. Today the domain records are not proxied.
+  `docs/guides/launch-setup-runbook.md` says that Cloudflare proxying can be
+  considered separately.
+- With the `header` source, a request whose header is missing, repeated,
+  listed or malformed is counted for the socket peer address. Behind a proxy
+  that address is the proxy. If the configured header stops arriving in a
+  usable form, every request is counted under the address of the proxy. All
+  callers then share one count, and one caller with a wrong key can make
+  every sign-in wait. The service does not report this state. The second
+  address check above shows it.
 - The table is in the memory of one service process. This is correct for one
   process on one machine, which is the current deployment. The table is not
   shared between processes or machines, and a restart empties it. More than
@@ -346,9 +409,32 @@ refuse a runtime import of a transport or a parallel database engine.
 `http_checks.self_test()` also runs `request_limit_checks.py`. Those checks
 drive the limiter with an injected clock, and drive the real application with
 a chosen socket peer address and over loopback sockets. They count
-authentication calls and worker entries, and they rerun their scenarios with
-each guard removed. They do not establish how a hosted proxy treats a forged
-address header.
+authentication calls and worker entries. The clock moves between the refused
+requests of a waiting address, so a refusal that was counted would show as a
+wait that stops falling.
+
+Six guards have a removed-guard control inside the suite. Each control reruns
+a scenario with the guard patched away and requires the scenario's own
+predicate to fail. The other guards have named checks but no such control
+inside the suite.
+
+| Guard | Removed-guard control |
+|---|---|
+| The refusal comes before authentication and before a worker slot | `removed_failed_attempt_limit_is_detected` |
+| A request that is refused with status 429 is not counted | `removed_uncounted_refusal_rule_is_detected` |
+| Counted failures leave the window | `removed_window_expiry_is_detected` |
+| The table stays bounded | `removed_eviction_is_detected` |
+| An address header that the host did not configure is never read | `removed_header_configuration_rule_is_detected` |
+| An unstated address source leaves the limit inactive | `removed_unstated_source_rule_is_detected` |
+
+`a_caller_controlled_header_is_the_known_wrong_case` runs the forged header
+scenario with a known-wrong configuration. One more check sends a failure
+from outside the service that carries its own response headers, and requires
+that none of them reaches the client. Only the service's own refusal type can
+add a response header, such as `Retry-After`.
+
+These checks do not establish how a hosted proxy treats a forged address
+header. The hosted checks above are for that, and nobody has run them yet.
 
 These checks do not establish a real Stripe account, live provider access,
 remote authorization profile, customer charges, or deployment readiness.
