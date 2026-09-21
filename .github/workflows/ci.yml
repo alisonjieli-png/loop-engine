@@ -229,6 +229,15 @@ jobs:
       - name: Development command and report regression checks
         run: PYTHONPATH=src:tools python -m unittest discover -s tools -p 'test_*.py'
 
+      - name: Component guides match the source
+        # The fast rules run in the tools tests above. This step adds the slow
+        # one: it runs every self-test command the guides tell a reader to
+        # run, because a command can name a report field that only exists at
+        # run time. Needs the installed package, so it lives in this job.
+        run: |
+          PYTHONPATH=src python tools/check_component_guides.py \
+            --run-documented-checks
+
       - name: Self-orientation and hardcoding delta gates
         run: |
           PYTHONPATH=devtools/src python -m loop_engine_devtools.cli --self-test
