@@ -727,6 +727,28 @@ class InstallChecks(ServiceCase):
         self.assertIsNone(report["items"][0]["facts"]["reported_by_client"])
         self.assertIsNone(report["interrupted_by"])
 
+    def test_an_error_outside_the_typed_refusals_keeps_what_is_already_known(self):
+        def stop_the_run(*_arguments, **_fields):
+            raise RuntimeError("something outside the typed refusals")
+
+        with running_http(self.fixture) as (base, _service):
+            with mock.patch.object(tool, "observe_client_listing", stop_the_run):
+                try:
+                    code, report, output = self.install(base, "--identity", "skill.alpha")
+                except Exception as error:  # A run that raises instead of recording must fail here.
+                    self.fail("the run raised %s instead of writing a report" % type(error).__name__)
+        item = report["items"][0]
+        self.assertEqual(code, 1, output)
+        self.assertIs(report["complete"], False)
+        self.assertEqual(report["interrupted_by"], {"code": "unexpected_error", "detail": "RuntimeError"})
+        # What was already recorded is kept, including the install record of the file on disk.
+        self.assertIs(item["facts"]["installed"], True)
+        self.assertEqual(item["install"]["body_sha256"],
+                         hashlib.sha256(BODIES["skill.alpha"].encode()).hexdigest())
+        self.assertEqual(report["summary"]["installed"], 1)
+        self.assertIs(report["all_selected_installed_and_reported"], False)
+        self.assertIn("unexpected_error", output)
+
     def test_a_preview_reads_no_body_and_writes_no_file(self):
         grant(self.fixture, ("skill.alpha", "skill.large"))
         with running_http(self.fixture) as (base, _service):
@@ -869,6 +891,8 @@ class InstallChecks(ServiceCase):
                      (("--identity", "skill.alpha"), {"options": ("--preview",)},
                       "preview_excludes_authorize_install"),
                      ((), {}, "exactly_one_of_query_or_identities_required"),
+                     (("--query", "   "), {}, "invalid_query"),
+                     (("--query", "x" * 5000), {}, "invalid_query"),
                      (("--identity", "skill.alpha", "--query", "alpha"), {}, "exactly_one_of_query_or_identities_required"),
                      (("--identity", "skill.alpha", "--identity", "skill.alpha"), {}, "duplicate_identity"),
                      (("--identity", "skill.alpha", "--top-n", "3"), {}, "invalid_search_limit"),
@@ -904,6 +928,12 @@ class InstallChecks(ServiceCase):
                     with self.assertRaises(tool.InstallRefusal) as refused:
                         tool.registered_client_kinds()
                 self.assertEqual(refused.exception.code, "unsupported_client_registry_version")
+        for broken in ([], {"record_type": tool.SUPPORTED_CLIENT_REGISTRY_RECORD_TYPES[0]}):
+            with self.subTest(registry=broken):
+                with mock.patch.object(tool, "read_client_registry", lambda broken=broken: broken):
+                    with self.assertRaises(tool.InstallRefusal) as refused:
+                        tool.registered_client_kinds()
+                self.assertEqual(refused.exception.code, "client_registry_unreadable")
 
     def test_client_kinds_come_from_the_recipes_registry(self):
         self.assertLessEqual(set(tool.CLIENT_LAYOUT_PROFILES), set(tool.registered_client_kinds()))
@@ -1018,6 +1048,33 @@ class ScriptedServiceChecks(unittest.TestCase):
                     scripted_manifest(**{field: "text \ud800 here"})))
                 self.refused_item(service, detail="text_does_not_encode_as_utf8")
                 self.assertNotIn(tool.DOWNLOAD_ROUTE, service.seen)
+
+    def test_a_digest_header_that_is_missing_or_doubled_is_refused(self):
+        def no_digest(handler):
+            handler.send_response(200)
+            handler.send_header(tool.RECORD_TYPE_HEADER, tool.DOWNLOAD_RECORD_TYPE)
+            handler.send_header("Content-Length", str(len(SCRIPTED_BODY)))
+            handler.end_headers()
+            handler.wfile.write(SCRIPTED_BODY)
+
+        def two_digests(handler):
+            handler.send_response(200)
+            handler.send_header(tool.RECORD_TYPE_HEADER, tool.DOWNLOAD_RECORD_TYPE)
+            handler.send_header(tool.DIGEST_HEADER, SCRIPTED_DIGEST)
+            handler.send_header(tool.DIGEST_HEADER, "0" * 64)
+            handler.send_header("Content-Length", str(len(SCRIPTED_BODY)))
+            handler.end_headers()
+            handler.wfile.write(SCRIPTED_BODY)
+
+        for name, download in (("missing", no_digest), ("doubled", two_digests)):
+            with self.subTest(header=name):
+                self.report = self.folder / ("digest-%s.json" % name)
+                self.refused_item(ScriptedService(download=download), stage="verification",
+                                  code="digest_header_missing_or_malformed")
+
+    def test_a_body_of_another_size_than_the_manifest_declares_is_refused(self):
+        service = ScriptedService(manifest=scripted_manifest(size_bytes=len(SCRIPTED_BODY) + 100))
+        self.refused_item(service, stage="verification", code="body_size_differs_from_manifest")
 
     def test_a_service_record_nested_too_deeply_is_refused(self):
         deep = b'{"record_type": "' + tool.RESULT_VERSION.encode() + b'", "result": ' \
@@ -1192,6 +1249,27 @@ class PathAndProfileChecks(unittest.TestCase):
         with self.assertRaises(tool.InstallRefusal) as refused:
             tool.verify_downloaded_body(*offered(b"\xff\xfe not text"))
         self.assertEqual(refused.exception.code, "body_is_not_utf8_text")
+
+    def test_bounds_outside_the_allowed_range_are_refused(self):
+        for changes in ({"request_timeout_seconds": 0}, {"request_timeout_seconds": 601},
+                        {"response_deadline_seconds": -1}, {"response_deadline_seconds": float("inf")},
+                        {"maximum_json_bytes": 0}, {"maximum_body_bytes": True},
+                        {"maximum_listing_bytes": -1}, {"listing_timeout_seconds": "30"}):
+            with self.subTest(changes=changes):
+                with self.assertRaises(tool.InstallRefusal) as refused:
+                    tool.TransferLimits(**changes)
+                self.assertEqual(refused.exception.code, "invalid_limits")
+        limits = tool.TransferLimits()
+        self.assertEqual((limits.request_timeout_seconds, limits.response_deadline_seconds), (30.0, 300.0))
+
+    def test_a_platform_without_confined_file_operations_is_refused(self):
+        # The tool opens every folder without following a link. A platform without that
+        # is refused before any file access. This is the refusal that Windows would meet.
+        with mock.patch.object(tool, "NO_FOLLOW_FLAG", None):
+            with self.assertRaises(tool.InstallRefusal) as refused:
+                tool.require_confined_file_operations()
+        self.assertEqual(refused.exception.code, "confined_file_operations_unavailable")
+        self.assertIsInstance(tool.require_confined_file_operations(), int)
 
     def test_native_names_follow_the_documented_rule(self):
         self.assertEqual(tool.native_name("skill.clean_supplier_names"), "skill-clean-supplier-names")
@@ -1407,6 +1485,9 @@ MUTANTS = (
     ("a preview makes no metered read and writes no file",
      lambda: _removed("preview_stops_here", lambda *_a, **_k: False),
      "InstallChecks.test_a_preview_reads_no_body_and_writes_no_file"),
+    ("what is known when something unexpected stops the run",
+     lambda: _removed("UNEXPECTED_ERRORS", (tool.InstallRefusal,)),
+     "InstallChecks.test_an_error_outside_the_typed_refusals_keeps_what_is_already_known"),
 )
 
 

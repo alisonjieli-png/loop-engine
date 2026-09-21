@@ -384,25 +384,36 @@ read, a kind without a native location, an item that the client omits,
 changed content and a changed name in the listing, a cut listing, a listing
 over its bound, a listing nested too deeply, a listed location that the
 platform cannot resolve, a listed name that UTF-8 cannot carry, a client that
-rewrites the installed file while it lists it, and a preview.
+rewrites the installed file while it lists it, a preview, bounds outside
+their allowed range, a platform without the confined file operations, a
+client registry version the tool does not know, and an error outside the
+typed refusals after the report exists.
 
 A second group of checks serves scripted answers from a loopback address,
 because the real local service answers correctly and cannot show what the
 tool does with a faulty or hostile peer. Those checks cover a download under
 another record type, a manifest for another identity, a manifest of another
-record version, a manifest that declares more than the allowance, an offer
-that changed between the search and the manifest, manifest text that UTF-8
-cannot carry, a service record nested too deeply, capabilities that name
-another body format, a search that claims to have loaded bodies, a response
-over the bound for a record, a body that keeps arriving after the declared
-size, a response that arrives too slowly, a dropped connection, and the
-report content at the moment of the first request and of the metered read.
-No provider, model or external host is used.
+record version, a manifest that declares more than the allowance, a manifest
+that declares another size, an offer that changed between the search and the
+manifest, manifest text that UTF-8 cannot carry, a service record nested too
+deeply, capabilities that name another body format, a search that claims to
+have loaded bodies, a response over the bound for a record, a body that keeps
+arriving after the declared size, a response that arrives too slowly, a
+missing and a doubled digest header, a dropped connection, and the report
+content at the moment of the first request and of the metered read. No
+provider, model or external host is used.
+
+Of the 53 refusal codes, 48 are raised by a check. The five that are not are
+`file_changed_after_install` and `unexpected_error`, which are written into
+the report rather than raised and are each covered by their own check,
+`invalid_arguments`, which the command line parser prints and which the key
+handling check covers, and `path_not_usable` and `write_failed`, which need a
+file system failure during the write and have no check today.
 
 The removed-guard controls are listed in the `MUTANTS` table of the checks.
 Each control removes one guard in memory, runs the named check of that guard
 and requires that the check fails. Source files are never changed by a
-control. There are 46 controls. They cover both digest comparisons, the
+control. There are 47 controls. They cover both digest comparisons, the
 download status and the download record type separately, the body permission,
 the download allowance, the manifest identity and record version, the offer
 comparison, the capabilities body format, the search that returns references
@@ -414,10 +425,11 @@ the only source of "reported", the name and the content behind the headline
 fact, the second read of the installed file, a location the platform cannot
 resolve, every character of the report written as an escape, nesting depth as
 a parse failure, the record written before the first request and before the
-metered read, the client registry version, the preview, the key kept from the
-client process, from the command line and from proxies and redirects, the new
-report path, the service contract, the declared text format and the refusal
-of a model turn command.
+metered read, what is kept when something unexpected stops the run, the
+client registry version, the preview, the key kept from the client process,
+from the command line and from proxies and redirects, the new report path,
+the service contract, the declared text format and the refusal of a model
+turn command.
 
 One control needs a folder that really refuses a new file. A process that may
 write anywhere, for example the machine administrator, cannot show that
