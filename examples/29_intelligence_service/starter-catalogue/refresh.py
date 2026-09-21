@@ -319,7 +319,11 @@ def anchored(populations: list, items: dict, bodies: dict, digests: dict, revisi
     """Copies of the records and the bodies with one new anchor revision written into them."""
     new_items, new_bodies = deepcopy(items), dict(bodies)
     old = str(items.get("source_revision") or "")
+    earlier = [value for value in new_items.get("previous_source_revisions") or () if value != revision]
+    if old and old != revision and old not in earlier:
+        earlier.append(old)
     new_items["source_revision"] = revision
+    new_items["previous_source_revisions"] = earlier
     new_items["source_digests"] = dict(sorted(digests.items()))
     rows = [row for _name, record in populations for row in record["specifications"]]
     for row, item in zip(rows, new_items["items"]):

@@ -1,6 +1,9 @@
 {
   "record_type": "starter_catalogue_candidate_items/v2",
   "source_revision": "0cf19eb8452676bc5e219e72b2bd966f93a0b4bb",
+  "previous_source_revisions": [
+    "381efecb8999f50a5d163d501d9590b289a0da8c"
+  ],
   "source_digests": {
     "integrations/README.md": "d1dbcc7dafc62072ffcb06c108c3fd78a15f90c5ee9091d333d4317f2614f30e",
     "integrations/architecture.yaml": "fba2ed07f376ba6ee23a915a0980476ef33cbc05acf9294a92a81815b3a0557f",
@@ -117,7 +120,13 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "contact",
+          "n/a",
+          "null",
+          "unknown"
+        ]
       }
     },
     {
@@ -152,7 +161,14 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "Strasse",
+          "apply",
+          "hold",
+          "never",
+          "non_ascii_retained"
+        ]
       }
     },
     {
@@ -187,7 +203,19 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "Fitz",
+          "Ibm Services Of America",
+          "L",
+          "LLC",
+          "MACHINE TOOLS INC",
+          "Mc",
+          "ebay: eBay",
+          "iphone: iPhone",
+          "la",
+          "machine: Machine"
+        ]
       }
     },
     {
@@ -222,7 +250,32 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          ";",
+          "ACME WIDGETS INC",
+          "Acme Widgets Incorporated",
+          "GmbH",
+          "LLC",
+          "ab",
+          "ag",
+          "ambiguous_suffix:co",
+          "corporation",
+          "cv",
+          "gmbh",
+          "inc",
+          "incorporated",
+          "kg",
+          "kk",
+          "limited",
+          "llc",
+          "ltd",
+          "n/a",
+          "pc",
+          "spa",
+          "suffix_canonicalized:Inc",
+          "ug"
+        ]
       }
     },
     {
@@ -257,7 +310,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "extension"
+        ]
       }
     },
     {
@@ -292,7 +348,13 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "http://www.example.com/",
+          "https://example.com/Docs",
+          "https://example.com/Docs/Guide",
+          "https://example.com/docs/guide"
+        ]
       }
     },
     {
@@ -327,7 +389,25 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "(at)",
+          "(dot)",
+          ",com",
+          ".@",
+          ".com.",
+          "@.",
+          "[at]",
+          "[dot]",
+          "ana@example.com; bo@example.com",
+          "domain:gmail.con->gmail.com",
+          "maria@gmail.co",
+          "maria@gmail.com",
+          "symbol_word:at",
+          "unrecoverable_shape",
+          "{at}",
+          "{dot}"
+        ]
       }
     },
     {
@@ -362,7 +442,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "correction"
+        ]
       }
     },
     {
@@ -399,7 +482,15 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "../other/exceptions.yaml",
+          "ACME-tech",
+          "IPHONE REPAIR",
+          "Iphone Repair",
+          "column_evidence:iPhone",
+          "iPhone Repair"
+        ]
       }
     },
     {
@@ -434,7 +525,12 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "AA CAREERS",
+          "AA Careers",
+          "disambiguate_value"
+        ]
       }
     },
     {
@@ -469,7 +565,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "The"
+        ]
       }
     },
     {
@@ -504,7 +603,14 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "9 Oak Ave",
+          "Beta Holdings LLC",
+          "difflib",
+          "st",
+          "ste"
+        ]
       }
     },
     {
@@ -539,7 +645,11 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "keep_first",
+          "keep_most_complete"
+        ]
       }
     },
     {
@@ -574,7 +684,19 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "18/09/2026",
+          "2026-09-19",
+          "2026-10-01",
+          "2026-11-30",
+          "A",
+          "Aa+",
+          "Aa+U",
+          "José",
+          "U",
+          "pattern_differs_from_dominant"
+        ]
       }
     },
     {
@@ -609,7 +731,25 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "#",
+          "12 N Main St Apt 4B, Springfield, IL 62704, USA",
+          "Main Street, Springfield",
+          "apartment",
+          "apt",
+          "country_from_position",
+          "empty_address",
+          "fl",
+          "floor",
+          "postal",
+          "rm",
+          "room",
+          "ste",
+          "suite",
+          "unit",
+          "usaddress"
+        ]
       }
     },
     {
@@ -647,7 +787,13 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "UPDATE",
+          "csv",
+          "hashlib",
+          "sqlite3"
+        ]
       }
     },
     {
@@ -684,7 +830,20 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          ".dockerignore",
+          "Dockerfile",
+          "MANIFEST.json",
+          "README.md",
+          "__init__.py",
+          "__main__.py",
+          "k8s/job.yaml",
+          "main",
+          "pyproject.toml",
+          "src",
+          "tests"
+        ]
       }
     },
     {
@@ -722,7 +881,11 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "src",
+          "tests"
+        ]
       }
     },
     {
@@ -759,7 +922,17 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          ".",
+          "..",
+          "../outside.py",
+          "/etc/passwd",
+          "AKIA",
+          "data",
+          "data/notes.txt",
+          "sk-"
+        ]
       }
     },
     {
@@ -796,7 +969,14 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "/app",
+          "/work",
+          "500m",
+          "512Mi",
+          "sha256:"
+        ]
       }
     },
     {
@@ -831,7 +1011,13 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "high_variance_cv",
+          "insufficient_evidence",
+          "no_better_than_baseline",
+          "too_perfect_suspect_leakage"
+        ]
       }
     },
     {
@@ -866,7 +1052,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -901,7 +1088,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "measurement_pack"
+        ]
       }
     },
     {
@@ -936,7 +1126,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -971,7 +1162,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1006,7 +1198,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1041,7 +1234,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "repetition_circuit_breaker"
+        ]
       }
     },
     {
@@ -1078,7 +1274,13 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "acceptance_inversion",
+          "customer id",
+          "customer_id",
+          "format_conformance"
+        ]
       }
     },
     {
@@ -1113,7 +1315,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1148,7 +1351,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1183,7 +1387,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "state_the_unknowns"
+        ]
       }
     },
     {
@@ -1218,7 +1425,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1253,7 +1461,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1290,7 +1499,12 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "established_facts",
+          "reuse_before_reasoning",
+          "sufficiency_check"
+        ]
       }
     },
     {
@@ -1329,7 +1543,11 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "inventory_setting",
+          "workplace_setup"
+        ]
       }
     },
     {
@@ -1364,7 +1582,11 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "report_shaping",
+          "stakeholder_view"
+        ]
       }
     },
     {
@@ -1399,7 +1621,11 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "decompose",
+          "outline_to_detail"
+        ]
       }
     },
     {
@@ -1434,7 +1660,14 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "Answer first, then list what would change your mind.",
+          "Assume the obvious answer is wrong.",
+          "{candidate}",
+          "{options}",
+          "{task}"
+        ]
       }
     },
     {
@@ -1469,7 +1702,22 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "acceptance_inversion",
+          "assumption_audit",
+          "cheapest_check",
+          "constraint_inversion",
+          "definition_check",
+          "done_definition",
+          "failure_mode_map",
+          "resource_horizon",
+          "reversibility",
+          "second_order",
+          "smallest_first_step",
+          "stakeholder_view",
+          "state_the_unknowns"
+        ]
       }
     },
     {
@@ -1504,7 +1752,18 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "context_boundary_probe",
+          "data_sufficiency",
+          "efficiency_check",
+          "implementation_choice",
+          "minimum_context",
+          "model_necessity",
+          "reuse_before_reasoning",
+          "step_confidence",
+          "train_or_call"
+        ]
       }
     },
     {
@@ -1539,7 +1798,11 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "latent_structure",
+          "residual_analysis"
+        ]
       }
     },
     {
@@ -1574,7 +1837,11 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "generalization",
+          "noise_and_stability"
+        ]
       }
     },
     {
@@ -1609,7 +1876,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "data_quality"
+        ]
       }
     },
     {
@@ -1644,7 +1914,10 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "error_patterns"
+        ]
       }
     },
     {
@@ -1679,7 +1952,14 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "adversarial_review",
+          "analogy_probe",
+          "cross_domain",
+          "devils_advocate",
+          "premortem"
+        ]
       }
     },
     {
@@ -1718,7 +1998,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1758,7 +2039,14 @@
       "provenance": {
         "authoring": "assistant_authored_from_repository_sources",
         "model_generated_row_digests": [],
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": [
+          "SKILL.md",
+          "agents/openai.yaml",
+          "allowed-tools",
+          "description",
+          "name"
+        ]
       }
     },
     {
@@ -1799,7 +2087,8 @@
           "78fdf498d6a705cd"
         ],
         "generator": "string-foundry-20260823 (deepseek-v4-flash:0731, improvement lane)",
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1842,7 +2131,8 @@
           "b4c5790b1fb0c283"
         ],
         "generator": "string-foundry-20260823 (deepseek-v4-flash:0731, improvement lane)",
-        "grounding": "restates_cited_source"
+        "grounding": "restates_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1881,7 +2171,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1919,7 +2210,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1958,7 +2250,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -1997,7 +2290,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2036,7 +2330,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2075,7 +2370,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2114,7 +2410,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2153,7 +2450,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2190,7 +2488,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2227,7 +2526,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2265,7 +2565,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2304,7 +2605,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2342,7 +2644,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2380,7 +2683,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2418,7 +2722,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2457,7 +2762,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2494,7 +2800,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2533,7 +2840,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2572,7 +2880,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2611,7 +2920,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2649,7 +2959,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2688,7 +2999,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2727,7 +3039,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2766,7 +3079,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2803,7 +3117,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2840,7 +3155,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2877,7 +3193,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2914,7 +3231,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2951,7 +3269,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -2988,7 +3307,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3025,7 +3345,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3063,7 +3384,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3101,7 +3423,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3140,7 +3463,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3179,7 +3503,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3216,7 +3541,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3253,7 +3579,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3292,7 +3619,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3329,7 +3657,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3367,7 +3696,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3404,7 +3734,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3441,7 +3772,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3478,7 +3810,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3517,7 +3850,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3554,7 +3888,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3591,7 +3926,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3628,7 +3964,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3665,7 +4002,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3702,7 +4040,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3739,7 +4078,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3776,7 +4116,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3813,7 +4154,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3850,7 +4192,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3887,7 +4230,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3926,7 +4270,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -3963,7 +4308,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4000,7 +4346,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4037,7 +4384,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4074,7 +4422,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4113,7 +4462,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4152,7 +4502,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4189,7 +4540,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4228,7 +4580,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4266,7 +4619,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4304,7 +4658,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4343,7 +4698,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4380,7 +4736,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4417,7 +4774,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4454,7 +4812,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4492,7 +4851,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4530,7 +4890,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4568,7 +4929,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4607,7 +4969,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     },
     {
@@ -4646,7 +5009,8 @@
       "provenance": {
         "authoring": "assistant_authored_from_general_practice",
         "model_generated_row_digests": [],
-        "grounding": "general_practice_beside_cited_source"
+        "grounding": "general_practice_beside_cited_source",
+        "unexecuted_quotations": []
       }
     }
   ]

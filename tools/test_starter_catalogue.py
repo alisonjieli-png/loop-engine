@@ -58,9 +58,13 @@ SPECIFICATIONS_GLOB = SPECIFICATIONS_PREFIX + "[0-9][0-9][0-9].json"
 SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v1"
 QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 100
 EXAMPLES_FILE, EXAMPLES_RECORD_TYPE = "executed-examples.json", "starter_catalogue_executed_examples/v1"
-#: How much of the catalogue the executed examples must cover. A body may quote a
-#: value only when a row here runs the cited code and observes it.
+#: An absolute floor for the executed examples, not a share of the catalogue. Most items
+#: describe a working method and can have no row at all, so this number does not rise with
+#: the catalogue. What a body may quote is governed by
+#: ``rule_bodies_list_the_quotations_no_example_proves``, which reads every body.
 MINIMUM_EXAMPLES, MINIMUM_EXAMPLE_ITEMS = 40, 10
+#: One span between single backticks, which is how a body writes a path, a name or a value.
+QUOTATION = re.compile(r"`([^`\n]+)`")
 IDENTITY = re.compile(r"[a-z][a-z0-9_]{2,79}")
 #: The two layers that can hold compiled material today. The other two canonical
 #: layers need real runs and real feedback, so an item there would be invented.
@@ -410,9 +414,18 @@ def rule_source_references_are_pinned(snapshot):
             found.append(f"{row.get('id')}: the source reference must be the first listed source at the full revision")
         if revision[:7] not in snapshot.bodies.get(row.get("id"), b"").decode("utf-8"):
             found.append(f"{row.get('id')}: the body does not name the revision it was compiled from")
+    earlier = snapshot.items.get("previous_source_revisions")
+    if (not isinstance(earlier, list) or not all(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value)
+                                                 for value in earlier) or revision in earlier
+            or len(set(earlier)) != len(earlier)):
+        return found + ["the items record must keep the earlier anchor revisions, each one full, distinct and "
+                        "not the current one"]
+    # The sheet may name the revision the catalogue is anchored to and any anchor it was moved from.
+    # Naming anything else means the sheet was left behind by an anchor change.
+    allowed = {revision[:7]} | {value[:7] for value in earlier}
     named = set(re.findall(r"revision [`]?([0-9a-f]{7})[`]?", snapshot.review))
-    found += [f"REVIEW.md names revision {other!r}, which is not the revision the catalogue is anchored to"
-              for other in sorted(named - {revision[:7]})]
+    found += [f"REVIEW.md names revision {other!r}, which is neither the revision the catalogue is anchored to "
+              f"nor one it was anchored to before" for other in sorted(named - allowed)]
     if revision[:7] not in named:
         found.append("REVIEW.md does not name the revision the catalogue is anchored to")
     return found
@@ -582,6 +595,44 @@ def rule_quoted_examples_reproduce(snapshot):
     return found
 
 
+def rule_bodies_list_the_quotations_no_example_proves(snapshot):
+    """Every quotation in a body is proven by an executed example or listed by its own item.
+
+    ``rule_quoted_examples_reproduce`` runs from the executed examples to the bodies. This
+    rule runs the other way. It collects every span in backticks that is not a source the
+    item cites, not a symbol the item names and not a model generated row the item cites,
+    drops the ones that an executed example of this item proves word for word, and requires
+    the item to list exactly what is left. So a body cannot gain a quoted value that nothing
+    ran while every named check stays green: the record has to say so.
+
+    The list is mechanical. It also holds ordinary terms such as a file name or a setting
+    name, not only values that the body claims the code returns.
+    """
+    proven = {}
+    for row in snapshot.examples.get("examples") or ():
+        proven.setdefault(row.get("identity"), []).append(row.get("quote"))
+    found = []
+    for row, item in snapshot.rows():
+        identity = row.get("id")
+        provenance = item.get("provenance") or {}
+        listed = provenance.get("unexecuted_quotations")
+        if not isinstance(listed, list) or not all(isinstance(value, str) for value in listed):
+            found.append(f"{identity}: the item must list the quotations that no executed example proves, "
+                         f"even when there are none, not {listed!r}")
+            continue
+        known = (set(row.get("sources") or ()) | set(row.get("symbols") or ())
+                 | set(provenance.get("model_generated_row_digests") or ()))
+        quotes = [quote for quote in proven.get(identity, ()) if isinstance(quote, str)]
+        body = snapshot.bodies.get(identity, b"").decode("utf-8")
+        measured = sorted(token for token in set(QUOTATION.findall(body)) - known
+                          if not any(token in quote for quote in quotes))
+        if sorted(listed) != measured:
+            found.append(f"{identity}: the body carries {sorted(set(measured) - set(listed))} that the item "
+                         f"does not list, and the item lists {sorted(set(listed) - set(measured))} that no "
+                         f"quotation of the body needs")
+    return found
+
+
 RULES = {function.__name__[5:]: function for function in (
     rule_identities_are_unique, rule_digests_and_sizes_match_the_bodies, rule_every_item_carries_a_licence,
     rule_bodies_say_how_they_relate_to_their_source,
@@ -590,7 +641,8 @@ RULES = {function.__name__[5:]: function for function in (
     rule_layers_kinds_effects_and_styles_are_declared, rule_source_references_are_pinned,
     rule_cited_source_bytes_are_the_pinned_bytes,
     rule_model_generated_material_is_bounded, rule_the_review_sheet_lists_every_item,
-    rule_the_catalogue_is_large_enough, rule_quoted_examples_reproduce)}
+    rule_the_catalogue_is_large_enough, rule_quoted_examples_reproduce,
+    rule_bodies_list_the_quotations_no_example_proves)}
 
 
 def problems(snapshot) -> dict:
@@ -699,6 +751,11 @@ def _set(target, key, value):
 
 def _first_reference(items):
     return items["items"][0]["reference"]
+
+
+def _without_the_capitalisation_examples(rows):
+    """Every executed example of the capitalisation item removed, so its values lose their proof."""
+    rows[:] = [row for row in rows if row["identity"] != "restore_capitalisation_of_names"]
 
 
 def _capitalisation_example(rows):
@@ -865,9 +922,14 @@ KNOWN_WRONG = {
                                         _first_reference(items)["source_ref"].split("@")[0]))),
         ("the revision is abbreviated", lambda s: _changed(
             s, items=lambda items: _set(items, "source_revision", items["source_revision"][:7]))),
-        ("the review sheet still names an older revision", lambda s: _changed(
+        ("the review sheet names a revision the record does not know", lambda s: _changed(
             s, review=lambda text: text.replace(f"revision `{s.items['source_revision'][:7]}`",
-                                                "revision `381efec`", 1))),
+                                                "revision `0ddba11`", 1))),
+        ("an earlier anchor revision is abbreviated in the record", lambda s: _changed(
+            s, items=lambda items: _set(items, "previous_source_revisions",
+                                        [items["previous_source_revisions"][0][:7]]))),
+        ("the current revision is also listed as an earlier one", lambda s: _changed(
+            s, items=lambda items: items["previous_source_revisions"].append(items["source_revision"]))),
         ("the review sheet names no revision at all", lambda s: _changed(
             s, review=lambda text: text.replace(s.items["source_revision"][:7], "an earlier commit")))),
     "cited_source_bytes_are_the_pinned_bytes": (
@@ -919,6 +981,15 @@ KNOWN_WRONG = {
             s, examples=lambda rows: _set(rows[0], "expect", {"no_such_field": None}))),
         ("the record type is not the supported one", lambda s: replace(
             s, examples={**s.examples, "record_type": "starter_catalogue_executed_examples/v2"}))),
+    "bodies_list_the_quotations_no_example_proves": (
+        ("a body gains a value that no executed example proves", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Checks\n", "\nThe call returns `41.7 seconds`.\n\n## Checks\n"))),
+        ("an item lists a quotation that its body does not carry", lambda s: _changed(
+            s, items=lambda items: items["items"][0]["provenance"]["unexecuted_quotations"].append("never_written"))),
+        ("an item does not list its quotations at all", lambda s: _changed(
+            s, items=lambda items: _set(items["items"][0]["provenance"], "unexecuted_quotations", None))),
+        ("an executed example is dropped, so the value it proved is no longer proven", lambda s: _changed(
+            s, examples=_without_the_capitalisation_examples))),
 }
 
 
