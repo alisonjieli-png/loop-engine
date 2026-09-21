@@ -84,6 +84,9 @@ const placesWithKey=record=>{const variable=typeof record?.credential_variable==
    headers or of environment values, and a configuration holds no list. Every other text is a reference, a plain setting word or the one top-level https $schema value, and every
    field name is a plain name. An address without slashes, with backslashes or under another name, and the arguments of a command, are therefore reported.
    A second, independent test asks the address parser that clients use: no text beside the address and the schema may parse as an absolute address.
+   schemas: the page allows the one top-level https $schema value, because an editor reads it and the client never connects to it. The reviewed record is held to more
+   than the page: that value must sit on the same host as the source address this recipe cites, so a reviewed record cannot send an editor to a host nobody reviewed.
+   A vendor that serves its schema from another host needs a review decision, recorded by changing the record or this rule, not a silent exception.
    A result names places and never repeats a value. */
 const parsesAsAddress=text=>[text,text.replaceAll("\\","/")].some(form=>{try{new URL(form);return true;}catch(_){return false;}});
 const pathLeaves=(value,path=[],found=[])=>{if(value!==null&&typeof value==="object")for(const [name,item] of Object.entries(value))pathLeaves(item,Array.isArray(value)?path:[...path,name],found);else found.push({path,value});return found;};
@@ -106,9 +109,10 @@ const configurationProblems=(configuration,address,variable)=>{
       ...leaves.filter(leaf=>typeof leaf.value==="string"&&!credentialPosition(leaf)&&!(leaf.path.at(-1)==="url"&&leaf.value===address)&&!schemaLeaf(leaf)&&!plainWord.test(leaf.value)).map(place),
       ...fieldNames(configuration||{}).filter(name=>!plainName.test(name)).map(name=>"(field name) "+label(name))]};
 };
+const sameHost=(left,right)=>{try{return new URL(left).host!==""&&new URL(left).host===new URL(right).host;}catch(_){return false;}};
 const recordProblems=record=>{
-  const variable=typeof record?.credential_variable==="string"?record.credential_variable:"",found={keys:placesWithKey(record),addresses:[],commands:[]};
-  (Array.isArray(record?.recipes)?record.recipes:[]).forEach((recipe,index)=>{const problems=configurationProblems(recipe?.configuration,endpointMark,variable),at=place=>"record.recipes["+index+"].configuration: "+place;found.keys.push(...problems.credentials.map(place=>at(place)+" (a credential position that does not hold a reference to the variable)"));found.addresses.push(...problems.addresses.map(at));if(!plainCommand.test(String(recipe?.verification_command)))found.commands.push("record.recipes["+index+"].verification_command");});
+  const variable=typeof record?.credential_variable==="string"?record.credential_variable:"",found={keys:placesWithKey(record),addresses:[],commands:[],schemas:[]};
+  (Array.isArray(record?.recipes)?record.recipes:[]).forEach((recipe,index)=>{const problems=configurationProblems(recipe?.configuration,endpointMark,variable),at=place=>"record.recipes["+index+"].configuration: "+place;found.keys.push(...problems.credentials.map(place=>at(place)+" (a credential position that does not hold a reference to the variable)"));found.addresses.push(...problems.addresses.map(at));if(!plainCommand.test(String(recipe?.verification_command)))found.commands.push("record.recipes["+index+"].verification_command");found.schemas.push(...problems.schemas.filter(address=>!sameHost(address,String(recipe?.source_url))).map(()=>"record.recipes["+index+"].configuration.$schema (not on the host of the cited source address)"));});
   return found;
 };
 const connectState=async page=>({shown:!await page.locator("#client-choice").isDisabled(),refusal:await page.locator("#setup-message").evaluate(node=>node.dataset.refusal||"")});
@@ -166,6 +170,7 @@ try {
   check("reviewed_recipe_record_contains_no_key",reviewedProblems.keys.length===0,{places:reviewedProblems.keys});
   check("reviewed_recipe_record_uses_only_the_address_placeholder",reviewedProblems.addresses.length===0,{places:reviewedProblems.addresses});
   check("reviewed_recipe_record_gives_plain_check_commands",reviewedProblems.commands.length===0,{places:reviewedProblems.commands});
+  check("reviewed_recipe_record_keeps_schema_addresses_on_its_cited_source_host",reviewedProblems.schemas.length===0,{places:reviewedProblems.schemas});
   const otherOrigin=fixture.billing_base+"/mcp",otherHost=new URL(otherOrigin).host,schemeOnly=otherOrigin.replace("://",":"),withBackslashes=otherOrigin.replace("://",":\\\\").replace("/mcp","\\mcp");
   const withUserInformation=text=>{const address=new URL(text);address.username="reviewer";address.password=shortLiteral;return address.href;};
   /* Known-wrong records. "display" names the check that must fail when a page without the rule shows the record. A record without it plants its text in a field that the page
@@ -215,11 +220,15 @@ try {
   const keyRecords=[...wrongCredentials,{name:"record_with_key_as_a_field_name",served:changedRecipe("codex",(_,record)=>{record[plantedKey]="note";})},{name:"record_with_key_in_a_list",served:changedRecipe("codex",(_,record)=>{record.notes=["first",plantedKey];})}];
   const addressRecords=[...wrongAddresses,...wrongNamed("recipe_with_an_address_as_its_entry_name_is_refused","recipe_with_a_list_of_command_arguments_is_refused")];
   const commandRecords=wrongNamed("recipe_with_a_command_line_that_is_not_plain_words_is_refused","recipe_with_key_in_a_command_is_refused");
+  /* The page accepts the one top-level https $schema value whatever host it names, so these two records are checked at source level only and are not served to the page. */
+  const schemaRecords=[{name:"record_with_a_schema_address_on_another_host",served:changedRecipe("opencode",item=>{item.configuration.$schema="https://"+otherHost+"/config.json";})},
+    {name:"record_with_a_schema_address_on_a_second_host_of_the_cited_vendor",served:changedRecipe("opencode",item=>{item.configuration.$schema="https://files."+new URL(item.source_url).host+"/config.json";})}];
   const keyPlaces=keyRecords.map(wrong=>[wrong.name,recordProblems(wrong.served).keys]),addressPlaces=addressRecords.map(wrong=>[wrong.name,recordProblems(wrong.served).addresses]);
   const repeatsPlantedText=places=>[plantedKey,standardKey,shapedName].some(text=>JSON.stringify(places).includes(text));
   check("no_key_check_of_the_record_fails_for_every_known_wrong_record",keyPlaces.every(([,places])=>places.length>0)&&!repeatsPlantedText(keyPlaces),{records:keyPlaces.length,missed:keyPlaces.filter(([,places])=>places.length===0).map(([name])=>name)});
   check("address_check_of_the_record_fails_for_every_known_wrong_record",addressPlaces.every(([,places])=>places.length>0)&&!repeatsPlantedText(addressPlaces),{records:addressPlaces.length,missed:addressPlaces.filter(([,places])=>places.length===0).map(([name])=>name)});
   check("command_check_of_the_record_fails_for_every_known_wrong_record",commandRecords.every(wrong=>recordProblems(wrong.served).commands.length>0),{records:commandRecords.length});
+  check("schema_check_of_the_record_fails_for_every_known_wrong_record",schemaRecords.every(wrong=>recordProblems(wrong.served).schemas.length>0)&&recordProblems(recipeRecord).schemas.length===0&&recipeRecord.recipes.some(item=>configurationProblems(item.configuration,endpointMark,variable).schemas.length===1),{records:schemaRecords.length});
   check("no_key_check_does_not_mistake_a_record_type_or_an_address_for_a_key",!keyShaped(recipeRecord.record_type)&&recipeRecord.recipes.every(item=>!keyShaped(item.source_url))&&keyShaped(standardKey)&&!keyShaped(shortLiteral));
   browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
   const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:"reduce"});
