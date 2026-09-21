@@ -108,7 +108,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flyctl apps list --org "${FLY_ORG}" --quiet | grep -Fx -- "${FLY_APP}" >/dev/null
+          # The quiet listing pads each name with spaces, so an exact line
+          # match never succeeds. Read the structured listing instead, and
+          # require this exact application in this exact organization.
+          flyctl apps list --org "${FLY_ORG}" --json \
+            | jq -e --arg app "${FLY_APP}" --arg org "${FLY_ORG}" \
+              'type == "array" and any(.[]; .Name == $app and .Organization.Slug == $org)' >/dev/null \
+            || { echo "The approved application was not found in the approved organization."; exit 1; }
           flyctl machine list --app "${FLY_APP}" --json | jq -e 'type == "array" and length <= 1' >/dev/null
           flyctl volumes list --app "${FLY_APP}" --json \
             | jq -e --arg region "${FLY_PRIMARY_REGION}" \

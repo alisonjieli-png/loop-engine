@@ -8,6 +8,25 @@ and the fabric roadmap steps S-4.1 to S-4.6. Prices are not set here; the
 owner sets them. What is fixed here is the shape: what is free, what is
 metered, what is never metered, and what runs where.
 
+## Which service this guide describes
+
+The repository contains two commands that serve tenants. The product service
+is `loop-engine service serve`. It runs as the Baltor private pilot, and it
+meters one provisioned item for each body read. The older command
+`loop-engine serve api` is the worker surface that this guide was written
+for. Its ledger declares the four units in the table below, and it is not
+deployed. Today its text conformance handler records avoided model calls and
+its evaluation handler records optimize hours. No handler records verified
+completions or judgment depth yet.
+
+The four units below are planned units for hosted compute, where the service
+runs and verifies the work itself. They are not the metering of the pilot. The
+[two service commands](../architecture/MVP-CLIENT-SERVER.md#two-service-commands)
+table compares both commands, and the
+[hosting shape record](../architecture/HOSTING-SHAPE-AND-THE-FIRST-RELEASE-2026-09-18.md#what-this-changes-about-metering)
+explains why a service that does not run the execution cannot sell a verified
+completion.
+
 ## Two things a customer can buy
 
 ```text
@@ -103,3 +122,9 @@ package index publication are blocked on accounts the owner supplies
 No hosted endpoint is operated on 2026-09-18, no price is published, and
 no payment provider is integrated. The feature matrix records the hosted
 cloud and public pricing cells as not present until those facts change.
+
+Updated on September 20, 2026: a private pilot of the intelligence service now
+runs. The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section records it. No price is published. The billing code exists, and the
+billing webhook, checkout and customer portal are switched off. No hosted
+compute, worker or customer execution is operated.

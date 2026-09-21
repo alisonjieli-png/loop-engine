@@ -101,7 +101,11 @@ does not remove its data from the downloaded file.
 The owner reports owning `baltor.ai`, inspired by Balto, and selected Baltor
 as the public-facing brand. Loop Engine remains the engine and repository
 identity. The Python command, import, schemas and profiles must not change
-merely to match marketing copy.
+merely to match marketing copy. The table
+[Names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
+lists where each name may appear. It also lists the technical identifiers
+that a customer can see and that still carry the engine name. Those
+identifiers are an open owner decision.
 
 Baltor is short and pronounceable, and the existing domain avoids a new
 purchase. Its meaning needs a short product description. Test whether people
@@ -113,20 +117,26 @@ The main caution is proximity to [Balto](https://www.balto.ai/), an existing
 AI software brand. There are also other businesses named Baltor. This limited
 search is not trademark clearance or a guarantee of exclusive use.
 
-The pilot currently uses `https://baltor-pilot.fly.dev`. The intended next
-hostname is `app.baltor.ai`. Longer-term address options are:
+The pilot answers on four hostnames. All four serve the same release with
+valid certificates. The
+[current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section is the current statement of these facts. Follow that section when
+this guide differs from it.
 
-| Address | Purpose |
-|---|---|
-| `baltor.ai` | Public website, with `/how-it-works` and `/docs` paths. |
-| `app.baltor.ai` | Authenticated subscriber dashboard when implemented. |
-| `api.baltor.ai` | Qualified serving application, with its exact `/mcp` resource address. |
+| Address | State on September 20, 2026 | Purpose |
+|---|---|---|
+| `baltor.ai` and `www.baltor.ai` | Live | Public website, with `/how-it-works` and `/docs` paths. |
+| `app.baltor.ai` | Live. It serves the same release as the public website. | Planned address of the signed-in subscriber dashboard. Browser sign-in is switched off today. |
+| `baltor-pilot.fly.dev` | Live | The name supplied by the host. The host configuration still names it as the canonical protocol and account origin. |
+| `api.baltor.ai` | Proposed only. No address record was found for it. | A possible separate address for the serving application and its exact `/mcp` resource. |
 
-These are proposed addresses, not configured endpoints. Confirm registrar
-control, renewal settings, hosting choice and exact allowed origins before
-changing domain records. Website sign-in and protocol authorization remain
-separate integrations. No domain purchase is required merely to continue local
-development.
+The first three rows are configured endpoints, not proposals. An earlier
+version of this section called all of these addresses proposed. It was
+corrected on September 20, 2026. Moving the canonical origin, a callback
+address or a token audience to `app.baltor.ai` is separate migration work.
+Follow the [endpoint migration design](../architecture/SERVICE-IDENTITY-ENDPOINTS-AND-MIGRATION.md#domain-migration-procedure).
+Confirm exact allowed origins before changing another domain record. Website
+sign-in and protocol authorization remain separate integrations.
 
 The [publication review](../../artifacts/architecture-audit-2026-09-19/publication-adversarial-review.md)
 records the current findings, source evidence and earlier domain checks.
