@@ -1,11 +1,13 @@
 """Prepare an invited Baltor beta account and show one password link.
 
 The command asks the identity provider's administration interface to create a
-confirmed user for the invited address, or finds the user that already has
-that address. It then asks the same interface to generate a recovery link.
-The provider sends no email for either request. The link lets the invited
-person set a password. It works once and it expires after the period that is
-configured at the provider.
+confirmed user for the invited address, or finds the user that an earlier run
+of this command created for that address. A found user that does not carry
+the invitation mark gets no link, because someone else registered it and
+chose its password. The command then asks the same interface to generate a
+recovery link. The provider sends no email for either request. The link lets
+the invited person set a password. It works once and it expires after the
+period that is configured at the provider.
 
 The administration credential arrives in the environment variable that
 tools/operator_credentials.json names for the selected reference. Run this
@@ -53,7 +55,12 @@ LINK_PARAMETERS = ("redirect_to", "token", "type")
 CUSTOMER_ROLE = "authenticated"
 EXISTING_ADDRESS_CODE = "email_exists"
 INVITATION_MARKER = "baltor_invitation"
+# The mark value is fixed apart from the report version, so that a later report
+# version does not make this command refuse the users that it created earlier.
+INVITATION_MARK_VALUE = "beta_invitation_report/v1"
+SUPPORTED_INVITATION_MARKS = (INVITATION_MARK_VALUE,)
 JSON_MEDIA_TYPE = "application/json"
+PLAIN_ENCODING = "identity"
 CREATED_STATUSES = (200, 201)
 LINK_STATUS = 200
 CREDENTIAL_REFUSED_STATUSES = (401, 403)
@@ -61,6 +68,9 @@ USER_NOT_FOUND_STATUS = 404
 EXISTING_ADDRESS_STATUS = 422
 EXIT_REFUSED_BEFORE_ANY_REQUEST = 2
 MAXIMUM_ADDRESS_LENGTH = 2_048
+MAXIMUM_INVITED_ADDRESS_LENGTH = 254
+MAXIMUM_LOCAL_PART_LENGTH = 64
+UNENCODED_BODY = "identity"
 MINIMUM_LONG_SECRET_LENGTH = 16
 LIMITATIONS = (
     "The link signs in as the invited person until it is used or expires. Only its digest is kept here.",
@@ -128,6 +138,7 @@ class InvitationFailure(str, Enum):
     USER_NOT_CONFIRMED = "user_is_not_confirmed"
     USER_CANNOT_SIGN_IN = "user_cannot_sign_in_at_the_provider"
     IDENTITY_MISMATCH = "user_identity_mismatch"
+    EXISTING_USER_NOT_INVITED = "existing_user_was_not_created_by_the_invitation_command"
     REDIRECT_REPLACED = "redirect_replaced_by_the_provider"
     LINK_SHAPE = "link_shape_refused"
     LINK_KIND_MISMATCH = "link_kind_mismatch"
@@ -142,6 +153,7 @@ class InvitationDetail(str, Enum):
     TIMEOUT = "timeout"
     CONNECTION_FAILED = "connection_failed"
     RESPONSE_TOO_LARGE = "response_too_large"
+    RESPONSE_ENCODING = "response_encoding_refused"
     TRANSPORT_ERROR = "transport_error"
     TRANSPORT_CONTRACT = "transport_contract_violation"
     MALFORMED_RESPONSE = "malformed_response"
@@ -153,7 +165,7 @@ REFUSALS = tuple(item.value for item in InvitationRefusal)
 FAILURES = tuple(item.value for item in InvitationFailure)
 DETAILS = tuple(item.value for item in InvitationDetail)
 TRANSPORT_FAILURE_CODES = (InvitationDetail.TIMEOUT.value, InvitationDetail.CONNECTION_FAILED.value,
-                           InvitationDetail.RESPONSE_TOO_LARGE.value)
+                           InvitationDetail.RESPONSE_TOO_LARGE.value, InvitationDetail.RESPONSE_ENCODING.value)
 _EXIT_CODES = {InvitationOutcome.LINK_ISSUED: 0, InvitationOutcome.REFUSED: 1, InvitationOutcome.OUTCOME_UNKNOWN: 3}
 
 
@@ -275,6 +287,7 @@ class InvitationResult:
     link_generated: "bool | None"
     provider_requests: int
     provider_status: "int | None"
+    invitation_mark_present: "bool | None" = None
     link: "str | None" = field(default=None, repr=False)
     sensitive_values: "tuple[str, ...]" = field(default=(), repr=False)
 
@@ -288,6 +301,7 @@ class _Progress:
     user_id: "str | None" = None
     user_created: "bool | None" = None
     link_generated: "bool | None" = None
+    mark_present: "bool | None" = None
     sensitive: list = field(default_factory=list)
 
 
@@ -345,7 +359,8 @@ def _invited_address(value):
     """The provider stores addresses in lower case, so the same form is used everywhere."""
     lowered = value.lower() if isinstance(value, str) and value.isascii() else ""
     local, _, domain = lowered.partition("@")
-    if (not _ADDRESS.fullmatch(lowered) or len(lowered) > 254 or len(local) > 64
+    if (not _ADDRESS.fullmatch(lowered) or len(lowered) > MAXIMUM_INVITED_ADDRESS_LENGTH
+            or len(local) > MAXIMUM_LOCAL_PART_LENGTH
             or domain.rsplit(".", 1)[-1].isdigit()):
         raise Refusal(InvitationRefusal.INVITED_ADDRESS)
     return lowered
@@ -439,21 +454,33 @@ def _within_limit(size, request):
     return size <= request.maximum_response_bytes
 
 
+def _deadline_passed(deadline):
+    """One overall deadline for the whole answer. The library's own timeout restarts for each read."""
+    return time.monotonic() > deadline
+
+
+def _require_unencoded_body(encoding):
+    """An encoded answer is refused before it is read, so no decoder can grow it beyond the bound."""
+    if (encoding or UNENCODED_BODY).strip().lower() != UNENCODED_BODY:
+        raise TransportFailure(InvitationDetail.RESPONSE_ENCODING.value)
+
+
 def send_administration_request(request, *, http_transport=None):
     """Send one POST and read a bounded answer. A lost answer becomes a typed failure."""
     import httpx
     deadline = time.monotonic() + request.timeout_seconds
     headers = {"apikey": request.credential, "Authorization": "Bearer " + request.credential,
-               "Accept": JSON_MEDIA_TYPE, "Content-Type": JSON_MEDIA_TYPE}
+               "Accept": JSON_MEDIA_TYPE, "Accept-Encoding": UNENCODED_BODY, "Content-Type": JSON_MEDIA_TYPE}
     try:
         with httpx.Client(**_client_options(request, http_transport)) as client:
             with client.stream("POST", request.url, headers=headers, content=request.body) as response:
+                _require_unencoded_body(response.headers.get("content-encoding"))
                 chunks, size = [], 0
                 for chunk in response.iter_bytes():
                     size += len(chunk)
                     if not _within_limit(size, request):
                         raise TransportFailure(InvitationDetail.RESPONSE_TOO_LARGE.value)
-                    if time.monotonic() > deadline:
+                    if _deadline_passed(deadline):
                         raise TransportFailure(InvitationDetail.TIMEOUT.value)
                     chunks.append(chunk)
                 return AdministrationResponse(response.status_code, b"".join(chunks))
@@ -536,6 +563,19 @@ def _refuse_provider_redirect(status):
         raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, InvitationFailure.PROVIDER_REDIRECT)
 
 
+def _require_transport_contract(response, unknown):
+    """An injected transport must return the typed answer record, or the outcome is unknown."""
+    if (not isinstance(response, AdministrationResponse) or type(response.status) is not int
+            or not isinstance(response.body, bytes)):
+        raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.TRANSPORT_CONTRACT.value)
+
+
+def _require_definite_status(status, unknown):
+    """Only a 4xx answer is a definite refusal. Any other unexpected status leaves the outcome unknown."""
+    if not 400 <= status <= 499:
+        raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.UNEXPECTED_STATUS.value)
+
+
 def _require_bounded_body(body, limits, unknown):
     if len(body) > limits.maximum_response_bytes:
         raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.RESPONSE_TOO_LARGE.value)
@@ -558,6 +598,24 @@ def _require_same_identity(payload, request, progress):
             or payload.get("email") != request.email
             or (progress.user_id is not None and identity != progress.user_id)):
         raise _Stop(InvitationOutcome.REFUSED, InvitationFailure.IDENTITY_MISMATCH)
+
+
+def _invitation_mark_present(payload):
+    """The mark lives in metadata that only the administration interface can write."""
+    metadata = payload.get("app_metadata")
+    mark = metadata.get(INVITATION_MARKER) if isinstance(metadata, dict) else None
+    return isinstance(mark, str) and mark in SUPPORTED_INVITATION_MARKS
+
+
+def _require_invited_user(progress):
+    """A user that this run only found must carry the mark of an earlier run of this command.
+
+    Whoever registered an unmarked account chose its password and may hold sessions and
+    personal keys for it. A link for such an account would hand the invited person an
+    account that someone else can still use.
+    """
+    if progress.user_created is not True and progress.mark_present is not True:
+        raise _Stop(InvitationOutcome.REFUSED, InvitationFailure.EXISTING_USER_NOT_INVITED)
 
 
 def _require_confirmed_user(payload, limits, now):
@@ -617,9 +675,7 @@ def _exchange(transport, url, fields, credential, limits, progress, unknown):
         raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, failure.code) from None
     except Exception:
         raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.TRANSPORT_ERROR.value) from None
-    if (not isinstance(response, AdministrationResponse) or type(response.status) is not int
-            or not isinstance(response.body, bytes)):
-        raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.TRANSPORT_CONTRACT.value)
+    _require_transport_contract(response, unknown)
     progress.status = response.status
     _refuse_provider_redirect(response.status)
     _require_bounded_body(response.body, limits, unknown)
@@ -628,7 +684,7 @@ def _exchange(transport, url, fields, credential, limits, progress, unknown):
 
 def _create_or_find_user(request, credential, transport, limits, progress):
     unknown = InvitationFailure.USER_CREATION_UNKNOWN
-    fields = {"email": request.email, "email_confirm": True, "app_metadata": {INVITATION_MARKER: REPORT_RECORD_TYPE}}
+    fields = {"email": request.email, "email_confirm": True, "app_metadata": {INVITATION_MARKER: INVITATION_MARK_VALUE}}
     response = _exchange(transport, request.project_origin + USERS_PATH, fields, credential, limits, progress, unknown)
     if response.status in CREATED_STATUSES:
         payload = _answer(response.body, unknown)
@@ -639,8 +695,7 @@ def _create_or_find_user(request, credential, transport, limits, progress):
             raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.OTHER_USER.value)
         progress.user_id, progress.user_created = identity, True
         return
-    if not 400 <= response.status <= 499:
-        raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.UNEXPECTED_STATUS.value)
+    _require_definite_status(response.status, unknown)
     progress.user_created = False
     if (response.status == EXISTING_ADDRESS_STATUS
             and _provider_error_code(response.body) == EXISTING_ADDRESS_CODE):
@@ -655,8 +710,7 @@ def _generate_link(request, credential, transport, limits, progress, now):
     fields = {"type": LINK_KIND, "email": request.email, "redirect_to": request.redirect_to}
     response = _exchange(transport, request.project_origin + LINK_PATH, fields, credential, limits, progress, unknown)
     if response.status != LINK_STATUS:
-        if not 400 <= response.status <= 499:
-            raise _Stop(InvitationOutcome.OUTCOME_UNKNOWN, unknown, InvitationDetail.UNEXPECTED_STATUS.value)
+        _require_definite_status(response.status, unknown)
         progress.link_generated = False
         if response.status in CREDENTIAL_REFUSED_STATUSES:
             raise _Stop(InvitationOutcome.REFUSED, InvitationFailure.CREDENTIAL_REFUSED)
@@ -677,10 +731,17 @@ def _generate_link(request, credential, transport, limits, progress, now):
     _require_same_identity(payload, request, progress)
     if isinstance(payload.get("id"), str) and _USER_IDENTITY.fullmatch(payload["id"]):
         progress.user_id = payload["id"]
+    progress.mark_present = _invitation_mark_present(payload)
+    _require_invited_user(progress)
     _require_confirmed_user(payload, limits, now)
     _require_sign_in_allowed(payload, now)
     _require_redirect_kept(redirect, payload, request)
     return link
+
+
+def _outcome_after_defect(progress):
+    """A defect after a request leaves the provider state unknown."""
+    return InvitationOutcome.OUTCOME_UNKNOWN if progress.requests else InvitationOutcome.REFUSED
 
 
 def issue_invitation(request, credential, transport, limits=None, now=None):
@@ -695,11 +756,11 @@ def issue_invitation(request, credential, transport, limits=None, now=None):
     except _Stop as stop:
         outcome, failure, detail, link = stop.outcome, stop.failure, stop.detail, None
     except Exception as error:
-        # A defect after a request leaves the provider state unknown. No message is kept.
-        outcome = InvitationOutcome.OUTCOME_UNKNOWN if progress.requests else InvitationOutcome.REFUSED
+        # No message is kept, because a message could hold a private value.
+        outcome = _outcome_after_defect(progress)
         failure, detail, link = InvitationFailure.UNEXPECTED_ERROR, type(error).__name__, None
     return InvitationResult(outcome, failure, detail, progress.user_id, progress.user_created,
-                            progress.link_generated, progress.requests, progress.status, link,
+                            progress.link_generated, progress.requests, progress.status, progress.mark_present, link,
                             tuple(progress.sensitive))
 
 
@@ -716,6 +777,7 @@ def build_report(request, result, observed_at):
         "email_sha256": request.email_digest,
         "user_id": result.user_id,
         "user_created": result.user_created,
+        "invitation_mark_present": result.invitation_mark_present,
         "link_kind": LINK_KIND,
         "link_generated": result.link_generated,
         "link_sha256": hashlib.sha256(result.link.encode("utf-8")).hexdigest() if issued else None,
@@ -786,7 +848,7 @@ def _record(stream, request, result, observed_at, sensitive):
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0], allow_abbrev=False)
     parser.add_argument("--project-ref", required=True, help="identity project reference, twenty lower case letters")
     parser.add_argument("--email", required=True, help="address of the invited person; it is used in lower case")
     parser.add_argument("--service-origin", required=True, help="exact HTTPS origin of the website, without a path")
@@ -797,6 +859,23 @@ def build_parser():
     parser.add_argument("--acknowledge-identity-account-effects", action="store_true",
                         help="confirm that a user may be created and that a sign-in link will be generated")
     return parser
+
+
+def _select_transport(transport):
+    """Only an absent transport selects the network. An injected one is used even when it is falsy."""
+    return send_administration_request if transport is None else transport
+
+
+def _sensitive_values(credential, result):
+    return (credential, *result.sensitive_values)
+
+
+def _safe_summary(summary, sensitive):
+    try:
+        _require_no_secret(summary, sensitive)
+    except Refusal as refusal:
+        return refusal.code
+    return summary
 
 
 def main(argv=None, *, environment=None, transport=None, manifest=None, now=None):
@@ -814,7 +893,7 @@ def main(argv=None, *, environment=None, transport=None, manifest=None, now=None
         sys.stderr.write(refusal.code + "\n")
         return EXIT_REFUSED_BEFORE_ANY_REQUEST
     try:
-        return _run(request, credential, transport or send_administration_request, limits, current, target, stream)
+        return _run(request, credential, _select_transport(transport), limits, current, target, stream)
     except Exception as error:
         # A defect here must not print a message that could hold a private value.
         sys.stderr.write(InvitationFailure.UNEXPECTED_ERROR.value + ":" + type(error).__name__ + "\n")
@@ -825,7 +904,7 @@ def _run(request, credential, transport, limits, current, target, stream):
     """Everything after the report file exists: requests, then the report, then the link."""
     with stream:
         result = issue_invitation(request, credential, transport, limits, current)
-        sensitive = (credential, *result.sensitive_values)
+        sensitive = _sensitive_values(credential, result)
         recorded, written = _record(stream, request, result, current(), sensitive)
     if not _report_is_durable(written):
         recorded = _withheld(recorded, InvitationFailure.REPORT_NOT_WRITTEN)
@@ -841,13 +920,10 @@ def _run(request, credential, transport, limits, current, target, stream):
         "outcome": recorded.outcome.value,
         "failure": recorded.failure.value if recorded.failure is not None else None,
         "detail": recorded.detail, "user_created": recorded.user_created,
+        "invitation_mark_present": recorded.invitation_mark_present,
         "provider_requests": recorded.provider_requests, "link_displayed": shown,
         "report": str(target), "report_written": written}, sort_keys=True)
-    try:
-        _require_no_secret(summary, sensitive)
-    except Refusal as refusal:
-        summary = refusal.code
-    sys.stderr.write(summary + "\n")
+    sys.stderr.write(_safe_summary(summary, sensitive) + "\n")
     if recorded.outcome is InvitationOutcome.LINK_ISSUED and not shown:
         return _EXIT_CODES[InvitationOutcome.REFUSED]
     return _EXIT_CODES[recorded.outcome]

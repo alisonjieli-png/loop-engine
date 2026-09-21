@@ -19,7 +19,7 @@ Private beta account procedure
 │   ├── client_access block: a signed-in person creates and revokes personal keys
 │   └── Registration stays closed on the website and at the identity provider
 ├── 2. Invite a person (each time, with one command)
-│   ├── Create or find the confirmed user at the identity provider
+│   ├── Create the confirmed user, or find the user that this command created earlier
 │   ├── Generate one recovery link, with no email
 │   └── Show the link once and keep a report that does not hold the link
 ├── 3. The invited person sets a password and signs in
@@ -76,7 +76,7 @@ Evidence level of the invitation command: local contract only.
 | Fact | State |
 |---|---|
 | Checks | The checks in [`tools/test_invite_beta_user.py`](../../tools/test_invite_beta_user.py) pass. They use an injected transport and the HTTP library's in-memory transport. No socket is opened. |
-| Removed guards | Each guard of the command was removed in memory, one at a time. Each removal makes a named check fail. |
+| Removed guards | The 42 removals listed in `RemovedGuardControls` in the checks file were made in memory, one at a time. Each removal makes its named check fail. Three of them remove a guard for the link request only. A guard that is not in that list is not proven in this way. |
 | Real provider | Not contacted. The request and answer shapes come from the provider's published source code and documentation for user creation, link generation and error answers, read on September 20, 2026. |
 | First real use | It is also the first provider qualification of this command. Use an address that you control, and compare the result with the provider's user list. |
 
@@ -232,9 +232,10 @@ The command does two things at the identity provider and nothing at the
 Baltor service.
 
 1. It creates a user for the address with a confirmed address and no
-   password. If the address already has a user, the provider refuses with its
-   typed code for an existing address, and the command continues with that
-   user.
+   password, and marks the user with `baltor_invitation` in metadata that
+   only the administration interface can write. If the address already has a
+   user, the provider refuses with its typed code for an existing address,
+   and the command continues with that user.
 2. It asks for a recovery link for that address. This interface returns the
    link and sends no email.
 
@@ -242,6 +243,13 @@ Before it shows the link, the command checks that the answer describes the
 invited user, that the user is confirmed and can sign in, that the link
 points at the identity project, that it is a recovery link, and that the
 provider kept the requested redirect address.
+
+A user that the command only found must carry the `baltor_invitation` mark
+of an earlier run. Without the mark the link is withheld with
+`existing_user_was_not_created_by_the_invitation_command`. Someone else
+registered that account and chose its password. That person may also hold
+browser sessions and personal client keys for it, and a new password ends
+neither of them. The command has no option to accept such an account.
 
 ### Run it
 
@@ -282,9 +290,15 @@ from the project recorded for that credential.
 
 The link appears once, alone, on standard output. Everything else goes to
 standard error as one line of JSON. To keep the link out of the terminal's
-history, send standard output to the clipboard:
+history, send standard output to the clipboard. The exit status of a
+pipeline is the status of its last command, so switch on `pipefail` first.
+Without it you see the status of `wl-copy`, which is 0 also after a refusal.
+After a refusal or an unknown outcome the clipboard holds no link, because
+nothing was written to standard output. In every case the `outcome` field on
+standard error is authoritative.
 
 ```bash
+set -o pipefail
 /usr/bin/python3 tools/operator_credentials.py run --ref supabase-secret --timeout 120 -- \
   .venv/bin/python tools/invite_beta_user.py \
   --project-ref qfzxmjznlwiopgvfgtsw \
@@ -306,7 +320,8 @@ workstation. The credential and the link never do.
 
 ### Read the result
 
-The exit status and the `outcome` field say what you may conclude.
+The exit status and the `outcome` field of the summary line on standard
+error say what you may conclude.
 
 | Exit status | `outcome` | Meaning |
 |---|---|---|
@@ -319,15 +334,32 @@ The exit status and the `outcome` field say what you may conclude.
 The report (`beta_invitation_report/v1`) holds these fields: the time, the
 project address and the issuer, the redirect address, a digest of the address
 (`email_sha256`), the provider's user identity (`user_id`), whether this run
-created the user (`user_created`), whether the provider generated a link
+created the user (`user_created`), whether the link answer carried the
+invitation mark (`invitation_mark_present`, which is `null` when no link
+answer was read), whether the provider generated a link
 (`link_generated`), a digest of the displayed link (`link_sha256`), the
 outcome, the failure and its detail, the last provider status, the number of
 requests, and `email_requested`, which is always `false`. It never holds the
-link, its one-time code, the credential or the address. As a second guard,
+link, its one-time code, the credential or the address in plain text. The
+address digest is a plain SHA-256 digest without a key. It is a pseudonym:
+a person who holds the report and can guess the address can confirm the
+guess. Keep reports as private as the address itself. As a second guard,
 the command refuses to write a report or a summary that contains the link,
 its token, its one-time code or the credential. The file is readable by its
 owner only. The issuer and the user identity are what you need to
 [disable the account](#disable-an-account) later.
+
+The report is written before the link is shown. A report with `link_issued`
+therefore does not prove that anybody saw the link. Only the summary line on
+standard error does, in its `link_displayed` field. Note that field beside
+the report when you keep the report as evidence.
+
+`user_created` as `false` is expected only when an earlier report in your
+folder shows that this command created the same `user_id`. On a first
+invitation it means that someone else created the account. The command then
+withholds the link unless the account carries the invitation mark. If you
+see `user_created` as `false` on a first invitation together with a link,
+do not deliver the link. Stop and report it.
 
 A report file that exists and is empty means that the run was interrupted or
 met a defect after the report file was created. Standard error then holds
@@ -345,7 +377,8 @@ Failures after the first request:
 | `user_creation_refused_by_provider` | The provider refused to create the user for a reason other than an existing address. | Check the address. Read the provider's log for the refusal. |
 | `user_not_found_at_the_provider` | The provider reported an existing address and then found no user for the link. | The address may belong to another sign-in method or the user was removed. Inspect the provider's user list. |
 | `link_refused_by_provider` | The provider refused to generate the link. | Read the provider's log. Wait before another attempt if it reports a rate limit. |
-| `user_is_not_confirmed` | The existing user has no confirmed address. The link was withheld. | Ask the owner to confirm or remove that user in the provider's dashboard, then run the command again. |
+| `existing_user_was_not_created_by_the_invitation_command` | The address already has a user, and that user does not carry the `baltor_invitation` mark. Someone else registered it and chose its password. The link was withheld. | Ask the owner to remove that user in the provider's dashboard. If the person has signed in before, also [disable the account](#disable-an-account) at the service with the `user_id` from the report. Then run the command again, so that the command creates the user. |
+| `user_is_not_confirmed` | The user has no confirmed address. The link was withheld. | Ask the owner to remove that user in the provider's dashboard. Never confirm it: a confirmed account keeps the password that it already has. Then run the command again, so that the command creates the user. |
 | `user_cannot_sign_in_at_the_provider` | The user is banned, removed, anonymous or has another role. The link was withheld. | A disabled account stays disabled. Lift the ban at the provider first if the account should return. |
 | `user_identity_mismatch` | The link answer describes another user or another address than the request. The link was withheld. | Stop and report it. Do not deliver any link for this address. |
 | `redirect_replaced_by_the_provider` | The provider replaced the redirect address, which happens when the address is not on its allow list. The link was withheld. | Use an address that is on the allow list, or ask the owner to add the exact address. |
@@ -356,7 +389,10 @@ Failures after the first request:
 | `unexpected_error` | A defect after a request. The detail names the error type only. | Treat as unknown and report it. |
 
 The `detail` field narrows an unknown outcome: `timeout`,
-`connection_failed`, `response_too_large`, `transport_error`,
+`connection_failed`, `response_too_large`, `response_encoding_refused` (the
+command asks for an answer without compression and refuses a compressed one
+before reading it, so that the byte limit is also a memory limit),
+`transport_error`,
 `transport_contract_violation`, `malformed_response`, `unexpected_status` or
 `response_does_not_describe_the_invited_user`.
 
@@ -385,9 +421,10 @@ Early refusals, with exit status 2:
 
 1. Do not run the command again at once. Keep the report.
 2. Look for the address in the provider's user list and note what you see.
-3. Run the command again with a new report path. If the user exists, the
-   command finds it. If not, the command creates it. A new link replaces an
-   earlier link for the same user.
+3. Run the command again with a new report path. If the first run created
+   the user, the command finds it by its invitation mark. If not, the
+   command creates it. A new link replaces an earlier link for the same
+   user.
 4. Keep both reports side by side. Never delete the first one.
 
 The credential wrapper also stops the command after its own timeout. The
@@ -407,7 +444,9 @@ with an address that you control before you invite anyone.
 3. Confirm in the provider's user list that the user exists, is confirmed
    and carries the `baltor_invitation` mark, and that no email was sent.
 4. Run the command again for the same address. Expect `user_created` to be
-   `false` and a different link.
+   `false`, `invitation_mark_present` to be `true` and a different link. If
+   the second run is refused for a missing mark, the provider did not keep
+   or did not return the mark. Stop and report it.
 5. Record what you observed beside the two reports.
 
 ## What the invited person does
@@ -439,7 +478,10 @@ out, and the sign-in token lasts one hour.
 ## Reissue a link
 
 Run the same command again with a new report path. The provider reports the
-existing address, `user_created` is `false`, and a new link is shown.
+existing address, `user_created` is `false`, `invitation_mark_present` is
+`true`, and a new link is shown. Before you deliver it, find the earlier
+report in which this command created the same `user_id`. Without such a
+report, treat the account as created by someone else.
 
 - Reissue when the link expired, when a message preview used it up, or when
   the person forgot the password. Recovery by email is not available.
@@ -540,8 +582,9 @@ repository root. They contact no provider.
 PYTHONPATH=src:tools .venv/bin/python -m unittest tools/test_invite_beta_user.py
 ```
 
-The checks fail when a guard of the command is removed, when this guide
-names an option that the command does not accept, when the two host blocks
-above no longer load, when the snippet for subject revocation stops working
-against a local service, or when the command can report a code that this
-guide does not explain.
+The checks fail when one of the guards listed in `RemovedGuardControls` is
+removed, when the number of removals stated in this guide differs from that
+list, when this guide names an option that the command does not accept, when
+the two host blocks above no longer load, when the snippet for subject
+revocation stops working against a local service, or when the command can
+report a code that this guide does not explain.

@@ -20,6 +20,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -69,7 +70,7 @@ def response(status, payload):
 def user(**changes):
     value = {"id": USER_ID, "aud": "authenticated", "role": "authenticated", "email": EMAIL,
              "email_confirmed_at": "2026-09-20T11:59:58.12345Z", "is_anonymous": False,
-             "app_metadata": {"baltor_invitation": tool.REPORT_RECORD_TYPE}, "user_metadata": {}}
+             "app_metadata": {"baltor_invitation": tool.INVITATION_MARK_VALUE}, "user_metadata": {}}
     value.update(changes)
     return value
 
@@ -222,6 +223,46 @@ class InvitationChecks(unittest.TestCase):
             with self.subTest(address=address):
                 self.assert_nothing_happened(self.run_command(created(), linked(), arguments={"--email": address}))
 
+    def test_address_longer_than_the_mailbox_limit_is_refused(self):
+        """Every label and the local part are valid here, so only the total length bound can refuse."""
+        address = "a" * 64 + "@" + ".".join(["b" * 50] * 4) + ".test"
+        self.assertGreater(len(address), 254)
+        self.assertIsNotNone(tool._ADDRESS.fullmatch(address))
+        self.assert_nothing_happened(self.run_command(created(), linked(), arguments={"--email": address}))
+        accepted = "a" * 64 + "@" + ".".join(["b" * 50] * 3) + "." + "c" * 31 + ".test"
+        self.assertEqual(len(accepted), 254)
+        self.assertEqual(tool._invited_address(accepted), accepted)
+
+    def test_abbreviated_confirmation_flag_is_not_a_confirmation(self):
+        for flag in ("--a", "--acknowledge", "--acknowledge-identity-account-effect"):
+            with self.subTest(flag=flag):
+                run = self.run_command(created(), linked(), confirm=False, arguments={flag: "--credential-ref"})
+                self.assert_nothing_happened(run)
+                self.assertNotIn("explicit_confirmation_required", run.stderr)
+
+    def test_injected_transport_is_used_even_when_it_is_falsy(self):
+        class EmptyRecorder(list):
+            """A recorder that is still empty is falsy, like any empty list."""
+
+            def __init__(self, *steps):
+                super().__init__()
+                self.steps = list(steps)
+
+            def __call__(self, request):
+                self.append(request.url)
+                return self.steps.pop(0)
+        network = []
+
+        def default_transport(request, **options):
+            network.append(request.url)
+            raise tool.TransportFailure("connection_failed")
+        recorder = EmptyRecorder(created(), linked())
+        self.assertFalse(recorder)
+        with patch.object(tool, "send_administration_request", default_transport):
+            run = Run(recorder)
+        self.addCleanup(run.close)
+        self.assertEqual((network, len(recorder), run.code, run.stdout), ([], 2, 0, LINK + "\n"), run.stderr)
+
     def test_without_confirmation_nothing_is_requested_or_written(self):
         run = self.run_command(created(), linked(), confirm=False)
         self.assert_nothing_happened(run)
@@ -290,7 +331,7 @@ class InvitationChecks(unittest.TestCase):
         self.assertEqual(run.provider.paths, ["/auth/v1/admin/users", "/auth/v1/admin/generate_link"])
         creation, generation = run.provider.bodies
         self.assertEqual(creation, {"email": EMAIL, "email_confirm": True,
-                                    "app_metadata": {"baltor_invitation": tool.REPORT_RECORD_TYPE}})
+                                    "app_metadata": {"baltor_invitation": "beta_invitation_report/v1"}})
         self.assertEqual(generation, {"type": "recovery", "email": EMAIL, "redirect_to": REDIRECT})
         for request in run.provider.requests:
             self.assertEqual(request.credential, CREDENTIAL)
@@ -319,6 +360,35 @@ class InvitationChecks(unittest.TestCase):
                 self.assertEqual((run.record["user_created"], run.record["user_id"]), (False, USER_ID))
                 self.assertEqual(len(run.provider.requests), 2)
 
+    def test_existing_account_without_the_invitation_mark_gets_no_link(self):
+        """An account that someone else registered keeps that person's password, sessions and keys."""
+        stranger = {"provider": "email", "providers": ["email"]}
+        for name, metadata in (("no_mark", stranger), ("no_metadata", None), ("metadata_is_not_an_object", "email"),
+                               ("other_value", {**stranger, "baltor_invitation": "beta_invitation_report/v0"}),
+                               ("true_is_not_the_mark", {**stranger, "baltor_invitation": True}),
+                               ("mark_in_user_metadata_only", stranger)):
+            with self.subTest(name=name):
+                changes = {"app_metadata": metadata, "created_at": "2026-09-18T08:00:00Z",
+                           "last_sign_in_at": "2026-09-19T08:00:00Z",
+                           "user_metadata": {"baltor_invitation": tool.INVITATION_MARK_VALUE}}
+                run = self.run_command(exists(), linked(**changes))
+                self.assertEqual((run.code, run.stdout, len(run.provider.requests)), (1, "", 2), run.stderr)
+                record = run.record
+                self.assertEqual((record["outcome"], record["failure"], record["user_created"],
+                                  record["invitation_mark_present"], record["link_generated"], record["link_sha256"]),
+                                 ("refused", "existing_user_was_not_created_by_the_invitation_command", False, False,
+                                  True, None))
+                self.assertIs(json.loads(run.stderr)["invitation_mark_present"], False)
+                self.assert_no_secret(run, run.report.read_text("utf-8"))
+        marked = self.run_command(exists(), linked())
+        self.assertEqual((marked.code, marked.stdout), (0, LINK + "\n"), marked.stderr)
+        self.assertEqual((marked.record["user_created"], marked.record["invitation_mark_present"]), (False, True))
+        self.assertIs(json.loads(marked.stderr)["invitation_mark_present"], True)
+
+    def test_report_says_when_the_mark_was_never_read(self):
+        run = self.run_command(created(), tool.TransportFailure("timeout"))
+        self.assertIsNone(run.record["invitation_mark_present"])
+
     def test_the_provider_is_never_asked_to_send_email(self):
         run = self.run_command(created(), linked())
         self.assertEqual(run.code, 0)
@@ -339,7 +409,7 @@ class InvitationChecks(unittest.TestCase):
                         last_sign_in_at=None, created_at="2026-09-20T11:59:58.1Z", updated_at="2026-09-20T11:59:59.2Z",
                         banned_until=None, deleted_at=None, invited_at=None, confirmation_sent_at=None,
                         app_metadata={"provider": "email", "providers": ["email"],
-                                      "baltor_invitation": tool.REPORT_RECORD_TYPE},
+                                      "baltor_invitation": tool.INVITATION_MARK_VALUE},
                         user_metadata={"email_verified": True},
                         identities=[{"identity_id": OTHER_ID, "id": USER_ID, "user_id": USER_ID, "provider": "email",
                                      "identity_data": {"email": EMAIL, "sub": USER_ID}, "email": EMAIL}])
@@ -394,6 +464,61 @@ class InvitationChecks(unittest.TestCase):
                 run = self.run_command(response(status, {"msg": "fixture"}), linked())
                 self.assertEqual((run.code, run.stdout, len(run.provider.requests)), (3, "", 1))
                 self.assertEqual(run.record["outcome"], "outcome_unknown")
+
+    def test_unexpected_status_on_the_link_request_leaves_the_outcome_unknown(self):
+        for status in (500, 502, 503, 504, 100, 201, 202, 204, 600):
+            with self.subTest(status=status):
+                run = self.run_command(created(), response(status, {"msg": "fixture"}))
+                self.assertEqual((run.code, run.stdout, len(run.provider.requests)), (3, "", 2))
+                record = run.record
+                self.assertEqual((record["outcome"], record["failure"], record["detail"], record["user_created"],
+                                  record["link_generated"], record["link_sha256"], record["provider_status"]),
+                                 ("outcome_unknown", "link_outcome_unknown_do_not_repeat", "unexpected_status", True,
+                                  None, None, status))
+
+    def test_provider_redirect_on_the_link_request_is_refused_as_unknown(self):
+        for status in (301, 302, 303, 307, 308):
+            with self.subTest(status=status):
+                run = self.run_command(created(), response(status, b""))
+                self.assertEqual((run.code, run.stdout, len(run.provider.requests)), (3, "", 2))
+                self.assertEqual((run.record["failure"], run.record["provider_status"], run.record["link_generated"]),
+                                 ("provider_redirect_refused", status, None))
+
+    def test_oversized_link_answer_is_refused_by_the_command_itself(self):
+        padded = json.dumps({**json.loads(linked().body), "padding": "x" * 70_000}).encode()
+        run = self.run_command(created(), response(200, padded))
+        self.assertEqual((run.code, run.stdout, len(run.provider.requests)), (3, "", 2))
+        self.assertEqual((run.record["failure"], run.record["detail"], run.record["link_sha256"]),
+                         ("link_outcome_unknown_do_not_repeat", "response_too_large", None))
+        self.assert_no_secret(run, run.report.read_text("utf-8"))
+
+    def test_transport_that_breaks_its_contract_leaves_the_outcome_unknown(self):
+        class Answer:
+            def __init__(self, status, body):
+                self.status, self.body = status, body
+        for name, answer in (("nothing", None), ("plain_object", {"status": 200, "body": b"{}"}),
+                             ("other_type", Answer(200, created().body)),
+                             ("truth_value_status", tool.AdministrationResponse(True, created().body)),
+                             ("text_status", tool.AdministrationResponse("200", created().body)),
+                             ("text_body", tool.AdministrationResponse(200, created().body.decode()))):
+            with self.subTest(name=name):
+                run = self.run_command(answer, linked())
+                self.assertEqual((run.code, run.stdout, len(run.provider.requests)), (3, "", 1))
+                self.assertEqual((run.record["outcome"], run.record["failure"], run.record["detail"]),
+                                 ("outcome_unknown", "user_creation_outcome_unknown_do_not_repeat",
+                                  "transport_contract_violation"))
+
+    def test_defect_between_the_requests_is_unknown_and_discloses_nothing(self):
+        def defect(*arguments, **options):
+            raise LookupError("private diagnostic " + CREDENTIAL)
+        with patch.object(tool, "_generate_link", defect):
+            run = self.run_command(created(), linked())
+        self.assertEqual((run.code, run.stdout, len(run.provider.requests)), (3, "", 1))
+        record = run.record
+        self.assertEqual((record["outcome"], record["failure"], record["detail"], record["user_created"]),
+                         ("outcome_unknown", "unexpected_error", "LookupError", True))
+        self.assert_no_secret(run, run.report.read_text("utf-8"))
+        self.assertNotIn("private diagnostic", run.stderr + run.report.read_text("utf-8"))
 
     def test_oversized_answer_is_refused_by_the_command_itself(self):
         padded = json.dumps({**user(), "padding": "x" * 70_000}).encode()
@@ -542,6 +667,30 @@ class InvitationChecks(unittest.TestCase):
         self.assertEqual((run.record["outcome"], run.record["failure"]), ("refused", "secret_in_output_refused"))
         self.assert_no_secret(run, run.report.read_text("utf-8"))
 
+    def test_credential_and_one_time_code_reach_the_output_guard(self):
+        """End to end: the values come from the run itself, not from a list the check supplies."""
+        original = tool.build_report
+        for name, secret in (("credential", CREDENTIAL), ("one_time_code", ONE_TIME_CODE)):
+            with self.subTest(name=name):
+                def leaking(*arguments, secret=secret):
+                    return {**original(*arguments), "note": secret}
+                with patch.object(tool, "build_report", leaking):
+                    run = self.run_command(created(), linked())
+                self.assertEqual((run.code, run.stdout), (1, ""), run.stderr)
+                self.assertEqual(json.loads(run.stderr)["failure"], "secret_in_output_refused")
+                self.assertEqual(run.report.read_text("utf-8"), "")
+                self.assert_no_secret(run)
+
+    def test_summary_line_is_guarded_like_the_report(self):
+        for name, secret in (("credential", CREDENTIAL), ("one_time_code", ONE_TIME_CODE)):
+            with self.subTest(name=name):
+                folder = tempfile.TemporaryDirectory(prefix="baltor-invitation-summary-")
+                self.addCleanup(folder.cleanup)
+                run = self.run_command(created(), linked(), report=Path(folder.name) / (secret + ".json"))
+                self.assertEqual(run.stderr, "secret_in_output_refused\n")
+                self.assertTrue(run.report.exists())
+                self.assert_no_secret(run, run.report.read_text("utf-8"))
+
     def test_short_code_is_matched_as_a_whole_value_and_long_secrets_anywhere(self):
         digest = "ab" + ONE_TIME_CODE + "cd" * 28
         honest = {"record_type": tool.REPORT_RECORD_TYPE, "link_sha256": digest}
@@ -629,6 +778,46 @@ class DefaultTransportChecks(unittest.TestCase):
         self.assertEqual((sent.method, str(sent.url), sent.content), ("POST", self.request.url, self.request.body))
         self.assertEqual((sent.headers["apikey"], sent.headers["authorization"], sent.headers["content-type"]),
                          (CREDENTIAL, "Bearer " + CREDENTIAL, "application/json"))
+        self.assertEqual(sent.headers.get_list("accept-encoding"), ["identity"])
+
+    def test_default_transport_refuses_a_compressed_answer_before_reading_it(self):
+        import gzip
+        import zlib
+        pulled = []
+
+        def body(packed):
+            pulled.append(len(packed))
+            yield packed
+        for name, packed in (("gzip", gzip.compress(b"x" * 4_000_000)), ("deflate", zlib.compress(b"x" * 4_000_000))):
+            with self.subTest(name=name):
+                self.assertLess(len(packed), self.request.maximum_response_bytes * 8)
+
+                def handler(request, name=name, packed=packed):
+                    return self.httpx.Response(200, headers={"Content-Encoding": name}, content=body(packed))
+                with self.assertRaises(tool.TransportFailure) as raised:
+                    self.send(handler)
+                self.assertEqual(raised.exception.code, "response_encoding_refused")
+        self.assertEqual(pulled, [])
+        answer = self.send(lambda request: self.httpx.Response(200, headers={"Content-Encoding": "identity"}, content=b"{}"))
+        self.assertEqual(answer.body, b"{}")
+
+    def test_default_transport_stops_at_one_overall_deadline(self):
+        """Each piece arrives quickly, so only the overall deadline can stop a slow answer."""
+        pulled = []
+
+        def body():
+            for index in range(40):
+                pulled.append(index)
+                time.sleep(0.02)
+                yield b"x"
+
+        def handler(request):
+            return self.httpx.Response(200, content=body())
+        slow = tool.AdministrationRequest(self.request.url, self.request.body, 0.1, 1_000, CREDENTIAL)
+        with self.assertRaises(tool.TransportFailure) as raised:
+            self.send(handler, slow)
+        self.assertEqual(raised.exception.code, "timeout")
+        self.assertLess(len(pulled), 20)
 
     def test_default_transport_never_follows_a_redirect_or_forwards_the_credential(self):
         contacted = []
@@ -712,7 +901,70 @@ class RemovedGuardControls(unittest.TestCase):
         ("_require_link_at_project", "test_link_shape_is_checked_before_display"),
         ("_require_link_kind", "test_other_link_kinds_are_withheld"),
         ("_require_no_secret", "test_output_guard_refuses_a_report_that_would_hold_a_secret"),
+        ("_require_invited_user", "test_existing_account_without_the_invitation_mark_gets_no_link"),
+        ("_require_transport_contract", "test_transport_that_breaks_its_contract_leaves_the_outcome_unknown"),
+        ("_require_definite_status", "test_unexpected_status_on_the_link_request_leaves_the_outcome_unknown"),
     )
+    # Each of these guards is removed for the link request only, so the creation checks cannot catch it.
+    LINK_REQUEST_CONTROLS = (
+        ("_require_definite_status", "test_unexpected_status_on_the_link_request_leaves_the_outcome_unknown"),
+        ("_refuse_provider_redirect", "test_provider_redirect_on_the_link_request_is_refused_as_unknown"),
+        ("_require_bounded_body", "test_oversized_link_answer_is_refused_by_the_command_itself"),
+    )
+    TRANSPORT_CONTROLS = (
+        ("_deadline_passed", lambda deadline: False, "test_default_transport_stops_at_one_overall_deadline"),
+        ("_require_unencoded_body", lambda encoding: None,
+         "test_default_transport_refuses_a_compressed_answer_before_reading_it"),
+    )
+    COMMAND_CONTROLS = (
+        ("_outcome_after_defect", lambda progress: tool.InvitationOutcome.REFUSED,
+         "test_defect_between_the_requests_is_unknown_and_discloses_nothing"),
+        ("_safe_summary", lambda summary, sensitive: summary, "test_summary_line_is_guarded_like_the_report"),
+        ("_sensitive_values", lambda credential, result: tuple(result.sensitive_values),
+         "test_credential_and_one_time_code_reach_the_output_guard"),
+        ("_SENSITIVE_FIELDS", ("action_link", "hashed_token"), "test_credential_and_one_time_code_reach_the_output_guard"),
+        ("MAXIMUM_INVITED_ADDRESS_LENGTH", 10 ** 6, "test_address_longer_than_the_mailbox_limit_is_refused"),
+        ("_invitation_mark_present", lambda payload: True,
+         "test_existing_account_without_the_invitation_mark_gets_no_link"),
+        ("_select_transport", lambda transport: transport or tool.send_administration_request,
+         "test_injected_transport_is_used_even_when_it_is_falsy"),
+    )
+
+    def test_each_guard_removed_for_the_link_request_only_fails_its_named_check(self):
+        original = tool._generate_link
+        for guard, name in self.LINK_REQUEST_CONTROLS:
+            def generate(*arguments, guard=guard):
+                with patch.object(tool, guard, lambda *values, **options: None):
+                    return original(*arguments)
+            with self.subTest(guard=guard):
+                self.assert_detected("_generate_link", generate, InvitationChecks, name)
+
+    def test_each_removed_transport_guard_fails_its_named_check(self):
+        for guard, replacement, name in self.TRANSPORT_CONTROLS:
+            with self.subTest(guard=guard):
+                self.assert_detected(guard, replacement, DefaultTransportChecks, name)
+
+    def test_each_weakened_command_guard_fails_its_named_check(self):
+        for guard, replacement, name in self.COMMAND_CONTROLS:
+            with self.subTest(guard=guard, name=name):
+                self.assert_detected(guard, replacement, InvitationChecks, name)
+
+    def test_accepting_an_abbreviated_confirmation_is_detected(self):
+        import argparse
+        original = argparse.ArgumentParser
+
+        def abbreviating(*arguments, **options):
+            return original(*arguments, **{**options, "allow_abbrev": True})
+        self.assertFalse(self.failed(InvitationChecks, "test_abbreviated_confirmation_flag_is_not_a_confirmation"))
+        with patch.object(tool.argparse, "ArgumentParser", abbreviating):
+            self.assertTrue(self.failed(InvitationChecks, "test_abbreviated_confirmation_flag_is_not_a_confirmation"))
+
+    def test_the_number_of_controls_matches_the_guide(self):
+        """The guide states how many removals are proven, so the statement cannot exceed this list."""
+        single = [name for name in dir(self) if name.startswith("test_") and name.endswith("_is_detected")]
+        count = (len(self.CONTROLS) + len(self.LINK_REQUEST_CONTROLS) + len(self.TRANSPORT_CONTROLS)
+                 + len(self.COMMAND_CONTROLS) + len(single))
+        self.assertIn("The " + str(count) + " removals listed in `RemovedGuardControls`", GUIDE.read_text("utf-8"))
 
     def test_each_removed_guard_fails_its_named_check(self):
         for guard, name in self.CONTROLS:
