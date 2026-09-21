@@ -139,3 +139,7 @@ footer{flex-wrap:wrap;align-items:center}
 @media(max-width:900px){.start-steps{grid-template-columns:1fr}.pricing-teaser{padding:1.4rem}.pricing-teaser h2{font-size:1.45rem}}
 @media(max-width:800px){.product-hero{padding-top:1.5rem}.start-strip{padding-bottom:2.5rem}.offer-section{padding:2.5rem 0}.closing-callout{align-items:start}}
 @media(max-width:680px){footer{align-items:flex-start}.footer-links{justify-content:flex-start}.footer-brand{flex-direction:row;gap:1rem;flex-wrap:wrap}}
+/* Enlarged text on a narrow screen: the access actions wrap inside their band instead of pushing the page wider. */
+[data-view=pricing]{overflow-wrap:anywhere}
+.actions .button,.closing-actions .button,.pricing-teaser-side .button{max-width:100%;flex-shrink:1;flex-wrap:wrap;gap:.5rem;white-space:normal}
+.closing-actions,.pricing-teaser-side,.plan-card .actions{min-width:0}

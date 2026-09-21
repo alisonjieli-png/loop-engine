@@ -21,6 +21,21 @@ try{
   check("live_homepage_leads_with_reusable_solutions",(await page.locator('[data-view="home"] h1').innerText()).includes("reusable solutions")&&await page.locator('[data-view="home"] .boundary-figure').count()===0);
   check("live_default_appearance_is_light",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   check("live_homepage_covers_five_optimization_problems",await page.locator("[data-friction]").count()===5);
+  check("live_homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
+  check("live_homepage_shows_the_three_step_strip",JSON.stringify(await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()))===JSON.stringify(["ask","connect","keep"]));
+  check("live_homepage_says_what_an_account_gives_you",JSON.stringify(await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()))===JSON.stringify(["downloads","recipes","search","usage"]));
+  check("live_homepage_offers_one_primary_action",await page.locator('[data-view="home"] .hero .button.primary').count()===1&&["invited","open"].includes(await page.locator("#hero-primary").getAttribute("data-access-state")));
+  await page.locator('header a[data-page="pricing"]').click();
+  const livePricing=await page.locator('[data-view="pricing"]').innerText();
+  const pricingFacts=["Baltor Pro","29 US dollars","each month","Search is free.","one downloaded item","Invited beta users are free."];
+  check("live_pricing_view_states_every_published_fact",new URL(page.url()).pathname==="/pricing"&&pricingFacts.every(fact=>livePricing.includes(fact)));
+  check("live_pricing_view_reports_the_payment_state_from_the_service",["Payment open","Payment not open"].includes(await page.locator("#pricing-state").innerText()));
+  const plainWords=text=>!/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profiles/i.test(text);
+  check("live_pricing_view_avoids_internal_runtime_names",plainWords(livePricing));
+  check("plain_word_check_rejects_a_page_that_names_the_runtime",!plainWords(livePricing+"\nBuilt on Loop Engine.")&&!plainWords(livePricing+"\nEvery step is a Loop node.")&&!plainWords(livePricing+"\nSee the role profiles."));
+  const deepPricing=await page.request.get(origin+"/pricing",{maxRedirects:0});
+  check("live_pricing_address_is_served_directly",deepPricing.status()===200);
+  await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
   for(const asset of ["service.js","client-access.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
     check("deployed_bytes_match_tested_source_"+asset,response.status()===200&&hash(await response.body())===hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",asset))));
@@ -49,7 +64,7 @@ try{
   }
   for(const width of [1440,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/how-it-works","/login","/admin","/connect","/examples","/security"]){
+    for(const path of ["/","/how-it-works","/pricing","/login","/admin","/connect","/examples","/security"]){
       await page.goto(origin+path);
       check(`live_layout_${width}_${path}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     }

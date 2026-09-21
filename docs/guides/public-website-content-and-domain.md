@@ -11,10 +11,46 @@ Use shared, release-bound facts so public copy and engineering status agree.
 
 ## Current positioning and presentation
 
+The category line is "Harness and agent optimized operation". That is the
+owner's phrase, recorded in the September 20 direction. It appears as the
+first line of the homepage, above the headline, and in the page description.
+
 The homepage leads with "Turn complex problems into reusable solutions."
 Its subject is the result a person can keep, run again and adapt. Model
 selection, useful information, tool choice, code reuse and verification
 explain how the product is intended to produce that result.
+
+The homepage sections run in this order:
+
+```text
+Homepage
+├── Category line and headline
+│   ├── One primary action
+│   └── One secondary action to How it works
+├── Three step strip: connect, ask, keep
+├── The five customer problems
+├── One workflow for the decisions behind the work
+├── What an account gives you: search, selected downloads,
+│   connection settings and usage
+├── The four persistent intelligence layers
+├── A starting point for every step
+├── Pricing summary with a link to the pricing view
+└── Closing action and the limits note
+```
+
+The primary action has two states and the page never chooses between them by
+itself. It reads `website.registration_available` from `/api/v1/capabilities`.
+When the service reports registration, the action reads "Get started" and
+leads to `/signup`. Otherwise it reads "Request access" and leads to
+`/signup#request-access`, where the page explains that access is by
+invitation. Before the service answers, and if it never answers, the page
+keeps the careful state. The same rule drives the payment state on the
+pricing view, which reads `billing.checkout`.
+
+`tools/check_service_workspace.mjs` holds both states as named checks. Each
+state is produced by a real service on its own loopback origin, not by a
+rewritten reply, and four removed-guard controls prove that a page which
+ignores the reported state fails a named check.
 
 Do not position Baltor as a context-layer product. Context is one input to
 work whose execution can also use an existing function, a small decision
@@ -57,6 +93,24 @@ permitted reference. Native loading and successful use are later checks.
 Show the actual server origin, protocol and authentication mode. Do not ask
 for model keys to establish intelligence-service access.
 
+### Structure survey, September 21, 2026
+
+Four public pages for comparable developer products were read for structure
+only. Nothing was copied. Observed on September 21, 2026; these pages change.
+
+| Page | Structure worth reusing | Not reused |
+|---|---|---|
+| [SenseLab](https://www.sense-lab.ai/) | Category line above the headline, one primary action, a short strip explaining the idea, a named problems section, then pricing on the same page. Light surfaces and generous spacing. | Adoption counts, star ratings and customer logos. Baltor has no such evidence. |
+| [Stripe connection guide](https://docs.stripe.com/mcp) | One reviewed configuration for each named client, the secret shown as a reference, and a separate section on revoking access. | Install links and one-click buttons for paths Baltor has not tested. |
+| [Mem0](https://mem0.ai/) | A three step strip with plain verbs, and a short list of what the product gives you. | Developer counts, compliance badges and benchmark claims. |
+| [Tavily](https://www.tavily.com/) | A hero that names the job in one line, then a small number of wide feature bands, and a closing action that repeats the primary action. | A metrics strip of latency, uptime and request volume. Baltor has no measured figures to publish. |
+
+The shared pattern is: category line, one headline, one primary action, a
+three step explanation, the problems, what you get, pricing, closing action.
+The homepage now follows that order. The parts that every one of these pages
+carries and Baltor does not are adoption numbers, customer names and measured
+performance. Those stay off the page until there is saved evidence for them.
+
 Copyable examples must use the client's supported secret-reference mechanism.
 Do not publish an OAuth login button, install link or client support badge
 before its real path is tested. The current email-free service token is not
@@ -66,7 +120,7 @@ a Stripe credential and is not a Supabase customer access token.
 
 | Page | Suitable content | Hold back or qualify |
 |---|---|---|
-| Homepage | Reusable solutions, the five customer problems, intended efficiency benefits and a clear working pilot action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
+| Homepage | The category line, reusable solutions, one primary action, the three step strip, the five customer problems, what an account gives you, the four intelligence layers, the pricing summary and a closing action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
 | How it works | A concrete task becomes understandable steps: find useful information, choose an approach, reuse or build, and check the result. Explain what the service supplies and what the user's tools may send to a model. | No runtime taxonomy, Loop branding or unsupported end-to-end success claim. Technical definitions belong in documentation. |
 | Getting started | Exact released package and supported platform, installation, inspection, one bounded working example, expected output, errors and recovery. | Working-tree-only commands must not be advertised as available from the published package or GitHub main branch. |
 | Harness and context guide | The generated instruction and assignment files, reference-first context, permitted write locations, supported versioned native layouts, and observed loading status. | Empty folders and offered skill references are not installed or loaded material. Do not copy the entire repository into every instance. |
@@ -74,7 +128,35 @@ a Stripe credential and is not a Supabase customer access token.
 | Security and privacy | Actual permission and disclosure boundaries, credential handling, retention settings, local versus external data flows, and known limitations. | Do not promise that all data stays local when queries or model calls can leave the machine. Do not claim formal certification or instantaneous in-flight revocation without evidence. |
 | Examples | Small reproducible tasks with the exact configuration, observed result, evaluator and limitations. | Component fixtures are not full-system benchmarks or proof of general task-solving quality. |
 | Research and roadmap | Dated experiments, candidates such as AutoRAG, measured failures, and a concise public roadmap. | Internal owner decisions, investor or acquisition research, detailed security findings before disclosure review, and old comparison cells presented as current facts. |
-| Pricing and account pages | Owner-approved prices and entitlements after the actual checkout, portal, cancellation and revocation paths are qualified. | A local signed-event fixture or a checkout redirect is not proof of a live paid service. |
+| Pricing and account pages | The plan name, the price, what is free, the measured unit, the beta entitlement, and the payment state read from the service. | A local signed-event fixture or a checkout redirect is not proof of a live paid service. Do not show a purchase button while the service reports that checkout is unavailable. |
+
+## Pricing view
+
+The pricing view answers at `/pricing`. It states one plan and nothing else.
+
+| Fact | Published wording |
+|---|---|
+| Plan | Baltor Pro |
+| Price | 29 US dollars each month |
+| Free | Search is free |
+| Measured unit | One downloaded item |
+| Beta | Invited beta users are free |
+
+These figures come from the owner's September 20 direction, recorded in
+`CLAUDE.md`. Engineering may not change a figure on the page alone. Change the
+recorded decision first, then the page, then the checks that hold the page to
+it.
+
+The payment state is not written into the page. The view reads
+`billing.checkout` from `/api/v1/capabilities`. While that field is false the
+view says plainly that payment is not open yet and shows no purchase button.
+`tools/check_service_workspace.mjs` holds both states, and two removed-guard
+controls prove that a page which always claims one state fails a named check.
+
+Two things are still missing on September 21, 2026. The serving route table
+does not yet list `/pricing`, so the address works through the navigation but
+a direct visit is not served. The account page holds the subscription
+controls, and those remain behind the payment state.
 
 The live public page describes a private pilot and the broader product direction.
 Keep the internal report available to the owner, and build the public content
