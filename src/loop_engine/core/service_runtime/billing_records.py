@@ -14,6 +14,13 @@ from .records import ServiceRuntimeError, identifier, text
 
 WEBHOOK_VERSION = "stripe_webhook_configuration/v1"
 POLICY_VERSION = "stripe_entitlement_policy/v1"
+CUSTOMER_PROJECTION_VERSION = "stripe_customer_projection/v1"
+CUSTOMER_OBJECT = "customer"
+CUSTOMER_IDENTITY_PREFIX = "cus_"
+# The provider metadata field that names the Loop Engine account. An operator
+# reading the provider dashboard sees which account a customer belongs to, and
+# the customer search before creation looks the account up by this field.
+TENANT_METADATA_KEY = "loop_engine_tenant_id"
 SNAPSHOT_VERSION = "stripe_customer_subscription_snapshot/v1"
 RESOLVER_VERSION = "stripe_subscription_resolver/v1"
 STRIPE_READ_PROVIDER_VERSION = "stripe_read_provider/v1"
@@ -72,6 +79,43 @@ class StripeEntitlementPolicy:
             raise ServiceRuntimeError("duplicate_price_identity")
         for price in self.allowed_price_ids:
             identifier(price, "Stripe Price")
+
+
+@dataclass(frozen=True)
+class StripeCustomerProjection:
+    """One verified provider customer that a named account owns.
+
+    The service holds no name, no postal address and no email address for an
+    account, so a customer it creates carries only the account identifier in
+    its metadata. This record refuses a provider customer that the account
+    cannot own, including one from the other test or live mode, a deleted one,
+    and one whose metadata names another account.
+    """
+
+    customer_id: str
+    tenant_id: str
+    livemode: bool
+    record_type: str = CUSTOMER_PROJECTION_VERSION
+
+    def __post_init__(self):
+        if self.record_type != CUSTOMER_PROJECTION_VERSION or type(self.livemode) is not bool:
+            raise ServiceRuntimeError("unsupported_stripe_customer_projection")
+        identifier(self.customer_id, "billing customer identity")
+        identifier(self.tenant_id, "tenant identity")
+        if not self.customer_id.startswith(CUSTOMER_IDENTITY_PREFIX):
+            raise ServiceRuntimeError("unsupported_stripe_customer_identity")
+
+    @classmethod
+    def from_provider(cls, value, *, tenant_id, livemode, metadata_key=TENANT_METADATA_KEY):
+        identifier(metadata_key, "provider metadata key")
+        identifier(tenant_id, "tenant identity")
+        metadata = value.get("metadata") if isinstance(value, dict) else None
+        if (not isinstance(value, dict) or value.get("object") != CUSTOMER_OBJECT
+                or not isinstance(value.get("id"), str) or value.get("livemode") is not livemode
+                or value.get("deleted", False) is not False or not isinstance(metadata, dict)
+                or metadata.get(metadata_key) != tenant_id):
+            raise ServiceRuntimeError("unverified_stripe_customer")
+        return cls(value["id"], tenant_id, livemode)
 
 
 @dataclass(frozen=True)

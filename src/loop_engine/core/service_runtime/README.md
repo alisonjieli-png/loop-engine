@@ -72,6 +72,70 @@ The `billing:manage` scope is deliberately absent from `DEFAULT_SCOPES`.
 the stored account/customer binding again. Merely authenticating a key does
 not grant billing-management authority.
 
+## One payment customer for each account
+
+This section describes current behavior. An account that asks for checkout and
+has no payment customer gets exactly one, created at the provider and bound
+before the session. The portal never creates one. The full journey, its
+evidence and its limits are in
+[the subscription journey guide](../../../../docs/guides/subscription-journey.md).
+
+`runtime.py` owns the durable state. `begin_billing_customer` reserves the one
+creation an account may ever need, in one `service_billing_customer_effect`
+record identified by the account itself. The record holds the provider
+idempotency key, the current attempt identity, a lease, the reconciliation
+window, the cycle count and the outcome. `authorize_billing_customer_dispatch`
+rechecks current authority, the lease and every reserved read-set guard before
+the provider call. `bind_billing_customer(request, reservation=...)` commits
+the account record, the absent customer record and the confirmed effect
+together, so a second writer cannot bind a second customer.
+`finish_billing_customer` retains an attempted outcome as unknown and a
+never dispatched one as not attempted.
+
+`stripe_sessions.py` owns the provider work. `ensure_customer` resolves the
+secret, verifies the configured provider account, searches the provider for a
+customer whose metadata names this account, and creates one only when the
+search found none. `StripeCustomerProjection` in `billing_records.py` refuses a
+provider customer from the other mode, a deleted one, and one whose metadata
+names another account.
+
+```text
+One customer for each account
+├── The durable effect record: one for each account, reused by every attempt
+├── The lease: a second caller during a running creation is refused
+├── The search before creation: a customer left behind by an uncertain
+│   attempt is bound instead of duplicated
+└── The atomic binding: the existing catalogue guard refuses a second writer
+```
+
+Within the reconciliation window a retry reuses the stored provider
+idempotency key. After that window the key can no longer reconcile anything,
+so a new cycle takes a new key and the search before creation is what keeps
+the account at one customer. A removed-guard control proves that step.
+
+Every supported provider mutation declares the exact parameter names it may
+carry, in `POST_PARAMETERS`. The customer form may carry only
+`metadata[loop_engine_tenant_id]`. The service holds no name, postal address
+or email address for an account, so it sends none. The customer search is a
+read with exactly two permitted fields, and both parts of its query are
+checked as service identities first, so neither can carry a quotation mark or
+a space into the provider query.
+
+| Guard | Removed-guard control |
+|---|---|
+| The search before creation | `removed_customer_search_before_creation_is_detected` |
+| The account identifier in the customer metadata | `removed_account_identifier_in_customer_metadata_is_detected` |
+| The ownership check on a provider customer | `removed_customer_ownership_check_is_detected` |
+| The provider account check before creation | `removed_provider_account_check_before_creation_is_detected` |
+
+The lease has a named check and no removed-guard control inside the suite.
+Removing it does not produce a second customer, because the reserved attempt
+identity and the search before creation each stop the duplicate on their own.
+The lease is what keeps a second caller away from the provider entirely.
+
+A host configuration may still bind a customer by hand through the
+`billing_customer` mapping of a tenant. That mapping is now optional.
+
 `authenticate_subject(issuer, subject)` accepts only an exact durable binding
 installed by the host. It does not verify a JSON Web Token itself and does not
 trust a token's proposed tenant identity. The transport must validate the

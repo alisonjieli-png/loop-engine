@@ -20,17 +20,23 @@ from ..provisioning_server import (
     ProvisioningMeterRequest,
 )
 from .records import (
-    BILLING_MANAGE_SCOPE, CLIENT_ACCESS_PROFILE, BillingCustomerBindingRequest, ENTITLEMENTS, IssuedServiceKey,
+    BILLING_CUSTOMER_OUTCOME_VERSION, BILLING_MANAGE_SCOPE, CLIENT_ACCESS_PROFILE, BillingCustomerBindingRequest,
+    BillingCustomerEffectSpec, BillingCustomerReservation, EFFECT_CONFIRMED, EFFECT_NOT_ATTEMPTED, EFFECT_PENDING,
+    EFFECT_UNKNOWN, ENTITLEMENTS, IssuedServiceKey, PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS,
     ServiceCommitUnknown, ServicePrincipal, ServiceRuntimeConfig, ServiceRuntimeError,
-    SubjectBindingRequest, SubjectTenantRegistration, TenantKeyIssue, TenantRegistration, digest, identifier, scopes,
+    SubjectBindingRequest, SubjectTenantRegistration, TenantKeyIssue, TenantRegistration, canonical, digest,
+    identifier, scopes,
 )
 from .storage import ServiceCatalogBinding
 
-TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER, TENANT_NAMESPACE, BILLING_POLICY, SESSION_REVOCATION = (
+(TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER, CUSTOMER_EFFECT, TENANT_NAMESPACE, BILLING_POLICY,
+ SESSION_REVOCATION) = (
     "service_tenant", "service_key", "service_subject", "service_entitlement",
-    "service_grants", "service_usage", "service_billing_customer", "service_tenant_namespace", "service_billing_policy",
-    "service_browser_session_revocation")
-SCHEMAS = {kind: kind + "/v1" for kind in (TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER, TENANT_NAMESPACE, BILLING_POLICY, SESSION_REVOCATION)}
+    "service_grants", "service_usage", "service_billing_customer", "service_billing_customer_effect",
+    "service_tenant_namespace", "service_billing_policy", "service_browser_session_revocation")
+SCHEMAS = {kind: kind + "/v1" for kind in (TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER,
+                                           CUSTOMER_EFFECT, TENANT_NAMESPACE, BILLING_POLICY, SESSION_REVOCATION)}
+CUSTOMER_IDEMPOTENCY_PREFIX = "le-customer-"
 # A customer-issued key is valid only while its owning sign-in stays enabled.
 # It has its own record version, so a server that predates the owner rule
 # refuses the record instead of honoring it without that rule after a rollback.
@@ -56,6 +62,8 @@ class ServiceRuntime:
         self._clock = clock
         self._issuer = object()
         self._principal_secret = secrets.token_bytes(32)
+        self._effect_issuer = object()
+        self._effect_secret = secrets.token_bytes(32)
 
     def _now(self):
         value = self._clock()
@@ -406,12 +414,138 @@ class ServiceRuntime:
             self._catalog.commit(store, (row, updated_tenant), (self._catalog.guard(tenant), self._catalog.guard(previous, row["record_id"])))
         return {"committed": True, "revoked": True}
 
-    def bind_billing_customer(self, request: BillingCustomerBindingRequest):
+    def _customer_effect_proof(self, reservation):
+        document = {"spec": asdict(reservation.spec), "record_id": reservation.record_id,
+                    "attempt_id": reservation.attempt_id, "idempotency_key": reservation.idempotency_key,
+                    "retry_before": reservation.retry_before, "attempt_number": reservation.attempt_number,
+                    "idempotency_cycles": reservation.idempotency_cycles,
+                    "guards": [asdict(guard) for guard in reservation.authority_guards]}
+        return hmac.new(self._effect_secret, canonical(document).encode(), hashlib.sha256).hexdigest()
+
+    def _reserved_customer(self, store, reservation):
+        if (not isinstance(reservation, BillingCustomerReservation)
+                or reservation._issuer is not self._effect_issuer):
+            raise ServiceRuntimeError("unissued_billing_customer_reservation")
+        if (not isinstance(reservation._proof, str)
+                or not hmac.compare_digest(reservation._proof, self._customer_effect_proof(reservation))):
+            raise ServiceRuntimeError("unissued_billing_customer_reservation")
+        row = self._catalog.read_id(store, reservation.record_id, kind=CUSTOMER_EFFECT)
+        state = self._payload(row, CUSTOMER_EFFECT)
+        if (state["spec_digest"] != reservation.spec.digest or state["attempt_id"] != reservation.attempt_id
+                or state["idempotency_key"] != reservation.idempotency_key):
+            raise ServiceRuntimeError("billing_customer_reservation_changed")
+        return row, state
+
+    def _unchanged_authority(self, store, reservation):
+        for guard in reservation.authority_guards:
+            actual = store.get(guard.record_id)
+            if (guard.must_not_exist and actual is not None) or (not guard.must_not_exist
+                    and (actual is None or actual["record_version"] != guard.record_version)):
+                raise ServiceRuntimeError("billing_customer_authority_changed")
+
+    def begin_billing_customer(self, principal, spec: BillingCustomerEffectSpec, *,
+                               lease_seconds, reconciliation_seconds) -> BillingCustomerReservation:
+        """Reserve the one provider customer creation this account may ever need.
+
+        The durable identity is the account, so every attempt, restart and
+        later repeat reuses one record. A running attempt holds a lease, so a
+        second caller is refused instead of starting a second creation. When
+        the reconciliation window has passed, the stored provider idempotency
+        key can no longer reconcile an earlier uncertain attempt, so a new
+        cycle takes a new key; the metadata search before creation is what
+        then keeps the account at one customer.
+        """
+        if not isinstance(spec, BillingCustomerEffectSpec):
+            raise ServiceRuntimeError("invalid_billing_customer_effect")
+        if (type(lease_seconds) is not int or lease_seconds <= 0 or type(reconciliation_seconds) is not int
+                or not lease_seconds < reconciliation_seconds < PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS):
+            raise ServiceRuntimeError("invalid_billing_customer_effect_allowance")
+        now = self._now()
+        with self._catalog.store(write=True) as store:
+            current, authority = self._revalidate(store, principal)
+            if current.tenant_id != spec.tenant_id or BILLING_MANAGE_SCOPE not in current.scopes:
+                raise ServiceRuntimeError("scope_required")
+            _tenant_row, tenant = self._tenant(store, current.tenant_id)
+            if tenant.get("billing_customer_id") or tenant.get("billing_account_id"):
+                raise ServiceRuntimeError("billing_customer_already_bound")
+            previous = self._catalog.read(store, CUSTOMER_EFFECT, current.tenant_id)
+            if previous is None:
+                state = {"record_type": SCHEMAS[CUSTOMER_EFFECT], "tenant_id": current.tenant_id,
+                         "spec": asdict(spec), "spec_digest": spec.digest, "created_at": now,
+                         "retry_before": now + reconciliation_seconds, "idempotency_cycles": 0,
+                         "idempotency_key": CUSTOMER_IDEMPOTENCY_PREFIX + uuid.uuid4().hex,
+                         "attempts": 0, "status": EFFECT_PENDING, "provider_customer_id": "",
+                         "diagnostic_code": ""}
+            else:
+                state = dict(self._payload(previous, CUSTOMER_EFFECT))
+                if state["spec_digest"] != spec.digest or state["spec"] != asdict(spec):
+                    raise ServiceRuntimeError("billing_customer_request_identity_conflict")
+                if state.get("lease_until", 0) > now:
+                    raise ServiceRuntimeError("billing_customer_creation_in_progress")
+                if now >= state["retry_before"]:
+                    state.update(idempotency_key=CUSTOMER_IDEMPOTENCY_PREFIX + uuid.uuid4().hex,
+                                 retry_before=now + reconciliation_seconds,
+                                 idempotency_cycles=state["idempotency_cycles"] + 1, status=EFFECT_PENDING)
+            attempt_id = uuid.uuid4().hex
+            state.update(attempt_id=attempt_id, lease_until=now + lease_seconds,
+                         attempts=state["attempts"] + 1, last_attempt_at=now)
+            row = self._catalog.record(CUSTOMER_EFFECT, current.tenant_id, state, tenant_id=current.tenant_id)
+            self._catalog.commit(store, (row,), (*authority, self._catalog.guard(previous, row["record_id"])))
+        reservation = BillingCustomerReservation(spec=spec, record_id=row["record_id"], attempt_id=attempt_id,
+            idempotency_key=state["idempotency_key"], retry_before=state["retry_before"],
+            attempt_number=state["attempts"], idempotency_cycles=state["idempotency_cycles"],
+            authority_guards=authority, _issuer=self._effect_issuer)
+        return replace(reservation, _proof=self._customer_effect_proof(reservation))
+
+    def authorize_billing_customer_dispatch(self, principal, reservation: BillingCustomerReservation):
+        """Recheck current authority, the lease and every reserved guard before the provider call."""
+        with self._catalog.store() as store:
+            current, _ = self._revalidate(store, principal)
+            if BILLING_MANAGE_SCOPE not in current.scopes or current.tenant_id != reservation.spec.tenant_id:
+                raise ServiceRuntimeError("scope_required")
+            _row, state = self._reserved_customer(store, reservation)
+            if self._now() >= min(state["lease_until"], state["retry_before"]):
+                raise ServiceRuntimeError("billing_customer_reservation_expired")
+            self._unchanged_authority(store, reservation)
+            _tenant_row, tenant = self._tenant(store, current.tenant_id)
+            if tenant.get("billing_customer_id") or tenant.get("billing_account_id"):
+                raise ServiceRuntimeError("billing_customer_already_bound")
+        return True
+
+    def finish_billing_customer(self, reservation: BillingCustomerReservation, *,
+                                diagnostic_code="", attempted=True):
+        """Retain an already attempted outcome; the same account identity retries it."""
+        if type(attempted) is not bool:
+            raise ServiceRuntimeError("invalid_effect_outcome")
+        with self._catalog.store(write=True) as store:
+            held, current = self._reserved_customer(store, reservation)
+            state = dict(current)
+            state.update(status=EFFECT_CONFIRMED if state["provider_customer_id"] else
+                         EFFECT_UNKNOWN if attempted else EFFECT_NOT_ATTEMPTED,
+                         diagnostic_code=diagnostic_code, lease_until=0, attempt_id="",
+                         completed_at=self._now())
+            updated = {**held, "record_version": uuid.uuid4().hex, "payload": state}
+            self._catalog.commit(store, (updated,), (self._catalog.guard(held),))
+        return {"record_type": BILLING_CUSTOMER_OUTCOME_VERSION, "effect_ref": held["record_id"],
+                "status": state["status"], "retry_before": state["retry_before"]}
+
+    def bind_billing_customer(self, request: BillingCustomerBindingRequest, *, reservation=None):
+        """Bind one provider customer to one account under the existing catalogue guard.
+
+        The tenant guard and the absent customer record commit together, so a
+        second writer cannot bind a second customer. When a reservation is
+        supplied, its authority guards and its durable attempt must still hold,
+        and the effect record is confirmed in the same atomic write.
+        """
         if not isinstance(request, BillingCustomerBindingRequest):
             raise ServiceRuntimeError("invalid_request")
+        if reservation is not None and (not isinstance(reservation, BillingCustomerReservation)
+                or reservation.spec.tenant_id != request.tenant_id
+                or reservation.spec.provider_account_id != request.provider_account_id):
+            raise ServiceRuntimeError("invalid_billing_customer_reservation")
         with self._catalog.store(write=True) as store:
             tenant, data = self._tenant(store, request.tenant_id)
-            if data.get("billing_customer_id"):
+            if data.get("billing_customer_id") or data.get("billing_account_id"):
                 raise ServiceRuntimeError("billing_customer_already_bound")
             row = self._catalog.record(CUSTOMER, (request.provider_account_id, request.provider_customer_id), {
                 "record_type": SCHEMAS[CUSTOMER], "tenant_id": request.tenant_id,
@@ -420,9 +554,22 @@ class ServiceRuntime:
             updated = {**tenant, "record_version": uuid.uuid4().hex,
                 "payload": {**data, "billing_customer_id": request.provider_customer_id,
                             "billing_account_id": request.provider_account_id}}
-            self._catalog.commit(store, (updated, row), (self._catalog.guard(tenant),
-                self._catalog.guard(None, row["record_id"])))
-        return {"committed": True, "tenant_id": request.tenant_id}
+            records = (updated, row)
+            guards = (self._catalog.guard(tenant), self._catalog.guard(None, row["record_id"]))
+            if reservation is not None:
+                held, state = self._reserved_customer(store, reservation)
+                self._unchanged_authority(store, reservation)
+                if self._now() >= min(state["lease_until"], state["retry_before"]):
+                    raise ServiceRuntimeError("billing_customer_reservation_expired")
+                effect = {**held, "record_version": uuid.uuid4().hex, "payload": {**state,
+                    "status": EFFECT_CONFIRMED, "provider_customer_id": request.provider_customer_id,
+                    "diagnostic_code": "", "lease_until": 0, "attempt_id": "", "completed_at": self._now()}}
+                records, guards = (*records, effect), (*guards, self._catalog.guard(held))
+            self._catalog.commit(store, records, guards)
+        return {"committed": True, "tenant_id": request.tenant_id,
+                "provider_account_id": request.provider_account_id,
+                "provider_customer_id": request.provider_customer_id,
+                "reconciled_effect": reservation is not None}
 
     def billing_customer_for(self, principal: ServicePrincipal):
         """Resolve the exact durable provider mapping after current scope validation."""

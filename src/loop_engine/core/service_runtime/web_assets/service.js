@@ -13,17 +13,51 @@
     document.querySelectorAll("[data-view]").forEach(item => { item.hidden = item.dataset.view !== name; });
     document.querySelectorAll("[data-page]").forEach(item => { if (item.dataset.page === name) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current"); });
   };
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/examples":"examples", "/security":"security", "/auth/callback":"login"};
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/examples":"examples", "/security":"security", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
   const serviceName = document.title.split(" | ")[0];
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Reusable solutions with less repeated work", workspace:"Intelligence workspace", login:"Sign in", signup:"Registration status", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Connect your client", examples:"Try your first retrieval", security:"Access and data boundaries"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Reusable solutions with less repeated work", workspace:"Intelligence workspace", login:"Sign in", signup:"Registration status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Connect your client", examples:"Try your first retrieval", security:"Access and data boundaries"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
+  /* The public access action, the pricing state and the personal-key wording come from the service capabilities record, never from wording kept in this file.
+     They are read only from this exact record version, because another version may rename a field or give it a different meaning.
+     Until the service answers, if it never answers, and for any other record version, the page keeps the careful state:
+     access by invitation, payment not open, personal keys described as being prepared. */
+  const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
+  const accessStates = {
+    open:{label:"Get started", href:"/signup", note:"Create your account. Search is free, and one downloaded item is the measured unit."},
+    invited:{label:"Request access", href:"/signup#request-access", note:"Private pilot. Access is by invitation while public sign-up is closed."}};
+  const paymentStates = {
+    open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited beta accounts stay free."},
+    closed:{badge:"Payment not open", note:"Payment is not open yet. Nothing on this page charges you today, and invited beta accounts stay free.", teaser:"Payment is not open yet. Nothing on this page charges you today."}};
+  const applyAccessState = open => {
+    const state = open === true ? accessStates.open : accessStates.invited;
+    for (const id of ["hero-primary", "pricing-primary", "closing-primary"]) {
+      $(id).setAttribute("href", state.href); $(id).dataset.accessState = open === true ? "open" : "invited";
+      $(id + "-label").textContent = state.label;
+    }
+    $("hero-access-note").textContent = state.note;
+  };
+  const applyPaymentState = open => {
+    const state = open === true ? paymentStates.open : paymentStates.closed;
+    $("pricing-state").textContent = state.badge; $("pricing-payment-state").textContent = state.note;
+    $("pricing-teaser-note").textContent = state.teaser;
+  };
+  const clientAccessStates = {
+    open:{offer:"You can also create and revoke a key for each device from your account page.",
+          plan:"Create and revoke a key for every client you connect, from your account page."},
+    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. In the private pilot the person who runs the service issues your key.",
+            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. In the private pilot the person who runs the service issues your key."}};
+  const applyClientAccessState = open => {
+    const state = open === true ? clientAccessStates.open : clientAccessStates.closed;
+    $("offer-usage-keys").textContent = state.offer; $("plan-keys-detail").textContent = state.plan;
+  };
+  applyAccessState(false); applyPaymentState(false); applyClientAccessState(false);
   const themes = ["system", "light", "dark"];
   const createIdentityClient = settings => window.BaltorIdentitySdk.createClient(settings.project_url, settings.publishable_key,
     {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
@@ -116,7 +150,8 @@
   }
   function facts(target, entries) { target.replaceChildren(); for (const [name, value] of entries) target.append(element("dt", name), element("dd", value ?? "Unknown")); }
   clientAccess = window.BaltorClientAccess.create({request, element, message,
-    current:() => ({connected:!!token, mode:authenticationMode, generation, available:capabilities?.website.client_access_available === true})});
+    current:() => ({connected:!!token, mode:authenticationMode, generation,
+      available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})});
   async function connectService(supplied, activate = false) {
     disconnect(); token = supplied; message("connection-message", "Checking access…");
     try {
@@ -418,7 +453,14 @@
     $("retrieval-note").textContent = "Installed vector method: " + value.retrieval.vector_backend + ". Semantic embedding model installed: " + (value.retrieval.semantic_embedding_model_installed ? "yes" : "no") + ". Bodies load only after selection.";
     $("setup-protocol").textContent = value.protocol.versions.join(", ");
     $("test-protocol").disabled = !token || authenticationMode === "browser_identity" || !principalScopes.includes("provisioning:metadata") || connectionBusy;
-    if (value.website.browser_identity_available) {
+    /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */
+    if (value.record_type === CAPABILITIES_RECORD_TYPE) {
+      applyAccessState(value.website.registration_available === true);
+      applyPaymentState(value.billing.checkout === true);
+      applyClientAccessState(value.website.client_access_available === true);
+      if (value.website.browser_identity_available) openBrowserIdentity();
+    }
+    function openBrowserIdentity() {
       request("/api/v1/account/identity", null, false).then(settings => {
         if (settings.record_type !== "browser_identity_public_configuration/v1" || settings.provider_profile !== "supabase_user/v1" || !settings.publishable_key.startsWith("sb_publishable_") || !window.BaltorIdentitySdk) throw new Error("Identity configuration unavailable");
         identityConfiguration = settings;

@@ -6,7 +6,7 @@ network, billing, or catalogue-disclosure authority.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 import hashlib
 import json
 from pathlib import Path
@@ -21,6 +21,17 @@ SCOPES = (*DEFAULT_SCOPES, BILLING_MANAGE_SCOPE, ACCESS_MANAGE_SCOPE)
 ENTITLEMENTS = ("metadata", "bodies")
 SERVICE_COLLECTION = "hosted_service_state"
 SUBJECT_TENANT_REGISTRATION_VERSION = "service_subject_tenant_registration/v1"
+BILLING_CUSTOMER_EFFECT_SPEC_VERSION = "billing_customer_effect_spec/v1"
+BILLING_CUSTOMER_OUTCOME_VERSION = "billing_customer_effect_outcome/v1"
+# One status vocabulary for every externally consequential billing effect.
+# `billing_effects.py` owns the checkout and portal effect and declares the
+# same four words; a check in `runtime_checks.py` fails when they drift apart.
+EFFECT_PENDING, EFFECT_CONFIRMED, EFFECT_UNKNOWN, EFFECT_NOT_ATTEMPTED = (
+    "pending", "confirmed", "unknown", "not_attempted")
+# The provider documents a minimum 24-hour idempotency-key retention period.
+# `billing_effects.py` declares the same observed provider fact, and a check
+# fails when the two declarations differ.
+PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS = 24 * 3600
 
 
 class ServiceRuntimeError(ValueError):
@@ -186,6 +197,53 @@ class BillingCustomerBindingRequest:
         identifier(self.tenant_id, "tenant identity")
         identifier(self.provider_customer_id, "billing customer identity")
         identifier(self.provider_account_id, "billing account identity")
+
+
+@dataclass(frozen=True)
+class BillingCustomerEffectSpec:
+    """The exact provider customer creation that one account may ever ask for.
+
+    The account has one such effect for its whole lifetime, so the durable
+    identity of the effect is the account itself. The spec carries no personal
+    detail because the service holds none.
+    """
+
+    tenant_id: str
+    provider_account_id: str
+    metadata_key: str
+    record_type: str = BILLING_CUSTOMER_EFFECT_SPEC_VERSION
+
+    def __post_init__(self):
+        if self.record_type != BILLING_CUSTOMER_EFFECT_SPEC_VERSION:
+            raise ServiceRuntimeError("unsupported_billing_customer_effect")
+        identifier(self.tenant_id, "tenant identity")
+        identifier(self.provider_account_id, "billing account identity")
+        identifier(self.metadata_key, "provider metadata key")
+
+    @property
+    def digest(self):
+        return digest(asdict(self))
+
+
+@dataclass(frozen=True)
+class BillingCustomerReservation:
+    """Issued by the runtime for one reserved creation attempt, never from HTTP.
+
+    The reservation carries the durable idempotency identity of the attempt and
+    the read-set guards that were current when it was reserved. The runtime
+    checks both again before the provider call and again before the binding.
+    """
+
+    spec: BillingCustomerEffectSpec
+    record_id: str
+    attempt_id: str
+    idempotency_key: str = field(repr=False)
+    retry_before: int
+    attempt_number: int
+    idempotency_cycles: int
+    authority_guards: tuple = field(repr=False)
+    _issuer: object = field(repr=False, compare=False)
+    _proof: str = field(default="", repr=False, compare=False)
 
 
 @dataclass(frozen=True)

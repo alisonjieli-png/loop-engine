@@ -9,7 +9,7 @@ import {resolve} from "node:path";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
@@ -30,7 +30,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 import jwt
 with ExitStack() as stack:
     root=Path(stack.enter_context(TemporaryDirectory(prefix="service-browser-")))
-    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir()
+    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir(); (root/"signups").mkdir()
     held=prepared(root/"intelligence")
     factory=lambda config:ServiceHttpApplication(held.runtime,held.provisioning,config,access_administration=held.administration)
     base,_=stack.enter_context(running_http(held,application_factory=factory,display_name="Baltor"))
@@ -46,7 +46,11 @@ with ExitStack() as stack:
     identity=BrowserIdentityAdapter(account.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-customers",registration_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(account.bindings["skill.alpha"],),transport=lambda _:user)
     manager=ServiceAccessAdministration(account.runtime,ServiceClientAccessPolicy(writes_authorized=True))
     account_base,_=stack.enter_context(running_http(account,application_factory=lambda config:ServiceHttpApplication(account.runtime,account.provisioning,config,browser_identity=identity,client_access=manager),display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"identity_origin":provider,"identity_token":identity_token,"identity_user":user}),flush=True)
+    # A fourth real service whose own configuration opens email sign-up, so the page is compared with a service that reports registration, not with a rewritten reply.
+    signups=HttpDomainFixture(root/"signups",operator_access=False)
+    signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user)
+    signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity),display_name="Baltor"))
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"identity_origin":provider,"identity_token":identity_token,"identity_user":user}),flush=True)
     sys.stdin.readline()
 `;
 const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
@@ -159,7 +163,7 @@ async function checkRefusedRecord(context,base,note,wrong,mutation){
   if(!closed)await checkShownRecipe(page,base,wrong.served,wrong.served.recipes.find(recipe=>recipe.id===wrong.id),note);
   await page.close();return state;
 }
-const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
+const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
 /* Planted values for the known-wrong records. Each is made for this run. The key in the standard base64 alphabet is broken by plus signs into pieces that the
    other alphabet never reports, and the short literal, the number and the shaped name are what a person could type by mistake. The header and the environment
    name that carry the short literal hold no word that names a credential, so only the rule for their table refuses them. */
@@ -256,6 +260,170 @@ try {
   await page.emulateMedia({colorScheme:"light"});
   check("all_five_owner_pain_points_are_present",JSON.stringify(await page.locator("[data-friction]").evaluateAll(items=>items.map(item=>item.dataset.friction).sort()))===JSON.stringify(["context","expertise","learning","model","reuse"]));
   check("optimization_message_does_not_guarantee_daily_improvement",(await page.locator(".optimization-callout").innerText()).includes("Model selection, context sizing, tool choice and code reuse")&&(await page.locator(".benefit-limits").innerText()).includes("guaranteed daily performance gain"));
+  /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
+     service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
+  check("homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
+  check("homepage_offers_one_primary_action_and_one_secondary",await page.locator('[data-view="home"] .hero .button.primary').count()===1&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown");
+  const startSteps=await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()),startText=await page.locator(".start-strip").innerText();
+  check("homepage_shows_a_three_step_strip",JSON.stringify(startSteps)===JSON.stringify(["ask","connect","keep"])&&["OpenCode","Codex","Claude Code"].every(client=>startText.includes(client)),{steps:startSteps});
+  const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),offerText=await page.locator(".offer-section").innerText();
+  check("homepage_says_what_an_account_gives_you",JSON.stringify(offers)===JSON.stringify(["downloads","recipes","search","usage"])&&["search","download","usage"].every(word=>offerText.toLowerCase().includes(word))&&["OpenCode","Codex","Claude Code"].every(client=>offerText.includes(client)),{offers});
+  const teaserText=await page.locator(".pricing-teaser").innerText();
+  check("homepage_states_the_plan_price_and_the_measured_unit",teaserText.includes("29 US dollars each month")&&teaserText.includes("one downloaded item")&&teaserText.includes("invited beta users are free")&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing");
+  check("homepage_closes_with_an_action",await page.locator(".closing-callout #closing-primary").isVisible()&&await page.locator(".closing-callout .text-link").isVisible());
+  const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;});
+  check("homepage_makes_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
+  check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
+  await page.locator('header a[data-page="pricing"]').click();
+  check("pricing_view_opens_from_the_navigation",new URL(page.url()).pathname==="/pricing"&&await page.locator('[data-view="pricing"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1&&(await page.title()).endsWith("| Pricing"));
+  const pricingText=await page.locator('[data-view="pricing"]').innerText();
+  const pricingFacts=[["plan name","Baltor Pro"],["price","29 US dollars"],["period","each month"],["free search","Search is free."],["measured unit","one downloaded item"],["invited beta","Invited beta users are free."]];
+  const missingFacts=text=>pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name);
+  check("pricing_view_states_every_published_fact",missingFacts(pricingText).length===0,{missing:missingFacts(pricingText)});
+  check("pricing_fact_check_fails_when_one_fact_is_missing",pricingFacts.every(([name,fact])=>missingFacts(pricingText.split(fact).join("")).includes(name)),{facts:pricingFacts.length});
+  check("pricing_view_offers_exactly_one_plan",await page.locator("[data-plan-point]").count()===5&&await page.locator('[data-view="pricing"] .plan-card').count()===1&&await page.locator('[data-view="pricing"] .button.primary').count()===1);
+  /* While the service reports no checkout, the pricing view may not carry a control that starts a payment. The guide states that rule, so a check owns it. */
+  const purchaseWords={source:"\\b(?:buy|purchase|checkout|subscribe|subscription|pay|payment|card)\\b",flags:"i"};
+  const purchaseControls=async opened=>opened.locator('[data-view="pricing"]').evaluate((node,pattern)=>{
+    const rule=new RegExp(pattern.source,pattern.flags);
+    return [...node.querySelectorAll("button, a, form, input[type=submit], input[type=button]")]
+      .map(item=>[item.tagName.toLowerCase()+(item.id?"#"+item.id:""),(item.textContent||"")+" "+(item.getAttribute("aria-label")||"")+" "+(item.getAttribute("value")||"")])
+      .filter(([,text])=>rule.test(text)).map(([place])=>place);
+  },purchaseWords);
+  check("pricing_view_offers_no_purchase_control_while_checkout_is_closed",(await purchaseControls(page)).length===0,{controls:await purchaseControls(page)});
+  await page.evaluate(()=>{const planted=document.createElement("a");planted.id="known-wrong-purchase";planted.className="button primary";planted.textContent="Subscribe now";document.querySelector('[data-view="pricing"] .plan-card .actions').append(planted);});
+  const plantedPurchase=await purchaseControls(page);
+  await page.evaluate(()=>document.getElementById("known-wrong-purchase").remove());
+  check("purchase_control_check_rejects_a_pricing_view_that_offers_one",plantedPurchase.includes("a#known-wrong-purchase")&&(await purchaseControls(page)).length===0,{planted:plantedPurchase});
+  check("pricing_view_uses_plain_words",!internalTerms.test(pricingText));
+  check("plain_word_check_rejects_a_page_that_names_the_runtime",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification."].every(claim=>internalTerms.test(pricingText+"\n"+claim)));
+  const pricingFits=[];
+  for(const width of [1440,820,390,360,320]){
+    await page.setViewportSize({width,height:1000});
+    for(const size of ["","200%"]){
+      await page.evaluate(value=>document.documentElement.style.fontSize=value,size);
+      pricingFits.push({width,size:size||"100%",...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length}))});
+    }
+    await page.evaluate(()=>document.documentElement.style.fontSize="");
+  }
+  check("pricing_view_fits_small_screens_and_enlarged_text",pricingFits.length===10&&pricingFits.every(item=>!item.overflow&&item.views===1),{problems:pricingFits.filter(item=>item.overflow||item.views!==1)});
+  /* A published address must answer a bookmark, a shared link and a reload, not only an intercepted click inside the page. */
+  const directPricing=await page.request.get(fixture.base+"/pricing",{maxRedirects:0});
+  check("pricing_address_is_served_on_a_direct_visit",directPricing.status()===200&&(directPricing.headers()["content-type"]||"").startsWith("text/html"),
+    {status:directPricing.status(),content_type:directPricing.headers()["content-type"]||"",
+     needed_entry:'src/loop_engine/core/service_runtime/http.py, WEB_ASSETS, add "/pricing": ("index.html", HTML_MEDIA_TYPE)'});
+  const reloadedPricing=await context.newPage();
+  reloadedPricing.on("pageerror",error=>errors.push(safeError(error.message)));
+  await reloadedPricing.goto(fixture.base+"/pricing");
+  const reloadedViews=await reloadedPricing.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view));
+  await reloadedPricing.close();
+  check("pricing_address_opens_the_pricing_view_after_a_reload",JSON.stringify(reloadedViews)===JSON.stringify(["pricing"]),{views:reloadedViews});
+  await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:output.replace(/\.json$/,"-pricing-desktop.png"),fullPage:true});
+  await page.setViewportSize({width:360,height:1000});await page.screenshot({path:output.replace(/\.json$/,"-pricing-mobile.png"),fullPage:true});
+  const homeFits=[];
+  for(const width of [1440,360]){await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");homeFits.push({width,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1}))});}
+  check("homepage_fits_a_360_pixel_screen",homeFits.length===2&&homeFits.every(item=>!item.overflow),{measurements:homeFits});
+  await page.setViewportSize({width:1440,height:1000});
+  /* The two states the service can report for public access and for payment, each read from a real service, with the removed-guard controls for both directions. */
+  const expectedAccess={invited:{state:"invited",href:"/signup#request-access",label:"Request access"},open:{state:"open",href:"/signup",label:"Get started"}};
+  const accessActions=target=>target.locator("[data-access-state]").evaluateAll(items=>items.map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("span").textContent})).sort((left,right)=>left.id<right.id?-1:1));
+  const sameAccess=(actions,want)=>actions.length===3&&actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label);
+  /* A capabilities record whose version this page was not written against may have renamed a field or given it a different meaning.
+     "version" serves the real reply of a real service with its record type changed, so the careful state is checked against a known-wrong version. */
+  const openPublic=async (base,mutation,version)=>{
+    const opened=await context.newPage(),state={applied:false,errors:[]};
+    opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
+    if(mutation)await opened.route("**/assets/service.js",async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
+    if(version)await opened.route("**/api/v1/capabilities",async route=>{const response=await route.fetch(),body=await response.json();body.result.record_type=version;await route.fulfill({response,json:body});});
+    await opened.goto(base+"/");
+    await opened.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+    return {page:opened,state};
+  };
+  const paymentState=async opened=>{await opened.locator('header a[data-page="pricing"]').click();return {badge:await opened.locator("#pricing-state").innerText(),shown:await opened.locator("#pricing-payment-state").innerText()};};
+  /* The personal-key wording is published in two places. Both follow the reported capability; neither is written as a fact in the page. */
+  const keyWording={
+    open:{offer:"You can also create and revoke a key for each device from your account page.",
+          plan:"Create and revoke a key for every client you connect, from your account page."},
+    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. In the private pilot the person who runs the service issues your key.",
+            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. In the private pilot the person who runs the service issues your key."}};
+  const keyState=async opened=>({offer:await opened.locator("#offer-usage-keys").evaluate(node=>node.textContent),plan:await opened.locator("#plan-keys-detail").evaluate(node=>node.textContent)});
+  const sameKeys=(keys,want)=>keys.offer===want.offer&&keys.plan===want.plan;
+  const carefulState=async (opened,note,name)=>{
+    const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened);
+    note(name,sameAccess(actions,expectedAccess.invited)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed),{actions,payment,keys});
+  };
+  const scenarios={
+    closed_service:{origin:"base",run:async (opened,note)=>{
+      const actions=await accessActions(opened),keys=await keyState(opened);
+      note("public_action_asks_for_an_invitation_when_registration_is_closed",sameAccess(actions,expectedAccess.invited),{actions});
+      note("personal_key_claim_is_held_back_when_the_service_reports_no_client_access",sameKeys(keys,keyWording.closed),keys);
+      const payment=await paymentState(opened);
+      note("pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),payment);
+    }},
+    open_registration:{origin:"signup_base",run:async (opened,note)=>{
+      const actions=await accessActions(opened);
+      note("public_action_offers_sign_up_when_the_service_reports_registration",sameAccess(actions,expectedAccess.open),{actions});
+    }},
+    open_checkout:{origin:"billing_base",run:async (opened,note)=>{
+      const payment=await paymentState(opened);
+      note("pricing_view_says_payment_is_open_when_the_service_reports_checkout",payment.badge==="Payment open"&&payment.shown.includes("Payment is open"),payment);
+    }},
+    client_access:{origin:"account_base",run:async (opened,note)=>{
+      const keys=await keyState(opened);
+      note("personal_key_claim_appears_when_the_service_reports_client_access",sameKeys(keys,keyWording.open),keys);
+    }},
+    unsupported_version_registration:{origin:"signup_base",version:"service_capabilities/v2",
+      run:(opened,note)=>carefulState(opened,note,"unsupported_capabilities_version_keeps_the_careful_state_over_registration")},
+    unsupported_version_checkout:{origin:"billing_base",version:"service_capabilities/v2",
+      run:(opened,note)=>carefulState(opened,note,"unsupported_capabilities_version_keeps_the_careful_state_over_checkout")},
+    unsupported_version_client_access:{origin:"account_base",version:"service_capabilities/v2",
+      run:(opened,note)=>carefulState(opened,note,"unsupported_capabilities_version_keeps_the_careful_state_over_client_access")}};
+  const publicOrigins=["base","signup_base","billing_base","account_base"];
+  const reported=[];
+  for(const name of publicOrigins){const value=(await (await page.request.get(fixture[name]+"/api/v1/capabilities")).json()).result;reported.push({name,record_type:value.record_type,registration:value.website.registration_available,checkout:value.billing.checkout,client_access:value.website.client_access_available});}
+  check("the_public_states_are_reported_by_real_services",JSON.stringify(reported)===JSON.stringify([
+    {name:"base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:false},
+    {name:"signup_base",record_type:"service_capabilities/v1",registration:true,checkout:false,client_access:false},
+    {name:"billing_base",record_type:"service_capabilities/v1",registration:false,checkout:true,client_access:false},
+    {name:"account_base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:true}]),{reported});
+  for(const name of Object.keys(scenarios)){
+    const scenario=scenarios[name],{page:opened}=await openPublic(fixture[scenario.origin],null,scenario.version);
+    await scenario.run(opened,check);await opened.close();
+  }
+  const versionGate="if (value.record_type === CAPABILITIES_RECORD_TYPE) {";
+  const publicControls=[
+    {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_action_asks_for_an_invitation_when_registration_is_closed"]},
+    {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_action_offers_sign_up_when_the_service_reports_registration"]},
+    {name:"always_say_payment_is_open",scenario:"closed_service",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(true);",expected:["pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout"]},
+    {name:"never_say_payment_is_open",scenario:"open_checkout",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(false);",expected:["pricing_view_says_payment_is_open_when_the_service_reports_checkout"]},
+    {name:"always_claim_personal_keys",scenario:"closed_service",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(true);",expected:["personal_key_claim_is_held_back_when_the_service_reports_no_client_access"]},
+    {name:"never_claim_personal_keys",scenario:"client_access",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(false);",expected:["personal_key_claim_appears_when_the_service_reports_client_access"]},
+    {name:"ignore_the_capabilities_record_version",scenario:"unsupported_version_registration",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_registration"]},
+    {name:"ignore_the_record_version_over_payment",scenario:"unsupported_version_checkout",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_checkout"]},
+    {name:"ignore_the_record_version_over_personal_keys",scenario:"unsupported_version_client_access",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_client_access"]}];
+  for(const control of publicControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);},scenario=scenarios[control.scenario];
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openPublic(fixture[scenario.origin],{find:control.find,replacement:control.replacement},scenario.version);applied=state.applied;await scenario.run(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
+  }
+  /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the served text. */
+  const servedHome=await (await page.request.get(fixture.base+"/")).text();
+  const carefulDefaults=["Payment not open","Payment is not open yet. Nothing on this page charges you today, and invited beta accounts stay free.",
+    "Payment is not open yet. Nothing on this page charges you today.","Request access",keyWording.closed.offer,keyWording.closed.plan];
+  const unsettled=/Checking payment|Checking whether payment is open/;
+  const carefulProblems=text=>[...carefulDefaults.filter(value=>!text.includes(value)),...(unsettled.test(text)?["an unsettled placeholder"]:[])];
+  check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedHome).length===0,{problems:carefulProblems(servedHome)});
+  const wrongDefault=servedHome.split(carefulDefaults[0]).join("Checking payment").split(carefulDefaults[1]).join("Checking whether payment is open.");
+  check("careful_default_check_rejects_a_served_page_that_never_settles",carefulProblems(wrongDefault).length>=3,{problems:carefulProblems(wrongDefault)});
+  /* One plain-word rule, used by the workspace check and by the hosted check. A copy that drifts is a named failure, not a silent disagreement. */
+  const ruleSource=path=>{const found=readFileSync(resolve(root,path),"utf8").match(/^const internalTerms=(\/.+\/i);$/m);return found?found[1]:"";};
+  const workspaceRule=ruleSource("tools/check_service_workspace.mjs"),hostedRule=ruleSource("tools/check_hosted_website.mjs");
+  check("both_public_page_checks_use_one_plain_word_rule",workspaceRule!==""&&workspaceRule===hostedRule&&workspaceRule===String(internalTerms),{workspace:workspaceRule,hosted:hostedRule});
+  check("plain_word_rule_comparison_rejects_a_drifted_copy",workspaceRule!==workspaceRule.replace("role profile","role profiles")&&workspaceRule!==workspaceRule.replace("| Engine","")&&internalTerms.test("See the role profiles.")&&internalTerms.test("Read the role profile."));
+  await page.goto(fixture.base+"/");
   await page.locator("#hero-how-it-works").click();
   check("technical_layer_definitions_remain_in_documentation",(await page.locator('[data-view="docs"] [data-layer-notes]').textContent()).includes("not a fifth persistent layer")&&(await page.locator('[data-view="docs"] [data-layer-notes]').textContent()).includes("temporary note board"));
   const boundary=page.locator('[data-view="about"] .boundary-figure');
@@ -430,7 +598,7 @@ try {
   check("changed_download_is_refused_by_the_browser",(await page.locator(".result").first().innerText()).includes("do not match")); await page.unroute("**/api/v1/download");
   for(const width of [1440,820,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/login","/signup","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security"]){
+    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security"]){
       await page.goto(fixture.base+path);
       const measurement=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(x=>!x.hidden).length}));
       check(`responsive_${width}_${path}`,!measurement.overflow&&measurement.views===1,measurement);
@@ -438,10 +606,10 @@ try {
   }
   for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/how-it-works","/connect","/examples","/security"]){
+    for(const path of ["/","/how-it-works","/pricing","/connect","/examples","/security"]){
       await page.goto(fixture.base+path); await page.evaluate(()=>document.documentElement.style.fontSize="200%");
-      const enlarged=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,items:[...document.querySelectorAll("body *")].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;}).slice(0,12).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}));
-      check(`enlarged_text_${width}_${path}`,!enlarged.overflow,enlarged);
+      const enlarged=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length,items:[...document.querySelectorAll("body *")].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;}).slice(0,12).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}));
+      check(`enlarged_text_${width}_${path}`,!enlarged.overflow&&enlarged.views===1,enlarged);
       await page.evaluate(()=>document.documentElement.style.fontSize="");
     }
   }

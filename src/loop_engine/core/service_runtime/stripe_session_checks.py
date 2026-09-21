@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 import json
 from pathlib import Path
+import re
 import tempfile
 import threading
 import time
@@ -18,32 +19,48 @@ from types import SimpleNamespace
 from .billing_effects import (
     BillingSessionEffectSpec, SESSION_EFFECT_KIND, SESSION_POLICY_KIND, EFFECT_UNKNOWN, EFFECT_CONFIRMED,
 )
-from .billing_records import StripeEntitlementPolicy
+from .billing_records import StripeEntitlementPolicy, TENANT_METADATA_KEY
 from .records import (
     BILLING_MANAGE_SCOPE, DEFAULT_SCOPES, BillingCustomerBindingRequest, ServiceRuntimeConfig, ServiceRuntimeError,
     TenantKeyIssue, TenantRegistration,
 )
-from .runtime import ServiceRuntime
+from .runtime import CUSTOMER_EFFECT, ServiceRuntime
 from .stripe_sessions import (
-    ACCOUNT_PATH, CHECKOUT_OPERATION, CHECKOUT_PATH, CUSTOMER_PATH, GET_METHOD, PORTAL_OPERATION,
-    PORTAL_PATH, POST_METHOD, PRICE_PATH, BillingSessionError, BillingSessionRequest,
+    ACCOUNT_PATH, CHECKOUT_OPERATION, CHECKOUT_PATH, CUSTOMER_COLLECTION_PATH, CUSTOMER_METADATA_PARAMETER,
+    CUSTOMER_PATH, CUSTOMER_SEARCH_PATH, GET_METHOD, PORTAL_OPERATION,
+    PORTAL_PATH, POST_METHOD, PRICE_PATH, SEARCH_QUERY_PARAMETER, SEARCH_RESULT_OBJECT,
+    BillingSessionError, BillingSessionRequest,
     StripeSessionAdapter, StripeSessionConfiguration, StripeSessionPlan,
 )
 
 FIXTURE_SECRET = "LOCAL_SESSION_ADAPTER_SECRET"
 FIXTURE_URL_TOKEN = "LOCAL_PORTAL_CAPABILITY_TOKEN"
+METADATA_PARAMETER_PATTERN = re.compile(r"metadata\[([^\]]+)\]")
+SEARCH_QUERY_PATTERN = re.compile(r"metadata\['([^']*)'\]:'([^']*)'")
 
 
 class LocalStripeSessionTransport:
     def __init__(self):
         self.calls, self.effects = [], {}
+        self.customers = {}
         self.lose_next_response = False
+        self.refuse_next_creation = False
         self.after_read = None
         self.override_customer = None
         self.override_account = None
         self.override_price = None
+        self.override_search = None
         self.override_result = None
         self.after_post = None
+
+    def _search(self, parameters):
+        """Answer a metadata search the way the provider documents it."""
+        match = SEARCH_QUERY_PATTERN.fullmatch(parameters[SEARCH_QUERY_PARAMETER])
+        if match is None:
+            raise AssertionError("unsupported provider search query")
+        key, value = match.group(1), match.group(2)
+        matched = [row for row in self.customers.values() if row["metadata"].get(key) == value]
+        return {"object": SEARCH_RESULT_OBJECT, "url": CUSTOMER_SEARCH_PATH, "has_more": False, "data": matched}
 
     def __call__(self, request, secret):
         if secret != FIXTURE_SECRET:
@@ -52,8 +69,12 @@ class LocalStripeSessionTransport:
         if request.method == GET_METHOD:
             if request.path == ACCOUNT_PATH:
                 result = self.override_account or {"id": "acct_fixture", "object": "account"}
+            elif request.path == CUSTOMER_SEARCH_PATH:
+                result = self.override_search or self._search(dict(request.parameters))
             elif request.path.startswith(CUSTOMER_PATH):
-                result = self.override_customer or {"id": request.path[len(CUSTOMER_PATH):], "object": "customer", "livemode": False}
+                identity = request.path[len(CUSTOMER_PATH):]
+                result = (self.override_customer or self.customers.get(identity)
+                          or {"id": identity, "object": "customer", "livemode": False})
             elif request.path.startswith(PRICE_PATH):
                 result = self.override_price or {"id": request.path[len(PRICE_PATH):], "object": "price",
                                                 "type": "recurring", "active": True, "livemode": False}
@@ -62,14 +83,25 @@ class LocalStripeSessionTransport:
             if self.after_read is not None:
                 self.after_read(request)
             return result
-        if request.method != POST_METHOD or request.path not in (CHECKOUT_PATH, PORTAL_PATH):
+        if request.method != POST_METHOD or request.path not in (CHECKOUT_PATH, PORTAL_PATH, CUSTOMER_COLLECTION_PATH):
             raise AssertionError("unexpected provider mutation")
         parameters = dict(request.parameters)
+        if request.path == CUSTOMER_COLLECTION_PATH and self.refuse_next_creation:
+            self.refuse_next_creation = False
+            raise ServiceRuntimeError("stripe_customer_creation_refused")
         existing = self.effects.get(request.idempotency_key)
         if existing is not None:
             if existing[0] != (request.path, request.parameters):
                 raise RuntimeError("provider idempotency conflict")
             result = existing[1]
+        elif request.path == CUSTOMER_COLLECTION_PATH:
+            result = {"id": "cus_fixture_" + str(len(self.customers) + 1), "object": "customer",
+                      "livemode": False, "created": int(time.time()),
+                      "metadata": {METADATA_PARAMETER_PATTERN.fullmatch(key).group(1): value
+                                   for key, value in parameters.items()
+                                   if METADATA_PARAMETER_PATTERN.fullmatch(key) is not None}}
+            self.customers[result["id"]] = result
+            self.effects[request.idempotency_key] = ((request.path, request.parameters), result)
         else:
             result = {"id": ("cs_fixture_" if request.path == CHECKOUT_PATH else "bps_fixture_") + str(len(self.effects) + 1),
                       "object": "checkout.session" if request.path == CHECKOUT_PATH else "billing_portal.session",
@@ -88,7 +120,7 @@ class LocalStripeSessionTransport:
         return self.override_result or dict(result)
 
 
-def fixture(root):
+def fixture(root, *, bind_customers=True):
     clock = {"now": int(time.time())}
     configuration = ServiceRuntimeConfig(str(Path(root) / "service.db"), writes_authorized=True)
     runtime = ServiceRuntime(configuration, clock=lambda: clock["now"])
@@ -97,7 +129,8 @@ def fixture(root):
         runtime.register_tenant(TenantRegistration(tenant, "tenant:" + tenant,
                                                   scopes=(*DEFAULT_SCOPES, BILLING_MANAGE_SCOPE)))
         keys[tenant] = runtime.issue_key(TenantKeyIssue(tenant, "local billing acceptance"))
-        runtime.bind_billing_customer(BillingCustomerBindingRequest(tenant, "cus_" + tenant, "acct_fixture"))
+        if bind_customers:
+            runtime.bind_billing_customer(BillingCustomerBindingRequest(tenant, "cus_" + tenant, "acct_fixture"))
     runtime.configure_billing_policy(StripeEntitlementPolicy(("price_basic", "price_other")))
     policy = StripeSessionConfiguration("acct_fixture", "fixture_version", "env:LOCAL_STRIPE_SESSION",
         plans=(StripeSessionPlan("basic", "Basic service", "price_basic"), StripeSessionPlan("other", "Other service", "price_other")),
@@ -144,6 +177,46 @@ def observed_result(function):
         return function()
     except ServiceRuntimeError as error:
         return {"unexpected_refusal": error.code}
+
+
+def captured(function):
+    """Return the domain refusal itself so its caller-safe details can be read."""
+    try:
+        function()
+    except ServiceRuntimeError as error:
+        return error
+    return None
+
+
+def quiet(function):
+    """Run one scenario step and keep a domain refusal as an observed outcome."""
+    try:
+        return function()
+    except ServiceRuntimeError:
+        return None
+
+
+def customer_rows(held, tenant="alpha"):
+    with held.runtime._catalog.store() as store:
+        return held.runtime._catalog.rows(store, CUSTOMER_EFFECT, tenant)
+
+
+def creations(held):
+    return [call for call in held.provider.calls
+            if call.method == POST_METHOD and call.path == CUSTOMER_COLLECTION_PATH]
+
+
+def bound(held, tenant="alpha"):
+    """The account's durable binding, or None when it has none or cannot read one."""
+    try:
+        return held.adapter._binding(principal(held, tenant))
+    except ServiceRuntimeError:
+        return None
+
+
+def sessions_created(held):
+    return [call for call in held.provider.calls
+            if call.method == POST_METHOD and call.path == CHECKOUT_PATH]
 
 
 def run_domain_checks(check):
@@ -275,12 +348,292 @@ def run_domain_checks(check):
               refused(lambda: held.adapter.effects.authorize_dispatch(principal(held), reserved), "session_authority_changed"))
 
 
+def first_checkout_binds_one_customer(root):
+    """A person who signs in and never paid presses subscribe once."""
+    held = fixture(root, bind_customers=False)
+    quiet(lambda: held.adapter.create(principal(held), request(held, "first-checkout")))
+    bound = held.adapter._binding(principal(held))
+    return (len(creations(held)) == 1 and len(held.provider.customers) == 1 and bound is not None
+            and bound["provider_customer_id"] in held.provider.customers
+            and held.provider.customers[bound["provider_customer_id"]]["metadata"] == {TENANT_METADATA_KEY: "alpha"})
+
+
+def repeat_after_the_window_finds_the_existing_customer(root):
+    """The first answer was lost and the provider no longer keeps its key."""
+    held = fixture(root, bind_customers=False)
+    held.provider.lose_next_response = True
+    quiet(lambda: held.adapter.create(principal(held), request(held, "lost-answer")))
+    held.clock["now"] += held.policy.reconciliation_seconds + 1
+    held.provider.effects.clear()
+    quiet(lambda: held.adapter.create(principal(held), request(held, "months-later")))
+    bound = held.adapter._binding(principal(held))
+    return (len(creations(held)) == 1 and len(held.provider.customers) == 1 and bound is not None
+            and customer_rows(held)[0]["payload"]["idempotency_cycles"] == 1)
+
+
+def another_accounts_customer_is_never_bound(root):
+    """The provider search answers with a customer that names another account."""
+    held = fixture(root, bind_customers=False)
+    foreign = {"id": "cus_named_for_beta", "object": "customer", "livemode": False,
+               "metadata": {TENANT_METADATA_KEY: "beta"}}
+    held.provider.customers[foreign["id"]] = foreign
+    held.provider.override_search = {"object": SEARCH_RESULT_OBJECT, "url": CUSTOMER_SEARCH_PATH,
+                                     "has_more": False, "data": [foreign]}
+    quiet(lambda: held.adapter.create(principal(held), request(held, "alpha-checkout")))
+    alpha = held.adapter._binding(principal(held))
+    return alpha is None or alpha["provider_customer_id"] != foreign["id"]
+
+
+def another_provider_account_creates_no_customer(root):
+    """The configured credential reaches a provider account the host did not choose."""
+    held = fixture(root, bind_customers=False)
+    held.provider.override_account = {"id": "acct_unbound", "object": "account"}
+    quiet(lambda: held.adapter.create(principal(held), request(held, "wrong-account")))
+    return (not held.provider.customers and not creations(held)
+            and held.adapter._binding(principal(held)) is None)
+
+
+def run_customer_checks(check):
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-first-") as root:
+        held = fixture(root, bind_customers=False)
+        offered = held.adapter.options(principal(held))
+        result = observed_result(lambda: held.adapter.create(principal(held), request(held, "first-checkout")))
+        first = bound(held)
+        session = sessions_created(held)
+        check("an_account_that_never_paid_is_offered_checkout_and_gets_one_customer_and_one_session",
+              offered["checkout_available"] is True and offered["portal_available"] is False
+              and offered["unavailable_reason"] == "" and len(creations(held)) == 1
+              and len(held.provider.customers) == 1 and result.get("payment_confirmed") is False
+              and first is not None and first["provider_account_id"] == "acct_fixture"
+              and first["provider_customer_id"] in held.provider.customers
+              and len(session) == 1
+              and dict(session[0].parameters)["customer"] == first["provider_customer_id"])
+        created = held.provider.customers.get(first["provider_customer_id"]) if first else {}
+        form = dict(creations(held)[0].parameters) if creations(held) else {}
+        check("a_created_customer_carries_only_the_account_identifier_and_no_personal_detail",
+              form == {CUSTOMER_METADATA_PARAMETER: "alpha"}
+              and created.get("metadata") == {TENANT_METADATA_KEY: "alpha"}
+              and not {"email", "name", "phone", "address[line1]", "description"} & set(form)
+              and customer_rows(held)[0]["payload"]["status"] == EFFECT_CONFIRMED)
+        observed_result(lambda: held.adapter.create(principal(held), request(held, "second-checkout")))
+        again = bound(held)
+        check("a_second_checkout_reuses_the_bound_customer_and_creates_nothing_at_the_provider",
+              len(creations(held)) == 1 and len(held.provider.customers) == 1
+              and len(customer_rows(held)) == 1 and again is not None and first is not None
+              and again["provider_customer_id"] == first["provider_customer_id"]
+              and held.adapter.options(principal(held))["portal_available"] is True)
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-scope-") as root:
+        held = fixture(root, bind_customers=False)
+        limited = held.runtime.issue_key(TenantKeyIssue("alpha", "metadata only", scopes=DEFAULT_SCOPES))
+        narrow = held.runtime.authenticate_key(limited.key)
+        check("a_caller_without_the_billing_scope_creates_no_customer_and_reaches_no_provider_call",
+              refused(lambda: held.adapter.create(narrow, request(held, "no-scope")), "scope_required")
+              and refused(lambda: held.adapter.ensure_customer(narrow), "scope_required")
+              and not held.provider.calls and not held.secret_calls and not held.provider.customers
+              and not customer_rows(held))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-authority-") as root:
+        held = fixture(root, bind_customers=False)
+        issued = principal(held)
+        held.runtime.set_tenant_enabled("alpha", False)
+        disabled = refused(lambda: held.adapter.ensure_customer(issued), "unauthorized")
+        held.runtime.set_tenant_enabled("alpha", True)
+        for field in ("allow_network", "allow_session_creation"):
+            denied = StripeSessionAdapter(held.runtime, replace(held.policy, **{field: False}),
+                                          held.secret, transport=held.provider)
+            disabled = disabled and refused(lambda: denied.ensure_customer(principal(held)),
+                                            "session_network_authority_required")
+        check("a_disabled_account_or_absent_network_authority_creates_no_customer",
+              disabled and not held.provider.calls and not held.secret_calls
+              and not held.provider.customers and not customer_rows(held))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-other-account-") as root:
+        held = fixture(root, bind_customers=False)
+        held.runtime.bind_billing_customer(BillingCustomerBindingRequest("alpha", "cus_elsewhere", "acct_other"))
+        blocked = refused(lambda: held.adapter.create(principal(held), request(held, "other-account")),
+                          "stripe_account_or_customer_mismatch")
+        held_result = observed_result(lambda: held.adapter.ensure_customer(principal(held)))
+        offered = held.adapter.options(principal(held))
+        check("an_account_bound_to_another_provider_account_is_refused_and_gets_no_second_customer",
+              blocked and held_result.get("status") == "already_bound" and not held.provider.customers
+              and not held.provider.calls and offered["checkout_available"] is False
+              and offered["unavailable_reason"] == "stripe_account_mismatch"
+              and held.runtime.billing_customer_for(principal(held))["provider_account_id"] == "acct_other")
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-uncertain-") as root:
+        held = fixture(root, bind_customers=False)
+        held.provider.lose_next_response = True
+        error = captured(lambda: held.adapter.create(principal(held), request(held, "uncertain-customer")))
+        left_behind = list(held.provider.customers)
+        check("an_uncertain_creation_is_reported_as_uncertain_and_is_not_retried_by_the_service",
+              isinstance(error, BillingSessionError) and error.code == "billing_customer_uncertain"
+              and error.details["creation_attempted"] is True and error.details["retry_same_request"] is True
+              and error.details["provider_commitment"] == "not_asserted"
+              and error.details["record_type"] == "billing_customer_uncertainty/v1"
+              and len(left_behind) == 1 and len(creations(held)) == 1
+              and customer_rows(held)[0]["payload"]["status"] == EFFECT_UNKNOWN
+              and refused(lambda: held.runtime.billing_customer_for(principal(held)), "billing_customer_not_bound"))
+        stored = json.dumps(customer_rows(held))
+        key = customer_rows(held)[0]["payload"]["idempotency_key"]
+        observed_result(lambda: held.adapter.create(principal(held), request(held, "uncertain-customer")))
+        reconciled = bound(held)
+        check("the_retry_finds_the_customer_left_behind_by_its_metadata_and_binds_that_one",
+              len(creations(held)) == 1 and len(held.provider.customers) == 1
+              and reconciled is not None and reconciled["provider_customer_id"] == left_behind[0]
+              and customer_rows(held)[0]["payload"]["idempotency_key"] == key
+              and customer_rows(held)[0]["payload"]["status"] == EFFECT_CONFIRMED
+              and FIXTURE_SECRET not in stored)
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-refused-") as root:
+        held = fixture(root, bind_customers=False)
+        held.provider.refuse_next_creation = True
+        error = captured(lambda: held.adapter.create(principal(held), request(held, "refused-customer")))
+        check("a_creation_refused_by_the_provider_leaves_no_binding_and_reports_the_refusal",
+              isinstance(error, BillingSessionError) and error.code == "billing_customer_uncertain"
+              and error.details["diagnostic_code"] == "stripe_customer_creation_refused"
+              and error.status == 503 and not held.provider.customers
+              and customer_rows(held)[0]["payload"]["diagnostic_code"] == "stripe_customer_creation_refused"
+              and refused(lambda: held.runtime.billing_customer_for(principal(held)), "billing_customer_not_bound"))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-concurrent-") as root:
+        held = fixture(root, bind_customers=False)
+        entered, release = threading.Event(), threading.Event()
+        held.provider.after_read = lambda call: (entered.set(), release.wait(2)) if call.path == ACCOUNT_PATH else None
+        current = principal(held)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            running = pool.submit(lambda: observed_result(
+                lambda: held.adapter.create(current, request(held, "concurrent-one"))))
+            entered.wait(1)
+            try:
+                blocked = refused(lambda: held.adapter.create(current, request(held, "concurrent-two")),
+                                  "billing_customer_creation_in_progress")
+            finally:
+                release.set()
+            running.result(timeout=5)
+        held.provider.after_read = None
+        observed_result(lambda: held.adapter.create(current, request(held, "concurrent-two")))
+        settled = bound(held)
+        check("two_concurrent_first_requests_end_with_exactly_one_customer_and_one_binding",
+              blocked and len(creations(held)) == 1 and len(held.provider.customers) == 1
+              and len(customer_rows(held)) == 1 and settled is not None
+              and settled["provider_customer_id"] in held.provider.customers)
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-ambiguous-") as root:
+        held = fixture(root, bind_customers=False)
+        twins = [{"id": "cus_twin_one", "object": "customer", "livemode": False,
+                  "metadata": {TENANT_METADATA_KEY: "alpha"}},
+                 {"id": "cus_twin_two", "object": "customer", "livemode": False,
+                  "metadata": {TENANT_METADATA_KEY: "alpha"}}]
+        held.provider.override_search = {"object": SEARCH_RESULT_OBJECT, "url": CUSTOMER_SEARCH_PATH,
+                                         "has_more": False, "data": twins}
+        error = captured(lambda: held.adapter.create(principal(held), request(held, "ambiguous")))
+        held.provider.override_search = {"object": SEARCH_RESULT_OBJECT, "url": CUSTOMER_SEARCH_PATH,
+                                         "has_more": True, "data": [twins[0]]}
+        truncated = captured(lambda: held.adapter.create(principal(held), request(held, "truncated")))
+        check("more_than_one_customer_for_one_account_is_refused_instead_of_choosing_one",
+              isinstance(error, BillingSessionError) and error.code == "billing_customer_not_created"
+              and error.details["diagnostic_code"] == "ambiguous_billing_customer_at_provider"
+              and error.details["creation_attempted"] is False
+              and truncated is not None
+              and truncated.details["diagnostic_code"] == "ambiguous_billing_customer_at_provider"
+              and not creations(held)
+              and refused(lambda: held.runtime.billing_customer_for(principal(held)), "billing_customer_not_bound"))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-named-") as root:
+        check("a_first_checkout_binds_one_customer_that_names_its_account",
+              first_checkout_binds_one_customer(root))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-window-") as root:
+        check("a_repeat_after_the_idempotency_window_finds_the_existing_customer_instead_of_creating_another",
+              repeat_after_the_window_finds_the_existing_customer(root))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-foreign-") as root:
+        check("a_provider_customer_that_names_another_account_is_never_bound",
+              another_accounts_customer_is_never_bound(root))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-account-") as root:
+        check("a_credential_that_reaches_another_provider_account_creates_no_customer",
+              another_provider_account_creates_no_customer(root))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-wire-") as root:
+        held = fixture(root, bind_customers=False)
+        wire = held.adapter._customer_creation_parameters
+        check("the_customer_wire_contract_refuses_personal_fields_and_an_unbounded_search",
+              refused(lambda: sessions_wire(CUSTOMER_COLLECTION_PATH, (("email", "person@example.test"),)),
+                      "unsupported_session_wire_parameters")
+              and refused(lambda: sessions_wire(CUSTOMER_COLLECTION_PATH, wire("alpha"), idempotency_key=""),
+                          "invalid_request")
+              and refused(lambda: sessions_search_wire(()), "unsupported_customer_search_parameters")
+              and refused(lambda: sessions_search_wire((("expand[]", "data"),)), "unsupported_customer_search_parameters")
+              and refused(lambda: search_query(TENANT_METADATA_KEY, "alpha' or metadata['x']:'y"), "invalid_request"))
+
+
+def run_customer_mutant_controls(check):
+    """Each control reruns a named scenario with one guard removed.
+
+    The scenario's own predicate must fail, so the removed behavior is the
+    reason that the named check passes.
+    """
+    from unittest.mock import patch
+    from . import stripe_sessions as adapter_module
+    from .billing_records import StripeCustomerProjection
+
+    def lenient(cls, value, *, tenant_id, livemode, metadata_key=TENANT_METADATA_KEY):
+        return cls(value["id"], tenant_id, livemode)
+
+    controls = (
+        ("removed_customer_search_before_creation_is_detected",
+         repeat_after_the_window_finds_the_existing_customer,
+         lambda: patch.object(adapter_module.StripeSessionAdapter, "_search_customer",
+                              lambda self, tenant_id, secret: None)),
+        ("removed_account_identifier_in_customer_metadata_is_detected",
+         first_checkout_binds_one_customer,
+         lambda: patch.object(adapter_module.StripeSessionAdapter, "_customer_creation_parameters",
+                              lambda self, tenant_id: ())),
+        ("removed_customer_ownership_check_is_detected",
+         another_accounts_customer_is_never_bound,
+         lambda: patch.object(StripeCustomerProjection, "from_provider", classmethod(lenient))),
+        ("removed_provider_account_check_before_creation_is_detected",
+         another_provider_account_creates_no_customer,
+         lambda: patch.object(adapter_module.StripeSessionAdapter, "_verified_account",
+                              lambda self, secret: {})),
+    )
+    for name, scenario, mutant in controls:
+        with tempfile.TemporaryDirectory(prefix="stripe-customer-mutant-") as root:
+            with mutant():
+                try:
+                    observed = bool(scenario(root))
+                except Exception:
+                    observed = False
+        check(name, observed is False)
+
+
+def sessions_wire(path, parameters, *, idempotency_key="le-customer-fixture"):
+    from .stripe_sessions import StripeSessionWireRequest
+    return StripeSessionWireRequest(POST_METHOD, path, tuple(parameters), "fixture_version",
+                                    idempotency_key, 2, 1024)
+
+
+def sessions_search_wire(parameters):
+    from .stripe_sessions import StripeSessionWireRequest
+    return StripeSessionWireRequest(GET_METHOD, CUSTOMER_SEARCH_PATH, tuple(parameters), "fixture_version",
+                                    "", 2, 1024)
+
+
+def search_query(metadata_key, tenant_id):
+    from .stripe_sessions import _customer_search_query
+    return _customer_search_query(metadata_key, tenant_id)
+
+
 def run_checks():
     tests = []
     def check(name, passed):
         tests.append({"test": name, "passed": bool(passed), "detail": "durable local state and injected provider, no live Stripe"})
     from .stripe_session_transport_checks import run_transport_checks
     run_domain_checks(check)
+    run_customer_checks(check)
+    run_customer_mutant_controls(check)
     run_transport_checks(check)
     return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),
             "all_passed": all(row["passed"] for row in tests)}
