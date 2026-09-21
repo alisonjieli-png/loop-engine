@@ -13,17 +13,39 @@
     document.querySelectorAll("[data-view]").forEach(item => { item.hidden = item.dataset.view !== name; });
     document.querySelectorAll("[data-page]").forEach(item => { if (item.dataset.page === name) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current"); });
   };
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/examples":"examples", "/security":"security", "/auth/callback":"login"};
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/examples":"examples", "/security":"security", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
   const serviceName = document.title.split(" | ")[0];
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Reusable solutions with less repeated work", workspace:"Intelligence workspace", login:"Sign in", signup:"Registration status", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Connect your client", examples:"Try your first retrieval", security:"Access and data boundaries"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Reusable solutions with less repeated work", workspace:"Intelligence workspace", login:"Sign in", signup:"Registration status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Connect your client", examples:"Try your first retrieval", security:"Access and data boundaries"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
+  /* The public access action and the pricing state come from the service capabilities record, never from wording kept in this file.
+     Until the service answers, and if it never answers, the page keeps the careful state: access by invitation, payment not open. */
+  const accessStates = {
+    open:{label:"Get started", href:"/signup", note:"Create your account. Search is free, and one downloaded item is the measured unit."},
+    invited:{label:"Request access", href:"/signup#request-access", note:"Private pilot. Access is by invitation while public sign-up is closed."}};
+  const paymentStates = {
+    open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited beta accounts stay free."},
+    closed:{badge:"Payment not open", note:"Payment is not open yet. Nothing on this page charges you today, and invited beta accounts stay free.", teaser:"Payment is not open yet. Nothing on this page charges you today."}};
+  const applyAccessState = open => {
+    const state = open === true ? accessStates.open : accessStates.invited;
+    for (const id of ["hero-primary", "pricing-primary", "closing-primary"]) {
+      $(id).setAttribute("href", state.href); $(id).dataset.accessState = open === true ? "open" : "invited";
+      $(id + "-label").textContent = state.label;
+    }
+    $("hero-access-note").textContent = state.note;
+  };
+  const applyPaymentState = open => {
+    const state = open === true ? paymentStates.open : paymentStates.closed;
+    $("pricing-state").textContent = state.badge; $("pricing-payment-state").textContent = state.note;
+    $("pricing-teaser-note").textContent = state.teaser;
+  };
+  applyAccessState(false); applyPaymentState(false);
   const themes = ["system", "light", "dark"];
   const createIdentityClient = settings => window.BaltorIdentitySdk.createClient(settings.project_url, settings.publishable_key,
     {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
@@ -408,6 +430,8 @@
   $("try-example").addEventListener("click", () => { navigate("/app"); $("query").value = "review inputs"; message("search-message", token ? "Example query prepared. Select Search to retrieve permitted references." : "Sign in first. This button does not submit a query or download a file."); });
   request("/api/v1/capabilities", null, false).then(value => {
     capabilities = value; $("service-status").textContent = "Service available";
+    applyAccessState(value.website.registration_available === true);
+    applyPaymentState(value.billing.checkout === true);
     clientAccess.connectionChanged();
     $("protocol-note").textContent = "Supported protocol: " + value.protocol.versions.join(", ") + ". External identity flow qualified: " + (value.protocol.external_authorization_flow_qualified ? "yes" : "no") + ".";
     $("retrieval-note").textContent = "Installed vector method: " + value.retrieval.vector_backend + ". Semantic embedding model installed: " + (value.retrieval.semantic_embedding_model_installed ? "yes" : "no") + ". Bodies load only after selection.";
