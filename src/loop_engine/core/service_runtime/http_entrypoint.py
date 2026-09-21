@@ -27,9 +27,11 @@ from .records import (
     BillingCustomerBindingRequest, ServiceRuntimeConfig, ServiceRuntimeError,
     SubjectBindingRequest, TenantKeyIssue, TenantRegistration,
 )
+from .request_limits import HEADER_SOURCE
 from .runtime import ServiceRuntime
 
 HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
+LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
 LICENSE_POLICY_VERSION = "service_host_license_policy/v1"
@@ -310,6 +312,34 @@ def configure_host(path):
             "configured_grant_sets": len(grants), "remote_accounts_created": False}
 
 
+def public_binding_refusal(host, behind_trusted_tls_proxy, request_limits):
+    """Name why this binding may not serve the public, or return empty text.
+
+    A service that anyone on the internet can reach must count refused
+    sign-in attempts, and it can only count them when the host has said where
+    the client address comes from. Behind a trusted proxy the socket peer is
+    the proxy, so every caller in the world would share one count; that host
+    names the exact header its own proxy writes on every request. A loopback
+    binding serves only this machine, so it needs no such statement.
+
+    This refusal exists because the setting has a safe-looking default. A host
+    that says nothing gets no limit at all, and nothing else in a running
+    service says so out loud. Being stopped at start with the exact repair is
+    better than serving paying customers with the control switched off.
+    """
+    if host in LOOPBACK_BINDINGS:
+        return ""
+    if not behind_trusted_tls_proxy:
+        return "non-loopback binding requires --behind-trusted-tls-proxy"
+    if request_limits.client_address_source != HEADER_SOURCE:
+        return ('a binding the public can reach must count refused sign-in attempts for each client '
+                'address; add "request_limits": {"record_type": "service_request_limits/v1", '
+                '"client_address_source": "header", "client_address_header": "<the exact header your '
+                'trusted proxy writes on every request>"} to the "http" section of the host '
+                'configuration, or bind to loopback for local work')
+    return ""
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Serve the versioned Loop Engine intelligence service.")
     parser.add_argument("command", choices=("serve", "configure", "issue-key", "smoke"))
@@ -344,8 +374,10 @@ def main(argv=None):
         # The runtime persists only its digest; callers must not log stdout.
         print(json.dumps({"record_type": "issued_service_key/v1", **asdict(issued)}, sort_keys=True))
         return 0
-    if arguments.host not in ("127.0.0.1", "::1", "localhost") and not arguments.behind_trusted_tls_proxy:
-        parser.error("non-loopback binding requires --behind-trusted-tls-proxy")
+    refusal = public_binding_refusal(arguments.host, arguments.behind_trusted_tls_proxy,
+                                     application.configuration.request_limits)
+    if refusal:
+        parser.error(refusal)
     if not 1 <= arguments.port <= 65535:
         parser.error("--port must be between one and 65535")
     import uvicorn
