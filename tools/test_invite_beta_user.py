@@ -119,7 +119,7 @@ class Provider:
 class Run:
     """One command run in a private temporary folder with captured output."""
 
-    def __init__(self, provider, *, arguments=None, remove=(), environment=None, confirm=True, report=None):
+    def __init__(self, provider, *, arguments=None, remove=(), environment=None, confirm=True, report=None, extra=()):
         self.folder = tempfile.TemporaryDirectory(prefix="baltor-invitation-check-")
         self.report = Path(self.folder.name) / "report.json" if report is None else report
         values = {"--project-ref": PROJECT, "--email": EMAIL, "--service-origin": ORIGIN,
@@ -128,6 +128,7 @@ class Run:
         argv = [item for name, value in values.items() if name not in remove for item in (name, value)]
         if confirm:
             argv.append("--acknowledge-identity-account-effects")
+        argv.extend(extra)
         self.provider = provider
         stdout, stderr = io.StringIO(), io.StringIO()
         try:
@@ -236,9 +237,9 @@ class InvitationChecks(unittest.TestCase):
     def test_abbreviated_confirmation_flag_is_not_a_confirmation(self):
         for flag in ("--a", "--acknowledge", "--acknowledge-identity-account-effect"):
             with self.subTest(flag=flag):
-                run = self.run_command(created(), linked(), confirm=False, arguments={flag: "--credential-ref"})
+                run = self.run_command(created(), linked(), confirm=False, extra=(flag,))
                 self.assert_nothing_happened(run)
-                self.assertNotIn("explicit_confirmation_required", run.stderr)
+                self.assertIn("unrecognized arguments: " + flag, run.stderr)
 
     def test_injected_transport_is_used_even_when_it_is_falsy(self):
         class EmptyRecorder(list):
