@@ -71,6 +71,10 @@ MAXIMUM_INVITED_ADDRESS_LENGTH = 254
 MAXIMUM_LOCAL_PART_LENGTH = 64
 UNENCODED_BODY = "identity"
 MINIMUM_LONG_SECRET_LENGTH = 16
+# The only free text in the summary line is the report path that the operator chose.
+# When that path matches a private value, this marker replaces the path alone.
+WITHHELD_REPORT_PATH = "report_path_withheld"
+SUMMARY_REPORT_FIELD = "report"
 LIMITATIONS = (
     "The link signs in as the invited person until it is used or expires. Only its digest is kept here.",
     "An administratively confirmed address is not proof that the person controls the mailbox.",
@@ -869,12 +873,26 @@ def _sensitive_values(credential, result):
     return (credential, *result.sensitive_values)
 
 
-def _safe_summary(summary, sensitive):
+def _safe_summary(fields, sensitive):
+    """Keep the typed fields of the summary line and give up as little as possible.
+
+    The operator chooses the report path, so that value is the only free text
+    here. When the whole line matches a private value, the path alone is
+    replaced and the reduced line is guarded again. Only a line that still
+    matches after that is replaced by the bare code.
+    """
+    summary = json.dumps(fields, sort_keys=True)
     try:
         _require_no_secret(summary, sensitive)
+        return summary
+    except Refusal:
+        pass
+    reduced = json.dumps({**fields, SUMMARY_REPORT_FIELD: WITHHELD_REPORT_PATH}, sort_keys=True)
+    try:
+        _require_no_secret(reduced, sensitive)
     except Refusal as refusal:
         return refusal.code
-    return summary
+    return reduced
 
 
 def main(argv=None, *, environment=None, transport=None, manifest=None, now=None):
@@ -915,13 +933,13 @@ def _run(request, credential, transport, limits, current, target, stream):
             shown = True
         except OSError:
             shown = False
-    summary = json.dumps({
+    summary = {
         "outcome": recorded.outcome.value,
         "failure": recorded.failure.value if recorded.failure is not None else None,
         "detail": recorded.detail, "user_created": recorded.user_created,
         "invitation_mark_present": recorded.invitation_mark_present,
         "provider_requests": recorded.provider_requests, "link_displayed": shown,
-        "report": str(target), "report_written": written}, sort_keys=True)
+        SUMMARY_REPORT_FIELD: str(target), "report_written": written}
     sys.stderr.write(_safe_summary(summary, sensitive) + "\n")
     if recorded.outcome is InvitationOutcome.LINK_ISSUED and not shown:
         return _EXIT_CODES[InvitationOutcome.REFUSED]

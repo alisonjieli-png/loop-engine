@@ -683,14 +683,31 @@ class InvitationChecks(unittest.TestCase):
                 self.assert_no_secret(run)
 
     def test_summary_line_is_guarded_like_the_report(self):
+        """A report path that matches a private value costs the path, not the whole line.
+
+        The invitation itself is unaffected: the link is shown and the exit status stays 0.
+        """
         for name, secret in (("credential", CREDENTIAL), ("one_time_code", ONE_TIME_CODE)):
             with self.subTest(name=name):
                 folder = tempfile.TemporaryDirectory(prefix="baltor-invitation-summary-")
                 self.addCleanup(folder.cleanup)
                 run = self.run_command(created(), linked(), report=Path(folder.name) / (secret + ".json"))
-                self.assertEqual(run.stderr, "secret_in_output_refused\n")
+                self.assertEqual((run.code, run.stdout), (0, LINK + "\n"), run.stderr)
+                summary = json.loads(run.stderr)
+                self.assertEqual((summary["outcome"], summary["failure"], summary["link_displayed"],
+                                  summary["report_written"], summary["report"]),
+                                 ("link_issued", None, True, True, tool.WITHHELD_REPORT_PATH))
                 self.assertTrue(run.report.exists())
                 self.assert_no_secret(run, run.report.read_text("utf-8"))
+                self.assertNotIn(str(run.report), run.stderr)
+
+    def test_summary_falls_back_to_the_bare_code_when_a_typed_field_would_hold_a_secret(self):
+        """The last resort stays: a reduced line that still matches is replaced entirely."""
+        fields = {"outcome": "link_issued", "report": "/private/report.json"}
+        self.assertEqual(tool._safe_summary(fields, (LINK,)), json.dumps(fields, sort_keys=True))
+        self.assertEqual(json.loads(tool._safe_summary(fields, ("/private/report.json",)))["report"],
+                         tool.WITHHELD_REPORT_PATH)
+        self.assertEqual(tool._safe_summary(fields, ("link_issued",)), tool.InvitationRefusal.SECRET_IN_OUTPUT.value)
 
     def test_short_code_is_matched_as_a_whole_value_and_long_secrets_anywhere(self):
         digest = "ab" + ONE_TIME_CODE + "cd" * 28
@@ -920,7 +937,8 @@ class RemovedGuardControls(unittest.TestCase):
     COMMAND_CONTROLS = (
         ("_outcome_after_defect", lambda progress: tool.InvitationOutcome.REFUSED,
          "test_defect_between_the_requests_is_unknown_and_discloses_nothing"),
-        ("_safe_summary", lambda summary, sensitive: summary, "test_summary_line_is_guarded_like_the_report"),
+        ("_safe_summary", lambda fields, sensitive: json.dumps(fields, sort_keys=True),
+         "test_summary_line_is_guarded_like_the_report"),
         ("_sensitive_values", lambda credential, result: tuple(result.sensitive_values),
          "test_credential_and_one_time_code_reach_the_output_guard"),
         ("_SENSITIVE_FIELDS", ("action_link", "hashed_token"), "test_credential_and_one_time_code_reach_the_output_guard"),
