@@ -12,10 +12,32 @@ pages in this order if the system is new to you.
 | 3 | [Solution Canvas](solution-canvas/) | What does the finished solution contain and run? |
 | 4 | [Core Architecture](core-architecture/) | How do Intelligence Search and Retrieval, Web Research, and Custom Plugins support Loops? |
 | 5 | [The four intelligence layers](intelligence-layers/) | What reusable context, code, history, solutions, and user guidance can a loop search? |
+| 6 | [The hosted intelligence service](service-runtime/) | How does a customer's engine reach the reviewed catalogue, and what is recorded? |
+| 7 | [Typed decision engines](typed-decisions/) | How is a closed-set judgment asked and admitted? |
+| 8 | [Configuration space and adaptive search](configuration-search/) | Which configurations exist for one step, and how are candidates proposed? |
+| 9 | [Managed records](managed-records/) | How is a durable, revisioned note read and revised? |
 
 Self-improvement is a Practitioner workflow, not another component. Read
 [Self-improvement as a Practitioner task](self-improvement/) after the core
 component map.
+
+Every source directory that runs a registered operational boundary is mapped to
+the guide that owns it in
+[the component guide map](COMPONENT-GUIDE-MAP.yaml). The check in
+`tools/check_component_guides.py` refuses a registered boundary whose directory
+has no guide, and a guide that names a command, a record type, a refusal code or
+a class the source does not define. Run it after changing a guide:
+
+```bash
+PYTHONPATH=src python tools/check_component_guides.py
+```
+
+Add `--run-documented-checks` to also run every self-test command these guides
+tell a reader to run. That takes several minutes and needs the package
+installed, so it runs in continuous integration rather than by default. It is
+the only rule that catches a command naming a report field the source builds at
+run time, which is how the four configuration search commands were found to
+raise `KeyError` on September 21, 2026.
 
 The [Loop profile ontology](loop-object/LOOP-PROFILE-ONTOLOGY.md) classifies
 one Loop object as Practitioner, Intelligence, or Solution work. It does not
