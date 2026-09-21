@@ -11,10 +11,59 @@ Use shared, release-bound facts so public copy and engineering status agree.
 
 ## Current positioning and presentation
 
+The category line is "Harness and agent optimized operation". That is the
+owner's phrase, recorded in the September 20 direction. It appears as the
+first line of the homepage, above the headline, and in the page description.
+
 The homepage leads with "Turn complex problems into reusable solutions."
 Its subject is the result a person can keep, run again and adapt. Model
 selection, useful information, tool choice, code reuse and verification
 explain how the product is intended to produce that result.
+
+The homepage sections run in this order:
+
+```text
+Homepage
+├── Category line and headline
+│   ├── One primary action
+│   └── One secondary action to How it works
+├── Three step strip: connect, ask, keep
+├── The five customer problems
+├── One workflow for the decisions behind the work
+├── What an account gives you: search, selected downloads,
+│   connection settings and usage
+├── The four persistent intelligence layers
+├── A starting point for every step
+├── Pricing summary with a link to the pricing view
+└── Closing action and the limits note
+```
+
+The primary action has two states and the page never chooses between them by
+itself. It reads `website.registration_available` from `/api/v1/capabilities`.
+When the service reports registration, the action reads "Get started" and
+leads to `/signup`. Otherwise it reads "Request access" and leads to
+`/signup#request-access`, where the page explains that access is by
+invitation. Before the service answers, and if it never answers, the page
+keeps the careful state. The same rule drives the payment state on the
+pricing view, which reads `billing.checkout`, and the personal-key wording
+on the homepage and the pricing view, which reads
+`website.client_access_available`. While that field is false, both places say
+that creating and revoking a key for each device is being prepared and that
+the person who runs the service issues the key. The deployed release reports
+it as false, so the page may not state the control as working today.
+
+The page reads those three fields only from the record version it was written
+against, `service_capabilities/v1`. Any other record version keeps the careful
+state, because another version may rename a field or give it a different
+meaning. The careful wording is also the wording the server sends, so a
+visitor whose browser does not run the page script reads the honest statement
+instead of "Checking payment".
+
+`tools/check_service_workspace.mjs` holds every state as a named check. Each
+state is produced by a real service on its own loopback origin, not by a
+rewritten reply, and nine removed-guard controls prove that a page which
+ignores the reported state, or which ignores the record version, fails a
+named check.
 
 Do not position Baltor as a context-layer product. Context is one input to
 work whose execution can also use an existing function, a small decision
@@ -57,6 +106,24 @@ permitted reference. Native loading and successful use are later checks.
 Show the actual server origin, protocol and authentication mode. Do not ask
 for model keys to establish intelligence-service access.
 
+### Structure survey, September 21, 2026
+
+Four public pages for comparable developer products were read for structure
+only. Nothing was copied. Observed on September 21, 2026; these pages change.
+
+| Page | Structure worth reusing | Not reused |
+|---|---|---|
+| [SenseLab](https://www.sense-lab.ai/) | Category line above the headline, one primary action, a short strip explaining the idea, a named problems section, then pricing on the same page. Light surfaces and generous spacing. | Adoption counts, star ratings and customer logos. Baltor has no such evidence. |
+| [Stripe connection guide](https://docs.stripe.com/mcp) | One reviewed configuration for each named client, the secret shown as a reference, and a separate section on revoking access. | Install links and one-click buttons for paths Baltor has not tested. |
+| [Mem0](https://mem0.ai/) | A three step strip with plain verbs, and a short list of what the product gives you. | Developer counts, compliance badges and benchmark claims. |
+| [Tavily](https://www.tavily.com/) | A hero that names the job in one line, then a small number of wide feature bands, and a closing action that repeats the primary action. | A metrics strip of latency, uptime and request volume. Baltor has no measured figures to publish. |
+
+The shared pattern is: category line, one headline, one primary action, a
+three step explanation, the problems, what you get, pricing, closing action.
+The homepage now follows that order. The parts that every one of these pages
+carries and Baltor does not are adoption numbers, customer names and measured
+performance. Those stay off the page until there is saved evidence for them.
+
 Copyable examples must use the client's supported secret-reference mechanism.
 Do not publish an OAuth login button, install link or client support badge
 before its real path is tested. The current email-free service token is not
@@ -66,7 +133,7 @@ a Stripe credential and is not a Supabase customer access token.
 
 | Page | Suitable content | Hold back or qualify |
 |---|---|---|
-| Homepage | Reusable solutions, the five customer problems, intended efficiency benefits and a clear working pilot action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
+| Homepage | The category line, reusable solutions, one primary action, the three step strip, the five customer problems, what an account gives you, the four intelligence layers, the pricing summary and a closing action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
 | How it works | A concrete task becomes understandable steps: find useful information, choose an approach, reuse or build, and check the result. Explain what the service supplies and what the user's tools may send to a model. | No runtime taxonomy, Loop branding or unsupported end-to-end success claim. Technical definitions belong in documentation. |
 | Getting started | Exact released package and supported platform, installation, inspection, one bounded working example, expected output, errors and recovery. | Working-tree-only commands must not be advertised as available from the published package or GitHub main branch. |
 | Harness and context guide | The generated instruction and assignment files, reference-first context, permitted write locations, supported versioned native layouts, and observed loading status. | Empty folders and offered skill references are not installed or loaded material. Do not copy the entire repository into every instance. |
@@ -74,7 +141,56 @@ a Stripe credential and is not a Supabase customer access token.
 | Security and privacy | Actual permission and disclosure boundaries, credential handling, retention settings, local versus external data flows, and known limitations. | Do not promise that all data stays local when queries or model calls can leave the machine. Do not claim formal certification or instantaneous in-flight revocation without evidence. |
 | Examples | Small reproducible tasks with the exact configuration, observed result, evaluator and limitations. | Component fixtures are not full-system benchmarks or proof of general task-solving quality. |
 | Research and roadmap | Dated experiments, candidates such as AutoRAG, measured failures, and a concise public roadmap. | Internal owner decisions, investor or acquisition research, detailed security findings before disclosure review, and old comparison cells presented as current facts. |
-| Pricing and account pages | Owner-approved prices and entitlements after the actual checkout, portal, cancellation and revocation paths are qualified. | A local signed-event fixture or a checkout redirect is not proof of a live paid service. |
+| Pricing and account pages | The plan name, the price, what is free, the measured unit, the beta entitlement, and the payment state read from the service. | A local signed-event fixture or a checkout redirect is not proof of a live paid service. Do not show a purchase button while the service reports that checkout is unavailable. |
+
+## Pricing view
+
+The pricing view answers at `/pricing`. It states one plan and nothing else.
+
+| Fact | Published wording |
+|---|---|
+| Plan | Baltor Pro |
+| Price | 29 US dollars each month |
+| Free | Search is free |
+| Measured unit | One downloaded item |
+| Beta | Invited beta users are free |
+
+These figures come from the owner's September 20 direction, recorded in
+`CLAUDE.md`. Engineering may not change a figure on the page alone. Change the
+recorded decision first, then the page, then the checks that hold the page to
+it.
+
+The payment state is not written into the page. The view reads
+`billing.checkout` from `/api/v1/capabilities`. While that field is false the
+view says plainly that payment is not open yet and shows no purchase button.
+`tools/check_service_workspace.mjs` holds both states, and two removed-guard
+controls prove that a page which always claims one state fails a named check.
+The named check `pricing_view_offers_no_purchase_control_while_checkout_is_closed`
+owns the rule against a purchase control in the closed state. It reads every
+button, link, form and submit control inside the pricing view, and its
+known-wrong case plants a "Subscribe now" control and requires the check to
+report it.
+
+The address `/pricing` must be served by the server, not only handled by the
+page. While the serving route table did not list it, a direct visit, a shared
+link, a bookmark and a reload while the pricing view was open all returned
+HTTP 401 with the JSON body
+`{"record_type":"service_http_error/v1","error":{"code":"unauthorized"}}` and a
+`WWW-Authenticate: Bearer` header, because an unknown address falls past the
+served web assets into the authenticated dispatcher. A visitor read that raw
+text where the website should be. The entry
+`"/pricing": ("index.html", HTML_MEDIA_TYPE)` in `WEB_ASSETS` in
+`src/loop_engine/core/service_runtime/http.py` is now on the main branch, so
+the source serves the address. Four named checks hold it:
+`pricing_address_is_served_on_a_direct_visit`,
+`pricing_address_opens_the_pricing_view_after_a_reload`, and `/pricing` in the
+`responsive_<width>_<path>` and `enlarged_text_<width>_<path>` loops of
+`tools/check_service_workspace.mjs`. A release that drops the entry fails all
+four. The deployed pilot serves the address only from the release that
+carries this source.
+
+One thing is still missing on September 21, 2026. The account page holds the
+subscription controls, and those remain behind the payment state.
 
 The live public page describes a private pilot and the broader product direction.
 Keep the internal report available to the owner, and build the public content
@@ -95,6 +211,22 @@ does not remove its data from the downloaded file.
 6. Keep candidate, locally tested, native-client tested and live-provider
    qualified statuses distinct. Self-improvement remains an evaluated
    candidate workflow, not a promise of continuous gains.
+
+Two check tools read the public pages. `tools/check_service_workspace.mjs`
+reads a local service in a real browser. `tools/check_hosted_website.mjs`
+reads a deployed origin. They enforce the same rule about the words that may
+not appear on the homepage, How it works, the pricing view and the shared
+footer, so both carry the same line, and the named check
+`both_public_page_checks_use_one_plain_word_rule` compares the two. Change the
+rule in both files together, or that check fails.
+
+The text-size survey of September 21, 2026 recorded overflow that this work
+did not introduce and does not own. At 200 percent text the workspace view
+`/app` overflows by 74 pixels at 390 pixels wide, 104 pixels at 360 and 144
+pixels at 320, and the sign-in view `/login` overflows by 22 pixels at 320.
+The pages this guide covers, the homepage, How it works, the pricing view,
+Connect, Examples and Access and data, showed no overflow at any measured
+width or text size.
 
 ## Brand and existing domain
 
