@@ -58,7 +58,7 @@ Current state on 21 September 2026 at revision `381efec`:
 
 - The takeover checkpoint (`docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md`) records that the hosted service serves one diagnostic record. The author of this folder did not observe the live service. No item here is in a host manifest in this repository.
 - The items exist only in this folder. The staging tool accepts one bounded population of at most 50 rows, so the check stages this catalogue as 3 populations taken in file order, and every row is accepted as a candidate in an isolated database.
-- Every item declares a licence. 2 record `unknown` with the state `needs_review`, which a host's list of accepted licences is expected to refuse.
+- Every item declares a licence. 2 record `unknown` with the state `needs_review`. The host loader refuses such an item before it is registered, so only the 121 items with an accepted licence can be put in a host manifest at all.
 
 Planned steps, not done here and not authorized by this folder:
 
@@ -97,8 +97,9 @@ The existing host manifest reader accepts an approved item in this form: the
 `reference` object from `items.json`, the `body_path`, an `approval_ref` that
 names the approval decision, and the tenant grants. Do not copy the lifecycle
 tag without a decision. Every reference here carries the tag
-`lifecycle: candidate`. When all 123 references are loaded unchanged, a request
-that names `lifecycle: qualified` is offered 0 items and 123 are withheld. The
+`lifecycle: candidate`. When the 121 references the host accepts are loaded
+unchanged, a request that names `lifecycle: qualified` is offered 0 items and
+121 are withheld. The other 2 are refused before registration. The
 value of the tag after approval is an open decision for the later manifest
 change. The reader binds an item by its identity, digest, source layer and
 source reference, so the tag can change without a new digest. The

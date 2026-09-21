@@ -686,11 +686,19 @@ class StarterCatalogueChecks(unittest.TestCase):
         self.assertTrue(all(probe["found_in_first_three"] for probe in review["probes"]))
         self.assertEqual(sum(probe["physical_model_calls"] for probe in review["probes"]), 0)
 
-    def _manifest(self, directory: Path, artifact_root: Path) -> Path:
+    def _servable(self):
+        """The items a host could put in a manifest: the ones whose licence it accepts.
+
+        An item whose licence is unknown or waiting for review is refused before
+        registration by the host loader, so it never belongs in a manifest.
+        """
+        return [item for item in self.snapshot.items["items"] if item["license_state"] == "declared"]
+
+    def _manifest(self, directory: Path, artifact_root: Path, items=None) -> Path:
         manifest = {"record_type": MANIFEST_VERSION, "artifact_root": str(artifact_root), "items": [
             {"reference": item["reference"], "body_path": item["body_path"],
              "approval_ref": "test_only:not_an_owner_approval", "grants": []}
-            for item in self.snapshot.items["items"]]}
+            for item in (self._servable() if items is None else items)]}
         path = directory / "manifest.json"
         path.write_text(json.dumps(manifest), encoding="utf-8")
         return path
@@ -699,7 +707,8 @@ class StarterCatalogueChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory).resolve()
             catalogue, _resolver, read, grants = load_host_manifest(self._manifest(folder, CATALOGUE.resolve()))
-            self.assertEqual(list(catalogue.items), [row["id"] for row, _item in self.snapshot.rows()])
+            self.assertEqual(list(catalogue.items),
+                             [item["reference"]["identity"] for item in self._servable()])
             self.assertEqual(grants, {})
             first = next(iter(catalogue.items.values()))
             self.assertEqual(read(first).encode("utf-8"), self.snapshot.bodies[first.identity])
@@ -709,6 +718,19 @@ class StarterCatalogueChecks(unittest.TestCase):
             target.write_bytes(target.read_bytes().replace(b"a", b"b", 1))
             with self.assertRaises(ServiceRuntimeError):
                 load_host_manifest(self._manifest(folder, copied))
+
+    def test_an_item_waiting_for_a_licence_review_is_refused_before_registration(self):
+        """The known-wrong manifest: one item whose licence state is needs_review."""
+        waiting = [item for item in self.snapshot.items["items"] if item["license_state"] == "needs_review"]
+        self.assertTrue(waiting, "the catalogue no longer holds an item waiting for a licence review")
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory).resolve()
+            for item in waiting:
+                with self.subTest(identity=item["reference"]["identity"]):
+                    with self.assertRaises(ServiceRuntimeError) as refused:
+                        load_host_manifest(self._manifest(folder, CATALOGUE.resolve(),
+                                                          self._servable() + [item]))
+                    self.assertIn(item["reference"]["identity"], str(refused.exception))
 
     def test_the_refresh_tool_reports_and_repairs_a_stale_body(self):
         refresh = _refresh_module()
