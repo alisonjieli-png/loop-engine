@@ -492,7 +492,14 @@ KNOWN_WRONG = {
         ("a body names the temporary run store", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Steps\n", "\nKeep the value in Runtime Memory.\n\n## Steps\n"))),
         ("a body uses a longer family word", lambda s: _changed(
-            s, body=lambda text: text.replace("\n## Steps\n", "\nPass it to the grandchildren.\n\n## Steps\n")))),
+            s, body=lambda text: text.replace("\n## Steps\n", "\nPass it to the grandchildren.\n\n## Steps\n"))),
+        ("a body uses a minus sign as punctuation", lambda s: _changed(
+            s, body=lambda text: text + f"A pause {chr(0x2212)} then more.\n")),
+        ("a purpose names an intelligence layer", lambda s: _changed(
+            s, items=lambda items: _set(_first_reference(items), "purpose",
+                                        "Serve material from Context Intelligence to a step"))),
+        ("a body names a stored query", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Steps\n", "\nRun an Intelligence Query first.\n\n## Steps\n")))),
     "bodies_stay_in_the_word_range": (
         ("a body is one sentence long", lambda s: _changed(s, body=lambda text: "# Short\n\nOne sentence only.\n")),
         ("a body is an essay", lambda s: _changed(s, body=lambda text: text + "more words " * 400 + "\n"))),
