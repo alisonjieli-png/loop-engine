@@ -2268,7 +2268,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "review_authorisation_on_every_path",
         "kind": "skill",
-        "purpose": "Review who may reach data on every path, not only the main page: endpoints, exports, search, background jobs and console commands, each with a test that proves a refusal.",
+        "purpose": "Review who may reach data on every path, so one customer cannot read another customer's records through an export, a search, a background job or a console command. Each path gets a test that proves a refusal.",
         "digest": "1bb737990eb1b66cb633ffcd82bffb91e23dfa41fd3fff27aff4d14b79fe2d81",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/workspace_operations.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2420,7 +2420,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "record_the_licence_of_every_bundled_component",
         "kind": "skill",
-        "purpose": "Keep an accurate list of everything you ship and the licence of each part, produce the notice file the terms require, and block a release when a licence is unknown.",
+        "purpose": "List the licences of everything you ship: your own code, every dependency, fonts, images and data sets. Produce the notice file the terms require, and block a release when a licence is unknown.",
         "digest": "53505dcfd8ea5451a78951ac7cd10cb756e332948acdabdbbf4e2de623d6afad",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/harness_intelligence.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2459,7 +2459,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "pin_dependency_versions_and_verify_them",
         "kind": "skill",
-        "purpose": "Make every build install the same bytes: keep an exact committed version list with digests, pin the base image by digest, and update dependencies in their own change.",
+        "purpose": "Make builds reproducible: commit the lock file with an exact version and digest for every package, install only from it, pin the base image by digest, and update dependencies in their own change.",
         "digest": "0a520953088e066f582fce3d4d1b9bb030cde991886a4bf1b9b545f6ae922e29",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/skill_registry.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2803,7 +2803,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "return_errors_a_caller_can_act_on",
         "kind": "skill",
-        "purpose": "Design error responses a caller can branch on: a stable code, a message naming the field or limit, whether retrying may succeed, and no secrets or stack text.",
+        "purpose": "Decide what an API error response should contain: a stable code the caller can branch on, a message naming the field or limit, a remedy, whether retrying may succeed, and no secrets or stack text.",
         "digest": "194f91a7b923eb0e37d09fd79dacf78850c9e39191efc6e2f528ff6cf6136d15",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/model_token_preflight.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2877,7 +2877,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "classify_a_failure_before_deciding_to_retry",
         "kind": "skill",
-        "purpose": "Decide what kind of failure you have before retrying: a temporary outage, an exhausted allowance, wrong credentials, a bad request or a broken response each need a different answer.",
+        "purpose": "Decide whether a failure should be retried at all before choosing how: a temporary outage, an exhausted allowance, wrong credentials, a bad request and a broken response each need a different answer.",
         "digest": "3de8dcc131fb8878429384a14d1b2758a689f8d6cc0c1d608b66df97b2f47cf3",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/provider_failure_classes.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2914,7 +2914,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "retry_with_backoff_inside_a_declared_budget",
         "kind": "skill",
-        "purpose": "Retry a temporary failure without making an outage worse: set a total time budget first, grow the waits, add a random part, honour the wait time the other side sends, and back off a failing destination.",
+        "purpose": "Wait between attempts without making an outage worse: set a total time budget first, grow the waits, add a random part so callers do not return together, honour the wait time the other side sends, and back off a failing destination.",
         "digest": "ebc36178ca164d579a395a625e366edd196b16923a19d6efa2debc65d97dabbc",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/recovery.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2951,7 +2951,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "make_a_write_safe_to_repeat_with_an_idempotency_key",
         "kind": "skill",
-        "purpose": "Stop a repeated request creating a second charge or order: store the idempotency key with the result in the same transaction, refuse the same key with different content, and handle two copies arriving at once.",
+        "purpose": "Stop a repeated request charging the customer twice after a timeout: store the idempotency key with the result in the same transaction, refuse the same key with different content, and handle two copies arriving at once.",
         "digest": "67136a5002a30658c3d6c4e5be4c4cef98e921d816ac4449052d53aa92816e8e",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/catalog/protocol.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2989,7 +2989,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "set_timeouts_and_cancel_an_outbound_call",
         "kind": "skill",
-        "purpose": "Give every network call, query and subprocess a deadline chosen from a measurement, pass the remaining time down, cancel properly, and never turn a timeout into an empty result.",
+        "purpose": "Stop one slow service holding every request thread: give each network call, query and subprocess a deadline chosen from a measurement, pass the remaining time down, cancel properly, and never turn a timeout into an empty result.",
         "digest": "25398565e75978295ef3e69f95ff0e70eece36406c59e414d8dddf0c83c267a7",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/runtime_capacity.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3105,7 +3105,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "scope_a_credential_to_the_smallest_permission",
         "kind": "skill",
-        "purpose": "Give each caller its own key or database user limited to the actions and records it needs, with an expiry, a trace to its holder and a review that removes unused grants.",
+        "purpose": "Apply least privilege to a service account, API key or database user: one credential per caller, limited to the actions and records it needs, with an expiry, a trace to its holder and a review that removes unused grants.",
         "digest": "f61fb4dcdc482ebb42c5a705c2c1386037a263bf0e0513259a3f6ba7e84ca914",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/credential_leases.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3179,7 +3179,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "respond_to_a_leaked_credential",
         "kind": "skill",
-        "purpose": "Handle a key that appeared in a commit, a log or a chat message: withdraw it first, replace it, read the access records for the whole period, and separate what you can prove from what you cannot tell.",
+        "purpose": "Handle a password or key that was committed to the repository or appeared in a log or chat message: withdraw it first, replace it, read the access records for the whole period, and separate what you can prove from what you cannot tell.",
         "digest": "7b0dae15c0a60563578e8d978c4403db3c87641ea343ea941400cf845e1358e6",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/credential_leases.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3255,7 +3255,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "remove_personal_data_before_it_reaches_a_log",
         "kind": "skill",
-        "purpose": "Stop personal or secret values at the place they are written rather than cleaning storage afterwards: decide per field, apply it in one shared writer, and include the error reporting tool.",
+        "purpose": "Stop customer names and other personal or secret values appearing in logs and error reports: decide per field, apply the rule in one shared writer, and include the error reporting tool.",
         "digest": "712433d8478897c89a3c50ba5afd1e3f644217701a9800eea3f601ae3240582e",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/semantic_event_history.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3443,7 +3443,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "read_a_profile_and_find_the_dominant_cost",
         "kind": "skill",
-        "purpose": "Turn a profile into one sentence about where the time or memory goes: read both the total including calls and the time inside the function, check call counts, and separate waiting from computing.",
+        "purpose": "Read profiler output and turn it into one sentence about where the time or memory goes: read both the total including calls and the time inside the function, check call counts, and separate waiting from computing.",
         "digest": "badb8d5327358d77cd93c2455778619cd7bfae9313fc97849dabe168c65eac15",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/operation_cost_records.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3554,7 +3554,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "write_a_data_contract_for_a_table_or_feed",
         "kind": "skill",
-        "purpose": "Write down what a table, export or message stream promises its readers: field meanings and units, what a row represents, freshness, quality rules checked at production, and a version.",
+        "purpose": "Stop an upstream team changing a column and breaking your report: write down what a table, export or message stream promises, with field meanings and units, freshness, quality rules checked at production, and a version.",
         "digest": "9813ca59338be2208ae0b4ea70e8922fc78415dd02aac24a35b83534e3abee8d",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/observation_expectations.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3665,7 +3665,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "decide_what_to_leave_out_of_a_prompt",
         "kind": "skill",
-        "purpose": "Fit a step inside its token budget by removing the least useful material first: rank the parts, drop whole parts before shortening any, never shorten the instruction, and say plainly when the work does not fit.",
+        "purpose": "Decide what to drop when the prompt is too long for the context window: rank the parts, remove whole parts before shortening any, never shorten the instruction, and say plainly when the work does not fit.",
         "digest": "c2e3a93e6768799f15f59fa10412d7c97e73129316bb8ba9e57a7b779e54866c",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/context_budget.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3739,7 +3739,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "carry_earlier_decisions_forward_without_the_whole_transcript",
         "kind": "skill",
-        "purpose": "Replace a growing chat history with a short record of what was decided, on what evidence and what is still open, while the full text stays fetchable by reference.",
+        "purpose": "Stop a long running agent forgetting a decision made earlier: replace the growing chat history with a short record of what was decided, on what evidence and what is still open, while the full text stays fetchable by reference.",
         "digest": "8aefb84c7d55fb67f8ae5005ec1b1a784c0d33da01b8f791002f35908c57ea01",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/context_artifacts.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3813,7 +3813,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "compare_a_smaller_model_against_the_larger_one",
         "kind": "skill",
-        "purpose": "Run a model comparison that could change your mind: freeze cases drawn from real traffic before looking, fix the grader, count failures and unparseable answers, and report cost and time beside the score.",
+        "purpose": "Compare two models on your own task honestly: freeze cases drawn from real traffic before looking, fix the grader, count failures and unparseable answers, and report cost and time beside the score.",
         "digest": "a9ef6425d6ef3eabfa408f826d41f7cc410a32a726a532bcfea94986c8a68c5c",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/model_demand.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -3963,7 +3963,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "separate_required_from_optional_in_a_request",
         "kind": "skill",
-        "purpose": "Sort a request into hard conditions, preferences and unconfirmed assumptions, give each hard condition an observation, weight the preferences and write the tie rule before the work starts.",
+        "purpose": "Sort a request into must have, nice to have and unconfirmed assumptions, give each hard condition an observation, weight the preferences and write the tie rule before the work starts.",
         "digest": "1159fe1bed275c7453a8a468e5db60a6ee43dda56e5e8fa173af83d8701f65ff",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/parameter_resolution.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -4078,7 +4078,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "release_behind_a_switch_that_can_be_turned_off",
         "kind": "skill",
-        "purpose": "Separate deploying code from turning behaviour on: default the switch off, read it at use time, raise it in steps while watching, turn it off without a deployment, and remove it once the change is proved.",
+        "purpose": "Ship a change behind a feature flag: default the switch off, read it at use time, raise it in steps while watching, turn it off without a deployment, and remove the flag once the change is proved.",
         "digest": "cb5939dd6a08f9dc743cefbb56ded247040cd025b19b307102c81e36aaba54a2",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/guardrail_intelligence.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -4115,7 +4115,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "verify_a_release_after_it_is_live",
         "kind": "skill",
-        "purpose": "Prove the new version is doing the right thing for real users: confirm the running revision, do one real end to end action, compare the counts that should not have changed, and write the values you saw.",
+        "purpose": "Find out whether a deploy actually worked: confirm the running revision, do one real end to end action, compare the counts that should not have changed, and write the values you saw.",
         "digest": "ef2af20b14f619daeebe91a245ecd3f7e77cfa4a0c854f22caf1a82f7b176954",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/artifact_constraints.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -4154,7 +4154,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "run_an_incident_review_without_blame",
         "kind": "skill",
-        "purpose": "Review an outage so that something changes: build the timeline from evidence, judge each decision by what was known then, ask why the system allowed it, and write actions with owners and dates.",
+        "purpose": "Run a postmortem that changes something: build the timeline from evidence, judge each decision by what was known then, ask why the system allowed it, and write actions with owners and dates.",
         "digest": "f9bd163eaeed21c14046e75a1213c78188e2928e81d8dc7c8835fb58dc2f1ae5",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/core/independent_failure_review.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -4179,6 +4179,386 @@
         "body_included": false
       },
       "body_path": "bodies/run_an_incident_review_without_blame.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "build_an_incident_timeline_from_evidence",
+        "kind": "skill",
+        "purpose": "Put the events of an outage in order from quotable records with times, mark when the cause landed, when the effect began, when somebody noticed and when service returned, and show the gaps.",
+        "digest": "62ca7d0575d7c7078db1ff001f3d0cfc1d940773cde0c786454d623fb0d81997",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/code_nodes/run_playback.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2342,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/build_an_incident_timeline_from_evidence.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "turn_an_incident_into_a_check_that_would_have_caught_it",
+        "kind": "skill",
+        "purpose": "Convert a lesson from an outage into a check that runs by itself: write it so it fails on the exact recorded case, measure its cost and false alarm rate, and give it an owner.",
+        "digest": "8835edee011238f5d6183fed7e30449f4e0f0774a37ea97e42310a81846f8def",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/heuristic_adoption.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2417,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/turn_an_incident_into_a_check_that_would_have_caught_it.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "write_a_task_brief_for_an_agent",
+        "kind": "skill",
+        "purpose": "Write an assignment an automated agent or a new colleague can finish and you can check: the finished thing, the exact inputs, acceptance checks with commands, the limits, and what to do when blocked.",
+        "digest": "b56144b637c5c55bd27fb866e4467c15d2207e64cd73990bc0cef0f7632d4975",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/external_harness.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2486,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/write_a_task_brief_for_an_agent.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "state_the_permissions_and_limits_of_an_assignment",
+        "kind": "skill",
+        "purpose": "Declare what an agent or unattended job may write, run, reach and spend: one writable folder, a list of allowed commands, a network rule, credential scopes, numeric limits and an approval per outside effect.",
+        "digest": "87da70826d990f34c7b33424dcfd789e99bf91674f2ddc4bb4b2a0cf7b3df914",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/harness_confinement.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2487,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/state_the_permissions_and_limits_of_an_assignment.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "split_a_large_request_into_assignable_parts",
+        "kind": "skill",
+        "purpose": "Break a large request into pieces that can each be finished and checked alone: cut along outputs rather than activities, write the dependencies, and make the joining step its own piece.",
+        "digest": "28f7d88cb5b17a62a99a014f7097bac4a6f0977273075717463a0dc447ad74e6",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/code_nodes/solution_graph_validation.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2466,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/split_a_large_request_into_assignable_parts.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "supply_the_files_and_facts_an_assignment_needs",
+        "kind": "skill",
+        "purpose": "Give a worker the material rather than a description of where it might be: exact paths with a revision, the defining rules in full, a resolvable reference for large files, and one authoritative source.",
+        "digest": "3cbb7519dd19553bc5e5217a0ee5aafab8112e7f5df02afcb5c099c0fd394bb6",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/information_access.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2440,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/supply_the_files_and_facts_an_assignment_needs.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "verify_an_agent_result_without_trusting_its_summary",
+        "kind": "skill",
+        "purpose": "Check what an agent produced rather than what it says it did: run the acceptance checks yourself, compare changes with the permitted scope, and look for tests that were skipped, removed or weakened.",
+        "digest": "3aa0ee279f48f662bf54a547abfc2f23ae3be177570e1f41a2011336eec65f86",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/independent_evidence.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2447,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/verify_an_agent_result_without_trusting_its_summary.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "check_generated_code_against_the_request",
+        "kind": "skill",
+        "purpose": "Test code a model wrote with expectations the model did not write: take results from the request or a reference, compare two implementations, use relationships that must hold, and read for values copied from the example.",
+        "digest": "ffa4a0bbe9bda0d65f183e0eb8f231e899dced84aedf9a1b160fe414e2fa35dc",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/differential_verification.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2588,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/check_generated_code_against_the_request.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "reproduce_the_evidence_a_report_claims",
+        "kind": "skill",
+        "purpose": "Rebuild a benchmark or accuracy claim before relying on it: ask for the exact inputs, run them yourself, check the denominator and the exclusions, and confirm the measured thing is the claimed thing.",
+        "digest": "884538decca95afa07009a3a4cc2de7426956d5608880308d8f98ae7496eeee3",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/independent_verification.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2375,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/reproduce_the_evidence_a_report_claims.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "review_a_failed_check_before_repairing_the_work",
+        "kind": "skill",
+        "purpose": "A test is failing: decide whether the work, the test or the environment is wrong, quote the task and the output as evidence, and never lower a threshold or skip a case to make it pass.",
+        "digest": "9d82bd9f0db9b3fa7cbb08c2ca2de325a6074404cc6e87b43afc95738c7ecd17",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/strings/verification_prompts.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2575,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/review_a_failed_check_before_repairing_the_work.md",
       "lifecycle": "candidate",
       "license_state": "declared",
       "provenance": {

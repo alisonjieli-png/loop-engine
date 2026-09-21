@@ -37,14 +37,16 @@ from tools.stage_intelligence_candidates import (
 ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue"
 NAMESPACE = "starter.catalogue"
-MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 40, 150, 600, 8
+#: The 49 items of the first catalogue plus the 60 the expansion had to add. The bound keeps a
+#: later change from thinning the catalogue back out; adding items never needs it raised.
+MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 109, 150, 600, 8
 #: A required part that holds fewer words than this is a heading without content.
 MINIMUM_PART_WORDS = 8
 #: ``compile_candidates`` accepts one bounded population of at most this many rows, so a
 #: larger catalogue is staged as several populations taken in file order. The number is
 #: the bound the staging tool states; a population larger than it is refused there.
 STAGING_POPULATION = 50
-QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 26
+QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 100
 EXAMPLES_FILE, EXAMPLES_RECORD_TYPE = "executed-examples.json", "starter_catalogue_executed_examples/v1"
 #: How much of the catalogue the executed examples must cover. A body may quote a
 #: value only when a row here runs the cited code and observes it.
