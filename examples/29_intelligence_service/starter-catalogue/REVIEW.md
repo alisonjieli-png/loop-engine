@@ -1,8 +1,18 @@
 # Starter catalogue review sheet
 
-Kind: review sheet for the owner. Every item in this folder is a candidate.
-No item has been approved, published, granted to a tenant or added to a host
-manifest. The approval column below is empty on purpose.
+Kind: review sheet. It records what each item is and how to read it. The
+decisions themselves are in the machine-readable record
+[`reviews.json`](reviews.json), which is the approval evidence a host manifest
+points at. The approval column in the table below stays empty: a reader looks
+up a decision in one place, not two.
+
+On 21 September 2026 three independent reviewers judged all 49 items. None of
+them wrote an item it judged. Forty-three items were approved by all three.
+Six were rejected by at least one reviewer, with the reason written down, and
+stay candidates. `reviews.json` holds one row for each item, each reviewer's
+decision and reason, and the rule that decided the outcome: an item is
+approved only when every reviewer approves it, and one written objection
+withholds approval.
 
 ## What this folder holds
 
@@ -36,6 +46,8 @@ Starter catalogue candidates (123)
 | `search-queries.json` | The plain customer queries that the check runs against the purposes, each with the item it must find and who wrote it. |
 | `executed-examples.json` | 54 executed examples over 12 of the 21 Code Intelligence items. Each row names its item, the quote as the body writes it, the cited module and function, the arguments and the fields the body claims. The check runs each listed call against the cited module. It covers the rows in this file, not every value that a body quotes. |
 | `refresh.py` | Recomputes the derived fields after a body was edited, and with `--anchor` moves the catalogue to a new source revision after checking that every cited file at that revision equals the file in the tree. It approves nothing and publishes nothing. |
+| `reviews.json` | The independent review record, `starter_catalogue_independent_review/v2`. One row for each item of the catalogue, whether or not it has a verdict, with each reviewer's decision and reason, the rule that decided the outcome, and the approval reference a host manifest points at. A row whose approval was carried across an anchor move also holds the carry record. `tools/carry_catalogue_approvals.py` writes it. |
+| `host-release/` | The release content generated from `reviews.json` and the bodies: `manifest.json` plus the approved bodies and nothing else. It is copied into the service image. Do not edit it by hand. |
 | `REVIEW.md` | This sheet. |
 
 ## Two kinds of body, and how to tell them apart
@@ -45,8 +57,8 @@ The check refuses a body whose text disagrees with that declaration.
 
 | Grounding in `provenance` | Authoring in `provenance` | What it means | Closing sentence in the body |
 |---|---|---|---|
-| `restates_cited_source` | `assistant_authored_from_repository_sources` | The body says what the cited file says or does. Read the file to review it. | `Compiled from revision 0cf19eb.` |
-| `general_practice_beside_cited_source` | `assistant_authored_from_general_practice` | The body is ordinary engineering practice written here in its own words. The cited file is a related practice in this repository, not the source of the words. | `Written for this catalogue at revision 0cf19eb.` |
+| `restates_cited_source` | `assistant_authored_from_repository_sources` | The body says what the cited file says or does. Read the file to review it. | `Compiled from revision 7ed4e85.` |
+| `general_practice_beside_cited_source` | `assistant_authored_from_general_practice` | The body is ordinary engineering practice written here in its own words. The cited file is a related practice in this repository, not the source of the words. | `Written for this catalogue at revision 7ed4e85.` |
 
 Both values carry the licence `MIT` and the same licence sentence. They differ
 only in where the words come from, and the check refuses an item whose two
@@ -68,9 +80,80 @@ entry, cannot see which of the two kinds a body is. Go back to `items.json` or
 to the closing sentence of the body itself. Changing the staging tool is outside
 the change that wrote this folder.
 
+## The approved release content
+
+`tools/build_host_catalogue_manifest.py` writes `host-release/`. It reads the
+review record, refuses every item that any reviewer rejected, measures each
+body file for its digest and size, and checks the declared licence against the
+host licence policy the running host will apply. Run it without `--write` to
+check the folder already in the repository, which is what the checks do:
+
+```bash
+PYTHONPATH=src python tools/build_host_catalogue_manifest.py \
+  --catalogue examples/29_intelligence_service/starter-catalogue \
+  --output examples/29_intelligence_service/starter-catalogue/host-release \
+  --artifact-root /opt/baltor/catalogue \
+  --accept-license MIT --grant pilot-owner:bodies:required
+```
+
+The release image copies `host-release/` to `/opt/baltor/catalogue`, owned by
+the unprivileged service user and with no write bit. The host configuration on
+the volume points `manifest_path` at `/opt/baltor/catalogue/manifest.json`. The
+catalogue is release content, so it travels in the image; the volume holds
+state only.
+
+## What happens to an approval when the anchor moves
+
+Every body ends with one sentence that names the revision it was anchored to.
+When a cited file changes, the catalogue has to be anchored again, and the
+anchor tool rewrites that one sentence in every body. The bytes of the body
+change, so its digest changes, and an approval names the digest of the bytes
+its reviewers read.
+
+`tools/carry_catalogue_approvals.py` decides, one item at a time and with no
+judgement, whether an approval still covers the body:
+
+```text
+One approved item, when the catalogue is anchored again
+├── Read the bytes the approval names, from the revision the record names
+│   └── They must hash to the digest the approval names, or the approval does not carry
+├── Compare those bytes with the body in the catalogue today
+│   ├── The only difference is the trailing anchor line
+│   │   └── and that line differs only in the revision it names
+│   │       └── the approval is carried, and recorded as carried
+│   └── Any other difference, anywhere, on any line
+│       └── the item returns to candidate state with the reason written down
+└── A carried approval keeps its reviewers, their decisions and the digest they
+    judged, and gains the new digest, the new revision and the proof
+```
+
+A carried approval is not a fresh approval. The row records
+`approval_state: carried` and a `carry` record naming both digests, both
+revisions and the proof, so a reader can always tell a carried approval from a
+reviewed one. An item whose approval did not carry records the outcome
+`carry_refused` with its reason, is not written into any host manifest, and
+needs a new independent review before it can be served again.
+
+Run it without `--write` to check the record already in the repository, which is
+what the checks do:
+
+```bash
+PYTHONPATH=src python tools/carry_catalogue_approvals.py \
+  --catalogue examples/29_intelligence_service/starter-catalogue \
+  --carried-at 2026-09-21
+```
+
+The comparison is the whole safety property, so it has its own known-wrong
+cases in `tools/test_carry_catalogue_approvals.py`: a changed sentence beside a
+changed anchor line, a removed anchor line, a second anchor-looking line, a
+changed word inside the anchor line other than the revision, changed trailing
+whitespace, and a body whose recorded digest does not match it. Each one must
+refuse the carry, and a mutant control requires every one of them to fail when
+the comparison is replaced by one that always carries.
+
 ## Current state and planned steps
 
-Current state on 21 September 2026 at revision `0cf19eb`:
+Current state on 21 September 2026 at revision `7ed4e85`:
 
 - The takeover checkpoint (`docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md`) records that the hosted service serves one diagnostic record. The author of this folder did not observe the live service. None of these 123 items is in a host manifest in this repository.
 - The items exist only in this folder. The staging tool accepts one bounded population of at most 50 rows, so the catalogue is committed as 3 population files and the check hands each committed file to the tool as it stands. Every row is accepted as a candidate in an isolated database. A named check also runs the tool on all 123 rows in one population and requires the refusal `One bounded population of specifications is required`, so the bound is a measured fact here and not a number this sheet repeats.
@@ -78,17 +161,25 @@ Current state on 21 September 2026 at revision `0cf19eb`:
 - Two items cannot be served. `check_a_table_join_before_trusting_it` and `make_a_data_pipeline_safe_to_run_again` are compiled from model generated statements and record the licence `unknown`, so the reader refuses a manifest that carries either of them, with the code `item_license_unknown`. Approving the text of those two items would not make them servable. Their rights must be settled first: either the licence of the generated statements is established and written into the item, or the item is rewritten from material whose licence is known, or the item is dropped. No host may list `unknown` as an accepted licence; the engine refuses such a policy.
 - The other 121 items record the licence `MIT`, which the default host policy accepts. The check in `tools/test_starter_catalogue.py` builds its manifest from those 121, loads them through the real reader, and requires that each of the two refused items is refused by name.
 
-Planned steps, not done here and not authorized by this folder:
+What happened after that, on 21 September 2026:
 
-- The owner, or the independent review the owner delegated this to, approves or rejects each item in the table below.
-- The rights of the two items with the licence `unknown` are settled, or those two items are dropped.
-- A later change adds each approved item to the host manifest with the approval reference and the tenant grants.
-- A release from a committed revision serves them.
+- Three independent reviewers judged 49 of the 123 items. Their decisions and reasons are in `reviews.json`.
+- 43 items were approved by all three and are in `host-release/manifest.json` with their approval references and the tenant grants.
+- 6 items were rejected by at least one reviewer and stay candidates. They are not in the generated manifest and their bodies are not in the release image.
+- The two items with the licence `unknown` are among the six. Their rights are still unsettled, so nothing about the review changes what the loader does with them: it refuses them with `item_license_unknown` before registration.
+- The other 74 items of the 123 have no verdict in this repository. They stay candidates and nothing serves them. `reviews.json` holds a row for each of them with the outcome `not_reviewed`, so the record names every item of the catalogue and an item without a verdict is a written fact rather than an absence.
+- The reviewers read the bodies at anchor revision `381efec`. The catalogue was anchored again twice after that, which rewrote the trailing anchor line of every body. All 43 approvals were carried by `tools/carry_catalogue_approvals.py`, which proved for each one that the only difference between the bytes the reviewers read and the body today is that line and the revision it names. None of the 43 was refused. The bytes each approval covers stay readable in this repository's own history, at the commit and folder that `reviews.json` names under `reviewed_bodies_revision` and `reviewed_bodies_folder`.
+
+Remaining steps, not done here and not authorized by this folder:
+
+- The rights of the two items with the licence `unknown` are settled, or those two items are rewritten from material whose licence is known, or they are dropped.
+- The four other rejected items are repaired against their written reasons and resubmitted, which needs a new review.
+- The 74 items with no verdict are put to an independent review.
 
 ## How to review one item
 
 1. Open the body from the first column and read it as a customer would.
-2. Check the grounding in `items.json`. For a body that restates its source, open the cited file at revision `0cf19eb` and check that the body says what the source says or does. For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true.
+2. Check the grounding in `items.json`. For a body that restates its source, open the cited file at revision `7ed4e85` and check that the body says what the source says or does. For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true.
 3. Check the licence state and the declared effects in `items.json`.
 4. Write the decision in the approval column: approved with a name and a date, rejected with the reason, or the change that is needed.
 5. After any edit of a body, run the refresh tool and then the checks. Run these commands from the repository root. The first command only reports stale items. The second rewrites the derived fields.
@@ -152,7 +243,7 @@ PYTHONPATH=src python examples/29_intelligence_service/starter-catalogue/refresh
   --anchor FULL_REVISION --write
 ```
 
-- Authoring. An assistant (Claude Code) wrote every body. 49 of them restate the cited repository sources. They were written against revision `381efec`, and the catalogue was later anchored to revision `0cf19eb` so that the pinned bytes are the bytes now in the tree. 79 of the 80 cited files are byte for byte the same at both revisions, so those bodies were not read again against different code. The exception is `src/loop_engine/core/service_runtime/http_entrypoint.py`, which gained 127 lines between the two revisions. Three items cite it, all of them bodies of general practice, and the one sentence each of them writes about that file was read again against the file at the new revision and still holds. The self tests of the nine cited source modules pass at that revision (113 checks). An adversarial review then found one statement that the code does not have: the capitalisation body said that a mixed case value such as `iPhone` keeps its capitals, and the code rewrites it to `Iphone` at 0.95 and applies that. The body was corrected from the executed behaviour. The other 74 bodies are ordinary engineering practice written here in plain words; they quote no code and no other project, and each names one related file in this repository with one sentence about what that file does. Those 74 record the authoring `assistant_authored_from_general_practice`, so the record does not say that their words were read out of the cited file. The section above says where that distinction stops travelling. The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
+- Authoring. An assistant (Claude Code) wrote every body. 49 of them restate the cited repository sources. They were written against revision `381efec`, and the catalogue was later anchored to revision `0cf19eb` and then to revision `7ed4e85` so that the pinned bytes are the bytes now in the tree. 79 of the 80 cited files are byte for byte the same at all three revisions, so those bodies were not read again against different code. The exception is `src/loop_engine/core/service_runtime/http_entrypoint.py`, which gained 127 lines between the first two revisions and 58 more between the second and the third. Three items cite it, all of them bodies of general practice, and the one sentence each of them writes about that file was read again against the file at each new revision and still holds: the manifest reader still checks the size and the digest of every file it loads, the host settings and the manifest still each carry an exact record version that loading refuses when it is unsupported, and the secret resolver still accepts only an environment reference and never writes the value it reads. The self tests of the nine cited source modules pass at that revision (113 checks). An adversarial review then found one statement that the code does not have: the capitalisation body said that a mixed case value such as `iPhone` keeps its capitals, and the code rewrites it to `Iphone` at 0.95 and applies that. The body was corrected from the executed behaviour. The other 74 bodies are ordinary engineering practice written here in plain words; they quote no code and no other project, and each names one related file in this repository with one sentence about what that file does. Those 74 record the authoring `assistant_authored_from_general_practice`, so the record does not say that their words were read out of the cited file. The section above says where that distinction stops travelling. The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
 - Executed examples, and how far they reach. `executed-examples.json` holds 54 rows over 12 of the 21 Code Intelligence items. For each row the check proves four things: the quote stands in its own body word for word, the module the row runs is one of the sources that this item cites, the function is one of the symbols that this item names, and the call produces every field the row lists with the value the body gives. A row that expects no field, or that names a field the result does not have, is refused, so the file cannot be emptied while the check stays green. What the check does not prove: a value that a body quotes without a row here is not executed by anything. Nine Code Intelligence items have no row: `layer_exception_catalogs_with_precedence`, `escalate_uncertain_values_with_candidates`, `find_duplicate_records_with_blocking_keys`, `propose_a_dedupe_without_deleting_rows`, `copy_a_table_with_corrections_never_in_place`, `export_a_standalone_python_package`, `verify_an_export_in_an_isolated_interpreter`, `refuse_secrets_and_unsafe_paths_in_generated_files` and `write_a_pinned_container_and_batch_job`. A row runs one function with arguments written in JSON, and the examples of those nine need a typed object to be built first, such as a field specification, a conformance policy, an exception catalog layer, an export specification or a table location, or they need an effect on the machine, such as a database, files or a separate interpreter. Four of the nine quote concrete values in their text, so a reviewer must check those by hand against the cited source. The 102 Context Intelligence items have no rows either; they describe working methods, engineering practice and question sets, and this check runs nothing for them. A second check reads every body in the other direction. It collects each span in backticks that is not a cited path, not a symbol the item names and not part of the quote of an executed example, and requires the item to list exactly those spans. 38 of the 123 items carry at least one quotation that no executed example proves, 200 quotations in all, and `items.json` lists them one by one under `provenance.unexecuted_quotations`. The list is mechanical, so it also holds ordinary terms such as a file name or a setting name, not only values that the body claims the code returns. Its purpose is that a body cannot gain a quoted value without the record showing it.
 - Licence. 121 items are compiled from, or written beside, material authored in this repository, which its `LICENSE` file places under MIT. 2 items are compiled from statements that a language model generated during work in this repository. Their licence is recorded as `unknown` with the state `needs_review`, and their provenance names the generator and the digests of the eight source rows. The task for this catalogue allowed at most eight such rows, and eight are used. The hosted service refuses both of them by name, as the section above records, so they cannot be served until their rights are settled.
 - Declared effects. The rule: an item declares every effect that one of its steps tells the reader to perform on the reader's own machine, which means reading or listing files, writing files, starting a command or using the network. A method that only transforms values it was given declares nothing. A step that asks a question, or that names an analysis without telling the reader how to run it, declares nothing, and a harness that chooses to run such an analysis needs its own authority for it. An item without effects declares an empty list. 86 items declare effects under this rule, and `items.json` names them one by one. For example, the environment item declares `reads_fs`, `network` and `spawns_process`, because its steps list files, measure tool versions with commands and test network access; the pipeline item declares `reads_fs`, because its second step reads the statements of an existing pipeline. The effect names are the ones the engine defines: `pure`, `reads_fs`, `writes_fs`, `reads_secret`, `network` and `spawns_process`. A write to a database table has no name among them, so the pipeline item records that write in its steps and declares no effect for it. The service lists an item only when the request states every effect that the item declares, and the current web and protocol surfaces send no effects. Those 86 items would be withheld today. That needs a decision in the engine. The declared effects were not reduced to avoid it.
