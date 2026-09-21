@@ -41,6 +41,18 @@ def _web_checks(check, root):
                   and public.headers["referrer-policy"] == "no-referrer"
                   and "localStorage" not in script.text
                   and httpx.get(base + "/assets/../http_entrypoint.py", trust_env=False).status_code != 200)
+            # A page that links to an address the server does not serve sends
+            # the reader to a refusal. Every internal link in the page must
+            # resolve to a served address or to an interface path.
+            from importlib.resources import files
+            import re as _re
+            page = files("loop_engine").joinpath("core", "service_runtime", "web_assets", "index.html").read_text("utf-8")
+            from .http import WEB_ASSETS
+            linked = {value for value in _re.findall(r'href="(/[^"#?]*)"', page)}
+            unserved = sorted(value for value in linked
+                              if value not in WEB_ASSETS and not value.startswith("/api/")
+                              and not value.startswith("/.well-known/") and value != "/mcp")
+            check("every_internal_link_on_the_page_has_a_served_address", not unserved)
             notices = httpx.get(base + "/assets/third-party-notices.txt", trust_env=False)
             check("packaged_browser_library_is_served_with_its_licence_terms",
                   notices.status_code == 200 and "MIT License" in notices.text and "Supabase" in notices.text
@@ -297,6 +309,57 @@ def _identity_checks(check, root):
                       session(token(third_key, "second")).status_code == 401)
 
 
+def _request_limit_checks(check, root):
+    """The failed-attempt limit over real sockets, where the peer is always the loopback address."""
+    import httpx
+    from .request_limits import LIMIT_REACHED_CODE, ServiceRequestLimits
+    wrong = {"Authorization": "Bearer WRONG_FIXTURE_TOKEN"}
+    (root / "peer").mkdir()
+    fixture = HttpDomainFixture(root / "peer")
+    limits = ServiceRequestLimits(client_address_source="socket_peer", failures_allowed=3)
+    with running_http(fixture, request_limits=limits) as (base, service):
+        reached, authenticate = [], service._authenticate_request
+        service._authenticate_request = lambda request: (reached.append(request.url.path), authenticate(request))[1]
+        with httpx.Client(base_url=base, trust_env=False, timeout=3) as client:
+            # The host configured no address header, so rotating forged ones changes nothing.
+            forged = [client.get("/api/v1/session", headers={**wrong, "Fly-Client-IP": "203.0.113." + str(index),
+                                                             "X-Forwarded-For": "203.0.113." + str(index)})
+                      for index in range(1, 5)]
+            over, wait = forged[-1], forged[-1].headers.get("retry-after", "")
+            check("real_HTTP_attempt_over_the_failure_limit_gets_429_and_Retry_After_before_authentication",
+                  [row.status_code for row in forged] == [401, 401, 401, 429] and len(reached) == 3
+                  and over.json()["error"]["code"] == LIMIT_REACHED_CODE
+                  and wait.isdigit() and 1 <= int(wait) <= 60
+                  and over.json()["error"].get("details", {}).get("retry_after_seconds") == int(wait)
+                  and over.headers["cache-control"] == "no-store" and "WRONG_FIXTURE_TOKEN" not in over.text)
+            protocol = client.post("/mcp", headers={**fixture.headers(), "Accept": "application/json, text/event-stream"},
+                json={"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-11-25",
+                      "capabilities": {}, "clientInfo": {"name": "limited", "version": "1"}}})
+            check("real_protocol_route_shares_the_failed_attempt_limit_and_public_routes_stay_open",
+                  protocol.status_code == 429 and "retry-after" in protocol.headers
+                  and client.get("/api/v1/session", headers=fixture.headers()).status_code == 429
+                  and client.get("/api/v1/health").status_code == 200 and len(reached) == 3)
+            started = service.request_limiter.clock
+            service.request_limiter.clock = lambda: started() + 61
+            check("real_HTTP_limit_ends_when_the_window_has_passed",
+                  client.get("/api/v1/session", headers=fixture.headers()).status_code == 200)
+    (root / "proxy").mkdir()
+    fixture = HttpDomainFixture(root / "proxy")
+    limits = ServiceRequestLimits(client_address_source="header", client_address_header="Fly-Client-IP",
+                                  failures_allowed=2)
+    with running_http(fixture, request_limits=limits) as (base, service):
+        with httpx.Client(base_url=base, trust_env=False, timeout=3) as client:
+            def through_proxy(address, credential, *more):
+                return client.get("/api/v1/session", headers=[*credential.items(), ("Fly-Client-IP", address),
+                                                              *(("Fly-Client-IP", value) for value in more)]).status_code
+            first = [through_proxy("198.51.100.10", wrong) for _attempt in range(3)]
+            repeated = [through_proxy("203.0.113.9", wrong, "203.0.113." + str(index)) for index in range(20, 23)]
+            check("real_HTTP_configured_proxy_header_separates_clients_and_a_repeated_header_names_nobody",
+                  first == [401, 401, 429] and through_proxy("198.51.100.20", fixture.headers()) == 200
+                  and repeated == [401, 401, 429] and through_proxy("203.0.113.9", fixture.headers()) == 200
+                  and sorted(service.request_limiter._failures) == ["127.0.0.1", "198.51.100.10"])
+
+
 async def _cancellation_checks(check, root):
     from mcp import ClientSession
     from mcp.client.streamable_http import streamablehttp_client
@@ -349,7 +412,8 @@ def self_test():
     def check(name, passed):
         tests.append({"test": name, "passed": bool(passed), "detail": "real loopback transport; no external provider"})
     for name, function in (("web", _web_checks), ("identity", _identity_checks),
-                           ("retrieval_snapshot", _retrieval_snapshot_checks)):
+                           ("retrieval_snapshot", _retrieval_snapshot_checks),
+                           ("request_limits", _request_limit_checks)):
         with tempfile.TemporaryDirectory(prefix="service-http-" + name + "-") as directory:
             function(check, Path(directory))
     for name, function in (("protocol", _protocol_checks), ("cancellation", _cancellation_checks)):
@@ -358,6 +422,12 @@ def self_test():
     from .http_boundary_checks import run_checks
     with tempfile.TemporaryDirectory(prefix="service-http-boundaries-") as directory:
         run_checks(check, Path(directory))
+    from .request_limit_checks import run_checks as request_limit_checks
+    def limit_check(name, passed):
+        tests.append({"test": name, "passed": bool(passed),
+                      "detail": "injected clock and the real application through ASGI; no socket, no external provider"})
+    with tempfile.TemporaryDirectory(prefix="service-request-limits-") as directory:
+        request_limit_checks(limit_check, Path(directory))
     from .access_checks import run_all_checks
     for row in run_all_checks()["tests"]:
         check(row["test"], row["passed"])

@@ -3,11 +3,13 @@
 Configuration names a durable store and exact host-reviewed artifact manifest.
 Serving does not create tenants or restore revoked grants. Host setup and key
 issuance are separate explicit commands; no cloud account is created here.
+An item is registered only when the host licence policy accepts the exact
+licence identifier that the item declares.
 """
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict
+from dataclasses import asdict, dataclass, fields as dataclass_fields
 import hashlib
 import json
 import os
@@ -30,6 +32,105 @@ from .runtime import ServiceRuntime
 HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
+LICENSE_POLICY_VERSION = "service_host_license_policy/v1"
+LICENSE_POLICY_KEY = "license_policy"
+#: The conservative default accepts only the licence of this repository's own
+#: material. A host that serves anything else lists that exact identifier.
+DEFAULT_ACCEPTED_LICENSES = ("MIT",)
+#: Values that a producer writes when no licence is known, or when a licence
+#: still waits for review. They name a state, not a licence, so an item that
+#: carries one is refused and no host list can accept one.
+UNKNOWN_LICENSE_MARKERS = ("unknown", "noassertion", "none")
+REVIEW_LICENSE_MARKERS = ("pending_review", "needs_review")
+LICENSE_MISSING = "item_license_missing"
+LICENSE_UNKNOWN = "item_license_unknown"
+LICENSE_NEEDS_REVIEW = "item_license_needs_review"
+LICENSE_NOT_ACCEPTED = "item_license_not_accepted"
+#: An operator message shows at most this many characters of one manifest or
+#: host value, so a large manifest or a long host list cannot make it large.
+#: An item identity gets more room, so that the operator can look the refused
+#: item up. The identity rule of this service, records.identifier, allows 128
+#: characters, and an identity of that length is shown in full between its two
+#: quotation marks. A manifest may carry a longer item identity, because an
+#: item identity is only required to be nonempty; such an identity is shown
+#: from its start.
+PREVIEW_CHARACTERS = 80
+IDENTITY_PREVIEW_CHARACTERS = 130
+
+
+def _license_state(license_name):
+    """Name the refusal state of a value that is not a licence name, or return empty text.
+
+    A state is recognised in any letter case, with spaces around it, and with a
+    hyphen or a space in place of the underscore, because recognising more
+    states can only refuse more. It never makes a name acceptable.
+    """
+    if not isinstance(license_name, str) or not license_name.strip():
+        return LICENSE_MISSING
+    marker = license_name.strip().casefold().replace("-", "_").replace(" ", "_")
+    if marker in UNKNOWN_LICENSE_MARKERS:
+        return LICENSE_UNKNOWN
+    return LICENSE_NEEDS_REVIEW if marker in REVIEW_LICENSE_MARKERS else ""
+
+
+def _preview(value, limit=PREVIEW_CHARACTERS):
+    """Return a short form of a manifest or host value for an operator message.
+
+    Every character outside printable ASCII is shown as an escape sequence, so
+    a hidden character or a letter of another script cannot pass for a name
+    that it only looks like.
+    """
+    shown = ascii(value)
+    return shown if len(shown) <= limit else shown[:limit - 3] + "..."
+
+
+@dataclass(frozen=True)
+class HostLicensePolicy:
+    """The exact licence identifiers that one host accepts for the items it serves.
+
+    Acceptance is host policy. An identifier is compared as written, so a name
+    in another letter case or with added spaces is a different, unlisted name.
+    A supplied list replaces the default list; it does not extend it. Every
+    listed identifier is written in printable ASCII characters, so the person
+    who reviews the host file sees each character of each name that the host
+    accepts. A control or zero width character, a direction override and a
+    letter of another script are refused. An item may still declare such a
+    name; no host list can hold it, so that item is never accepted.
+    """
+
+    accepted_licenses: tuple[str, ...] = DEFAULT_ACCEPTED_LICENSES
+    record_type: str = LICENSE_POLICY_VERSION
+
+    def __post_init__(self):
+        if self.record_type != LICENSE_POLICY_VERSION:
+            raise ServiceRuntimeError("unsupported_license_policy",
+                f"this release reads the host licence policy record {LICENSE_POLICY_VERSION} only")
+        names = self.accepted_licenses
+        if (type(names) not in (tuple, list) or any(
+                not isinstance(name, str) or name != name.strip() or not (name.isascii() and name.isprintable())
+                or _license_state(name) for name in names) or len(set(names)) != len(names)):
+            raise ServiceRuntimeError("invalid_license_policy",
+                "accepted licences are exact, distinct identifiers written in printable ASCII characters; "
+                "a missing, unknown or review state is not a licence")
+        object.__setattr__(self, "accepted_licenses", tuple(names))
+
+    def refusal(self, license_name):
+        """Return the stable refusal code for one item's licence, or empty text when this host accepts it."""
+        return _license_state(license_name) or ("" if license_name in self.accepted_licenses else LICENSE_NOT_ACCEPTED)
+
+
+DEFAULT_LICENSE_POLICY = HostLicensePolicy()
+
+
+def host_license_policy(configuration):
+    """Return the licence policy that a host configuration declares, or the conservative default."""
+    if LICENSE_POLICY_KEY not in configuration:
+        return DEFAULT_LICENSE_POLICY
+    settings = configuration[LICENSE_POLICY_KEY]
+    if not isinstance(settings, dict) or set(settings) != {field.name for field in dataclass_fields(HostLicensePolicy)}:
+        raise ServiceRuntimeError("unsupported_license_policy",
+            "a host licence policy names its record version and its accepted licences, and nothing else")
+    return HostLicensePolicy(**settings)
 
 
 def _host_json(path, *, maximum_bytes=2_000_000):
@@ -41,8 +142,15 @@ def _host_json(path, *, maximum_bytes=2_000_000):
     return _parse_json(selected.read_bytes())
 
 
-def load_host_manifest(path):
-    """Load exact host attestations; catalogue tags cannot approve a source."""
+def load_host_manifest(path, *, license_policy=DEFAULT_LICENSE_POLICY):
+    """Load exact host attestations; catalogue tags cannot approve a source.
+
+    An item is registered only when the host licence policy accepts the exact
+    licence identifier that the item declares. The conservative default policy
+    applies when the caller supplies none.
+    """
+    if not isinstance(license_policy, HostLicensePolicy):
+        raise ServiceRuntimeError("invalid_license_policy", "a typed host licence policy is required")
     manifest = _host_json(path)
     if set(manifest) != {"record_type", "artifact_root", "items"} or manifest["record_type"] != MANIFEST_VERSION:
         raise ServiceRuntimeError("unsupported_manifest")
@@ -56,6 +164,16 @@ def load_host_manifest(path):
         if not isinstance(row, dict) or set(row) != {"reference", "body_path", "approval_ref", "grants"}:
             raise ServiceRuntimeError("invalid_manifest_item")
         item = _item(row["reference"])
+        # Licence acceptance is decided first and for every row, with or without
+        # grants, so the body of a refused item is never opened and the item is
+        # never registered, granted or offered as starter material. The message
+        # is built from short previews only, so its length has a fixed limit.
+        refused = license_policy.refusal(item.license_name)
+        if refused:
+            accepted = license_policy.accepted_licenses
+            raise ServiceRuntimeError(refused, f"{refused}: item {_preview(item.identity, IDENTITY_PREVIEW_CHARACTERS)} "
+                f"is refused before registration; it declares the licence {_preview(item.license_name)} "
+                f"and this host accepts {_preview(list(accepted))} (listed identifiers: {len(accepted)})")
         if item.identity in paths:
             raise ServiceRuntimeError("duplicate_item_identity")
         relative = Path(row["body_path"])
@@ -110,12 +228,14 @@ def environment_secret(reference):
 
 def load_host_application(path):
     configuration = _host_json(path)
-    allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration", "browser_identity", "client_access"}
+    allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
+               "browser_identity", "client_access", LICENSE_POLICY_KEY}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
+    license_policy = host_license_policy(configuration)
     runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
-    catalogue, resolver, body_reader, _grants = load_host_manifest(configuration["manifest_path"])
+    catalogue, resolver, body_reader, _grants = load_host_manifest(configuration["manifest_path"], license_policy=license_policy)
     binding = DurableProvisioningBinding(runtime, catalogue, resolver, body_reader)
     browser_identity = None
     if configuration.get("browser_identity"):
@@ -177,7 +297,8 @@ def configure_host(path):
             application.runtime.set_operator_entitlement(row["tenant_id"], **row["operator_entitlement"])
         if row.get("billing_customer"):
             application.runtime.bind_billing_customer(BillingCustomerBindingRequest(row["tenant_id"], **row["billing_customer"]))
-    _catalogue, _resolver, _reader, grants = load_host_manifest(configuration["manifest_path"])
+    _catalogue, _resolver, _reader, grants = load_host_manifest(
+        configuration["manifest_path"], license_policy=host_license_policy(configuration))
     for tenant, selected in grants.items():
         application.runtime.set_grants(tenant, tuple(selected))
     if configuration.get("billing"):

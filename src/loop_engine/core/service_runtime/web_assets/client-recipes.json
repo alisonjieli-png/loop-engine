@@ -1,13 +1,15 @@
 {
-  "record_type": "website_client_recipes/v1",
+  "record_type": "website_client_recipes/v2",
   "reviewed_at": "2026-09-20",
   "credential_variable": "BALTOR_SERVICE_TOKEN",
+  "revocation_note": "If you created this token on your Account page, open Account, find it under Your client tokens and select Revoke. If your operator gave you the token, ask your operator to revoke it. The service refuses a revoked token on its next request. Revoking a token does not recall files that were already downloaded.",
   "recipes": [
     {
       "id": "codex",
       "name": "Codex",
       "format": "toml",
       "configuration_location": "Your existing Codex config.toml",
+      "configuration_note": "Merge this table into your existing config.toml. Do not replace your other settings.",
       "configuration": {
         "mcp_servers": {
           "baltor": {
@@ -21,6 +23,7 @@
       "verification_command": "codex mcp list",
       "verification_note": "This command shows configuration, not a completed handshake. In a Codex session, inspect /mcp and confirm that Baltor's tools are available before asking it to search.",
       "version_note": "Documented configuration; native end-to-end qualification is pending. Check your installed version with codex --version.",
+      "removal_note": "After the token is revoked, delete the mcp_servers.baltor table from config.toml and clear BALTOR_SERVICE_TOKEN from your environment.",
       "source_url": "https://learn.chatgpt.com/docs/extend/mcp?surface=cli"
     },
     {
@@ -28,6 +31,7 @@
       "name": "OpenCode 1.x",
       "format": "json",
       "configuration_location": "Your existing opencode.json",
+      "configuration_note": "Merge the baltor entry into the mcp section of your existing opencode.json. Do not replace your other settings.",
       "configuration": {
         "$schema": "https://opencode.ai/config.json",
         "mcp": {
@@ -43,7 +47,29 @@
       "verification_command": "opencode mcp list",
       "verification_note": "Confirm that Baltor connects and exposes its tools. This service uses a supplied token; do not start an OAuth login for it. OpenCode 2.x uses a different configuration layout.",
       "version_note": "Documented 1.x configuration; native end-to-end qualification is pending. Check your installed version with opencode --version.",
+      "removal_note": "After the token is revoked, delete the baltor entry from opencode.json and clear BALTOR_SERVICE_TOKEN from your environment.",
       "source_url": "https://opencode.ai/docs/mcp-servers/"
+    },
+    {
+      "id": "claude-code",
+      "name": "Claude Code",
+      "format": "json",
+      "configuration_location": "A .mcp.json file in your project folder",
+      "configuration_note": "Create this file, or merge the baltor entry into the mcpServers section of an existing one. Do not replace your other settings. The file holds the name of the variable, never the token, so it is safe to keep in version control.",
+      "configuration": {
+        "mcpServers": {
+          "baltor": {
+            "type": "http",
+            "url": "{{ENDPOINT}}",
+            "headers": {"Authorization": "Bearer ${BALTOR_SERVICE_TOKEN}"}
+          }
+        }
+      },
+      "verification_command": "claude mcp list",
+      "verification_note": "Run this command in your project folder, in the terminal where BALTOR_SERVICE_TOKEN is set. The list shows a status next to baltor. If the status is Pending approval, start claude in this folder once and approve the server. If the list warns about a missing environment variable, set the token before you start Claude Code. In a session, enter /mcp and confirm that Baltor's tools are listed.",
+      "version_note": "Documented project configuration with environment variable expansion; native end-to-end qualification is pending. Check your installed version with claude --version.",
+      "removal_note": "After the token is revoked, delete the baltor entry from .mcp.json and clear BALTOR_SERVICE_TOKEN from your environment.",
+      "source_url": "https://code.claude.com/docs/en/mcp"
     }
   ]
 }

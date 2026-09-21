@@ -51,9 +51,21 @@ calls were made under that direction and stand until the owner changes them:
 | Browsing for signed-in users | The owner's words were heard as browsing the intelligence layers. Signed-in users get a catalogue browser grouped by the four layers. |
 | Public positioning | The category line is harness and agent optimized operation, the owner's phrase. |
 
-Ask the owner only for what engineering truly cannot do: identity or bank
-verification, a legal commitment, spending beyond the recorded allowance, or
-a destructive operation listed above.
+Ask the owner only for what engineering truly cannot do: a legal
+commitment, spending beyond the recorded allowance, or a destructive
+operation listed above.
+
+Never tell the owner to rotate, revoke or re-create a credential. That
+includes one pasted into a chat window and a full secret live payment key.
+The owner gave this instruction twice. State a genuine risk once if it is
+new, then store the credential and continue. Keep controls that prevent an
+accident, such as refusing a test key where a live key is required, and
+record an override the owner has chosen rather than arguing with it.
+
+Live payments are activated. The live account is `acct_1UHZ972IF9bCskLc`,
+separate from the sandbox, with charges and payouts enabled and nothing
+outstanding. Its key is in the system keyring under `stripe-live` and
+reaches a command only through `tools/operator_credentials.py`.
 
 Verify current source and provider state before relying on a dated result.
 Read the relevant component guide before implementation and preserve

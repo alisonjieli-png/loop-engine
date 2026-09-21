@@ -20,7 +20,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import operator_credentials  # noqa: E402
 
-RUNTIME_PURPOSES = ("publishable-api", "secret-api", "transactional-email", "runtime-test-api", "webhook-signing")
+RUNTIME_PURPOSES = ("publishable-api", "secret-api", "transactional-email",
+                    "runtime-test-api", "runtime-live-api", "webhook-signing")
 APPLICATION = re.compile(r"[a-z0-9][a-z0-9-]{0,62}")
 
 
