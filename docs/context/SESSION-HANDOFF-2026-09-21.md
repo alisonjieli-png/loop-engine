@@ -27,7 +27,7 @@ region, one machine, one encrypted volume of 1 GB at `/data`.
 | Fact | Value |
 |---|---|
 | Hostnames answering | `app.baltor.ai`, `baltor.ai`, `www.baltor.ai`, `baltor-pilot.fly.dev` |
-| Subdomains added today, certificates issuing | `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai` |
+| Subdomains added today, all answering 200 | `demo.baltor.ai`, `examples.baltor.ai`, `docs.baltor.ai`, `status.baltor.ai` |
 | Items served | 34 with no declared effect authority, 43 when the caller declares `reads_fs`, `writes_fs`, `network` and `spawns_process` |
 | Account creation | Closed. The capabilities record reports `registration_available` false |
 | Payments | Live account `acct_1UHZ972IF9bCskLc`, checkout and portal proven, nobody charged |
@@ -44,6 +44,28 @@ Observed evidence, each with its own dated record under `docs/evidence/`:
   `claude mcp list` reporting the server and the one remaining step.
 - [One real local model call](../evidence/local-model-call-2026-09-21.md):
   `qwen2.5-coder:7b` over a real socket, 87.28 seconds cold and 0.71 warm.
+
+### Adding a hostname takes three steps, not one
+
+A new hostname needs all three or it answers 421 Misdirected Request:
+
+1. A certificate on the Fly application, which asks for the canonical name,
+   the challenge name and the ownership record.
+2. Those three records in the Cloudflare zone `baltor.ai`.
+3. **The hostname added to `allowed_hosts` and `allowed_origins` in the host
+   configuration at `/data/host.json` on the volume, then a machine
+   restart.** This is the step that is easy to miss. The service keeps an
+   explicit list and refuses any hostname not on it, which is deliberate and
+   must not be loosened into a wildcard.
+
+Done for the four added today. The file was backed up first, to
+`/data/host.json.before-subdomains-20260921T163012`, and the replacement was
+parsed before it replaced the original. All eight hostnames answer 200.
+
+Routing each new hostname to its own surface, rather than to the main site,
+is being built on `wave9/subdomain-surfaces` as a typed host rule the host
+configuration supplies, so a self-hosted installation without these names
+behaves correctly and a new name needs no code change.
 
 ## The catalogue, and the one number that matters
 
