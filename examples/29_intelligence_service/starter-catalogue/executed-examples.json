@@ -1,6 +1,6 @@
 {
   "record_type": "starter_catalogue_executed_examples/v1",
-  "note": "Every example that a Code Intelligence body quotes, with the call that produces it. The check runs each call against the cited module and compares the named fields, so a body cannot claim a value that the code does not produce. The quote must appear in the body word for word. The token <packaged-catalogs> is the merged packaged catalogs.",
+  "note": "53 executed examples over 12 of the 21 Code Intelligence items. For each row below the check proves that the quote stands in its own body word for word, that the module the row runs is one of the sources this item cites, that the function is one of the symbols this item names, and that the call produces every listed field with the listed value. A row that expects no field, or that names a field the result does not have, is refused. The check does not prove anything about a value that a body quotes without a row here; nine Code Intelligence items have no row, because their examples need a typed object to be built first or an effect on the machine, and a row runs one function with arguments written in JSON. REVIEW.md names those nine items. The token <packaged-catalogs> is the merged packaged catalogs.",
   "modules": {
     "operations": "loop_engine.code_nodes.text_conformance_operations",
     "conformance": "loop_engine.code_nodes.text_conformance",
