@@ -8,8 +8,11 @@ undated (`kebab-case.md`) and kept current; superseded guidance is
 rewritten in place, not preserved under a date.
 
 What does not belong here: design decisions (see `../architecture/`),
-point-in-time check results (see `../verification/`), and research (see
-`../research/`).
+point-in-time check results (see `../verification/`), research (see
+`../research/`), and the working rules for changing the code (see the
+[engineering standards](../standards/README.md), which cover names, records
+and versions, checks and evidence, service interface conventions, and the
+language each component uses).
 
 Start with [getting started](../getting-started.md) and the
 [documentation index](../README.md).

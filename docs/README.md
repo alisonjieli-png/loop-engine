@@ -37,6 +37,7 @@ says where each name may appear.
 | [Solution Canvas](components/solution-canvas/README.md) | Reusable Solution definitions and execution. |
 | [Core Architecture](components/core-architecture/README.md) | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
 | [Intelligence layers](components/intelligence-layers/README.md) | The four persistent layers, references, qualification, and separate Runtime Memory. |
+| [Engineering standards](standards/README.md) | The working rules for changing the code: names, records and versions, checks and evidence, service interface conventions, and the language each component uses. |
 
 The [generated architecture diagrams](ARCHITECTURE-DIAGRAMS.md) and
 [source audit](../artifacts/architecture-audit-2026-09-19/README.md) help locate
@@ -95,7 +96,8 @@ was rewritten during the context-route cleanup.
 ## Coding-agent prompts
 
 Read [AGENTS.md](../AGENTS.md), then the
-[coding-agent route](context/CODEX-START-HERE.md).
+[coding-agent route](context/CODEX-START-HERE.md) and the
+[engineering standards](standards/README.md).
 The [prompt index](prompts/README.md) distinguishes the one broad continuation
 brief, focused workflows, and design history. Select guidance for the current
 task; do not treat old mandates as permission to launch work.
