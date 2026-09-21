@@ -285,19 +285,96 @@
   $("copy-endpoint").addEventListener("click", async () => { try { await navigator.clipboard.writeText($("protocol-url").value); $("copy-endpoint").textContent = "Endpoint copied"; } catch (_) { $("protocol-url").select(); $("copy-endpoint").textContent = "Select and copy the endpoint"; } });
   $("protocol-url").value = location.origin + "/mcp";
   $("setup-endpoint").textContent = location.origin + "/mcp";
+  // A connection recipe is reviewed data that a person copies into a client. It may name the environment
+  // variable that holds the service token. It may never carry a token, and the only address it may use is
+  // the origin that served this page. A record that breaks a rule is refused as a whole and nothing from it is shown.
+  // The rules list the few forms that a configuration text may take and refuse every other text. A new way to
+  // write a key or an address is therefore refused without a rule of its own.
+  // The limit of these rules is one plain word under an ordinary name. The page cannot tell a setting word from a short
+  // secret, from a host name without dots or from the name of a program. The review of the record decides that.
+  const recipeRecordType = "website_client_recipes/v2", endpointPlaceholder = "{{ENDPOINT}}";
+  const recipeTextFields = ["id", "name", "configuration_location", "configuration_note", "verification_command", "verification_note", "version_note", "removal_note", "source_url"];
+  const isTable = value => value !== null && typeof value === "object" && !Array.isArray(value);
+  // Every field name and every single value in a record, each with the field names that lead to it.
+  const recipeStrings = (value, path = [], found = []) => {
+    if (value !== null && typeof value === "object") for (const [name, item] of Object.entries(value)) {
+      if (!Array.isArray(value)) found.push({path:[...path, name], key:name, text:name, named:true, string:true});
+      recipeStrings(item, Array.isArray(value) ? path : [...path, name], found);
+    } else found.push({path, key:path[path.length - 1] ?? "", text:String(value), named:false, string:typeof value === "string"});
+    return found;
+  };
+  // Key-shaped text. Keys are written in one of two alphabets. In the alphabet that is safe inside an address: a long unbroken run, or a shorter run
+  // that mixes letters and digits. In the standard base64 alphabet: such a mixed run that also holds a plus sign or padding. A run that only slashes
+  // join is not reported, because a record type such as name/v2 and the path of an address are not keys.
+  const mixedRun = run => /[0-9]/.test(run) && /[A-Za-z]/.test(run);
+  const tokenShaped = text => /[A-Za-z0-9_-]{32,}/.test(text) || (text.match(/[A-Za-z0-9_-]{20,}/g) || []).some(mixedRun)
+    || (text.match(/[A-Za-z0-9+\/=]{20,}/g) || []).some(run => /[+=]/.test(run) && mixedRun(run));
+  // A configuration holds tables and single settings only. A list is refused, because a list can carry the arguments of a command as plain words.
+  const settingsOnly = value => isTable(value) ? Object.values(value).every(settingsOnly) : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
+  const plainHttps = text => { try { const url = new URL(text); return text.startsWith("https://") && !url.username && !url.password; } catch (_) { return false; } };
+  // Two addresses sit on the same host. An address that cannot be read has no host, so it is never the same host as another one.
+  const sameHost = (left, right) => { try { const host = new URL(left).host; return host !== "" && host === new URL(String(right)).host; } catch (_) { return false; } };
+  const settingName = /^\$?[A-Za-z][A-Za-z0-9_-]*$/, settingWord = /^[A-Za-z][A-Za-z0-9_-]*$/, credentialTable = /^(?:.*headers|env|environment)$/i;
+  // A name holds a credential when one of its words says so. A capital letter, a hyphen or an underscore divides the words of a name, so oauth and timeout are not such names.
+  const credentialWords = ["authorization", "auth", "bearer", "token", "secret", "password", "passphrase", "credential", "credentials", "key", "apikey"];
+  const namesCredential = name => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase().split(/[^a-z0-9]+/).some(word => credentialWords.includes(word));
+  // The command that a person is told to run is plain words and options: no address, path, pipe, assignment or quotation.
+  const plainCommand = /^[A-Za-z][A-Za-z0-9-]*(?: -{0,2}[A-Za-z][A-Za-z0-9-]*)*$/;
+  // The table that holds the address. Every table above it holds exactly one table, so a configuration names exactly one server entry.
+  const serverEntry = table => { while (!Object.keys(table).includes("url")) { const inner = Object.values(table).filter(isTable); if (inner.length !== 1) return null; table = inner[0]; } return table; };
+  function recipeRefusal(record) {
+    const variable = record?.credential_variable;
+    if (record?.record_type !== recipeRecordType || typeof variable !== "string" || !/^[A-Z][A-Z0-9_]{2,63}$/.test(variable) || typeof record.revocation_note !== "string" || !record.revocation_note
+      || !Array.isArray(record.recipes) || !record.recipes.length || new Set(record.recipes.map(recipe => recipe?.id)).size !== record.recipes.length) return "unsupported_record";
+    // This file is public. No text anywhere in it is shaped like a key: not a value, not a field name and not the variable name, in a field that is displayed or in one that is not.
+    if (tokenShaped(variable) || recipeStrings(record).some(item => tokenShaped(item.text.replaceAll(variable, "")))) return "credential_rule";
+    const references = [variable, "Bearer {env:" + variable + "}", "Bearer ${" + variable + "}"];
+    // A credential position holds a declared reference to the variable and nothing else. Such a position is every value inside a table of headers or of
+    // environment values, every value under a name that holds a credential, and every text that mentions the variable or a bearer value.
+    const credentialPosition = item => item.path.some(name => credentialTable.test(name)) || item.path.some(namesCredential) || item.text.includes(variable) || /\bbearer\b/i.test(item.text);
+    for (const recipe of record.recipes) {
+      if (!recipe || recipeTextFields.some(field => typeof recipe[field] !== "string" || !recipe[field]) || !["toml", "json"].includes(recipe.format) || !plainHttps(recipe.source_url)
+        || !plainCommand.test(recipe.verification_command) || !isTable(recipe.configuration) || !settingsOnly(recipe.configuration)) return "unsupported_record";
+      const found = recipeStrings(recipe.configuration), values = found.filter(item => !item.named);
+      if (found.some(item => item.named && !settingName.test(item.text))) return "unsupported_record";
+      const credentialProblem = !values.some(item => item.text.includes(variable))
+        || values.some(item => credentialPosition(item) && !(item.string && references.includes(item.text)));
+      if (credentialProblem) return "credential_rule";
+      // The address is the placeholder. It is held once, under the url name of the single server entry, and the page fills it with its own origin.
+      // Inside that entry the only tables are tables of headers or of environment values. Every other text is a plain setting word or the one
+      // top-level https $schema value, so no other text can carry an address, a path, an option or a command line. That $schema value must sit on
+      // the host of the source address this recipe cites, so the page cannot send a reader's editor to a host nobody reviewed. This is the rule the
+      // release check applies to the reviewed record, so the page and the release check agree. A vendor that serves its schema from another host
+      // needs a review decision, recorded by changing the record or this rule, not a silent exception.
+      const entry = serverEntry(recipe.configuration);
+      const addressProblem = !entry || entry.url !== endpointPlaceholder
+        || Object.entries(entry).some(([name, item]) => isTable(item) && !credentialTable.test(name))
+        || values.filter(item => item.key === "url" || item.text.includes("{{")).length !== 1
+        || values.some(item => item.string && !credentialPosition(item) && item.text !== endpointPlaceholder && !settingWord.test(item.text) && !(item.path.length === 1 && item.key === "$schema" && plainHttps(item.text) && sameHost(item.text, recipe.source_url)));
+      if (addressProblem) return "address_rule";
+    }
+    return "";
+  }
+  const tomlKey = key => /^[A-Za-z0-9_-]+$/.test(key) ? key : JSON.stringify(key);
+  const tomlText = (table, path = []) => {
+    const entries = Object.entries(table);
+    const own = entries.filter(([, item]) => !isTable(item)).map(([key, item]) => tomlKey(key) + " = " + JSON.stringify(item));
+    const blocks = own.length ? [(path.length ? "[" + path.map(tomlKey).join(".") + "]\n" : "") + own.join("\n")] : [];
+    return blocks.concat(entries.filter(([, item]) => isTable(item)).map(([key, item]) => tomlText(item, [...path, key]))).join("\n\n");
+  };
   function renderRecipe() {
     const selected = recipes?.recipes.find(item => item.id === $("client-choice").value);
     if (!selected) return;
-    const configuration = JSON.parse(JSON.stringify(selected.configuration).replaceAll("{{ENDPOINT}}", location.origin + "/mcp"));
-    let content;
-    if (selected.format === "toml") {
-      content = "[mcp_servers.baltor]\n" + Object.entries(configuration.mcp_servers.baltor).map(([key,value]) => key + " = " + JSON.stringify(value)).join("\n");
-    } else content = JSON.stringify(configuration, null, 2);
-    $("client-configuration").textContent = content; $("configuration-location").textContent = selected.configuration_location;
+    const endpoint = location.origin + "/mcp";
+    const fill = value => value === endpointPlaceholder ? endpoint : Array.isArray(value) ? value.map(fill) : value && typeof value === "object" ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, fill(item)])) : value;
+    const configuration = fill(selected.configuration);
+    $("client-configuration").textContent = selected.format === "toml" ? tomlText(configuration) : JSON.stringify(configuration, null, 2);
+    $("configuration-location").textContent = selected.configuration_location; $("client-configuration-note").textContent = selected.configuration_note;
     $("client-verify-command").textContent = selected.verification_command; $("client-verify-note").textContent = selected.verification_note;
     $("client-version-note").textContent = selected.version_note;
+    $("client-revoke-note").textContent = recipes.revocation_note; $("client-removal-note").textContent = selected.removal_note;
     $("client-source").href = selected.source_url; $("client-source").textContent = selected.source_url;
-    $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets";
+    $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets"; message("setup-message", "");
   }
   $("client-choice").addEventListener("change", renderRecipe);
   $("copy-configuration").addEventListener("click", async () => {
@@ -305,11 +382,17 @@
     catch (_) { message("setup-message", "Clipboard unavailable. Select and copy the configuration text."); }
   });
   request("/assets/client-recipes.json", null, false, false, {raw:true}).then(value => {
-    if (value.record_type !== "website_client_recipes/v1" || !Array.isArray(value.recipes) || !value.recipes.length) throw new Error("Unknown configuration format");
+    const refusal = recipeRefusal(value);
+    if (refusal) throw Object.assign(new Error("Connection recipes refused"), {refusal});
     recipes = value; $("client-choice").replaceChildren();
     for (const recipe of value.recipes) { const option = element("option", recipe.name); option.value = recipe.id; $("client-choice").append(option); }
     $("client-choice").disabled = false; renderRecipe();
-  }).catch(() => message("setup-message", "Client recipes could not be loaded. Use the setup guide; do not guess a configuration.", true));
+  }).catch(error => {
+    recipes = null; $("setup-message").dataset.refusal = error.refusal || "unavailable";
+    $("client-choice").replaceChildren(element("option", "Recipes unavailable")); $("client-choice").disabled = true; $("copy-configuration").disabled = true;
+    $("client-configuration").textContent = "No configuration is shown."; $("client-version-note").textContent = "";
+    message("setup-message", error.refusal ? "The connection recipes did not pass their safety check, so none is shown. Use the setup guide; do not guess a configuration." : "Client recipes could not be loaded. Use the setup guide; do not guess a configuration.", true);
+  });
   $("test-protocol").addEventListener("click", async () => {
     if (connectionBusy || !token || !capabilities) return;
     connectionBusy = true; const epoch = generation, version = capabilities.protocol.versions[0];
