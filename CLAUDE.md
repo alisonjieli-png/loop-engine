@@ -4,7 +4,12 @@
 
 @ASTRA.md
 
-Start with the [takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md).
+Start with the [September 21 session handoff](docs/context/SESSION-HANDOFF-2026-09-21.md).
+It is the current picture: what is live, what is approved and not yet
+deployed, what is running on which branch, the open defects and the reason
+the build is red. Another harness picking this work up starts there.
+
+Then read the [takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md).
 It records the verified live state, the repairs made on September 20, the
 open findings, the private beta definition and the working cycle for
 changes, tests, checkpoints and releases. The north star and the ordered
