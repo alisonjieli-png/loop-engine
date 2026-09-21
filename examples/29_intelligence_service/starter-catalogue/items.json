@@ -3585,6 +3585,607 @@
         "model_generated_row_digests": [],
         "grounding": "general_practice_beside_cited_source"
       }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "handle_missing_values_without_inventing_them",
+        "kind": "skill",
+        "purpose": "Keep a value that is zero, a value that is empty and a value nobody knows apart all the way to the report, mark every filled value with the rule that filled it, and never use a real value as a marker for absent.",
+        "digest": "bf56d50d1a55af67fe731e7984a259e9e9badcc5d96eb56980818538d26af6f6",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/model_gateway_accounting.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2429,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/handle_missing_values_without_inventing_them.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "assemble_the_context_for_one_step",
+        "kind": "skill",
+        "purpose": "Build the prompt for one step of a task: name the job and the output shape, include in full whatever the step must act on, refer to large material by reference, and keep the parts separate so one can be removed.",
+        "digest": "d3b32a2aa0ec17d5efc571d0328453dc35678a6d0a57b4574b5ef02af58e5f1a",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/llm_work_packet.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2347,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/assemble_the_context_for_one_step.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "decide_what_to_leave_out_of_a_prompt",
+        "kind": "skill",
+        "purpose": "Fit a step inside its token budget by removing the least useful material first: rank the parts, drop whole parts before shortening any, never shorten the instruction, and say plainly when the work does not fit.",
+        "digest": "c2e3a93e6768799f15f59fa10412d7c97e73129316bb8ba9e57a7b779e54866c",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/context_budget.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2552,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/decide_what_to_leave_out_of_a_prompt.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "keep_instructions_and_supplied_text_apart",
+        "kind": "skill",
+        "purpose": "Stop text inside a document, ticket or web page acting as an instruction: keep your instruction and the supplied material in separate named parts, and test with an instruction hidden in the material.",
+        "digest": "3df4d412a8c21594afc5d6d743f8341972b9db2aa58389fdd134d583c77e2818",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/prompt_elements.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2720,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/keep_instructions_and_supplied_text_apart.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "carry_earlier_decisions_forward_without_the_whole_transcript",
+        "kind": "skill",
+        "purpose": "Replace a growing chat history with a short record of what was decided, on what evidence and what is still open, while the full text stays fetchable by reference.",
+        "digest": "8aefb84c7d55fb67f8ae5005ec1b1a784c0d33da01b8f791002f35908c57ea01",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/context_artifacts.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2515,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/carry_earlier_decisions_forward_without_the_whole_transcript.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "choose_a_smaller_model_for_a_bounded_decision",
+        "kind": "skill",
+        "purpose": "Use a small cheap model for a step that only picks from a known set or extracts a short field, after checking whether the step needs a model at all, and escalate only the unsure cases.",
+        "digest": "63c27eb3b6c10052f20814029baa71ad244cb96fbe7123fb0e10f4283a883670",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/typed_decision.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2626,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/choose_a_smaller_model_for_a_bounded_decision.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "compare_a_smaller_model_against_the_larger_one",
+        "kind": "skill",
+        "purpose": "Run a model comparison that could change your mind: freeze cases drawn from real traffic before looking, fix the grader, count failures and unparseable answers, and report cost and time beside the score.",
+        "digest": "a9ef6425d6ef3eabfa408f826d41f7cc410a32a726a532bcfea94986c8a68c5c",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/model_demand.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2583,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/compare_a_smaller_model_against_the_larger_one.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "set_an_output_size_from_a_known_limit",
+        "kind": "skill",
+        "purpose": "Set the maximum answer length from a source that states it for the exact model, treat an unknown limit as unknown rather than guessing, and report a truncated answer as a failure.",
+        "digest": "5dfb780877c0353c31163e41137fdfa4986a8db44c2b8d142572eae1a46118f2",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/model_capabilities.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2529,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/set_an_output_size_from_a_known_limit.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "write_acceptance_criteria_a_reviewer_can_check",
+        "kind": "skill",
+        "purpose": "Write conditions for done that two people read the same way: each one true or false from a named observation, with the exact input, the expected result and who judges it.",
+        "digest": "13cfd570e4361a57942c6ca6a6551d0468e0d3d202122a9bb3f6e1cef2e5b791",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/independent_judgment.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2589,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/write_acceptance_criteria_a_reviewer_can_check.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "turn_a_vague_request_into_a_testable_statement",
+        "kind": "skill",
+        "purpose": "Turn a request such as make it better into something you can be wrong about: keep the original wording, write two readings, find the cheapest observation that separates them, and state what is out of scope.",
+        "digest": "0fce2800203bf1fb42257578be944dbb93747fdc1d74fbcdab90893a1ae88c73",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/development_planning.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2277,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/turn_a_vague_request_into_a_testable_statement.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "separate_required_from_optional_in_a_request",
+        "kind": "skill",
+        "purpose": "Sort a request into hard conditions, preferences and unconfirmed assumptions, give each hard condition an observation, weight the preferences and write the tie rule before the work starts.",
+        "digest": "1159fe1bed275c7453a8a468e5db60a6ee43dda56e5e8fa173af83d8701f65ff",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/parameter_resolution.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2398,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/separate_required_from_optional_in_a_request.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "run_a_release_check_list_before_deploying",
+        "kind": "skill",
+        "purpose": "Go through the same list before every deployment: the exact revision whose checks passed, the change list, the order of database and application steps, the settings present, and a small first rollout.",
+        "digest": "d6029e8b1589608b4288c0168b7211b03891cc5ab8437ea4d7b5206597a1e9fc",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/code_nodes/smoke_ladder.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2472,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/run_a_release_check_list_before_deploying.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "write_a_rollback_plan_before_the_release",
+        "kind": "skill",
+        "purpose": "Decide how to undo a release before making it: exact steps and identifiers, the number and period that trigger going back, who decides, and a rehearsed duration.",
+        "digest": "1461815429d43ae2cb162a27ce2456ab5d4364c80f83fbf6faa6327a21fbbbc2",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/recovery.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2360,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/write_a_rollback_plan_before_the_release.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "release_behind_a_switch_that_can_be_turned_off",
+        "kind": "skill",
+        "purpose": "Separate deploying code from turning behaviour on: default the switch off, read it at use time, raise it in steps while watching, turn it off without a deployment, and remove it once the change is proved.",
+        "digest": "cb5939dd6a08f9dc743cefbb56ded247040cd025b19b307102c81e36aaba54a2",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/guardrail_intelligence.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2405,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/release_behind_a_switch_that_can_be_turned_off.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "verify_a_release_after_it_is_live",
+        "kind": "skill",
+        "purpose": "Prove the new version is doing the right thing for real users: confirm the running revision, do one real end to end action, compare the counts that should not have changed, and write the values you saw.",
+        "digest": "ef2af20b14f619daeebe91a245ecd3f7e77cfa4a0c854f22caf1a82f7b176954",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/artifact_constraints.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2465,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/verify_a_release_after_it_is_live.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "run_an_incident_review_without_blame",
+        "kind": "skill",
+        "purpose": "Review an outage so that something changes: build the timeline from evidence, judge each decision by what was known then, ask why the system allowed it, and write actions with owners and dates.",
+        "digest": "f9bd163eaeed21c14046e75a1213c78188e2928e81d8dc7c8835fb58dc2f1ae5",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/independent_failure_review.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2474,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/run_an_incident_review_without_blame.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
     }
   ]
 }
