@@ -1,0 +1,161 @@
+{
+  "record_type": "starter_catalogue_search_queries/v1",
+  "note": "Plain customer queries and the item each one must find among the first three results of the lexical search over identity and purpose. The author of the purposes wrote the first group. An adversarial reviewer wrote the second group after the purposes existed, and these five missed before synonyms were added. This is a smoke check, not a relevance benchmark.",
+  "queries": [
+    {
+      "query": "how do I remove duplicate customers from a CRM export",
+      "expected": "find_duplicate_records_with_blocking_keys",
+      "written_by": "author"
+    },
+    {
+      "query": "fuzzy match two company records",
+      "expected": "score_duplicate_pairs_by_weakest_signal",
+      "written_by": "author"
+    },
+    {
+      "query": "names are in ALL CAPS fix the casing",
+      "expected": "restore_capitalisation_of_names",
+      "written_by": "author"
+    },
+    {
+      "query": "standardize Inc and LLC in company names",
+      "expected": "canonicalize_company_legal_suffixes",
+      "written_by": "author"
+    },
+    {
+      "query": "format phone numbers with country code",
+      "expected": "normalize_phone_numbers",
+      "written_by": "author"
+    },
+    {
+      "query": "fix typos in email domains like gmail.con",
+      "expected": "normalize_and_recover_email_addresses",
+      "written_by": "author"
+    },
+    {
+      "query": "clean URLs lowercase host",
+      "expected": "normalize_website_addresses",
+      "written_by": "author"
+    },
+    {
+      "query": "strip non-breaking spaces and zero width characters",
+      "expected": "normalize_whitespace_and_unicode_text",
+      "written_by": "author"
+    },
+    {
+      "query": "which corrections can be applied automatically and which need review",
+      "expected": "apply_hold_or_escalate_each_correction",
+      "written_by": "author"
+    },
+    {
+      "query": "find invalid dates in a column",
+      "expected": "detect_malformed_values_by_dominant_pattern",
+      "written_by": "author"
+    },
+    {
+      "query": "parse street address into parts",
+      "expected": "split_address_lines_into_components",
+      "written_by": "author"
+    },
+    {
+      "query": "update a table without touching the original",
+      "expected": "copy_a_table_with_corrections_never_in_place",
+      "written_by": "author"
+    },
+    {
+      "query": "is my model overfitting",
+      "expected": "read_the_train_validation_gap",
+      "written_by": "author"
+    },
+    {
+      "query": "which metric for imbalanced classification",
+      "expected": "choose_metrics_by_task_type_and_industry",
+      "written_by": "author"
+    },
+    {
+      "query": "data leakage between train and test",
+      "expected": "audit_data_splits_for_errors_and_leakage",
+      "written_by": "author"
+    },
+    {
+      "query": "the agent keeps retrying the same failing fix",
+      "expected": "diagnose_a_stall_and_change_strategy",
+      "written_by": "author"
+    },
+    {
+      "query": "the request is ambiguous what should I build",
+      "expected": "carry_competing_readings_of_a_request",
+      "written_by": "author"
+    },
+    {
+      "query": "do I need an LLM for this step or can code do it",
+      "expected": "decide_whether_a_step_needs_a_model",
+      "written_by": "author"
+    },
+    {
+      "query": "write a failing test first",
+      "expected": "test_driven_change_red_green_refactor",
+      "written_by": "author"
+    },
+    {
+      "query": "make my ETL job idempotent",
+      "expected": "make_a_data_pipeline_safe_to_run_again",
+      "written_by": "author"
+    },
+    {
+      "query": "join duplicated my rows",
+      "expected": "check_a_table_join_before_trusting_it",
+      "written_by": "author"
+    },
+    {
+      "query": "Dockerfile for a batch job pinned image",
+      "expected": "write_a_pinned_container_and_batch_job",
+      "written_by": "author"
+    },
+    {
+      "query": "scan generated code for API keys",
+      "expected": "refuse_secrets_and_unsafe_paths_in_generated_files",
+      "written_by": "author"
+    },
+    {
+      "query": "how to report what I could not verify",
+      "expected": "report_observed_derived_assumed_and_unknown",
+      "written_by": "author"
+    },
+    {
+      "query": "what to ask before starting a big task",
+      "expected": "questions_to_ask_before_starting_work",
+      "written_by": "author"
+    },
+    {
+      "query": "publish a skill for claude code and codex",
+      "expected": "package_one_skill_for_two_coding_harnesses",
+      "written_by": "author"
+    },
+    {
+      "query": "dedupe my contacts csv",
+      "expected": "find_duplicate_records_with_blocking_keys",
+      "written_by": "reviewer"
+    },
+    {
+      "query": "classes are skewed",
+      "expected": "choose_metrics_by_task_type_and_industry",
+      "written_by": "reviewer"
+    },
+    {
+      "query": "german umlauts got stripped",
+      "expected": "normalize_whitespace_and_unicode_text",
+      "written_by": "reviewer"
+    },
+    {
+      "query": "cannot reach the database",
+      "expected": "deliver_the_best_available_result_when_blocked",
+      "written_by": "reviewer"
+    },
+    {
+      "query": "when should an agent ask the user",
+      "expected": "resolve_missing_information",
+      "written_by": "reviewer"
+    }
+  ]
+}
