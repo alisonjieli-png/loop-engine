@@ -1,0 +1,398 @@
+{
+  "record_type": "candidate_intelligence_specifications/v1",
+  "population": 3,
+  "populations": 3,
+  "specifications": [
+    {
+      "id": "keep_instructions_and_supplied_text_apart",
+      "layer": "context",
+      "family": "method",
+      "title": "Keep your instructions and the supplied text apart",
+      "tags": [
+        "prompt injection",
+        "untrusted text",
+        "delimiters",
+        "agent safety"
+      ],
+      "text": "# Keep your instructions and the supplied text apart\n\nMark clearly which part of a prompt is your instruction and which part is material from elsewhere, so text inside the material cannot act as an instruction.\n\n## When to use it\n\nUse it whenever a prompt contains anything you did not write: a user message, a web page, a file, a database row, a previous answer, or the output of a tool.\n\n## Steps\n\n1. Put your instructions in their own named part, and the supplied material in another named part.\n2. State in the instruction that the material is data to work on, and that any instruction inside it is content to report, not to follow.\n3. Delimit the material clearly and consistently, and make sure the material cannot close the delimiter.\n4. Put the instruction where it cannot be lost: state the job before the material and the required output shape after it.\n5. Keep the permissions outside the prompt. What the step may do is decided by the caller, never by text in the material.\n6. Treat the answer as untrusted as well. Validate its shape, and check any path, command or address it contains before acting.\n7. Test with material that contains a plain instruction to do something else, and require that the step reports it instead of following it.\n8. Log which parts were supplied material, so an odd answer can be traced back.\n\n## Checks\n\n- Instruction and material are separate named parts in every prompt.\n- Material cannot close or escape its delimiter.\n- A test with an instruction hidden in the material passes.\n- No permission is granted by anything inside the prompt.\n\n## Known-wrong example\n\nA support tool builds one long text from the ticket, the customer history and the request to draft a reply. A customer writes, inside the ticket, that the previous instructions are cancelled and the agent should send the full account details. The model follows it, because nothing in the prompt says which words were instructions. Separate parts, and a rule that material is only data, would have made the sentence something to report.\n\n## What to record\n\n- The part structure of the prompt.\n- The test case with an instruction inside the material and the observed behaviour.\n- Any answer that contained a path, a command or an address, and what was done with it.\n\n## Source\n\n- `src/loop_engine/core/prompt_elements.py`: this repository builds a prompt from named elements such as task background, the material to work on, the expectations and the required format, and treats the requested answer style as declared data rather than as branches in code.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/prompt_elements.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "carry_earlier_decisions_forward_without_the_whole_transcript",
+      "layer": "context",
+      "family": "method",
+      "title": "Carry earlier decisions forward without the whole transcript",
+      "tags": [
+        "conversation history",
+        "summary",
+        "long task",
+        "memory"
+      ],
+      "text": "# Carry earlier decisions forward without the whole transcript\n\nReplace a long history with a short record of what was decided, while keeping the full text where it can still be fetched.\n\n## When to use it\n\nUse it in any task that runs over many steps, where the history grows until it crowds out the material the current step needs.\n\n## Steps\n\n1. Store the full output of each step by its digest, and keep the reference. Never let the only copy be the text inside a window.\n2. After each step, write a short record: what was decided, on what evidence, what is still open, and the reference to the full text.\n3. Carry those records forward instead of the raw history. Carry the original request unchanged beside them.\n4. Keep failures and refused options in the record. A history that only holds successes causes the same wrong path to be tried again.\n5. Decide a threshold: material above a certain size is kept only by reference, and material below it may also stay inline.\n6. Let a step fetch the full text by reference when it needs it, with a check on size before it is loaded.\n7. Do not summarise the original request or the acceptance rules. Those stay word for word.\n8. Check that a step given only the short records can still reach the same decision.\n\n## Checks\n\n- Every summary carries a reference to the full text it came from.\n- The original request and the acceptance rules are never summarised.\n- Refused options and failures appear in the carried record.\n- A step working only from the records reaches the same decision in a test.\n\n## Known-wrong example\n\nA long task keeps only the last ten exchanges. The rule that the customer refused a subscription was stated at the start, and is now outside the window. The next step proposes a subscription again, and the work is wasted twice. A short carried record naming that refusal, with a reference to where it was stated, would have cost twenty words.\n\n## What to record\n\n- The reference and digest of each stored output.\n- The short record for each step: decision, evidence, open questions.\n- The threshold above which material is kept only by reference.\n\n## Source\n\n- `src/loop_engine/core/context_artifacts.py`: this repository stores a large value first, returns a stable reference addressed by its digest, and keeps a smaller representation inline only while it is under declared limits.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/context_artifacts.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "choose_a_smaller_model_for_a_bounded_decision",
+      "layer": "context",
+      "family": "method",
+      "title": "Choose a smaller model for a bounded decision",
+      "tags": [
+        "cheaper model",
+        "classification",
+        "model cost",
+        "routing"
+      ],
+      "text": "# Choose a smaller model for a bounded decision\n\nUse the cheapest thing that can answer the question, and reserve the expensive model for the work that really needs judgment.\n\n## When to use it\n\nUse it at every step that calls a model, especially a step that runs thousands of times: a classification, a route, a yes or no, a field extraction, a short rewrite.\n\n## Steps\n\n1. Ask first whether the step needs a model at all. A lookup table, a rule or a search answers many questions exactly and for nothing.\n2. Write the question as a bounded decision: a choice from a named set, a number in a range, or a short field, with the allowed answers listed.\n3. Ask for the answer in a declared shape, and refuse an answer that does not fit rather than guessing what it meant.\n4. Try the smallest available model first on a frozen set of cases with known right answers.\n5. Compare it with the large model on the same cases and the same shape. Compare accuracy, cost and time together.\n6. Route by the decision, not by the topic. Keep the large model for open work where the answer is not from a known set.\n7. Where the small model is unsure, escalate that case only, and record how often escalation happens.\n8. Repeat the comparison when either model changes, because the answer is about this pair of models on this task.\n\n## Checks\n\n- The step was checked for whether it needs a model at all.\n- The allowed answers are listed and an answer outside them is refused.\n- The comparison used the same frozen cases and the same answer shape.\n- The escalation rate is measured, not assumed.\n\n## Known-wrong example\n\nA team routes every step to the largest model because it is the safest choice. A classification into three categories runs four hundred thousand times a month and costs more than everything else together. The small model, measured, agrees with the large one on ninety eight point four percent of a frozen set, and the disagreements are all one category that a simple rule catches. Nobody measured, so nobody knew.\n\n## What to record\n\n- The frozen cases and the right answer for each.\n- Accuracy, cost and time for each model tried.\n- The escalation rule and how often it fires.\n\n## Source\n\n- `src/loop_engine/core/typed_decision.py`: this repository has a route for a step that needs one bounded choice rather than prose, returning the selected candidate with a probability for each option and a confidence for the judgment, validated against a declared contract.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/typed_decision.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "compare_a_smaller_model_against_the_larger_one",
+      "layer": "context",
+      "family": "evaluation",
+      "title": "Compare a smaller model against the larger one honestly",
+      "tags": [
+        "model comparison",
+        "frozen cases",
+        "holdout",
+        "cost per call"
+      ],
+      "text": "# Compare a smaller model against the larger one honestly\n\nRun a comparison that could actually change your mind, and report what it cost as well as what it scored.\n\n## When to use it\n\nUse it before moving a step to a cheaper model, before moving it to a more expensive one, and whenever a provider releases a version you are tempted by.\n\n## Steps\n\n1. Freeze the case set before you look at any result. Draw the cases from real traffic, including the awkward ones, and keep a part of them unseen until the end.\n2. Fix the grader first: an exact comparison where one exists, and a written rule for a human or an independent judge where it does not.\n3. Keep everything else the same: the same prompt parts, the same answer shape, the same temperature setting and the same retry behaviour.\n4. Run each model on the whole set, and record every failure, refusal and unparseable answer as a result rather than dropping it.\n5. Report the score with the number of cases behind it, and the disagreements between the models grouped by kind.\n6. Report the cost and the time beside the score. A one percent loss for a tenth of the cost is a decision, not a defeat.\n7. Check the unseen part once, at the end, and report it separately.\n8. Record the exact model versions and the date. This result is about these versions on this task, and nothing more.\n\n## Checks\n\n- The case set was frozen before any result was seen.\n- Failures and unparseable answers are counted, not dropped.\n- Cost and time are reported beside the score.\n- The unseen part was used once and reported separately.\n\n## Known-wrong example\n\nAn engineer tries a cheaper model on twenty cases picked while developing, sees the same answers, and switches. In production the cheaper model fails on long inputs, which were not in those twenty cases, and returns an unparseable answer for four percent of requests. Those are retried against the expensive model, so the bill rises. A frozen set drawn from real traffic would have contained the long inputs.\n\n## What to record\n\n- The frozen cases, the unseen part and the grader.\n- The scores, failures and disagreements for each model.\n- The cost, time, model versions and date.\n\n## Source\n\n- `src/loop_engine/core/model_demand.py`: this repository builds its preference for which model a step needs from recorded observations of what worked on that kind of step, and marks a route as unproven until there is enough evidence.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/model_demand.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "set_an_output_size_from_a_known_limit",
+      "layer": "context",
+      "family": "method",
+      "title": "Set an output size from a known limit",
+      "tags": [
+        "max tokens",
+        "truncated answer",
+        "output limit",
+        "model capacity"
+      ],
+      "text": "# Set an output size from a known limit\n\nTake the maximum answer size from a source that states it for the exact model, and treat an unknown limit as unknown rather than picking a number.\n\n## When to use it\n\nUse it whenever you call a model with a setting for how long the answer may be, and whenever a long answer is being cut off.\n\n## Steps\n\n1. Find the stated maximum output size for the exact model and the exact interface you are calling. Record where the number came from.\n2. If no source states it, record the limit as unknown and refuse to guess. A guess that is too small silently truncates every long answer.\n3. Keep three numbers apart: what the model can produce, what you chose to allow for this call, and what the whole task may spend.\n4. Choose the allowance for the call from the work, not from the maximum. Ask for what the answer needs.\n5. Tie the allowance to the route it was chosen for. A different model or interface needs its own number.\n6. Detect a truncated answer and treat it as a failure of the call, not as a short answer.\n7. On truncation, either raise the allowance within the known maximum or split the work, and say which you did.\n8. Re-check the recorded maximum when the model version changes.\n\n## Checks\n\n- Every allowance traces to a recorded source for that exact model.\n- An unknown maximum produces a clear unknown, never a default number.\n- A truncated answer is reported as a failure.\n- The allowance is bound to the route it was chosen for.\n\n## Known-wrong example\n\nA service sets the answer limit to a round two thousand tokens, because that seemed generous. A model that can produce far more is asked for a long document, and the answer stops in the middle of a sentence. The code treats it as the finished answer, and the document is published incomplete. Reading the stated maximum and detecting truncation would have caught both mistakes.\n\n## What to record\n\n- The stated maximum, its source and the date.\n- The allowance chosen for the call and why.\n- Every truncation and what was done about it.\n\n## Source\n\n- `src/loop_engine/core/model_capabilities.py`: this repository separates a limit a provider states or has been observed to have from a limit a caller chose, refuses to start generating when the maximum for the selected model is unknown, and reports a mismatch between a chosen allowance and the known maximum.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/model_capabilities.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "write_acceptance_criteria_a_reviewer_can_check",
+      "layer": "context",
+      "family": "method",
+      "title": "Write acceptance criteria a reviewer can check",
+      "tags": [
+        "acceptance criteria",
+        "definition of done",
+        "requirements",
+        "reviewer"
+      ],
+      "text": "# Write acceptance criteria a reviewer can check\n\nWrite the conditions for \"done\" so that two people reading them reach the same verdict without asking the author.\n\n## When to use it\n\nUse it before work starts on any task given to another person, another team or an agent, and before you agree to deliver anything.\n\n## Steps\n\n1. Write each criterion as a statement that is true or false about the delivered thing, not about the effort.\n2. Name the observation that decides it: which command, which screen, which file, which query, and what the result must be.\n3. Give the exact input for each criterion, and the exact expected output or the rule the output must satisfy.\n4. Say who judges it and whether the judge may be the producer. For anything that matters, the answer is no.\n5. Include the negative conditions: what must not happen, what must not change, what must still work afterwards.\n6. Include the non functional conditions that are real requirements: response time at a stated size, a permission that must not widen, a limit that must hold.\n7. For a criterion that needs judgment, write the rule the judge applies and ask for quotations from the delivered thing as evidence.\n8. Have someone who did not write them read them and say what they would check. Repair every difference.\n\n## Checks\n\n- Every criterion can be answered true or false from a named observation.\n- Every criterion has an input and an expected result or rule.\n- A second reader reaches the same verdict without asking questions.\n- The judge is named and is not the producer where it matters.\n\n## Known-wrong example\n\nA task says the import must be fast and handle errors gracefully. The work is delivered, the author declares it done, and the reviewer disagrees about both. Two weeks of argument follow. Stating that a file of one hundred thousand rows imports in under two minutes on the test machine, and that a malformed row is written to a rejects file while the rest continue, would have settled it before the work started.\n\n## What to record\n\n- The criteria with their inputs, observations and expected results.\n- The named judge for each.\n- The differences found when a second reader tested the wording.\n\n## Source\n\n- `src/loop_engine/core/independent_judgment.py`: this repository lets a separate judge decide one written criterion about a deliverable, and requires the judgment to quote the deliverable itself rather than assert a verdict.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/independent_judgment.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "turn_a_vague_request_into_a_testable_statement",
+      "layer": "context",
+      "family": "method",
+      "title": "Turn a vague request into a testable statement",
+      "tags": [
+        "vague requirement",
+        "clarify the ask",
+        "scope",
+        "ambiguity"
+      ],
+      "text": "# Turn a vague request into a testable statement\n\nTake a sentence like \"make the dashboard better\" and turn it into something you can be wrong about.\n\n## When to use it\n\nUse it at the start of any task whose request does not say what would count as finished, and before spending effort on a guess.\n\n## Steps\n\n1. Keep the original wording. Every later statement sits beside it, never replaces it.\n2. Name the person who will use the result and the decision or action it should support.\n3. Ask what they would do differently if the work were finished. The answer usually contains the real requirement.\n4. Write two or three materially different readings of the request, and say what each one would produce.\n5. Find the cheapest observation that separates the readings, such as one question, one example or one small sample of data.\n6. Write the chosen reading as a statement with a subject, a measurable property and a value or a rule.\n7. Add what is out of scope, so the boundary is written rather than assumed.\n8. Show the statement to the person who asked, beside the original wording, and repair it until they agree.\n\n## Checks\n\n- The original wording is preserved next to the statement.\n- At least two readings were written before one was chosen.\n- The chosen statement can be shown to be unsatisfied by a named observation.\n- The person who asked has agreed to the wording.\n\n## Known-wrong example\n\nA request says the search should be more relevant. A team spends a month changing the ranking. The person who asked actually meant that searching for a product code returns nothing, which was a missing field in the index and a day of work. One question about what they would do differently would have found it.\n\n## What to record\n\n- The original wording, unchanged.\n- The readings considered and the observation that separated them.\n- The agreed statement and what is out of scope.\n\n## Source\n\n- `src/loop_engine/core/development_planning.py`: this repository keeps planning records passive and typed, holding the open clarification items and the verification contract for each requirement beside the plan itself.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/development_planning.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "separate_required_from_optional_in_a_request",
+      "layer": "context",
+      "family": "method",
+      "title": "Separate what is required from what is preferred",
+      "tags": [
+        "must have",
+        "nice to have",
+        "tradeoff",
+        "assumptions"
+      ],
+      "text": "# Separate what is required from what is preferred\n\nSort a request into the parts that must hold, the parts that are preferences and the parts that are only assumptions, so a tradeoff can be made without guessing.\n\n## When to use it\n\nUse it whenever a request carries more conditions than can all be satisfied, or whenever an agent must decide between two acceptable results.\n\n## Steps\n\n1. List every condition you can find in the request, including the ones implied by the words used.\n2. Sort each into three groups: a hard condition that must hold, a preference that improves the result, and an assumption that nobody has confirmed.\n3. For each hard condition, write the observation that shows it holds.\n4. For each preference, say which direction is better and roughly how much it is worth against the others.\n5. For each assumption, say what would happen if it is false and how cheaply it could be checked.\n6. Write the rule for a tie, so a choice between two acceptable results does not need another conversation.\n7. Show the three groups to the person who asked. People correct a misplaced hard condition immediately.\n8. Keep the groups with the work, so a later reviewer can see which conditions were binding.\n\n## Checks\n\n- Every condition sits in exactly one group.\n- Each hard condition has an observation that shows it holds.\n- The preferences have a direction and a rough weight.\n- The tie rule is written before the work starts.\n\n## Known-wrong example\n\nA request asks for a fast, cheap and complete report. A developer treats completeness as a hard condition, spends the budget on it, and delivers something too slow to use in the meeting it was for. The deadline was the hard condition, and completeness was a preference. Sorting the conditions in ten minutes would have produced a useful partial report on time.\n\n## What to record\n\n- The three groups with their sources in the request.\n- The observations for the hard conditions.\n- The tie rule and any assumption that was later found false.\n\n## Source\n\n- `src/loop_engine/core/parameter_resolution.py`: this repository resolves a value from several possible sources with a declared order of precedence, and records which source supplied the value and why it was selected.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/parameter_resolution.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "run_a_release_check_list_before_deploying",
+      "layer": "context",
+      "family": "checklist",
+      "title": "Run a release check list before deploying",
+      "tags": [
+        "release checklist",
+        "deployment",
+        "image digest",
+        "rollout"
+      ],
+      "text": "# Run a release check list before deploying\n\nGo through the same short list every time, so that the release that goes wrong is the one you were watching rather than the one nobody prepared.\n\n## When to use it\n\nUse it for every deployment to an environment that people or customers depend on, however small the change.\n\n## Steps\n\n1. Confirm the exact revision you are releasing, and that its checks passed on that revision rather than on a similar one.\n2. Confirm what changed since the running version, and read the list. A release nobody can describe is a release nobody can undo.\n3. Confirm the order: database changes that add, then the application, then any change that removes. Never the reverse.\n4. Confirm the settings and secrets the new version needs exist in the target environment.\n5. Deploy by an exact identifier such as an image digest, not by a moving tag, and keep the previous identifier written down.\n6. Release to a small part of the traffic first, and watch the signals you chose in advance for a stated period.\n7. Run the checks that only work against the live system, and write down what you observed rather than that you looked.\n8. Announce the release with the revision, the time and the person to contact.\n\n## Checks\n\n- The released revision is the one whose checks passed.\n- The previous version's exact identifier is written down before the deployment.\n- Required settings and secrets are present in the target before the switch.\n- The observation after release is written down with values, not with the word fine.\n\n## Known-wrong example\n\nA team deploys a change that reads a new settings value. The value was added to the test environment and forgotten in production. The service starts, serves errors on one path, and the cause takes forty minutes to find because the release notes list only the code change. Confirming the settings before the switch takes one minute.\n\n## What to record\n\n- The revision, the previous identifier and the change list.\n- The settings and secrets confirmed.\n- The observations after the release, with values and times.\n\n## Source\n\n- `src/loop_engine/code_nodes/smoke_ladder.py`: this repository proves a path in stages, starting with a deterministic local fixture that runs end to end with no model calls before any stage that touches a real provider.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/code_nodes/smoke_ladder.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "write_a_rollback_plan_before_the_release",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Write the way back before the release",
+      "tags": [
+        "rollback",
+        "undo a deploy",
+        "irreversible change",
+        "trigger"
+      ],
+      "text": "# Write the way back before the release\n\nDecide how you would undo the change, and who decides, before you make the change rather than during the outage.\n\n## When to use it\n\nUse it for every release that is not trivially reversible, and for every database or settings change that goes out with one.\n\n## Steps\n\n1. Write down what going back means for this change: the previous version, the previous settings and the state of the data.\n2. Check whether the change is reversible at all. A removed column, a sent message and a deleted file are not.\n3. For anything not reversible, split the release so that the irreversible part comes last and separately.\n4. Write the exact steps to go back, with the commands and the identifiers filled in, not a description.\n5. Write the condition that triggers going back, as a number and a period, and decide it before the release.\n6. Name the person who decides, and make sure that person can act without waiting for anyone.\n7. Measure how long going back takes, by rehearsing it in a test environment.\n8. After going back, keep the failed version and its evidence. Investigate afterwards, not during.\n\n## Checks\n\n- The way back is written as exact steps, not as an intention.\n- The trigger condition is a number and a period, agreed before the release.\n- The rehearsal gives a measured duration.\n- An irreversible step is in its own release, after the reversible ones.\n\n## Known-wrong example\n\nA release goes out with a migration that drops a column. Errors appear, and the team tries to go back. The previous version selects the dropped column, so it cannot start, and the data is gone. They spend three hours restoring from a backup taken that morning and lose the day's orders. Keeping the removal for a later separate release would have made going back one command.\n\n## What to record\n\n- The exact steps and identifiers for going back.\n- The trigger condition and the named decider.\n- The measured duration from the rehearsal.\n\n## Source\n\n- `src/loop_engine/core/recovery.py`: this repository decides what should happen after a failure from the situation in front of it rather than from a fixed table, and records the decision together with the reason for it.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/recovery.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "release_behind_a_switch_that_can_be_turned_off",
+      "layer": "context",
+      "family": "method",
+      "title": "Release behind a switch that can be turned off",
+      "tags": [
+        "feature flag",
+        "gradual rollout",
+        "kill switch",
+        "flag removal"
+      ],
+      "text": "# Release behind a switch that can be turned off\n\nSeparate putting code into production from turning behaviour on, so the risky moment is a setting change rather than a deployment.\n\n## When to use it\n\nUse it for a change that is large, risky, slow to deploy, or that several teams must release together.\n\n## Steps\n\n1. Put the new path behind a named switch that defaults to off, and deploy it turned off.\n2. Keep the old path working while the switch exists. Two paths is the cost you are paying for the ability to go back in seconds.\n3. Make the switch a stored setting, read at use time, not something compiled in or read only at start.\n4. Turn it on for yourself, then for a small group, then for a percentage, watching at each step.\n5. Choose in advance what you watch and the value that means turn it off.\n6. Make turning it off need no deployment, no build and no approval chain, and test that path before you need it.\n7. Record who changed the switch, when and to what. A switch nobody can explain is worse than a branch in code.\n8. Remove the switch and the old path once the new one is proved, and give that removal its own change.\n\n## Checks\n\n- The switch defaults to off and the deployment with it off is safe.\n- Turning it off takes effect without a deployment, and was tested.\n- Every change of the switch is recorded with a person and a time.\n- Each switch has an owner and a date for its removal.\n\n## Known-wrong example\n\nA team adds fifteen switches over a year and removes none. The combinations are never tested together, and a customer hits a pair that nobody has run. The behaviour cannot be reproduced, because nobody records which values were in force. Recording the values with each request, and removing a switch when its change is proved, would have kept both problems away.\n\n## What to record\n\n- The switch name, owner, default and removal date.\n- Every change with the person, time and value.\n- The values in force when an unusual result is reported.\n\n## Source\n\n- `src/loop_engine/core/guardrail_intelligence.py`: this repository keeps the rules that narrow what a run may do as records rather than as branches in code, with a declared level of enforcement and a path for challenging a rule that blocks work wrongly.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/guardrail_intelligence.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "verify_a_release_after_it_is_live",
+      "layer": "context",
+      "family": "checklist",
+      "title": "Verify a release after it is live",
+      "tags": [
+        "post deploy check",
+        "health endpoint",
+        "smoke test",
+        "silent failure"
+      ],
+      "text": "# Verify a release after it is live\n\nProve that the new version is doing the right thing for real users, rather than that it started without crashing.\n\n## When to use it\n\nUse it immediately after every deployment, and again after the first full traffic period such as a business day.\n\n## Steps\n\n1. Check that the running version is the one you released, by asking the service which revision it is.\n2. Do the real thing once. Place a test order, run a real query, send a message through the whole path, and look at the result.\n3. Check the path the change touched, not only a health endpoint. A health endpoint that answers says almost nothing.\n4. Compare the counts that should not have changed: requests, errors, writes per minute, items produced. A silent drop to a lower number is the common failure.\n5. Watch the queue depths and the delay of anything that follows the database. These break later than the request path.\n6. Look at the failures that are being handled quietly. An increase in retries is a release problem even while the totals look normal.\n7. Write down the values you observed with the times, not the word fine.\n8. Keep watching for a stated period, and only then treat the release as finished.\n\n## Checks\n\n- The running revision matches the released revision.\n- One real end to end action was performed and its result inspected.\n- The counts that should be unchanged were compared with the previous period.\n- Observations are written with values and times.\n\n## Known-wrong example\n\nA deployment finishes, the health endpoint answers, and the team closes the release. The change broke the writing of one field, so orders are accepted and saved without a delivery address. Nothing fails, and the error count does not move. The first complaint arrives three days later. Placing one real order and reading the stored row would have shown it in a minute.\n\n## What to record\n\n- The revision confirmed and the end to end action performed.\n- The counts compared and the values observed with times.\n- The period watched before the release was treated as finished.\n\n## Source\n\n- `src/loop_engine/core/artifact_constraints.py`: this repository checks what a produced artifact means rather than only that it exists and parses, because a file that is well formed and empty passed the older check.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/artifact_constraints.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "run_an_incident_review_without_blame",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Run an incident review without blame",
+      "tags": [
+        "incident review",
+        "postmortem",
+        "outage",
+        "action items"
+      ],
+      "text": "# Run an incident review without blame\n\nLook for the conditions that let a mistake become an outage, because the person who pressed the key is the least useful thing you can find.\n\n## When to use it\n\nUse it after any unplanned interruption, data loss, security event or near miss, while the memory is fresh and before the next one.\n\n## Steps\n\n1. Hold the review within a few days, with the people who were there and one person to run it who was not.\n2. State the rule out loud: nobody is named as a cause. Actions are described by role.\n3. Build the timeline from evidence first: log entries, messages, deployments, alarms, with times.\n4. For each decision in the timeline, ask what that person knew at that moment. Judging with later knowledge teaches nothing.\n5. Ask why the system allowed it: which check was absent, which signal was missing, which surface made the wrong action easy.\n6. Ask why it took so long to notice and so long to recover, as two separate questions.\n7. Write actions that change the system, each with one owner and a date. An action that says be more careful is not an action.\n8. Publish the review where the whole organisation can read it, and check the actions at a later date.\n\n## Checks\n\n- The timeline is built from evidence with times, not from memory alone.\n- Every decision is judged by what was known at that moment.\n- Each action changes a system, has an owner and has a date.\n- The review is readable by people who were not involved.\n\n## Known-wrong example\n\nA review concludes that an engineer ran the wrong command and should be more careful. Four months later a different engineer runs the same command with the same result, because the tool still accepted it without a confirmation, in an environment whose name looked like the test one. The finding pointed at a person, so nothing about the system changed.\n\n## What to record\n\n- The timeline with evidence and times.\n- The conditions that allowed the event, and the gaps in noticing and recovering.\n- The actions with owners, dates and their state at the later check.\n\n## Source\n\n- `src/loop_engine/core/independent_failure_review.py`: when a check fails here, a separate review decides whether the work or the check was wrong before any repair, using a closed set of classifications and evidence quoted from the subject.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/independent_failure_review.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "build_an_incident_timeline_from_evidence",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Build an incident timeline from evidence",
+      "tags": [
+        "incident timeline",
+        "outage",
+        "evidence",
+        "time to detect"
+      ],
+      "text": "# Build an incident timeline from evidence\n\nPut the events in order from records that carry times, so the review argues about causes rather than about what happened.\n\n## When to use it\n\nUse it during and after any outage or security event, starting while it is still going on, because the evidence is easiest to collect then.\n\n## Steps\n\n1. Open one shared place to write while the event is happening, and record each action with the time it was taken.\n2. Fix the time zone for the whole timeline, and convert everything into it as you add it.\n3. Take each entry from a source that can be quoted: a log line, a deployment record, an alarm, a message, a query result.\n4. Separate what was observed from what someone believed at the time. Both belong in the timeline, marked differently.\n5. Mark the four moments that matter: when the cause was introduced, when the effect began, when a person first noticed, and when service returned.\n6. Go back further than the alarm. The change that caused it is often days earlier and looked harmless.\n7. Note the gaps where there is no evidence, rather than filling them from memory.\n8. Have someone who was not involved read the timeline and say where it stops making sense.\n\n## Checks\n\n- Every entry has a time in one zone and a quotable source.\n- Belief and observation are marked apart.\n- The four moments are identified.\n- The gaps without evidence are shown as gaps.\n\n## Known-wrong example\n\nA review builds its timeline from what people remember a week later. Two people place the same deployment on different days, and the conclusion blames a change that went out afterwards. The real cause was a settings edit nobody wrote down. Recording actions as they were taken, with times, would have cost minutes and given a true order.\n\n## What to record\n\n- The timeline with sources, times and one time zone.\n- The four moments and the durations between them.\n- The gaps in the evidence and what could make them visible next time.\n\n## Source\n\n- `src/loop_engine/code_nodes/run_playback.py`: this repository replays a saved record of a run into an ordered readable transcript, so what happened can be read step by step rather than reconstructed.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/code_nodes/run_playback.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "turn_an_incident_into_a_check_that_would_have_caught_it",
+      "layer": "context",
+      "family": "method",
+      "title": "Turn an incident into a check that would have caught it",
+      "tags": [
+        "action items",
+        "alerting",
+        "regression guard",
+        "false alarms"
+      ],
+      "text": "# Turn an incident into a check that would have caught it\n\nConvert a lesson into something that runs by itself, and prove that it fails on the case it was written for.\n\n## When to use it\n\nUse it at the end of every incident review, and whenever a manual check keeps finding the same kind of problem.\n\n## Steps\n\n1. Write the failure as one sentence: this condition held, and nothing noticed for this long.\n2. Decide where the check belongs: a test that runs before merging, a check in the build, a validation at the boundary, or an alarm on a running system. Earlier is cheaper.\n3. Write the check so it would have failed on the exact case. Take the values from the timeline, not from an invented example.\n4. Run it against the state before the repair, or reconstruct that state, and require it to fail.\n5. Run it after the repair and require it to pass.\n6. Check its cost: how often it runs, how long it takes and how often it will report something that is not a problem. A check that cries wolf gets turned off.\n7. Give it an owner and a note saying which incident it came from, so a later reader does not delete it as unexplained.\n8. Resist turning one incident into a general rule for everything. One case is evidence for one check, not for a policy.\n\n## Checks\n\n- The check fails on the reconstructed case from the incident.\n- It passes after the repair.\n- Its cost and its rate of false reports are measured, not assumed.\n- It names the incident it came from and has an owner.\n\n## Known-wrong example\n\nAfter an outage caused by a full disk, a team adds an alarm at ninety percent. It fires every week during normal growth, everyone silences it, and the next full disk goes unnoticed. An alarm on the time remaining until the disk fills, tested against the recorded growth from the incident, would have fired once and meant something.\n\n## What to record\n\n- The failure sentence and the case taken from the timeline.\n- The check, where it runs, and the evidence that it fails on that case.\n- Its cost, its false report rate and its owner.\n\n## Source\n\n- `src/loop_engine/core/heuristic_adoption.py`: this repository refuses to adopt a general rule before a declared number of recorded runs supports it, while still allowing an exact fix for a known case.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/heuristic_adoption.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "write_a_task_brief_for_an_agent",
+      "layer": "context",
+      "family": "method",
+      "title": "Write a task brief for an agent",
+      "tags": [
+        "task brief",
+        "delegation",
+        "agent instructions",
+        "scope"
+      ],
+      "text": "# Write a task brief for an agent\n\nWrite the assignment so that a capable worker who knows nothing about your project can finish it and you can check the result.\n\n## When to use it\n\nUse it whenever you hand work to an automated agent, a separate process or a new team member, and whenever the last attempt came back almost right.\n\n## Steps\n\n1. State the goal as the finished thing, not as the activity. Say what will exist when it is done.\n2. Give the context the work needs: where the code lives, which part of it matters, and what has already been tried and rejected.\n3. Name the exact inputs by path or identifier, and say which of them may be changed and which may not.\n4. State the acceptance conditions as checks, with the command to run and the expected result.\n5. State the limits: what may be written, what may be run, what may be reached over the network, what may be spent, and what must never happen.\n6. State how to report back: what to return, in what shape, and what to do with a partial result.\n7. Say what to do when blocked: which questions to ask, which decisions to make alone, and when to stop.\n8. Read the brief once as if you knew nothing else about the work, and repair anything you could only answer from memory.\n\n## Checks\n\n- The goal names a finished thing, not an activity.\n- Every input is named exactly and marked changeable or not.\n- The acceptance conditions are commands with expected results.\n- The limits and the reporting shape are stated.\n\n## Known-wrong example\n\nA brief says to improve error handling in the payments module. The agent wraps every call in a catch block that logs and continues, which removes the failures that a caller relied on and turns a refused payment into a silent success. The brief never said which behaviour mattered or how the result would be checked. Two acceptance conditions would have prevented all of it.\n\n## What to record\n\n- The brief as given, unchanged.\n- The acceptance conditions and their results.\n- The questions the worker had to ask, which show what the brief left out.\n\n## Source\n\n- `src/loop_engine/core/external_harness.py`: when this repository hands work to a separately started agent process, the goal, the authority, the evaluation and the record of what happened stay with the caller, and the outside process supplies only the mechanics.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/external_harness.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "state_the_permissions_and_limits_of_an_assignment",
+      "layer": "context",
+      "family": "method",
+      "title": "State the permissions and limits of an assignment",
+      "tags": [
+        "agent permissions",
+        "sandbox",
+        "write scope",
+        "resource limits"
+      ],
+      "text": "# State the permissions and limits of an assignment\n\nSay exactly what the worker may touch, run, reach and spend, so that nothing has to be guessed from the wording of the task.\n\n## When to use it\n\nUse it for every assignment given to an automated agent or an unattended process, and for any work that runs with credentials you would not hand out casually.\n\n## Steps\n\n1. Name one folder the work may write in, and say that everything else is read only.\n2. List the commands or kinds of command that may be run, and say that anything else needs a new decision.\n3. State the network rule: no access, a named list of destinations, or open access with a reason.\n4. State which credentials are available, in which scope, and which are not available at all.\n5. Give a limit on the resources: time, memory, disk, number of calls and money, each as a number.\n6. Bind every approval to the exact action it was given for. A changed action needs a new approval.\n7. Say clearly which actions have effects outside the machine, such as sending a message or making a payment, and require a separate approval for each one.\n8. Give the process an environment that contains only what was declared, rather than the whole environment of the machine it runs on.\n\n## Checks\n\n- An attempt to write outside the named folder is refused and visible.\n- A command that was not listed does not run.\n- Each outside effect has its own approval bound to the exact action.\n- The resource limits are numbers, and reaching one stops the work.\n\n## Known-wrong example\n\nAn agent is asked to clean up old files and inherits the full environment of the build machine, including a deployment credential. A confused path sends it to the wrong folder and it deletes part of a published artifact store. Nothing refused it, because nothing had been declared. One named folder and a cleared environment would have turned it into a refusal.\n\n## What to record\n\n- The declared folder, commands, network rule and credentials.\n- The resource limits and which ones were reached.\n- Each approval, the exact action it covered and who gave it.\n\n## Source\n\n- `src/loop_engine/core/harness_confinement.py`: a confined process here sees a cleared environment holding exactly the variables that were declared, each naming a place inside the sandbox rather than a setting of the host.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/harness_confinement.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "split_a_large_request_into_assignable_parts",
+      "layer": "context",
+      "family": "method",
+      "title": "Split a large request into assignable parts",
+      "tags": [
+        "decomposition",
+        "work breakdown",
+        "dependencies",
+        "parallel work"
+      ],
+      "text": "# Split a large request into assignable parts\n\nBreak work into pieces that can each be finished and checked on their own, with the dependencies between them written down.\n\n## When to use it\n\nUse it when a request is too large for one attempt, when several workers can help at once, or when an earlier attempt failed somewhere nobody can identify.\n\n## Steps\n\n1. Write the whole goal and its acceptance conditions first. The pieces must add up to it.\n2. Cut along outputs, not along activities. Each piece ends in something that exists and can be checked.\n3. For each piece, write its inputs, its output and the condition that says it is finished.\n4. Draw the dependencies. A piece may start when its inputs exist, and no piece may depend on something later.\n5. Mark the pieces that can run at the same time, and the point where their outputs are brought together.\n6. Make the joining an explicit piece of work with its own condition, because that is where mismatches appear.\n7. Keep each piece small enough to be judged in one reading. If you cannot state its finishing condition, it is still too large.\n8. Check that the pieces together satisfy the whole goal, and name anything that no piece covers.\n\n## Checks\n\n- Every piece has named inputs, one output and a finishing condition.\n- The dependencies form no circle.\n- The joining step exists and has its own condition.\n- Nothing in the whole goal is left uncovered by the pieces.\n\n## Known-wrong example\n\nA request is split into design, build and test as three assignments. The build finishes without a checkable output, the test assignment cannot start because nothing says what correct means, and the design turns out to have assumed a field the database does not have. Splitting by output, with each piece ending in something that can be checked, would have found the missing field in the first piece.\n\n## What to record\n\n- The pieces with their inputs, outputs and conditions.\n- The dependency order and the pieces that ran at the same time.\n- Anything in the goal that no piece covers.\n\n## Source\n\n- `src/loop_engine/code_nodes/solution_graph_validation.py`: this repository validates a stored work graph by checking that the connections match their declared input and output types, that the graph has no circle, and that an execution order exists.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/code_nodes/solution_graph_validation.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "supply_the_files_and_facts_an_assignment_needs",
+      "layer": "context",
+      "family": "method",
+      "title": "Supply the files and facts an assignment needs",
+      "tags": [
+        "context for an agent",
+        "exact paths",
+        "authoritative source",
+        "attachments"
+      ],
+      "text": "# Supply the files and facts an assignment needs\n\nGive the worker the material itself, or an exact reference it can fetch, instead of a description of where something might be.\n\n## When to use it\n\nUse it with every assignment handed to an agent or a separate process, and whenever an attempt failed because the worker looked in the wrong place.\n\n## Steps\n\n1. List what the work must read: files, records, examples of the expected output, and the rules that apply.\n2. Give each one an exact identity: a path with a revision, a record identifier, or a reference addressed by digest.\n3. Include small essential material in full. A worker should not have to search for the one paragraph that defines correct.\n4. For large material, give a reference the worker can resolve, and say how to resolve it.\n5. Check that each reference resolves before you send the assignment. A broken path costs a whole attempt.\n6. Say which material is authoritative when two sources disagree, because they will.\n7. Put everything for one assignment in one place that persists across attempts, so a second attempt starts from the same material.\n8. Say what is deliberately not supplied, and whether the worker may go and find it.\n\n## Checks\n\n- Every reference resolves at the moment the assignment is sent.\n- The material that defines correct is present in full.\n- One source is named authoritative for each question.\n- The material stays available for a second attempt.\n\n## Known-wrong example\n\nAn assignment says to follow the existing style in the repository. The worker reads three files, two of which are old and inconsistent, and follows the wrong one. The review sends it back, and the second attempt reads three different files. Naming one file as the authoritative example, with its revision, would have made both attempts the same.\n\n## What to record\n\n- The material list with exact identities and which is authoritative.\n- The references checked before sending.\n- What was deliberately left out and whether the worker may fetch it.\n\n## Source\n\n- `src/loop_engine/core/information_access.py`: this repository gives a produced value a logical identity and resolves it through a check on scope, permissions, size and contract identity, so a consumer asks for the value rather than for a location.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/information_access.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "verify_an_agent_result_without_trusting_its_summary",
+      "layer": "context",
+      "family": "review",
+      "title": "Verify an agent result without trusting its summary",
+      "tags": [
+        "verify an agent",
+        "independent check",
+        "skipped tests",
+        "scope creep"
+      ],
+      "text": "# Verify an agent result without trusting its summary\n\nJudge the thing that was produced, not the account the producer gives of it.\n\n## When to use it\n\nUse it for every result returned by an automated agent, and for any report that describes work you did not watch.\n\n## Steps\n\n1. Read the acceptance conditions first, before the summary. Read the summary last, or not at all.\n2. Find the produced thing. If you cannot find it, the work is not done, whatever the summary says.\n3. Check that it is really there and really has content: not an empty file, not a placeholder, not the same file as before.\n4. Run the acceptance checks yourself, in your own environment, and read their output rather than a claim about it.\n5. Compare the changes with the assignment's permitted scope. Anything touched outside it is a finding, even when it looks like an improvement.\n6. Look for the work that was skipped: a check turned off, a case removed, an assertion weakened, a rule relaxed.\n7. Where the assignment required judgment, ask for quotations from the produced thing that support the claim, and check each quotation is really there.\n8. Record the verdict against each condition separately, so a partly correct result is not treated as complete or as worthless.\n\n## Checks\n\n- Every acceptance condition has its own verdict.\n- The checks were run by the verifier, not reported by the producer.\n- No check, test or rule was weakened as part of the work.\n- Quoted evidence was found word for word in the produced thing.\n\n## Known-wrong example\n\nAn agent reports that all tests pass and the feature is complete. The tests do pass, because the agent marked two failing tests to be skipped and deleted a third. The summary says nothing false. Comparing the test count with the previous run, and reading the changes for removed checks, would have found it in a minute.\n\n## What to record\n\n- The verdict for each condition, with the output you saw.\n- Any change outside the permitted scope.\n- Any check or test that was removed, skipped or weakened.\n\n## Source\n\n- `src/loop_engine/core/independent_evidence.py`: this repository judges an attempt from outside the claims of the producer, using facts about the artifact such as agreement between separate attempts, rather than the producer's own account.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/independent_evidence.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "check_generated_code_against_the_request",
+      "layer": "context",
+      "family": "review",
+      "title": "Check generated code against the request",
+      "tags": [
+        "generated code",
+        "self written tests",
+        "differential testing",
+        "properties"
+      ],
+      "text": "# Check generated code against the request\n\nTest generated code with something the generator did not write, because code and its tests from one source agree with each other by construction.\n\n## When to use it\n\nUse it whenever code and its tests come from the same generator in the same attempt, and whenever a generated result is about to be used by somebody else.\n\n## Steps\n\n1. Take the expected results from the request, an existing implementation or a reference data set. Do not take them from the generator's own tests.\n2. Run the generated code against inputs you chose, and compare with those expected results.\n3. Where no expected result exists, compare two independent implementations on the same inputs and investigate every difference.\n4. Use relationships that must hold whatever the answer is: sorting twice gives the same list, reversing twice gives the original, a total equals the sum of its parts.\n5. Check the shape and meaning of the output, not only that it parses. An empty list of the right type is not a result.\n6. Read the code for the things tests rarely catch: a hard coded value that matches the example, a branch that only handles the sample, an exception swallowed.\n7. Run it on an input larger and stranger than the example, and see whether it still behaves.\n8. Record which expectations came from outside the generator, because those are the ones that carry weight.\n\n## Checks\n\n- At least one expected result came from outside the generated work.\n- The output is checked for meaning, not only for format.\n- A value or path specific to the example is not present in the code.\n- The code was run on an input it was not shown.\n\n## Known-wrong example\n\nA model writes a date parsing function and a test suite for it. Every test passes. The function returns the current date whenever parsing fails, and the tests only use valid dates from the same model. A single case taken from the request, with a malformed date and the required behaviour, would have failed at once.\n\n## What to record\n\n- The expectations used and where each came from.\n- The differences found between two implementations.\n- The inputs tried beyond the examples.\n\n## Source\n\n- `src/loop_engine/core/differential_verification.py`: this repository verifies a generated artifact without trusting values the same model wrote, by comparing independent implementations, checking relationships that must hold and recording each divergence.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/differential_verification.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "reproduce_the_evidence_a_report_claims",
+      "layer": "context",
+      "family": "review",
+      "title": "Reproduce the evidence a report claims",
+      "tags": [
+        "benchmark claim",
+        "denominator",
+        "exclusions",
+        "fair comparison"
+      ],
+      "text": "# Reproduce the evidence a report claims\n\nRun the numbers again yourself from the stated inputs, rather than accepting a table you cannot rebuild.\n\n## When to use it\n\nUse it before you rely on a benchmark, a measurement, an accuracy claim or a cost figure, whether it came from an agent, a colleague or another project.\n\n## Steps\n\n1. Ask for the exact inputs: the data set, the revision, the commands, the settings and the environment.\n2. Check that the claim names its denominator. A percentage without the number of cases cannot be checked.\n3. Run the stated commands yourself, in a clean environment, and record what you get.\n4. Compare your numbers with the claim. A small difference needs an explanation; a large one needs the work stopped.\n5. Check what was excluded. Failed runs, timed out cases and unparseable answers removed from a denominator change the result silently.\n6. Check that the comparison is fair: the same cases, the same grader, the same settings on both sides.\n7. Look for the measurement that was taken on a different thing from the one being claimed, such as a component check reported as a whole system result.\n8. Record what you could reproduce, what you could not, and what you did not try.\n\n## Checks\n\n- The inputs were stated exactly enough to run again.\n- Your numbers and the claim agree, or the difference is explained.\n- Exclusions are counted and reported.\n- The measured thing and the claimed thing are the same thing.\n\n## Known-wrong example\n\nA report says a change made the importer forty percent faster. Rebuilt, the measurement used a data set with the largest customer removed, because those runs failed. The failures were the slow cases. With them included the change is slightly slower. Asking for the exclusions would have shown it before the change was adopted.\n\n## What to record\n\n- The stated inputs and the commands you ran.\n- Your numbers beside the claimed numbers.\n- What you could not reproduce and what you did not attempt.\n\n## Source\n\n- `src/loop_engine/core/independent_verification.py`: in this repository the exact comparisons of a check run in the controlling process, outside the code being judged, so a claim is not confirmed by the thing that made it.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/core/independent_verification.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "review_a_failed_check_before_repairing_the_work",
+      "layer": "context",
+      "family": "review",
+      "title": "Review a failed check before repairing the work",
+      "tags": [
+        "failing test",
+        "do not weaken a check",
+        "wrong expectation",
+        "flaky environment"
+      ],
+      "text": "# Review a failed check before repairing the work\n\nDecide whether the work, the check or the environment is wrong, and never make a check weaker so that it passes.\n\n## When to use it\n\nUse it every time an automated check fails, especially when the failure is inconvenient and a small change to the check would clear it.\n\n## Steps\n\n1. Read the failure text and write down what the check expected and what it saw.\n2. Choose one of four explanations: the work is wrong, the check expects something the task never asked for, the check is stricter than the task, or the environment is at fault.\n3. Ground the choice in the task wording and the produced thing, quoting both. A feeling that the check is unfair is not grounds.\n4. If the work is wrong, repair the work and leave the check alone.\n5. If the check is wrong, change it, and then show that the changed check still fails on a known wrong version of the work.\n6. If the environment is at fault, repair the environment and run the check again unchanged.\n7. Never delete a case, lower a threshold or mark a test to be skipped as a way of passing. Record any such change as a finding with an owner.\n8. Record the explanation you chose and the evidence for it, so a repeated failure is not explained differently each time.\n\n## Checks\n\n- The explanation names one of the four and quotes the task and the produced thing.\n- A changed check still fails on a known wrong version.\n- No case was removed, skipped or loosened to pass.\n- The explanation is recorded with the failure.\n\n## Known-wrong example\n\nA test asserts that a report has twelve columns. A change adds a column, the test fails, and a developer updates the number to thirteen. Two months later a different change silently drops a column and the same test is updated again. The test now records whatever the code does. Deciding that the check was right and asking why a column vanished would have found a real defect.\n\n## What to record\n\n- The failure text, the expectation and the observation.\n- The chosen explanation with quotations as evidence.\n- Any change made to a check, and the known wrong case it still fails on.\n\n## Source\n\n- `src/loop_engine/strings/verification_prompts.py`: this repository keeps the governed texts that instruct a separate review of a failed check, so classifying the failure and confirming a claim that the check is at fault are done deliberately rather than by the producer.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 0cf19eb.\n",
+      "sources": [
+        "src/loop_engine/strings/verification_prompts.py"
+      ],
+      "symbols": []
+    }
+  ]
+}
