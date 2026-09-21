@@ -131,6 +131,48 @@ def _web_checks(check, root):
             check("missing_and_wrong_credentials_refuse_without_secret_echo",
                   missing.status_code == wrong.status_code == 401
                   and "WRONG_FIXTURE_TOKEN" not in wrong.text and not fixture.reads)
+            # A refusal used to carry a code and nothing else, so a customer
+            # who mistyped a token read "unauthorized" and had to guess what
+            # to do. Every refusal now states what happened and what to do
+            # next, whatever produced it, and neither sentence repeats
+            # anything from the request.
+            refusals = [
+                httpx.get(base + "/api/v1/session", trust_env=False),
+                client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION, "query": ""}),
+                client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION,
+                                                       "query": "alpha", "mode": "telepathy"}),
+                client.post("/api/v1/provisioning", json={"record_type": "service_provisioning_request/v0",
+                                                          "operation": "list"}),
+                client.post("/api/v1/provisioning", json=provisioning_request("list", surprise="FIXTURE_ECHO_PROBE")),
+                client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION,
+                                                       "query": "alpha", "FIXTURE_ECHO_PROBE": 1}),
+                client.post("/api/v1/provisioning", content=b"not json",
+                            headers={"Content-Type": "application/json"}),
+                client.post("/api/v1/provisioning", json=[1, 2, 3]),
+                client.post("/api/v1/provisioning", content=b"{}", headers={"Content-Type": "text/plain"}),
+                client.post("/api/v1/provisioning", json=provisioning_request("read", identity="skill.beta",
+                                                                             request_id="fixture-refusal-1")),
+                httpx.post(base + "/api/v1/no-such-route", json={}, trust_env=False),
+            ]
+            errors = [answer.json()["error"] for answer in refusals]
+            check("every_refusal_states_what_happened_and_what_to_do_next",
+                  len(errors) == 11 and all(answer.status_code >= 400 for answer in refusals)
+                  and all(len(error.get("message", "").split()) >= 5
+                          and len(error.get("next_action", "").split()) >= 5
+                          and error["message"].endswith(".") and error["next_action"].endswith(".")
+                          and error["code"].replace("_", " ") not in error["message"].lower()
+                          for error in errors)
+                  and len({error["code"] for error in errors}) >= 7)
+            check("a_refusal_never_repeats_the_caller_s_own_text_back_to_them",
+                  not any("FIXTURE_ECHO_PROBE" in answer.text or "telepathy" in answer.text
+                          or "skill.beta" in answer.text for answer in refusals))
+            # The guard above must not be satisfiable by one sentence used for
+            # everything: a wrong credential and a malformed search are
+            # different problems and need different next actions.
+            unauthorized = next(error for error in errors if error["code"] == "unauthorized")
+            check("different_refusals_carry_different_next_actions",
+                  len({error.get("next_action", "") for error in errors}) >= 5
+                  and "token" in unauthorized.get("next_action", "").lower())
             listed = client.post("/api/v1/provisioning", json=provisioning_request()).json()["result"]
             search = client.post("/api/v1/retrieval", json={"record_type": RETRIEVAL_REQUEST_VERSION,
                 "query": "alpha", "mode": "hybrid"}).json()["result"]

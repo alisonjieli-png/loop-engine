@@ -384,7 +384,8 @@ are release 8 and every earlier release. A rollback is the usual case.
   limit are allowed to finish. At most `maximum_concurrent_operations`
   attempts can be inside authentication at one time, so at most that many
   refused attempts from one address can finish after the limit is reached. A
-  check shows this bound.
+  check holds every worker slot open, sends further attempts while they are
+  held, and requires each of those to be refused with `503 service_busy`.
 - A caller who controls more addresses than `maximum_tracked_addresses` can
   make the table forget the oldest address early. Such a caller already has
   that many separate allowances. The worker slots remain the ceiling for all

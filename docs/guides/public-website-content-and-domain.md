@@ -174,11 +174,15 @@ report it.
 The address `/pricing` must be served by the server, not only handled by the
 page. While the serving route table did not list it, a direct visit, a shared
 link, a bookmark and a reload while the pricing view was open all returned
-HTTP 401 with the JSON body
-`{"record_type":"service_http_error/v1","error":{"code":"unauthorized"}}` and a
+HTTP 401 with a `service_http_error/v1` body whose only content was
+`"code":"unauthorized"`, and a
 `WWW-Authenticate: Bearer` header, because an unknown address falls past the
 served web assets into the authenticated dispatcher. A visitor read that raw
-text where the website should be. The entry
+text where the website should be. Since September 21, 2026 an address the
+service does not serve is decided before authentication and answers
+`404 route_unavailable`, and a browser asking for HTML gets a page that says so
+with a link back, so this failure can no longer look like a credential fault.
+The entry
 `"/pricing": ("index.html", HTML_MEDIA_TYPE)` in `WEB_ASSETS` in
 `src/loop_engine/core/service_runtime/http.py` is now on the main branch, so
 the source serves the address. Four named checks hold it:

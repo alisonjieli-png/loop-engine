@@ -161,9 +161,18 @@ class _Service:
 
     def statuses_together(self, count, method, path, **request):
         """Send `count` equal requests on one event loop, so that they overlap."""
+        return sorted(row[0] for row in self.answers_together(count, method, path, **request))
+
+    def answers_together(self, count, method, path, **request):
+        """Send `count` equal requests on one event loop and keep every answer.
+
+        The status alone cannot tell a typed refusal from a failure the
+        service did not plan for, so a check about what happens under load
+        needs the refusal codes as well.
+        """
         async def together():
             return await asyncio.gather(*(self._exchange(method, path, **request) for _each in range(count)))
-        return sorted(row[0] for row in asyncio.run(together()))
+        return asyncio.run(together())
 
 
 def _refuses(function):
@@ -512,19 +521,45 @@ def _transport_checks(check, root):
     service = _Service(root / "overlap", _peer(failures_allowed=3))
     try:
         slots = service.application.configuration.maximum_concurrent_operations
-        inside, authenticate = threading.Barrier(slots), service.application._authenticate_request
+        authenticate = service.application._authenticate_request
+        # Hold every worker slot open until the check releases it. An earlier
+        # version used a barrier of `slots` parties. When the machine was
+        # loaded, the first attempts finished and freed their slots before the
+        # extra ones arrived, so the extras took a slot, waited alone at a
+        # barrier that would never fill again and answered 500 after ten
+        # seconds. The check then failed for a timing the service never
+        # promised, roughly half the time, which is worse than no check: it
+        # taught a reader to rerun rather than to look.
+        arrived, release = threading.Semaphore(0), threading.Event()
 
         def held_authentication(request):
-            inside.wait(timeout=10)  # every worker slot is inside authentication before any attempt is refused
+            arrived.release()
+            release.wait(timeout=30)
             return authenticate(request)
 
         service.application._authenticate_request = held_authentication
-        overlapping = service.statuses_together(slots + 4, "GET", "/api/v1/session", headers=WRONG)
+        held = []
+        waiter = threading.Thread(target=lambda: held.extend(
+            service.answers_together(slots, "GET", "/api/v1/session", headers=WRONG)))
+        waiter.start()
+        # Every worker slot is occupied, and stays occupied, until this check
+        # says otherwise. Only then are the extra attempts sent, so what they
+        # answer is a property of the full service and not of the order the
+        # event loop happened to choose.
+        entered = all(arrived.acquire(timeout=30) for _slot in range(slots))
+        extra = [service.send("GET", "/api/v1/session", headers=WRONG) for _attempt in range(4)]
+        release.set()
+        waiter.join(timeout=60)
         service.application._authenticate_request = authenticate
         # Known limit, stated in the README: attempts already inside
-        # authentication finish, and the worker slots bound how many there are.
+        # authentication finish, and the worker slots bound how many there
+        # are. The rest must be told the service is busy. An unplanned 500
+        # would satisfy a status count alone, so the refusal code is checked.
         check("attempts_already_inside_authentication_finish_and_the_worker_slots_bound_them",
-              overlapping == [401] * slots + [503] * 4 and service.authentications == slots
+              entered and len(held) == slots and all(row[0] == 401 for row in held)
+              and [row[0] for row in extra] == [503] * 4
+              and [row[2]["error"]["code"] for row in extra] == ["service_busy"] * 4
+              and service.authentications == slots
               and service.status("GET", "/api/v1/session", headers=WRONG) == 429
               and service.authentications == slots)
     finally:

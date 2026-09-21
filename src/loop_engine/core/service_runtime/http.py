@@ -24,6 +24,7 @@ from .http_auth import (
     EXTERNAL_JWT_AUTHENTICATION,
 )
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
+from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 
 RESULT_VERSION = "service_http_result/v1"
@@ -214,8 +215,15 @@ def _parse_json(body):
     return value
 
 
-def _error_record(code, details=None):
-    result = {"record_type": ERROR_VERSION, "error": {"code": code},
+def _error_record(code, status, details=None):
+    # The code stays exactly what it was, because a client matches on it. The
+    # two sentences beside it are for whoever has to act: a person reading the
+    # website, and an agent that has to choose a next step without one. They
+    # are chosen from the code and the status alone, so no part of the request
+    # can be reflected back in a refusal.
+    message, next_action = _refusal_guidance(code, status)
+    result = {"record_type": ERROR_VERSION,
+              "error": {"code": code, "message": message, "next_action": next_action},
               "effect_commitment": "not_asserted", "automatic_retry": False}
     if details is not None:
         result["error"]["details"] = details
@@ -223,6 +231,21 @@ def _error_record(code, details=None):
                 and details.get("committed") is True and details.get("status") == "pending"):
             result["effect_commitment"] = "durable_pending"
     return result
+
+
+def _status_classes_in_use():
+    """Every HTTP status this transport can put on a refusal.
+
+    Read from this module's own source rather than kept as a second list, so
+    that a status added to a raise or to `_status` has no wording only if the
+    wording check says so.
+    """
+    import inspect
+    import re
+    source = inspect.getsource(inspect.getmodule(_status_classes_in_use))
+    raised = re.findall(r"ServiceHttpError\([^)\n]*?,\s*(\d{3})", source)
+    chosen = re.findall(r"return\s+(\d{3})(?:,|\s|$)", source) + re.findall(r"\s(\d{3})\s+if\s", source)
+    return {int(value) for value in [*raised, *chosen, "400"]}
 
 
 def http_provisioning_schema(operation):
@@ -594,10 +617,10 @@ class ServiceHttpApplication:
                     raise ServiceHttpError("response_limit_exceeded", 413)
                 return response
             except ValidationError:
-                code = "invalid_request"
+                status, code = 400, "invalid_request"
             except Exception as error:
-                _status_code, code = _status(error)
-            refused = _error_record(code)
+                status, code = _status(error)
+            refused = _error_record(code, status)
             return types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(refused).decode())],
                                         structuredContent=refused, isError=True)
         return sdk
@@ -684,7 +707,7 @@ class ServiceHttpApplication:
                         status_code=404, media_type=HTML_MEDIA_TYPE,
                         headers={**cors, **self._page_headers()})
                 else:
-                    response = JSONResponse(_error_record(code, details), status_code=status,
+                    response = JSONResponse(_error_record(code, status, details), status_code=status,
                                             headers={**cors, **(added or {})})
                 if status == 401:
                     response.headers["WWW-Authenticate"] = ("Bearer resource_metadata=\""

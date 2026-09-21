@@ -175,6 +175,7 @@ def self_test() -> dict:
         "core.external_service_intelligence", "core.provisioning_server", "core.provisioning_mcp_checks",
         "core.service_runtime.runtime", "core.service_runtime.billing",
         "core.service_runtime.stripe_provider", "core.service_runtime.http_checks",
+        "core.service_runtime.refusals",
         "core.service_runtime.stripe_sessions",
         "decision_cli", "core.decisions.contracts", "core.decisions.jev", "core.decisions.system_one", "code_nodes.decision_tools",
         "core.retrieval_backends",
