@@ -35,6 +35,14 @@ jobs:
       IMAGE: ghcr.io/${{ github.repository }}
 
     steps:
+      # Two different things can stop a publication, and they are not the same
+      # thing. A revision that no longer heads main has simply been overtaken
+      # by a later push: there is nothing to publish, the later push has its
+      # own run, and publishing would move the moving tags backwards. That is
+      # an ordinary outcome and this job reports it as a skip. A revision that
+      # no trusted run covers, or a revision that is not an exact commit, is a
+      # real problem and still fails the job. Neither case publishes anything,
+      # so the safety property is unchanged; only the colour differs.
       - name: Require successful source checks for the current main revision
         id: source
         uses: actions/github-script@v7
@@ -49,7 +57,12 @@ jobs:
               ...context.repo, ref: 'heads/main'
             });
             if (current.data.object.sha !== revision) {
-              throw new Error('This revision is no longer the current main revision.');
+              core.setOutput('publish', 'false');
+              core.setOutput('revision', revision);
+              core.notice(`A later push overtook ${revision}; main now heads ` +
+                `${current.data.object.sha}. Nothing is published from this run, ` +
+                `and the run for the current revision publishes instead.`);
+              return;
             }
             const runs = await github.rest.actions.listWorkflowRuns({
               ...context.repo, workflow_id: 'ci.yml', branch: 'main',
@@ -64,19 +77,23 @@ jobs:
             if (!eligible) {
               throw new Error('No successful trusted CI run covers this exact main revision.');
             }
+            core.setOutput('publish', 'true');
             core.setOutput('revision', revision);
             core.setOutput('ci_run', eligible.id);
 
       - uses: actions/checkout@v7
+        if: steps.source.outputs.publish == 'true'
         with:
           ref: ${{ steps.source.outputs.revision }}
 
       - name: Set up Docker Buildx
+        if: steps.source.outputs.publish == 'true'
         uses: docker/setup-buildx-action@v3
         with:
           driver: docker
 
       - name: Pull the pinned base image with retries
+        if: steps.source.outputs.publish == 'true'
         # A transient token fetch failure at the registry must not fail the
         # publication; the base image is pinned by digest in the Dockerfile.
         run: |
@@ -93,6 +110,7 @@ jobs:
           exit 1
 
       - name: Build the image without publishing
+        if: steps.source.outputs.publish == 'true'
         id: build
         uses: docker/build-push-action@v6
         with:
@@ -107,6 +125,7 @@ jobs:
             org.opencontainers.image.licenses=MIT
 
       - name: Verify the exact local image before publication
+        if: steps.source.outputs.publish == 'true'
         id: verify
         env:
           SOURCE_REVISION: ${{ steps.source.outputs.revision }}
@@ -130,7 +149,14 @@ jobs:
               print(json.dumps({"suite": report["record_type"], "passed": report["passed"], "total": report["total"]}))
           '
 
-      - name: Refuse publication if main changed during verification
+      # Main can move while the image is being built and verified. The image
+      # is still correct for the revision it was built from, but the moving
+      # tags belong to the newer revision, so nothing is published here and
+      # the run for that newer revision publishes instead. Being overtaken is
+      # not a fault, so this reports a skip rather than failing.
+      - name: Publish only while this revision still heads main
+        id: recheck
+        if: steps.source.outputs.publish == 'true'
         uses: actions/github-script@v7
         env:
           SOURCE_REVISION: ${{ steps.source.outputs.revision }}
@@ -139,11 +165,17 @@ jobs:
             const current = await github.rest.git.getRef({
               ...context.repo, ref: 'heads/main'
             });
-            if (current.data.object.sha !== process.env.SOURCE_REVISION) {
-              throw new Error('Main changed during verification; do not publish this image.');
+            const held = current.data.object.sha === process.env.SOURCE_REVISION;
+            core.setOutput('publish', held ? 'true' : 'false');
+            if (!held) {
+              core.notice(`Main moved to ${current.data.object.sha} while ` +
+                `${process.env.SOURCE_REVISION} was being verified. The built ` +
+                `image is not published, and the run for the current revision ` +
+                `publishes instead.`);
             }
 
       - name: Log in to the GitHub Container Registry
+        if: steps.recheck.outputs.publish == 'true'
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -151,6 +183,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish the verified image without rebuilding it
+        if: steps.recheck.outputs.publish == 'true'
         id: publish
         env:
           SOURCE_REVISION: ${{ steps.source.outputs.revision }}
@@ -168,6 +201,7 @@ jobs:
           echo "digest=${PUBLISHED_REFERENCE#*@}" >> "$GITHUB_OUTPUT"
 
       - name: Record the image digest
+        if: steps.recheck.outputs.publish == 'true'
         run: |
           {
             echo "## Published worker image"
@@ -180,6 +214,7 @@ jobs:
           echo "${{ steps.publish.outputs.digest }}" > "$RUNNER_TEMP/image-digest.txt"
 
       - uses: actions/upload-artifact@v7
+        if: steps.recheck.outputs.publish == 'true'
         with:
           name: worker-image-digest
           path: ${{ runner.temp }}/image-digest.txt

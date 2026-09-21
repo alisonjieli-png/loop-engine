@@ -40,23 +40,54 @@ from tools.stage_intelligence_candidates import (
 ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue"
 NAMESPACE = "starter.catalogue"
-MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 40, 150, 600, 8
+#: The 49 items of the first catalogue plus the 60 the expansion had to add. The bound keeps a
+#: later change from thinning the catalogue back out; adding items never needs it raised.
+MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 109, 150, 600, 8
 #: A required part that holds fewer words than this is a heading without content.
 MINIMUM_PART_WORDS = 8
-QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 26
+#: ``compile_candidates`` accepts one bounded population of at most this many rows, so the
+#: catalogue is committed as several population files that the tool accepts as they stand.
+#: A separate check proves that the tool refuses a population larger than this bound.
+STAGING_POPULATION = 50
+#: The message the staging tool gives when one population is empty or larger than the bound.
+POPULATION_REFUSAL = "One bounded population of specifications is required"
+#: The committed population files and the contract they carry. A check requires that the
+#: refresh tool beside the catalogue uses the same three values, so they cannot drift apart.
+SPECIFICATIONS_PREFIX = "specifications-"
+SPECIFICATIONS_GLOB = SPECIFICATIONS_PREFIX + "[0-9][0-9][0-9].json"
+SPECIFICATIONS_RECORD_TYPE = "candidate_intelligence_specifications/v1"
+QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 100
 EXAMPLES_FILE, EXAMPLES_RECORD_TYPE = "executed-examples.json", "starter_catalogue_executed_examples/v1"
-#: How much of the catalogue the executed examples must cover. A body may quote a
-#: value only when a row here runs the cited code and observes it.
+#: An absolute floor for the executed examples, not a share of the catalogue. Most items
+#: describe a working method and can have no row at all, so this number does not rise with
+#: the catalogue. What a body may quote is governed by
+#: ``rule_bodies_list_the_quotations_no_example_proves``, which reads every body.
 MINIMUM_EXAMPLES, MINIMUM_EXAMPLE_ITEMS = 40, 10
+#: One span between single backticks, which is how a body writes a path, a name or a value.
+QUOTATION = re.compile(r"`([^`\n]+)`")
 IDENTITY = re.compile(r"[a-z][a-z0-9_]{2,79}")
 #: The two layers that can hold compiled material today. The other two canonical
 #: layers need real runs and real feedback, so an item there would be invented.
 LAYERS = {"context": "context_intelligence", "code": "code_intelligence"}
 MODEL_GENERATED_SOURCE = "src/loop_engine/governance/candidates/part-00000.jsonl"
-LICENCE_STATES = {"declared": ("MIT", "assistant_authored_from_repository_sources", "Licence: MIT."),
-                  "needs_review": ("unknown", "assistant_compiled_from_model_generated_candidates",
-                                   "Licence state: needs review.")}
+#: Each licence state, with the licence the reference must carry and the sentence the body states.
+LICENCE_STATES = {"declared": ("MIT", "Licence: MIT."),
+                  "needs_review": ("unknown", "Licence state: needs review.")}
 REVIEW_LICENCE = {"declared": "MIT, declared", "needs_review": "unknown, needs review"}
+#: How a body relates to the file it cites, and the sentence the body must carry so that a
+#: reader is never told that general engineering practice was read out of the cited code.
+GROUNDINGS = {"restates_cited_source": "Compiled from revision {revision}.",
+              "general_practice_beside_cited_source": "Written for this catalogue at revision {revision}."}
+GENERAL_PRACTICE = "general_practice_beside_cited_source"
+GENERAL_PRACTICE_SENTENCE = ("The steps above are ordinary engineering practice, "
+                             "written for this catalogue in its own words.")
+#: How each licence state and grounding pair was authored. The two facts are decided
+#: together, so a body of general engineering practice cannot record that its words were
+#: taken from a repository source. Both values under the state `declared` carry the
+#: licence MIT and the same licence sentence; they differ only in where the words come from.
+AUTHORING = {("declared", "restates_cited_source"): "assistant_authored_from_repository_sources",
+             ("declared", GENERAL_PRACTICE): "assistant_authored_from_general_practice",
+             ("needs_review", "restates_cited_source"): "assistant_compiled_from_model_generated_candidates"}
 #: The items compiled from model generated statements. They record the licence
 #: `unknown`, so the default host licence policy refuses them before registration
 #: and they cannot be served until their rights are settled. The names are listed
@@ -103,20 +134,38 @@ REVIEW_FORBIDDEN = RETIRED_PUBLIC_LANGUAGE
 class CatalogueSnapshot:
     """Everything the rules read, held in memory so a known-wrong copy is cheap."""
 
-    specifications: dict
+    populations: tuple
     items: dict
     bodies: dict
     review: str
     repository: Path
     examples: dict
 
+    @property
+    def specifications(self) -> dict:
+        """Every committed population's rows in file order, under one record.
+
+        The staging tool refuses this combined record, because it holds more rows
+        than one population may hold. It exists so that a rule about the whole
+        catalogue reads one list. A rule about staging reads ``populations``.
+        """
+        return {"record_type": SPECIFICATIONS_RECORD_TYPE,
+                "specifications": [row for _name, record in self.populations
+                                   for row in record.get("specifications") or ()]}
+
     def rows(self):
-        return list(zip(self.specifications.get("specifications") or (), self.items.get("items") or ()))
+        return list(zip(self.specifications["specifications"], self.items.get("items") or ()))
+
+
+def load_populations(folder: Path) -> tuple:
+    """The committed population files with their records, in file name order."""
+    return tuple((path.name, json.loads(path.read_text(encoding="utf-8")))
+                 for path in sorted(folder.glob(SPECIFICATIONS_GLOB)))
 
 
 def load_snapshot(folder: Path = CATALOGUE) -> CatalogueSnapshot:
     bodies = {path.stem: path.read_bytes() for path in sorted((folder / "bodies").iterdir())}
-    return CatalogueSnapshot(json.loads((folder / "specifications.json").read_text(encoding="utf-8")),
+    return CatalogueSnapshot(load_populations(folder),
                              json.loads((folder / "items.json").read_text(encoding="utf-8")), bodies,
                              (folder / "REVIEW.md").read_text(encoding="utf-8"), ROOT,
                              json.loads((folder / EXAMPLES_FILE).read_text(encoding="utf-8")))
@@ -178,16 +227,44 @@ def rule_every_item_carries_a_licence(snapshot):
         if state not in LICENCE_STATES:
             found.append(f"{identity}: licence state {state!r} is not declared")
             continue
-        licence, authoring, sentence = LICENCE_STATES[state]
+        licence, sentence = LICENCE_STATES[state]
+        grounding = (item.get("provenance") or {}).get("grounding")
+        authoring = AUTHORING.get((state, grounding))
         generated = MODEL_GENERATED_SOURCE in (row.get("sources") or ())
         if item.get("reference", {}).get("license") != licence:
             found.append(f"{identity}: the licence must be {licence!r} in the state {state!r}")
         if generated != (state == "needs_review"):
             found.append(f"{identity}: model generated material needs review, and only such material")
-        if (item.get("provenance") or {}).get("authoring") != authoring:
-            found.append(f"{identity}: the provenance does not say how the body was authored")
+        if authoring is None:
+            found.append(f"{identity}: the licence state {state!r} and the grounding {grounding!r} are not a "
+                         f"pair this catalogue supports, so no authoring value fits them")
+        elif (item.get("provenance") or {}).get("authoring") != authoring:
+            found.append(f"{identity}: a body that is {grounding!r} under the licence state {state!r} was "
+                         f"authored as {authoring!r}, not {(item.get('provenance') or {}).get('authoring')!r}")
         if sentence not in snapshot.bodies.get(identity, b"").decode("utf-8"):
             found.append(f"{identity}: the body does not state its licence")
+    return found
+
+
+def rule_bodies_say_how_they_relate_to_their_source(snapshot):
+    """A body either restates the file it cites or says that it is general practice beside it."""
+    revision = str(snapshot.items.get("source_revision"))[:7]
+    found = []
+    for row, item in snapshot.rows():
+        identity = row.get("id")
+        grounding = (item.get("provenance") or {}).get("grounding")
+        body = snapshot.bodies.get(identity, b"").decode("utf-8")
+        if grounding not in GROUNDINGS:
+            found.append(f"{identity}: the provenance must say how the body relates to its source, "
+                         f"one of {sorted(GROUNDINGS)}, not {grounding!r}")
+            continue
+        for name, sentence in GROUNDINGS.items():
+            if (sentence.format(revision=revision) in body) != (name == grounding):
+                found.append(f"{identity}: a body declared as {grounding!r} must carry "
+                             f"{GROUNDINGS[grounding].format(revision=revision)!r} and no other grounding sentence")
+                break
+        if (GENERAL_PRACTICE_SENTENCE in body) != (grounding == GENERAL_PRACTICE):
+            found.append(f"{identity}: only a body written from general practice may say that it was")
     return found
 
 
@@ -230,14 +307,49 @@ def rule_bodies_stay_in_the_word_range(snapshot):
             for identity, count in sorted(counts.items()) if not MINIMUM_WORDS <= count <= MAXIMUM_WORDS]
 
 
-def rule_specification_loads_through_the_staging_tool(snapshot):
-    try:
-        records = compile_candidates(snapshot.specifications, CandidateStageRequest(snapshot.repository, NAMESPACE))
-    except ValueError as error:
-        return [f"the staging tool refuses the specification: {error}"]
+def compile_every_population(populations: tuple, request) -> tuple[list, list]:
+    """Every compiled record, with the refusal of any committed population file the tool rejects.
+
+    Each file is handed to the staging tool exactly as it is committed, which is
+    what an operator does with the command in the review sheet. Nothing is split
+    here, so a file the tool would refuse is reported instead of being worked around.
+    """
+    records, refusals = [], []
+    for name, record in populations:
+        try:
+            records += compile_candidates(record, request)
+        except ValueError as error:
+            refusals.append(f"{name}: the staging tool refuses the population: {error}")
+    return records, refusals
+
+
+def rule_every_population_file_loads_through_the_staging_tool(snapshot):
+    """Every committed population file is accepted by the staging tool as it stands."""
     found = []
+    names = [name for name, _record in snapshot.populations]
+    expected = [f"{SPECIFICATIONS_PREFIX}{number:03d}.json" for number in range(1, len(names) + 1)]
+    if names != expected:
+        return [f"the population files must be numbered from one without a gap: {expected}, not {names}"]
+    for number, (name, record) in enumerate(snapshot.populations, start=1):
+        rows = record.get("specifications")
+        if record.get("record_type") != SPECIFICATIONS_RECORD_TYPE:
+            found.append(f"{name}: record type {record.get('record_type')!r} is not the one the staging tool accepts")
+        if record.get("population") != number or record.get("populations") != len(names):
+            found.append(f"{name}: the record must say that it is population {number} of {len(names)}")
+        if not isinstance(rows, list) or not 1 <= len(rows) <= STAGING_POPULATION:
+            found.append(f"{name}: a population holds one to {STAGING_POPULATION} rows, "
+                         f"not {len(rows) if isinstance(rows, list) else 'a list'}")
+    if found:
+        return found
+    records, found = compile_every_population(
+        snapshot.populations, CandidateStageRequest(snapshot.repository, NAMESPACE))
+    if found:
+        return found
     if len(records) != len(snapshot.specifications["specifications"]):
         found.append("the staging tool did not compile one record for each row")
+    identities = [record["record_id"] for record in records]
+    found += [f"{identity}: the same record identity is staged twice"
+              for identity in sorted(set(identities)) if identities.count(identity) > 1]
     found += [f"{record['record_id']}: staged as something other than an unexecutable candidate"
               for record in records if record["lifecycle"] != "candidate"
               or record["payload"]["lifecycle"] != "candidate" or record["payload"]["execution_available"] is not False
@@ -302,6 +414,52 @@ def rule_source_references_are_pinned(snapshot):
             found.append(f"{row.get('id')}: the source reference must be the first listed source at the full revision")
         if revision[:7] not in snapshot.bodies.get(row.get("id"), b"").decode("utf-8"):
             found.append(f"{row.get('id')}: the body does not name the revision it was compiled from")
+    earlier = snapshot.items.get("previous_source_revisions")
+    if (not isinstance(earlier, list) or not all(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{40}", value)
+                                                 for value in earlier) or revision in earlier
+            or len(set(earlier)) != len(earlier)):
+        return found + ["the items record must keep the earlier anchor revisions, each one full, distinct and "
+                        "not the current one"]
+    # The sheet may name the revision the catalogue is anchored to and any anchor it was moved from.
+    # Naming anything else means the sheet was left behind by an anchor change.
+    allowed = {revision[:7]} | {value[:7] for value in earlier}
+    named = set(re.findall(r"revision [`]?([0-9a-f]{7})[`]?", snapshot.review))
+    found += [f"REVIEW.md names revision {other!r}, which is neither the revision the catalogue is anchored to "
+              f"nor one it was anchored to before" for other in sorted(named - allowed)]
+    if revision[:7] not in named:
+        found.append("REVIEW.md does not name the revision the catalogue is anchored to")
+    return found
+
+
+def rule_cited_source_bytes_are_the_pinned_bytes(snapshot):
+    """Every cited file in the tree is byte for byte the file the record pins.
+
+    ``compile_candidates`` hashes the working tree into ``sources[].sha256`` of the
+    staged record, while ``reference.source_ref`` names a revision. If the tree moves
+    on, one staged record carries two provenance facts about different bytes. The
+    items record therefore pins the digest of every cited file at its own
+    ``source_revision``, and this rule compares those digests with the tree. When a
+    cited file changes, anchor the catalogue again with the refresh tool, which reads
+    the file at the new revision before it writes anything.
+    """
+    digests = snapshot.items.get("source_digests")
+    if not isinstance(digests, dict):
+        return ["the items record must pin the digest of every cited source"]
+    cited = sorted({source for row, _item in snapshot.rows() for source in row.get("sources") or ()})
+    found = [f"{source}: no digest is pinned for a cited source" for source in cited if source not in digests]
+    found += [f"{source}: a digest is pinned for a file that no item cites" for source in sorted(digests)
+              if source not in cited]
+    for source in cited:
+        if source not in digests:
+            continue
+        path = snapshot.repository / source
+        if not path.is_file():
+            found.append(f"{source}: a cited source is not a file of this repository")
+            continue
+        measured = hashlib.sha256(path.read_bytes()).hexdigest()
+        if measured != digests[source]:
+            found.append(f"{source}: the file in the tree is not the file the record pins at "
+                         f"{str(snapshot.items.get('source_revision'))[:7]}; anchor the catalogue again")
     return found
 
 
@@ -437,13 +595,54 @@ def rule_quoted_examples_reproduce(snapshot):
     return found
 
 
+def rule_bodies_list_the_quotations_no_example_proves(snapshot):
+    """Every quotation in a body is proven by an executed example or listed by its own item.
+
+    ``rule_quoted_examples_reproduce`` runs from the executed examples to the bodies. This
+    rule runs the other way. It collects every span in backticks that is not a source the
+    item cites, not a symbol the item names and not a model generated row the item cites,
+    drops the ones that an executed example of this item proves word for word, and requires
+    the item to list exactly what is left. So a body cannot gain a quoted value that nothing
+    ran while every named check stays green: the record has to say so.
+
+    The list is mechanical. It also holds ordinary terms such as a file name or a setting
+    name, not only values that the body claims the code returns.
+    """
+    proven = {}
+    for row in snapshot.examples.get("examples") or ():
+        proven.setdefault(row.get("identity"), []).append(row.get("quote"))
+    found = []
+    for row, item in snapshot.rows():
+        identity = row.get("id")
+        provenance = item.get("provenance") or {}
+        listed = provenance.get("unexecuted_quotations")
+        if not isinstance(listed, list) or not all(isinstance(value, str) for value in listed):
+            found.append(f"{identity}: the item must list the quotations that no executed example proves, "
+                         f"even when there are none, not {listed!r}")
+            continue
+        known = (set(row.get("sources") or ()) | set(row.get("symbols") or ())
+                 | set(provenance.get("model_generated_row_digests") or ()))
+        quotes = [quote for quote in proven.get(identity, ()) if isinstance(quote, str)]
+        body = snapshot.bodies.get(identity, b"").decode("utf-8")
+        measured = sorted(token for token in set(QUOTATION.findall(body)) - known
+                          if not any(token in quote for quote in quotes))
+        if sorted(listed) != measured:
+            found.append(f"{identity}: the body carries {sorted(set(measured) - set(listed))} that the item "
+                         f"does not list, and the item lists {sorted(set(listed) - set(measured))} that no "
+                         f"quotation of the body needs")
+    return found
+
+
 RULES = {function.__name__[5:]: function for function in (
     rule_identities_are_unique, rule_digests_and_sizes_match_the_bodies, rule_every_item_carries_a_licence,
+    rule_bodies_say_how_they_relate_to_their_source,
     rule_every_item_is_a_candidate, rule_no_forbidden_vocabulary, rule_bodies_stay_in_the_word_range,
-    rule_specification_loads_through_the_staging_tool, rule_bodies_have_the_required_parts,
+    rule_every_population_file_loads_through_the_staging_tool, rule_bodies_have_the_required_parts,
     rule_layers_kinds_effects_and_styles_are_declared, rule_source_references_are_pinned,
+    rule_cited_source_bytes_are_the_pinned_bytes,
     rule_model_generated_material_is_bounded, rule_the_review_sheet_lists_every_item,
-    rule_the_catalogue_is_large_enough, rule_quoted_examples_reproduce)}
+    rule_the_catalogue_is_large_enough, rule_quoted_examples_reproduce,
+    rule_bodies_list_the_quotations_no_example_proves)}
 
 
 def problems(snapshot) -> dict:
@@ -466,27 +665,84 @@ def _refresh_module():
     return sys.modules[name]
 
 
-def _changed(snapshot, *, specifications=None, items=None, body=None, review=None, examples=None):
+def _repack(populations: tuple, rows: list) -> tuple:
+    """The rows put back into population files of at most the bound, keeping the file names.
+
+    A change that adds rows past the last committed file gets one more file, named
+    after its number, so a known-wrong copy still looks like a committed catalogue.
+    """
+    names = [name for name, _record in populations]
+    chunks = [rows[start:start + STAGING_POPULATION] for start in range(0, len(rows), STAGING_POPULATION)] or [[]]
+    while len(names) < len(chunks):
+        names.append(f"{SPECIFICATIONS_PREFIX}{len(names) + 1:03d}.json")
+    return tuple((names[number - 1],
+                  {"record_type": SPECIFICATIONS_RECORD_TYPE, "population": number, "populations": len(chunks),
+                   "specifications": chunk})
+                 for number, chunk in enumerate(chunks, start=1))
+
+
+def _changed(snapshot, *, specifications=None, populations=None, items=None, body=None, review=None,
+             examples=None):
     """A deep copy with one deliberate defect; the committed files are never touched."""
-    new_specifications, new_items = deepcopy(snapshot.specifications), deepcopy(snapshot.items)
+    new_populations, new_items = deepcopy(snapshot.populations), deepcopy(snapshot.items)
     new_examples = deepcopy(snapshot.examples)
     bodies = dict(snapshot.bodies)
     if specifications:
-        specifications(new_specifications["specifications"])
+        rows = [row for _name, record in new_populations for row in record["specifications"]]
+        specifications(rows)
+        new_populations = _repack(new_populations, rows)
+    if populations:
+        new_populations = populations(new_populations)
     if items:
         items(new_items)
     if examples:
         examples(new_examples["examples"])
     if body:
-        identity = new_specifications["specifications"][0]["id"]
+        identity = new_populations[0][1]["specifications"][0]["id"]
         bodies[identity] = body(bodies[identity].decode("utf-8")).encode("utf-8")
-    return replace(snapshot, specifications=new_specifications, items=new_items, bodies=bodies,
+    return replace(snapshot, populations=new_populations, items=new_items, bodies=bodies,
                    examples=new_examples,
                    review=snapshot.review if review is None else review(snapshot.review))
 
 
+def _one_oversized_population(populations: tuple) -> tuple:
+    """Every row in one population file, which is the shape the staging tool refuses."""
+    rows = [row for _name, record in populations for row in record["specifications"]]
+    return ((populations[0][0], {"record_type": SPECIFICATIONS_RECORD_TYPE, "population": 1, "populations": 1,
+                                 "specifications": rows}),)
+
+
+def _first_population_emptied(populations: tuple) -> tuple:
+    """The first population file with no rows left in it, which the staging tool also refuses."""
+    name, record = populations[0]
+    return ((name, {**record, "specifications": []}),) + populations[1:]
+
+
 def _generated(items):
     return next(item for item in items["items"] if item["license_state"] == "needs_review")
+
+
+def _general_practice_item(items):
+    """The first item whose body is general engineering practice written beside its cited file."""
+    return next(item for item in items["items"] if item["provenance"]["grounding"] == GENERAL_PRACTICE)
+
+
+def _restating_item(items):
+    """The first item under the licence state `declared` whose body restates the file it cites."""
+    return next(item for item in items["items"] if item["license_state"] == "declared"
+                and item["provenance"]["grounding"] == "restates_cited_source")
+
+
+def _general_practice_identity(snapshot):
+    """The first item whose body is general practice written beside the file it cites."""
+    return next(row["id"] for row, item in snapshot.rows()
+                if item["provenance"]["grounding"] == GENERAL_PRACTICE)
+
+
+def _changed_body(snapshot, identity, change):
+    """A deep copy in which one named body carries a deliberate defect."""
+    text = change(snapshot.bodies[identity].decode("utf-8"))
+    return replace(snapshot, bodies={**snapshot.bodies, identity: text.encode("utf-8")})
 
 
 def _set(target, key, value):
@@ -495,6 +751,11 @@ def _set(target, key, value):
 
 def _first_reference(items):
     return items["items"][0]["reference"]
+
+
+def _without_the_capitalisation_examples(rows):
+    """Every executed example of the capitalisation item removed, so its values lose their proof."""
+    rows[:] = [row for row in rows if row["identity"] != "restore_capitalisation_of_names"]
 
 
 def _capitalisation_example(rows):
@@ -557,7 +818,26 @@ KNOWN_WRONG = {
             s, items=lambda items: _set(_first_reference(items), "license", ""))),
         ("model generated material claims the repository licence", lambda s: _changed(
             s, items=lambda items: (_set(_generated(items), "license_state", "declared"),
-                                    _set(_generated(items)["reference"], "license", "MIT"))))),
+                                    _set(_generated(items)["reference"], "license", "MIT")))),
+        ("general practice says that its words came from a repository source", lambda s: _changed(
+            s, items=lambda items: _set(_general_practice_item(items)["provenance"], "authoring",
+                                        AUTHORING[("declared", "restates_cited_source")]))),
+        ("a body that restates its source claims to be general practice authoring", lambda s: _changed(
+            s, items=lambda items: _set(_restating_item(items)["provenance"], "authoring",
+                                        AUTHORING[("declared", GENERAL_PRACTICE)]))),
+        ("an authoring value that this catalogue does not know", lambda s: _changed(
+            s, items=lambda items: _set(_general_practice_item(items)["provenance"], "authoring",
+                                        "assistant_authored_from_another_project")))),
+    "bodies_say_how_they_relate_to_their_source": (
+        ("an item does not say how its body relates to its source", lambda s: _changed(
+            s, items=lambda items: _set(items["items"][0]["provenance"], "grounding", "read_from_the_source"))),
+        ("general practice claims to be compiled from the file it cites", lambda s: _changed_body(
+            s, _general_practice_identity(s),
+            lambda text: text.replace("Written for this catalogue at revision", "Compiled from revision"))),
+        ("general practice does not say that it is general practice", lambda s: _changed_body(
+            s, _general_practice_identity(s), lambda text: text.replace(GENERAL_PRACTICE_SENTENCE + "\n\n", ""))),
+        ("a body compiled from its source claims to be general practice", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Source\n", f"\n{GENERAL_PRACTICE_SENTENCE}\n\n## Source\n")))),
     "every_item_is_a_candidate": (
         ("an item calls itself qualified", lambda s: _changed(
             s, items=lambda items: _set(_first_reference(items)["tags"], "lifecycle", ["qualified"]))),
@@ -600,13 +880,25 @@ KNOWN_WRONG = {
     "bodies_stay_in_the_word_range": (
         ("a body is one sentence long", lambda s: _changed(s, body=lambda text: "# Short\n\nOne sentence only.\n")),
         ("a body is an essay", lambda s: _changed(s, body=lambda text: text + "more words " * 400 + "\n"))),
-    "specification_loads_through_the_staging_tool": (
+    "every_population_file_loads_through_the_staging_tool": (
         ("a row carries a field the staging tool does not accept", lambda s: _changed(
             s, specifications=lambda rows: _set(rows[0], "license", "MIT"))),
         ("a row claims to be active", lambda s: _changed(
             s, specifications=lambda rows: _set(rows[0], "lifecycle", "active"))),
         ("a source is not a file in the repository", lambda s: _changed(
-            s, specifications=lambda rows: _set(rows[0], "sources", ["src/loop_engine/no_such_file.py"])))),
+            s, specifications=lambda rows: _set(rows[0], "sources", ["src/loop_engine/no_such_file.py"]))),
+        ("the same identity is staged again in a later population", lambda s: _changed(
+            s, specifications=lambda rows: rows.append(deepcopy(rows[0])),
+            items=lambda items: items["items"].append(deepcopy(items["items"][0])))),
+        ("a population file holds more rows than the staging tool accepts", lambda s: _changed(
+            s, populations=_one_oversized_population)),
+        ("a population file is empty", lambda s: _changed(s, populations=_first_population_emptied)),
+        ("a population file does not say which population it is", lambda s: _changed(
+            s, populations=lambda populations: tuple(
+                (name, {**record, "population": record["population"] + 1}) if number == 1 else (name, record)
+                for number, (name, record) in enumerate(populations, start=1)))),
+        ("a population file is missing from the middle of the set", lambda s: _changed(
+            s, populations=lambda populations: populations[:1] + populations[2:]))),
     "bodies_have_the_required_parts": (
         ("the known-wrong example is missing", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Known-wrong example\n", "\n## Another part\n"))),
@@ -629,7 +921,27 @@ KNOWN_WRONG = {
             s, items=lambda items: _set(_first_reference(items), "source_ref",
                                         _first_reference(items)["source_ref"].split("@")[0]))),
         ("the revision is abbreviated", lambda s: _changed(
-            s, items=lambda items: _set(items, "source_revision", items["source_revision"][:7])))),
+            s, items=lambda items: _set(items, "source_revision", items["source_revision"][:7]))),
+        ("the review sheet names a revision the record does not know", lambda s: _changed(
+            s, review=lambda text: text.replace(f"revision `{s.items['source_revision'][:7]}`",
+                                                "revision `0ddba11`", 1))),
+        ("an earlier anchor revision is abbreviated in the record", lambda s: _changed(
+            s, items=lambda items: _set(items, "previous_source_revisions",
+                                        [items["previous_source_revisions"][0][:7]]))),
+        ("the current revision is also listed as an earlier one", lambda s: _changed(
+            s, items=lambda items: items["previous_source_revisions"].append(items["source_revision"]))),
+        ("the review sheet names no revision at all", lambda s: _changed(
+            s, review=lambda text: text.replace(s.items["source_revision"][:7], "an earlier commit")))),
+    "cited_source_bytes_are_the_pinned_bytes": (
+        ("a cited file in the tree is not the file the record pins", lambda s: _changed(
+            s, items=lambda items: _set(items["source_digests"],
+                                        sorted(items["source_digests"])[0], "0" * 64))),
+        ("a cited source has no pinned digest", lambda s: _changed(
+            s, items=lambda items: items["source_digests"].pop(sorted(items["source_digests"])[0]))),
+        ("a digest is pinned for a file that no item cites", lambda s: _changed(
+            s, items=lambda items: _set(items["source_digests"], "src/loop_engine/core/facets.py", "0" * 64))),
+        ("the record pins no digests at all", lambda s: _changed(
+            s, items=lambda items: _set(items, "source_digests", None)))),
     "model_generated_material_is_bounded": (
         ("a row that the source does not hold", lambda s: _changed(
             s, items=lambda items: _generated(items)["provenance"]["model_generated_row_digests"].append("f" * 16))),
@@ -669,6 +981,15 @@ KNOWN_WRONG = {
             s, examples=lambda rows: _set(rows[0], "expect", {"no_such_field": None}))),
         ("the record type is not the supported one", lambda s: replace(
             s, examples={**s.examples, "record_type": "starter_catalogue_executed_examples/v2"}))),
+    "bodies_list_the_quotations_no_example_proves": (
+        ("a body gains a value that no executed example proves", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Checks\n", "\nThe call returns `41.7 seconds`.\n\n## Checks\n"))),
+        ("an item lists a quotation that its body does not carry", lambda s: _changed(
+            s, items=lambda items: items["items"][0]["provenance"]["unexecuted_quotations"].append("never_written"))),
+        ("an item does not list its quotations at all", lambda s: _changed(
+            s, items=lambda items: _set(items["items"][0]["provenance"], "unexecuted_quotations", None))),
+        ("an executed example is dropped, so the value it proved is no longer proven", lambda s: _changed(
+            s, examples=_without_the_capitalisation_examples))),
 }
 
 
@@ -698,9 +1019,44 @@ class StarterCatalogueChecks(unittest.TestCase):
                 self.assertEqual(len(mutant.failures), len(cases), f"{check} survived the removal of {name}")
                 self.assertEqual(mutant.errors, [])
 
+    def test_the_staging_tool_refuses_the_whole_catalogue_as_one_population(self):
+        """The bound is an asserted fact, not a number this file repeats.
+
+        The combined record of every committed population holds more rows than one
+        population may hold, so the staging tool refuses it by name. This is why the
+        catalogue is committed as population files instead of as one file.
+        """
+        combined = self.snapshot.specifications
+        self.assertGreater(len(combined["specifications"]), STAGING_POPULATION)
+        with self.assertRaises(ValueError) as refusal:
+            compile_candidates(combined, CandidateStageRequest(ROOT, NAMESPACE))
+        self.assertEqual(str(refusal.exception), POPULATION_REFUSAL)
+        # The same refusal for an empty population, so the bound is proven at both ends.
+        with self.assertRaises(ValueError) as empty:
+            compile_candidates({**combined, "specifications": []}, CandidateStageRequest(ROOT, NAMESPACE))
+        self.assertEqual(str(empty.exception), POPULATION_REFUSAL)
+        # Every committed file stays inside the bound and is accepted as it stands.
+        for name, record in self.snapshot.populations:
+            with self.subTest(population=name):
+                self.assertLessEqual(len(record["specifications"]), STAGING_POPULATION)
+                self.assertEqual(len(compile_candidates(record, CandidateStageRequest(ROOT, NAMESPACE))),
+                                 len(record["specifications"]))
+
+    def test_the_refresh_tool_and_this_check_name_the_same_population_files(self):
+        """One contract for the committed population files, so the two tools cannot drift apart."""
+        refresh = _refresh_module()
+        self.assertEqual(
+            (refresh.SPECIFICATIONS_PREFIX, refresh.SPECIFICATIONS_GLOB, refresh.SPECIFICATIONS_RECORD_TYPE,
+             refresh.POPULATION_SIZE),
+            (SPECIFICATIONS_PREFIX, SPECIFICATIONS_GLOB, SPECIFICATIONS_RECORD_TYPE, STAGING_POPULATION))
+        self.assertEqual([name for name, _record in self.snapshot.populations],
+                         refresh.population_names(CATALOGUE))
+
     def test_the_specification_stages_and_review_search_finds_every_item(self):
         request = CandidateStageRequest(ROOT, NAMESPACE, True)
-        records = compile_candidates(self.snapshot.specifications, request)
+        records, refusals = compile_every_population(self.snapshot.populations, request)
+        self.assertEqual(refusals, [])
+        self.assertEqual(len(records), len(self.snapshot.rows()))
         with tempfile.TemporaryDirectory() as directory:
             with closing(SQLiteRecordStore(str(Path(directory) / "candidates.db"))) as store:
                 self.assertTrue(stage_candidates(store, records, request).committed)
@@ -782,6 +1138,50 @@ class StarterCatalogueChecks(unittest.TestCase):
                     self.assertEqual(refusal.exception.code, code)
                     self.assertIn(changed["reference"]["identity"], str(refusal.exception))
 
+    def _cited_tree(self, directory: str) -> Path:
+        """A tree that holds only the cited files, at their own paths, copied from this repository."""
+        root = Path(directory).resolve() / "tree"
+        for source in self.snapshot.items["source_digests"]:
+            target = root / source
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / source).read_bytes())
+        return root
+
+    def test_the_pinned_digests_are_read_from_the_tree_and_not_from_the_record(self):
+        """The known-wrong tree: one cited file is edited, and the rule names that file.
+
+        The rule hashes the files of the repository it is given, so a copy of the
+        cited files with one byte changed must be reported. Without this the rule
+        could be comparing the record with itself.
+        """
+        rule = RULES["cited_source_bytes_are_the_pinned_bytes"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._cited_tree(directory)
+            self.assertEqual(rule(replace(self.snapshot, repository=root)), [])
+            edited = sorted(self.snapshot.items["source_digests"])[0]
+            (root / edited).write_bytes((root / edited).read_bytes() + b"\n# one more line\n")
+            found = rule(replace(self.snapshot, repository=root))
+            self.assertEqual(len(found), 1)
+            self.assertIn(edited, found[0])
+            # A cited file that is missing from the tree is reported as well, not passed over.
+            (root / edited).unlink()
+            self.assertIn("is not a file of this repository", " ".join(rule(replace(self.snapshot, repository=root))))
+
+    def test_the_anchor_tool_refuses_a_revision_whose_cited_bytes_differ(self):
+        """Anchoring reads each cited file at the named revision before it writes anything."""
+        refresh = _refresh_module()
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory).resolve() / "starter-catalogue"
+            shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("__pycache__"))
+            before = (folder / "items.json").read_bytes()
+            revision = self.snapshot.items["source_revision"]
+            self.assertFalse(refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision))["written"])
+            with self.assertRaises(refresh.CatalogueRefreshError):
+                refresh.anchor(refresh.AnchorRequest(folder, ROOT, "0" * 40, True))
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, "forty character revision"):
+                refresh.anchor(refresh.AnchorRequest(folder, ROOT, revision[:7], True))
+            self.assertEqual((folder / "items.json").read_bytes(), before)
+
     def test_the_refresh_tool_reports_and_repairs_a_stale_body(self):
         refresh = _refresh_module()
         with tempfile.TemporaryDirectory() as directory:
@@ -812,7 +1212,8 @@ class StarterCatalogueChecks(unittest.TestCase):
         refresh = _refresh_module()
         with tempfile.TemporaryDirectory() as directory:
             folder, _body = self._stale_copy(directory)
-            before = {name: (folder / name).read_bytes() for name in ("specifications.json", "items.json")}
+            names = [name for name, _record in self.snapshot.populations] + ["items.json"]
+            before = {name: (folder / name).read_bytes() for name in names}
             leftover = folder / ("items.json" + refresh.TEMPORARY_SUFFIX)
             leftover.write_text("left by an interrupted write", encoding="utf-8")
             with self.assertRaisesRegex(refresh.CatalogueRefreshError, "interrupted write"):
@@ -820,7 +1221,8 @@ class StarterCatalogueChecks(unittest.TestCase):
             # Neither record changed, the file of the other run is kept, and this run's own file is gone.
             self.assertEqual(before, {name: (folder / name).read_bytes() for name in before})
             self.assertEqual(leftover.read_text(encoding="utf-8"), "left by an interrupted write")
-            self.assertFalse((folder / ("specifications.json" + refresh.TEMPORARY_SUFFIX)).exists())
+            for name in names[:-1]:
+                self.assertFalse((folder / (name + refresh.TEMPORARY_SUFFIX)).exists())
             leftover.unlink()
             self.assertTrue(refresh.refresh(refresh.RefreshRequest(folder, True))["written"])
             self.assertEqual(problems(load_snapshot(folder)).get("digests_and_sizes_match_the_bodies"), None)
@@ -837,7 +1239,9 @@ class StarterCatalogueChecks(unittest.TestCase):
         """Path confinement: a link in place of a record, the bodies folder or one body is refused."""
         refresh = _refresh_module()
         identity = self.snapshot.rows()[0][0]["id"]
-        for relative in ("items.json", "specifications.json", "bodies", f"bodies/{identity}.md"):
+        planted = ["items.json", "bodies", f"bodies/{identity}.md"]
+        planted += [name for name, _record in self.snapshot.populations]
+        for relative in planted:
             with self.subTest(planted=relative), tempfile.TemporaryDirectory() as directory:
                 folder, _body = self._stale_copy(directory)
                 moved = self._plant_link(folder, relative, Path(directory).resolve() / "outside")

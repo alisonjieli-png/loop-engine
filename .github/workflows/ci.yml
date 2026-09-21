@@ -24,6 +24,13 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Check the publication guards
+        # The guards in publish-image.yml run only inside a release, so
+        # nothing else exercises them. This extracts their scripts and decides
+        # them against a fake repository, including the cases that must fail a
+        # release and the ones that must only skip it.
+        run: node tools/check_publish_guard.mjs
+
       - name: Check Markdown structure
         run: >-
           npx --yes markdownlint-cli2@0.23.2

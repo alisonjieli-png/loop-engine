@@ -1,6 +1,6 @@
 {
   "record_type": "starter_catalogue_search_queries/v1",
-  "note": "Plain customer queries and the item each one must find among the first three results of the lexical search over identity and purpose. The author of the purposes wrote the first group. An adversarial reviewer wrote the second group after the purposes existed, and these five missed before synonyms were added. This is a smoke check, not a relevance benchmark.",
+  "note": "Plain customer queries and the item each one must find among the first three results of the lexical search over identity and purpose. The author of the purposes wrote the first group. An adversarial reviewer wrote the second group after the first 49 purposes existed, and five of those missed before synonyms were added. The third group covers the items added on 21 September 2026; the author wrote all 74 of them before running any, 20 missed on the first run, and the purposes were given the words the queries used until every one passed. No query was changed to fit a purpose. This is a smoke check, not a relevance benchmark.",
   "queries": [
     {
       "query": "how do I remove duplicate customers from a CRM export",
@@ -156,6 +156,376 @@
       "query": "when should an agent ask the user",
       "expected": "resolve_missing_information",
       "written_by": "reviewer"
+    },
+    {
+      "query": "how do I write a regression test for a bug I just fixed",
+      "expected": "write_a_regression_test_that_pins_a_defect",
+      "written_by": "author"
+    },
+    {
+      "query": "which test cases should I write for a field with a range",
+      "expected": "choose_test_cases_from_boundaries_and_classes",
+      "written_by": "author"
+    },
+    {
+      "query": "my test passes sometimes and fails sometimes",
+      "expected": "isolate_a_flaky_test_before_trusting_it",
+      "written_by": "author"
+    },
+    {
+      "query": "how do I know my new guard actually works",
+      "expected": "prove_a_check_can_fail_when_the_behaviour_is_removed",
+      "written_by": "author"
+    },
+    {
+      "query": "make a small reproduction from a huge failing file",
+      "expected": "reduce_a_failure_to_a_minimal_reproduction",
+      "written_by": "author"
+    },
+    {
+      "query": "find the commit that broke the build",
+      "expected": "bisect_a_regression_across_revisions",
+      "written_by": "author"
+    },
+    {
+      "query": "works on my machine but fails on the server",
+      "expected": "bisect_a_failure_across_inputs_and_settings",
+      "written_by": "author"
+    },
+    {
+      "query": "how do I read a stack trace",
+      "expected": "read_a_failure_report_and_name_the_first_wrong_value",
+      "written_by": "author"
+    },
+    {
+      "query": "what should I look for when reviewing a pull request",
+      "expected": "review_a_change_for_correctness",
+      "written_by": "author"
+    },
+    {
+      "query": "the change looks fine but something is missing",
+      "expected": "review_a_change_for_what_is_missing",
+      "written_by": "author"
+    },
+    {
+      "query": "what happens if one write succeeds and the next one fails",
+      "expected": "review_error_paths_and_partial_failure",
+      "written_by": "author"
+    },
+    {
+      "query": "two workers updating the same row race condition",
+      "expected": "review_shared_state_for_ordering_defects",
+      "written_by": "author"
+    },
+    {
+      "query": "check my code for sql injection",
+      "expected": "review_untrusted_input_for_injection",
+      "written_by": "author"
+    },
+    {
+      "query": "can another customer read this data through the export",
+      "expected": "review_authorisation_on_every_path",
+      "written_by": "author"
+    },
+    {
+      "query": "is my file upload safe from path traversal",
+      "expected": "review_file_paths_for_traversal_and_link_escape",
+      "written_by": "author"
+    },
+    {
+      "query": "is it safe to run code the model wrote",
+      "expected": "review_generated_output_before_it_is_executed",
+      "written_by": "author"
+    },
+    {
+      "query": "should we add this npm package",
+      "expected": "review_a_new_dependency_before_adding_it",
+      "written_by": "author"
+    },
+    {
+      "query": "what licences are in the thing we ship",
+      "expected": "record_the_licence_of_every_bundled_component",
+      "written_by": "author"
+    },
+    {
+      "query": "lock file and reproducible builds",
+      "expected": "pin_dependency_versions_and_verify_them",
+      "written_by": "author"
+    },
+    {
+      "query": "the scanner says one of our packages is vulnerable",
+      "expected": "respond_to_a_vulnerable_dependency_report",
+      "written_by": "author"
+    },
+    {
+      "query": "rename a database column without downtime",
+      "expected": "plan_a_schema_change_in_compatible_steps",
+      "written_by": "author"
+    },
+    {
+      "query": "the deployment retried and ran my migration twice",
+      "expected": "write_a_migration_that_is_safe_to_run_twice",
+      "written_by": "author"
+    },
+    {
+      "query": "update forty million rows without locking the table",
+      "expected": "backfill_a_large_table_in_bounded_batches",
+      "written_by": "author"
+    },
+    {
+      "query": "test a migration on production sized data first",
+      "expected": "rehearse_a_migration_on_a_copy_of_real_data",
+      "written_by": "author"
+    },
+    {
+      "query": "design a new rest endpoint request and response",
+      "expected": "design_a_request_and_response_contract",
+      "written_by": "author"
+    },
+    {
+      "query": "add a field without breaking existing clients",
+      "expected": "version_an_interface_so_older_callers_keep_working",
+      "written_by": "author"
+    },
+    {
+      "query": "client and server disagree about the protocol version",
+      "expected": "negotiate_a_supported_version_at_connection_time",
+      "written_by": "author"
+    },
+    {
+      "query": "what should an api error response contain",
+      "expected": "return_errors_a_caller_can_act_on",
+      "written_by": "author"
+    },
+    {
+      "query": "someone asked my endpoint for a million rows",
+      "expected": "bound_a_list_endpoint_with_paging_and_limits",
+      "written_by": "author"
+    },
+    {
+      "query": "should I retry this failure or not",
+      "expected": "classify_a_failure_before_deciding_to_retry",
+      "written_by": "author"
+    },
+    {
+      "query": "exponential backoff and jitter",
+      "expected": "retry_with_backoff_inside_a_declared_budget",
+      "written_by": "author"
+    },
+    {
+      "query": "the customer was charged twice after a timeout",
+      "expected": "make_a_write_safe_to_repeat_with_an_idempotency_key",
+      "written_by": "author"
+    },
+    {
+      "query": "one slow service is holding all my threads",
+      "expected": "set_timeouts_and_cancel_an_outbound_call",
+      "written_by": "author"
+    },
+    {
+      "query": "the overnight job restarted and lost everything",
+      "expected": "keep_partial_work_when_a_long_job_is_interrupted",
+      "written_by": "author"
+    },
+    {
+      "query": "where should I put my api keys",
+      "expected": "keep_secrets_out_of_source_and_settings",
+      "written_by": "author"
+    },
+    {
+      "query": "least privilege for a service account",
+      "expected": "scope_a_credential_to_the_smallest_permission",
+      "written_by": "author"
+    },
+    {
+      "query": "change an api key while the service is running",
+      "expected": "rotate_a_credential_without_an_outage",
+      "written_by": "author"
+    },
+    {
+      "query": "a password got committed to the repository",
+      "expected": "respond_to_a_leaked_credential",
+      "written_by": "author"
+    },
+    {
+      "query": "what should go in a log line",
+      "expected": "write_a_log_line_that_is_safe_to_share",
+      "written_by": "author"
+    },
+    {
+      "query": "stop customer names appearing in our logs",
+      "expected": "remove_personal_data_before_it_reaches_a_log",
+      "written_by": "author"
+    },
+    {
+      "query": "when should something be an error and when a warning",
+      "expected": "choose_log_levels_and_what_belongs_in_each",
+      "written_by": "author"
+    },
+    {
+      "query": "trace one request across several services",
+      "expected": "carry_one_correlation_identifier_across_services",
+      "written_by": "author"
+    },
+    {
+      "query": "where is my application actually spending time",
+      "expected": "measure_before_optimising",
+      "written_by": "author"
+    },
+    {
+      "query": "my benchmark gives a different number every run",
+      "expected": "build_a_repeatable_performance_test",
+      "written_by": "author"
+    },
+    {
+      "query": "how do I read profiler output",
+      "expected": "read_a_profile_and_find_the_dominant_cost",
+      "written_by": "author"
+    },
+    {
+      "query": "average response time looks fine but users complain",
+      "expected": "use_percentiles_not_averages_for_response_time",
+      "written_by": "author"
+    },
+    {
+      "query": "where should I validate incoming json",
+      "expected": "validate_input_at_the_boundary_and_refuse_early",
+      "written_by": "author"
+    },
+    {
+      "query": "the upstream team changed a column and broke my report",
+      "expected": "write_a_data_contract_for_a_table_or_feed",
+      "written_by": "author"
+    },
+    {
+      "query": "should a missing price become zero",
+      "expected": "handle_missing_values_without_inventing_them",
+      "written_by": "author"
+    },
+    {
+      "query": "what should I put in the prompt for one step",
+      "expected": "assemble_the_context_for_one_step",
+      "written_by": "author"
+    },
+    {
+      "query": "my prompt is too long for the window",
+      "expected": "decide_what_to_leave_out_of_a_prompt",
+      "written_by": "author"
+    },
+    {
+      "query": "stop prompt injection from a support ticket",
+      "expected": "keep_instructions_and_supplied_text_apart",
+      "written_by": "author"
+    },
+    {
+      "query": "the agent forgot a decision from earlier in the task",
+      "expected": "carry_earlier_decisions_forward_without_the_whole_transcript",
+      "written_by": "author"
+    },
+    {
+      "query": "can I use a cheaper model for this classification",
+      "expected": "choose_a_smaller_model_for_a_bounded_decision",
+      "written_by": "author"
+    },
+    {
+      "query": "compare two models on my own task",
+      "expected": "compare_a_smaller_model_against_the_larger_one",
+      "written_by": "author"
+    },
+    {
+      "query": "the model answer keeps getting cut off",
+      "expected": "set_an_output_size_from_a_known_limit",
+      "written_by": "author"
+    },
+    {
+      "query": "write acceptance criteria for a ticket",
+      "expected": "write_acceptance_criteria_a_reviewer_can_check",
+      "written_by": "author"
+    },
+    {
+      "query": "the request just says make it better",
+      "expected": "turn_a_vague_request_into_a_testable_statement",
+      "written_by": "author"
+    },
+    {
+      "query": "must have versus nice to have",
+      "expected": "separate_required_from_optional_in_a_request",
+      "written_by": "author"
+    },
+    {
+      "query": "what to check before deploying to production",
+      "expected": "run_a_release_check_list_before_deploying",
+      "written_by": "author"
+    },
+    {
+      "query": "how do we undo this release if it goes wrong",
+      "expected": "write_a_rollback_plan_before_the_release",
+      "written_by": "author"
+    },
+    {
+      "query": "ship it behind a feature flag",
+      "expected": "release_behind_a_switch_that_can_be_turned_off",
+      "written_by": "author"
+    },
+    {
+      "query": "the deploy finished but did it actually work",
+      "expected": "verify_a_release_after_it_is_live",
+      "written_by": "author"
+    },
+    {
+      "query": "how do we run a postmortem",
+      "expected": "run_an_incident_review_without_blame",
+      "written_by": "author"
+    },
+    {
+      "query": "put the outage events in order",
+      "expected": "build_an_incident_timeline_from_evidence",
+      "written_by": "author"
+    },
+    {
+      "query": "turn the lesson from an outage into an alarm",
+      "expected": "turn_an_incident_into_a_check_that_would_have_caught_it",
+      "written_by": "author"
+    },
+    {
+      "query": "write instructions for a coding agent",
+      "expected": "write_a_task_brief_for_an_agent",
+      "written_by": "author"
+    },
+    {
+      "query": "what should an agent be allowed to do",
+      "expected": "state_the_permissions_and_limits_of_an_assignment",
+      "written_by": "author"
+    },
+    {
+      "query": "break a big job into smaller assignments",
+      "expected": "split_a_large_request_into_assignable_parts",
+      "written_by": "author"
+    },
+    {
+      "query": "which files should I attach to the assignment",
+      "expected": "supply_the_files_and_facts_an_assignment_needs",
+      "written_by": "author"
+    },
+    {
+      "query": "the agent says it is done, how do I know",
+      "expected": "verify_an_agent_result_without_trusting_its_summary",
+      "written_by": "author"
+    },
+    {
+      "query": "the model wrote the code and the tests",
+      "expected": "check_generated_code_against_the_request",
+      "written_by": "author"
+    },
+    {
+      "query": "can I trust this benchmark number",
+      "expected": "reproduce_the_evidence_a_report_claims",
+      "written_by": "author"
+    },
+    {
+      "query": "a test is failing, should I change the test",
+      "expected": "review_a_failed_check_before_repairing_the_work",
+      "written_by": "author"
     }
   ]
 }

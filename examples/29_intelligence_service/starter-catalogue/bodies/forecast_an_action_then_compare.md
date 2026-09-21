@@ -40,4 +40,4 @@ A three hour job starts without a forecast. It ends with a score of 0.81 and a b
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the questions of the forecast and calibrate steps, and the guidance record about forecasting and then comparing.
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work functions for estimating and calibrating, and for observing and comparing.
 
-Licence: MIT. Compiled from revision 381efec.
+Licence: MIT. Compiled from revision 0cf19eb.
