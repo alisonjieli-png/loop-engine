@@ -52,6 +52,7 @@ WEB_ASSETS = {
     "/assets/service.css": ("service.css", "text/css"),
     "/assets/architecture.css": ("architecture.css", "text/css"),
     "/assets/client-access.js": ("client-access.js", "text/javascript"),
+    "/assets/catalogue-browser.js": ("catalogue-browser.js", "text/javascript"),
     "/assets/service.js": ("service.js", "text/javascript"),
     "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
     # The licence terms of the packaged browser library travel with it.

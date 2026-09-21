@@ -41,18 +41,26 @@ def _web_checks(check, root):
                   and public.headers["referrer-policy"] == "no-referrer"
                   and "localStorage" not in script.text
                   and httpx.get(base + "/assets/../http_entrypoint.py", trust_env=False).status_code != 200)
-            # A page that links to an address the server does not serve sends
-            # the reader to a refusal. Every internal link in the page must
+            # A page that names an address the server does not serve sends the
+            # reader to a refusal. Every internal address the page names must
             # resolve to a served address or to an interface path.
             from importlib.resources import files
             import re as _re
             page = files("loop_engine").joinpath("core", "service_runtime", "web_assets", "index.html").read_text("utf-8")
             from .http import WEB_ASSETS
-            linked = {value for value in _re.findall(r'href="(/[^"#?]*)"', page)}
-            unserved = sorted(value for value in linked
+            def unserved_addresses(pattern):
+                named = {value for value in _re.findall(pattern, page)}
+                return sorted(value for value in named
                               if value not in WEB_ASSETS and not value.startswith("/api/")
                               and not value.startswith("/.well-known/") and value != "/mcp")
-            check("every_internal_link_on_the_page_has_a_served_address", not unserved)
+            check("every_internal_link_on_the_page_has_a_served_address",
+                  not unserved_addresses(r'href="(/[^"#?]*)"'))
+            # A script, stylesheet or image the page names but the asset table
+            # does not hold is answered by the interface router instead, so the
+            # page loads without the behaviour it declared and the reader sees a
+            # permanent failure. Scanning link targets alone did not catch that.
+            check("every_script_stylesheet_and_image_the_page_names_is_served",
+                  not unserved_addresses(r'src="(/[^"#?]*)"'))
             notices = httpx.get(base + "/assets/third-party-notices.txt", trust_env=False)
             check("packaged_browser_library_is_served_with_its_licence_terms",
                   notices.status_code == 200 and "MIT License" in notices.text and "Supabase" in notices.text
