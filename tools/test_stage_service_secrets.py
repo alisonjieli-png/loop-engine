@@ -11,6 +11,8 @@ DATA = {"api_keys": {
     "runtime-a": {"purpose": "secret-api", "environment": "RUNTIME_A"},
     "runtime-b": {"purpose": "transactional-email", "environment": "RUNTIME_B"},
     "same-name": {"purpose": "publishable-api", "environment": "RUNTIME_A"},
+    "runtime-live": {"purpose": "runtime-live-api", "environment": "RUNTIME_LIVE"},
+    "webhook": {"purpose": "webhook-signing", "environment": "RUNTIME_HOOK"},
     "deploy": {"purpose": "organization-deploy", "environment": "DEPLOY_TOKEN"},
     "administrator": {"purpose": "service-access", "environment": "ADMIN_TOKEN"}},
     "oauth": {"management": {"environment": "MANAGEMENT_TOKEN"}}}
@@ -51,6 +53,10 @@ class StagingTests(unittest.TestCase):
                 staging.selected([name], DATA)
         with self.assertRaises(staging.StagingError):
             staging.selected([], DATA)
+
+    def test_a_live_runtime_credential_and_its_signing_secret_may_be_staged(self):
+        self.assertEqual(staging.selected(["runtime-live", "webhook"], DATA),
+                         {"RUNTIME_LIVE": "runtime-live", "RUNTIME_HOOK": "webhook"})
 
     def test_two_credentials_cannot_share_one_environment_name(self):
         with self.assertRaises(staging.StagingError):
