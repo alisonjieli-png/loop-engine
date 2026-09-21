@@ -267,10 +267,11 @@ def _licence_policy(check, root):
           and started(host(accepted, **{LICENSE_POLICY_KEY: current}))[0] == "")
     # An operator message stays short, whatever a manifest or a host list holds,
     # and it still names the refused item. An identity of 128 characters, the
-    # longest tenant or namespace identity that the service supports, is shown
-    # in full. A longer one is shown from its start. The limit of 480 characters
-    # is written here and is not read from the loader, so a loader that raises
-    # its own preview limits fails this check.
+    # longest that the identity rule of this service allows, is shown in full.
+    # A manifest may carry a longer item identity, and that one is shown from
+    # its start. The limit of 480 characters is written here and is not read
+    # from the loader, so a loader that raises its own preview limits fails
+    # this check.
     crowded = HostLicensePolicy(tuple(f"Licence-{number}" for number in range(5_000)))
     identities = ("skill.refused", "skill." + "n" * 122, "skill." + "x" * 5_000)
     messages = [loaded(manifest(row(identity, "L" * 5_000)), license_policy=crowded) for identity in identities]

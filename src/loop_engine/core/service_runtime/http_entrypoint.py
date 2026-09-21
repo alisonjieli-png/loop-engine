@@ -48,9 +48,12 @@ LICENSE_NEEDS_REVIEW = "item_license_needs_review"
 LICENSE_NOT_ACCEPTED = "item_license_not_accepted"
 #: An operator message shows at most this many characters of one manifest or
 #: host value, so a large manifest or a long host list cannot make it large.
-#: An item identity gets more room. The longest tenant or namespace identity
-#: that this service supports has 128 characters, and an identity of that
-#: length is shown in full between its two quotation marks.
+#: An item identity gets more room, so that the operator can look the refused
+#: item up. The identity rule of this service, records.identifier, allows 128
+#: characters, and an identity of that length is shown in full between its two
+#: quotation marks. A manifest may carry a longer item identity, because an
+#: item identity is only required to be nonempty; such an identity is shown
+#: from its start.
 PREVIEW_CHARACTERS = 80
 IDENTITY_PREVIEW_CHARACTERS = 130
 
