@@ -54,8 +54,10 @@ These statements describe the source at the revision named above.
 
 - The host configuration accepts the two blocks in
   [Enable browser sign-in](#enable-browser-sign-in-for-prepared-accounts).
-  A check loads the blocks from this guide through the real host loader, so
-  the guide cannot drift from the typed configuration.
+  A check loads the blocks from this guide through the real host loader, and
+  it compares the loaded values with the applied records named below, so the
+  guide cannot drift either from the typed configuration or from the
+  configuration that runs.
 - [`tools/invite_beta_user.py`](../../tools/invite_beta_user.py) prepares an
   invited account and shows one recovery link. It sends at most two requests
   and repeats nothing.
@@ -210,7 +212,7 @@ volume). Keep every other member as it is.
 | `email_signup_enabled` is `false` | The website shows no account form, and the capabilities record says that registration is not available. The service refuses the pair `true` with a closed `registration_enabled`, with `email_signup_requires_account_admission`. |
 | `publishable_key_ref` | An environment reference. The key value is never written into the file. |
 | `allow_network` is `true` | The service reads the current user from the provider for every browser request. Without this authority every sign-in is refused with `identity_network_authority_required`. |
-| `namespace_prefix` | The first part of each activated tenant identity and namespace. At most 32 characters. |
+| `namespace_prefix` | The first part of each account's tenant identity and namespace. At most 32 characters. Changing it on a service where accounts exist makes a second tenant for the same person. |
 | `starter_identities` | Catalogue items that a new tenant may read. Leave it empty until the owner has approved starter items. An identity that is not in the manifest stops the service at start with `invalid_starter_identities`. |
 | `writes_authorized` is `true` | A signed-in person can create and revoke personal client keys. With `false` the account page lists keys and refuses each change with `access_writes_not_authorized`. |
 
@@ -253,6 +255,10 @@ service reported `registration_enabled` and `email_signup_enabled` as
 public addresses healthy. The record also states that nobody had used the
 open path: the provider held the same two accounts as before and no tenant
 had been created.
+
+The second part holds as well. The same record shows `email_signup_enabled`
+as `false` and the capabilities record reporting that registration is not
+available. The fourth part is operator discipline and no check enforces it.
 
 The third part does not hold today. A probe on September 21, 2026 read the
 provider's public settings and recorded them in
@@ -458,9 +464,11 @@ link, its one-time code, the credential or the address in plain text. The
 address digest is a plain SHA-256 digest without a key. It is a pseudonym:
 a person who holds the report and can guess the address can confirm the
 guess. Keep reports as private as the address itself. As a second guard,
-the command refuses to write a report or a summary that contains the link,
-its token, its one-time code or the credential. The file is readable by its
-owner only. The issuer and the user identity are what you need to
+the command refuses to write a report that contains the link, its token, its
+one-time code or the credential, and it applies the same rule to the summary
+line as described above. The file is readable by its owner only. The issuer
+and the user identity are what you need to
+[bind the invited subject](#bind-the-invited-subject) and to
 [disable the account](#disable-an-account) later.
 
 The report is written before the link is shown. A report with `link_issued`
@@ -567,6 +575,10 @@ with an address that you control before you invite anyone.
    guard reads. The command is right to withhold the link. Record the
    failure and its detail, and report it, rather than removing the guard.
 6. Record what you observed beside the two reports.
+
+This qualifies the command only. The invited person still has no Baltor
+account after a successful run. Binding the subject is the separate step
+below.
 
 ## Bind the invited subject
 
