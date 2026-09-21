@@ -216,8 +216,8 @@ None of the three is a secret value. The command never writes a credential to
 a file, an argument, an output line or a report.
 
 All three have a reviewed entry in `devtools/hardcoding-allowlist.yaml`,
-created on September 21, 2026. Two of them are suppressed by it. The third is
-not, and the delta gate
+created on September 21, 2026, and all three are suppressed by it. The delta
+gate
 
 ```bash
 PYTHONPATH=devtools/src .venv/bin/python -m loop_engine_devtools.cli \
@@ -225,31 +225,34 @@ PYTHONPATH=devtools/src .venv/bin/python -m loop_engine_devtools.cli \
   --baseline devtools/hardcoding-ci-baseline.json --fail-on-new high
 ```
 
-still ends with exit code 1. Observed on September 21, 2026:
+ends with exit code 0. Observed on September 21, 2026:
 
 ```text
-allowlist_problems: [{"rule": "allowlist_classification",
-                      "detail": "hardcoding.de0597ea9aaeaead742ae431"}]
-blocking_new_finding_ids: ["hardcoding.de0597ea9aaeaead742ae431"]
+severity: {'high': 632, 'medium': 16579}
+blocking_new_finding_ids: []
 ```
 
-The reason is one field. That entry declares
-`classification: DEPLOYMENT_CONFIGURATION`, and the audit classifies the same
-finding as `STRATEGY_OR_PROVIDER_BINDING`. The loader `_load_allowlist` in
+The webhook entry did not suppress its finding when it was written, and the
+reason was one field. It declared `classification: DEPLOYMENT_CONFIGURATION`,
+while the audit classifies the same finding as `STRATEGY_OR_PROVIDER_BINDING`.
+The loader `_load_allowlist` in
 `devtools/src/loop_engine_devtools/assurance/hardcoding.py` requires the entry
 to mirror the classification the audit assigned; when it does not, the loader
 skips the entry and records an allowlist problem, and the command in
 `devtools/src/loop_engine_devtools/cli.py` returns 1 for a blocking finding
-and for an invalid allowlist alike.
+and for an invalid allowlist alike. The entry now carries the audit's own
+classification, which is what the loader compares.
 
-Correcting that one field is the whole repair, and it belongs to the owner of
-the allowlist, which this work does not edit. The step
-"Self-orientation and hardcoding delta gates" in `.github/workflows/ci.yml`
-runs this command without `continue-on-error`, and a release comes only from
-a committed revision whose continuous integration run passed, so the
-correction comes before the release. Finding identifiers are stable while the
-literal and its owner stay the same; take them from a fresh audit run if
-either changes.
+A known-wrong run confirms that the field is what clears the gate, and not
+some other change. With one scratch copy of the allowlist whose only
+difference is `DEPLOYMENT_CONFIGURATION` in that entry, the same command
+reports `blocking_new_finding_ids: ["hardcoding.de0597ea9aaeaead742ae431"]`
+and exits 1. The repository file was not changed for that run.
+
+Finding identifiers are stable while the literal and its owner stay the same;
+take them from a fresh audit run if either changes. Do not choose the
+classification a reviewer would prefer. Read the one the audit assigned and
+repeat it, or the entry will be skipped without suppressing anything.
 
 ## Order of operations
 
