@@ -10,7 +10,7 @@ Use it before any cleaning of names, companies, emails, phones or websites in a 
 
 1. Count null markers first. Values such as an empty text, `n/a`, `-`, `unknown` and `null` are counted and left out of the other counts.
 2. For every other value, count these signals: all upper case, all lower case, mixed case, leading, trailing or doubled spaces, nonstandard space or zero-width characters, characters outside ASCII, digits, email-like shape, website-like shape, phone-like shape, and a legal suffix as the last word.
-3. Reduce each value to a character pattern. An upper case letter becomes `A`, a lower case letter `a`, a digit `9` and a character outside ASCII `U`. Repeats collapse, so `2026-09-18` becomes `9+-9+-9+`. Keep the five most common patterns.
+3. Reduce each value to a character pattern. Use the first rule that matches: an upper case letter becomes `A`, a lower case letter `a`, a digit `9`, and any other character outside ASCII `U`. Repeats collapse, so `2026-09-18` becomes `9+-9+-9+`. Keep the five most common patterns.
 4. Turn each count into a share of all values.
 5. Propose whitespace and Unicode rules first, because later operations read cleaned text.
 6. When at least half of the values are email-like, propose only the email rule for that column. Do the same for website-like and phone-like columns.
@@ -20,6 +20,7 @@ Use it before any cleaning of names, companies, emails, phones or websites in a 
 ## Checks
 
 - The profile reports the total, the counts, the shares and the top patterns.
+- An accented letter is still a letter in the pattern, so `José` gives `Aa+` and not `Aa+U`. Read the count of characters outside ASCII, not the pattern, to find accents.
 - Every proposed rule names its evidence. A rule without evidence is not proposed.
 - No value in the table changed.
 

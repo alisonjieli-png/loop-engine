@@ -1,0 +1,797 @@
+{
+  "record_type": "starter_catalogue_executed_examples/v1",
+  "note": "Every example that a Code Intelligence body quotes, with the call that produces it. The check runs each call against the cited module and compares the named fields, so a body cannot claim a value that the code does not produce. The quote must appear in the body word for word. The token <packaged-catalogs> is the merged packaged catalogs.",
+  "modules": {
+    "operations": "loop_engine.code_nodes.text_conformance_operations",
+    "conformance": "loop_engine.code_nodes.text_conformance",
+    "recovery": "loop_engine.code_nodes.field_recovery",
+    "duplicates": "loop_engine.code_nodes.duplicate_detection",
+    "address": "loop_engine.code_nodes.address_components",
+    "measurement": "loop_engine.code_nodes.measurement"
+  },
+  "packaged_catalogs_token": "<packaged-catalogs>",
+  "examples": [
+    {
+      "identity": "profile_text_column_before_cleaning",
+      "quote": "`2026-09-18` becomes `9+-9+-9+`",
+      "module": "operations",
+      "function": "induce_pattern",
+      "arguments": [
+        "2026-09-18"
+      ],
+      "expect": {
+        "collapsed": "9+-9+-9+"
+      }
+    },
+    {
+      "identity": "profile_text_column_before_cleaning",
+      "quote": "`José` gives `Aa+` and not `Aa+U`",
+      "module": "operations",
+      "function": "induce_pattern",
+      "arguments": [
+        "José"
+      ],
+      "expect": {
+        "collapsed": "Aa+"
+      }
+    },
+    {
+      "identity": "normalize_whitespace_and_unicode_text",
+      "quote": "becomes `Acme Widgets Inc` at 0.99",
+      "module": "operations",
+      "function": "whitespace_normalize",
+      "arguments": [
+        "Acme Widgets\t  Inc"
+      ],
+      "expect": {
+        "output": "Acme Widgets Inc",
+        "confidence": 0.99
+      }
+    },
+    {
+      "identity": "normalize_whitespace_and_unicode_text",
+      "quote": "becomes `zerowidth` at 0.98",
+      "module": "operations",
+      "function": "unicode_normalize",
+      "arguments": [
+        "zero​width",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "zerowidth",
+        "confidence": 0.98
+      }
+    },
+    {
+      "identity": "normalize_whitespace_and_unicode_text",
+      "quote": "With the default setting `Straße` stays `Straße`",
+      "module": "operations",
+      "function": "unicode_normalize",
+      "arguments": [
+        "Straße",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Straße",
+        "changed": false
+      }
+    },
+    {
+      "identity": "normalize_whitespace_and_unicode_text",
+      "quote": "the German sharp s becomes `ss`",
+      "module": "operations",
+      "function": "unicode_normalize",
+      "arguments": [
+        "Straße",
+        {
+          "ascii_fold": "hold"
+        },
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Strasse",
+        "confidence": 0.5
+      }
+    },
+    {
+      "identity": "normalize_whitespace_and_unicode_text",
+      "quote": "`José` becomes `Jose`",
+      "module": "operations",
+      "function": "unicode_normalize",
+      "arguments": [
+        "José",
+        {
+          "ascii_fold": "apply"
+        },
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Jose",
+        "confidence": 0.9
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`ACME CORPORATION` becomes `Acme Corporation` at 0.92",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "ACME CORPORATION",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Acme Corporation",
+        "confidence": 0.92
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`IBM SERVICES OF AMERICA` becomes `IBM Services of America`",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "IBM SERVICES OF AMERICA",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "IBM Services of America"
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`AA CAREERS` gives the proposal `AA Careers` at 0.75",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "AA CAREERS",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "AA Careers",
+        "confidence": 0.75
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`JOHN VAN DER BERG` gives `John van der Berg` at 0.78",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "JOHN VAN DER BERG",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "John van der Berg",
+        "confidence": 0.78
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`Acme Widgets` and `PayPal Holdings` are unchanged at 1.0",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "PayPal Holdings",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "PayPal Holdings",
+        "confidence": 1.0,
+        "changed": false
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`iPhone Repair` becomes `Iphone Repair` at 0.95",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "iPhone Repair",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Iphone Repair",
+        "confidence": 0.95
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`eBay Store` becomes `Ebay Store` at 0.95",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "eBay Store",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Ebay Store",
+        "confidence": 0.95
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "the `Mac` prefix rule proposes `MacHine Tools Inc`",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "MACHINE TOOLS INC",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "MacHine Tools Inc",
+        "confidence": 0.8
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`macdonald` gives `MacDonald`",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "MACDONALD",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "MacDonald"
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "`macy` gives `Macy`",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "MACY",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Macy"
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "write `O'Brien` for a single letter `O`",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "O'BRIEN",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "O'Brien"
+      }
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "quote": "keep a preserved token in upper case (`IBM`, `USA`, `HVAC`)",
+      "module": "operations",
+      "function": "case_normalize",
+      "arguments": [
+        "ACME HVAC USA IBM",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Acme HVAC USA IBM"
+      }
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "quote": "`Acme Widgets, Inc.` becomes `Acme Widgets Inc` at 0.97",
+      "module": "operations",
+      "function": "suffix_canonicalize",
+      "arguments": [
+        "Acme Widgets, Inc.",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Acme Widgets Inc",
+        "confidence": 0.97
+      }
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "quote": "`Holding Co., Ltd.` gives the proposal `Holding Co Ltd` at 0.85",
+      "module": "operations",
+      "function": "suffix_canonicalize",
+      "arguments": [
+        "Holding Co., Ltd.",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Holding Co Ltd",
+        "confidence": 0.85
+      }
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "quote": "`Banco Popular s.a.` gives the proposal `Banco Popular SA` at 0.8",
+      "module": "operations",
+      "function": "suffix_canonicalize",
+      "arguments": [
+        "Banco Popular s.a.",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Banco Popular SA",
+        "confidence": 0.8
+      }
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "quote": "a company named `Inc` alone stays unchanged",
+      "module": "operations",
+      "function": "suffix_canonicalize",
+      "arguments": [
+        "Inc",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Inc",
+        "changed": false
+      }
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "quote": "so `nordic fish as` becomes `nordic fish AS`",
+      "module": "operations",
+      "function": "suffix_canonicalize",
+      "arguments": [
+        "nordic fish as",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "nordic fish AS",
+        "confidence": 0.5
+      }
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "quote": "the long form (`Incorporated`, `Corporation`, `Limited`, `Company`)",
+      "module": "operations",
+      "function": "suffix_canonicalize",
+      "arguments": [
+        "Acme Inc",
+        {
+          "style": "long_form"
+        },
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Acme Incorporated"
+      }
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "quote": "A suffix written in all upper case never gets a period",
+      "module": "operations",
+      "function": "suffix_canonicalize",
+      "arguments": [
+        "Acme LLC",
+        {
+          "style": "short_with_period"
+        },
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "Acme LLC"
+      }
+    },
+    {
+      "identity": "normalize_phone_numbers",
+      "quote": "`(415) 555-0100` becomes `+14155550100` at 0.95",
+      "module": "operations",
+      "function": "phone_normalize",
+      "arguments": [
+        "(415) 555-0100",
+        {
+          "default_country_code": "1"
+        },
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "+14155550100",
+        "confidence": 0.95
+      }
+    },
+    {
+      "identity": "normalize_phone_numbers",
+      "quote": "`415-555-0100 ext. 12` becomes `+14155550100 ext 12`",
+      "module": "operations",
+      "function": "phone_normalize",
+      "arguments": [
+        "415-555-0100 ext. 12",
+        {
+          "default_country_code": "1"
+        },
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "+14155550100 ext 12"
+      }
+    },
+    {
+      "identity": "normalize_phone_numbers",
+      "quote": "`+44 20 7946 0958` becomes `+442079460958` at 0.93",
+      "module": "operations",
+      "function": "phone_normalize",
+      "arguments": [
+        "+44 20 7946 0958",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "+442079460958",
+        "confidence": 0.93
+      }
+    },
+    {
+      "identity": "normalize_phone_numbers",
+      "quote": "with the reason `digit_count_unexpected:7`",
+      "module": "operations",
+      "function": "phone_normalize",
+      "arguments": [
+        "555-0100",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "changed": false,
+        "reasons": [
+          "digit_count_unexpected:7"
+        ]
+      }
+    },
+    {
+      "identity": "normalize_website_addresses",
+      "quote": "`Example.COM/Path/Page?Q=1` becomes `https://example.com/Path/Page?Q=1` at 0.9",
+      "module": "operations",
+      "function": "website_normalize",
+      "arguments": [
+        "Example.COM/Path/Page?Q=1",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "https://example.com/Path/Page?Q=1",
+        "confidence": 0.9
+      }
+    },
+    {
+      "identity": "normalize_website_addresses",
+      "quote": "`HTTP://WWW.Example.com/` becomes `http://www.example.com` at 0.95",
+      "module": "operations",
+      "function": "website_normalize",
+      "arguments": [
+        "HTTP://WWW.Example.com/",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "http://www.example.com",
+        "confidence": 0.95
+      }
+    },
+    {
+      "identity": "normalize_website_addresses",
+      "quote": "and `http://example.com` when `www.` removal is on",
+      "module": "operations",
+      "function": "website_normalize",
+      "arguments": [
+        "HTTP://WWW.Example.com/",
+        {
+          "strip_www": true
+        },
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "output": "http://example.com"
+      }
+    },
+    {
+      "identity": "normalize_website_addresses",
+      "quote": "each value left unchanged with `invalid_host` or `whitespace_inside_url`",
+      "module": "operations",
+      "function": "website_normalize",
+      "arguments": [
+        "exa mple.com",
+        {},
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "changed": false,
+        "reasons": [
+          "whitespace_inside_url"
+        ]
+      }
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "quote": "`John.Smith at Example dot com` becomes `john.smith@example.com` at 0.9",
+      "module": "recovery",
+      "function": "recover_email",
+      "arguments": [
+        "John.Smith at Example dot com"
+      ],
+      "expect": {
+        "output": "john.smith@example.com",
+        "confidence": 0.9
+      }
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "quote": "`sam@@example..com,` becomes `sam@example.com` at 0.9",
+      "module": "recovery",
+      "function": "recover_email",
+      "arguments": [
+        "sam@@example..com,"
+      ],
+      "expect": {
+        "output": "sam@example.com",
+        "confidence": 0.9
+      }
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "quote": "`gmail.con` gives `gmail.com` at 0.9",
+      "module": "recovery",
+      "function": "recover_email",
+      "arguments": [
+        "maria@gmail.con"
+      ],
+      "expect": {
+        "output": "maria@gmail.com",
+        "confidence": 0.9
+      }
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "quote": "`gmail.co` gives `gmail.com` at only 0.7",
+      "module": "recovery",
+      "function": "recover_email",
+      "arguments": [
+        "maria@gmail.co"
+      ],
+      "expect": {
+        "output": "maria@gmail.com",
+        "confidence": 0.7
+      }
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "quote": "Leave it unchanged at 0.5 with the reason `ambiguous_address`",
+      "module": "recovery",
+      "function": "recover_email",
+      "arguments": [
+        "ana@example.com; bo@example.com"
+      ],
+      "expect": {
+        "changed": false,
+        "confidence": 0.5,
+        "reasons": [
+          "ambiguous_address"
+        ]
+      }
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "quote": "remove a `mailto:` prefix and angle brackets",
+      "module": "operations",
+      "function": "email_normalize",
+      "arguments": [
+        "mailto:<Sam@Example.com>"
+      ],
+      "expect": {
+        "output": "sam@example.com"
+      }
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "quote": "A parameter keeps it as written",
+      "module": "operations",
+      "function": "email_normalize",
+      "arguments": [
+        "Sam.Jones@Example.com",
+        {
+          "lowercase_local_part": false
+        }
+      ],
+      "expect": {
+        "output": "Sam.Jones@example.com"
+      }
+    },
+    {
+      "identity": "apply_hold_or_escalate_each_correction",
+      "quote": "`ACME CORPORATION` is applied at 0.92",
+      "module": "operations",
+      "function": "classify",
+      "arguments": [
+        0.92,
+        true,
+        0.9,
+        0.6
+      ],
+      "expect": {
+        "value": "applied"
+      }
+    },
+    {
+      "identity": "apply_hold_or_escalate_each_correction",
+      "quote": "`AA CAREERS` (0.75) and `MACHINE TOOLS INC` (0.8) are held",
+      "module": "operations",
+      "function": "classify",
+      "arguments": [
+        0.75,
+        true,
+        0.9,
+        0.6
+      ],
+      "expect": {
+        "value": "held"
+      }
+    },
+    {
+      "identity": "score_duplicate_pairs_by_weakest_signal",
+      "quote": "`Acme Widgets, Inc.` and `ACME WIDGETS INC` have the same name key",
+      "module": "duplicates",
+      "function": "name_key",
+      "arguments": [
+        "Acme Widgets, Inc.",
+        "<packaged-catalogs>"
+      ],
+      "expect": {
+        "value": "acme widgets"
+      }
+    },
+    {
+      "identity": "score_duplicate_pairs_by_weakest_signal",
+      "quote": "`12 N Main St., Ste 4` and `12 North Main Street Suite 4` have the same address key",
+      "module": "duplicates",
+      "function": "address_key",
+      "arguments": [
+        "12 N Main St., Ste 4"
+      ],
+      "expect": {
+        "value": "12 north main street suite 4"
+      }
+    },
+    {
+      "identity": "detect_malformed_values_by_dominant_pattern",
+      "quote": "the dominant pattern is `9+-9+-9+` with a share of 0.8",
+      "module": "recovery",
+      "function": "detect_malformed",
+      "arguments": [
+        [
+          "2026-09-18",
+          "2026-09-19",
+          "2026-10-01",
+          "18/09/2026",
+          "2026-11-30"
+        ]
+      ],
+      "expect": {
+        "dominant_pattern": "9+-9+-9+",
+        "dominant_share": 0.8
+      }
+    },
+    {
+      "identity": "detect_malformed_values_by_dominant_pattern",
+      "quote": "`18-09-2026` has the same pattern as `2026-09-18`",
+      "module": "operations",
+      "function": "induce_pattern",
+      "arguments": [
+        "18-09-2026"
+      ],
+      "expect": {
+        "collapsed": "9+-9+-9+"
+      }
+    },
+    {
+      "identity": "split_address_lines_into_components",
+      "quote": "`77 Pine Road, Toronto ON M5V 2T6` gives city `Toronto`",
+      "module": "address",
+      "function": "extract_components",
+      "arguments": [
+        "77 Pine Road, Toronto ON M5V 2T6"
+      ],
+      "expect": {
+        "components": {
+          "house_number": "77",
+          "street": "Pine Road",
+          "postal_code": "M5V 2T6",
+          "city": "Toronto",
+          "region": "ON"
+        }
+      }
+    },
+    {
+      "identity": "split_address_lines_into_components",
+      "quote": "with `house_number_not_found` and `city_or_region_ambiguous`",
+      "module": "address",
+      "function": "extract_components",
+      "arguments": [
+        "Main Street, Springfield"
+      ],
+      "expect": {
+        "reasons": [
+          "house_number_not_found",
+          "city_or_region_ambiguous"
+        ],
+        "confidence": 0.4
+      }
+    },
+    {
+      "identity": "read_the_train_validation_gap",
+      "quote": "Training 0.99 and cross-validated 0.80 give `overfitting`",
+      "module": "measurement",
+      "function": "read_generalization_gap",
+      "arguments": [
+        0.99,
+        0.8
+      ],
+      "expect": {
+        "verdict": "overfitting"
+      }
+    },
+    {
+      "identity": "read_the_train_validation_gap",
+      "quote": "Training 0.86 and 0.84 give `healthy`",
+      "module": "measurement",
+      "function": "read_generalization_gap",
+      "arguments": [
+        0.86,
+        0.84
+      ],
+      "expect": {
+        "verdict": "healthy"
+      }
+    },
+    {
+      "identity": "read_the_train_validation_gap",
+      "quote": "the verdict is `cv_beats_train_suspect_leakage`",
+      "module": "measurement",
+      "function": "read_generalization_gap",
+      "arguments": [
+        8.0,
+        12.0
+      ],
+      "expect": {
+        "verdict": "cv_beats_train_suspect_leakage"
+      }
+    },
+    {
+      "identity": "read_the_train_validation_gap",
+      "quote": "the verdict is `overfitting` with a relative gap of 33 percent",
+      "module": "measurement",
+      "function": "read_generalization_gap",
+      "arguments": [
+        8.0,
+        12.0
+      ],
+      "expect": {
+        "verdict": "overfitting"
+      },
+      "keywords": {
+        "metric_direction": "minimize"
+      }
+    }
+  ]
+}

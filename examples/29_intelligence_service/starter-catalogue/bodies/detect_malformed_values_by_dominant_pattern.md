@@ -8,7 +8,7 @@ Use it on columns that should follow one format: dates, postal codes, product co
 
 ## Steps
 
-1. Trim each value and reduce it to a collapsed character pattern. An upper case letter becomes `A`, a lower case letter `a`, a digit `9` and a character outside ASCII `U`. Other characters stay. Repeats collapse, so `2026-09-18` becomes `9+-9+-9+`.
+1. Trim each value and reduce it to a collapsed character pattern. Use the first rule that matches: an upper case letter becomes `A`, a lower case letter `a`, a digit `9`, and any other character outside ASCII `U`. Other characters stay. Repeats collapse, so `2026-09-18` becomes `9+-9+-9+`.
 2. Count the patterns and take the most common one as the dominant pattern.
 3. Compute its share of all values. When the share is below the dominant share threshold, report that there is no dominant pattern and flag nothing. The default threshold is 0.6. It must be above 0 and at most 1.
 4. Otherwise flag every value whose pattern differs from the dominant pattern.
@@ -20,6 +20,7 @@ Use it on columns that should follow one format: dates, postal codes, product co
 - In the column `2026-09-18`, `2026-09-19`, `2026-10-01`, `18/09/2026`, `2026-11-30`, the dominant pattern is `9+-9+-9+` with a share of 0.8. Only `18/09/2026` is flagged, with confidence 0.6.
 - An empty column reports no dominant pattern.
 - The collapsed pattern ignores how long each run is. `18-09-2026` has the same pattern as `2026-09-18` and is not flagged. Compare the exact pattern when run length matters.
+- A letter keeps its letter class even outside ASCII, because the case rules are read first. `José` gives `Aa+`, not `Aa+U`. A character with no case and no digit value, such as a currency sign or a Chinese character, gives `U`.
 
 ## Known-wrong example
 

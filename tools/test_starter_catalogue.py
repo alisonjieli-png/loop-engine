@@ -9,6 +9,7 @@ from contextlib import closing
 from copy import deepcopy
 from dataclasses import dataclass, replace
 import hashlib
+from importlib import import_module
 import importlib.util
 import json
 from pathlib import Path
@@ -20,6 +21,7 @@ import unittest
 from unittest import mock
 
 from loop_engine.catalog.stores.sqlite_store import SQLiteRecordStore
+from loop_engine.code_nodes.text_conformance import load_packaged_catalogs, merge_layers
 from loop_engine.core.facets import EFFECTS
 from loop_engine.core.harness_intelligence import KINDS, RECORD_TYPE as ITEM_RECORD_TYPE
 from loop_engine.core.instance_instructions import STYLE_FILES
@@ -39,6 +41,10 @@ MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 40, 
 #: A required part that holds fewer words than this is a heading without content.
 MINIMUM_PART_WORDS = 8
 QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 26
+EXAMPLES_FILE, EXAMPLES_RECORD_TYPE = "executed-examples.json", "starter_catalogue_executed_examples/v1"
+#: How much of the catalogue the executed examples must cover. A body may quote a
+#: value only when a row here runs the cited code and observes it.
+MINIMUM_EXAMPLES, MINIMUM_EXAMPLE_ITEMS = 40, 10
 IDENTITY = re.compile(r"[a-z][a-z0-9_]{2,79}")
 #: The two layers that can hold compiled material today. The other two canonical
 #: layers need real runs and real feedback, so an item there would be invented.
@@ -87,6 +93,7 @@ class CatalogueSnapshot:
     bodies: dict
     review: str
     repository: Path
+    examples: dict
 
     def rows(self):
         return list(zip(self.specifications.get("specifications") or (), self.items.get("items") or ()))
@@ -96,7 +103,8 @@ def load_snapshot(folder: Path = CATALOGUE) -> CatalogueSnapshot:
     bodies = {path.stem: path.read_bytes() for path in sorted((folder / "bodies").iterdir())}
     return CatalogueSnapshot(json.loads((folder / "specifications.json").read_text(encoding="utf-8")),
                              json.loads((folder / "items.json").read_text(encoding="utf-8")), bodies,
-                             (folder / "REVIEW.md").read_text(encoding="utf-8"), ROOT)
+                             (folder / "REVIEW.md").read_text(encoding="utf-8"), ROOT,
+                             json.loads((folder / EXAMPLES_FILE).read_text(encoding="utf-8")))
 
 
 def word_count(text: str) -> int:
@@ -322,13 +330,63 @@ def rule_the_catalogue_is_large_enough(snapshot):
     return [] if count >= MINIMUM_ITEMS else [f"{count} items is fewer than {MINIMUM_ITEMS}"]
 
 
+def _observed_field(result, name):
+    """One named field of a result: the whole value under 'value', else a key or an attribute."""
+    if name == "value":
+        return result
+    if isinstance(result, dict):
+        return result.get(name)
+    return getattr(result, name, None)
+
+
+def rule_quoted_examples_reproduce(snapshot):
+    """Every quoted example runs against the cited code and observes what the body says."""
+    record = snapshot.examples
+    if record.get("record_type") != EXAMPLES_RECORD_TYPE:
+        return [f"{EXAMPLES_FILE}: record type {record.get('record_type')!r} is not supported"]
+    modules, token = record.get("modules") or {}, record.get("packaged_catalogs_token")
+    rows = record.get("examples") or ()
+    found = []
+    if len(rows) < MINIMUM_EXAMPLES or len({row.get("identity") for row in rows}) < MINIMUM_EXAMPLE_ITEMS:
+        found.append(f"{EXAMPLES_FILE}: at least {MINIMUM_EXAMPLES} executed examples over "
+                     f"{MINIMUM_EXAMPLE_ITEMS} items are required")
+    catalogs = merge_layers([load_packaged_catalogs()])
+    for row in rows:
+        identity, quote = row.get("identity"), row.get("quote")
+        body = snapshot.bodies.get(identity)
+        if body is None:
+            found.append(f"{identity}: an executed example names an item that has no body")
+            continue
+        if not isinstance(quote, str) or quote not in body.decode("utf-8"):
+            found.append(f"{identity}: the body does not say {quote!r} word for word")
+        module_name = modules.get(row.get("module"))
+        function = getattr(import_module(module_name), row.get("function"), None) if module_name else None
+        if function is None:
+            found.append(f"{identity}: {row.get('module')}.{row.get('function')} is not a cited function")
+            continue
+        arguments = [catalogs if value == token else value for value in row.get("arguments") or ()]
+        try:
+            result = function(*arguments, **(row.get("keywords") or {}))
+        except Exception as error:  # the body must not quote a call the code refuses
+            found.append(f"{identity}: {row.get('function')} refused the example: {error}")
+            continue
+        for name, expected in (row.get("expect") or {}).items():
+            observed = _observed_field(result, name)
+            if isinstance(observed, tuple):
+                observed = list(observed)
+            if observed != expected:
+                found.append(f"{identity}: {row.get('function')} gives {name}={observed!r}, "
+                             f"the body says {expected!r}")
+    return found
+
+
 RULES = {function.__name__[5:]: function for function in (
     rule_identities_are_unique, rule_digests_and_sizes_match_the_bodies, rule_every_item_carries_a_licence,
     rule_every_item_is_a_candidate, rule_no_forbidden_vocabulary, rule_bodies_stay_in_the_word_range,
     rule_specification_loads_through_the_staging_tool, rule_bodies_have_the_required_parts,
     rule_layers_kinds_effects_and_styles_are_declared, rule_source_references_are_pinned,
     rule_model_generated_material_is_bounded, rule_the_review_sheet_lists_every_item,
-    rule_the_catalogue_is_large_enough)}
+    rule_the_catalogue_is_large_enough, rule_quoted_examples_reproduce)}
 
 
 def problems(snapshot) -> dict:
@@ -351,18 +409,22 @@ def _refresh_module():
     return sys.modules[name]
 
 
-def _changed(snapshot, *, specifications=None, items=None, body=None, review=None):
+def _changed(snapshot, *, specifications=None, items=None, body=None, review=None, examples=None):
     """A deep copy with one deliberate defect; the committed files are never touched."""
     new_specifications, new_items = deepcopy(snapshot.specifications), deepcopy(snapshot.items)
+    new_examples = deepcopy(snapshot.examples)
     bodies = dict(snapshot.bodies)
     if specifications:
         specifications(new_specifications["specifications"])
     if items:
         items(new_items)
+    if examples:
+        examples(new_examples["examples"])
     if body:
         identity = new_specifications["specifications"][0]["id"]
         bodies[identity] = body(bodies[identity].decode("utf-8")).encode("utf-8")
     return replace(snapshot, specifications=new_specifications, items=new_items, bodies=bodies,
+                   examples=new_examples,
                    review=snapshot.review if review is None else review(snapshot.review))
 
 
@@ -376,6 +438,12 @@ def _set(target, key, value):
 
 def _first_reference(items):
     return items["items"][0]["reference"]
+
+
+def _capitalisation_example(rows):
+    """The executed example that the adversarial review corrected, whatever its position."""
+    return next(row for row in rows if row["identity"] == "restore_capitalisation_of_names"
+                and row["arguments"][0] == "iPhone Repair")
 
 
 def _renamed_first_identity(snapshot):
@@ -472,6 +540,21 @@ KNOWN_WRONG = {
     "the_catalogue_is_large_enough": (
         ("only a handful of items", lambda s: _changed(
             s, specifications=lambda rows: rows.__delitem__(slice(MINIMUM_ITEMS - 1, None)))),),
+    "quoted_examples_reproduce": (
+        ("a body quotes a value the code does not produce", lambda s: _changed(
+            s, examples=lambda rows: _set(_capitalisation_example(rows)["expect"], "output", "iPhone Repair"))),
+        ("a body quotes a confidence the code does not produce", lambda s: _changed(
+            s, examples=lambda rows: _set(_capitalisation_example(rows)["expect"], "confidence", 0.8))),
+        ("an executed example is not in its body word for word", lambda s: _changed(
+            s, examples=lambda rows: _set(rows[0], "quote", "`2026-09-18` becomes `9-9-9`"))),
+        ("an executed example names a function that is not there", lambda s: _changed(
+            s, examples=lambda rows: _set(rows[0], "function", "induce_patterns"))),
+        ("an executed example names an item without a body", lambda s: _changed(
+            s, examples=lambda rows: _set(rows[0], "identity", "a_name_with_no_body"))),
+        ("the executed examples are thinned out", lambda s: _changed(
+            s, examples=lambda rows: rows.__delitem__(slice(1, None)))),
+        ("the record type is not the supported one", lambda s: replace(
+            s, examples={**s.examples, "record_type": "starter_catalogue_executed_examples/v2"}))),
 }
 
 
