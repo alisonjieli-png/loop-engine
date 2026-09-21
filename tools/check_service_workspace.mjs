@@ -311,7 +311,7 @@ try {
   const directPricing=await page.request.get(fixture.base+"/pricing",{maxRedirects:0});
   check("pricing_address_is_served_on_a_direct_visit",directPricing.status()===200&&(directPricing.headers()["content-type"]||"").startsWith("text/html"),
     {status:directPricing.status(),content_type:directPricing.headers()["content-type"]||"",
-     needed_entry:'src/loop_engine/core/service_runtime/http.py, WEB_ASSETS, add "/pricing": ("index.html", HTML_MEDIA_TYPE)'});
+     needed_entry:'src/loop_engine/core/service_runtime/web_pages.py, WEB_ASSETS, add "/pricing": ("index.html", HTML_MEDIA_TYPE)'});
   const reloadedPricing=await context.newPage();
   reloadedPricing.on("pageerror",error=>errors.push(safeError(error.message)));
   await reloadedPricing.goto(fixture.base+"/pricing");

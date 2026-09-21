@@ -1,0 +1,87 @@
+"""The pages and files this service serves to a browser, and their addresses.
+
+This module owns the served address table, the packaged files behind it, and
+the page a reader sees at an address the service does not serve. It owns no
+transport, no credential and no interface address; `http` keeps those.
+
+It was separated from `http` on September 21, 2026, because that module had
+grown past this repository's length convention and every new page made it
+longer. Adding a page is now a change to a small module that serves pages.
+"""
+from __future__ import annotations
+
+from html import escape
+
+HTML_MEDIA_TYPE = "text/html"
+#: The name of this deployment is written into a served page here. A packaged
+#: page carries the placeholder; no packaged file carries a deployment's name.
+SERVICE_NAME_PLACEHOLDER = b"{{SERVICE_NAME}}"
+#: The directory inside the installed package that holds every served file.
+PACKAGED_ASSET_DIRECTORY = ("core", "service_runtime", "web_assets")
+WEB_ASSETS = {
+    "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
+    "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),
+    "/account": ("index.html", HTML_MEDIA_TYPE),
+    "/admin": ("index.html", HTML_MEDIA_TYPE),
+    "/connect": ("index.html", HTML_MEDIA_TYPE),
+    "/examples": ("index.html", HTML_MEDIA_TYPE),
+    "/security": ("index.html", HTML_MEDIA_TYPE),
+    "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
+    "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
+    "/pricing": ("index.html", HTML_MEDIA_TYPE),
+    "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
+    "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
+    "/assets/service.css": ("service.css", "text/css"),
+    "/assets/architecture.css": ("architecture.css", "text/css"),
+    "/assets/client-access.js": ("client-access.js", "text/javascript"),
+    "/assets/service.js": ("service.js", "text/javascript"),
+    "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
+    # The licence terms of the packaged browser library travel with it.
+    "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
+}
+MISSING_ADDRESS_PAGE = """<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{name} | Address not found</title><link rel="stylesheet" href="/assets/service.css"></head>
+<body><main id="main" class="reading" style="padding:4rem 4vw">
+<p class="eyebrow">Address not found</p>
+<h1>This service has no page at that address.</h1>
+<p class="lede">The address in your browser is not one {name} serves. It may have been
+mistyped, or it may be an older address that has since changed. Nothing is wrong with
+your account or your key.</p>
+<div class="actions"><a class="button primary" href="/">Go to the home page</a>
+<a class="button quiet" href="/docs">Open the setup guide</a></div>
+<p class="caption">If you followed a link from {name} to get here, the link is wrong and
+we would like to know. Tell the person who runs this service which page you came from.</p>
+</main></body></html>
+"""
+
+
+def read_packaged_asset(name):
+    """Return the exact bytes of one file packaged beside this module."""
+    from importlib.resources import files
+    return files("loop_engine").joinpath(*PACKAGED_ASSET_DIRECTORY, name).read_bytes()
+
+
+def served_asset(path, method, display_name):
+    """Return `(body, media_type)` for a served address, or None when this service serves none.
+
+    The deployment's name is written into a served page here, so that a caller
+    does not have to know which packaged files carry the placeholder.
+    """
+    if method != "GET" or path not in WEB_ASSETS:
+        return None
+    name, media_type = WEB_ASSETS[path]
+    body = read_packaged_asset(name)
+    if media_type == HTML_MEDIA_TYPE:
+        body = body.replace(SERVICE_NAME_PLACEHOLDER, escape(display_name, quote=True).encode("utf-8"))
+    return body, media_type
+
+
+def missing_address_page(display_name):
+    """Return the bytes of the page a reader sees at an address this service does not serve.
+
+    The page names no address and repeats nothing from the request, so nothing
+    can be reflected into it.
+    """
+    return MISSING_ADDRESS_PAGE.format(name=escape(display_name)).encode("utf-8")

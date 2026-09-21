@@ -18,7 +18,8 @@ same. It does not create another runtime type.
 ## Request and result records
 
 - Every data route is under `/api/v1/`. The Model Context Protocol endpoint
-  is `/mcp`. The website pages and assets are the fixed list `WEB_ASSETS`.
+  is `/mcp`. The website pages and assets are the fixed list `WEB_ASSETS` in
+  `core.service_runtime.web_pages`.
 - A request body is one JSON object with a `record_type`, for example
   `service_provisioning_request/v1`, `service_retrieval_request/v1`,
   `service_client_access_request/v1` or `billing_session_request/v1`. The
