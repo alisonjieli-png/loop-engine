@@ -46,6 +46,7 @@ WEB_ASSETS = {
     "/security": ("index.html", HTML_MEDIA_TYPE),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
+    "/pricing": ("index.html", HTML_MEDIA_TYPE),
     "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
     "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
     "/assets/service.css": ("service.css", "text/css"),
