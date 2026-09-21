@@ -2117,10 +2117,10 @@
         "identity": "review_a_change_for_what_is_missing",
         "kind": "skill",
         "purpose": "Review a change for the work that is missing: unfinished parts of the request, callers that were not updated, missing settings, alarms or documents, and paths that were never touched.",
-        "digest": "e3aeb27cf2330b360fa898f69a0ea7cd5cfe1f178b53f0253cb4532378ad65cf",
+        "digest": "164fa56e20a440447c610bb3954a6e2028a8e3b03b9ab9792b15ca10c92524fb",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/strings/ask_strategies.py@381efecb8999f50a5d163d501d9590b289a0da8c",
-        "size_bytes": 2469,
+        "size_bytes": 2468,
         "license": "MIT",
         "declared_effects": [
           "reads_fs"
@@ -2976,6 +2976,608 @@
         "body_included": false
       },
       "body_path": "bodies/make_a_write_safe_to_repeat_with_an_idempotency_key.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "set_timeouts_and_cancel_an_outbound_call",
+        "kind": "skill",
+        "purpose": "Give every network call, query and subprocess a deadline chosen from a measurement, pass the remaining time down, cancel properly, and never turn a timeout into an empty result.",
+        "digest": "25398565e75978295ef3e69f95ff0e70eece36406c59e414d8dddf0c83c267a7",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/runtime_capacity.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2327,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/set_timeouts_and_cancel_an_outbound_call.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "keep_partial_work_when_a_long_job_is_interrupted",
+        "kind": "skill",
+        "purpose": "Save progress during a long job so a restart costs minutes and not the whole run: write complete records, record the input identity, catch the stop signal, and resume from the last position.",
+        "digest": "105a18823a6fe3a1a52ac73b0e15fe0694353c50b682272e2baba8fae6d2bbaf",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/run_checkpoint.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2460,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/keep_partial_work_when_a_long_job_is_interrupted.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "keep_secrets_out_of_source_and_settings",
+        "kind": "skill",
+        "purpose": "Stop API keys and passwords from living in the repository or the image: store a reference to an environment variable or a secret store, refuse to start without it, and scan the history once.",
+        "digest": "a36b3a29c15941555b4555187ae3e7a137a6bfc9d6107d3eeeada1d9318fdef6",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/service_runtime/http_entrypoint.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2400,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/keep_secrets_out_of_source_and_settings.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "scope_a_credential_to_the_smallest_permission",
+        "kind": "skill",
+        "purpose": "Give each caller its own key or database user limited to the actions and records it needs, with an expiry, a trace to its holder and a review that removes unused grants.",
+        "digest": "f61fb4dcdc482ebb42c5a705c2c1386037a263bf0e0513259a3f6ba7e84ca914",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/credential_leases.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2237,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/scope_a_credential_to_the_smallest_permission.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "rotate_a_credential_without_an_outage",
+        "kind": "skill",
+        "purpose": "Replace an API key or password while the system keeps running: allow two valid credentials at once, move callers one at a time, watch old use fall to zero, then disable before deleting.",
+        "digest": "d65d842a955724a486768bdf29cc7a76faae91960b2338a41b82f5f41d877c9f",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/service_api.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2284,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/rotate_a_credential_without_an_outage.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "respond_to_a_leaked_credential",
+        "kind": "skill",
+        "purpose": "Handle a key that appeared in a commit, a log or a chat message: withdraw it first, replace it, read the access records for the whole period, and separate what you can prove from what you cannot tell.",
+        "digest": "7b0dae15c0a60563578e8d978c4403db3c87641ea343ea941400cf845e1358e6",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/credential_leases.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2512,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/respond_to_a_leaked_credential.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "write_a_log_line_that_is_safe_to_share",
+        "kind": "skill",
+        "purpose": "Write log lines that help at three in the morning and can still be handed to a support engineer: structured fields, identifiers instead of content, and an allowed list of fields.",
+        "digest": "fee6034935bc1e8d1f9502769d4627323f8d36190ac90dd11c3f0dfa291578e1",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/otel_export.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2527,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/write_a_log_line_that_is_safe_to_share.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "remove_personal_data_before_it_reaches_a_log",
+        "kind": "skill",
+        "purpose": "Stop personal or secret values at the place they are written rather than cleaning storage afterwards: decide per field, apply it in one shared writer, and include the error reporting tool.",
+        "digest": "712433d8478897c89a3c50ba5afd1e3f644217701a9800eea3f601ae3240582e",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/semantic_event_history.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2504,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/remove_personal_data_before_it_reaches_a_log.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "choose_log_levels_and_what_belongs_in_each",
+        "kind": "skill",
+        "purpose": "Agree what error, warning, information and debug mean so a level can decide whether to wake somebody, and stop one failure being recorded at every frame it passes.",
+        "digest": "20f2ff780f84368433d622db7f719257197ce5401a8f932af00d8ae5886f9937",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/event_vocabulary.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2436,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/choose_log_levels_and_what_belongs_in_each.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "carry_one_correlation_identifier_across_services",
+        "kind": "skill",
+        "purpose": "Give each request one identifier that travels through every service, queue and background job, so one search returns the whole story and a user can quote it in a report.",
+        "digest": "3225c9ff8844724e892bf128c3d9c1a0e1365b21346d3f719fd20b370f97c1eb",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/otel_export.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2310,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/carry_one_correlation_identifier_across_services.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "measure_before_optimising",
+        "kind": "skill",
+        "purpose": "Find where the time actually goes before changing code for speed: state a goal number, measure on realistic data, break the time down by phase, and work only on the largest phase.",
+        "digest": "34c81df3357846f7e57417271d09b66fa3d200e1e2060d2896a10ce91c77a227",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/operation_cost_capture.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2262,
+        "license": "MIT",
+        "declared_effects": [
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/measure_before_optimising.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "build_a_repeatable_performance_test",
+        "kind": "skill",
+        "purpose": "Make a benchmark you can trust: freeze the input and the environment, warm up, run several times, measure the same version twice to find the noise floor, and report the spread.",
+        "digest": "e914a6feb1e3650c83ed94f2511b200741ec66421ada1ab12b11c24848ed01f1",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/ngram_benchmark.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2388,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/build_a_repeatable_performance_test.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "read_a_profile_and_find_the_dominant_cost",
+        "kind": "skill",
+        "purpose": "Turn a profile into one sentence about where the time or memory goes: read both the total including calls and the time inside the function, check call counts, and separate waiting from computing.",
+        "digest": "badb8d5327358d77cd93c2455778619cd7bfae9313fc97849dabe168c65eac15",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/operation_cost_records.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2324,
+        "license": "MIT",
+        "declared_effects": [
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/read_a_profile_and_find_the_dominant_cost.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "use_percentiles_not_averages_for_response_time",
+        "kind": "skill",
+        "purpose": "Describe how slow the slow requests are: report the middle, ninety fifth and ninety ninth percentile with the window and sample count, and never average percentiles together.",
+        "digest": "cea1f0b1138ab497831398b09145869ed52ed11c35b4851240ee0d5a6aee7442",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/ngram_benchmark.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2379,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/use_percentiles_not_averages_for_response_time.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "validate_input_at_the_boundary_and_refuse_early",
+        "kind": "skill",
+        "purpose": "Check incoming data at the edge and convert it into your own types there: declare the shape, refuse unknown fields instead of ignoring them, and report every problem at once.",
+        "digest": "096872478aba99fceb000c84aa372f2cbc71a1c7f2fb8f30fd650de4273e39d9",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/settings_loader.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2380,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/validate_input_at_the_boundary_and_refuse_early.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "write_a_data_contract_for_a_table_or_feed",
+        "kind": "skill",
+        "purpose": "Write down what a table, export or message stream promises its readers: field meanings and units, what a row represents, freshness, quality rules checked at production, and a version.",
+        "digest": "9813ca59338be2208ae0b4ea70e8922fc78415dd02aac24a35b83534e3abee8d",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/observation_expectations.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2556,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/write_a_data_contract_for_a_table_or_feed.md",
       "lifecycle": "candidate",
       "license_state": "declared",
       "provenance": {

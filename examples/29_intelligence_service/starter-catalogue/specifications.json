@@ -1155,14 +1155,14 @@
       "id": "review_a_change_for_what_is_missing",
       "layer": "context",
       "family": "review",
-      "title": "Review a change for what is missing from it",
+      "title": "Review a change for the work it leaves out",
       "tags": [
         "code review",
         "incomplete change",
         "callers",
         "follow up"
       ],
-      "text": "# Review a change for what is missing from it\n\nLook for the work that is absent rather than the work that is present, because absent work leaves no line to comment on.\n\n## When to use it\n\nUse it after a correctness review, and always for a change written by an agent, which tends to satisfy the words of a request and skip the parts that were implied.\n\n## Steps\n\n1. List everything the request asked for, including anything implied by the words used, such as a list needing paging or a write needing a permission check.\n2. Compare that list with the files the change touches. Mark each request item as done, partly done or absent.\n3. Ask which callers of the changed code were not updated. Search for every use, not only the ones in the same folder.\n4. Ask what documentation, settings, migration or alarm the change needs and does not have.\n5. Ask what happens on the paths that were not changed: the old version of the record, the failure branch, the empty result.\n6. Ask who else must act before this change is safe to release.\n7. Turn each absent item into either a required change now or a written follow up with an owner.\n\n## Checks\n\n- Every item of the request is marked done, partly done or absent.\n- Every caller of a changed function was found and judged.\n- Absent items are either fixed or written down with an owner, never silently dropped.\n- The change does not leave two ways of doing the same thing without a reason.\n\n## Known-wrong example\n\nAn agent is asked to add a new field to an order and does so in the create path. The review approves it. The update path, the export and the search filter never learned about the field, so orders edited after creation silently lose it. Nothing in the change shows this, because the missing work is in files the change never touched. Searching for every use of the order record would have found all three.\n\n## What to record\n\n- The request list with a state for each item.\n- The callers found and the ones deliberately left alone.\n- The follow up items with owners.\n\n## Source\n\n- `src/loop_engine/strings/ask_strategies.py`: this repository registers several named ways of asking the same question, including asking again with part of the material hidden and asking whether the first answer still holds, so a single phrasing does not decide the result.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "text": "# Review a change for the work it leaves out\n\nLook for the work that is absent rather than the work that is present, because absent work leaves no line to comment on.\n\n## When to use it\n\nUse it after a correctness review, and always for a change written by an agent, which tends to satisfy the words of a request and skip the parts that were implied.\n\n## Steps\n\n1. List everything the request asked for, including anything implied by the words used, such as a list needing paging or a write needing a permission check.\n2. Compare that list with the files the change touches. Mark each request item as done, partly done or absent.\n3. Ask which callers of the changed code were not updated. Search for every use, not only the ones in the same folder.\n4. Ask what documentation, settings, migration or alarm the change needs and does not have.\n5. Ask what happens on the paths that were not changed: the old version of the record, the failure branch, the empty result.\n6. Ask who else must act before this change is safe to release.\n7. Turn each absent item into either a required change now or a written follow up with an owner.\n\n## Checks\n\n- Every item of the request is marked done, partly done or absent.\n- Every caller of a changed function was found and judged.\n- Absent items are either fixed or written down with an owner, never silently dropped.\n- The change does not leave two ways of doing the same thing without a reason.\n\n## Known-wrong example\n\nAn agent is asked to add a new field to an order and does so in the create path. The review approves it. The update path, the export and the search filter never learned about the field, so orders edited after creation silently lose it. Nothing in the change shows this, because the missing work is in files the change never touched. Searching for every use of the order record would have found all three.\n\n## What to record\n\n- The request list with a state for each item.\n- The callers found and the ones deliberately left alone.\n- The follow up items with owners.\n\n## Source\n\n- `src/loop_engine/strings/ask_strategies.py`: this repository registers several named ways of asking the same question, including asking again with part of the material hidden and asking whether the first answer still holds, so a single phrasing does not decide the result.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
       "sources": [
         "src/loop_engine/strings/ask_strategies.py"
       ],
@@ -1544,6 +1544,280 @@
       "text": "# Make a write safe to repeat with an idempotency key\n\nLet a caller repeat a request after a timeout without creating a second charge, a second order or a second message.\n\n## When to use it\n\nUse it for any write a caller might send twice: a payment, an order, an email, a transfer, a job submission, or any call behind a network that can time out.\n\n## Steps\n\n1. Have the caller generate a key for the attempt, unique to that attempt, and send it with the request.\n2. Store the key with the result of the first completed request, in the same transaction that performs the write.\n3. When a request arrives with a key you have already completed, return the stored result rather than doing the work again.\n4. Store the important request fields beside the key. If the same key arrives with different content, refuse it instead of returning the old result.\n5. Handle the request that is still in progress: hold, or return a clear \"in progress\" answer, so two copies never do the work at once.\n6. Decide how long keys are kept, and tell callers. A key that is forgotten too early brings the duplicate back.\n7. Give the operation its own identifier in the result, so the caller can check the state later by that identifier.\n8. Test three cases: the same key twice, the same key with different content, and two copies arriving at the same moment.\n\n## Checks\n\n- The key and the result are stored in the same transaction as the write.\n- The same key with different content is refused.\n- Two requests with one key, arriving together, produce one write.\n- The retention period for keys is stated and longer than the caller's retry window.\n\n## Known-wrong example\n\nA payment endpoint checks for a recent identical charge before writing, to avoid duplicates. Two copies of the same request arrive in the same second. Both checks run before either write, both find nothing, and the customer is charged twice. A key stored in the same transaction as the charge, with a uniqueness rule in the database, would have made the second write fail and return the first result.\n\n## What to record\n\n- The key, the stored result and the request fields it was bound to.\n- The refusals where the same key carried different content.\n- The retention period for keys.\n\n## Source\n\n- `src/loop_engine/catalog/protocol.py`: this repository applies writes as one batch with preconditions and returns an acknowledgement carrying the digest of the batch, so a caller can tell an applied batch from a repeated one.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
       "sources": [
         "src/loop_engine/catalog/protocol.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "set_timeouts_and_cancel_an_outbound_call",
+      "layer": "context",
+      "family": "method",
+      "title": "Set timeouts and cancel an outbound call",
+      "tags": [
+        "timeout",
+        "deadline",
+        "cancellation",
+        "thread pool",
+        "hanging request"
+      ],
+      "text": "# Set timeouts and cancel an outbound call\n\nGive every call to another system a deadline you chose on purpose, and make sure the work really stops when the deadline passes.\n\n## When to use it\n\nUse it for every network call, database query, subprocess and job that can wait: in other words, all of them. A call with no deadline will one day wait forever.\n\n## Steps\n\n1. Set the deadline for the whole operation first, from what the caller can wait for.\n2. Divide that deadline among the calls the operation makes, leaving room for the work between them.\n3. Set separate limits where the tool allows: time to connect, time to the first byte, time for the whole call.\n4. Base the numbers on a measurement of normal and slow responses, not on a round number. Record the measurement.\n5. Pass the remaining time down with the request, so a service that is called can stop work it can no longer deliver.\n6. Cancel properly: close the connection, cancel the task, and check that the work on the other side actually stops.\n7. Decide what the caller receives when the deadline passes: a clear failure, a partial result, or a cached value. Say which.\n8. Make sure a timeout is not silently treated as an empty answer. Empty and unknown are different.\n\n## Checks\n\n- Every outbound call has an explicit deadline.\n- The sum of the inner deadlines fits inside the outer one.\n- Cancellation stops the work, and a test shows it.\n- A timeout produces a distinct failure, never an empty result.\n\n## Known-wrong example\n\nA page calls three services with no deadline set. One of them slows to sixty seconds under load. Every request thread waits, the pool fills, and the whole site stops answering, including pages that never use that service. A two second deadline would have degraded one part of one page instead.\n\n## What to record\n\n- The measured normal and slow response times.\n- The chosen deadlines and how they divide.\n- What the caller receives when a deadline passes.\n\n## Source\n\n- `src/loop_engine/core/runtime_capacity.py`: this repository takes a limit from something measured, such as memory or disk, rather than allowing a part of the system to declare a number of its own.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/runtime_capacity.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "keep_partial_work_when_a_long_job_is_interrupted",
+      "layer": "context",
+      "family": "method",
+      "title": "Keep partial work when a long job is interrupted",
+      "tags": [
+        "checkpoint",
+        "resume",
+        "long running job",
+        "overnight run"
+      ],
+      "text": "# Keep partial work when a long job is interrupted\n\nSave enough during a long job that an interruption costs minutes, not the whole run.\n\n## When to use it\n\nUse it for any job that runs longer than a few minutes: a build, a data job, an overnight run, a large import, or an agent working through many steps.\n\n## Steps\n\n1. Decide what \"progress\" means for this job: the last key processed, the files produced so far, the best result so far.\n2. Write that progress to durable storage at points you choose, not only at the end.\n3. Make each write complete or absent, never half written. Write to a temporary name and move it into place.\n4. Record enough to continue: the position, the settings in use and the identity of the input, so a resume cannot continue against different data.\n5. Catch the signals that ask a process to stop, write one last progress record, and then exit.\n6. On start, look for an existing progress record, check that it matches the current input, and continue from it or say clearly why it cannot.\n7. Keep the partial output usable and clearly labelled as partial, so a reader never mistakes it for the finished result.\n8. Test the interruption: stop the job in the middle, restart it, and compare the final result with an uninterrupted run.\n\n## Checks\n\n- A record is written more often than the job is expected to be interrupted.\n- Each record is complete or absent, never half written.\n- A resume refuses to continue against different input.\n- The interrupted and uninterrupted runs give the same final result in a test.\n\n## Known-wrong example\n\nAn overnight job processes files for nine hours and writes its results at the end. At hour eight the machine restarts for an update. The morning report is empty, the logs show only that it started, and nobody can say which files were done. Writing progress every few minutes would have left eight hours of usable work and a clear place to continue.\n\n## What to record\n\n- The definition of progress and how often it is saved.\n- The identity of the input the progress belongs to.\n- The result of the interruption test.\n\n## Source\n\n- `src/loop_engine/core/run_checkpoint.py`: this repository writes a checkpoint of the best work so far when a run is signalled to stop, so an interrupted overnight run leaves something usable behind.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/run_checkpoint.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "keep_secrets_out_of_source_and_settings",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Keep secrets out of source and settings files",
+      "tags": [
+        "secrets",
+        "api key",
+        "environment variable",
+        "secret scanning"
+      ],
+      "text": "# Keep secrets out of source and settings files\n\nMake the settings name where a secret lives instead of holding its value, so a repository, an image or a report can never carry it.\n\n## When to use it\n\nUse it from the first day of a project, and whenever you add an integration that needs a key, a password or a certificate.\n\n## Steps\n\n1. Name every secret the system needs and where it comes from.\n2. In settings, store a reference such as an environment variable name or a path in a secret store. Never the value.\n3. Resolve the reference at start, refuse to start when it is missing, and never write the resolved value anywhere.\n4. Keep secrets out of build arguments, image layers, command lines that other users can list, and error messages.\n5. Give each environment its own secret. A development key that also works in production is a production key.\n6. Add a check to the build that refuses a commit containing something that looks like a key, and run it on the history once.\n7. Give every secret an owner, a place it is stored and a date it will be replaced.\n8. Write down what to do when one leaks, before one leaks.\n\n## Checks\n\n- No settings file, image layer or build log holds a secret value.\n- Starting without a required secret fails with a clear message and no value in it.\n- The repository history was scanned once, not only new commits.\n- Each environment uses a different secret.\n\n## Known-wrong example\n\nA team keeps the production database password in a settings file, because the repository is private. A new developer forks it to a personal account to try something. The password is now on a machine nobody controls and in a backup nobody tracks. Changing it later requires finding every copy. A reference to an environment variable would have left nothing to copy.\n\n## What to record\n\n- The secret list with owner, storage place and replacement date.\n- The references used in settings, never the values.\n- The result of scanning the history.\n\n## Source\n\n- `src/loop_engine/core/service_runtime/http_entrypoint.py`: the host settings here name an environment variable with a short prefix instead of holding a secret, and the resolver refuses anything that is not such a reference and does not write the value it reads.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/service_runtime/http_entrypoint.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "scope_a_credential_to_the_smallest_permission",
+      "layer": "context",
+      "family": "method",
+      "title": "Scope a credential to the smallest permission that works",
+      "tags": [
+        "least privilege",
+        "service account",
+        "database user",
+        "token scope"
+      ],
+      "text": "# Scope a credential to the smallest permission that works\n\nGive each caller its own credential, limited to the actions and the data it really needs, and for no longer than it needs them.\n\n## When to use it\n\nUse it whenever you create a key, a token, a database user or a service account, including one for a script, a test or an agent.\n\n## Steps\n\n1. List the exact actions the caller performs and the exact data they touch.\n2. Create a separate credential for that caller. Do not share one credential between two callers.\n3. Grant only those actions. Start with read, and add write only where a step needs it.\n4. Limit the reach: one database schema, one storage folder, one set of records, one set of addresses.\n5. Give the credential an expiry. A credential without one is a permanent risk.\n6. Make the credential traceable to its holder, so a record shows who acted.\n7. Cap how much a credential can do, such as a spending limit or a request rate, when the interface offers it.\n8. Review the grants on a schedule and remove the ones nothing uses.\n\n## Checks\n\n- Each caller has its own credential with its own expiry.\n- Removing one grant breaks exactly one caller, and the tests show which.\n- An action outside the grant is refused, and a test proves it.\n- Unused grants are removed at the review.\n\n## Known-wrong example\n\nA reporting script is given the same administrative database user as the application, because it was quicker. Months later the script is changed to clean up old rows and, through an error in a date filter, deletes live orders. A read only user limited to the reporting schema would have made that change impossible and the error visible at once.\n\n## What to record\n\n- The caller, its actions, its credential and the grants.\n- The expiry and the review date.\n- The refusals observed when a caller went outside its grant.\n\n## Source\n\n- `src/loop_engine/core/credential_leases.py`: this repository hands out a lease with a named scope, a lifetime and a ceiling on how many are live at once, so a process acts without ever holding the credential itself.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/credential_leases.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "rotate_a_credential_without_an_outage",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Replace a credential without an outage",
+      "tags": [
+        "key rotation",
+        "password change",
+        "two valid keys",
+        "cutover"
+      ],
+      "text": "# Replace a credential without an outage\n\nChange a key or a password while the system keeps running, by letting the old and the new one work at the same time for a short period.\n\n## When to use it\n\nUse it on a schedule for every long lived credential, and immediately whenever one may have been exposed.\n\n## Steps\n\n1. Check first that the system can hold two valid credentials at once. If it cannot, that is the change to make before any replacement.\n2. Create the new credential with the same grants as the old one, and verify those grants before switching anything.\n3. Add the new credential to the store, so both are valid.\n4. Move the callers over one at a time, watching each one after the move.\n5. Watch the use of the old credential until it reaches zero. Do not rely on a list of callers, because one is always forgotten.\n6. Disable the old credential without deleting it, so a mistake can be undone quickly.\n7. After a period you decide in advance, delete the old credential.\n8. Record what was replaced, by whom and when, and set the next replacement date.\n\n## Checks\n\n- Two credentials can be valid at once, and a test shows it.\n- The grants of the new credential were verified before the switch.\n- The use of the old credential reached zero before it was disabled.\n- Disabling was reversible for a stated period.\n\n## Known-wrong example\n\nAn engineer replaces an interface key by editing the value in the store, because it is the same field. Every service using it starts failing within a minute, including a background job whose owner is on holiday. The rollback takes an hour because the old value was not kept. Adding the new key beside the old one would have made the switch invisible.\n\n## What to record\n\n- The credential, the reason for replacing it and the date.\n- The callers moved and the moment the old use reached zero.\n- The date the old credential was disabled and the date it was deleted.\n\n## Source\n\n- `src/loop_engine/core/service_api.py`: the hosted surface here stores a tenant key as a digest rather than the value, so a key can be checked, replaced and withdrawn without keeping a copy of it.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/service_api.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "respond_to_a_leaked_credential",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Respond to a credential that may have leaked",
+      "tags": [
+        "leaked key",
+        "incident",
+        "revoke",
+        "committed secret"
+      ],
+      "text": "# Respond to a credential that may have leaked\n\nAct on the assumption that the credential is already being used by someone else, and take away its power before anything else.\n\n## When to use it\n\nUse it the moment a key appears in a commit, a log, a ticket, a screenshot, a chat message or an error report, even when you believe nobody saw it.\n\n## Steps\n\n1. Withdraw the credential first. Deleting the commit, the message or the log entry does not withdraw it, and copies already exist.\n2. Issue a replacement and move the callers, following the replacement procedure.\n3. Find out what the credential could do. Its grants define the worst case, not your guess about the finder.\n4. Read the access records for the whole period the credential existed, not only since it was noticed. Look for unusual addresses, times and volumes.\n5. Decide whether data was reached. Record what you can prove, what you can rule out and what you cannot tell.\n6. Remove the value from the place it leaked, knowing this is cleanup and not containment. For a repository, rewriting history does not remove copies others hold.\n7. Decide who must be told, including customers and any authority, and by when. Take advice for anything involving personal data.\n8. Add the check that would have caught it, and prove that the check fails on the known case.\n\n## Checks\n\n- The credential was withdrawn before any cleanup started.\n- The access records for the full period were read, not sampled.\n- What can be proved, ruled out and not told apart are recorded separately.\n- A new check fails on the leaked value when it is put back.\n\n## Known-wrong example\n\nA key is pasted into a public issue. The team edits the message and considers it handled. The key stays valid for three more weeks, and search services have already indexed the original text. Charges appear on the account. Withdrawing the key in the first minute would have made the copy worthless.\n\n## What to record\n\n- The time the leak was noticed and the time the credential was withdrawn.\n- The grants the credential held and what the access records show.\n- The notifications made and the new check added.\n\n## Source\n\n- `src/loop_engine/core/credential_leases.py`: this repository gives every lease a state, including revoked and expired, so authority can be taken away at one place without collecting copies of the secret.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/credential_leases.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "write_a_log_line_that_is_safe_to_share",
+      "layer": "context",
+      "family": "method",
+      "title": "Write a log line that is safe to share",
+      "tags": [
+        "logging",
+        "structured logs",
+        "sensitive data",
+        "allowed fields"
+      ],
+      "text": "# Write a log line that is safe to share\n\nWrite the record so that it helps whoever reads it at three in the morning, and so that it can be handed to a support engineer without leaking anything.\n\n## When to use it\n\nUse it whenever you add or change a log line, and when you review a change that adds one.\n\n## Steps\n\n1. Write one event per line, as structured fields rather than a sentence with values glued into it.\n2. Include the fields a reader needs to act: the time with its zone, the level, the operation, the identifier of the work, the outcome and the duration.\n3. Refer to data by identifier rather than by content. Log the order identity, not the customer address.\n4. Never log a password, a key, a token, a card number, an authorisation header, a full request body or a model prompt.\n5. Keep an allowed list of fields that may be recorded, and add to it deliberately. An allowed list is safer than a list of forbidden words.\n6. Say what happened and what the program did about it: retrying, giving up, using a default.\n7. Keep the text stable and put the changing parts in fields, so the same event can be counted.\n8. Read your own lines from the point of view of someone who does not know the code. If a line cannot be acted on, change it or remove it.\n\n## Checks\n\n- A sample of real lines contains no secret and no personal content.\n- Every line has time, level, operation, work identifier and outcome.\n- The message text is stable and the variable parts are fields.\n- A new field must be added to the allowed list before it appears.\n\n## Known-wrong example\n\nA service logs the whole request body when validation fails, to make debugging easier. The body holds names, addresses and card details. The logs are shipped to a third party search tool that many people can read, and the data is kept for a year. An allowed list of fields, with the failing field name and no value, would have given the same help with none of the exposure.\n\n## What to record\n\n- The allowed field list and who may change it.\n- The retention period for each log stream and who can read it.\n- The sample review that showed no secret content.\n\n## Source\n\n- `src/loop_engine/core/otel_export.py`: when this repository projects a saved run into spans for a tracing system, it copies only a named list of safe keys and leaves raw prompts, tool output, secrets and material bodies out.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/otel_export.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "remove_personal_data_before_it_reaches_a_log",
+      "layer": "context",
+      "family": "method",
+      "title": "Remove personal data before it reaches a log",
+      "tags": [
+        "redaction",
+        "personal data",
+        "error reporting",
+        "privacy"
+      ],
+      "text": "# Remove personal data before it reaches a log\n\nStop sensitive values at the place they are written, rather than trying to clean them out of storage afterwards.\n\n## When to use it\n\nUse it for logs, traces, error reports, analytics events, support exports and any copy of production data used for testing.\n\n## Steps\n\n1. List the fields that count as personal or secret in your system. Include the ones that identify a person together, such as a postal code with a birth date.\n2. Decide for each field what a reader really needs: nothing, a stable identifier that cannot be reversed, a shortened form such as the last four characters, or the value itself with an approval.\n3. Apply the decision in one shared place that every writer passes through, so a new log line is safe by default.\n4. Prefer an allowed list of fields to a search for forbidden patterns. A pattern search misses the field nobody thought of.\n5. Handle nested structures and free text, where values hide inside messages and stack details.\n6. Do the same for error reporting tools, which often send local variables and request content by default.\n7. Test with a record containing every sensitive field and check that none of them appears in the output.\n8. Set retention and access rules for what remains, and delete on schedule.\n\n## Checks\n\n- A test record with every sensitive field produces output containing none of them.\n- The removal happens in one shared place, not in each call site.\n- Error reporting is included, not only the main log.\n- The retention period and the readers are written down.\n\n## Known-wrong example\n\nA team adds a filter that removes any field called password. An error report later includes a local variable holding the whole form, where the key is spelled differently, and the value is sent to an external service. An allowed list of fields, applied in the shared writer, would have sent the field names and no values whatever they were called.\n\n## What to record\n\n- The field list and the decision for each field.\n- The place the removal happens and the test that proves it.\n- Retention, access and deletion for each stream.\n\n## Source\n\n- `src/loop_engine/core/semantic_event_history.py`: this repository builds the view a model is given from an allowed list of event kinds and fields, so a record that was not named for that view cannot reach it.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/semantic_event_history.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "choose_log_levels_and_what_belongs_in_each",
+      "layer": "context",
+      "family": "method",
+      "title": "Choose log levels and what belongs in each",
+      "tags": [
+        "log level",
+        "error",
+        "warning",
+        "alert fatigue"
+      ],
+      "text": "# Choose log levels and what belongs in each\n\nAgree once what each level means, so that a level can be used to decide whether to wake somebody.\n\n## When to use it\n\nUse it when you set up logging for a service, and whenever a review finds the same event recorded at three different levels in three places.\n\n## Steps\n\n1. Write one sentence for each level that says who acts on it. A level nobody acts on is decoration.\n2. Use error for a failure that a person must look at, with enough detail to start. Do not use it for a failure the code handled.\n3. Use warning for something that is working now but will fail if it continues, such as a retry that succeeded or an allowance nearly spent.\n4. Use information for the events that describe normal progress: started, finished, decided, with the identity and the outcome.\n5. Use debug for detail that helps during investigation, and make it possible to turn on for one part without turning it on everywhere.\n6. Do not log the same failure at several levels as it travels up the call chain. Record it once, where it is handled.\n7. Decide which levels are shipped, which are kept and for how long, and what each costs.\n8. Review the error volume regularly. An error nobody reads is a broken level, not a busy system.\n\n## Checks\n\n- Each level has a written sentence about who acts on it.\n- A handled failure does not appear as an error.\n- One failure produces one record, not one per frame.\n- The error volume is small enough that each one is read.\n\n## Known-wrong example\n\nA service records every failed request as an error, including the ones a retry fixes a second later. The error stream reaches thousands a day, the team stops reading it, and the one real error, a database running out of disk, sits unread among them. Recording the successful retry as a warning and only the final failure as an error would have kept the stream readable.\n\n## What to record\n\n- The meaning of each level and who acts on it.\n- The volume per level and the retention for each.\n- The review of the error stream and what changed after it.\n\n## Source\n\n- `src/loop_engine/core/event_vocabulary.py`: this repository keeps one closed set of event families and maps every recorded kind into it, so a reader can group events without knowing every producer.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/event_vocabulary.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "carry_one_correlation_identifier_across_services",
+      "layer": "context",
+      "family": "method",
+      "title": "Carry one correlation identifier across services",
+      "tags": [
+        "correlation id",
+        "request id",
+        "tracing",
+        "distributed systems"
+      ],
+      "text": "# Carry one correlation identifier across services\n\nGive each piece of work one identifier that travels with it, so the records of five services can be read as one story.\n\n## When to use it\n\nUse it as soon as a request touches more than one service, one queue or one background job, and before the first investigation that needs it.\n\n## Steps\n\n1. Create one identifier at the outermost entry point, or accept the one the caller sent if you trust the caller.\n2. Put it in every log line, every record written and every outbound request.\n3. Use a standard header so tools and other teams understand it without agreement.\n4. Pass it through queues in the message, not only in the request, so background work stays connected.\n5. Keep a second identifier for the current step, and record which step it came from, so an ordered view can be rebuilt.\n6. Return the identifier to the caller in the response and in any failure, so a user can quote it in a report.\n7. Make the identifier meaningless in itself. It must not carry a customer name, an account number or anything private.\n8. Check the chain end to end: start a request, then find every record for it with one search.\n\n## Checks\n\n- One search by the identifier returns records from every service involved.\n- Background work started by a request carries the same identifier.\n- The identifier appears in the response and in failures.\n- The identifier holds no personal or secret content.\n\n## Known-wrong example\n\nEach service generates its own request number. An investigation into one slow checkout takes two days of matching timestamps by hand across four log systems, and the match is never certain. One identifier created at the entry and passed on would have made it one search.\n\n## What to record\n\n- The identifier, where it is created and the header that carries it.\n- The step identifier and the step it came from.\n- The result of the end to end check.\n\n## Source\n\n- `src/loop_engine/core/otel_export.py`: when this repository projects a saved run into spans, each span names the span it belongs to, and the projection validates that the resulting structure is complete before it is exported.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/otel_export.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "measure_before_optimising",
+      "layer": "context",
+      "family": "evaluation",
+      "title": "Measure before optimising",
+      "tags": [
+        "performance",
+        "profiling",
+        "bottleneck",
+        "premature optimisation"
+      ],
+      "text": "# Measure before optimising\n\nFind out where the time actually goes before changing any code for speed, because the guess is usually wrong.\n\n## When to use it\n\nUse it before every performance change, and whenever someone says that a part of the system is slow without a number.\n\n## Steps\n\n1. State the goal as a number: which operation, at which size, measured how, and what value would be good enough.\n2. Measure the current value on realistic data. A measurement on a small test set answers a different question.\n3. Break the time down by phase: waiting for the database, waiting for another service, computing, serialising, waiting for a lock.\n4. Find the phase that holds most of the time. Work only there, and ignore the rest until it becomes the largest.\n5. Estimate the best possible gain from removing that phase entirely. If the whole phase is five percent, the change cannot help much.\n6. Make one change. Measure again with the same method and the same data.\n7. Keep the measurement, both values and the change together, so the gain is evidence rather than a claim.\n8. Stop when the goal is reached. Further work has a cost and no stated benefit.\n\n## Checks\n\n- A number existed before the first change.\n- The measurement uses realistic sizes and the same method both times.\n- The change was made in the phase that held most of the time.\n- The gain is reported with the measurement that shows it.\n\n## Known-wrong example\n\nA team rewrites a sorting routine in a faster style and reports a large improvement in a small test. In production the page is no faster, because ninety two percent of its time is one database query that returns the whole table. A breakdown by phase would have pointed at the query on the first day.\n\n## What to record\n\n- The goal number and the measurement method.\n- The phase breakdown before and after.\n- The change made and the measured difference.\n\n## Source\n\n- `src/loop_engine/core/operation_cost_capture.py`: this repository times the declared phases of an operation with a steady clock while the real work runs, and keeps as unknown anything it did not observe.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/operation_cost_capture.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "build_a_repeatable_performance_test",
+      "layer": "context",
+      "family": "evaluation",
+      "title": "Build a performance test that gives the same answer twice",
+      "tags": [
+        "benchmark",
+        "repeatable measurement",
+        "noise floor",
+        "warm up"
+      ],
+      "text": "# Build a performance test that gives the same answer twice\n\nMake a measurement you can trust by fixing the data, the machine and the method, and by reporting how much the result moves on its own.\n\n## When to use it\n\nUse it when you want to compare two versions, watch for a slow decline over time, or prove that a change actually helped.\n\n## Steps\n\n1. Freeze the input: a fixed data set of a stated size, with a stated shape, stored where the test can find it.\n2. Fix the environment: the same machine class, the same settings, the same versions, nothing else running.\n3. Warm up first, then measure. The first runs include work that will not repeat, such as loading and compiling.\n4. Run the measurement several times and report the spread, not only the middle value.\n5. Measure the same version twice before comparing two versions. The difference between two runs of the same code is the noise floor.\n6. Call a difference real only when it is larger than that noise floor.\n7. Record everything alongside the number: revision, data set, machine, settings, date and the raw values.\n8. Run it on a schedule as well as on demand, so a slow decline is visible before it becomes a complaint.\n\n## Checks\n\n- Two runs of the same version differ by less than the change you want to detect.\n- The input size and shape are fixed and stored.\n- The report carries the spread and the raw values, not only an average.\n- The environment is recorded with the result.\n\n## Known-wrong example\n\nAn engineer measures before and after on a laptop, gets nine percent faster, and merges the change. The laptop was charging during the second run, which lifted the processor speed. The service gets slower in production. Running the unchanged version twice first would have shown a twelve percent difference from nothing at all.\n\n## What to record\n\n- The frozen input, the environment and the method.\n- The raw values, the spread and the noise floor.\n- The revision each measurement belongs to.\n\n## Source\n\n- `src/loop_engine/core/ngram_benchmark.py`: this repository runs a frozen benchmark against judgments kept in source control, records retrieval quality, timing and size together, and keeps model calls and network access out of the measurement.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/ngram_benchmark.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "read_a_profile_and_find_the_dominant_cost",
+      "layer": "context",
+      "family": "evaluation",
+      "title": "Read a profile and find the dominant cost",
+      "tags": [
+        "profiler",
+        "hot path",
+        "call counts",
+        "memory allocation"
+      ],
+      "text": "# Read a profile and find the dominant cost\n\nTurn a profile into one sentence about where the time or the memory goes, before deciding what to change.\n\n## When to use it\n\nUse it once you know an operation is too slow or too heavy and you need to know which part is responsible.\n\n## Steps\n\n1. Profile the operation as it really runs, with realistic data, not a shortened version.\n2. Decide which measure you are reading: time spent inside a function, time including everything it calls, allocations, or bytes held.\n3. Sort by total time including calls first. That shows which path matters.\n4. Then sort by time inside the function alone. That shows where the work happens.\n5. Look for the three usual shapes: one slow call, many calls that are each fast, and work repeated because a result was not kept.\n6. Check the call counts. A function taking thirty percent because it is called two million times is a different problem from one called twice.\n7. Separate waiting from computing. Waiting for a database or a service does not appear in a processor profile at all.\n8. Write one sentence naming the dominant cost and the change you expect to fix it, before editing anything.\n\n## Checks\n\n- The profile was taken on realistic data.\n- Both views were read: including calls and inside the function alone.\n- Call counts were read, not only durations.\n- Waiting time was accounted for separately.\n\n## Known-wrong example\n\nA profile shows a date formatting function at the top of the list. An engineer replaces it with a faster one and gains almost nothing. The function was called four hundred thousand times inside a table render that only needed twelve dates. Reading the call count would have pointed at the caller instead of the callee.\n\n## What to record\n\n- The profile, the data used and the measure read.\n- The dominant cost in one sentence.\n- The expected effect of the planned change, written before the change.\n\n## Source\n\n- `src/loop_engine/core/operation_cost_records.py`: this repository records what each implementation of an operation cost, phase by phase, so the cheapest implementation that still satisfies the contract can be chosen from observation.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/operation_cost_records.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "use_percentiles_not_averages_for_response_time",
+      "layer": "context",
+      "family": "evaluation",
+      "title": "Use percentiles, not averages, for response time",
+      "tags": [
+        "percentile",
+        "p99",
+        "latency",
+        "service level",
+        "slow requests"
+      ],
+      "text": "# Use percentiles, not averages, for response time\n\nDescribe how slow the slow requests are, because the average hides exactly the users who are suffering.\n\n## When to use it\n\nUse it for every response time number you publish, promise or alarm on: a service level target, a dashboard, a performance comparison, or a claim that one version is faster than another.\n\n## Steps\n\n1. Record the duration of each individual request, not a running average.\n2. Give the middle value, the ninety fifth and the ninety ninth, and the largest seen.\n3. Say over which window and how many requests the numbers were computed. A high percentile over a hundred requests is mostly noise.\n4. Measure where the user is, or at the outermost entry, so queueing and connection time are included.\n5. Split by the things that change the answer: endpoint, customer size, region, cold or warm start.\n6. Never average percentiles from different periods or different machines together. That number means nothing.\n7. Set alarms on a percentile and a duration, both stated, rather than on an average.\n8. Keep the raw durations long enough to compute a different percentile when a question changes.\n\n## Checks\n\n- Every published number names its percentile, its window and its sample count.\n- The measurement point includes queueing, not only handler time.\n- Percentiles come from raw durations and are never averaged together.\n- The split shows at least the endpoint and the region.\n\n## Known-wrong example\n\nA dashboard shows an average response time of 120 milliseconds and everyone is satisfied. One customer with ten times the data waits eleven seconds on every page. Their requests are a fraction of a percent of the traffic, so the average never moves. The ninety ninth percentile would have shown the problem the day it appeared.\n\n## What to record\n\n- The percentile, window and sample count for each number.\n- The measurement point and the splits used.\n- The raw durations, kept so another percentile can be computed later.\n\n## Source\n\n- `src/loop_engine/core/ngram_benchmark.py`: this repository computes percentile values from the measured query times of a frozen benchmark and keeps them beside the quality numbers and the size of the index.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/ngram_benchmark.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "validate_input_at_the_boundary_and_refuse_early",
+      "layer": "context",
+      "family": "method",
+      "title": "Validate input at the boundary and refuse early",
+      "tags": [
+        "input validation",
+        "parsing",
+        "unknown field",
+        "fail fast"
+      ],
+      "text": "# Validate input at the boundary and refuse early\n\nCheck what comes in at the edge of your system, turn it into your own types there, and refuse what does not fit before anything acts on it.\n\n## When to use it\n\nUse it at every place data enters: an endpoint, a message consumer, a file import, a form, a settings file and any answer from a model.\n\n## Steps\n\n1. Draw the boundary. Inside it, values are already valid; outside it, nothing is trusted.\n2. Write the shape the input must have: fields, types, required or optional, allowed values, ranges, formats and units.\n3. Convert at the boundary into your own types, so the rest of the code never handles raw text.\n4. Refuse unknown fields rather than ignoring them. An ignored field hides a spelling mistake that silently changes nothing.\n5. Refuse on the first complete check and return every problem at once, so the caller can fix them together.\n6. Check the relationships between fields as well as each field alone: an end after its start, a total matching its parts.\n7. Validate in one place per boundary. Scattered checks disagree with each other over time.\n8. Test the refusals as carefully as the acceptances, including the empty value, the missing field and the extra field.\n\n## Checks\n\n- A value inside the boundary never needs checking again.\n- An unknown field causes a refusal with a clear message.\n- All the problems in one input are reported together.\n- Refusal cases have tests, including missing and extra fields.\n\n## Known-wrong example\n\nA settings reader ignores keys it does not know. Someone writes the retry limit with a spelling mistake, and the service silently keeps the default of zero retries. Weeks later a brief outage becomes a full one, and the settings file looks correct to everyone who reads it. Refusing the unknown key at start would have reported the mistake in one second.\n\n## What to record\n\n- The declared shape for each boundary.\n- The refusal messages and the tests that produce them.\n- Any field deliberately accepted and ignored, with the reason.\n\n## Source\n\n- `src/loop_engine/core/settings_loader.py`: this repository refuses a settings key it does not know, so a misspelled setting cannot quietly change how a run behaves.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/settings_loader.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "write_a_data_contract_for_a_table_or_feed",
+      "layer": "context",
+      "family": "method",
+      "title": "Write a data contract for a table or a feed",
+      "tags": [
+        "data contract",
+        "data quality",
+        "producer and consumer",
+        "freshness"
+      ],
+      "text": "# Write a data contract for a table or a feed\n\nWrite down what a data set promises, so that a change on the producing side is a visible decision rather than a surprise for its readers.\n\n## When to use it\n\nUse it when one team produces data another team consumes: a table, an export, a message stream, an interface response used for reporting, or a file delivered on a schedule.\n\n## Steps\n\n1. Name the owner of the data and the people who read it.\n2. Describe each field: name, type, unit, whether it can be empty, allowed values, and what it means in the real world.\n3. Describe the set as a whole: what one row represents, which fields identify a row, and how many rows to expect.\n4. State the promises about time: how often it is produced, how late it may be, and how far back it can change.\n5. State the quality rules you will check: no repeated identifiers, totals inside a range, a share of empty values below a limit, values matching a reference list.\n6. Check the rules where the data is produced, and refuse or quarantine a delivery that breaks them rather than passing it on.\n7. Version the contract and treat a removed or narrowed field as a change that needs agreement, as with any interface.\n8. Publish the rule results beside the data, so a reader can see that today's delivery passed.\n\n## Checks\n\n- Every field has a type, a unit and a meaning in words.\n- The identifying fields are named and their uniqueness is checked.\n- A delivery that breaks a rule is stopped, not passed on with a note.\n- The latest rule results are visible to the readers.\n\n## Known-wrong example\n\nA reporting team builds on a column called status, reading the values active and closed. The producing team adds the value pending and stops setting closed. No contract exists, so nothing fails. The monthly report quietly undercounts for a quarter, and the error is found by a customer. A declared set of allowed values, checked at production, would have refused the first delivery.\n\n## What to record\n\n- The contract: fields, meanings, promises and rules.\n- The rule results for each delivery.\n- Each contract version and what changed between versions.\n\n## Source\n\n- `src/loop_engine/core/observation_expectations.py`: this repository checks an observation against a declared shape as a separate, passive step, and treats matching that shape as a check on structure rather than proof that the value is right.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/observation_expectations.py"
       ],
       "symbols": []
     }

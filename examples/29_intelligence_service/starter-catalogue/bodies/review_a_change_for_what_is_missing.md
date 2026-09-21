@@ -1,4 +1,4 @@
-# Review a change for what is missing from it
+# Review a change for the work it leaves out
 
 Look for the work that is absent rather than the work that is present, because absent work leaves no line to comment on.
 
