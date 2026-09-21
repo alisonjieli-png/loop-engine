@@ -1,0 +1,1411 @@
+{
+  "record_type": "starter_catalogue_independent_review/v1",
+  "recorded_at": "2026-09-21",
+  "catalogue_folder": "examples/29_intelligence_service/starter-catalogue",
+  "catalogue_items_file": "items.json",
+  "catalogue_items_record_type": "starter_catalogue_candidate_items/v1",
+  "catalogue_source_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
+  "approval_ref_prefix": "examples/29_intelligence_service/starter-catalogue/reviews.json#",
+  "decision_rule": "An item is approved only when every independent reviewer approves it. One written objection from one reviewer withholds approval and leaves the item a candidate. No producer of an item reviewed that item, and this record does not overturn a verdict.",
+  "what_an_approval_permits": "An approved row may be named by a host manifest and served by a host whose licence policy accepts the exact licence the item declares. Approval grants no effect, no network access, no spending and no model authority.",
+  "what_a_rejection_records": "A rejected row stays a candidate with its reason. It is not deleted, not edited to pass, and not written into any host manifest. It may be resubmitted after the reason is answered, which needs a new review.",
+  "reviewers": [
+    {
+      "reviewer_id": "reviewer_one_correctness_and_usefulness",
+      "label": "Reviewer one (correctness and usefulness lens), Claude Opus 5",
+      "lens": "correctness and usefulness",
+      "produced_any_item_under_review": false
+    },
+    {
+      "reviewer_id": "reviewer_two_provenance_licence_safety",
+      "label": "Reviewer two, provenance, licence and safety",
+      "lens": "provenance, licence and safety",
+      "produced_any_item_under_review": false
+    },
+    {
+      "reviewer_id": "reviewer_three_adversarial",
+      "label": "Reviewer three (adversarial lens), independent review, not the producer of any item",
+      "lens": "adversarial",
+      "produced_any_item_under_review": false
+    }
+  ],
+  "totals": {
+    "items_reviewed": 49,
+    "approved": 43,
+    "rejected": 6
+  },
+  "rows": [
+    {
+      "identity": "analyse_errors_by_segment_and_cluster",
+      "body_path": "bodies/analyse_errors_by_segment_and_cluster.md",
+      "body_digest": "c404dfd2f5d6ada09f9cc0538163c622e28d2654f753be43c645849520c4a8a7",
+      "body_size_bytes": 2569,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#analyse_errors_by_segment_and_cluster"
+    },
+    {
+      "identity": "apply_hold_or_escalate_each_correction",
+      "body_path": "bodies/apply_hold_or_escalate_each_correction.md",
+      "body_digest": "4dd86e90109847297bd353786483e2129238fb3333fe3b5df8140e776db22389",
+      "body_size_bytes": 2903,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#apply_hold_or_escalate_each_correction"
+    },
+    {
+      "identity": "ask_a_model_with_a_declared_answer_shape",
+      "body_path": "bodies/ask_a_model_with_a_declared_answer_shape.md",
+      "body_digest": "5975fabfee69d770298e8a33b1ffe40a9f074c981aa21e40f28fa3dcec4c8506",
+      "body_size_bytes": 2982,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "reject",
+          "reason": "Reviewer three (adversarial lens) — independent review, not the producer of any item: It declares no effect and gives no authority statement, yet its title, its trigger (use it when a model is asked the same kind of question many times) and its step 6 stride order put the reader at the point of issuing many model calls, which need network access, a credential and money; its sibling escalate_uncertain_values_with_candidates carries the exact missing sentence (the request makes no call, building it grants nothing and spends nothing), so with declared_effects empty this item is offered to a step holding zero authority."
+        }
+      ],
+      "outcome": "rejected",
+      "rule_applied": "one_written_objection_withholds_approval",
+      "approval_ref": ""
+    },
+    {
+      "identity": "audit_data_splits_for_errors_and_leakage",
+      "body_path": "bodies/audit_data_splits_for_errors_and_leakage.md",
+      "body_digest": "58123198e78f48f806d745ab65514e68eb58a7b1c393a53a0885538fbae4adc7",
+      "body_size_bytes": 2665,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#audit_data_splits_for_errors_and_leakage"
+    },
+    {
+      "identity": "canonicalize_company_legal_suffixes",
+      "body_path": "bodies/canonicalize_company_legal_suffixes.md",
+      "body_digest": "f0a8defdea8f87c62bb1cd2b44260137187b5db54635c15a2eee6485ea4713c5",
+      "body_size_bytes": 2801,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#canonicalize_company_legal_suffixes"
+    },
+    {
+      "identity": "carry_competing_readings_of_a_request",
+      "body_path": "bodies/carry_competing_readings_of_a_request.md",
+      "body_digest": "195ee5a5ee7424f86bd3af8dd7be0aa8b4e6f6dabf4ebe812fab874a2c485f4c",
+      "body_size_bytes": 2432,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#carry_competing_readings_of_a_request"
+    },
+    {
+      "identity": "check_a_table_join_before_trusting_it",
+      "body_path": "bodies/check_a_table_join_before_trusting_it.md",
+      "body_digest": "97bb15ddd30d41ed2f9e2556a9bf3383138e918f249347e4935e42939150bdab",
+      "body_size_bytes": 2629,
+      "declared_license": "unknown",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "reject",
+          "reason": "Reviewer one (correctness and usefulness lens), Claude Opus 5: The join advice itself is correct, but the item declares `license: \"unknown\"` over four unreviewed model-generated source statements, and `load_host_manifest` refuses it with `item_license_unknown` before registration while `HostLicensePolicy` refuses any host policy that lists `unknown`, so it can never be served and its rights are unsettled; settle the rights or rewrite it from MIT material and resubmit."
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "reject",
+          "reason": "Reviewer two — provenance, licence and safety: It declares the licence \"unknown\" with state needs_review over four model-generated statements (string-foundry-20260823, deepseek-v4-flash:0731) that its own body says no person has reviewed, so no rights determination exists and load_host_manifest refuses it as item_license_unknown before registration — a state HostLicensePolicy forbids any host from listing as accepted."
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "reject",
+          "reason": "Reviewer three (adversarial lens) — independent review, not the producer of any item: It declares the licence unknown, which _license_state maps to item_license_unknown before registration, so no host policy can accept it and a manifest carrying it makes load_host_manifest raise and refuses all 47 other items with it; its only source is four unreviewed model-generated statements in src/loop_engine/governance/candidates/part-00000.jsonl, so nothing establishes the rights in the text and approving the content would not make it servable."
+        }
+      ],
+      "outcome": "rejected",
+      "rule_applied": "one_written_objection_withholds_approval",
+      "approval_ref": ""
+    },
+    {
+      "identity": "check_for_existing_work_before_building",
+      "body_path": "bodies/check_for_existing_work_before_building.md",
+      "body_digest": "7df406045238fe90957696bb03331d039393d1a7743d98739ff5ee726205b4ab",
+      "body_size_bytes": 3010,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#check_for_existing_work_before_building"
+    },
+    {
+      "identity": "check_that_a_result_is_stable_and_generalizes",
+      "body_path": "bodies/check_that_a_result_is_stable_and_generalizes.md",
+      "body_digest": "49897a2e8f7001719b591dcc6736761c25e39b086b4212ef60852de0e2c5c805",
+      "body_size_bytes": 2709,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#check_that_a_result_is_stable_and_generalizes"
+    },
+    {
+      "identity": "choose_metrics_by_task_type_and_industry",
+      "body_path": "bodies/choose_metrics_by_task_type_and_industry.md",
+      "body_digest": "cd0cc819fa3c3b1526f1ceabb720d3531ef54a26d1d0bc835b271a1b4e7df077",
+      "body_size_bytes": 3530,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#choose_metrics_by_task_type_and_industry"
+    },
+    {
+      "identity": "choose_one_next_action",
+      "body_path": "bodies/choose_one_next_action.md",
+      "body_digest": "1b94bb2ace8c94654168b1a8c14442ad5c4fc9424c163415ed393b2644d95188",
+      "body_size_bytes": 2738,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#choose_one_next_action"
+    },
+    {
+      "identity": "choose_review_perspectives",
+      "body_path": "bodies/choose_review_perspectives.md",
+      "body_digest": "3cccffcfa1efada0686678a7c8a58118c3dc5e5875b12615e46888e6ffdbdc89",
+      "body_size_bytes": 3390,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#choose_review_perspectives"
+    },
+    {
+      "identity": "copy_a_table_with_corrections_never_in_place",
+      "body_path": "bodies/copy_a_table_with_corrections_never_in_place.md",
+      "body_digest": "c9a321227805545b9f690abeb41bf8fd05a7cb7c2223a4317218e1701d5837bb",
+      "body_size_bytes": 2716,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#copy_a_table_with_corrections_never_in_place"
+    },
+    {
+      "identity": "decide_whether_a_step_needs_a_model",
+      "body_path": "bodies/decide_whether_a_step_needs_a_model.md",
+      "body_digest": "391c2da2069cd8a53703c9a3890bd9e42cef74d1707549b39eb0cdaa1f149503",
+      "body_size_bytes": 3457,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#decide_whether_a_step_needs_a_model"
+    },
+    {
+      "identity": "deliver_the_best_available_result_when_blocked",
+      "body_path": "bodies/deliver_the_best_available_result_when_blocked.md",
+      "body_digest": "645fd24b7a0cd7397ac97b93197c7bf292aa3c8a16fff3e023b98c710e5ef805",
+      "body_size_bytes": 2577,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#deliver_the_best_available_result_when_blocked"
+    },
+    {
+      "identity": "detect_malformed_values_by_dominant_pattern",
+      "body_path": "bodies/detect_malformed_values_by_dominant_pattern.md",
+      "body_digest": "78be20e4f046cf5390d7c0aa67a8b1abcba1576eeb041b41309f9772afd2bd67",
+      "body_size_bytes": 2754,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#detect_malformed_values_by_dominant_pattern"
+    },
+    {
+      "identity": "diagnose_a_stall_and_change_strategy",
+      "body_path": "bodies/diagnose_a_stall_and_change_strategy.md",
+      "body_digest": "0f4d13eab03200daf6256d569b921c84e7f4256263494864855020844fadaab9",
+      "body_size_bytes": 2891,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#diagnose_a_stall_and_change_strategy"
+    },
+    {
+      "identity": "escalate_uncertain_values_with_candidates",
+      "body_path": "bodies/escalate_uncertain_values_with_candidates.md",
+      "body_digest": "f8a252199507f1acefeef96718ade06f3cd839ee6911843f14828e7bd537c762",
+      "body_size_bytes": 2645,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#escalate_uncertain_values_with_candidates"
+    },
+    {
+      "identity": "export_a_standalone_python_package",
+      "body_path": "bodies/export_a_standalone_python_package.md",
+      "body_digest": "2ea68d3f2cac0e37d24e3c40bfe16958f7b48b9406c1bf5cb9d4d7291213866d",
+      "body_size_bytes": 2754,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#export_a_standalone_python_package"
+    },
+    {
+      "identity": "find_duplicate_records_with_blocking_keys",
+      "body_path": "bodies/find_duplicate_records_with_blocking_keys.md",
+      "body_digest": "678df3671fed5712492c18538ce69b4cec636f429cb6f0461b431e5800432813",
+      "body_size_bytes": 2722,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#find_duplicate_records_with_blocking_keys"
+    },
+    {
+      "identity": "forecast_an_action_then_compare",
+      "body_path": "bodies/forecast_an_action_then_compare.md",
+      "body_digest": "6e670864408eb68d201b4a5fcc7d2cb967609dc5ddb82a10cb3002d427248812",
+      "body_size_bytes": 2664,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#forecast_an_action_then_compare"
+    },
+    {
+      "identity": "freeze_the_success_metric_before_measuring",
+      "body_path": "bodies/freeze_the_success_metric_before_measuring.md",
+      "body_digest": "9319c8f7d8be3240885bfe9f7c5d5319a94ae961782a5073065a061d4ca00c44",
+      "body_size_bytes": 2811,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#freeze_the_success_metric_before_measuring"
+    },
+    {
+      "identity": "hand_over_a_result_its_consumer_can_use",
+      "body_path": "bodies/hand_over_a_result_its_consumer_can_use.md",
+      "body_digest": "127675ea8f8191fab1e60770c4b927793ce098f7ea8b8f375298aa4853e8494f",
+      "body_size_bytes": 2733,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#hand_over_a_result_its_consumer_can_use"
+    },
+    {
+      "identity": "layer_exception_catalogs_with_precedence",
+      "body_path": "bodies/layer_exception_catalogs_with_precedence.md",
+      "body_digest": "c50508d972e6cd2b52b73490e91e8f896bdaef17a9c32e72905f979a3448bd56",
+      "body_size_bytes": 2754,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#layer_exception_catalogs_with_precedence"
+    },
+    {
+      "identity": "look_for_structure_the_model_missed",
+      "body_path": "bodies/look_for_structure_the_model_missed.md",
+      "body_digest": "cb93ad286a927703b169a6265a22080cec0772b1e48320fb8fdeddd6afd07921",
+      "body_size_bytes": 2704,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#look_for_structure_the_model_missed"
+    },
+    {
+      "identity": "make_a_data_pipeline_safe_to_run_again",
+      "body_path": "bodies/make_a_data_pipeline_safe_to_run_again.md",
+      "body_digest": "68f7ff51c4ca61298c3feef66ed87e9deaeecbc4188dfb0d3b8f8506a514269d",
+      "body_size_bytes": 2716,
+      "declared_license": "unknown",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "reject",
+          "reason": "Reviewer one (correctness and usefulness lens), Claude Opus 5: The idempotence and partition-swap advice itself is correct, but the item declares `license: \"unknown\"` over four unreviewed model-generated source statements, and `load_host_manifest` refuses it with `item_license_unknown` before registration while `HostLicensePolicy` refuses any host policy that lists `unknown`, so it can never be served and its rights are unsettled; settle the rights or rewrite it from MIT material and resubmit."
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "reject",
+          "reason": "Reviewer two — provenance, licence and safety: Same unreviewed model-generated provenance and \"unknown\" licence, refused as item_license_unknown before registration; it additionally declares only reads_fs while its steps write a staging partition, swap it into production and rerun each step to compare checksums, so its write and process effects are undeclared."
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "reject",
+          "reason": "Reviewer three (adversarial lens) — independent review, not the producer of any item: Same defect as check_a_table_join_before_trusting_it: licence unknown, refused by the loader with item_license_unknown before its body is opened and aborting the whole manifest load, and compiled from the same four unreviewed model-generated statements, so its rights must be settled or the item rewritten from material whose licence is known before any approval can matter."
+        }
+      ],
+      "outcome": "rejected",
+      "rule_applied": "one_written_objection_withholds_approval",
+      "approval_ref": ""
+    },
+    {
+      "identity": "measure_the_environment_before_relying_on_it",
+      "body_path": "bodies/measure_the_environment_before_relying_on_it.md",
+      "body_digest": "4d9f748a7fc48b5c2def6f2c6acb00e203424d3d5caf55c4221836061f416484",
+      "body_size_bytes": 2653,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#measure_the_environment_before_relying_on_it"
+    },
+    {
+      "identity": "normalize_and_recover_email_addresses",
+      "body_path": "bodies/normalize_and_recover_email_addresses.md",
+      "body_digest": "4403b31cdd866b97cc21e06892bcdac6314c1123a4165af4d916bc57f5894589",
+      "body_size_bytes": 2691,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_and_recover_email_addresses"
+    },
+    {
+      "identity": "normalize_phone_numbers",
+      "body_path": "bodies/normalize_phone_numbers.md",
+      "body_digest": "85f05c9e754d4a1c5e288fc6d74bcf80ed0b8065cf546d1a60c63275389a524e",
+      "body_size_bytes": 2579,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_phone_numbers"
+    },
+    {
+      "identity": "normalize_website_addresses",
+      "body_path": "bodies/normalize_website_addresses.md",
+      "body_digest": "896e99df8bc1ee06eff77d54974a9991a186264b08f11aea21e6fe4c43c7bdba",
+      "body_size_bytes": 2351,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_website_addresses"
+    },
+    {
+      "identity": "normalize_whitespace_and_unicode_text",
+      "body_path": "bodies/normalize_whitespace_and_unicode_text.md",
+      "body_digest": "5a9eb40dfd5474ff89b790388d315fd9b0427187767e529ed9bc21dde7a98687",
+      "body_size_bytes": 2688,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_whitespace_and_unicode_text"
+    },
+    {
+      "identity": "orient_on_a_task_and_write_its_contracts",
+      "body_path": "bodies/orient_on_a_task_and_write_its_contracts.md",
+      "body_digest": "c86357c206b368d96df8a0b64bed60bc036d8765de14635f4986e000bd3393f5",
+      "body_size_bytes": 2861,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#orient_on_a_task_and_write_its_contracts"
+    },
+    {
+      "identity": "package_one_skill_for_two_coding_harnesses",
+      "body_path": "bodies/package_one_skill_for_two_coding_harnesses.md",
+      "body_digest": "d7c57be1d725bf1a3e39557ac3666af9789047fa30d49c9212ab9201ceca0276",
+      "body_size_bytes": 3689,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "reject",
+          "reason": "Reviewer two — provenance, licence and safety: Its declared effects are writes_fs alone, but step 9 and the check \"The structure check passes\" require executing integrations/tests/check_integrations.py and reading back every generated manifest and skill file, so spawns_process and reads_fs are undeclared for the same kind of work that test_driven_change_red_green_refactor declares all three for, and because harness_intelligence.visibility gates offering on declared_effects the item would be handed to a step that holds no execution authority at all."
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "rejected",
+      "rule_applied": "one_written_objection_withholds_approval",
+      "approval_ref": ""
+    },
+    {
+      "identity": "plan_and_split_work_with_explicit_joins",
+      "body_path": "bodies/plan_and_split_work_with_explicit_joins.md",
+      "body_digest": "935b573e884d9391ea200d118ab3ee58cb6b9d14c244462b0a48f7d47e2cf2b7",
+      "body_size_bytes": 2737,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#plan_and_split_work_with_explicit_joins"
+    },
+    {
+      "identity": "profile_text_column_before_cleaning",
+      "body_path": "bodies/profile_text_column_before_cleaning.md",
+      "body_digest": "065ff1aae9ae74a9b6804a5bbd56535e4350a26901f578b9cd6f26305bc67440",
+      "body_size_bytes": 2904,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#profile_text_column_before_cleaning"
+    },
+    {
+      "identity": "propose_a_dedupe_without_deleting_rows",
+      "body_path": "bodies/propose_a_dedupe_without_deleting_rows.md",
+      "body_digest": "ad2980a5b4af24ad380bee202894f404fa6cefbdc67f684b80e8b5996b8966ae",
+      "body_size_bytes": 2591,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#propose_a_dedupe_without_deleting_rows"
+    },
+    {
+      "identity": "questions_to_ask_before_starting_work",
+      "body_path": "bodies/questions_to_ask_before_starting_work.md",
+      "body_digest": "73125053ee04beaa9a50b3a255708f5df6a1fddc9581aa1c44135b4a2c8ac52d",
+      "body_size_bytes": 3101,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "reject",
+          "reason": "Reviewer three (adversarial lens) — independent review, not the producer of any item: A near duplicate of orient_on_a_task_and_write_its_contracts, which covers the same moment and produces an artifact instead of a list; eleven of its thirteen questions restate content already owned by six other items in this set and three of them cite the identical question forms (acceptance_inversion with verify_the_requested_output, whose step 1 is the same sentence; state_the_unknowns with resolve_missing_information; stakeholder_view with hand_over_a_result_its_consumer_can_use), leaving only the failure map and second order questions unique, which does not earn a separate item in a catalogue whose value is that a search returns the one right item."
+        }
+      ],
+      "outcome": "rejected",
+      "rule_applied": "one_written_objection_withholds_approval",
+      "approval_ref": ""
+    },
+    {
+      "identity": "read_the_train_validation_gap",
+      "body_path": "bodies/read_the_train_validation_gap.md",
+      "body_digest": "82197d8e99396512ee8a64bbd22e6c21db0b0ccadaba8094892c14804367f745",
+      "body_size_bytes": 2803,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#read_the_train_validation_gap"
+    },
+    {
+      "identity": "refuse_secrets_and_unsafe_paths_in_generated_files",
+      "body_path": "bodies/refuse_secrets_and_unsafe_paths_in_generated_files.md",
+      "body_digest": "fe4af70fd3bad7e27b446d32084fff40f7f337875b023e62bd27779979703ec4",
+      "body_size_bytes": 2515,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "reject",
+          "reason": "Reviewer three (adversarial lens) — independent review, not the producer of any item: The title and framing promise that generated files holding secrets are refused, but the rule is four narrow shapes (verified in solution_export.py line 43: sk-[A-Za-z0-9]{20,}, AKIA[0-9A-Z]{16}, a bearer header, a private key header) that do not match sk_live_, ghp_, AIza or a JWT, and nothing in the body says the list is a floor rather than coverage, so an agent packaging a file containing this repository's own live Stripe key shape sees the check pass and publishes it."
+        }
+      ],
+      "outcome": "rejected",
+      "rule_applied": "one_written_objection_withholds_approval",
+      "approval_ref": ""
+    },
+    {
+      "identity": "report_observed_derived_assumed_and_unknown",
+      "body_path": "bodies/report_observed_derived_assumed_and_unknown.md",
+      "body_digest": "f37e09ea1bab67a8421a3ab47b61dd003eceefea1dae2970f29a8a15dc6275c0",
+      "body_size_bytes": 2301,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#report_observed_derived_assumed_and_unknown"
+    },
+    {
+      "identity": "resolve_missing_information",
+      "body_path": "bodies/resolve_missing_information.md",
+      "body_digest": "6c978687df2c84a5af4e6df157e029cd0b7a1236f4f4fdd76903ec275b3fc434",
+      "body_size_bytes": 2579,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#resolve_missing_information"
+    },
+    {
+      "identity": "restore_capitalisation_of_names",
+      "body_path": "bodies/restore_capitalisation_of_names.md",
+      "body_digest": "99332e5a5c756df9df35126fe24c28b5265ff8b45a0541ab9373b2b56b060e84",
+      "body_size_bytes": 3627,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#restore_capitalisation_of_names"
+    },
+    {
+      "identity": "review_an_accepted_solution_adversarially",
+      "body_path": "bodies/review_an_accepted_solution_adversarially.md",
+      "body_digest": "036fcb7fc725a249689be4fa5e579d8b3492fe0d8e5da779f8fef5b052f10ec7",
+      "body_size_bytes": 3147,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#review_an_accepted_solution_adversarially"
+    },
+    {
+      "identity": "score_duplicate_pairs_by_weakest_signal",
+      "body_path": "bodies/score_duplicate_pairs_by_weakest_signal.md",
+      "body_digest": "0ad0985851a2fb759acd4475bead244e025e374744c3ed5d5f35d516d715e1a0",
+      "body_size_bytes": 2573,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#score_duplicate_pairs_by_weakest_signal"
+    },
+    {
+      "identity": "split_address_lines_into_components",
+      "body_path": "bodies/split_address_lines_into_components.md",
+      "body_digest": "3556cf52026dc774e144c745da11fed579b13aa30b61f3e7d067875d97f26775",
+      "body_size_bytes": 3009,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#split_address_lines_into_components"
+    },
+    {
+      "identity": "test_driven_change_red_green_refactor",
+      "body_path": "bodies/test_driven_change_red_green_refactor.md",
+      "body_digest": "6c0560a81edb8ebde89c6441fe0da984dd2fb257a48b89e6f355e8238df04795",
+      "body_size_bytes": 2356,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#test_driven_change_red_green_refactor"
+    },
+    {
+      "identity": "verify_an_export_in_an_isolated_interpreter",
+      "body_path": "bodies/verify_an_export_in_an_isolated_interpreter.md",
+      "body_digest": "18d1ffdaaae0bb9a3d71f5ed1ebad2f227cc4feac39eb04f49887e2cdf08e5d5",
+      "body_size_bytes": 2809,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#verify_an_export_in_an_isolated_interpreter"
+    },
+    {
+      "identity": "verify_the_requested_output",
+      "body_path": "bodies/verify_the_requested_output.md",
+      "body_digest": "aba76a5560feb22e1c133b0a322ceb39032b5da1cae6a0269735ae75290044aa",
+      "body_size_bytes": 2876,
+      "declared_license": "MIT",
+      "source_layer": "context_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#verify_the_requested_output"
+    },
+    {
+      "identity": "write_a_pinned_container_and_batch_job",
+      "body_path": "bodies/write_a_pinned_container_and_batch_job.md",
+      "body_digest": "47bc02c6f8ae0f0c8bf667ab8fec3d7c16084f3e1e11014dddbb7c0c01f4d8c9",
+      "body_size_bytes": 2660,
+      "declared_license": "MIT",
+      "source_layer": "code_intelligence",
+      "decisions": [
+        {
+          "reviewer_id": "reviewer_one_correctness_and_usefulness",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_two_provenance_licence_safety",
+          "decision": "approve",
+          "reason": ""
+        },
+        {
+          "reviewer_id": "reviewer_three_adversarial",
+          "decision": "approve",
+          "reason": ""
+        }
+      ],
+      "outcome": "approved",
+      "rule_applied": "unanimous_approval_by_every_independent_reviewer",
+      "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#write_a_pinned_container_and_batch_job"
+    }
+  ]
+}

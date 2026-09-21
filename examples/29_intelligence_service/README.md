@@ -54,11 +54,29 @@ references. The title-derived retrieval probes are smoke checks, not evidence
 of semantic relevance or downstream task benefit. Independently review each
 source, license, contract and intended use before any separate publication.
 
+## The reviewed starter catalogue in the release
+
+`starter-catalogue/` holds 49 candidate items. Three independent reviewers
+judged all of them on 21 September 2026. Their decisions and reasons are in
+`starter-catalogue/reviews.json`, and `starter-catalogue/REVIEW.md` explains
+how to read the folder. An item is approved only when every reviewer approves
+it. Forty-three items were approved. Six were rejected with written reasons
+and stay candidates.
+
+`tools/build_host_catalogue_manifest.py` turns the approved rows into
+`starter-catalogue/host-release/`, which holds the host manifest and the
+approved bodies and nothing else. It refuses to write a rejected item, refuses
+a licence the host policy does not accept, and measures the digest and size of
+every body from the file itself. The release image copies that folder to
+`/opt/baltor/catalogue`, read only and owned by the unprivileged service user,
+so the catalogue travels in the image rather than on a storage volume.
+
 ## Verify
 
 ```bash
 PYTHONPATH=src python examples/29_intelligence_service/run.py
 loop-engine service smoke
+PYTHONPATH=src:tools python -m unittest tools.test_build_host_catalogue_manifest
 ```
 
 The first command checks real preparation, domain retrieval, exact bytes,

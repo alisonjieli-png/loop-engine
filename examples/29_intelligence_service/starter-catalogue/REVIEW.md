@@ -1,8 +1,18 @@
 # Starter catalogue review sheet
 
-Kind: review sheet for the owner. Every item in this folder is a candidate.
-No item has been approved, published, granted to a tenant or added to a host
-manifest. The approval column below is empty on purpose.
+Kind: review sheet. It records what each item is and how to read it. The
+decisions themselves are in the machine-readable record
+[`reviews.json`](reviews.json), which is the approval evidence a host manifest
+points at. The approval column in the table below stays empty: a reader looks
+up a decision in one place, not two.
+
+On 21 September 2026 three independent reviewers judged all 49 items. None of
+them wrote an item it judged. Forty-three items were approved by all three.
+Six were rejected by at least one reviewer, with the reason written down, and
+stay candidates. `reviews.json` holds one row for each item, each reviewer's
+decision and reason, and the rule that decided the outcome: an item is
+approved only when every reviewer approves it, and one written objection
+withholds approval.
 
 ## What this folder holds
 
@@ -31,7 +41,31 @@ Starter catalogue candidates (49)
 | `search-queries.json` | The plain customer queries that the check runs against the purposes, each with the item it must find and who wrote it. |
 | `executed-examples.json` | 54 executed examples over 12 of the 21 Code Intelligence items. Each row names its item, the quote as the body writes it, the cited module and function, the arguments and the fields the body claims. The check runs each listed call against the cited module. It covers the rows in this file, not every value that a body quotes. |
 | `refresh.py` | Recomputes the derived fields after a body was edited. It approves nothing and publishes nothing. |
+| `reviews.json` | The independent review record, `starter_catalogue_independent_review/v1`. One row for each of the 49 items with each reviewer's decision and reason, the rule that decided the outcome, and the approval reference a host manifest points at. |
+| `host-release/` | The release content generated from `reviews.json` and the bodies: `manifest.json` plus the 43 approved bodies and nothing else. It is copied into the service image. Do not edit it by hand. |
 | `REVIEW.md` | This sheet. |
+
+## The approved release content
+
+`tools/build_host_catalogue_manifest.py` writes `host-release/`. It reads the
+review record, refuses every item that any reviewer rejected, measures each
+body file for its digest and size, and checks the declared licence against the
+host licence policy the running host will apply. Run it without `--write` to
+check the folder already in the repository, which is what the checks do:
+
+```bash
+PYTHONPATH=src python tools/build_host_catalogue_manifest.py \
+  --catalogue examples/29_intelligence_service/starter-catalogue \
+  --output examples/29_intelligence_service/starter-catalogue/host-release \
+  --artifact-root /opt/baltor/catalogue \
+  --accept-license MIT --grant pilot-owner:bodies:required
+```
+
+The release image copies `host-release/` to `/opt/baltor/catalogue`, owned by
+the unprivileged service user and with no write bit. The host configuration on
+the volume points `manifest_path` at `/opt/baltor/catalogue/manifest.json`. The
+catalogue is release content, so it travels in the image; the volume holds
+state only.
 
 ## Current state and planned steps
 
@@ -43,12 +77,17 @@ Current state on 20 September 2026 at revision `381efec`:
 - Two items cannot be served. `check_a_table_join_before_trusting_it` and `make_a_data_pipeline_safe_to_run_again` are compiled from model generated statements and record the licence `unknown`, so the reader refuses a manifest that carries either of them, with the code `item_license_unknown`. Approving the text of those two items would not make them servable. Their rights must be settled first: either the licence of the generated statements is established and written into the item, or the item is rewritten from material whose licence is known, or the item is dropped. No host may list `unknown` as an accepted licence; the engine refuses such a policy.
 - The other 47 items record the licence `MIT`, which the default host policy accepts. The check in `tools/test_starter_catalogue.py` builds its manifest from those 47, loads them through the real reader, and requires that each of the two refused items is refused by name.
 
-Planned steps, not done here and not authorized by this folder:
+What happened after that, on 21 September 2026:
 
-- The owner approves or rejects each item in the table below.
-- The rights of the two items with the licence `unknown` are settled, or those two items are dropped.
-- A later change adds each approved item to the host manifest with the owner's approval reference and the tenant grants.
-- A release from a committed revision serves them.
+- Three independent reviewers judged all 49 items. Their decisions and reasons are in `reviews.json`.
+- 43 items were approved by all three and are in `host-release/manifest.json` with their approval references and the tenant grants.
+- 6 items were rejected by at least one reviewer and stay candidates. They are not in the generated manifest and their bodies are not in the release image.
+- The two items with the licence `unknown` are among the six. Their rights are still unsettled, so nothing about the review changes what the loader does with them: it refuses them with `item_license_unknown` before registration.
+
+Remaining steps, not done here and not authorized by this folder:
+
+- The rights of the two items with the licence `unknown` are settled, or those two items are rewritten from material whose licence is known, or they are dropped.
+- The four other rejected items are repaired against their written reasons and resubmitted, which needs a new review.
 
 ## How to review one item
 
