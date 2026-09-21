@@ -104,6 +104,9 @@ body[data-page=home]{background:var(--paper)}
 .offer-grid article{display:flex;flex-direction:column;padding:1.6rem;background:var(--paper);border:1px solid var(--border);border-radius:12px;min-width:0}
 .offer-grid h3{font-size:1.08rem;line-height:1.35;margin:.9rem 0 .55rem}
 .offer-grid p{color:var(--muted);font-size:.95rem;margin:0}
+/* The state line of an offer card, and of a plan point, says what works today. It sits below the description. */
+.offer-grid p+p{margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border);font-size:.88rem}
+#plan-keys-detail{display:block}
 .pricing-teaser{display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap;margin-top:3rem;padding:2rem;border:1px solid var(--border);border-radius:14px;background:var(--bg)}
 .pricing-teaser>div:first-child{min-width:0;flex:1 1 320px}
 .pricing-teaser h2{font-size:1.75rem;line-height:1.25;margin:0 0 .6rem}

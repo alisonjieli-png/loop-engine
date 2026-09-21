@@ -9,6 +9,8 @@ if(!origin||new URL(origin).origin!==origin||!origin.startsWith("https://")||!pr
 const root=resolve(new URL("..",import.meta.url).pathname);
 const checks=[],errors=[],external=[],navigation=[];
 const check=(name,passed)=>checks.push({name,passed:passed===true});
+/* One plain-word rule for the public pages. tools/check_service_workspace.mjs carries the same line, and a named check there compares the two. */
+const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
 const hash=value=>createHash("sha256").update(value).digest("hex");
 const browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
@@ -30,11 +32,27 @@ try{
   const pricingFacts=["Baltor Pro","29 US dollars","each month","Search is free.","one downloaded item","Invited beta users are free."];
   check("live_pricing_view_states_every_published_fact",new URL(page.url()).pathname==="/pricing"&&pricingFacts.every(fact=>livePricing.includes(fact)));
   check("live_pricing_view_reports_the_payment_state_from_the_service",["Payment open","Payment not open"].includes(await page.locator("#pricing-state").innerText()));
-  const plainWords=text=>!/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profiles/i.test(text);
+  const plainWords=text=>!internalTerms.test(text);
   check("live_pricing_view_avoids_internal_runtime_names",plainWords(livePricing));
-  check("plain_word_check_rejects_a_page_that_names_the_runtime",!plainWords(livePricing+"\nBuilt on Loop Engine.")&&!plainWords(livePricing+"\nEvery step is a Loop node.")&&!plainWords(livePricing+"\nSee the role profiles."));
+  check("plain_word_check_rejects_a_page_that_names_the_runtime",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the role profile.","Read the runtime classification."].every(claim=>!plainWords(livePricing+"\n"+claim)));
   const deepPricing=await page.request.get(origin+"/pricing",{maxRedirects:0});
-  check("live_pricing_address_is_served_directly",deepPricing.status()===200);
+  check("live_pricing_address_is_served_directly",deepPricing.status()===200&&(deepPricing.headers()["content-type"]||"").startsWith("text/html"));
+  /* The deployed page is compared with what the deployed service reports, never with its own wording. */
+  const liveCapabilities=(await (await page.request.get(origin+"/api/v1/capabilities",{maxRedirects:0})).json()).result;
+  const liveVersion=liveCapabilities.record_type==="service_capabilities/v1";
+  const purchaseWords={source:"\\b(?:buy|purchase|checkout|subscribe|subscription|pay|payment|card)\\b",flags:"i"};
+  const livePurchase=await page.locator('[data-view="pricing"]').evaluate((node,pattern)=>{
+    const rule=new RegExp(pattern.source,pattern.flags);
+    return [...node.querySelectorAll("button, a, form, input[type=submit], input[type=button]")]
+      .map(item=>[item.tagName.toLowerCase()+(item.id?"#"+item.id:""),(item.textContent||"")+" "+(item.getAttribute("aria-label")||"")+" "+(item.getAttribute("value")||"")])
+      .filter(([,text])=>rule.test(text)).map(([place])=>place);
+  },purchaseWords);
+  check("live_pricing_view_offers_no_purchase_control_while_checkout_is_closed",
+    (liveVersion&&liveCapabilities.billing.checkout===true)||livePurchase.length===0);
+  const liveKeys=await page.locator("#plan-keys-detail").evaluate(node=>node.textContent);
+  const claimsKeys=liveKeys.startsWith("Create and revoke a key");
+  check("live_personal_key_wording_follows_the_reported_capability",
+    claimsKeys===(liveVersion&&liveCapabilities.website.client_access_available===true));
   await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
   for(const asset of ["service.js","client-access.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
@@ -46,7 +64,7 @@ try{
   const explainsProviderBoundary=text=>text.includes("Model keys stay in your environment")&&text.includes("A remote model may receive the information you allow");
   check("how_it_works_identifies_external_model_connection",explainsProviderBoundary(providerCopy));
   check("provider_boundary_check_rejects_wrong_secret_destination",!explainsProviderBoundary(providerCopy.replace("Model keys stay in your environment","Model keys are uploaded to the service")));
-  check("live_public_explanation_avoids_internal_runtime_names",!/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profiles/i.test(await page.locator('[data-view="about"]').textContent())&&!(await page.locator("footer").innerText()).includes("Loop Engine"));
+  check("live_public_explanation_avoids_internal_runtime_names",!internalTerms.test(await page.locator('[data-view="about"]').textContent())&&!(await page.locator("footer").innerText()).includes("Loop Engine"));
   await page.click("#assignment-build");
   check("live_task_explorer_changes_selected_context",(await page.locator("#assignment-materials").innerText()).includes("selected-normalizer.py"));
   await page.locator("#assignment-build").focus();await page.keyboard.press("End");
