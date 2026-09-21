@@ -1,0 +1,89 @@
+{
+ "record_type": "account_email_path_probe/v1",
+ "observed_at": "2026-09-21T10:46:59.906588+00:00",
+ "purpose": "Confirm that public sign-up can work on the baltor.ai domain without changing identity provider settings that engineering cannot reach.",
+ "identity_provider": {
+  "project_origin": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+  "server_key_has_administration_rights": true,
+  "public_settings": {
+   "signup_disabled": false,
+   "automatic_confirmation": false,
+   "meaning": "the provider requires email confirmation, which is what the design assumes"
+  },
+  "generate_link": {
+   "endpoint": "POST /auth/v1/admin/generate_link",
+   "status": 200,
+   "answer_shape": "flat object",
+   "fields_present_at_the_top_level": [
+    "action_link",
+    "hashed_token",
+    "email_otp",
+    "verification_type",
+    "id",
+    "email",
+    "redirect_to",
+    "confirmation_sent_at"
+   ],
+   "fields_absent": [
+    "properties"
+   ],
+   "important": "Older documentation shows these fields nested under a properties object. This project must read them at the top level.",
+   "sends_email": false
+  },
+  "probe_hygiene": {
+   "disposable_addresses_used": 1,
+   "domain_used": "baltor.invalid (reserved, cannot receive mail)",
+   "first_probe_misread_the_shape_and_left_one_user": true,
+   "cleanup": "the user was removed with a hard delete; a follow-up listing found no probe user remaining",
+   "accounts_before": 2,
+   "accounts_after": 2
+  }
+ },
+ "mail_provider": {
+  "first_sender_domain": {
+   "name": "auth.baltor.ai",
+   "status": "partially_failed",
+   "verified_records": [
+    "signing key",
+    "return path alias"
+   ],
+   "failing_records": [
+    "return path mail exchange",
+    "return path sender policy"
+   ],
+   "public_dns_is_correct": true,
+   "evidence": "The two failing names answer correctly from the authoritative name servers and from five public resolvers, with a 300 second lifetime, hours after the name server change. The zone is unsigned, so no validating resolver can fail it, and no alias shadows the names.",
+   "send_attempt": "refused with 403, the domain is not verified",
+   "reading": "stuck verification state at the provider, not a name service problem",
+   "disposition": "Kept unchanged for comparison. Nothing was deleted. The service sends from mail.baltor.ai instead."
+  },
+  "second_sender_domain": {
+   "name": "mail.baltor.ai",
+   "created_at": "2026-09-21",
+   "reason": "A fresh domain gets a fresh verification, and nothing had to be deleted.",
+   "records_installed": [
+    "signing key",
+    "return path mail exchange",
+    "return path sender policy",
+    "return path alias"
+   ],
+   "transport_security": "enforced",
+   "open_and_click_tracking": false,
+   "public_dns_confirmed": true,
+   "verification": "verified, all four records",
+   "send_test": {
+    "from": "accounts@mail.baltor.ai",
+    "to": "delivered@resend.dev (the provider's own test address, not a person)",
+    "result": "delivered",
+    "message_identity_recorded": true,
+    "meaning": "the confirmation and recovery email path works end to end from this domain"
+   }
+  }
+ },
+ "decision": "Sign-up sends its own email. The service asks the identity provider for a confirmation link without sending, then sends that link from its own sender address. The whole journey stays on the baltor.ai domain and needs no provider setting that engineering cannot change. The sender address is host configuration, not a value in the source, and is set to accounts@mail.baltor.ai.",
+ "limits": [
+  "No email has been delivered to a person; the one test went to the provider's test address.",
+  "The first sender domain remains in its failed state and is kept for comparison.",
+  "This probe does not qualify the sign-up journey; it establishes that every interface the design needs exists, answers and delivers."
+ ]
+}

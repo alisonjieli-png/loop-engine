@@ -1,0 +1,78 @@
+{
+ "record_type": "pilot_configuration_change/v1",
+ "observed_at": "2026-09-21T10:51:19.899763+00:00",
+ "application": "baltor-pilot",
+ "release_before": 8,
+ "image": "unchanged, sha256:a2d31be073025fcc4f6f0ad86ef743eeffbd36d8d65671855d7298260862ce0a",
+ "change": "Switched on browser sign-in and personal client keys, which already shipped in release 8 and were switched off by host configuration.",
+ "configuration_added": {
+  "browser_identity": {
+   "project_url": "https://qfzxmjznlwiopgvfgtsw.supabase.co",
+   "publishable_key_ref": "env:SUPABASE_PUBLISHABLE_KEY",
+   "namespace_prefix": "customer",
+   "allowed_scopes": [
+    "provisioning:metadata",
+    "provisioning:read",
+    "usage:read"
+   ],
+   "registration_enabled": true,
+   "email_signup_enabled": false,
+   "allow_network": true
+  },
+  "client_access": {
+   "allowed_scopes": [
+    "provisioning:metadata",
+    "provisioning:read",
+    "usage:read"
+   ],
+   "maximum_active_tokens": 10,
+   "maximum_lifetime_seconds": 604800,
+   "default_lifetime_seconds": 86400,
+   "maximum_token_records": 1000,
+   "writes_authorized": true
+  }
+ },
+ "meaning": "A person the operator has invited can sign in with the identity provider, receive a server-owned account, and create and revoke personal client keys. The public sign-up form stays closed until the account email work lands.",
+ "how_it_was_applied": [
+  "The proposed blocks were validated offline with the real configuration classes, together with four known-wrong variants that must be refused: a sign-up form without account admission, automatic administration authority, an insecure identity origin, and a customer key policy that grants administration.",
+  "The existing host configuration was copied to /data/host.json.backup-before-signin on the volume.",
+  "The new configuration was written beside it and loaded with the real loader inside the running machine before anything was replaced.",
+  "Only then was it moved into place.",
+  "The identity publishable key was staged as a deployment secret with tools/stage_service_secrets.py, so its value never appeared in a command line, a log or a report.",
+  "The same image digest was redeployed to apply the staged secret and restart the machine. No source changed and no image was built."
+ ],
+ "observed_after": {
+  "capabilities": {
+   "browser_identity_available": true,
+   "client_access_available": true,
+   "registration_available": false,
+   "authentication_modes": [
+    "host_key"
+   ]
+  },
+  "identity_configuration_served": {
+   "publishable_key_present": true,
+   "key_kind": "publishable, not a server secret",
+   "registration_enabled": true,
+   "email_signup_enabled": false,
+   "session_persistence": "page_memory"
+  },
+  "health": {
+   "baltor.ai": true,
+   "www.baltor.ai": true,
+   "app.baltor.ai": true,
+   "baltor-pilot.fly.dev": true
+  },
+  "browser_checks": {
+   "https://baltor.ai": "46/46",
+   "https://app.baltor.ai": "46/46"
+  }
+ },
+ "rollback": "Move /data/host.json.backup-before-signin back into place and redeploy the same image digest. The staged key can stay; it is read only when the browser identity block is present.",
+ "known_limits": [
+  "No person has signed in through this path yet.",
+  "The public sign-up form is closed. Accounts are created by invitation until the account email work lands.",
+  "The confirmation redirect still names the platform hostname because the public base address is unchanged. Moving it to the branded hostname is planned with the account email release.",
+  "The catalogue still holds one diagnostic item, so a new account sees very little until the approved catalogue is published."
+ ]
+}
