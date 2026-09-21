@@ -1,7 +1,15 @@
 # Loop Engine writing context
 
 Use this context when editing public Markdown with a prose-review or humanizer
-skill.
+skill. This file owns the voice, the punctuation and the reference style. It
+does not own the vocabulary.
+
+The vocabulary lives in [terminology.yaml](terminology.yaml), the single
+structured source. Every term there states its kind, its definition, the
+surfaces where it may appear, the surfaces that refuse it and its status.
+[The developer language guide](docs/guides/developer-language.md) explains how
+to read it. A term list repeated here would drift away from the file that the
+conformance gate reads, so the sections below point at it.
 
 ## Reader
 
@@ -57,37 +65,18 @@ historical source quotations. The canonical runtime identifier remains `Loop`.
 Do not construct a title by combining the import name, distribution name, or
 runtime class name.
 
-## Preferred architecture terms
+## Architecture terms and where each one may appear
 
-- Loop object
-- Loop Practitioner
-- Practitioner Loop graph
-- Solution Canvas
-- Solution Loop
-- self-improvement Practitioner task
-- Core Architecture
-- Intelligence Search and Retrieval
-- Web Research
-- Custom Plugins
-- Retrieval Engine
-- built-in adapter
-- extension point
-- potential external plugin
-- Context Intelligence
-- Code Intelligence
-- Runtime History and Solution Intelligence
-- User Feedback Intelligence
-- Runtime Memory
-- Run History
-- report, event log, contract, evidence, or run record according to meaning
+Open [terminology.yaml](terminology.yaml) and read the entry for the term you
+are about to write. It gives the kind, the definition, the surfaces that allow
+the term, the surfaces that refuse it and the status. The homepage, the How it
+works view and the shared footer refuse the exact runtime terms; technical
+documentation, the Documentation view, GitHub and source code keep them.
 
-## Terms that need a qualifier
-
-- Step profile means the number, order, and repetition of steps.
-- Effort setting means bounded work limits.
-- Operating settings mean permissions, access, and preferences.
-- Candidate means under review and not available to run.
-- Potential plugin means planned packaging around an existing extension point.
+[The developer language guide](docs/guides/developer-language.md) explains the
+surfaces, the three settings a developer confuses on the first day, the two
+views over the four intelligence layers and the retired words. Choose report,
+event log, contract, evidence or run record according to the actual object.
 
 ## Punctuation and structure
 

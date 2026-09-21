@@ -3,16 +3,26 @@
 Kind: engineering standard. It describes the names that the code and the
 documents use today. It renames nothing.
 
-Two documents own the vocabulary. This standard links to them and does not
-repeat them.
+One file owns the vocabulary. This standard links to it and does not repeat
+it.
 
-- [terminology.yaml](../../terminology.yaml) is the machine-readable list of
-  canonical terms, forbidden class names, deprecated terms and semantic
-  categories. The conformance gates read it.
-- The table
-  [Names and where they may appear](../guides/product-style-guide.md#names-and-where-they-may-appear)
-  in the product style guide says where each public and technical name may
-  appear, and which identifiers wait for an owner decision.
+- [terminology.yaml](../../terminology.yaml) is the single structured source.
+  Every term carries its kind, its definition, the surfaces where it may
+  appear, the surfaces that refuse it and its status. It also holds the
+  canonical terms, the forbidden class names, the retired words, the semantic
+  categories and the renames that were proposed but not performed. The
+  conformance gates read it.
+- [The developer language guide](../guides/developer-language.md) is the page
+  a new developer or a new coding agent reads first. It explains the surfaces,
+  the customer words, the technical words, the phrase that must stay whole and
+  how to propose a rename.
+
+The product style guide used to carry a table of names. It now points at
+terminology.yaml, because a table in a document drifts away from the file that
+the gate reads.
+
+This standard keeps the shapes: record types, scopes, error codes, check
+names, files and folders.
 
 ## Baltor and Loop Engine
 
@@ -54,6 +64,15 @@ In technical prose:
   folder does not carry. Read
   [the four document gates](CHECKS-AND-EVIDENCE.md#what-each-gate-covers)
   before you write.
+- The gate `undefined_terms_retired_names_and_misplaced_words` inside
+  `python -m loop_engine --conformance` reads terminology.yaml and refuses a
+  term without a definition, a retired word in the prose of a current
+  document, and a technical word on a surface that refuses it. Four different
+  places now carry part of the retired-word list: this gate, the two vale
+  rules, the ripgrep step in `.github/workflows/ci.yml` and
+  `retired_source_nomenclature` in `src/loop_engine/forbidden_paths.json`.
+  Only the first reads terminology.yaml. Folding the other three into it is
+  recorded work, not finished work.
 
 ## Runtime terms
 

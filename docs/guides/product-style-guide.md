@@ -60,27 +60,40 @@ research ambition.
 ## Names and where they may appear
 
 Baltor is the public brand. Loop Engine is the repository, the Python package
-and the technical name. This table is the single reference for where each
-name and word may appear. It renames nothing.
+and the technical name.
 
-| Name or word | Kind | What it names | May appear | Must not appear | Status |
-|---|---|---|---|---|---|
-| Baltor | Public brand | The product, the website and the hosted service as a customer sees them. | Every page that a customer reads, including the homepage, How it works and their shared footer. Email from the service. Copied client settings, where the entry is named `baltor` and the credential variable is `BALTOR_SERVICE_TOKEN`. Technical documentation when it describes the product. | In place of a code identifier, a package name, a record type, a contract field or the repository name. | Decided by the owner. |
-| Loop Engine | Technical name | The repository, the engine, the Python distribution and command `loop-engine`, and the Python import `loop_engine`. | Technical documentation, the Documentation view of the website, GitHub, the README, source code and command output. | The homepage, How it works and their shared footer. | Decided by the owner. |
-| Building with Loops | README title | The title of the public README. | The README. | Anywhere as a product name. | Decided by the owner. |
-| task, each step, information, tools, model, checks, results, reusable solution | Public words | The work as a customer describes it. | Every page. On the homepage, How it works and their shared footer, only these words describe the work. | In technical documentation, in place of an exact runtime term. | Decided by the owner. |
-| Loop, Loop node, discrete cognitive or act step Loop node, runtime classification, role profile, Practitioner, Intelligence, Solution, run mode, step profile | Technical words | The exact runtime terms with their complete definitions. | Technical documentation, the Documentation view of the website, GitHub and source code. Keep the full phrase [discrete cognitive or act step Loop node](../../ASTRA.md#complete-behavioral-explanation) together with its complete behavioral explanation. | The homepage, How it works and their shared footer. | Decided by the owner. |
-| agent, harness, prompt cycle | Technical words | The customer's own tools and how they call a model. | Technical documentation, connection guidance and GitHub. | The homepage and How it works. | Decided by the owner. The [public content direction](public-website-content-and-domain.md#current-positioning-and-presentation) records it. |
-| `le_` | Customer-visible technical identifier: key prefix | The first characters of every client key that the service issues. | Issued keys, and technical documentation that explains them. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
-| `loop-engine-intelligence` | Customer-visible technical identifier: protocol server name | The server name that a Model Context Protocol client shows after it connects. | The protocol handshake and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
-| `X-Loop-Engine-Record-Type` | Customer-visible technical identifier: response header | The header on a downloaded body that names its record type. A browser client can read it. | Service responses and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
-| `Loop Engine Intelligence` | Customer-visible technical identifier: protected resource name | The `resource_name` field of the protected resource metadata at `/.well-known/oauth-protected-resource`. A client can show this name to the person who authorizes it. The service returns that record only when the host configuration lists the authentication mode `external_jwt`. The pilot lists only `host_key`, so the pilot does not return it today. | The protected resource metadata and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
-| `loop-engine` | Customer-visible technical identifier: command and package name | The command that a customer types and the package that a customer installs. | Installation and setup instructions, the Documentation view of the website and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
+The list of names used to live in a table on this page. It now lives in
+[terminology.yaml](../../terminology.yaml), which is the single structured
+source. Every term there carries its kind, its definition, the surfaces where
+it may appear, the surfaces that refuse it and its status, and the
+conformance gate `undefined_terms_retired_names_and_misplaced_words` reads
+the same fields. A table repeated here would drift away from the file that
+the gate reads, so this page points at the file instead.
+
+Read [the developer language guide](developer-language.md) first. It explains
+the surfaces, the words a customer page uses, the words a technical document
+uses, the phrase that must stay whole, and how to propose a rename. Then open
+terminology.yaml for the exact entry.
+
+Two placements on this page changed on September 21, 2026, and terminology.yaml
+records both with their reason:
+
+- The words harness and agent may now appear on a public page. The owner's
+  category line is harness and agent optimized operation, so refusing the two
+  words that the line is made of was no longer the owner's rule.
+- The four intelligence layer names are public words. The homepage already
+  shows Context Intelligence, Code Intelligence, Runtime History and Solution
+  Intelligence, and User Feedback Intelligence, and `LAYER_PUBLIC_LABEL` in
+  `src/loop_engine/core/intelligence_layers.py` calls them product-facing
+  names. The bare role words are the technical ones, so terminology.yaml
+  refuses Practitioner, Intelligence Loop and Solution Loop on a public page
+  and allows the layer names everywhere.
 
 ### Open owner decision: identifiers that carry the engine name
 
-Five identifiers in the table are visible to a customer and still carry the
-engine name. The key prefix `le_` is set in
+Five identifiers carry `status: open_owner_decision` in terminology.yaml.
+They are visible to a customer and still carry the engine name. The key
+prefix `le_` is set in
 `src/loop_engine/core/service_runtime/runtime.py` and `access.py`. The
 protocol server name `loop-engine-intelligence`, the response header
 `X-Loop-Engine-Record-Type` and the protected resource name

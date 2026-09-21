@@ -33,8 +33,12 @@ behavior, output, limit, or current implementation state instead.
 
 ## Product terms
 
-Use the names in [Product nomenclature](reference/PRODUCT-NOMENCLATURE.md).
-The short list is:
+The single structured source is [terminology.yaml](../terminology.yaml), and
+[the developer language guide](guides/developer-language.md) explains how to
+read it. Open the entry for a term before you write it: the entry states where
+the term may appear and where it must not.
+[Product nomenclature](reference/PRODUCT-NOMENCLATURE.md) gives the longer
+explanations. The short list is:
 
 - Loop
 - Loop Practitioner
