@@ -27,7 +27,10 @@ from loop_engine.core.harness_intelligence import KINDS, RECORD_TYPE as ITEM_REC
 from loop_engine.core.instance_instructions import STYLE_FILES
 from loop_engine.core.intelligence_tagging import RECORD_TYPE as TAG_RECORD_TYPE
 from loop_engine.core.retrieval import Retriever
-from loop_engine.core.service_runtime.http_entrypoint import MANIFEST_VERSION, load_host_manifest
+from loop_engine.core.service_runtime.http_entrypoint import (
+    DEFAULT_LICENSE_POLICY, LICENSE_MISSING, LICENSE_NOT_ACCEPTED, LICENSE_UNKNOWN, MANIFEST_VERSION,
+    load_host_manifest,
+)
 from loop_engine.core.service_runtime.records import ServiceRuntimeError
 from loop_engine.core.store_serve import StoreRecord
 from tools.stage_intelligence_candidates import (
@@ -67,6 +70,15 @@ GROUNDINGS = {"restates_cited_source": "Compiled from revision {revision}.",
 GENERAL_PRACTICE = "general_practice_beside_cited_source"
 GENERAL_PRACTICE_SENTENCE = ("The steps above are ordinary engineering practice, "
                              "written for this catalogue in its own words.")
+#: The items compiled from model generated statements. They record the licence
+#: `unknown`, so the default host licence policy refuses them before registration
+#: and they cannot be served until their rights are settled. The names are listed
+#: here so that the refusal is proven for each of them by name.
+LICENCE_REFUSED_ITEMS = ("check_a_table_join_before_trusting_it", "make_a_data_pipeline_safe_to_run_again")
+#: Licence values that a host must refuse, with the refusal code each one produces.
+#: `GPL-3.0-only` is a real licence identifier that this host does not list.
+UNACCEPTABLE_LICENCES = (("unknown", LICENSE_UNKNOWN), ("", LICENSE_MISSING), ("   ", LICENSE_MISSING),
+                         ("GPL-3.0-only", LICENSE_NOT_ACCEPTED))
 REVIEW_LAYER = {"context_intelligence": "Context Intelligence", "code_intelligence": "Code Intelligence"}
 EMPTY_LAYERS = ("Runtime History and Solution Intelligence", "User Feedback Intelligence")
 REQUIRED_PARTS = ("## When to use it", "## Steps", "## Checks", "## Known-wrong example",
@@ -75,6 +87,9 @@ ITEM_FIELDS = {"reference", "body_path", "lifecycle", "license_state", "provenan
 #: The dash characters (em dash, en dash, horizontal bar, minus sign) that public prose never uses, written as code points
 #: so that this source file stays free of them.
 DASHES = "[" + chr(0x2014) + chr(0x2013) + chr(0x2015) + chr(0x2212) + "]"
+#: The retired heading, assembled from its three words, so that this source file
+#: does not itself hold the retired term that the conformance gate refuses.
+RETIRED_HEADING = " ".join(("what", "is", "next"))
 def _patterns(*patterns):
     return tuple(re.compile(pattern, re.IGNORECASE) for pattern in patterns)
 
@@ -386,21 +401,46 @@ def rule_the_catalogue_is_large_enough(snapshot):
 
 
 def _observed_field(result, name):
-    """One named field of a result: the whole value under 'value', else a key or an attribute."""
+    """Whether a result carries a named field, and its value.
+
+    The name `value` means the whole result. Any other name must be a key that
+    the result really holds or an attribute that it really has, so an absent
+    field is reported instead of being compared as nothing against nothing.
+    """
     if name == "value":
-        return result
+        return True, result
     if isinstance(result, dict):
-        return result.get(name)
-    return getattr(result, name, None)
+        return name in result, result.get(name)
+    return hasattr(result, name), getattr(result, name, None)
+
+
+def _module_source_path(module_name, repository: Path):
+    """The repository path of an imported module, or None when it is not a file of this repository."""
+    try:
+        path = Path(import_module(module_name).__file__).resolve()
+    except (AttributeError, ImportError, TypeError, ValueError):
+        return None
+    try:
+        return path.relative_to(repository).as_posix()
+    except ValueError:
+        return None
 
 
 def rule_quoted_examples_reproduce(snapshot):
-    """Every quoted example runs against the cited code and observes what the body says."""
+    """Every quoted example runs against the code that its own item cites, and observes what the body says.
+
+    A row is bound to one item: the module it names must be one of that item's
+    own sources, and the function must be one of that item's own symbols. A row
+    that asserts nothing, or that names a field the result does not have, is
+    refused, so the file cannot be hollowed out while every named check is green.
+    """
     record = snapshot.examples
     if record.get("record_type") != EXAMPLES_RECORD_TYPE:
         return [f"{EXAMPLES_FILE}: record type {record.get('record_type')!r} is not supported"]
     modules, token = record.get("modules") or {}, record.get("packaged_catalogs_token")
     rows = record.get("examples") or ()
+    declared = {row.get("id"): (set(row.get("sources") or ()), set(row.get("symbols") or ()))
+                for row in snapshot.specifications.get("specifications") or ()}
     found = []
     if len(rows) < MINIMUM_EXAMPLES or len({row.get("identity") for row in rows}) < MINIMUM_EXAMPLE_ITEMS:
         found.append(f"{EXAMPLES_FILE}: at least {MINIMUM_EXAMPLES} executed examples over "
@@ -414,10 +454,23 @@ def rule_quoted_examples_reproduce(snapshot):
             continue
         if not isinstance(quote, str) or quote not in body.decode("utf-8"):
             found.append(f"{identity}: the body does not say {quote!r} word for word")
+        sources, symbols = declared.get(identity, (set(), set()))
         module_name = modules.get(row.get("module"))
-        function = getattr(import_module(module_name), row.get("function"), None) if module_name else None
+        source_path = _module_source_path(module_name, snapshot.repository) if module_name else None
+        if source_path is None or source_path not in sources:
+            found.append(f"{identity}: an executed example runs {module_name!r}, which is not one of the "
+                         f"{len(sources)} sources this item cites")
+            continue
+        function = getattr(import_module(module_name), row.get("function"), None)
         if function is None:
             found.append(f"{identity}: {row.get('module')}.{row.get('function')} is not a cited function")
+            continue
+        if row.get("function") not in symbols:
+            found.append(f"{identity}: an executed example calls {row.get('function')!r}, which is not one of the "
+                         f"symbols this item names")
+        expected_fields = row.get("expect")
+        if not isinstance(expected_fields, dict) or not expected_fields:
+            found.append(f"{identity}: an executed example that expects no field asserts nothing")
             continue
         arguments = [catalogs if value == token else value for value in row.get("arguments") or ()]
         try:
@@ -425,8 +478,12 @@ def rule_quoted_examples_reproduce(snapshot):
         except Exception as error:  # the body must not quote a call the code refuses
             found.append(f"{identity}: {row.get('function')} refused the example: {error}")
             continue
-        for name, expected in (row.get("expect") or {}).items():
-            observed = _observed_field(result, name)
+        for name, expected in expected_fields.items():
+            present, observed = _observed_field(result, name)
+            if not present:
+                found.append(f"{identity}: {row.get('function')} gives no field {name!r}, so the body's "
+                             f"{expected!r} is not observed")
+                continue
             if isinstance(observed, tuple):
                 observed = list(observed)
             if observed != expected:
@@ -514,6 +571,35 @@ def _capitalisation_example(rows):
                 and row["arguments"][0] == "iPhone Repair")
 
 
+def _wording(sentence: str):
+    """A known-wrong case that puts one forbidden sentence into the first body.
+
+    Each sentence is written so that exactly one forbidden pattern matches it.
+    Removing that one pattern then leaves the sentence accepted, which is what
+    the per-pattern control requires.
+    """
+    return lambda snapshot: _changed(
+        snapshot, body=lambda text: text.replace("\n## Steps\n", f"\n{sentence}\n\n## Steps\n"))
+
+
+def _foreign_module_row(snapshot):
+    """A call that succeeds in every respect, listed under an item that does not cite the module it runs."""
+    cited = _module_source_path(snapshot.examples["modules"]["operations"], snapshot.repository)
+    identity = next(row["id"] for row in snapshot.specifications["specifications"]
+                    if cited not in (row.get("sources") or ()))
+    return {"identity": identity, "quote": snapshot.bodies[identity].decode("utf-8").splitlines()[0],
+            "module": "operations", "function": "whitespace_normalize", "arguments": ["a  b"],
+            "expect": {"output": "a b"}}
+
+
+def _without_the_first_examples_source(snapshot):
+    """The item of the first executed example stops citing the module that the example runs."""
+    row = snapshot.examples["examples"][0]
+    path = _module_source_path(snapshot.examples["modules"][row["module"]], snapshot.repository)
+    return _changed(snapshot, specifications=lambda rows: next(
+        entry for entry in rows if entry["id"] == row["identity"])["sources"].remove(path))
+
+
 def _renamed_first_identity(snapshot):
     """The first item under an identity with internal vocabulary; every derived field follows the new name."""
     old, new = snapshot.specifications["specifications"][0]["id"], "practitioner_loop_profile"
@@ -565,8 +651,19 @@ KNOWN_WRONG = {
         ("a body uses a horizontal bar", lambda s: _changed(
             s, body=lambda text: text + f"A pause {chr(0x2015)} then more.\n")),
         ("an identity carries internal runtime vocabulary", _renamed_first_identity),
-        ("a body names a graph relationship and a run record", lambda s: _changed(
-            s, body=lambda text: text.replace("\n## Steps\n", "\nIt was spawned and kept in Run History.\n\n## Steps\n"))),
+        *((f"a body uses the wording {label}", _wording(sentence)) for label, sentence in (
+            ("of the runtime type", "The task runs in a loop until it is done."),
+            ("of a runtime role", "A Practitioner owns this work."),
+            ("of the runtime classification", "The runtime classification decides the shape."),
+            ("of a compiled canvas", "Compile the Solution Canvas first."),
+            ("of the engine's own modules", "Reuse the code nodes of the engine."),
+            ("of a graph relationship", "It was spawned by the step before it."),
+            ("of a starting relationship", "A Starting Solution runs the pipeline."),
+            ("of the run record store", "Keep the outcome in Run History."),
+            ("of a retired condition name", "Write the stop condition before you start."),
+            ("of a retired word for a record", "Keep the receipt of the change."),
+            ("of a retired word for a history", "Add the decision to the chronicle."),
+            ("of a retired heading", f"Then decide {RETIRED_HEADING}."))),
         ("a body names the temporary run store", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Steps\n", "\nKeep the value in Runtime Memory.\n\n## Steps\n"))),
         ("a body uses a longer family word", lambda s: _changed(
@@ -641,6 +738,16 @@ KNOWN_WRONG = {
             s, examples=lambda rows: _set(rows[0], "identity", "a_name_with_no_body"))),
         ("the executed examples are thinned out", lambda s: _changed(
             s, examples=lambda rows: rows.__delitem__(slice(1, None)))),
+        ("an executed example runs code that its own item does not cite", _without_the_first_examples_source),
+        ("an executed example is listed under another item", lambda s: _changed(
+            s, examples=lambda rows: rows.append(_foreign_module_row(s)))),
+        ("an executed example calls a function that its own item does not name", lambda s: _changed(
+            s, examples=lambda rows: rows[0].update(function="whitespace_normalize", arguments=["a  b"],
+                                                    keywords={}, expect={"output": "a b"}))),
+        ("an executed example asserts nothing", lambda s: _changed(
+            s, examples=lambda rows: _set(rows[0], "expect", {}))),
+        ("an executed example names a field that the result does not have", lambda s: _changed(
+            s, examples=lambda rows: _set(rows[0], "expect", {"no_such_field": None}))),
         ("the record type is not the supported one", lambda s: replace(
             s, examples={**s.examples, "record_type": "starter_catalogue_executed_examples/v2"}))),
 }
@@ -686,29 +793,41 @@ class StarterCatalogueChecks(unittest.TestCase):
         self.assertTrue(all(probe["found_in_first_three"] for probe in review["probes"]))
         self.assertEqual(sum(probe["physical_model_calls"] for probe in review["probes"]), 0)
 
-    def _servable(self):
-        """The items a host could put in a manifest: the ones whose licence it accepts.
-
-        An item whose licence is unknown or waiting for review is refused before
-        registration by the host loader, so it never belongs in a manifest.
-        """
-        return [item for item in self.snapshot.items["items"] if item["license_state"] == "declared"]
-
-    def _manifest(self, directory: Path, artifact_root: Path, items=None) -> Path:
+    def _manifest(self, directory: Path, artifact_root: Path, items, name: str = "manifest.json") -> Path:
         manifest = {"record_type": MANIFEST_VERSION, "artifact_root": str(artifact_root), "items": [
             {"reference": item["reference"], "body_path": item["body_path"],
              "approval_ref": "test_only:not_an_owner_approval", "grants": []}
-            for item in (self._servable() if items is None else items)]}
-        path = directory / "manifest.json"
+            for item in items]}
+        path = directory / name
         path.write_text(json.dumps(manifest), encoding="utf-8")
         return path
 
-    def test_the_items_load_through_the_host_manifest_reader(self):
+    def _licence_partition(self):
+        """The items the default host licence policy accepts, and the ones it refuses with the refusal code.
+
+        The partition is read from the engine's own policy, so it follows the
+        policy rather than repeating it. No policy that accepts a state such as
+        `unknown` is ever built here; the conservative default decides.
+        """
+        accepted, refused = [], []
+        for item in self.snapshot.items["items"]:
+            code = DEFAULT_LICENSE_POLICY.refusal(item["reference"]["license"])
+            (refused if code else accepted).append((item, code))
+        return [item for item, _code in accepted], refused
+
+    def test_the_items_the_host_licence_policy_accepts_load_through_the_manifest_reader(self):
+        accepted, refused = self._licence_partition()
+        # The catalogue's own record of each licence state and the engine's policy agree.
+        self.assertEqual([item["reference"]["identity"] for item, _code in refused],
+                         [item["reference"]["identity"] for item in self.snapshot.items["items"]
+                          if item["license_state"] != "declared"])
+        self.assertEqual(len(accepted) + len(refused), len(self.snapshot.items["items"]))
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory).resolve()
-            catalogue, _resolver, read, grants = load_host_manifest(self._manifest(folder, CATALOGUE.resolve()))
-            self.assertEqual(list(catalogue.items),
-                             [item["reference"]["identity"] for item in self._servable()])
+            catalogue, _resolver, read, grants = load_host_manifest(
+                self._manifest(folder, CATALOGUE.resolve(), accepted))
+            self.assertEqual(list(catalogue.items), [item["reference"]["identity"] for item in accepted])
+            self.assertEqual(set(catalogue.items) & {item["reference"]["identity"] for item, _code in refused}, set())
             self.assertEqual(grants, {})
             first = next(iter(catalogue.items.values()))
             self.assertEqual(read(first).encode("utf-8"), self.snapshot.bodies[first.identity])
@@ -717,20 +836,34 @@ class StarterCatalogueChecks(unittest.TestCase):
             target = copied / "bodies" / f"{first.identity}.md"
             target.write_bytes(target.read_bytes().replace(b"a", b"b", 1))
             with self.assertRaises(ServiceRuntimeError):
-                load_host_manifest(self._manifest(folder, copied))
+                load_host_manifest(self._manifest(folder, copied, accepted))
 
-    def test_an_item_waiting_for_a_licence_review_is_refused_before_registration(self):
-        """The known-wrong manifest: one item whose licence state is needs_review."""
-        waiting = [item for item in self.snapshot.items["items"] if item["license_state"] == "needs_review"]
-        self.assertTrue(waiting, "the catalogue no longer holds an item waiting for a licence review")
+    def test_an_item_without_an_accepted_licence_is_refused_by_name(self):
+        """The behaviour a customer depends on: an item this host may not serve never reaches the catalogue."""
+        accepted, refused = self._licence_partition()
+        self.assertEqual([item["reference"]["identity"] for item, _code in refused], list(LICENCE_REFUSED_ITEMS))
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory).resolve()
-            for item in waiting:
-                with self.subTest(identity=item["reference"]["identity"]):
-                    with self.assertRaises(ServiceRuntimeError) as refused:
-                        load_host_manifest(self._manifest(folder, CATALOGUE.resolve(),
-                                                          self._servable() + [item]))
-                    self.assertIn(item["reference"]["identity"], str(refused.exception))
+            for index, (item, code) in enumerate(refused):
+                identity = item["reference"]["identity"]
+                with self.subTest(item=identity):
+                    self.assertEqual(code, LICENSE_UNKNOWN)
+                    path = self._manifest(folder, CATALOGUE.resolve(), accepted + [item], f"refused_{index}.json")
+                    with self.assertRaises(ServiceRuntimeError) as refusal:
+                        load_host_manifest(path)
+                    self.assertEqual(refusal.exception.code, LICENSE_UNKNOWN)
+                    self.assertIn(identity, str(refusal.exception))
+            # A control that cannot become empty: the licence of an accepted item is
+            # replaced by each value a host must refuse, and the refusal names its code.
+            for index, (licence, code) in enumerate(UNACCEPTABLE_LICENCES):
+                with self.subTest(licence=licence):
+                    changed = deepcopy(accepted[0])
+                    changed["reference"]["license"] = licence
+                    path = self._manifest(folder, CATALOGUE.resolve(), [changed], f"licence_{index}.json")
+                    with self.assertRaises(ServiceRuntimeError) as refusal:
+                        load_host_manifest(path)
+                    self.assertEqual(refusal.exception.code, code)
+                    self.assertIn(changed["reference"]["identity"], str(refusal.exception))
 
     def test_the_refresh_tool_reports_and_repairs_a_stale_body(self):
         refresh = _refresh_module()
@@ -774,6 +907,31 @@ class StarterCatalogueChecks(unittest.TestCase):
             leftover.unlink()
             self.assertTrue(refresh.refresh(refresh.RefreshRequest(folder, True))["written"])
             self.assertEqual(problems(load_snapshot(folder)).get("digests_and_sizes_match_the_bodies"), None)
+
+    def _plant_link(self, folder: Path, relative: str, outside: Path) -> Path:
+        """Move one part of a copied catalogue outside the folder and leave a link in its place."""
+        target, moved = folder / relative, outside / Path(relative).name
+        outside.mkdir(parents=True, exist_ok=True)
+        target.rename(moved)
+        target.symlink_to(moved, target_is_directory=moved.is_dir())
+        return moved
+
+    def test_the_refresh_tool_refuses_a_planted_symbolic_link(self):
+        """Path confinement: a link in place of a record, the bodies folder or one body is refused."""
+        refresh = _refresh_module()
+        identity = self.snapshot.rows()[0][0]["id"]
+        for relative in ("items.json", "specifications.json", "bodies", f"bodies/{identity}.md"):
+            with self.subTest(planted=relative), tempfile.TemporaryDirectory() as directory:
+                folder, _body = self._stale_copy(directory)
+                moved = self._plant_link(folder, relative, Path(directory).resolve() / "outside")
+                before = sorted((path.relative_to(moved).as_posix(), path.read_bytes())
+                                for path in (moved.rglob("*") if moved.is_dir() else [moved]) if path.is_file())
+                with self.assertRaises(refresh.CatalogueRefreshError):
+                    refresh.refresh(refresh.RefreshRequest(folder, True))
+                # Nothing was written through the link, so the material outside the folder is untouched.
+                self.assertEqual(before, sorted((path.relative_to(moved).as_posix(), path.read_bytes())
+                                                for path in (moved.rglob("*") if moved.is_dir() else [moved])
+                                                if path.is_file()))
 
     def test_the_refresh_tool_gives_a_typed_refusal_for_unreadable_files(self):
         refresh = _refresh_module()
