@@ -1,0 +1,32 @@
+{
+ "record_type": "live_service_expiry_findings/v1",
+ "observed_at": "2026-09-21T12:18:48.562725+00:00",
+ "how_it_was_found": "Running the hosted service check against the live deployment after billing was switched on. It passed 3 of 16, then 13 of 16, before passing 16 of 16.",
+ "findings": [
+  {
+   "what": "The diagnostic service keys had expired.",
+   "detail": "They are issued with a lifetime of one day on purpose, and nothing reissued them. Every authenticated hosted check failed with a refusal that looked the same as a wrong key.",
+   "why_it_matters": "An operator cannot tell an expired credential from a broken service without looking, and the checks that prove the deployment works stop working a day after they are set up.",
+   "fix": "tools/reissue_service_keys.py asks the running service for a new key using the administrator credential already held, and writes it straight back into the keyring. The value is never printed, never written to a file and never put on a command line. It requires an explicit confirmation, refuses an address that is not an exact secure origin, refuses a lifetime outside one minute to seven days, and leaves the saved value untouched when the service refuses.",
+   "checks": "Ten, including that a refused issue writes nothing, that storage which does not confirm is reported rather than assumed, and a known-wrong control showing that dropping the scope list would widen the key."
+  },
+  {
+   "what": "The operator entitlements had expired, so no body could be read.",
+   "detail": "Both diagnostic accounts held a grant that ended on 20 September. Searching and listing still worked, so the service looked healthy, but every download was refused and no usage was recorded.",
+   "why_it_matters": "This is the shape of a silent customer outage. The account is enabled, sign-in works, search works, and only the thing the customer pays for stops. Nothing announced it.",
+   "fix": "Both grants were renewed for ninety days from the host configuration, which is the declared source for them. The renewal used the existing host grant path, not a new one.",
+   "still_open": "Nothing reports an approaching expiry. A paid account renews through its subscription, but an operator granted account does not, so an operator has no warning before access stops. This belongs with the reliability work."
+  }
+ ],
+ "a_defect_found_while_writing_the_check": {
+  "what": "The scope list of a reissued key was a default argument, captured when the file was imported.",
+  "why_it_matters": "Narrowing the list in one place would not have narrowed the keys, and the control that was meant to prove the narrowing could not see it either.",
+  "fix": "The list is read when the command runs."
+ },
+ "final_state": {
+  "hosted_service_and_protocol_checks": "16 of 16 against the live deployment",
+  "physical_model_calls": 0,
+  "usage_records": "9 to 10, one authorized metered read",
+  "entitlements_valid_until": "ninety days from 21 September 2026"
+ }
+}

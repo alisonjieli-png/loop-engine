@@ -49,6 +49,7 @@ Existing service boundary
 ├── provisioning.py: live durable authority over ProvisioningServer
 ├── billing.py and billing_records.py: signed-event state and reconciliation
 ├── stripe_provider.py: explicitly authorized read-only Stripe adapter
+├── request_limits.py: failed-attempt settings record and its table in process memory
 └── http*.py: separately owned remote transport and host configuration
 ```
 
@@ -118,6 +119,220 @@ public registration, subscription processing or useful native task execution.
 `set_operator_entitlement` is an explicit local host grant with an evidence
 reference and expiry. It is not evidence of payment. Billing projections do
 not override an administrative access revocation.
+
+## Failed-attempt limit for each client address
+
+This section describes current behavior. The HTTP transport counts refused
+sign-in attempts and refused account activations for each client address.
+When an address has reached its limit, the transport refuses its next sign-in
+attempt with status 429 and a `Retry-After` header. It does this before any
+authentication work and before a worker slot is used. `request_limits.py`
+owns the settings record and the table. `http.py` owns the places that use
+them. This is an internal service mechanic. It adds no runtime type, store or
+graph vertex.
+
+The limit is active only when the host states where the client address comes
+from. The service never guesses. Behind a proxy the socket peer is the proxy,
+so a guessed socket peer would put every caller in one count, and one caller
+with a wrong key could make every sign-in wait. A host file that says nothing
+about this limit leaves it inactive, and the capabilities record says so.
+
+```text
+Request that needs sign-in
+├── Host and Origin checks
+├── No credential, or more than one credential
+│   └── status 401 at once: no worker slot is used and nothing is counted
+├── Failed-attempt limit for the client address
+│   ├── address source not stated: the limit is inactive, continue
+│   ├── at the limit: status 429, Retry-After, code failed_attempt_limit_reached
+│   │   └── no authentication work, no worker slot, and not counted again
+│   └── under the limit: continue
+├── Authentication in a worker slot
+│   ├── accepted: never counted, and never clears the count
+│   ├── refused with a status from 400 to 499: counted for the address
+│   └── answered with a status from 500 to 599: not counted
+└── The governed operation
+    └── a refusal here, such as a missing scope, is not counted
+```
+
+Account activation follows the same path. Every activation request that the
+service refuses with a status from 400 to 499 is counted, including a
+malformed request. A status from 500 to 599 means that the service or a
+provider could not answer. It says nothing about the caller, so it is not
+counted.
+
+An address is refused while it has `failures_allowed` counted failures in the
+last `window_seconds`. The wait ends when the oldest of those failures leaves
+the window. A request that is refused with status 429 is not counted, so
+repeated requests do not make the wait longer. While an address waits, a
+correct key from that address is refused too, because checking a key is the
+work that the limit protects. Public routes stay open to a waiting address.
+Examples are the pages, the health route and the capabilities record.
+
+### Settings
+
+`ServiceRequestLimits` is an immutable record with the record type
+`service_request_limits/v1`. It is the `request_limits` field of
+`ServiceHttpConfiguration`. A host configuration file supplies it as a mapping
+inside `http`. The mapping must name the record type. An unknown field, a
+missing record type or another version is refused when the service starts.
+
+| Field | Default | Meaning |
+|---|---|---|
+| `client_address_source` | `not_configured` | Where the client address comes from: `not_configured`, `socket_peer` or `header`. `not_configured` leaves the limit inactive. |
+| `client_address_header` | empty | Exact name of the header that holds the client address. Required when the source is `header`, and refused with any other source. |
+| `failures_allowed` | 30 | Counted failures that one address may have inside the window. From 1 to 1000. |
+| `window_seconds` | 60 | Length of the window. From one second to one day. |
+| `maximum_tracked_addresses` | 4096 | The most addresses that the table remembers. From 1 to 65,536. |
+| `ipv6_prefix_bits` | 64 | An Internet Protocol version 6 address is counted by this prefix, because one subscriber usually controls the whole prefix. From 32 to 128. |
+
+`failures_allowed` multiplied by `maximum_tracked_addresses` cannot exceed
+1,000,000, so the table has a known largest size. When the table is full, the
+address whose latest failure is the oldest leaves first. Addresses whose
+window has passed leave before that.
+
+The defaults are starting values chosen by judgment. They are not measured.
+People behind one shared address share one count, so the default is generous.
+
+The capabilities record publishes a projection of the settings at
+`limits.failed_attempts_per_address`. The existing keys under `limits` are
+unchanged. The projection is not the settings record, so it has its own
+record type, `service_failed_attempt_limit/v1`. It holds `active`,
+`client_address_source`, `failures_allowed`, `window_seconds`,
+`ipv6_prefix_bits`, `counted`, `refusal_code` and `state`.
+
+Anyone can read the capabilities record without signing in. The projection
+therefore leaves out `client_address_header` and `maximum_tracked_addresses`.
+No client needs them. If a host ever named a header that callers can set, the
+header name would tell a caller which header to forge. The table size would
+tell a caller how many addresses empty the table. An operator reads both
+values from the host file.
+
+### Which address is counted
+
+```text
+client_address_source
+├── not_configured: the limit is inactive, and nothing is counted
+├── socket_peer: the address that opened the connection to this process
+│   └── right only when callers connect to this process directly
+└── header: the address in the one header that the host named
+    └── right only when the host's own trusted proxy overwrites that header
+```
+
+The service reads an address header only when the host configured its exact
+name. With the `socket_peer` source, every address header that a caller sends
+is ignored. A caller therefore cannot avoid the limit by changing a header,
+and cannot put failures on another address.
+
+With the `header` source, the header is used only when it appears exactly
+once and holds exactly one address. A missing, repeated, listed or malformed
+value is counted for the socket peer address instead. Name only a header that
+your own trusted proxy overwrites on every request. A header that a caller can
+set or extend is the known-wrong choice. `X-Forwarded-For` is such a header on
+most platforms. A check shows that it lets a caller avoid the limit and name a
+victim.
+
+The hosted service runs behind the Fly proxy, so its host file needs the
+`header` source. For Fly, the documented header is `Fly-Client-IP`:
+
+```json
+"request_limits": {
+  "record_type": "service_request_limits/v1",
+  "client_address_source": "header",
+  "client_address_header": "Fly-Client-IP"
+}
+```
+
+Observed: the [Fly request header documentation](https://fly.io/docs/networking/request-headers/)
+says that `Fly-Client-IP` holds the client address as the Fly proxy sees it.
+The same page says that with another reverse proxy in front of Fly, the
+header holds the address of that proxy and not the address of the caller.
+Missing: the page does not say what the Fly proxy does with a
+`Fly-Client-IP` value that the caller sent. This has not been checked on the
+hosted service.
+
+### Switching the limit on for the hosted service
+
+This subsection describes operator work that is not done yet. Merging or
+deploying this code does not switch the limit on. The host file of the hosted
+service has no `request_limits` mapping. After a deployment the hosted service
+therefore still accepts unlimited refused sign-in attempts that carry a
+credential, and each one still uses a worker slot. One change needs no
+operator work: a request without exactly one credential no longer uses a
+worker slot.
+
+Do these steps in order, after the release that contains this limit runs:
+
+1. Add the mapping above inside `http` in the host file on the volume. Then
+   restart the service.
+2. Read the capabilities record on every hostname. Confirm that
+   `limits.failed_attempts_per_address.active` is `true` and that
+   `client_address_source` is `header`.
+3. Check a forged header value. From one address, send sign-in requests with a
+   wrong key through the Fly proxy. Send one more request than
+   `failures_allowed`. Give every request a different forged `Fly-Client-IP`
+   value. The last request must be refused with status 429. If every request
+   gets status 401, the proxy passed the forged values on. A caller can then
+   avoid the limit and can name a victim. Remove the mapping in that case.
+4. Check a second address while the first address still waits. Send one
+   sign-in request with a wrong key from another network. It must get status
+   401. If it gets status 429, the header does not arrive in a usable form,
+   and all callers share one count. Remove the mapping in that case.
+5. Do not record the limit as working for the hosted service before steps 2,
+   3 and 4 have passed. Steps 3 and 4 make the first address wait for up to
+   `window_seconds`.
+
+Remove the mapping from the host file before you start a release that was
+built before this limit existed. Such a release refuses a host file that
+contains `request_limits`, and it does not start. At the time of writing these
+are release 8 and every earlier release. A rollback is the usual case.
+
+### Limits of this design
+
+- The limit does nothing until the host states the address source. A host
+  file written before this limit existed states none. Read
+  `limits.failed_attempts_per_address.active` in the capabilities record to
+  see the current state.
+- A release from before this limit does not know the `request_limits` mapping
+  and refuses a host file that contains it. Remove the mapping from the host
+  file before you start such a release, for example during a rollback.
+- The `Fly-Client-IP` mapping is right only while the Fly proxy is the
+  outermost proxy. With another reverse proxy in front of Fly, the header
+  holds the address of that proxy. All callers would then share the few
+  addresses of that proxy, and one caller with a wrong key could make every
+  sign-in wait. Change the mapping before such a proxy is placed in front of
+  Fly. Name a header that the new outermost proxy overwrites, and repeat the
+  hosted checks above. Today the domain records are not proxied.
+  `docs/guides/launch-setup-runbook.md` says that Cloudflare proxying can be
+  considered separately.
+- With the `header` source, a request whose header is missing, repeated,
+  listed or malformed is counted for the socket peer address. Behind a proxy
+  that address is the proxy. If the configured header stops arriving in a
+  usable form, every request is counted under the address of the proxy. All
+  callers then share one count, and one caller with a wrong key can make
+  every sign-in wait. The service does not report this state. The second
+  address check above shows it.
+- The table is in the memory of one service process. This is correct for one
+  process on one machine, which is the current deployment. The table is not
+  shared between processes or machines, and a restart empties it. More than
+  one machine needs a shared store or a limit at the proxy.
+- Attempts that are already inside authentication when an address reaches its
+  limit are allowed to finish. At most `maximum_concurrent_operations`
+  attempts can be inside authentication at one time, so at most that many
+  refused attempts from one address can finish after the limit is reached. A
+  check shows this bound.
+- A caller who controls more addresses than `maximum_tracked_addresses` can
+  make the table forget the oldest address early. Such a caller already has
+  that many separate allowances. The worker slots remain the ceiling for all
+  callers together.
+- People who share one address share one count. While one of them keeps
+  failing, the others wait too.
+- Only sign-in and account activation are limited. The billing webhook, the
+  public pages, the capabilities record and the identity configuration are
+  anonymous routes without such a limit.
+- A governed operation can run its work twice for one refused request, because
+  its Loop runs up to two steps. The limit counts one refused attempt for that
+  request.
 
 ## Persistence and concurrency contract
 
@@ -190,6 +405,36 @@ exercise real temporary SQLite files, reopen, revocation, concurrent writes,
 unknown acknowledgment recovery, local signed events, duplicate and out-of-order
 delivery, and injected read-only provider transport contracts. Boundary checks
 refuse a runtime import of a transport or a parallel database engine.
+
+`http_checks.self_test()` also runs `request_limit_checks.py`. Those checks
+drive the limiter with an injected clock, and drive the real application with
+a chosen socket peer address and over loopback sockets. They count
+authentication calls and worker entries. The clock moves between the refused
+requests of a waiting address, so a refusal that was counted would show as a
+wait that stops falling.
+
+Six guards have a removed-guard control inside the suite. Each control reruns
+a scenario with the guard patched away and requires the scenario's own
+predicate to fail. The other guards have named checks but no such control
+inside the suite.
+
+| Guard | Removed-guard control |
+|---|---|
+| The refusal comes before authentication and before a worker slot | `removed_failed_attempt_limit_is_detected` |
+| A request that is refused with status 429 is not counted | `removed_uncounted_refusal_rule_is_detected` |
+| Counted failures leave the window | `removed_window_expiry_is_detected` |
+| The table stays bounded | `removed_eviction_is_detected` |
+| An address header that the host did not configure is never read | `removed_header_configuration_rule_is_detected` |
+| An unstated address source leaves the limit inactive | `removed_unstated_source_rule_is_detected` |
+
+`a_caller_controlled_header_is_the_known_wrong_case` runs the forged header
+scenario with a known-wrong configuration. One more check sends a failure
+from outside the service that carries its own response headers, and requires
+that none of them reaches the client. Only the service's own refusal type can
+add a response header, such as `Retry-After`.
+
+These checks do not establish how a hosted proxy treats a forged address
+header. The hosted checks above are for that, and nobody has run them yet.
 
 These checks do not establish a real Stripe account, live provider access,
 remote authorization profile, customer charges, or deployment readiness.
