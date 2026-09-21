@@ -1,6 +1,6 @@
 # Restore capitalisation of person and company names
 
-Decide capitalisation token by token, with a confidence that names every doubtful decision. A value written fully in upper case or fully in lower case carries no case information, so every token in it must be decided.
+Decide capitalisation token by token, with a confidence that names every doubtful decision. A value fully in upper case or fully in lower case carries no case information, so every token must be decided.
 
 ## When to use it
 
@@ -9,7 +9,7 @@ Use it when a name or company column mixes correctly written values with values 
 ## Steps
 
 1. Leave null markers and values without letters unchanged.
-2. When the value has mixed case, keep its existing capitals, for example `iPhone` and `IBM`, and only check first letters.
+2. When the value has mixed case, keep a token fully in upper case (`IBM`) and a token that starts with a capital and has another capital (`PayPal`). Step 4 decides every other token. A token such as `iPhone` or `eBay` is not kept.
 3. Otherwise split the value on spaces and then on hyphens. Note whether each token is first, inner or last.
 4. For each token, use the first rule that matches:
    - keep a token that contains digits;
@@ -30,13 +30,14 @@ Use it when a name or company column mixes correctly written values with values 
 
 - `ACME CORPORATION` becomes `Acme Corporation` at 0.92.
 - `IBM SERVICES OF AMERICA` becomes `IBM Services of America`.
-- `AA CAREERS` gives the proposal `AA Careers` at 0.75, so the value is held for review.
-- `JOHN VAN DER BERG` gives `John van der Berg` at 0.78, so the value is held for review.
-- `Acme Widgets` is unchanged at 1.0.
+- `AA CAREERS` gives the proposal `AA Careers` at 0.75 and is held for review.
+- `JOHN VAN DER BERG` gives `John van der Berg` at 0.78 and is held.
+- `Acme Widgets` and `PayPal Holdings` are unchanged at 1.0.
+- `iPhone Repair` becomes `Iphone Repair` at 0.95. With the exception entry `iphone: iPhone` it is unchanged at 1.0.
 
 ## Known-wrong example
 
-A generic title case function turns `IBM SERVICES OF AMERICA` into `Ibm Services Of America`. This method also has a known weak spot. For `MACHINE TOOLS INC` the `Mac` prefix rule proposes `MacHine Tools Inc`. The confidence is 0.8, so the proposal is held and the input is kept. The repair is an exception entry `machine: Machine`. Lowering the threshold would apply the wrong value.
+A generic title case function turns `IBM SERVICES OF AMERICA` into `Ibm Services Of America`. This method also has two known weak spots. First, for `MACHINE TOOLS INC` the `Mac` prefix rule proposes `MacHine Tools Inc`. At 0.8 the proposal is held and the input is kept. The repair is the exception entry `machine: Machine`. Lowering the threshold would apply the wrong value. Second, `eBay Store` becomes `Ebay Store` at 0.95. At an apply threshold of 0.9 this wrong value is applied, not held. The repair is an exception entry such as `ebay: eBay`. The column also protects the token when at least two mixed case values show the same form.
 
 ## What to record
 

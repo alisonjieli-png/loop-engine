@@ -29,6 +29,7 @@ SPECIFICATIONS_FILE = "specifications.json"
 ITEMS_FILE = "items.json"
 BODIES_FOLDER = "bodies"
 BODY_SUFFIX = ".md"
+TEMPORARY_SUFFIX = ".refresh"
 
 
 class CatalogueRefreshError(ValueError):
@@ -54,11 +55,25 @@ def _regular_file(folder: Path, name: str) -> Path:
     return path
 
 
+def _text(path: Path) -> str:
+    try:
+        return path.read_bytes().decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise CatalogueRefreshError(f"{path.name} is not UTF-8 text; save the file as UTF-8 and run again") from error
+
+
+def _record(folder: Path, name: str) -> dict:
+    try:
+        return json.loads(_text(_regular_file(folder, name)))
+    except json.JSONDecodeError as error:
+        raise CatalogueRefreshError(
+            f"{name} is not valid JSON (line {error.lineno}); repair the file or restore it from the repository") from error
+
+
 def load_catalogue(folder: Path) -> tuple[dict, dict, dict]:
     """The two records and the body text for every identity, or a typed refusal."""
     folder = folder.resolve()
-    specifications = json.loads(_regular_file(folder, SPECIFICATIONS_FILE).read_text(encoding="utf-8"))
-    items = json.loads(_regular_file(folder, ITEMS_FILE).read_text(encoding="utf-8"))
+    specifications, items = _record(folder, SPECIFICATIONS_FILE), _record(folder, ITEMS_FILE)
     if not isinstance(specifications, dict) or specifications.get("record_type") != SPECIFICATIONS_RECORD_TYPE:
         raise CatalogueRefreshError("unsupported specifications record")
     if not isinstance(items, dict) or items.get("record_type") != ITEMS_RECORD_TYPE:
@@ -78,7 +93,7 @@ def load_catalogue(folder: Path) -> tuple[dict, dict, dict]:
         path = bodies_folder / (identity + BODY_SUFFIX)
         if path.is_symlink() or not path.is_file():
             raise CatalogueRefreshError(f"the body of {identity} must be a regular file")
-        bodies[identity] = path.read_bytes().decode("utf-8")
+        bodies[identity] = _text(path)
     return specifications, items, bodies
 
 
@@ -113,12 +128,34 @@ def stale_identities(specifications: dict, items: dict, bodies: dict) -> list[st
         items["items"], new_items["items"]) if row != new_row or item != new_item]
 
 
-def _replace(path: Path, value: dict) -> None:
-    temporary = path.with_name(path.name + ".refresh")
-    with temporary.open("x", encoding="utf-8") as stream:
+def _prepare(path: Path, value: dict, created: list) -> Path:
+    """Write the new content beside the record. Exclusive creation never follows a planted link."""
+    temporary = path.with_name(path.name + TEMPORARY_SUFFIX)
+    try:
+        stream = temporary.open("x", encoding="utf-8")
+    except FileExistsError as error:
+        raise CatalogueRefreshError(
+            f"{temporary.name} is left from an interrupted write; check that {path.name} is intact, "
+            f"remove {temporary.name} and run again") from error
+    created.append(temporary)
+    with stream:
         json.dump(value, stream, indent=2, ensure_ascii=False)
         stream.write("\n")
-    os.replace(temporary, path)
+    return temporary
+
+
+def _replace_both(replacements: list) -> None:
+    """Prepare every new file before replacing any record; remove what this run created on failure."""
+    created: list = []
+    try:
+        prepared = [(_prepare(path, value, created), path) for path, value in replacements]
+        for temporary, path in prepared:
+            os.replace(temporary, path)
+    except OSError as error:
+        raise CatalogueRefreshError(f"the write failed: {error}; run the tool again to see what is stale") from error
+    finally:
+        for temporary in created:
+            temporary.unlink(missing_ok=True)
 
 
 def refresh(request: RefreshRequest) -> dict:
@@ -130,8 +167,8 @@ def refresh(request: RefreshRequest) -> dict:
     stale = stale_identities(specifications, items, bodies)
     if stale and request.write:
         new_specifications, new_items = derive(specifications, items, bodies)
-        _replace(_regular_file(folder, SPECIFICATIONS_FILE), new_specifications)
-        _replace(_regular_file(folder, ITEMS_FILE), new_items)
+        _replace_both([(_regular_file(folder, SPECIFICATIONS_FILE), new_specifications),
+                       (_regular_file(folder, ITEMS_FILE), new_items)])
     return {"record_type": "starter_catalogue_refresh/v1", "items": len(bodies), "stale": stale,
             "written": bool(stale and request.write), "approved": False, "published": False}
 

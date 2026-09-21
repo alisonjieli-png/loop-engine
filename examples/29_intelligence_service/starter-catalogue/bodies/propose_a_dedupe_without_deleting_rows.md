@@ -16,7 +16,7 @@ Use it after duplicate pairs have been scored, when someone must approve the mer
 
 ## Checks
 
-- In the reference example, rows `a` and `b` form the only cluster. The proposal keeps `a`, merges `b` and reports 6 rows in and 5 rows out.
+- The rows out equal the rows in minus the merged rows. With six rows and one cluster of two rows, the proposal keeps the first row of the cluster under `keep_first`, merges the other row and reports 6 rows in and 5 rows out.
 - The possible pairs stay outside the clusters before and after the decision requests.
 - An unknown strategy is refused.
 - The source rows are equal before and after.

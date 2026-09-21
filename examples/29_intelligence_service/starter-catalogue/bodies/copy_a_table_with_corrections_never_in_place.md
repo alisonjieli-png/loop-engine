@@ -19,7 +19,7 @@ Use it when cleaned data must be produced from a delimited file or a SQLite tabl
 
 ## Checks
 
-- In the reference example one spelled out email address is applied, one ambiguous domain is held, one cell with two addresses is escalated and one valid address is unchanged. The manifest counts one of each.
+- For each corrected column, the counts of applied, held, escalated and unchanged cells add up to the rows out. The rows in equal the rows out plus the dropped identities.
 - The merged row is absent from the target and named in the dropped identities.
 - A second copy to the same target is refused.
 - A copy without corrections and without a proposal reproduces every row.

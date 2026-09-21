@@ -28,14 +28,15 @@ Starter catalogue candidates (49)
 | `bodies/` | One body for each item. The body is the source of truth for the text, the digest and the size. |
 | `specifications.json` | The items in the exact format that `tools/stage_intelligence_candidates.py` accepts. The `text` of each row equals its body. |
 | `items.json` | The facts a harness item carries: identity, kind, purpose, source layer, source reference, licence, declared effects, harness styles, lifecycle tag, digest and size. Each `reference` object has the shape that `HarnessIntelligenceItem.reference()` returns. |
+| `search-queries.json` | The plain customer queries that the check runs against the purposes, each with the item it must find and who wrote it. |
 | `refresh.py` | Recomputes the derived fields after a body was edited. It approves nothing and publishes nothing. |
 | `REVIEW.md` | This sheet. |
 
 ## Current state and planned steps
 
-Current state, observed on 20 September 2026 at revision `381efec`:
+Current state on 20 September 2026 at revision `381efec`:
 
-- The hosted service serves one diagnostic record. None of these 49 items is served.
+- The takeover checkpoint (`docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md`) records that the hosted service serves one diagnostic record. The author of this folder did not observe the live service. None of these 49 items is in a host manifest in this repository.
 - The items exist only in this folder. The staging tool accepts all 49 rows in an isolated database and keeps them as candidates.
 - The serving path does not yet refuse an item without a known licence. That is an open finding in the takeover checkpoint.
 
@@ -70,8 +71,14 @@ PYTHONPATH=src python tools/stage_intelligence_candidates.py \
 ```
 
 The existing host manifest reader accepts an approved item in this form: the
-`reference` object from `items.json` unchanged, the `body_path`, an
-`approval_ref` that names the owner's decision, and the tenant grants. The
+`reference` object from `items.json`, the `body_path`, an `approval_ref` that
+names the owner's decision, and the tenant grants. Do not copy the lifecycle
+tag without a decision. Every reference here carries the tag
+`lifecycle: candidate`. When all 49 references are loaded unchanged, a request
+that names `lifecycle: qualified` is offered 0 items and 49 are withheld. The
+value of the tag after approval is an open decision for the later manifest
+change. The reader binds an item by its identity, digest, source layer and
+source reference, so the tag can change without a new digest. The
 reader checks the size and the digest of the body again. Do not add an item
 to a host manifest before it is approved. The reader treats every manifest
 entry as approved.
@@ -87,12 +94,12 @@ feedback, from records that name the exact run or the exact statement.
 
 ## What the owner should know before approving
 
-- Authoring. An assistant (Claude Code) wrote every body from the cited sources. The numeric examples in the Code Intelligence bodies were run against the code at revision `381efec`, and the self tests of the nine cited source modules pass at that revision (113 checks). The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
+- Authoring. An assistant (Claude Code) wrote every body from the cited sources. The quoted examples in the Code Intelligence bodies were run against the code at revision `381efec`, and the self tests of the nine cited source modules pass at that revision (113 checks). The scenarios in the known-wrong examples are illustrations written for this catalogue. No independent person has reviewed any body.
 - Licence. 47 items are compiled from material authored in this repository, which its `LICENSE` file places under MIT. Two items are compiled from statements that a language model generated during work in this repository. Their licence is recorded as `unknown` with the state `needs_review`, and their provenance names the generator and the digests of the eight source rows. The task for this catalogue allowed at most eight such rows, and eight are used.
-- Declared effects. Nine items declare effects because following them reads files, writes files or starts a process: `layer_exception_catalogs_with_precedence`, `copy_a_table_with_corrections_never_in_place`, `export_a_standalone_python_package`, `verify_an_export_in_an_isolated_interpreter`, `refuse_secrets_and_unsafe_paths_in_generated_files`, `write_a_pinned_container_and_batch_job`, `measure_the_environment_before_relying_on_it`, `test_driven_change_red_green_refactor` and `package_one_skill_for_two_coding_harnesses`. The service lists an item only when the request states every effect that the item declares, and the current web and protocol surfaces send no effects. These nine items would be withheld today. That needs a decision in the engine. The declared effects were not reduced to avoid it.
+- Declared effects. The rule: an item declares every effect that one of its steps tells the reader to perform on the reader's own machine, which means reading or listing files, writing files, starting a command or using the network. A method that only transforms values it was given declares nothing. A step that asks a question, or that names an analysis without telling the reader how to run it, declares nothing, and a harness that chooses to run such an analysis needs its own authority for it. An item without effects declares an empty list. Eleven items declare effects under this rule: `layer_exception_catalogs_with_precedence`, `copy_a_table_with_corrections_never_in_place`, `export_a_standalone_python_package`, `verify_an_export_in_an_isolated_interpreter`, `refuse_secrets_and_unsafe_paths_in_generated_files`, `write_a_pinned_container_and_batch_job`, `verify_the_requested_output`, `check_for_existing_work_before_building`, `measure_the_environment_before_relying_on_it`, `test_driven_change_red_green_refactor` and `package_one_skill_for_two_coding_harnesses`. The environment item declares `reads_fs`, `network` and `spawns_process`, because its steps list files, measure tool versions with commands and test network access. The service lists an item only when the request states every effect that the item declares, and the current web and protocol surfaces send no effects. These eleven items would be withheld today. That needs a decision in the engine. The declared effects were not reduced to avoid it.
 - Lifecycle tag. Every reference carries the tag `lifecycle: candidate`. A request that names no lifecycle still matches a tagged item, so the tag alone does not hide a candidate. Approval and the host manifest remain the gate.
 - Vocabulary. The bodies use no internal runtime vocabulary. The cited paths contain the package name `loop_engine`, and the integration item cites paths that contain the command name of this repository. The check removes cited source paths before it looks for forbidden words.
-- Search. The purpose of each item is the text that the hosted search reads. All 49 title probes of the staging tool return their own item first. In a local emulation of the hosted search, 26 of 26 plain customer queries found the expected item among the first three. The same author wrote the purposes and the queries, so this is a smoke check and not a relevance benchmark.
+- Search. The purpose of each item is the text that the hosted search reads. All 49 title probes of the staging tool return their own item first. The file `search-queries.json` keeps 31 plain customer queries, and the check requires that each one finds its item among the first three results of a local emulation of the hosted search. The author of the purposes wrote 26 of them. A reviewer wrote 15 unseen queries afterwards, and 10 of the 15 found their item. The five that missed are kept in the file, and synonyms such as dedupe, skewed, umlauts, unreachable and ask the user were added to the purposes until they passed. The other ten reviewer queries were not saved. The queries were tuned against the purposes, so this is a smoke check and not a relevance benchmark.
 - Size. The staging tool accepts at most 50 rows in one population. This catalogue uses 49.
 - Omitted on purpose: ontology values, context policies, templates of the runtime, module references, `terminology.yaml`, benchmark evidence and anything about this project's own internals.
 

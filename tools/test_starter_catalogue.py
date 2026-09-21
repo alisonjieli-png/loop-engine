@@ -36,6 +36,9 @@ ROOT = Path(__file__).resolve().parents[1]
 CATALOGUE = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue"
 NAMESPACE = "starter.catalogue"
 MINIMUM_ITEMS, MINIMUM_WORDS, MAXIMUM_WORDS, MAXIMUM_MODEL_GENERATED_ROWS = 40, 150, 600, 8
+#: A required part that holds fewer words than this is a heading without content.
+MINIMUM_PART_WORDS = 8
+QUERIES_FILE, QUERIES_RECORD_TYPE, MINIMUM_QUERIES = "search-queries.json", "starter_catalogue_search_queries/v1", 26
 IDENTITY = re.compile(r"[a-z][a-z0-9_]{2,79}")
 #: The two layers that can hold compiled material today. The other two canonical
 #: layers need real runs and real feedback, so an item there would be invented.
@@ -50,9 +53,9 @@ EMPTY_LAYERS = ("Runtime History and Solution Intelligence", "User Feedback Inte
 REQUIRED_PARTS = ("## When to use it", "## Steps", "## Checks", "## Known-wrong example",
                   "## What to record", "## Source")
 ITEM_FIELDS = {"reference", "body_path", "lifecycle", "license_state", "provenance"}
-#: The two dash characters that public prose never uses, written as code points
+#: The dash characters (em dash, en dash, horizontal bar, minus sign) that public prose never uses, written as code points
 #: so that this source file stays free of them.
-DASHES = "[" + chr(0x2014) + chr(0x2013) + "]"
+DASHES = "[" + chr(0x2014) + chr(0x2013) + chr(0x2015) + chr(0x2212) + "]"
 def _patterns(*patterns):
     return tuple(re.compile(pattern, re.IGNORECASE) for pattern in patterns)
 
@@ -61,11 +64,14 @@ def _patterns(*patterns):
 #: Cited source paths are removed before a body is read, because a path is not wording.
 INTERNAL_VOCABULARY = _patterns(
     r"(?<![a-z0-9])loops?(?![a-z0-9])", r"(?<![a-z0-9])practitioners?(?![a-z0-9])",
-    r"role[\s_-]+profiles?", r"runtime[\s_-]+classification", r"solution[\s_-]+canvas", r"code[\s_-]+nodes?")
+    r"role[\s_-]+profiles?", r"runtime[\s_-]+classification", r"solution[\s_-]+canvas", r"code[\s_-]+nodes?",
+    r"(?<![a-z0-9])spawn(?:s|ed|ing)?(?![a-z0-9])", r"starting[\s_-]+(?:solution|intelligence)(?![a-z0-9])",
+    r"run[\s_-]+history", r"runtime[\s_-]+(?:memory|history)",
+    r"(?:context|code|solution|feedback)[\s_-]+intelligence", r"intelligence[\s_-]+(?:items?|quer(?:y|ies)|layers?)")
 #: The retired public language and the dash characters that continuous integration
 #: refuses in every published document, so they also apply to the review sheet.
 RETIRED_PUBLIC_LANGUAGE = _patterns(
-    r"(?<![a-z0-9])child(?:ren)?(?![a-z0-9])", DASHES, r"stop[\s_-]+conditions?",
+    r"(?<![a-z0-9])(?:grand)?child(?:ren)?(?![a-z0-9])", DASHES, r"stop[\s_-]+conditions?",
     r"(?<![a-z0-9])receipts?(?![a-z0-9])", r"(?<![a-z0-9])chronicles?(?![a-z0-9])",
     r"what[\s_-]*is[\s_-]*next|what[\s_-]+next|whats[\s_-]*next")
 FORBIDDEN = INTERNAL_VOCABULARY + RETIRED_PUBLIC_LANGUAGE
@@ -184,7 +190,7 @@ def rule_no_forbidden_vocabulary(snapshot):
         for path in sorted(row.get("sources") or (), key=len, reverse=True):
             body = body.replace(path, "")
         texts = [body, str(row.get("title")), str(item.get("reference", {}).get("purpose")),
-                 " ".join(map(str, row.get("tags") or ()))]
+                 " ".join(map(str, row.get("tags") or ())), str(identity)]
         for pattern in FORBIDDEN:
             for text in texts:
                 match = pattern.search(text)
@@ -226,6 +232,11 @@ def rule_bodies_have_the_required_parts(snapshot):
         positions = [text.find(f"\n{part}\n") for part in REQUIRED_PARTS]
         if -1 in positions or positions != sorted(positions):
             found.append(f"{identity}: the body needs these parts in this order: {', '.join(REQUIRED_PARTS)}")
+        else:
+            ends = positions[1:] + [len(text)]
+            found += [f"{identity}: the part {part!r} needs at least {MINIMUM_PART_WORDS} words of content"
+                      for part, start, end in zip(REQUIRED_PARTS, positions, ends)
+                      if word_count(text[start + len(part) + 2:end]) < MINIMUM_PART_WORDS]
         cited = set(re.findall(r"`((?:src|integrations)/[^`]+)`", _source_section(text)))
         if cited != set(row.get("sources") or ()):
             found.append(f"{identity}: the Source part must cite exactly the listed sources")
@@ -367,6 +378,16 @@ def _first_reference(items):
     return items["items"][0]["reference"]
 
 
+def _renamed_first_identity(snapshot):
+    """The first item under an identity with internal vocabulary; every derived field follows the new name."""
+    old, new = snapshot.specifications["specifications"][0]["id"], "practitioner_loop_profile"
+    changed = _changed(snapshot, specifications=lambda rows: _set(rows[0], "id", new),
+                       items=lambda items: (_set(_first_reference(items), "identity", new),
+                                            _set(items["items"][0], "body_path", f"bodies/{new}.md")))
+    bodies = {(new if identity == old else identity): body for identity, body in snapshot.bodies.items()}
+    return replace(changed, bodies=bodies, review=snapshot.review.replace(old, new))
+
+
 KNOWN_WRONG = {
     "identities_are_unique": (
         ("an identity repeats", lambda s: _changed(
@@ -394,7 +415,16 @@ KNOWN_WRONG = {
         ("a purpose names a role profile", lambda s: _changed(
             s, items=lambda items: _set(_first_reference(items), "purpose", "Select the role profile for a task"))),
         ("a body uses a dash character", lambda s: _changed(
-            s, body=lambda text: text + f"A pause {chr(0x2014)} then more.\n"))),
+            s, body=lambda text: text + f"A pause {chr(0x2014)} then more.\n")),
+        ("a body uses a horizontal bar", lambda s: _changed(
+            s, body=lambda text: text + f"A pause {chr(0x2015)} then more.\n")),
+        ("an identity carries internal runtime vocabulary", _renamed_first_identity),
+        ("a body names a graph relationship and a run record", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Steps\n", "\nIt was spawned and kept in Run History.\n\n## Steps\n"))),
+        ("a body names the temporary run store", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Steps\n", "\nKeep the value in Runtime Memory.\n\n## Steps\n"))),
+        ("a body uses a longer family word", lambda s: _changed(
+            s, body=lambda text: text.replace("\n## Steps\n", "\nPass it to the grandchildren.\n\n## Steps\n")))),
     "bodies_stay_in_the_word_range": (
         ("a body is one sentence long", lambda s: _changed(s, body=lambda text: "# Short\n\nOne sentence only.\n")),
         ("a body is an essay", lambda s: _changed(s, body=lambda text: text + "more words " * 400 + "\n"))),
@@ -409,7 +439,10 @@ KNOWN_WRONG = {
         ("the known-wrong example is missing", lambda s: _changed(
             s, body=lambda text: text.replace("\n## Known-wrong example\n", "\n## Another part\n"))),
         ("a listed source is not cited", lambda s: _changed(
-            s, specifications=lambda rows: rows[0]["sources"].append("src/loop_engine/core/facets.py")))),
+            s, specifications=lambda rows: rows[0]["sources"].append("src/loop_engine/core/facets.py"))),
+        ("the known-wrong example is a heading without text", lambda s: _changed(
+            s, body=lambda text: re.sub(r"(\n## Known-wrong example\n).*?(\n## What to record\n)", r"\1\2", text,
+                                        flags=re.DOTALL)))),
     "layers_kinds_effects_and_styles_are_declared": (
         ("an invented history item", lambda s: _changed(
             s, specifications=lambda rows: _set(rows[0], "layer", "runtime_history_solution"),
@@ -522,13 +555,51 @@ class StarterCatalogueChecks(unittest.TestCase):
             with self.assertRaises(refresh.CatalogueRefreshError):
                 refresh.refresh(refresh.RefreshRequest(folder, True))
 
+    def _stale_copy(self, directory: str) -> tuple[Path, Path]:
+        folder = Path(directory).resolve() / "starter-catalogue"
+        shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("__pycache__"))
+        body = folder / "bodies" / f"{self.snapshot.rows()[0][0]['id']}.md"
+        with body.open("a", encoding="utf-8") as stream:
+            stream.write("One more sentence.\n")
+        return folder, body
+
+    def test_the_refresh_tool_refuses_a_leftover_temporary_file_and_keeps_it(self):
+        refresh = _refresh_module()
+        with tempfile.TemporaryDirectory() as directory:
+            folder, _body = self._stale_copy(directory)
+            before = {name: (folder / name).read_bytes() for name in ("specifications.json", "items.json")}
+            leftover = folder / ("items.json" + refresh.TEMPORARY_SUFFIX)
+            leftover.write_text("left by an interrupted write", encoding="utf-8")
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, "interrupted write"):
+                refresh.refresh(refresh.RefreshRequest(folder, True))
+            # Neither record changed, the file of the other run is kept, and this run's own file is gone.
+            self.assertEqual(before, {name: (folder / name).read_bytes() for name in before})
+            self.assertEqual(leftover.read_text(encoding="utf-8"), "left by an interrupted write")
+            self.assertFalse((folder / ("specifications.json" + refresh.TEMPORARY_SUFFIX)).exists())
+            leftover.unlink()
+            self.assertTrue(refresh.refresh(refresh.RefreshRequest(folder, True))["written"])
+            self.assertEqual(problems(load_snapshot(folder)).get("digests_and_sizes_match_the_bodies"), None)
+
+    def test_the_refresh_tool_gives_a_typed_refusal_for_unreadable_files(self):
+        refresh = _refresh_module()
+        with tempfile.TemporaryDirectory() as directory:
+            folder, body = self._stale_copy(directory)
+            body.write_bytes(b"\xff\xfe not text")
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, "UTF-8"):
+                refresh.refresh(refresh.RefreshRequest(folder))
+        with tempfile.TemporaryDirectory() as directory:
+            folder, _body = self._stale_copy(directory)
+            (folder / "items.json").write_text("{not json", encoding="utf-8")
+            with self.assertRaisesRegex(refresh.CatalogueRefreshError, "valid JSON"):
+                refresh.refresh(refresh.RefreshRequest(folder))
+
     def test_purposes_answer_plain_queries_the_way_the_hosted_search_reads_them(self):
-        queries = {"remove duplicate customers from a contact export": "find_duplicate_records_with_blocking_keys",
-                   "names are in all caps fix the casing": "restore_capitalisation_of_names",
-                   "fix typos in email domains": "normalize_and_recover_email_addresses",
-                   "is my model overfitting": "read_the_train_validation_gap",
-                   "the agent keeps retrying the same failing fix": "diagnose_a_stall_and_change_strategy",
-                   "make my data pipeline idempotent": "make_a_data_pipeline_safe_to_run_again"}
+        record = json.loads((CATALOGUE / QUERIES_FILE).read_text(encoding="utf-8"))
+        self.assertEqual(record.get("record_type"), QUERIES_RECORD_TYPE)
+        queries = {row["query"]: row["expected"] for row in record["queries"]}
+        self.assertGreaterEqual(len(queries), MINIMUM_QUERIES)
+        self.assertLessEqual(set(queries.values()), {row["id"] for row, _item in self.snapshot.rows()})
+        self.assertIn("reviewer", {row["written_by"] for row in record["queries"]})
 
         def first_three(items, query):
             records = [StoreRecord(row["reference"]["identity"], "context", row["reference"]["purpose"], body={

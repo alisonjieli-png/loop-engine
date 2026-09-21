@@ -23,7 +23,7 @@ Use it to find duplicate customers, companies or contacts in one table with name
 
 ## Checks
 
-- In the six row example of the reference implementation, 6 comparisons run in place of 15.
+- The comparison count equals the number of distinct pairs that share at least one block that was not skipped. It is never larger than n(n-1)/2 for n rows. Six rows have 15 possible pairs. When blocking leaves six pairs, 6 comparisons run in place of 15.
 - The pair count equals the comparison count, and the outcome counts add up to it.
 - The report says whether it is exhaustive within its blocks. A skipped block makes that statement false.
 

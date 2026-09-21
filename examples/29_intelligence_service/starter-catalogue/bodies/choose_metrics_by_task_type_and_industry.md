@@ -10,10 +10,10 @@ Use it before training or comparing models, and whenever a result is reported wi
 
 1. State the task type, the target shape, the class balance, the industry and whether a holdout set exists.
 2. Choose by task type:
-   - classification: area under the receiver operating characteristic curve (ROC AUC). Unless the classes are stated to be imbalanced, add accuracy and the F1 score.
+   - classification: area under the receiver operating characteristic curve. Unless the classes are stated to be imbalanced, add accuracy and the F1 score.
    - classification with a probability output: add logarithmic loss and a calibration measure such as the Brier score. A model can rank well and still be badly calibrated.
    - classification with imbalanced classes: add the area under the precision and recall curve, balanced accuracy, the F1 score and the Matthews correlation coefficient. Mark accuracy as misleading.
-   - regression: root mean squared error (RMSE), which penalizes large errors, mean absolute error (MAE), which is robust to outliers, and the coefficient of determination, which can be negative. Avoid mean absolute percentage error when targets approach zero.
+   - regression: root mean squared error, which penalizes large errors, mean absolute error, which is robust to outliers, and the coefficient of determination, which can be negative. Avoid mean absolute percentage error when targets approach zero.
    - ranking and search: normalized discounted cumulative gain, mean average precision, mean reciprocal rank or precision at k, because position matters.
    - forecasting: mean absolute scaled error against a naive forecast, symmetric mean absolute percentage error and root mean squared error, with a rolling origin backtest. A random split of a time series leaks the future.
    - text generation: reference based and human evaluation. Mark word overlap metrics such as BLEU and ROUGE as misleading when used alone.
