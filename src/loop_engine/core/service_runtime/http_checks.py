@@ -448,5 +448,7 @@ def self_test():
     from .browser_identity_checks import run_checks as identity_account_checks
     with tempfile.TemporaryDirectory(prefix="service-browser-identity-") as directory:
         identity_account_checks(check, Path(directory))
+    from .observability_checks import run_checks as observability_checks
+    observability_checks(check)
     return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),
             "all_passed": all(row["passed"] for row in tests)}

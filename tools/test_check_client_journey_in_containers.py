@@ -254,8 +254,8 @@ class RecordedDocker:
             return {"status": 421, "code": "invalid_host", "result": None}
         if route == "/api/v1/health":
             return {"status": 200, "code": None,
-                    "result": {"record_type": self._served_version("service_health/v1"), "healthy": True,
-                               "readiness_checked": False}}
+                    "result": {"record_type": self._served_version("service_health/v2"), "alive": True,
+                               "ready": True, "readiness_checked": True}}
         if variable is None:
             if self.world["refuses_without_a_key"]:
                 return {"status": 401, "code": "unauthorized", "result": None}

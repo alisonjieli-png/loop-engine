@@ -184,7 +184,8 @@
   "core/decisions/configuration.py",
   "core/decisions/system_one.py",
   "core/service_runtime/browser_identity.py",
-  "core/service_runtime/browser_identity_checks.py"
+  "core/service_runtime/browser_identity_checks.py",
+  "core/service_runtime/observability_checks.py"
  ],
  "notes": [
   "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
@@ -560,6 +561,7 @@
   "core/decisions/configuration.py": "Uses urllib.parse for effect-free endpoint validation only. Import-boundary checks prohibit HTTP clients and sockets here; outbound requests are owned solely by decisions/http_transport.py.",
   "core/decisions/system_one.py": "Uses urllib.parse for effect-free endpoint validation only. Import-boundary checks prohibit HTTP clients and sockets here; outbound requests are owned solely by decisions/http_transport.py.",
   "core/service_runtime/browser_identity.py": "Host-installed browser identity adapter. Network authority is checked before any key or provider read; the signed issuer, browser-only audience and current user are validated at the configured HTTPS origin. The bounded user request refuses redirects, inherited proxies, oversized or duplicate-key responses. It cannot authorize the MCP resource audience.",
-  "core/service_runtime/browser_identity_checks.py": "Real loopback-only identity acceptance with locally signed tokens, owned temporary listeners and an injected current-user transport. No remote identity account, email, credential or provider request is used."
+  "core/service_runtime/browser_identity_checks.py": "Real loopback-only identity acceptance with locally signed tokens, owned temporary listeners and an injected current-user transport. No remote identity account, email, credential or provider request is used.",
+  "core/service_runtime/observability_checks.py": "Real loopback-only acceptance for the request reference, the failure journal and the measured readiness answer. It drives the owned temporary fixture server over loopback so that the privacy guard can read every byte of the durable store afterwards. No external provider, remote account or hosted credential is used."
  }
 }

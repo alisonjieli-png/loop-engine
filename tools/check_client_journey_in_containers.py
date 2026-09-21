@@ -65,7 +65,11 @@ ISSUED_KEY_RECORD_TYPE = "issued_service_key/v1"
 SERVED_RETRIEVAL_RECORD_TYPE = "service_retrieval_result/v1"
 SERVED_MANIFEST_RECORD_TYPE = "provisioning_manifest/v2"
 SERVED_DOWNLOAD_RECORD_TYPE = "service_download/v1"
-SERVED_HEALTH_RECORD_TYPE = "service_health/v1"
+SERVED_HEALTH_RECORD_TYPE = "service_health/v2"
+#: The health answer names alive and ready separately. Alive says the
+#: process answers; ready says every required dependency answered just
+#: now. This drill requires both, because a drill that accepted alive
+#: alone would pass against a service that can serve nobody.
 #: The refusals this drill expects from the service, named once here and
 #: compared by name everywhere else.
 UNAUTHORIZED_CODE = "unauthorized"
@@ -1124,7 +1128,9 @@ class ContainerJourneyDrill:
 
         self.check("health_answers_on_the_private_network_without_a_key",
                    answers["health"]["status"] == 200
-                   and (answers["health"]["result"] or {}).get("healthy") is True
+                   and (answers["health"]["result"] or {}).get("alive") is True
+                   and (answers["health"]["result"] or {}).get("ready") is True
+                   and (answers["health"]["result"] or {}).get("readiness_checked") is True
                    and answers["health"].get("record_type") == SERVED_HEALTH_RECORD_TYPE)
         self.check("usage_is_refused_without_a_key",
                    answers["usage_without_a_key"]["status"] == 401

@@ -1,7 +1,11 @@
 """Exercise the actual workflow permission gate without a provider or secret."""
 from pathlib import Path
+import json
 import os
+import re
+import shutil
 import subprocess
+import tempfile
 import unittest
 
 import yaml
@@ -76,7 +80,49 @@ class FlyDeploymentTests(unittest.TestCase):
         for required in ("--ha=false", "--strategy immediate", "--deploy-retries 0", "--no-public-ips", "@sha256:"):
             self.assertIn(required, deploy)
         self.assertNotIn("flyctl launch", str(self.workflow))
-        self.assertIn(".result.healthy == true", deploy)
+        self.assertIn(".result.ready == true", deploy)
+
+    def test_the_deploy_health_gate_accepts_what_the_service_actually_serves(self):
+        """Run the workflow's own filter over a health record the code produced.
+
+        A gate written against a health record the service no longer serves
+        fails every deployment after a successful release, and a gate that
+        accepts anything passes a machine that can serve nobody. Both are
+        caught here by running the exact filter from the workflow, first over a
+        real ready record and then over the known-wrong case of one that is not
+        ready.
+        """
+        if shutil.which("jq") is None:
+            self.skipTest("jq is required to run the workflow's own health gate")
+        deploy = next(row["run"] for row in self.steps if row["name"] == "Publish and deploy the exact tested image")
+        expression = re.search(r"jq -e '(.+?)' >/dev/null", deploy)
+        self.assertIsNotNone(expression, "the deploy step must gate the release on a readable jq expression")
+        gate = expression.group(1)
+
+        from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture
+        from loop_engine.core.service_runtime.observability import readiness_report, ServiceObservabilityPolicy
+        with tempfile.TemporaryDirectory(prefix="fly-health-gate-") as directory:
+            fixture = HttpDomainFixture(Path(directory))
+            def measure(policy):
+                return readiness_report(config=fixture.runtime.config, provisioning=fixture.provisioning,
+                    authentication_modes=("host_key",), policy=policy, browser_identity_installed=False,
+                    billing_sessions_installed=False, billing_webhook_installed=False)
+            ready = measure(ServiceObservabilityPolicy())
+            # Known-wrong case: a volume with no room left to write. The
+            # service answers, so a gate that only checked for an answer would
+            # pass it. This one must refuse the release.
+            unready = measure(ServiceObservabilityPolicy(minimum_free_bytes=2**40))
+
+        def run_gate(record):
+            served = json.dumps({"record_type": "service_operation_result/v1",
+                                 "operation": "health", "result": record})
+            return subprocess.run(["jq", "-e", gate], input=served, capture_output=True,
+                                  text=True, timeout=10).returncode
+
+        self.assertTrue(ready["ready"])
+        self.assertEqual(run_gate(ready), 0, "the deploy gate rejected the health record the service serves")
+        self.assertFalse(unready["ready"])
+        self.assertNotEqual(run_gate(unready), 0, "the deploy gate accepted a service that is not ready")
 
     def test_service_profile_has_persistence_tls_and_a_real_server_command(self):
         profile = tomllib.loads((ROOT / "fly.toml").read_text())

@@ -27,6 +27,12 @@ The product style guide holds the table
 [Names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
 for Baltor, Loop Engine, the public words and the technical words.
 
+The [service failure diagnosis guide](service-failure-diagnosis.md) is the
+operator procedure for the deployed service: the reference that names one
+request in both the customer's refusal and the durable record, the read-only
+command that finds those records, what the health route measures, and the first
+failure of each dependency. Every command in it reads and changes nothing.
+
 The [launch setup runbook](launch-setup-runbook.md) lists the account, hosting,
 identity, storage, payment and secret-reference work for the owner. The
 [decision-tool guide](jev-and-harness-decision-tools.md) covers optional Jev

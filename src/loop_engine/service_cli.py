@@ -61,7 +61,7 @@ def self_test() -> dict:
     with patch(__name__ + "._service_main") as entry, redirect_stdout(output):
         code = main(["service", "--help"])
     check("service_help_is_effect_free_and_lists_explicit_host_commands",
-          code == 0 and not entry.called and "configure|issue-key|serve" in output.getvalue()
+          code == 0 and not entry.called and "configure|issue-key|serve|failures" in output.getvalue()
           and "service smoke" in output.getvalue() and "service" in ROOT_HELP)
 
     cases = (

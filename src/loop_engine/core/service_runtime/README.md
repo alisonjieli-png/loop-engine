@@ -419,6 +419,43 @@ stored acknowledgment; a changed effect is refused. A missing or malformed
 write acknowledgment remains unknown. Retrying the same request reconciles
 an existing committed row without charging again.
 
+## Operator observability
+
+`observability.py` holds three separate facts about one request. They are not
+merged and each is versioned on its own.
+
+```text
+Operator observability
+├── Request reference
+│   ├── Issued from the operating system random source and nothing else
+│   ├── The issuing function takes no argument, so no credential can reach it
+│   ├── Shown to the customer in a refusal, never on a successful answer
+│   └── A reference this process did not issue is refused when recorded
+├── Failure journal: service_request_failure/v1
+│   ├── Reference, route, method, refusal code, status, tenant, time, version
+│   ├── A bounded ring over the existing service collection and namespace
+│   ├── An undeclared path is recorded as unmatched, never as it was sent
+│   └── Recording never raises; a refusal cannot become a different failure
+└── Readiness: service_health/v2
+    ├── Alive and ready are separate fields with separate meanings
+    ├── A required dependency that fails answers 503
+    └── Reported dependencies are named and do not remove the machine
+```
+
+Recording is governed by `service_observability_policy/v1`. The default records
+metadata and no request body; `metadata_and_request_body` is an explicit host
+choice, and asking to record a body without it is refused with
+`payload_capture_not_authorized`. A credential, an authorization header and any
+other header that carries authority are never recorded under any setting.
+
+`loop-engine service failures` reads the journal by newest, by tenant or by
+reference. It builds the journal from the host configuration with host write
+authority withheld and starts no server, so it answers while the service is
+refusing every request or is not running.
+
+The operator procedure, including the first failure of each dependency, is the
+[service failure diagnosis guide](../../../../docs/guides/service-failure-diagnosis.md).
+
 ## Disclosure binding
 
 `DurableProvisioningBinding` uses persistent exact tenant grants and the
