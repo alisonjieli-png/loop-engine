@@ -44,6 +44,12 @@ The [harness instance layout](harness-instance-context-layout.md) distinguishes
 the generated instruction and assignment files from proposed native context
 materialization and observed-loading requirements.
 
+The [overnight local solving guide](overnight-solving-on-local-models.md)
+covers the machine tiers a local model needs, the memory arithmetic behind
+them, connecting a local inference server as a custom provider, declaring an
+unattended night's authority, budget and wait, and reading the result in the
+morning. It names the parts that were executed and the parts that were not.
+
 The [public content and domain plan](public-website-content-and-domain.md)
 separates customer pages from the internal engineering report. The
 [launch benefit guide](launch-benefits-and-evidence.md) records the overnight,
