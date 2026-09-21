@@ -171,26 +171,26 @@ button, link, form and submit control inside the pricing view, and its
 known-wrong case plants a "Subscribe now" control and requires the check to
 report it.
 
-Two things are still missing on September 21, 2026.
-
-The serving route table does not yet list `/pricing`. A direct visit to
-`https://baltor.ai/pricing`, a shared link, a bookmark and a reload while the
-pricing view is open therefore return HTTP 401 with the JSON body
+The address `/pricing` must be served by the server, not only handled by the
+page. While the serving route table did not list it, a direct visit, a shared
+link, a bookmark and a reload while the pricing view was open all returned
+HTTP 401 with the JSON body
 `{"record_type":"service_http_error/v1","error":{"code":"unauthorized"}}` and a
 `WWW-Authenticate: Bearer` header, because an unknown address falls past the
-served web assets into the authenticated dispatcher. The address works only
-through a click inside the page, which the page handles itself. The exact
-repair is one entry in `WEB_ASSETS` in
-`src/loop_engine/core/service_runtime/http.py`:
-`"/pricing": ("index.html", HTML_MEDIA_TYPE)`. That file belongs to the
-service route owner, so the gap is held by the failing named checks
+served web assets into the authenticated dispatcher. A visitor read that raw
+text where the website should be. The entry
+`"/pricing": ("index.html", HTML_MEDIA_TYPE)` in `WEB_ASSETS` in
+`src/loop_engine/core/service_runtime/http.py` is now on the main branch, so
+the source serves the address. Four named checks hold it:
 `pricing_address_is_served_on_a_direct_visit`,
-`pricing_address_opens_the_pricing_view_after_a_reload`,
-`responsive_<width>_/pricing` and `enlarged_text_<width>_/pricing`. Do not
-release the navigation entries while those checks fail.
+`pricing_address_opens_the_pricing_view_after_a_reload`, and `/pricing` in the
+`responsive_<width>_<path>` and `enlarged_text_<width>_<path>` loops of
+`tools/check_service_workspace.mjs`. A release that drops the entry fails all
+four. The deployed pilot serves the address only from the release that
+carries this source.
 
-The account page holds the subscription controls, and those remain behind the
-payment state.
+One thing is still missing on September 21, 2026. The account page holds the
+subscription controls, and those remain behind the payment state.
 
 The live public page describes a private pilot and the broader product direction.
 Keep the internal report available to the owner, and build the public content

@@ -37,8 +37,9 @@ try{
   check("plain_word_check_rejects_a_page_that_names_the_runtime",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the role profile.","Read the runtime classification."].every(claim=>!plainWords(livePricing+"\n"+claim)));
   const deepPricing=await page.request.get(origin+"/pricing",{maxRedirects:0});
   check("live_pricing_address_is_served_directly",deepPricing.status()===200&&(deepPricing.headers()["content-type"]||"").startsWith("text/html"));
-  /* The deployed page is compared with what the deployed service reports, never with its own wording. */
-  const liveCapabilities=(await (await page.request.get(origin+"/api/v1/capabilities",{maxRedirects:0})).json()).result;
+  /* The deployed page is compared with what the deployed service reports, never with its own wording.
+     A missing field or a missing element keeps its own check failing instead of ending the journey. */
+  const liveCapabilities=(await (await page.request.get(origin+"/api/v1/capabilities",{maxRedirects:0})).json())?.result||{};
   const liveVersion=liveCapabilities.record_type==="service_capabilities/v1";
   const purchaseWords={source:"\\b(?:buy|purchase|checkout|subscribe|subscription|pay|payment|card)\\b",flags:"i"};
   const livePurchase=await page.locator('[data-view="pricing"]').evaluate((node,pattern)=>{
@@ -48,11 +49,11 @@ try{
       .filter(([,text])=>rule.test(text)).map(([place])=>place);
   },purchaseWords);
   check("live_pricing_view_offers_no_purchase_control_while_checkout_is_closed",
-    (liveVersion&&liveCapabilities.billing.checkout===true)||livePurchase.length===0);
-  const liveKeys=await page.locator("#plan-keys-detail").evaluate(node=>node.textContent);
+    (liveVersion&&liveCapabilities.billing?.checkout===true)||livePurchase.length===0);
+  const liveKeys=await page.locator("#plan-keys-detail").count()===1?await page.locator("#plan-keys-detail").evaluate(node=>node.textContent):"";
   const claimsKeys=liveKeys.startsWith("Create and revoke a key");
   check("live_personal_key_wording_follows_the_reported_capability",
-    claimsKeys===(liveVersion&&liveCapabilities.website.client_access_available===true));
+    liveKeys!==""&&claimsKeys===(liveVersion&&liveCapabilities.website?.client_access_available===true));
   await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
   for(const asset of ["service.js","client-access.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
