@@ -286,6 +286,7 @@ jobs:
           python examples/26_export_a_standalone_solution/run.py
           python examples/27_optimize_a_node_grid/run.py
           python examples/28_containerized_worker/run.py
+          python examples/30_overnight_local_run/run.py
 
       - name: Product solve acceptance
         run: |
