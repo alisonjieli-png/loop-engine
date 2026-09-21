@@ -50,7 +50,32 @@ RECORD_TYPE = "harness_intelligence_item/v1"
 CATALOGUE_RECORD_TYPE = "harness_intelligence_offer/v1"
 #: What can reach a harness instance.
 KINDS = ("reusable_code", "skill", "tool", "instruction_file")
-#: Where the body an item points at actually lives.
+#: The intelligence families the library holds. A family names what the
+#: material is built to follow, which is a different axis from the layer
+#: where its body is stored.
+#:
+#: loop_native     material built for the Loop runtime: the four recorded
+#:                persistent layers, consumed through Loop operations.
+#: harness        material shaped to drop into a working directory as files
+#:                a standard harness already knows how to read (SKILL.md,
+#:                AGENTS.md, plugin declarations, protocol server configs),
+#:                for Codex, OpenCode, Claude Code and others.
+#: open_knowledge generalized knowledge in open formats, shaped by no
+#:                harness and no runtime.
+FAMILIES = ("loop_native", "harness", "open_knowledge")
+#: Which source layers hold which family. Harness-family bodies keep their
+#: own identity rather than copying a body that a Loop-native layer owns.
+FAMILY_SOURCE_LAYERS = {
+    "loop_native": ("context_intelligence", "code_intelligence",
+                    "runtime_history_solution_intelligence",
+                    "user_feedback_intelligence"),
+    "harness": ("harness_local",),
+    "open_knowledge": ("context_intelligence", "code_intelligence",
+                       "runtime_history_solution_intelligence",
+                       "user_feedback_intelligence"),
+}
+#: Where the body an item points at actually lives. Kept for existing
+#: callers; every name is now validated against FAMILIES as well.
 SOURCE_LAYERS = ("context_intelligence", "code_intelligence",
                  "runtime_history_solution_intelligence", "user_feedback_intelligence",
                  "harness_local")
@@ -71,7 +96,18 @@ WITHHOLDING_REASONS = (WITHHELD_ANOTHER_KIND, WITHHELD_OTHER_TAGS, WITHHELD_ANOT
 
 
 class HarnessIntelligenceError(ValueError):
-    """An item names an unknown kind, carries no digest, or declares an effect."""
+    """An item names an unknown kind or family, carries no digest, or declares an effect."""
+
+
+def family_for_source_layer(source_layer: str) -> str:
+    """The one family a source layer serves. A layer serves exactly one family.
+
+    Harness material keeps its own identity in ``harness_local`` so a drop-in
+    file is never a second copy of a body a Loop-native layer owns.
+    """
+    if source_layer == "harness_local":
+        return "harness"
+    return "loop_native" if source_layer in SOURCE_LAYERS else ""
 
 
 @dataclass(frozen=True)
@@ -90,6 +126,10 @@ class HarnessIntelligenceItem:
     styles: tuple[str, ...] = ()
     default_exposure: str = EXPOSURES[0]
     availability: str = AVAILABILITY[0]
+    #: What the material is built to follow: the Loop runtime, a standard
+    #: harness's drop-in files, or an open knowledge format. It is derived
+    #: from the source layer, so the two axes can never disagree.
+    family: str = ""
     #: The dimensions this item is filed under: role, domain, geography,
     #: language, sensitivity, authentication, lifecycle. An item that declares
     #: nothing is general and is offered to every request.
@@ -107,6 +147,15 @@ class HarnessIntelligenceItem:
         if self.source_layer not in SOURCE_LAYERS:
             raise HarnessIntelligenceError(
                 f"{self.source_layer!r} is not one of {SOURCE_LAYERS}")
+        family = family_for_source_layer(self.source_layer)
+        if not family:
+            raise HarnessIntelligenceError(
+                f"the source layer {self.source_layer!r} serves no family")
+        if self.family not in ("", family):
+            raise HarnessIntelligenceError(
+                f"item {self.identity!r} declares family {self.family!r} but its source "
+                f"layer {self.source_layer!r} serves {family!r}; the two axes must agree")
+        object.__setattr__(self, "family", family)
         if len(self.digest) != DIGEST_LENGTH or not all(
                 character in "0123456789abcdef" for character in self.digest):
             raise HarnessIntelligenceError(
@@ -138,6 +187,7 @@ class HarnessIntelligenceItem:
         return {"record_type": RECORD_TYPE, "identity": self.identity, "kind": self.kind,
                 "purpose": self.purpose, "digest": self.digest,
                 "source_layer": self.source_layer, "source_ref": self.source_ref,
+                "family": self.family,
                 "size_bytes": self.size_bytes, "license": self.license_name,
                 "declared_effects": list(self.declared_effects),
                 "styles": list(self.styles), "tags": self.tags.to_dict(),
@@ -250,6 +300,10 @@ class HarnessIntelligenceDraft:
     styles: tuple[str, ...] = ()
     default_exposure: str = EXPOSURES[0]
     availability: str = AVAILABILITY[0]
+    #: What the material is built to follow. Optional: the item derives it from
+    #: the source layer, and a draft that declares one must agree with that
+    #: derivation or it is a known-wrong case the item refuses.
+    family: str = ""
     tags: TagSet = EMPTY_TAGS
 
 
@@ -262,7 +316,7 @@ def item_from_body(draft: HarnessIntelligenceDraft, body: str) -> HarnessIntelli
         draft.identity, draft.kind, draft.purpose, hashlib.sha256(encoded).hexdigest(),
         draft.source_layer, draft.source_ref, len(encoded), draft.license_name,
         tuple(draft.declared_effects), tuple(draft.styles), draft.default_exposure,
-        draft.availability, draft.tags)
+        draft.availability, draft.family, draft.tags)
 
 
 def self_test() -> dict:
@@ -379,6 +433,28 @@ def self_test() -> dict:
           set(row["kind"] for row in kinds_only["offered"]) == {"skill"}
           and kinds_only["requested_kinds"] == ["skill"],
           str(len(kinds_only["offered"])))
+    # The family axis. Three known-wrong cases: a family nobody declared, a
+    # draft whose family disagrees with the layer its body lives in, and a
+    # harness-family claim about material that a Loop-native layer owns.
+    check("an_item_derives_its_family_from_its_source_layer",
+          parser.family == "loop_native" and "family" in parser.reference())
+    check("a_family_nobody_declared_is_refused",
+          refuses(lambda: HarnessIntelligenceItem(
+              "x", "skill", "p", "0" * 64, "context_intelligence", "ref",
+              family="made_up")))
+    check("a_draft_whose_family_disagrees_with_its_source_layer_is_refused",
+          refuses(lambda: item_from_body(HarnessIntelligenceDraft(
+              "skill.dropped_in", "skill", "A file a harness reads on its own",
+              "context_intelligence", "ctx.skill.dropped_in", "MIT",
+              family="harness"), "body")))
+    check("harness_material_keeps_its_own_identity_not_a_loop_native_body",
+          refuses(lambda: HarnessIntelligenceItem(
+              "x", "skill", "p", "0" * 64, "harness_local", "ref",
+              family="loop_native"))
+          and item_from_body(HarnessIntelligenceDraft(
+              "skill.setup_checklist", "skill", "A checklist AGENTS.md already reads",
+              "harness_local", "harness.skill.setup_checklist", "MIT"),
+              "body").family == "harness")
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "harness_intelligence_test/v1", "tests": tests,
             "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}

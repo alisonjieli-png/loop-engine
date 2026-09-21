@@ -54,7 +54,7 @@ def _tags(value):
 
 def _item(value):
     expected = {"record_type", "identity", "kind", "purpose", "digest", "source_layer",
-                "source_ref", "size_bytes", "license", "declared_effects", "styles",
+                "source_ref", "family", "size_bytes", "license", "declared_effects", "styles",
                 "tags", "exposure", "availability", "body_included"}
     if (not isinstance(value, dict) or set(value) != expected
             or value["record_type"] != ITEM_RECORD_TYPE or value["body_included"] is not False):
@@ -64,7 +64,8 @@ def _item(value):
         digest=value["digest"], source_layer=value["source_layer"], source_ref=value["source_ref"],
         size_bytes=value["size_bytes"], license_name=value["license"],
         declared_effects=tuple(value["declared_effects"]), styles=tuple(value["styles"]),
-        default_exposure=value["exposure"], availability=value["availability"], tags=_tags(value["tags"]))
+        default_exposure=value["exposure"], availability=value["availability"],
+        family=value["family"], tags=_tags(value["tags"]))
 
 
 def _rule(value):

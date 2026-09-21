@@ -326,6 +326,34 @@ Runtime Memory is separate, temporary, and scoped to one run. Source formats
 such as Markdown, skills, repositories, packages, transcripts, and vectors do
 not define new intelligence layers.
 
+Owner direction, September 21, 2026: intelligence material is also organized
+by family, which names what the material is built to follow. A family is not
+a layer, and a layer is not a family; an item's family is derived from the
+layer that holds its body, so the two axes cannot disagree.
+
+```text
+Intelligence families
+├── Loop-native intelligence
+│   ├── built for the Loop runtime
+│   └── bodies live in the four persistent layers
+├── Harness intelligence
+│   ├── built to drop into a working directory as files a standard
+│   │   harness already knows how to read: SKILL.md, AGENTS.md, plugin
+│   │   declarations, protocol server configurations
+│   ├── for harnesses such as Codex, OpenCode and Claude Code
+│   └── bodies keep their own identity in the harness_local source layer,
+│       never a second copy of a body a Loop-native layer owns
+└── Open Knowledge Format intelligence
+    ├── generalized knowledge in open formats
+    ├── shaped by no harness and no runtime
+    └── classified into a persistent layer by meaning
+```
+
+The private beta serves harness intelligence first: the drop-in files a
+customer's existing harness can use immediately. Loop-native and Open
+Knowledge Format material remain part of the library and are served through
+the same contracts.
+
 Searching, selecting, materializing, framing, invoking, replaying, and
 interpreting intelligence are Loop operations. Search returns small typed
 references. Load a large body only after selection and permission checks.

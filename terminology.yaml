@@ -827,8 +827,12 @@ vocabulary:
   Harness Intelligence:
     kind: technical_word
     definition: >-
-      The provisioning view that serves authorized material from the four
-      persistent layers to one harness assignment. It is a view, not a fifth
+      The provisioning view that serves authorized material to one harness
+      assignment, and the family of intelligence material shaped to drop
+      into a working directory as files a standard harness already knows
+      how to read, such as SKILL.md, AGENTS.md, plugin declarations and
+      protocol server configurations, for harnesses such as Codex,
+      OpenCode and Claude Code. It is a view and a family, not a fifth
       persistent layer, and it is not the Intelligence Library, which is the
       searchable view every Loop uses.
     pattern: '\bHarness Intelligence\b'
@@ -839,7 +843,42 @@ vocabulary:
     - website_documentation_view
     must_not_appear:
     - public_website_pages
-    status: decided_by_engineering_2026_09_21
+    status: decided_by_the_owner_2026_09_21
+  Intelligence Family:
+    kind: technical_word
+    definition: >-
+      The axis that names what intelligence material is built to follow.
+      Three families exist. Loop-native intelligence is built for the Loop
+      runtime and lives in the four persistent layers. Harness intelligence
+      is built to drop into a working directory as files a standard
+      harness already reads, and keeps its own identity in the
+      harness_local source layer. Open Knowledge Format intelligence is
+      generalized knowledge in open formats shaped by no harness and no
+      runtime. A family is not a layer and a layer is not a family.
+    pattern: '\bIntelligence Family\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner_2026_09_21
+  Open Knowledge Format Intelligence:
+    kind: technical_word
+    definition: >-
+      Generalized knowledge held in open formats, shaped for no harness
+      and no runtime, classified into a persistent layer by meaning. The
+      source format does not choose the layer.
+    pattern: '\bOpen Knowledge Format Intelligence\b'
+    case_sensitive: true
+    may_appear:
+    - source_code
+    - technical_documents
+    - website_documentation_view
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_the_owner_2026_09_21
   Intelligence Library:
     kind: technical_word
     definition: >-
