@@ -66,7 +66,10 @@ const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role
    view and in the repository. The second set describes the product as a trial, which the owner retired: who may create
    an account is a matter of configuration, not of copy. Each rule is checked against a known-wrong page of its own. */
 const publicVocabulary=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profiles?|\bPractitioner\b/i;
-const retiredAccessWords=/\bpilots?\b|\bbetas?\b/i;
+/* The retired set names all four phrases the style guide retires, so a page that never writes pilot or beta but still
+   offers "early access" is reported. The hosted check reads the deployed pages with the same rule, and a copy that
+   drifts between the two is a named failure below rather than a silent disagreement. */
+const retiredAccessWords=/\bpilots?\b|\bbetas?\b|early access/i;
 /* The six benefits. The titles, the detail sentence that proves the detail was rendered, and the state readers used by
    the interaction checks and by their removed-guard controls. */
 const benefitNames=["material","reuse","model","export","review","resume"];
@@ -385,16 +388,27 @@ try {
   /* Rendered text is not the whole surface. A message can sit in a script the browser fetches and appear only in a
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. */
-  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json"];
+  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt"];
+  /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
+     so a customer reaches that file from every page, and a served asset added in the route table alone is a named
+     failure here rather than a file nobody scans. */
+  const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/http.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
+  const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
+  const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
+  check("every_served_asset_route_is_scanned_for_retired_words",assetRoutes.length>0&&unscannedFor(servedFiles).length===0,{routes:assetRoutes.length,unscanned:unscannedFor(servedFiles)});
+  check("served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",assetRoutes.length>0&&assetRoutes.every(path=>JSON.stringify(unscannedFor(servedFiles.filter(kept=>kept!==path)))===JSON.stringify([path])),{routes:assetRoutes.length});
   const servedTexts=[];
   for(const path of servedFiles)servedTexts.push([path,await (await page.request.get(fixture.base+path)).text()]);
   const retiredIn=(path,text)=>retiredAccessWords.test(text)?[{path:"the served file "+path,rule:"retired access word",found:text.match(retiredAccessWords)[0]}]:[];
   const servedFileProblems=servedTexts.flatMap(([path,text])=>retiredIn(path,text));
   check("no_customer_page_describes_the_product_as_a_trial",vocabularyProblems.filter(item=>item.rule==="retired access word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="retired access word")});
   check("no_customer_page_uses_the_runtime_vocabulary",vocabularyProblems.filter(item=>item.rule==="runtime word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="runtime word")});
-  check("retired_word_check_rejects_a_known_wrong_page",["Join the private pilot.","Beta users get early access.","A pilot user can search.","Our private beta is invitation only."].every(claim=>retiredAccessWords.test(claim))&&!retiredAccessWords.test("Accounts open in small groups. Join the waiting list."));
+  /* One known-wrong page for each retired phrase, including a page that never writes pilot or beta and still offers
+     early access. An earlier rule read only pilot and beta and let that last page through. */
+  const retiredKnownWrong=["Join the private pilot.","Beta users get early access.","A pilot user can search.","Our private beta is invitation only.","Request early access from your account page."];
+  check("retired_word_check_rejects_a_known_wrong_page",retiredKnownWrong.every(claim=>retiredAccessWords.test(claim))&&!retiredAccessWords.test("Accounts open in small groups. Join the waiting list."),{pages:retiredKnownWrong.length});
   check("no_served_file_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedFileProblems.length===0,{files:servedTexts.length,problems:servedFileProblems});
-  check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedTexts.every(([path,text])=>retiredIn(path,text+"\n/* Join the private beta. */").length===1),{files:servedTexts.length});
+  check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&["\n/* Join the private beta. */","\n/* Ask for early access. */"].every(planted=>servedTexts.every(([path,text])=>retiredIn(path,text+planted).length===1)),{files:servedTexts.length});
   check("runtime_word_check_rejects_a_known_wrong_page",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification.","A Practitioner owns the task."].every(claim=>publicVocabulary.test(claim))&&!publicVocabulary.test("Each step gets the material it needs."));
   /* Get started is the first way into the product, and the page behind it walks through the three steps in order. */
   await page.goto(fixture.base+"/");
@@ -575,10 +589,18 @@ try {
   const wrongDefault=servedHome.split(carefulDefaults[0]).join("Checking payment").split(carefulDefaults[1]).join("Checking whether payment is open.");
   check("careful_default_check_rejects_a_served_page_that_never_settles",carefulProblems(wrongDefault).length>=3,{problems:carefulProblems(wrongDefault)});
   /* One plain-word rule, used by the workspace check and by the hosted check. A copy that drifts is a named failure, not a silent disagreement. */
-  const ruleSource=path=>{const found=readFileSync(resolve(root,path),"utf8").match(/^const internalTerms=(\/.+\/i);$/m);return found?found[1]:"";};
+  const namedRule=(path,name)=>{const found=readFileSync(resolve(root,path),"utf8").match(new RegExp("^\\s*const "+name+"=(\\/.+\\/i);$","m"));return found?found[1]:"";};
+  const ruleSource=path=>namedRule(path,"internalTerms");
   const workspaceRule=ruleSource("tools/check_service_workspace.mjs"),hostedRule=ruleSource("tools/check_hosted_website.mjs");
   check("both_public_page_checks_use_one_plain_word_rule",workspaceRule!==""&&workspaceRule===hostedRule&&workspaceRule===String(internalTerms),{workspace:workspaceRule,hosted:hostedRule});
   check("plain_word_rule_comparison_rejects_a_drifted_copy",workspaceRule!==workspaceRule.replace("role profile","role profiles")&&workspaceRule!==workspaceRule.replace("| Engine","")&&internalTerms.test("See the role profiles.")&&internalTerms.test("Read the role profile."));
+  /* The retired words are read twice as well, here from the source tree and in the hosted check from the deployed
+     pages. The two rules had drifted: this one carried pilot and beta only while the hosted one also carried early
+     access, so a homepage offering early access passed here and was caught only after a deployment. */
+  const workspaceRetired=namedRule("tools/check_service_workspace.mjs","retiredAccessWords"),hostedRetired=namedRule("tools/check_hosted_website.mjs","liveRetired");
+  check("both_public_page_checks_use_one_retired_word_rule",workspaceRetired!==""&&workspaceRetired===hostedRetired&&workspaceRetired===String(retiredAccessWords),{workspace:workspaceRetired,hosted:hostedRetired});
+  const droppedBranch=workspaceRetired.replace("|early access","");
+  check("retired_word_rule_comparison_rejects_a_drifted_copy",droppedBranch!==workspaceRetired&&!new RegExp(droppedBranch.slice(1,-2),"i").test("Request early access from your account page.")&&retiredAccessWords.test("Request early access from your account page."),{dropped:droppedBranch});
   await page.goto(fixture.base+"/");
   await page.locator("#hero-how-it-works").click();
   /* The four persistent layers and the five customer problems moved off the homepage, which sells, on to How it works,

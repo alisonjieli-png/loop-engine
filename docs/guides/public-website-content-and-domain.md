@@ -123,9 +123,9 @@ page which drops one way of reaching a detail fails a named check.
 
 ### The retired trial words
 
-The words pilot, beta and private beta do not appear on any page a customer
-reads. Being invited changes only who can create an account. It does not
-change how the product looks or how carefully it is built.
+The words pilot, beta, private beta and early access do not appear on any page
+a customer reads. Being invited changes only who can create an account. It
+does not change how the product looks or how carefully it is built.
 
 | Do not write | Write |
 |---|---|
@@ -142,19 +142,30 @@ the account page when customer token management is switched off. It now reads
 `pilot-callout` in the two served stylesheets was retired in the same change;
 the box it styled is `closing-band`.
 
-Four named checks in `tools/check_service_workspace.mjs` hold the rule, and
-each of the two scans has a known-wrong case beside it.
+Eight named checks in `tools/check_service_workspace.mjs` hold the rule, and
+each scan has a known-wrong case beside it.
 
 | Check | What it reads |
 |---|---|
 | `no_customer_page_describes_the_product_as_a_trial` | The header, the shown view and the footer of all eleven served addresses and of `/get-started` |
-| `retired_word_check_rejects_a_known_wrong_page` | Four known-wrong sentences, each of which the rule must report, and one accepted sentence it must not |
-| `no_served_file_carries_a_retired_word` | Every file the browser fetches for a customer page: the markup, the four scripts, the two stylesheets and the recipe record |
-| `served_file_scan_rejects_a_file_that_carries_a_retired_word` | Each of those served files with one retired sentence appended, which the scan must report |
+| `retired_word_check_rejects_a_known_wrong_page` | Five known-wrong sentences, one for each retired phrase, each of which the rule must report, and one accepted sentence it must not |
+| `no_served_file_carries_a_retired_word` | Every file the browser fetches for a customer page: the markup, the four scripts, the two stylesheets, the recipe record and the open-source notices the footer links to |
+| `served_file_scan_rejects_a_file_that_carries_a_retired_word` | Each of those served files with one retired sentence appended, twice: once naming a private beta and once asking for early access |
+| `every_served_asset_route_is_scanned_for_retired_words` | The scanned list against `WEB_ASSETS` in `src/loop_engine/core/service_runtime/http.py`, so an asset added to the route table alone cannot escape the scan |
+| `served_asset_coverage_check_rejects_a_route_left_out_of_the_scan` | The same comparison with each served asset route removed from the list in turn, which must report exactly that route |
+| `both_public_page_checks_use_one_retired_word_rule` | The rule text of `retiredAccessWords` here and of `liveRetired` in `tools/check_hosted_website.mjs`, which must be the same string |
+| `retired_word_rule_comparison_rejects_a_drifted_copy` | The same rule with its `early access` branch dropped, which must then miss a page that asks for early access |
 
 The deployed pages are read the same way by
 `no_live_customer_page_describes_the_product_as_a_trial` in
 `tools/check_hosted_website.mjs`, with its own known-wrong case.
+
+The two rules had drifted. Until September 21, 2026 the workspace rule read
+pilot and beta only, while the hosted rule also read early access, so a page
+offering early access passed the check that gates a commit and failed only
+after a deployment. The workspace rule now carries all four phrases, and
+`both_public_page_checks_use_one_retired_word_rule` makes a future
+disagreement a named failure instead of a silent one.
 
 ### Get started
 
