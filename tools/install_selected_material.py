@@ -49,6 +49,7 @@ from loop_engine.core.service_runtime.http_auth import validate_public_url
 
 REPORT_RECORD_TYPE = "native_material_install_report/v1"
 INSTALL_RECORD_TYPE = "native_material_install_record/v1"
+PREVIEW_RECORD_TYPE = "native_material_install_preview/v1"
 LAYOUT_PROFILE_RECORD_TYPE = "native_client_layout_profile/v1"
 LISTING_RECORD_TYPE = "native_client_listing_observation/v1"
 # The service states these values inline in its HTTP adapter. The checks run
@@ -68,6 +69,19 @@ SKILL_KIND = "skill"
 SKILL_FILE_RENDERING = "generated_frontmatter_then_served_body"
 LISTING_FORMAT_JSON_ENTRIES = "json_entries"
 CLIENT_RECIPES_RESOURCE = ("core", "service_runtime", "web_assets", "client-recipes.json")
+# The tool reads one field of the registry, the identifier of each recipe. That field has the
+# same place and meaning in both versions named here. Any other version is refused, not guessed.
+SUPPORTED_CLIENT_REGISTRY_RECORD_TYPES = ("website_client_recipes/v1", "website_client_recipes/v2")
+# Text from the service or the client can hold a code point that UTF-8 cannot carry, such as a
+# lone surrogate. The report writes every character outside ASCII as an escape, so no text can
+# make the report write fail.
+REPORT_ASCII_ONLY = True
+# A parser can fail on nesting depth as well as on syntax. Both mean "not a usable record".
+JSON_PARSE_ERRORS = (ValueError, RecursionError)
+# After the report is reserved, nothing that goes wrong may end the run without a report.
+UNEXPECTED_ERRORS = (Exception,)
+RESPONSE_READ_CHUNK_BYTES = 1 << 16
+PARTIAL_FILE_SUFFIX = ".partial"
 # Opening with this flag fails on a symbolic link instead of following it.
 # A platform without it is refused before any file access.
 NO_FOLLOW_FLAG = getattr(os, "O_NOFOLLOW", None)
@@ -104,6 +118,7 @@ class RefusalCode(str, Enum):
     """Stable refusal codes. The text beside a code never holds a secret."""
 
     INSTALL_NOT_AUTHORIZED = "install_not_authorized"
+    PREVIEW_EXCLUDES_AUTHORIZATION = "preview_excludes_authorize_install"
     INVALID_ORIGIN = "invalid_origin"
     INVALID_KEY_VARIABLE_NAME = "invalid_key_variable_name"
     KEY_VARIABLE_NOT_SET = "key_variable_not_set"
@@ -116,6 +131,7 @@ class RefusalCode(str, Enum):
     INVALID_REQUEST_PREFIX = "invalid_request_prefix"
     INVALID_ARGUMENTS = "invalid_arguments"
     CLIENT_REGISTRY_UNREADABLE = "client_registry_unreadable"
+    UNSUPPORTED_CLIENT_REGISTRY_VERSION = "unsupported_client_registry_version"
     UNKNOWN_CLIENT_KIND = "unknown_client_kind"
     CLIENT_HAS_NO_LAYOUT_PROFILE = "client_has_no_layout_profile"
     TARGET_NOT_A_REAL_DIRECTORY = "target_not_a_real_directory"
@@ -128,6 +144,7 @@ class RefusalCode(str, Enum):
     SERVICE_UNREACHABLE = "service_unreachable"
     REDIRECT_REFUSED = "redirect_refused"
     RESPONSE_TOO_LARGE = "response_too_large"
+    RESPONSE_DEADLINE_PASSED = "response_deadline_passed"
     SERVICE_REFUSED = "service_refused"
     IDENTITY_HAS_NO_NATIVE_NAME = "identity_has_no_native_name"
     KIND_HAS_NO_NATIVE_LOCATION = "kind_has_no_native_location"
@@ -147,6 +164,9 @@ class RefusalCode(str, Enum):
     EXISTING_PATH_NOT_A_REGULAR_FILE = "existing_path_not_a_regular_file"
     DIFFERENT_FILE_EXISTS = "different_file_exists"
     PATH_NOT_USABLE = "path_not_usable"
+    TARGET_FOLDER_NOT_WRITABLE = "target_folder_not_writable"
+    FILE_CHANGED_AFTER_INSTALL = "file_changed_after_install"
+    UNEXPECTED_ERROR = "unexpected_error"
     WRITE_FAILED = "write_failed"
     MODEL_TURN_COMMAND_REFUSED = "model_turn_command_refused"
     INVALID_LAYOUT_PROFILE = "invalid_layout_profile"
@@ -167,6 +187,7 @@ class ListingState(str, Enum):
 
     OBSERVED = "observed"
     NOTHING_INSTALLED = "nothing_installed"
+    PREVIEW_ONLY = "preview_only_no_client_process"
     CLIENT_OFFERS_NO_LISTING = "client_offers_no_listing_command"
     EXECUTABLE_NOT_FOUND = "client_executable_not_found"
     EXECUTABLE_NOT_USABLE = "client_executable_not_usable"
@@ -272,9 +293,14 @@ class ClientLayoutProfile:
 
 @dataclass(frozen=True)
 class TransferLimits:
-    """Bounds for every request, response and client process."""
+    """Bounds for every request, response and client process.
+
+    request_timeout_seconds bounds one socket operation. response_deadline_seconds
+    bounds one whole response, from the request to its last byte.
+    """
 
     request_timeout_seconds: float = 30.0
+    response_deadline_seconds: float = 300.0
     maximum_json_bytes: int = 2_000_000
     maximum_body_bytes: int = 64 * 1024 * 1024
     listing_timeout_seconds: float = 30.0
@@ -283,7 +309,8 @@ class TransferLimits:
     maximum_watched_paths: int = 20_000
 
     def __post_init__(self):
-        for name in ("request_timeout_seconds", "listing_timeout_seconds", "version_timeout_seconds"):
+        for name in ("request_timeout_seconds", "response_deadline_seconds", "listing_timeout_seconds",
+                     "version_timeout_seconds"):
             value = getattr(self, name)
             _refuse_unless(type(value) in (int, float) and math.isfinite(value) and 0 < value <= 600,
                            RefusalCode.INVALID_LIMITS)
@@ -360,7 +387,8 @@ def _refusal_for_open_error(error: OSError, name: str, directory: int) -> Instal
 def require_confined_file_operations() -> int:
     """The platform flags that open a path without following a link, else a refusal."""
     _refuse_unless(NO_FOLLOW_FLAG is not None and hasattr(os, "O_DIRECTORY") and hasattr(os, "O_NONBLOCK")
-                   and os.open in os.supports_dir_fd and os.mkdir in os.supports_dir_fd,
+                   and all(operation in os.supports_dir_fd
+                           for operation in (os.open, os.mkdir, os.link, os.unlink, os.access)),
                    RefusalCode.CONFINED_FILE_OPERATIONS_UNAVAILABLE)
     return NO_FOLLOW_FLAG | getattr(os, "O_CLOEXEC", 0)
 
@@ -449,34 +477,81 @@ def require_identical_existing(existing: bytes | None, expected: bytes) -> None:
                    RefusalCode.DIFFERENT_FILE_EXISTS)
 
 
+def require_writable_placement(root: Path, directories: tuple[str, ...]) -> None:
+    """Refuse before the metered read when the file could not be placed afterwards.
+
+    Nothing is created. The deepest folder that already exists must allow a new
+    entry. Every folder on the way is opened without following a link.
+    """
+    validate_relative_parts(directories)
+    try:
+        current = _open_directory(str(root))
+    except OSError:
+        raise InstallRefusal(RefusalCode.TARGET_NOT_A_REAL_DIRECTORY) from None
+    try:
+        writable = os.access(str(root), os.W_OK | os.X_OK)
+        for name in directories:
+            try:
+                following = _open_directory(name, current)
+            except FileNotFoundError:
+                break
+            except OSError as error:
+                raise _refusal_for_open_error(error, name, current) from None
+            writable = os.access(name, os.W_OK | os.X_OK, dir_fd=current)
+            os.close(current)
+            current = following
+        _refuse_unless(writable, RefusalCode.TARGET_FOLDER_NOT_WRITABLE)
+    finally:
+        os.close(current)
+
+
 def write_confined_file(root: Path, parts: tuple[str, ...], data: bytes) -> bool:
     """Create the file under the root. True when written, False when identical.
 
-    The final open is exclusive, so an existing file is never replaced.
+    The bytes go to a new partial name in the same folder first. The final name
+    appears only through a hard link to the finished file, so a stopped run never
+    leaves a cut file under the name that the client discovers. A hard link never
+    replaces an existing name.
     """
     validate_relative_parts(parts)
     directory = _walk_to_directory(root, parts[:-1], create=True)
     # Without a directory handle the next open would resolve against the working folder.
     _refuse_unless(directory is not None, RefusalCode.PATH_NOT_USABLE)
+    partial = "." + parts[-1] + "." + uuid.uuid4().hex + PARTIAL_FILE_SUFFIX
     try:
         flags = require_confined_file_operations() | os.O_WRONLY | os.O_CREAT | os.O_EXCL
         try:
-            descriptor = os.open(parts[-1], flags, 0o644, dir_fd=directory)
-        except FileExistsError:
-            require_identical_existing(_read_regular_file(parts[-1], directory, len(data)), data)
-            return False
+            descriptor = os.open(partial, flags, 0o644, dir_fd=directory)
         except OSError as error:
-            raise _refusal_for_open_error(error, parts[-1], directory) from None
+            raise _refusal_for_open_error(error, partial, directory) from None
         try:
-            view = memoryview(data)
-            while view:
-                view = view[os.write(descriptor, view):]
-            os.fsync(descriptor)
-        except OSError as error:
-            os.unlink(parts[-1], dir_fd=directory)  # Only the file this call created.
-            raise InstallRefusal(RefusalCode.WRITE_FAILED, type(error).__name__) from None
+            try:
+                view = memoryview(data)
+                while view:
+                    view = view[os.write(descriptor, view):]
+                os.fsync(descriptor)
+            except OSError as error:
+                raise InstallRefusal(RefusalCode.WRITE_FAILED, type(error).__name__) from None
+            finally:
+                os.close(descriptor)
+            try:
+                os.link(partial, parts[-1], src_dir_fd=directory, dst_dir_fd=directory, follow_symlinks=False)
+            except FileExistsError:
+                try:
+                    existing = _read_regular_file(parts[-1], directory, len(data))
+                except InstallRefusal as refusal:
+                    if refusal.code is RefusalCode.PATH_NOT_USABLE:
+                        refusal = InstallRefusal(RefusalCode.EXISTING_PATH_NOT_A_REGULAR_FILE)
+                    raise refusal from None
+                require_identical_existing(existing, data)
+                return False
+            except OSError as error:
+                raise InstallRefusal(RefusalCode.WRITE_FAILED, type(error).__name__) from None
         finally:
-            os.close(descriptor)
+            try:
+                os.unlink(partial, dir_fd=directory)  # Only the partial name this call created.
+            except OSError:
+                pass
         written = _read_regular_file(parts[-1], directory, len(data))
         _refuse_unless(written is not None and hmac.compare_digest(written, data), RefusalCode.WRITE_FAILED)
         return True
@@ -487,6 +562,25 @@ def write_confined_file(root: Path, parts: tuple[str, ...], data: bytes) -> bool
 # ---------------------------------------------------------------------------
 # Service client
 # ---------------------------------------------------------------------------
+
+def require_manifest_record_type(value: dict) -> None:
+    """Only the manifest record version that this tool knows is read."""
+    _refuse_unless(value.get("record_type") == MANIFEST_RECORD_TYPE, RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+
+
+def require_manifest_identity(manifest_identity: str, requested_identity: str) -> None:
+    """A manifest answers for the identity that was asked for, and for no other."""
+    _refuse_unless(manifest_identity == requested_identity, RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+
+
+def require_encodable_text(texts: tuple[str, ...]) -> None:
+    """Manifest text is copied into the file header and the report. It must encode as UTF-8."""
+    try:
+        for text in texts:
+            text.encode("utf-8")
+    except UnicodeEncodeError:
+        raise InstallRefusal(RefusalCode.UNSUPPORTED_SERVICE_RECORD, "text_does_not_encode_as_utf8") from None
+
 
 @dataclass(frozen=True)
 class OfferedItem:
@@ -513,8 +607,11 @@ class OfferedItem:
             raise InstallRefusal(RefusalCode.UNSUPPORTED_SERVICE_RECORD) from None
         texts = (item.identity, item.kind, item.purpose, item.digest, item.license_name, item.source_layer,
                  item.source_ref, item.qualification_basis)
-        _refuse_unless(value.get("record_type") == MANIFEST_RECORD_TYPE and item.identity == identity
-                       and all(isinstance(text, str) for text in texts) and item.kind in KINDS
+        require_manifest_record_type(value)
+        _refuse_unless(all(isinstance(text, str) for text in texts), RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+        require_manifest_identity(item.identity, identity)
+        require_encodable_text(texts)
+        _refuse_unless(item.kind in KINDS
                        and DIGEST_PATTERN.fullmatch(item.digest) is not None
                        and type(item.size_bytes) is int and item.size_bytes >= 0
                        and type(item.body_allowed) is bool,
@@ -546,7 +643,7 @@ def service_error_code(data: bytes) -> str:
     try:
         value = json.loads(data)
         code = value["error"]["code"] if value.get("record_type") == ERROR_VERSION else ""
-    except (ValueError, KeyError, TypeError, AttributeError):
+    except (*JSON_PARSE_ERRORS, KeyError, TypeError, AttributeError):
         return "unrecognized"
     return code if isinstance(code, str) and ERROR_CODE_PATTERN.fullmatch(code) else "unrecognized"
 
@@ -554,6 +651,31 @@ def service_error_code(data: bytes) -> str:
 def service_opener():
     """The key goes to the named origin only: no proxy from the environment and no redirect."""
     return urllib.request.build_opener(urllib.request.ProxyHandler({}), _RefuseRedirect())
+
+
+def require_within_deadline(deadline: float) -> None:
+    """The whole response must arrive before this moment on the monotonic clock."""
+    _refuse_unless(time.monotonic() < deadline, RefusalCode.RESPONSE_DEADLINE_PASSED)
+
+
+def read_bounded(response, bound: int, deadline: float) -> bytes:
+    """Read at most bound plus one bytes, and stop when the whole-response deadline passes.
+
+    The extra byte lets the caller tell a response of exactly the bound from a longer one.
+    """
+    chunks, remaining = [], bound + 1
+    while remaining > 0:
+        require_within_deadline(deadline)
+        chunk = response.read1(min(remaining, RESPONSE_READ_CHUNK_BYTES))
+        if not chunk:
+            break
+        chunks.append(chunk)
+        remaining -= len(chunk)
+    return b"".join(chunks)
+
+
+def require_bounded_response(data: bytes, bound: int) -> None:
+    _refuse_unless(len(data) <= bound, RefusalCode.RESPONSE_TOO_LARGE)
 
 
 class ServiceClient:
@@ -575,6 +697,7 @@ class ServiceClient:
             fields["Authorization"] = "Bearer " + self._key
         request = urllib.request.Request(self._origin + route, data=data, headers=fields)
         self.calls += 1
+        deadline = time.monotonic() + self._limits.response_deadline_seconds
         try:
             try:
                 response = self._opener.open(request, timeout=self._limits.request_timeout_seconds)
@@ -582,7 +705,7 @@ class ServiceClient:
                 response = error
             with response:
                 bound = maximum_bytes if response.status == 200 else self._limits.maximum_json_bytes
-                return response.status, response.headers, response.read(bound + 1)
+                return response.status, response.headers, read_bounded(response, bound, deadline)
         except InstallRefusal:
             raise
         except Exception as error:  # Only the type is kept: the text could hold a header value.
@@ -591,13 +714,13 @@ class ServiceClient:
     def _result(self, route: str, payload: dict | None, *, authenticated: bool = True) -> dict:
         status, _headers, data = self._exchange(route, payload, authenticated=authenticated,
                                                 maximum_bytes=self._limits.maximum_json_bytes)
-        _refuse_unless(len(data) <= self._limits.maximum_json_bytes, RefusalCode.RESPONSE_TOO_LARGE)
+        require_bounded_response(data, self._limits.maximum_json_bytes)
         if status != 200:
             raise InstallRefusal(RefusalCode.SERVICE_REFUSED, str(status) + ":" + service_error_code(data))
         try:
             value = json.loads(data)
             result = value["result"] if value.get("record_type") == RESULT_VERSION else None
-        except (ValueError, KeyError, TypeError, AttributeError):
+        except (*JSON_PARSE_ERRORS, KeyError, TypeError, AttributeError):
             result = None
         _refuse_unless(isinstance(result, dict), RefusalCode.UNSUPPORTED_SERVICE_RECORD)
         return result
@@ -613,8 +736,9 @@ class ServiceClient:
             payload["mode"] = search_mode
         result = self._result(RETRIEVAL_ROUTE, payload)
         hits = result.get("hits")
-        _refuse_unless(result.get("record_type") == RETRIEVAL_RESULT_RECORD_TYPE and isinstance(hits, list)
-                       and result.get("bodies_loaded") is False, RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+        _refuse_unless(result.get("record_type") == RETRIEVAL_RESULT_RECORD_TYPE and isinstance(hits, list),
+                       RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+        require_references_only(result)
         selected = []
         for hit in hits:
             reference = hit.get("reference") if isinstance(hit, dict) else None
@@ -642,6 +766,17 @@ class ServiceClient:
                               kinds[0] if len(kinds) == 1 else "", status)
 
 
+def require_references_only(result: dict) -> None:
+    """A search answer must say that it loaded no body. Bodies are read one by one, and metered."""
+    _refuse_unless(result.get("bodies_loaded") is False, RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+
+
+def require_supported_body_format(delivery: dict) -> None:
+    """The file rendering is defined for text bodies in UTF-8 only."""
+    _refuse_unless(delivery.get("body_format") == SUPPORTED_BODY_FORMAT,
+                   RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES, "body_format")
+
+
 def require_supported_service(capabilities: dict) -> int:
     """Refuse an unknown service contract before any authenticated request.
 
@@ -651,9 +786,9 @@ def require_supported_service(capabilities: dict) -> int:
     _refuse_unless(capabilities.get("record_type") == CAPABILITIES_RECORD_TYPE
                    and capabilities.get("api_version") == SUPPORTED_API_VERSION and isinstance(delivery, dict)
                    and delivery.get("download_endpoint") == DOWNLOAD_ROUTE
-                   and delivery.get("body_format") == SUPPORTED_BODY_FORMAT
                    and type(delivery.get("download_bytes")) is int and delivery["download_bytes"] >= 1,
                    RefusalCode.UNSUPPORTED_SERVICE_CAPABILITIES)
+    require_supported_body_format(delivery)
     return delivery["download_bytes"]
 
 
@@ -666,12 +801,31 @@ def require_body_permitted(item: OfferedItem) -> None:
     _refuse_unless(item.body_allowed is True, RefusalCode.BODY_NOT_PERMITTED)
 
 
-def require_successful_download(download: DownloadedBody) -> None:
-    """Only an exact success response of the download record type carries a body."""
+def require_within_download_allowance(item: OfferedItem, allowance: int) -> None:
+    """Do not start a read that is declared larger than the service and this tool allow."""
+    _refuse_unless(item.size_bytes <= allowance, RefusalCode.BODY_EXCEEDS_DOWNLOAD_ALLOWANCE)
+
+
+def require_offer_unchanged(search_digest: str | None, item: OfferedItem) -> None:
+    """The manifest must name the digest that the search named."""
+    _refuse_unless(search_digest in (None, item.digest), RefusalCode.OFFER_CHANGED)
+
+
+def require_download_status(download: DownloadedBody) -> None:
+    """Any status other than success is the refusal of the service, with its own code."""
     if download.http_status != 200:
         raise InstallRefusal(RefusalCode.SERVICE_REFUSED,
                              str(download.http_status) + ":" + service_error_code(download.data))
+
+
+def require_download_record_type(download: DownloadedBody) -> None:
+    """Only a response of the download record type carries a body."""
     _refuse_unless(download.record_type == DOWNLOAD_RECORD_TYPE, RefusalCode.UNSUPPORTED_SERVICE_RECORD)
+
+
+def require_successful_download(download: DownloadedBody) -> None:
+    require_download_status(download)
+    require_download_record_type(download)
 
 
 def require_header_digest(body_digest: str, download: DownloadedBody) -> None:
@@ -705,9 +859,13 @@ def verify_downloaded_body(item: OfferedItem, download: DownloadedBody) -> str:
     return body_digest
 
 
+def existing_header_is_the_generated_one(existing: bytes, header: bytes) -> bool:
+    return existing[:len(header)] == header
+
+
 def existing_file_is_the_expected_one(existing: bytes, header: bytes, item: OfferedItem) -> bool:
     body = existing[len(header):]
-    return (existing[:len(header)] == header and len(body) == item.size_bytes
+    return (existing_header_is_the_generated_one(existing, header) and len(body) == item.size_bytes
             and hmac.compare_digest(hashlib.sha256(body).hexdigest(), item.digest))
 
 
@@ -734,8 +892,10 @@ def _run_client(command: tuple[str, ...], project: Path, process_environment: di
                 maximum_bytes: int):
     """Run one client command. Output goes through a regular file, not a pipe.
 
-    OpenCode 1.17.9 and 1.18.31 were observed to stop at 65,536 bytes when the
-    listing was captured through a pipe, and to write all of it to a file.
+    With OpenCode 1.17.9 and 1.18.31, a Python subprocess pipe capture of the
+    listing held exactly 65,536 bytes with exit code 0. A shell pipe to a fast
+    reader delivered the whole listing, and so did a regular file. The cut
+    depends on the reader, so this tool uses the regular file.
     """
     with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as errors:
         started = time.monotonic()
@@ -764,9 +924,19 @@ def listing_entry_for(entries: list, listing: ListingCommand, absolute_path: str
     wanted = os.path.realpath(absolute_path)
     for entry in entries:
         location = entry.get(listing.location_field) if isinstance(entry, dict) else None
-        if isinstance(location, str) and os.path.isabs(location) and os.path.realpath(location) == wanted:
+        if location_is_the_installed_file(location, wanted):
             return entry
     return None
+
+
+def location_is_the_installed_file(location, wanted: str) -> bool:
+    """A location that the platform cannot resolve, such as one with a NUL, is no match."""
+    if not isinstance(location, str) or not os.path.isabs(location):
+        return False
+    try:
+        return os.path.realpath(location) == wanted
+    except (ValueError, OSError):
+        return False
 
 
 def describe_client_report(entries: list, listing: ListingCommand, record: dict) -> dict:
@@ -781,11 +951,18 @@ def describe_client_report(entries: list, listing: ListingCommand, record: dict)
             content_digest = hashlib.sha256(content.encode("utf-8")).hexdigest()
         except UnicodeEncodeError:
             content_digest = None
-    return {"reported": True, "reported_name": entry.get(listing.name_field),
-            "name_matches": entry.get(listing.name_field) == record["native_name"],
+    reported_name = entry.get(listing.name_field)
+    return {"reported": True, "reported_name": reported_name if isinstance(reported_name, str) else None,
+            "name_matches": reported_name == record["native_name"],
             "reported_content_sha256": content_digest,
             "content_matches_served_body": None if content_digest is None
             else hmac.compare_digest(content_digest, record["body_sha256"])}
+
+
+def reported_with_same_name_and_content(client_report: dict) -> bool:
+    """The headline fact: the client names that exact file, under that name, with the served content."""
+    return (client_report["reported"] is True and client_report.get("name_matches") is True
+            and client_report.get("content_matches_served_body") is True)
 
 
 def observe_client_listing(profile: ClientLayoutProfile, command_prefix: tuple[str, ...] | None, project: Path,
@@ -817,6 +994,23 @@ def observe_client_listing(profile: ClientLayoutProfile, command_prefix: tuple[s
             observation["paths_created_by_the_client_process"] = sorted(after - before)[:50]
 
 
+def listing_exceeds_bound(size: int, limits: TransferLimits) -> bool:
+    return size > limits.maximum_listing_bytes
+
+
+def parse_listing_entries(data: bytes):
+    """The entries of a listing, or None when it cannot be read.
+
+    Nesting depth is a parse failure like any other. A listing that does not
+    parse is unknown. It is never read as "not reported".
+    """
+    try:
+        entries = json.loads(data.decode("utf-8"))
+    except JSON_PARSE_ERRORS:  # UnicodeDecodeError is a ValueError.
+        return None
+    return entries if isinstance(entries, list) else None
+
+
 def _observe(profile, command_prefix, project, process_environment, limits, observation):
     try:
         _code, _elapsed, _size, text = _run_client((*command_prefix, *profile.version_arguments), project,
@@ -841,15 +1035,11 @@ def _observe(profile, command_prefix, project, process_environment, limits, obse
     if code != 0:
         observation["state"] = ListingState.FAILED
         return observation, None
-    if size > limits.maximum_listing_bytes:
+    if listing_exceeds_bound(size, limits):
         observation["state"] = ListingState.TOO_LARGE
         return observation, None
-    try:
-        entries = json.loads(data.decode("utf-8"))
-    except (ValueError, UnicodeDecodeError):
-        entries = None
-    if not isinstance(entries, list):
-        # A cut or malformed listing is unknown. It is never read as "not reported".
+    entries = parse_listing_entries(data)
+    if entries is None:
         observation["state"] = ListingState.UNREADABLE
         return observation, None
     observation.update({"state": ListingState.OBSERVED, "entries": len(entries)})
@@ -863,10 +1053,22 @@ def _observe(profile, command_prefix, project, process_environment, limits, obse
 def registered_client_kinds() -> tuple[str, ...]:
     """Client identifiers come from the existing recipes registry, not from this tool."""
     try:
-        resource = files("loop_engine").joinpath(*CLIENT_RECIPES_RESOURCE)
-        return tuple(row["id"] for row in json.loads(resource.read_text(encoding="utf-8"))["recipes"])
-    except (OSError, ValueError, KeyError, TypeError):
+        registry = read_client_registry()
+        require_supported_client_registry(registry)
+        return tuple(row["id"] for row in registry["recipes"])
+    except (OSError, *JSON_PARSE_ERRORS, KeyError, TypeError, AttributeError):
         raise InstallRefusal(RefusalCode.CLIENT_REGISTRY_UNREADABLE) from None
+
+
+def read_client_registry():
+    resource = files("loop_engine").joinpath(*CLIENT_RECIPES_RESOURCE)
+    return json.loads(resource.read_text(encoding="utf-8"))
+
+
+def require_supported_client_registry(registry: dict) -> None:
+    """A registry version that this tool does not know is refused, not read as a known one."""
+    _refuse_unless(registry.get("record_type") in SUPPORTED_CLIENT_REGISTRY_RECORD_TYPES,
+                   RefusalCode.UNSUPPORTED_CLIENT_REGISTRY_VERSION)
 
 
 OPENCODE_PROFILE = ClientLayoutProfile(
@@ -911,11 +1113,14 @@ class InstallRequest:
     client_command: tuple[str, ...] | None = None
     allow_loopback_http: bool = False
     authorized: bool = False
+    preview: bool = False
     request_prefix: str = ""
     limits: TransferLimits = field(default_factory=TransferLimits)
 
     def __post_init__(self):
-        _refuse_unless(self.authorized is True, RefusalCode.INSTALL_NOT_AUTHORIZED)
+        _refuse_unless(type(self.authorized) is bool and type(self.preview) is bool
+                       and (self.authorized or self.preview), RefusalCode.INSTALL_NOT_AUTHORIZED)
+        _refuse_unless(not (self.authorized and self.preview), RefusalCode.PREVIEW_EXCLUDES_AUTHORIZATION)
         try:
             origin = validate_public_url(self.origin, permit_loopback=self.allow_loopback_http is True)
         except (ValueError, TypeError, AttributeError):
@@ -972,7 +1177,7 @@ def reserve_report(path: Path) -> int:
 
 
 def _write_report(descriptor: int, report: dict) -> None:
-    data = (json.dumps(report, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+    data = (json.dumps(report, indent=2, ensure_ascii=REPORT_ASCII_ONLY) + "\n").encode("utf-8")
     os.ftruncate(descriptor, 0)
     os.lseek(descriptor, 0, os.SEEK_SET)
     view = memoryview(data)
@@ -984,13 +1189,48 @@ def _write_report(descriptor: int, report: dict) -> None:
 def _new_item(identity: str) -> dict:
     return {"identity": identity, "native_name": None,
             "facts": {"offered": False, "fetched": False, "installed": False, "reported_by_client": None},
-            "offer": None, "fetch": None, "install": None, "client_report": None, "refusal": None}
+            "offer": None, "preview": None, "fetch": None, "install": None, "client_report": None,
+            "refusal": None}
 
 
-def install_one_item(client: ServiceClient, profile: ClientLayoutProfile, root: Path, selected: dict,
-                     request_prefix: str, maximum_body_bytes: int) -> dict:
+def record_selection_before_any_request(persist) -> None:
+    """Put the origin, the request prefix and the selection on disk before the first request.
+
+    A run that is stopped during the first request then still names the request
+    prefix that a repeat reuses, so the same read is not metered twice.
+    """
+    persist()
+
+
+def record_pending_fetch(item: dict, request_id: str, persist) -> None:
+    """Write the request identity to the report before the metered read is sent.
+
+    Until a response arrives the outcome is unknown. A stopped run then still
+    names the request identity that a repeat can reuse.
+    """
+    item["fetch"] = {"outcome": FetchOutcome.UNKNOWN, "request_id": request_id, "http_status": None,
+                     "header_digest": None, "body_sha256": None, "body_bytes": None}
+    persist()
+
+
+@dataclass(frozen=True)
+class ItemJourney:
+    """What one item needs from the run. It holds no credential."""
+
+    profile: ClientLayoutProfile
+    root: Path
+    request_prefix: str
+    maximum_body_bytes: int
+    preview: bool
+
+
+def preview_stops_here(journey: ItemJourney) -> bool:
+    """A preview ends before the metered read, the file write and the client process."""
+    return journey.preview is True
+
+
+def install_one_item(client: ServiceClient, journey: ItemJourney, selected: dict, item: dict, persist) -> None:
     """Carry one identity as far as its checks allow and record every fact on the way."""
-    item = _new_item(selected["identity"])
     stage = Stage.SELECTION
     try:
         name = item["native_name"] = native_name(selected["identity"])
@@ -1000,30 +1240,38 @@ def install_one_item(client: ServiceClient, profile: ClientLayoutProfile, root: 
             item["facts"]["offered"] = True
             item["offer"] = {"source": "search", "digest": selected["digest"]}
         offered = client.manifest(selected["identity"], selected.get("digest"))
-        _refuse_unless(selected.get("digest") in (None, offered.digest), RefusalCode.OFFER_CHANGED)
+        require_offer_unchanged(selected.get("digest"), offered)
         item["facts"]["offered"] = True
         item["offer"] = offered.to_dict("search_and_manifest" if selected.get("digest") else "manifest")
-        location = profile.location_for(offered.kind)
+        location = journey.profile.location_for(offered.kind)
         require_body_permitted(offered)
-        _refuse_unless(offered.size_bytes <= maximum_body_bytes, RefusalCode.BODY_EXCEEDS_DOWNLOAD_ALLOWANCE)
+        require_within_download_allowance(offered, journey.maximum_body_bytes)
         header, truncated = RENDERERS[location.rendering](name, offered.purpose)
         parts = location.relative_parts(name)
         stage = Stage.PLACEMENT
-        existing = read_confined_file(root, parts, len(header) + offered.size_bytes)
+        existing = read_confined_file(journey.root, parts, len(header) + offered.size_bytes)
         already_present = refuse_different_existing_file(existing, header, offered)
+        if not already_present:
+            require_writable_placement(journey.root, parts[:-1])
+        if preview_stops_here(journey):
+            item["preview"] = {"record_type": PREVIEW_RECORD_TYPE, "path": "/".join(parts),
+                               "identical_file_present": already_present,
+                               "metered_body_read_needed": not already_present,
+                               "file_bytes": len(header) + offered.size_bytes}
+            return
         body_digest = offered.digest
         if already_present:
             item["fetch"] = {"outcome": FetchOutcome.NOT_NEEDED, "request_id": None}
             content, written = existing, False
         else:
             stage = Stage.FETCH
-            request_id = request_prefix + "-" + hashlib.sha256(offered.identity.encode("utf-8")).hexdigest()[:16]
-            item["fetch"] = {"outcome": FetchOutcome.UNKNOWN, "request_id": request_id, "http_status": None,
-                             "header_digest": None, "body_sha256": None, "body_bytes": None}
+            request_id = (journey.request_prefix + "-"
+                          + hashlib.sha256(offered.identity.encode("utf-8")).hexdigest()[:16])
+            record_pending_fetch(item, request_id, persist)
             download = client.download(offered, request_id, offered.size_bytes)
             item["fetch"].update({"outcome": FetchOutcome.REFUSED_BY_SERVICE, "http_status": download.http_status,
                                   "header_digest": download.header_digest or None})
-            require_successful_download(download)
+            require_download_status(download)
             stage = Stage.VERIFICATION
             item["fetch"].update({"outcome": FetchOutcome.REJECTED_BY_VERIFICATION,
                                   "body_bytes": len(download.data)})
@@ -1032,20 +1280,86 @@ def install_one_item(client: ServiceClient, profile: ClientLayoutProfile, root: 
             item["facts"]["fetched"] = True
             stage = Stage.PLACEMENT
             content = header + download.data
-            written = write_confined_file(root, parts, content)
+            written = write_confined_file(journey.root, parts, content)
         item["facts"]["installed"] = True
         item["install"] = {
             "record_type": INSTALL_RECORD_TYPE, "identity": offered.identity, "kind": offered.kind,
             "native_name": name, "body_sha256": body_digest, "body_bytes": offered.size_bytes,
-            "path": "/".join(parts), "absolute_path": str(root.joinpath(*parts)),
+            "path": "/".join(parts), "absolute_path": str(journey.root.joinpath(*parts)),
             "file_sha256": hashlib.sha256(content).hexdigest(), "file_bytes": len(content),
             "body_offset_bytes": len(header), "rendering": location.rendering,
             "description_truncated": truncated, "license": offered.license_name,
             "source_layer": offered.source_layer, "source_ref": offered.source_ref,
-            "written_by_this_run": written, "already_present_identical": not written}
+            "written_by_this_run": written, "already_present_identical": not written,
+            "file_unchanged_at_end_of_run": None}
     except InstallRefusal as refusal:
         item["refusal"] = {"stage": stage, "code": refusal.code, "detail": refusal.detail}
-    return item
+
+
+def installed_file_is_unchanged(root: Path, record: dict) -> bool:
+    """Read the installed file again through the confined reader and compare it with the install record."""
+    try:
+        current = read_confined_file(root, tuple(record["path"].split("/")), record["file_bytes"])
+    except InstallRefusal:
+        return False
+    return current is not None and hmac.compare_digest(hashlib.sha256(current).hexdigest(), record["file_sha256"])
+
+
+def _summarize(report: dict, http_calls: int) -> None:
+    items = report["items"]
+    facts = [item["facts"] for item in items]
+    installed = [item for item in items if item["install"] is not None]
+    report["summary"] = {
+        "selected": len(facts), "offered": sum(row["offered"] for row in facts),
+        "fetched": sum(row["fetched"] for row in facts), "installed": len(installed),
+        "written_by_this_run": sum(item["install"]["written_by_this_run"] for item in installed),
+        "already_present_identical": sum(item["install"]["already_present_identical"] for item in installed),
+        "listed_at_installed_path": sum(item["client_report"] is not None and item["client_report"]["reported"] is True
+                                        for item in items),
+        "reported_by_client": sum(row["reported_by_client"] is True for row in facts),
+        "refused": sum(item["refusal"] is not None for item in items)}
+    report["http_calls"] = http_calls
+    report["all_selected_installed_and_reported"] = (
+        bool(items) and report["service_refusal"] is None and report.get("interrupted_by") is None
+        and all(item["facts"]["installed"] and item["facts"]["reported_by_client"] is True
+                and item["install"]["file_unchanged_at_end_of_run"] is True for item in items))
+
+
+def _run_journey(request: InstallRequest, client: ServiceClient, profile: ClientLayoutProfile, root: Path,
+                 report: dict, persist) -> None:
+    try:
+        allowance = min(require_supported_service(client.capabilities()), request.limits.maximum_body_bytes)
+        selection = (client.search(request.query, request.top_n, request.search_mode) if request.query
+                     else [{"identity": identity, "digest": None} for identity in request.identities])
+        journey = ItemJourney(profile, root, report["request_prefix"], allowance, request.preview)
+        for selected in selection:
+            item = _new_item(selected["identity"])
+            report["items"].append(item)
+            install_one_item(client, journey, selected, item, persist)
+            persist()  # Keep what is known if a later step stops the run.
+    except InstallRefusal as refusal:
+        report["service_refusal"] = {"code": refusal.code, "detail": refusal.detail}
+    installed = [item for item in report["items"] if item["facts"]["installed"]]
+    observation = {"record_type": LISTING_RECORD_TYPE, "client_kind": profile.client_kind,
+                   "state": ListingState.PREVIEW_ONLY if request.preview else ListingState.NOTHING_INSTALLED,
+                   "model_turns_started": 0}
+    if installed:
+        observation, entries = observe_client_listing(profile, request.client_command, root,
+                                                      request.key_variable, request.limits)
+        report["listing"] = observation
+        persist()
+        if entries is not None:
+            for item in installed:
+                item["client_report"] = describe_client_report(entries, profile.listing, item["install"])
+                item["facts"]["reported_by_client"] = reported_with_same_name_and_content(item["client_report"])
+        # The client process is not this tool's code. The install record must still describe the file.
+        for item in installed:
+            unchanged = item["install"]["file_unchanged_at_end_of_run"] = installed_file_is_unchanged(
+                root, item["install"])
+            if not unchanged:
+                item["refusal"] = {"stage": Stage.PLACEMENT, "code": RefusalCode.FILE_CHANGED_AFTER_INSTALL,
+                                   "detail": ""}
+    report["listing"] = observation
 
 
 def install_selected_material(request: InstallRequest, key: str, report_descriptor: int) -> dict:
@@ -1056,6 +1370,7 @@ def install_selected_material(request: InstallRequest, key: str, report_descript
     request_prefix = request.request_prefix or "native-install-" + uuid.uuid4().hex
     report = {
         "record_type": REPORT_RECORD_TYPE, "complete": False,
+        "mode": "preview_without_body_read_or_file_write" if request.preview else "install",
         "observed_at": datetime.now(timezone.utc).isoformat(), "origin": request.origin,
         "client": {"kind": profile.client_kind, "layout_profile": profile.record_type,
                    "layout_observed_with_versions": list(profile.observed_client_versions)},
@@ -1063,48 +1378,30 @@ def install_selected_material(request: InstallRequest, key: str, report_descript
         "selection": {"by": "query" if request.query else "identities",
                       "query_sha256": hashlib.sha256(request.query.encode("utf-8")).hexdigest() if request.query else None,
                       "query_characters": len(request.query) if request.query else None,
+                      "largest_number_of_hits": request.top_n,
                       "identities": list(request.identities)},
         "key": {"source": "environment_variable", "variable_name": request.key_variable, "value_recorded": False},
         "request_prefix": request_prefix, "model_turns_started": 0, "automatic_retries": 0,
-        "service_refusal": None, "items": [], "listing": None,
+        "service_refusal": None, "interrupted_by": None, "items": [], "listing": None,
         "limits": ["A listing shows that the client discovered the file and what content it holds.",
                    "It does not show that a model read, used or benefited from the item.",
                    "The layout was observed with the client versions named above only."]}
+
+    def persist() -> None:
+        _write_report(report_descriptor, report)
+
+    record_selection_before_any_request(persist)
     try:
-        allowance = min(require_supported_service(client.capabilities()), request.limits.maximum_body_bytes)
-        selection = (client.search(request.query, request.top_n, request.search_mode) if request.query
-                     else [{"identity": identity, "digest": None} for identity in request.identities])
-        for selected in selection:
-            report["items"].append(install_one_item(client, profile, root, selected, request_prefix, allowance))
-            _write_report(report_descriptor, report)  # Keep what is known if a later step stops the run.
-    except InstallRefusal as refusal:
-        report["service_refusal"] = {"code": refusal.code, "detail": refusal.detail}
-    installed = [item for item in report["items"] if item["facts"]["installed"]]
-    if installed:
-        observation, entries = observe_client_listing(profile, request.client_command, root,
-                                                      request.key_variable, request.limits)
-        if entries is not None:
-            for item in installed:
-                item["client_report"] = describe_client_report(entries, profile.listing, item["install"])
-                item["facts"]["reported_by_client"] = item["client_report"]["reported"]
-    else:
-        observation = {"record_type": LISTING_RECORD_TYPE, "client_kind": profile.client_kind,
-                       "state": ListingState.NOTHING_INSTALLED, "model_turns_started": 0}
-    report["listing"] = observation
-    facts = [item["facts"] for item in report["items"]]
-    report["summary"] = {
-        "selected": len(facts), "offered": sum(row["offered"] for row in facts),
-        "fetched": sum(row["fetched"] for row in facts), "installed": len(installed),
-        "written_by_this_run": sum(item["install"]["written_by_this_run"] for item in installed),
-        "already_present_identical": sum(item["install"]["already_present_identical"] for item in installed),
-        "reported_by_client": sum(row["reported_by_client"] is True for row in facts),
-        "refused": sum(item["refusal"] is not None for item in report["items"])}
-    report["http_calls"] = client.calls
-    report["all_selected_installed_and_reported"] = bool(facts) and report["service_refusal"] is None and all(
-        item["facts"]["installed"] and item["client_report"] is not None
-        and item["client_report"]["reported"] is True and item["client_report"]["name_matches"] is True
-        and item["client_report"]["content_matches_served_body"] is True for item in report["items"])
-    report["complete"] = True
+        _run_journey(request, client, profile, root, report, persist)
+        _summarize(report, client.calls)
+        report["complete"] = True
+    except UNEXPECTED_ERRORS as error:  # Only the type is kept: the text could hold foreign content.
+        report["interrupted_by"] = {"code": RefusalCode.UNEXPECTED_ERROR, "detail": type(error).__name__}
+        try:
+            _summarize(report, client.calls)
+        except UNEXPECTED_ERRORS:
+            report["summary"] = None
+        report["all_selected_installed_and_reported"] = False
     return report
 
 
@@ -1140,6 +1437,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--allow-loopback-http", action="store_true", help="Permit plain HTTP to a loopback address.")
     parser.add_argument("--authorize-install", action="store_true",
                         help="Approve metered body reads, file writes under the target and one listing process.")
+    parser.add_argument("--preview", action="store_true",
+                        help="Only show what would be selected: no body read, no file write, no client process.")
     return parser
 
 
@@ -1154,7 +1453,7 @@ def main(argv=None) -> int:
             report=args.report, query=args.query, identities=tuple(args.identity), top_n=args.top_n,
             search_mode=args.search_mode, allow_loopback_http=args.allow_loopback_http,
             client_command=None if args.client_executable is None else (os.path.abspath(args.client_executable),),
-            authorized=args.authorize_install, request_prefix=args.request_prefix)
+            authorized=args.authorize_install, preview=args.preview, request_prefix=args.request_prefix)
         key = resolve_service_key(request.key_variable)
         refuse_key_on_command_line(key, arguments)
         real_target_directory(request.target)
@@ -1164,19 +1463,31 @@ def main(argv=None) -> int:
         print(json.dumps({"refused": refusal.code, "detail": refusal.detail}), file=sys.stderr)
         return 2
     try:
-        report = install_selected_material(request, key, descriptor)
-        _write_report(descriptor, report)
-    except InstallRefusal as refusal:
-        _write_report(descriptor, {"record_type": REPORT_RECORD_TYPE, "complete": False,
-                                   "interrupted_by": {"code": refusal.code, "detail": refusal.detail}})
-        print(json.dumps({"refused": refusal.code, "detail": refusal.detail}), file=sys.stderr)
-        return 1
+        try:
+            report = install_selected_material(request, key, descriptor)
+        except InstallRefusal as refusal:
+            report = {"record_type": REPORT_RECORD_TYPE, "complete": False,
+                      "interrupted_by": {"code": refusal.code, "detail": refusal.detail}}
+        try:
+            _write_report(descriptor, report)
+        except UNEXPECTED_ERRORS as error:
+            # The last complete write stays on disk when this one cannot be made.
+            report = {"record_type": REPORT_RECORD_TYPE, "complete": False,
+                      "interrupted_by": {"code": RefusalCode.UNEXPECTED_ERROR, "detail": type(error).__name__}}
     finally:
         os.close(descriptor)
-    print(json.dumps({"record_type": REPORT_RECORD_TYPE, **report["summary"],
+    if report.get("interrupted_by") is not None:
+        print(json.dumps({"refused": report["interrupted_by"]["code"],
+                          "detail": report["interrupted_by"]["detail"], "report": str(request.report)}),
+              file=sys.stderr)
+        return 1
+    print(json.dumps({"record_type": REPORT_RECORD_TYPE, "mode": report["mode"], **report["summary"],
                       "listing_state": report["listing"]["state"],
                       "all_selected_installed_and_reported": report["all_selected_installed_and_reported"],
                       "report": str(request.report)}))
+    if request.preview:
+        # A preview succeeds when every selected item could be installed. It installs nothing.
+        return 0 if report["items"] and report["service_refusal"] is None and not report["summary"]["refused"] else 1
     return 0 if report["all_selected_installed_and_reported"] else 1
 
 
