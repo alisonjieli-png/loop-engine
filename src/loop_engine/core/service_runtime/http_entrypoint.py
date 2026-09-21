@@ -345,9 +345,29 @@ def configure_host(path):
             "configured_grant_sets": len(grants), "remote_accounts_created": False}
 
 
+def apply_host_grants(path):
+    """Explicit one-time application of the manifest's disclosure grants to existing tenants.
+
+    A release that carries a new host manifest changes which items the host may
+    disclose. Tenant registration is a separate, earlier setup step that this
+    operation never repeats, so an existing deployment can take a new manifest
+    without re-registering anything. Every tenant named in the grants must
+    already exist, the grant set for that tenant is replaced by exactly what the
+    manifest declares, and no tenant the manifest does not name is touched.
+    """
+    _application, configuration = load_host_application(path)
+    runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
+    _catalogue, _resolver, _reader, grants = load_host_manifest(
+        configuration["manifest_path"], license_policy=host_license_policy(configuration))
+    applied = {tenant: runtime.set_grants(tenant, tuple(selected))["grants"]
+               for tenant, selected in sorted(grants.items())}
+    return {"record_type": "service_host_grant_application/v1", "manifest_path": configuration["manifest_path"],
+            "granted_items_by_tenant": applied, "tenants_registered": 0, "remote_accounts_created": False}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Serve the versioned Loop Engine intelligence service.")
-    parser.add_argument("command", choices=("serve", "configure", "issue-key", "smoke"))
+    parser.add_argument("command", choices=("serve", "configure", "apply-grants", "issue-key", "smoke"))
     parser.add_argument("--config", help="Absolute host configuration file; never supplied by a remote request.")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
@@ -368,6 +388,9 @@ def main(argv=None):
         parser.error("--config is required")
     if arguments.command == "configure":
         print(json.dumps(configure_host(arguments.config), sort_keys=True))
+        return 0
+    if arguments.command == "apply-grants":
+        print(json.dumps(apply_host_grants(arguments.config), sort_keys=True))
         return 0
     application, _configuration = load_host_application(arguments.config)
     if arguments.command == "issue-key":
