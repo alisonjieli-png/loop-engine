@@ -290,6 +290,8 @@
   // the origin that served this page. A record that breaks a rule is refused as a whole and nothing from it is shown.
   // The rules list the few forms that a configuration text may take and refuse every other text. A new way to
   // write a key or an address is therefore refused without a rule of its own.
+  // The limit of these rules is one plain word under an ordinary name. The page cannot tell a setting word from a short
+  // secret, from a host name without dots or from the name of a program. The review of the record decides that.
   const recipeRecordType = "website_client_recipes/v2", endpointPlaceholder = "{{ENDPOINT}}";
   const recipeTextFields = ["id", "name", "configuration_location", "configuration_note", "verification_command", "verification_note", "version_note", "removal_note", "source_url"];
   const isTable = value => value !== null && typeof value === "object" && !Array.isArray(value);
@@ -302,8 +304,8 @@
     return found;
   };
   // Key-shaped text. Keys are written in one of two alphabets. In the alphabet that is safe inside an address: a long unbroken run, or a shorter run
-  // that mixes letters and digits. In the standard base64 alphabet: such a mixed run that also holds a plus sign or padding. A slash alone never joins
-  // a run, because a record type such as name/v2 and the path of an address are not keys.
+  // that mixes letters and digits. In the standard base64 alphabet: such a mixed run that also holds a plus sign or padding. A run that only slashes
+  // join is not reported, because a record type such as name/v2 and the path of an address are not keys.
   const mixedRun = run => /[0-9]/.test(run) && /[A-Za-z]/.test(run);
   const tokenShaped = text => /[A-Za-z0-9_-]{32,}/.test(text) || (text.match(/[A-Za-z0-9_-]{20,}/g) || []).some(mixedRun)
     || (text.match(/[A-Za-z0-9+\/=]{20,}/g) || []).some(run => /[+=]/.test(run) && mixedRun(run));
@@ -311,6 +313,9 @@
   const settingsOnly = value => isTable(value) ? Object.values(value).every(settingsOnly) : typeof value === "string" || typeof value === "boolean" || Number.isFinite(value);
   const plainHttps = text => { try { const url = new URL(text); return text.startsWith("https://") && !url.username && !url.password; } catch (_) { return false; } };
   const settingName = /^\$?[A-Za-z][A-Za-z0-9_-]*$/, settingWord = /^[A-Za-z][A-Za-z0-9_-]*$/, credentialTable = /^(?:.*headers|env|environment)$/i;
+  // A name holds a credential when one of its words says so. A capital letter, a hyphen or an underscore divides the words of a name, so oauth and timeout are not such names.
+  const credentialWords = ["authorization", "auth", "bearer", "token", "secret", "password", "passphrase", "credential", "credentials", "key", "apikey"];
+  const namesCredential = name => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").toLowerCase().split(/[^a-z0-9]+/).some(word => credentialWords.includes(word));
   // The command that a person is told to run is plain words and options: no address, path, pipe, assignment or quotation.
   const plainCommand = /^[A-Za-z][A-Za-z0-9-]*(?: -{0,2}[A-Za-z][A-Za-z0-9-]*)*$/;
   // The table that holds the address. Every table above it holds exactly one table, so a configuration names exactly one server entry.
@@ -322,8 +327,9 @@
     // This file is public. No text anywhere in it is shaped like a key: not a value, not a field name and not the variable name, in a field that is displayed or in one that is not.
     if (tokenShaped(variable) || recipeStrings(record).some(item => tokenShaped(item.text.replaceAll(variable, "")))) return "credential_rule";
     const references = [variable, "Bearer {env:" + variable + "}", "Bearer ${" + variable + "}"];
-    // A credential position holds a declared reference to the variable and nothing else. Every value inside a table of headers or of environment values is such a position.
-    const credentialPosition = item => item.path.some(name => credentialTable.test(name)) || item.text.includes(variable) || /\bbearer\b/i.test(item.text) || /^authorization$/i.test(item.key);
+    // A credential position holds a declared reference to the variable and nothing else. Such a position is every value inside a table of headers or of
+    // environment values, every value under a name that holds a credential, and every text that mentions the variable or a bearer value.
+    const credentialPosition = item => item.path.some(name => credentialTable.test(name)) || item.path.some(namesCredential) || item.text.includes(variable) || /\bbearer\b/i.test(item.text);
     for (const recipe of record.recipes) {
       if (!recipe || recipeTextFields.some(field => typeof recipe[field] !== "string" || !recipe[field]) || !["toml", "json"].includes(recipe.format) || !plainHttps(recipe.source_url)
         || !plainCommand.test(recipe.verification_command) || !isTable(recipe.configuration) || !settingsOnly(recipe.configuration)) return "unsupported_record";
