@@ -11,42 +11,144 @@ Use shared, release-bound facts so public copy and engineering status agree.
 
 ## Current positioning and presentation
 
-The category line is "Harness and agent optimized operation". That is the
-owner's phrase, recorded in the September 20 direction. It appears as the
-first line of the homepage, above the headline, and in the page description.
+The buyer is one developer who already runs a coding tool that calls a model,
+who pays for those calls out of their own budget, and who is tired of their
+tools working out the same things again on every task. There is no team
+account, no shared workspace and one plan, so the page speaks to that person
+and not to an engineering manager.
 
-The homepage leads with "Turn complex problems into reusable solutions."
-Its subject is the result a person can keep, run again and adapt. Model
-selection, useful information, tool choice, code reuse and verification
-explain how the product is intended to produce that result.
+The line above the headline is "Free to install. Paid access to the library."
+It replaces "Harness and agent optimized operation" on September 21, 2026, for
+two reasons that engineering recorded rather than asked about. The owner's
+later direction rewrites the top of the homepage and asks for language that
+says who the user is and what the benefit is. The retired line also carried
+the word harness, which the table of
+[names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
+keeps off the homepage. The recorded owner decision in `CLAUDE.md` still names
+the retired phrase; an operator should update that row so the record and the
+page agree.
+
+The homepage leads with "Give your AI agents what they need for each step."
+It names the thing the reader owns and the unit of work the product sells.
+The owner's own proposal was "Give your AI agents exactly what they need". The
+word "exactly" was removed because search is text matching over metadata and a
+selection can miss, so precision would be claimed that nobody measured. The
+words "for each step" were added because that is the product's actual shape.
+An agent-free version of the same sentence, "Reusable material for the tools
+that write your code", is kept in the check as an accepted alternative, so the
+owner can change the headline without changing the check.
+
+The subhead says what the product is, the supporting line says that model keys
+stay with the customer, and the one primary action is Get started. The action
+whose wording the service controls sits in the caption under it.
 
 The homepage sections run in this order:
 
 ```text
 Homepage
-├── Category line and headline
-│   ├── One primary action
-│   └── One secondary action to How it works
-├── Three step strip: connect, ask, keep
-├── The five customer problems
+├── Free and paid line, headline and subhead
+│   ├── One primary action to Get started
+│   ├── One secondary action to How it works
+│   └── The waiting list caption, whose wording the service controls
+├── Six benefits, each opening to say how it works
+│   and what has not been measured
+├── What works right now: search, selected downloads,
+│   connection settings and usage, with the size of the library
+├── Three step strip: connect, ask, keep the record
 ├── One workflow for the decisions behind the work
-├── What an account gives you: search, selected downloads,
-│   connection settings and usage
-├── The four persistent intelligence layers
 ├── A starting point for every step
 ├── Pricing summary with a link to the pricing view
 └── Closing action and the limits note
 ```
 
-The primary action has two states and the page never chooses between them by
+The five customer problems and the four persistent intelligence layers moved
+to How it works on September 21, 2026. They are the vendor's model of the
+world, and they asked the reader to diagnose themselves before they knew what
+the product was. They are still shown to every customer, and
+`tools/check_service_workspace.mjs` holds them by name on the page they now
+live on.
+
+### The six benefits and how they open
+
+Each benefit is a title and a detail. The detail says how the product does it
+and names the file or the behaviour behind it, and where the outcome is an
+intention rather than a result the detail says so in a sentence the reader
+will actually read.
+
+| Benefit | What the detail says has not been measured |
+|---|---|
+| Each step gets the material it needs | How much it changes your token use |
+| Reuse code instead of writing it again | How much generated output it saves |
+| Not every step needs a large model | Which model fits which work |
+| Solutions you can run without us | Nothing. The mechanism runs today, and the page says it is not a record of a customer task it solved |
+| A failed check is examined, not obeyed | The ranking term is written and not yet connected to a live run |
+| Work that can stop and start again | No overnight task population has been run |
+
+The website has a strict content security policy with no inline script and no
+inline style, so the opening behaviour lives in `service.js` and `service.css`.
+Every detail is written into the page source, so a reader whose browser never
+receives the script sees all six. Once the script runs, one benefit is open at
+a time. Pointing at a title, moving keyboard focus to it and pressing it each
+open that one and close the others, so a touch screen and a keyboard reach the
+same detail that a mouse reaches. Each title is a button inside a heading, it
+names its own detail through `aria-controls`, the detail names the title back
+through `aria-labelledby`, and `aria-expanded` follows the state. Nothing
+moves or fades, so a reduced-motion setting changes nothing.
+
+`tools/check_service_workspace.mjs` holds all of that by name, including the
+page read without the script, and five removed-guard controls prove that a
+page which drops one way of reaching a detail fails a named check.
+
+### The retired trial words
+
+The words pilot, beta and private beta do not appear on any page a customer
+reads. Being invited changes only who can create an account. It does not
+change how the product looks or how carefully it is built.
+
+| Do not write | Write |
+|---|---|
+| private pilot, beta, early access programme | accounts open in small groups |
+| pilot user, beta tester | invited member |
+| join the beta | join the waiting list |
+| the pilot does not support X yet | X is being built |
+
+One sentence outside this file still carries the retired word:
+"Your operator manages pilot access." in
+`src/loop_engine/core/service_runtime/web_assets/client-access.js`, shown on
+the account page when customer token management is switched off. The check
+names it as a recorded exception rather than hiding it, so every other
+occurrence anywhere still fails.
+
+### Get started
+
+Get started is the first item in the navigation and in the footer, ahead of
+How it works. Connect is no longer a destination in the navigation, because a
+reader meets the word before they know what it means. It is step two of Get
+started and is always written as "Connect your tools".
+
+The Get started page names three steps in order: download, connect your tools,
+sign up. It keeps the copyable connection settings, the environment variable
+guidance and the connection check that the Connect page already held. Step one
+says plainly that the packaged download and its email link are being built and
+sends the reader to the installation guide. Step three says plainly that the
+waiting list form is being built.
+
+The page answers at `/connect`, which the serving route table lists. The
+address `/get-started` opens the same page through the navigation, and a
+direct visit to it is not served yet. It needs one entry in `WEB_ASSETS` in
+`src/loop_engine/core/service_runtime/http.py`, next to the entry that
+`/pricing` received on September 21, 2026. Until it has one, every link on
+the website points at `/connect`, so no customer reaches a refused address.
+
+The account action has two states and the page never chooses between them by
 itself. It reads `website.registration_available` from `/api/v1/capabilities`.
-When the service reports registration, the action reads "Get started" and
-leads to `/signup`. Otherwise it reads "Request access" and leads to
-`/signup#request-access`, where the page explains that access is by
-invitation. Before the service answers, and if it never answers, the page
-keeps the careful state. The same rule drives the payment state on the
-pricing view, which reads `billing.checkout`, and the personal-key wording
-on the homepage and the pricing view, which reads
+When the service reports that account creation is open, the action reads
+"Create your account" and leads to `/signup`. Otherwise it reads "Join the
+waiting list" and leads to `/signup#waiting-list`, where the page explains
+that accounts open in small groups. Before the service answers, and if it
+never answers, the page keeps the careful state. The same rule drives the
+payment state on the pricing view, which reads `billing.checkout`, and the
+personal-key wording on the homepage and the pricing view, which reads
 `website.client_access_available`. While that field is false, both places say
 that creating and revoking a key for each device is being prepared and that
 the person who runs the service issues the key. The deployed release reports
@@ -66,18 +168,25 @@ ignores the reported state, or which ignores the record version, fails a
 named check.
 
 Do not position Baltor as a context-layer product. Context is one input to
-work whose execution can also use an existing function, a small decision
-call or a native harness. Keep "agent", "harness", "prompt cycle" and
-precise Loop terminology in technical documentation and GitHub. The owner
-explicitly excludes those internal terms from the homepage and How it works.
-Use each step, selected information, tools and checked results on those pages.
-Do not rename the repository, runtime or serialized contracts.
+work whose execution can also use an existing function, a small decision call
+or a coding tool the customer already runs. Keep "harness", "prompt cycle" and
+precise Loop terminology in technical documentation and GitHub. Use each step,
+selected information, tools and checked results on the public pages. Do not
+rename the repository, runtime or serialized contracts.
+
+The word "agent" is allowed on the homepage from September 21, 2026. It is the
+word the buyer already uses for the thing they run, it is a customer word and
+not a runtime word, and the owner's own direction proposes it. The rule that
+matters, which keeps Loop, Loop node, Loop Engine, runtime classification,
+role profiles and Practitioner off the public pages, is unchanged. The table
+of [names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
+records the change and its reason.
 
 The five customer problems are excessive context, expensive models applied
 indiscriminately, missing domain expertise, regenerated code and repeated
-mistakes. Pair each question with a specific approach, not an invented
-percentage improvement. More context or a more capable model can be justified
-when it improves the required outcome.
+mistakes. They live on How it works. Pair each question with a specific
+approach, not an invented percentage improvement. More context or a more
+capable model can be justified when it improves the required outcome.
 
 The website defaults to light appearance, with white surfaces, restrained
 blue accents, readable spacing and an optional dark appearance. Hosting
@@ -133,9 +242,9 @@ a Stripe credential and is not a Supabase customer access token.
 
 | Page | Suitable content | Hold back or qualify |
 |---|---|---|
-| Homepage | The category line, reusable solutions, one primary action, the three step strip, the five customer problems, what an account gives you, the four intelligence layers, the pricing summary and a closing action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
-| How it works | A concrete task becomes understandable steps: find useful information, choose an approach, reuse or build, and check the result. Explain what the service supplies and what the user's tools may send to a model. | No runtime taxonomy, Loop branding or unsupported end-to-end success claim. Technical definitions belong in documentation. |
-| Getting started | Exact released package and supported platform, installation, inspection, one bounded working example, expected output, errors and recovery. | Working-tree-only commands must not be advertised as available from the published package or GitHub main branch. |
+| Homepage | The free and paid line, the headline, one primary action to Get started, the six benefits with their unmeasured outcomes named, what works right now, the three step strip, the pricing summary and a closing action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
+| How it works | A concrete task becomes understandable steps: find useful information, choose an approach, reuse or build, and check the result. The five customer problems and the four intelligence layers. Explain what the service supplies and what the user's tools may send to a model. | No runtime taxonomy, Loop branding or unsupported end-to-end success claim. Technical definitions belong in documentation. |
+| Get started | Download, connect your tools and sign up, in that order. Exact released package and supported platform, installation, inspection, one bounded working example, expected output, errors and recovery. | Working-tree-only commands must not be advertised as available from the published package or GitHub main branch. Do not show a download form or a waiting list form before it works. |
 | Harness and context guide | The generated instruction and assignment files, reference-first context, permitted write locations, supported versioned native layouts, and observed loading status. | Empty folders and offered skill references are not installed or loaded material. Do not copy the entire repository into every instance. |
 | Integration reference | Tested protocol version, request and response schemas, effects, authentication scopes, limits, refused combinations and version negotiation. | A listed adapter or successful import is not end-to-end support for every native client. |
 | Security and privacy | Actual permission and disclosure boundaries, credential handling, retention settings, local versus external data flows, and known limitations. | Do not promise that all data stays local when queries or model calls can leave the machine. Do not claim formal certification or instantaneous in-flight revocation without evidence. |
@@ -150,15 +259,22 @@ The pricing view answers at `/pricing`. It states one plan and nothing else.
 | Fact | Published wording |
 |---|---|
 | Plan | Baltor Pro |
-| Price | 29 US dollars each month |
+| Price | 29 United States dollars each month |
 | Free | Search is free |
 | Measured unit | One downloaded item |
-| Beta | Invited beta users are free |
+| Invited accounts | Invited accounts are free |
 
 These figures come from the owner's September 20 direction, recorded in
 `CLAUDE.md`. Engineering may not change a figure on the page alone. Change the
 recorded decision first, then the page, then the checks that hold the page to
 it.
+
+Two wordings changed on September 21, 2026 without changing a figure. The
+price now reads "29 United States dollars", which is the wording of the
+recorded decision itself and not the abbreviation the page had used. The
+entitlement row now reads "Invited accounts are free", because the owner asked
+that the word beta not appear on a customer page. The fact behind it, an
+operator entitlement that costs nothing, is unchanged.
 
 The payment state is not written into the page. The view reads
 `billing.checkout` from `/api/v1/capabilities`. While that field is false the
@@ -186,13 +302,16 @@ the source serves the address. Four named checks hold it:
 `pricing_address_opens_the_pricing_view_after_a_reload`, and `/pricing` in the
 `responsive_<width>_<path>` and `enlarged_text_<width>_<path>` loops of
 `tools/check_service_workspace.mjs`. A release that drops the entry fails all
-four. The deployed pilot serves the address only from the release that
+four. The deployed service serves the address only from the release that
 carries this source.
+
+The address `/get-started` is still not in the serving route table, so it
+works through the navigation only and every link on the website points at
+`/connect` instead.
 
 One thing is still missing on September 21, 2026. The account page holds the
 subscription controls, and those remain behind the payment state.
 
-The live public page describes a private pilot and the broader product direction.
 Keep the internal report available to the owner, and build the public content
 from an explicit allowlist. Hiding an internal panel with a browser control
 does not remove its data from the downloaded file.
