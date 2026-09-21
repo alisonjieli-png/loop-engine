@@ -5,13 +5,15 @@ application is driven through its ASGI interface with a chosen socket peer
 address, which a loopback socket cannot vary. No socket is opened here; the
 loopback transport checks for the same limit are in http_checks.py. Identity
 outcomes at the activation route are injected, because identity verification
-has its own checks. Each removed-guard control reruns a scenario with the
-guard patched away and requires the scenario's own predicate to fail.
+has its own checks. A removed-guard control reruns a scenario with the guard
+patched away and requires the scenario's own predicate to fail. Not every
+guard has one; the README names the guards that do.
 """
 from __future__ import annotations
 
 import asyncio
 from dataclasses import asdict
+from email.message import Message
 import json
 import threading
 from unittest.mock import patch
@@ -20,8 +22,8 @@ from .http import ServiceHttpApplication, ServiceHttpConfiguration
 from .http_auth import HttpAuthenticationError
 from .http_test_fixtures import HttpDomainFixture
 from .request_limits import (
-    HEADER_SOURCE, LIMIT_REACHED_CODE, NOT_CONFIGURED_SOURCE, REFUSAL_RECORD_TYPE, REQUEST_LIMITS_RECORD_TYPE,
-    SOCKET_PEER_SOURCE, UNKNOWN_PEER_KEY, FailedAttemptLimiter, ServiceRequestLimits,
+    HEADER_SOURCE, LIMIT_REACHED_CODE, NOT_CONFIGURED_SOURCE, PUBLISHED_LIMIT_RECORD_TYPE, REFUSAL_RECORD_TYPE,
+    REQUEST_LIMITS_RECORD_TYPE, SOCKET_PEER_SOURCE, UNKNOWN_PEER_KEY, FailedAttemptLimiter, ServiceRequestLimits,
 )
 
 HOST, ORIGIN = "service.test", "https://service.test"
@@ -68,6 +70,26 @@ class _IdentityStandIn:
 
     def authenticate(self, _credential):
         raise HttpAuthenticationError()
+
+
+PRIVATE_VALUE = "PRIVATE_FIXTURE_VALUE"
+CARRIED_HEADERS = {"Set-Cookie": "provider_session=" + PRIVATE_VALUE, "X-Provider-Internal": PRIVATE_VALUE,
+                   "Retry-After": "86400"}
+
+
+class _OutsideFailure(RuntimeError):
+    """A failure that is not the service's own refusal type and carries response headers.
+
+    A provider client can raise such a failure: the transport failure of the
+    standard library carries the provider's response headers in a message
+    object under the same attribute name.
+    """
+
+    def __init__(self):
+        super().__init__("outside failure")
+        self.headers = Message()
+        for name, value in CARRIED_HEADERS.items():
+            self.headers[name] = value
 
 
 class _Service:
@@ -241,6 +263,12 @@ def _limiter_checks(check):
     limiter.record_failure(PROXY)
     check("an_expired_address_leaves_before_a_waiting_address_is_evicted",
           list(limiter._failures) == [SECOND, VICTIM, PROXY] and limiter.retry_after(SECOND) == 49)
+    roomy = FailedAttemptLimiter(_peer(failures_allowed=1, maximum_tracked_addresses=3), clock=clock)
+    roomy.record_failure(FIRST)
+    clock.now += 61.0
+    roomy.record_failure(SECOND)
+    check("an_expired_address_is_forgotten_when_another_address_fails_in_a_table_with_room",
+          list(roomy._failures) == [SECOND])
     shared = FailedAttemptLimiter(_peer(failures_allowed=4, maximum_tracked_addresses=16))
     errors = []
 
@@ -354,6 +382,64 @@ def _unstated_source_holds(seen):
     return seen == {"statuses": {401}, "tracked": 0, "published": (False, NOT_CONFIGURED_SOURCE)}
 
 
+def _waiting(root):
+    """One address reaches its limit and keeps asking while the clock moves on."""
+    service = _Service(root, _peer(failures_allowed=3))
+    try:
+        seen = {"refused": [service.status("GET", "/api/v1/session", headers=WRONG) for _attempt in range(3)],
+                "waiting": []}
+        for _attempt in range(10):
+            service.clock.now += 5
+            status, headers, _body = service.send("GET", "/api/v1/session", headers=WRONG)
+            seen["waiting"].append((status, headers.get("retry-after")))
+        service.clock.now += 9  # one second before the three counted failures leave the window
+        early = [service.send("GET", "/api/v1/session", headers=chosen) for chosen in (WRONG, service.valid)]
+        seen["one_second_early"] = [(status, headers.get("retry-after")) for status, headers, _body in early]
+        seen["reached_while_waiting"] = service.authentications
+        service.clock.now += 1  # the three counted failures leave the window at this instant
+        seen["released"] = [service.status("GET", "/api/v1/session", headers=chosen)
+                            for chosen in (service.valid, WRONG)]
+        seen["reached"] = service.authentications
+        return seen
+    finally:
+        service.close()
+
+
+def _waiting_holds(seen):
+    """The wait falls by exactly the time that passed, and it ends when the counted failures leave the window."""
+    return seen == {"refused": [401, 401, 401], "waiting": [(429, str(wait)) for wait in range(55, 5, -5)],
+                    "one_second_early": [(429, "1"), (429, "1")], "reached_while_waiting": 3,
+                    "released": [200, 401], "reached": 5}
+
+
+def _counting_refusal(self, key):
+    """The known-wrong rule: a request that is refused with status 429 is counted as one more failure."""
+    wait = self.retry_after(key)
+    if wait:
+        self.record_failure(key)
+    return {"record_type": REFUSAL_RECORD_TYPE, "retry_after_seconds": wait} if wait else None
+
+
+def _outside_failure(root):
+    """Authentication raises a failure from outside the service that carries its own response headers."""
+    service = _Service(root, _peer(failures_allowed=3))
+    try:
+        with patch.object(service.application.authenticator, "authenticate", side_effect=_OutsideFailure()):
+            status, headers, body = service.send("GET", "/api/v1/session", headers=service.valid)
+        own = service.send("GET", "/api/v1/unknown", headers=service.valid)
+        return {"status": status, "carried": sorted(set(headers) & {name.lower() for name in CARRIED_HEADERS}),
+                "private_value_sent": PRIVATE_VALUE in json.dumps([headers, body]),
+                "code": (body or {}).get("error", {}).get("code"), "counted": len(service.application.request_limiter),
+                "own_refusal": (own[0], (own[2] or {}).get("error", {}).get("code"))}
+    finally:
+        service.close()
+
+
+def _outside_failure_holds(seen):
+    return seen == {"status": 500, "carried": [], "private_value_sent": False, "code": "operation_failed",
+                    "counted": 0, "own_refusal": (404, "route_unavailable")}
+
+
 def _transport_checks(check, root):
     # Behind a proxy the socket peer is the proxy. A limit that guessed the
     # socket peer would put every caller in one count, so it must not guess.
@@ -373,21 +459,17 @@ def _transport_checks(check, root):
     check("removed_failed_attempt_limit_is_detected",
           not _crossing_holds(mutant) and mutant["status"] == 401 and mutant["after"] == (4, 4))
 
-    service = _Service(root / "window", _peer(failures_allowed=3))
-    try:
-        for _attempt in range(3):
-            service.status("GET", "/api/v1/session", headers=WRONG)
-        waiting = [service.send("GET", "/api/v1/session", headers=WRONG) for _attempt in range(10)]
-        service.clock.now += 59
-        late = service.send("GET", "/api/v1/session", headers=WRONG)
-        service.clock.now += 1
-        check("refusals_while_waiting_are_not_counted_and_the_window_expires",
-              all(row[0] == 429 for row in waiting) and late[0] == 429 and late[1].get("retry-after") == "1"
-              and service.authentications == 3
-              and service.status("GET", "/api/v1/session", headers=service.valid) == 200
-              and service.status("GET", "/api/v1/session", headers=WRONG) == 401 and service.authentications == 5)
-    finally:
-        service.close()
+    # The clock moves between the refused requests. With a clock that stands
+    # still, a counted refusal would leave the same failure times and stay unseen.
+    check("refusals_while_waiting_are_not_counted_and_the_window_expires", _waiting_holds(_waiting(root / "window")))
+    with patch.object(FailedAttemptLimiter, "refusal", _counting_refusal):
+        counted = _waiting(root / "window-counting-refusals")
+    # The known-wrong rule never releases a caller that keeps asking: the wait
+    # stops falling, and a correct key is still refused at the original expiry.
+    check("removed_uncounted_refusal_rule_is_detected",
+          not _waiting_holds(counted) and counted["waiting"][0] == (429, "55") and counted["released"][0] == 429)
+    check("a_failure_from_outside_the_service_adds_no_response_header",
+          _outside_failure_holds(_outside_failure(root / "outside-failure")))
 
     service = _Service(root / "success", _peer(failures_allowed=3))
     try:
@@ -484,6 +566,17 @@ def _transport_checks(check, root):
         check("a_repeated_configured_header_is_counted_for_the_socket_peer_not_for_a_named_address",
               repeated == [401, 401, 401, 429] and through_proxy(VICTIM, service.valid) == 200
               and list(service.application.request_limiter._failures) == [FIRST, SECOND, PROXY])
+        # The capabilities record is anonymous. It names the address source,
+        # never the trusted header and never the size of the table.
+        status, _headers, body = service.send("GET", "/api/v1/capabilities", peer=PROXY)
+        check("capabilities_name_the_address_source_but_not_the_trusted_header_or_the_table_size",
+              status == 200 and PROXY_HEADER.lower() not in json.dumps(body).lower()
+              and body["result"]["limits"]["failed_attempts_per_address"] == {
+                  "record_type": PUBLISHED_LIMIT_RECORD_TYPE, "active": True,
+                  "counted": ["refused_authentication", "refused_account_activation"],
+                  "failures_allowed": 3, "window_seconds": 60, "client_address_source": HEADER_SOURCE,
+                  "ipv6_prefix_bits": 64, "refusal_code": LIMIT_REACHED_CODE,
+                  "state": "memory_of_one_service_process"})
     finally:
         service.close()
 
@@ -501,11 +594,10 @@ def _transport_checks(check, root):
                   "response_bytes": configuration.maximum_response_bytes,
                   "search_results": configuration.maximum_search_results,
                   "concurrent_operations": configuration.maximum_concurrent_operations}
-              and limits["failed_attempts_per_address"] == configuration.request_limits.to_dict()
+              and limits["failed_attempts_per_address"] == configuration.request_limits.published()
               and limits["failed_attempts_per_address"]["failures_allowed"] == 3
               and limits["failed_attempts_per_address"]["active"] is True
               and limits["failed_attempts_per_address"]["client_address_source"] == SOCKET_PEER_SOURCE
-              and limits["failed_attempts_per_address"]["client_address_header"] is None
               and set(limits) == {"request_bytes", "response_bytes", "search_results", "concurrent_operations",
                                   "failed_attempts_per_address"})
     finally:
@@ -526,15 +618,17 @@ def _host_file_checks(check, root):
             "http": {"public_base_url": ORIGIN, "allowed_hosts": [HOST], **http}, "authentication": {}}))
         application = load_host_application(str(path))[0]
         application._workers.shutdown(wait=True)
-        return application.capabilities()["limits"]["failed_attempts_per_address"]
+        return (application.configuration.request_limits,
+                application.capabilities()["limits"]["failed_attempts_per_address"])
 
     stated = {"record_type": REQUEST_LIMITS_RECORD_TYPE, "client_address_source": HEADER_SOURCE,
               "client_address_header": PROXY_HEADER}
-    published = load({"request_limits": stated})
-    earlier = load({})
+    settings, published = load({"request_limits": stated})
+    earlier_settings, earlier = load({})
+    # The header name is read from the loaded settings: the public record does not carry it.
     check("the_documented_host_file_mapping_activates_the_limit_through_the_real_host_loader",
-          (published["active"], published["client_address_source"], published["client_address_header"])
-          == (True, HEADER_SOURCE, PROXY_HEADER)
+          settings == _header() and (published["active"], published["client_address_source"]) == (True, HEADER_SOURCE)
+          and earlier_settings == ServiceRequestLimits()
           and (earlier["active"], earlier["client_address_source"]) == (False, NOT_CONFIGURED_SOURCE))
     inexact = ({"client_address_header": PROXY_HEADER}, {**stated, "record_type": "service_request_limits/v2"},
                {**stated, "client_address_source": SOCKET_PEER_SOURCE}, {**stated, "trust_forwarded_for": True})

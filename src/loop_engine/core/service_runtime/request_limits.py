@@ -21,6 +21,7 @@ import threading
 import time
 
 REQUEST_LIMITS_RECORD_TYPE = "service_request_limits/v1"
+PUBLISHED_LIMIT_RECORD_TYPE = "service_failed_attempt_limit/v1"
 REFUSAL_RECORD_TYPE = "service_request_limit_refusal/v1"
 LIMIT_REACHED_CODE = "failed_attempt_limit_reached"
 NOT_CONFIGURED_SOURCE, SOCKET_PEER_SOURCE, HEADER_SOURCE = "not_configured", "socket_peer", "header"
@@ -86,14 +87,20 @@ class ServiceRequestLimits:
     def active(self):
         return self.client_address_source != NOT_CONFIGURED_SOURCE
 
-    def to_dict(self):
-        """The projection published under the `limits` key of the capabilities record."""
-        return {"record_type": self.record_type, "active": self.active,
+    def published(self):
+        """The projection published under the `limits` key of the capabilities record.
+
+        Anyone can read that record without signing in. The projection has its
+        own record type because it is not the settings record. It says what a
+        caller can observe: whether the limit is active, the address source,
+        the allowance and the window. It leaves out the name of the trusted
+        header and the size of the table. No client needs them, and they would
+        tell a caller which header to forge and how many addresses empty the table.
+        """
+        return {"record_type": PUBLISHED_LIMIT_RECORD_TYPE, "active": self.active,
                 "counted": ["refused_authentication", "refused_account_activation"],
                 "failures_allowed": self.failures_allowed, "window_seconds": self.window_seconds,
-                "maximum_tracked_addresses": self.maximum_tracked_addresses,
                 "client_address_source": self.client_address_source,
-                "client_address_header": self.client_address_header or None,
                 "ipv6_prefix_bits": self.ipv6_prefix_bits,
                 "refusal_code": LIMIT_REACHED_CODE,
                 "state": "memory_of_one_service_process"}

@@ -59,7 +59,7 @@ WEB_ASSETS = {
 
 
 class ServiceHttpError(ValueError):
-    """A bounded versioned transport refusal with no private exception text."""
+    """A bounded versioned transport refusal with no private exception text; no other failure adds details or headers."""
 
     def __init__(self, code, status=400, *, details=None, headers=None):
         super().__init__(code)
@@ -292,7 +292,7 @@ class ServiceHttpApplication:
                            "response_bytes": self.configuration.maximum_response_bytes,
                            "search_results": self.configuration.maximum_search_results,
                            "concurrent_operations": self.configuration.maximum_concurrent_operations,
-                           "failed_attempts_per_address": self.configuration.request_limits.to_dict()},
+                           "failed_attempts_per_address": self.configuration.request_limits.published()},
                 "billing": {"webhook": self.billing_processor is not None,
                             "checkout": session_options.get("checkout_available", False),
                             "portal": session_options.get("portal_available", False),
@@ -624,8 +624,8 @@ class ServiceHttpApplication:
                     response.headers.update(cors)
             except Exception as error:
                 status, code = _status(error)
-                response = JSONResponse(_error_record(code, error.details if isinstance(error, ServiceHttpError) else None),
-                                        status_code=status, headers={**cors, **(getattr(error, "headers", None) or {})})
+                details, added = (error.details, error.headers) if isinstance(error, ServiceHttpError) else (None, None)
+                response = JSONResponse(_error_record(code, details), status_code=status, headers={**cors, **(added or {})})
                 if status == 401:
                     response.headers["WWW-Authenticate"] = ("Bearer resource_metadata=\""
                         + config.public_base_url + "/.well-known/oauth-protected-resource/mcp\""
