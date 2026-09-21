@@ -9,11 +9,25 @@ import {resolve} from "node:path";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-browse-desktop.png","-browse-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
 const recipeRecord=JSON.parse(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/client-recipes.json"),"utf8"));
+/* The catalogue browser is read from the source tree as well. The service's asset table does not name
+   the file yet, so every page in this run is served those exact source bytes at its own address, and the
+   missing table entry is reported by its own named check with the line the service needs. A removed-guard
+   control changes those bytes in memory only, never the source file. */
+const browseSource=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets/catalogue-browser.js"),"utf8");
+const routeBrowseAsset=(target,mutation)=>{
+  const state={applied:false,errors:[]};
+  target.route("**/assets/catalogue-browser.js",route=>{
+    const body=mutation?browseSource.split(mutation.find).join(mutation.replacement):browseSource;
+    if(mutation)state.applied=body!==browseSource;
+    route.fulfill({status:200,contentType:"text/javascript",body});
+  });
+  return state;
+};
 const program=`from contextlib import ExitStack
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -26,11 +40,13 @@ from loop_engine.core.service_runtime.stripe_session_transport_checks import _ap
 from loop_engine.core.service_runtime.http_test_fixtures import running_key_set
 from loop_engine.core.service_runtime.browser_identity import BrowserIdentityAdapter,BrowserIdentityConfiguration
 from loop_engine.core.service_runtime.access import ServiceAccessAdministration,ServiceClientAccessPolicy
+from loop_engine.core.harness_intelligence import HarnessIntelligenceDraft,item_from_body
+from loop_engine.core.provisioning_server import ProvisioningGrant,ProvisioningItemBinding
 from cryptography.hazmat.primitives.asymmetric import rsa
 import jwt
 with ExitStack() as stack:
     root=Path(stack.enter_context(TemporaryDirectory(prefix="service-browser-")))
-    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir(); (root/"signups").mkdir()
+    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir(); (root/"signups").mkdir(); (root/"browse").mkdir()
     held=prepared(root/"intelligence")
     factory=lambda config:ServiceHttpApplication(held.runtime,held.provisioning,config,access_administration=held.administration)
     base,_=stack.enter_context(running_http(held,application_factory=factory,display_name="Baltor"))
@@ -50,7 +66,25 @@ with ExitStack() as stack:
     signups=HttpDomainFixture(root/"signups",operator_access=False)
     signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user)
     signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity),display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"identity_origin":provider,"identity_token":identity_token,"identity_user":user}),flush=True)
+    # A fifth real service whose catalogue spans the persistent groups, so browsing is compared with a real
+    # reply from a real service. One of the four groups is left empty on purpose, one item is granted
+    # without its body, one item names no licence, and two items name the development tool they were
+    # written for. No item declares an effect, because a browser holds no authority to run anything.
+    browse=HttpDomainFixture(root/"browse")
+    published=[
+        (HarnessIntelligenceDraft("context.review","skill","Review the supplied inputs before work starts","context_intelligence","fixture:context.review/v1","MIT",(),("claude-code",)),"CONTEXT_REVIEW_BODY",True),
+        (HarnessIntelligenceDraft("context.brief","instruction_file","Write the brief for one step","context_intelligence","fixture:context.brief/v1","CC-BY-4.0"),"CONTEXT_BRIEF_BODY",True),
+        (HarnessIntelligenceDraft("code.normalise","reusable_code","Normalise a supplied table of values","code_intelligence","fixture:code.normalise/v1","Apache-2.0",(),("codex",)),"CODE_NORMALISE_BODY",True),
+        (HarnessIntelligenceDraft("code.verify","tool","Check an import against its declared contract","code_intelligence","fixture:code.verify/v1","MIT"),"CODE_VERIFY_BODY",False),
+        (HarnessIntelligenceDraft("history.retry","instruction_file","What an earlier attempt at this task did","runtime_history_solution_intelligence","fixture:history.retry/v1","MIT"),"HISTORY_RETRY_BODY",True),
+        (HarnessIntelligenceDraft("local.notes","instruction_file","Notes your own setup already holds","harness_local","fixture:local.notes/v1","",(),(),"metadata_only","installed"),"LOCAL_NOTES_BODY",True)]
+    for draft,body,_allowed in published:
+        item=item_from_body(draft,body)
+        browse.catalogue.register(item); browse.bodies[item.identity]=body
+        browse.bindings[item.identity]=ProvisioningItemBinding.from_item(item)
+    browse.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse.bindings[draft.identity],allowed) for draft,_body,allowed in published))
+    browse_base,_=stack.enter_context(running_http(browse,display_name="Baltor"))
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user}),flush=True)
     sys.stdin.readline()
 `;
 const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
@@ -58,7 +92,7 @@ const lines=createInterface({input:child.stdout});
 const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
 const checks=[],errors=[],network=[]; let browser;
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
-const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.identity_token];
+const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
@@ -163,7 +197,7 @@ async function checkRefusedRecord(context,base,note,wrong,mutation){
   if(!closed)await checkShownRecipe(page,base,wrong.served,wrong.served.recipes.find(recipe=>recipe.id===wrong.id),note);
   await page.close();return state;
 }
-const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
+const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.browse_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
 /* Planted values for the known-wrong records. Each is made for this run. The key in the standard base64 alphabet is broken by plus signs into pieces that the
    other alphabet never reports, and the short literal, the number and the shaped name are what a person could type by mistake. The header and the environment
    name that carry the short literal hold no word that names a credential, so only the rule for their table refuses them. */
@@ -247,7 +281,7 @@ try {
   check("no_key_check_does_not_mistake_a_record_type_or_an_address_for_a_key",!keyShaped(recipeRecord.record_type)&&recipeRecord.recipes.every(item=>!keyShaped(item.source_url))&&keyShaped(standardKey)&&!keyShaped(shortLiteral));
   browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
   const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:"reduce"});
-  await context.route("**/*",localOnly);
+  await context.route("**/*",localOnly); routeBrowseAsset(context);
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
@@ -474,7 +508,7 @@ try {
   /* Connection recipes: every reviewed recipe, the known-wrong records, the serving origins and the removed-guard controls. */
   const checkConnectionRecipes=async()=>{
   const recipeContext=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
-  await recipeContext.grantPermissions(["clipboard-read","clipboard-write"]);await recipeContext.route("**/*",localOnly);
+  await recipeContext.grantPermissions(["clipboard-read","clipboard-write"]);await recipeContext.route("**/*",localOnly);routeBrowseAsset(recipeContext);
   check("no_key_check_separates_keys_from_variable_references",keyShaped(fixture.token)&&keyShaped("Bearer "+plantedKey)&&keyShaped("Bearer secret")&&!keyShaped("Bearer {env:"+variable+"}")&&!keyShaped("Bearer ${"+variable+"}")&&!keyShaped(variable));
   let sameAddress=null;try{sameAddress=[schemeOnly,withBackslashes].every(text=>new URL(text).href===otherOrigin);}catch(_){sameAddress=false;}
   check("known_wrong_addresses_reach_another_host_in_a_client_address_parser",sameAddress===true&&otherOrigin!==fixture.base+"/mcp",{forms:2});
@@ -686,6 +720,281 @@ try {
   await page.locator('header a[data-page="login"]').click();await page.click("#disconnect");releaseCustomer();
   check("customer_sign_out_clears_tokens_before_delayed_reply",await page.locator("#client-access-controls").isHidden()&&await page.inputValue("#client-issued-token")===""&&await page.locator("#refresh-client-access").isDisabled());
   await page.unroute("**/api/v1/account/access");
+  /* Browsing the four groups. The page is never allowed to agree with itself: every group, count and
+     filtered list is compared with a real reply from the same service, read with the same credential
+     through a separate request. The known-wrong cases sit beside the states they refuse. */
+  const plainContext=await browser.newContext();
+  const servedAsset=await plainContext.request.get(fixture.browse_base+"/assets/catalogue-browser.js");
+  const servedAssetText=servedAsset.status()===200?await servedAsset.text():"";
+  await plainContext.close();
+  check("catalogue_browser_asset_is_served",servedAsset.status()===200&&(servedAsset.headers()["content-type"]||"").includes("javascript")&&servedAssetText===browseSource,
+    {status:servedAsset.status(),
+     needed_entry:'src/loop_engine/core/service_runtime/http.py, WEB_ASSETS, add "/assets/catalogue-browser.js": ("catalogue-browser.js", "text/javascript")'});
+  const browseList=async (target,fields={})=>(await (await target.request.post(fixture.browse_base+"/api/v1/provisioning",
+    {headers:{Authorization:"Bearer "+fixture.browse_token,"Content-Type":"application/json"},
+     data:{record_type:"service_provisioning_request/v1",operation:"list",...fields}})).json()).result;
+  const layerNames=[["context_intelligence","Guidance and methods"],["code_intelligence","Reusable code and tools"],
+    ["runtime_history_solution_intelligence","What worked before"],["user_feedback_intelligence","Your own instructions"],
+    ["harness_local","Already on your own machine"]];
+  const expectedGroups=(items,filtered)=>layerNames.map(([layer,name])=>{
+    const held=items.filter(row=>row.source_layer===layer);
+    return {layer,name,count:held.length+(held.length===1?" item":" items"),
+      empty:held.length?"":(filtered?"Nothing in this group matches your filters.":"Nothing is published in this group yet."),
+      identities:held.map(row=>row.identity)};
+  }).filter(group=>group.layer!=="harness_local"||group.identities.length>0);
+  const browseGroups=target=>target.locator("#browse-groups .browse-group").evaluateAll(items=>items.map(item=>({
+    layer:item.dataset.layer,name:item.querySelector("h3").textContent,count:item.querySelector(".badge").textContent,
+    empty:item.querySelector(".browse-empty")?.textContent||"",
+    identities:[...item.querySelectorAll(".browse-item")].map(button=>button.dataset.identity)})));
+  const browseDetail=target=>target.locator("#browse-detail dl").evaluate(node=>{
+    const pairs=[];
+    for(const item of node.children){if(item.tagName==="DT")pairs.push([item.textContent,""]);else pairs[pairs.length-1][1]=item.textContent;}
+    return Object.fromEntries(pairs);});
+  const browseStatus=page=>page.locator('#browse-detail p[role="status"]').evaluate(node=>node.textContent);
+  const settleBrowse=page=>page.waitForFunction(()=>!document.querySelector("#refresh-browse").disabled);
+  const loadBrowse=async page=>{await page.click("#refresh-browse");await settleBrowse(page);};
+  const openItem=async (page,identity)=>{
+    await page.locator('.browse-item[data-identity="'+identity+'"]').click();
+    await page.waitForFunction(id=>{const panel=document.querySelector("#browse-detail");
+      return panel.querySelector("p.caption")?.textContent===id&&!panel.textContent.includes("Checking this item");},identity);};
+  const refusedBrowse=async (page,note,name,planted)=>{
+    const groups=await browseGroups(page),message=await page.locator("#browse-message").innerText();
+    note(name,groups.length===0&&await page.locator("#browse-count").innerText()==="Nothing shown"
+      &&message.startsWith("This service answered with a catalogue record this page was not written for")
+      &&!(await page.locator(".browse").innerText()).includes(planted),{groups:groups.length,message});};
+  async function openBrowseWorkspace(mutation){
+    const context=await browser.newContext({viewport:{width:1440,height:1000},acceptDownloads:true,reducedMotion:"reduce"});
+    await context.route("**/*",localOnly);
+    const state=routeBrowseAsset(context,mutation);
+    const opened=await context.newPage();
+    opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
+    await opened.goto(fixture.browse_base+"/login");
+    await opened.fill("#access-token",fixture.browse_token);
+    await opened.click("#connect-button");
+    await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
+    await opened.waitForFunction(()=>!document.querySelector("#refresh-browse").disabled);
+    return {context,page:opened,state};
+  }
+  const browseScenarios={
+    catalogue:async (opened,note)=>{
+      await loadBrowse(opened);
+      const reply=await browseList(opened),groups=await browseGroups(opened),want=expectedGroups(reply.items,false);
+      note("browse_shows_the_four_groups_with_plain_names",reply.items.length===6&&groups.length===5
+        &&JSON.stringify(groups.map(item=>[item.layer,item.name]))===JSON.stringify(want.map(item=>[item.layer,item.name])),
+        {shown:groups.map(item=>item.name)});
+      note("browse_counts_and_membership_match_the_service_reply",JSON.stringify(groups)===JSON.stringify(want)
+        &&await opened.locator("#browse-count").innerText()==="6 items",{groups,want});
+      const emptyGroup=groups.find(item=>item.layer==="user_feedback_intelligence");
+      note("browse_says_plainly_when_a_group_holds_nothing",emptyGroup!==undefined&&emptyGroup.count==="0 items"
+        &&emptyGroup.identities.length===0&&emptyGroup.empty==="Nothing is published in this group yet.",{group:emptyGroup});
+      await openItem(opened,"context.review");
+      const detail=await browseDetail(opened),listed=reply.items.find(row=>row.identity==="context.review");
+      note("browse_detail_states_purpose_licence_size_digest_and_effects",
+        detail["What it is for"]===listed.purpose&&detail["Exact reference"]===listed.identity
+        &&detail["Where it comes from"]===listed.source_ref&&detail.Licence===listed.license
+        &&detail.Size===listed.size_bytes+" bytes"&&detail.Digest===listed.digest&&/^[0-9a-f]{64}$/.test(detail.Digest)
+        &&detail["Declared effects"]==="None declared"&&detail["Written for"]==="claude-code"
+        &&detail["The file itself"].startsWith("You may fetch it"),{detail});
+      const saving=opened.waitForEvent("download");
+      await opened.click("#browse-download");
+      const saved=await saving,stream=await saved.createReadStream(),chunks=[];
+      for await (const chunk of stream) chunks.push(chunk);
+      note("browse_download_matches_the_selected_digest",Buffer.concat(chunks).toString()==="CONTEXT_REVIEW_BODY"
+        &&createHash("sha256").update("CONTEXT_REVIEW_BODY").digest("hex")===listed.digest
+        &&(await browseStatus(opened)).includes("Digest verified"));
+      await openItem(opened,"code.verify");
+      note("browse_detail_says_when_the_file_is_not_granted",(await browseDetail(opened))["The file itself"]==="Not granted to this account."
+        &&await opened.locator("#browse-download").count()===0
+        &&(await browseStatus(opened))==="This account may read the details above, not the file.");
+      await openItem(opened,"local.notes");
+      note("browse_detail_states_an_unstated_licence_honestly",(await browseDetail(opened)).Licence==="Not stated"
+        &&(await browseDetail(opened))["Written for"]==="No tool named, so it suits every tool");
+      const view=await opened.locator('[data-view="workspace"] .browse').innerText();
+      note("browse_view_uses_plain_words",!internalTerms.test(view)&&!/\bPractitioner\b/i.test(view),{});
+      note("browse_shows_descriptions_and_no_file_body",view.includes("No file was fetched.")
+        &&!["CONTEXT_REVIEW_BODY","CODE_NORMALISE_BODY","LOCAL_NOTES_BODY","HISTORY_RETRY_BODY"].some(body=>view.includes(body)));
+      note("browse_stores_nothing_in_the_browser",await opened.evaluate(()=>localStorage.length===0&&sessionStorage.length===0&&document.cookie==="")
+        &&!view.includes(fixture.browse_token));
+      await opened.locator("#browse-style").focus();
+      await opened.keyboard.press("Tab");
+      const afterOne=await opened.evaluate(()=>document.activeElement.id);
+      await opened.keyboard.press("Tab");
+      const reached=await opened.evaluate(()=>({className:String(document.activeElement.className),identity:document.activeElement.dataset.identity}));
+      await opened.keyboard.press("Enter");
+      await opened.waitForFunction(id=>document.querySelector("#browse-detail p.caption")?.textContent===id,reached.identity);
+      note("browse_opens_an_item_with_the_keyboard",afterOne==="refresh-browse"&&reached.className==="browse-item"
+        &&await opened.locator('.browse-item[data-identity="'+reached.identity+'"]').getAttribute("aria-current")==="true",{afterOne,reached});
+      await opened.setViewportSize({width:1440,height:1000});
+      await opened.screenshot({path:output.replace(/\.json$/,"-browse-desktop.png"),fullPage:true});
+      const browseFits=[];
+      for(const width of [1440,820,390,320]){
+        await opened.setViewportSize({width,height:1000});
+        for(const size of ["","200%"]){
+          await opened.evaluate(value=>document.documentElement.style.fontSize=value,size);
+          browseFits.push({width,size:size||"100%",...await opened.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,
+            items:[...document.querySelectorAll('[data-view="workspace"] .browse *')].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;})
+              .slice(0,8).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}))});
+        }
+        await opened.evaluate(()=>document.documentElement.style.fontSize="");
+      }
+      await opened.setViewportSize({width:390,height:1000});
+      await opened.screenshot({path:output.replace(/\.json$/,"-browse-mobile.png"),fullPage:true});
+      await opened.setViewportSize({width:1440,height:1000});
+      note("browse_fits_small_screens_and_enlarged_text",browseFits.length===8&&browseFits.every(item=>!item.overflow),
+        {problems:browseFits.filter(item=>item.overflow)});
+    },
+    kind_filter:async (opened,note)=>{
+      await loadBrowse(opened);
+      await opened.selectOption("#browse-kind","reusable_code");await settleBrowse(opened);
+      const reply=await browseList(opened,{kinds:["reusable_code"]}),groups=await browseGroups(opened);
+      note("browse_filters_by_kind_through_the_service",reply.items.length===1&&reply.items[0].identity==="code.normalise"
+        &&JSON.stringify(groups)===JSON.stringify(expectedGroups(reply.items,true))
+        &&await opened.locator("#browse-count").innerText()==="1 of 6 items",{groups});
+      note("browse_says_a_filter_hid_a_group_rather_than_calling_it_unpublished",
+        groups.find(item=>item.layer==="context_intelligence")?.empty==="Nothing in this group matches your filters.");
+    },
+    tool_filter:async (opened,note)=>{
+      await loadBrowse(opened);
+      await opened.selectOption("#browse-style","codex");await settleBrowse(opened);
+      const reply=await browseList(opened,{style:"codex"}),groups=await browseGroups(opened);
+      const identities=groups.flatMap(item=>item.identities);
+      note("browse_filters_by_development_tool_through_the_service",reply.items.length===5
+        &&JSON.stringify(groups)===JSON.stringify(expectedGroups(reply.items,true))
+        &&identities.includes("code.normalise")&&identities.includes("context.brief")&&!identities.includes("context.review"),
+        {identities});
+    },
+    changed_download:async (opened,note)=>{
+      await loadBrowse(opened);await openItem(opened,"context.review");
+      /* Bytes that are not the revision the reader selected, with a service report that agrees with those
+         bytes. Only the comparison against the listed digest can tell this answer from a correct one. */
+      const wrongBody="CORRUPTED_LOCAL_FIXTURE",wrongDigest=createHash("sha256").update(wrongBody).digest("hex");
+      await opened.route("**/api/v1/download",async route=>{const response=await route.fetch();
+        await route.fulfill({response,headers:{...response.headers(),"x-content-sha256":wrongDigest},body:wrongBody});});
+      const saving=opened.waitForEvent("download",{timeout:1500}).then(()=>false,()=>true);
+      await opened.click("#browse-download");
+      await opened.waitForFunction(()=>document.querySelector('#browse-detail p[role="status"]').textContent!=="Fetching the selected revision…");
+      const nothingSaved=await saving;
+      note("browse_refuses_changed_download_bytes_and_saves_nothing",nothingSaved
+        &&(await browseStatus(opened)).includes("do not match the selected item")
+        &&(await browseStatus(opened)).includes("Nothing was saved."),{status:await browseStatus(opened)});
+      await opened.unroute("**/api/v1/download");
+    },
+    reported_digest:async (opened,note)=>{
+      await loadBrowse(opened);await openItem(opened,"context.review");
+      /* The bytes are the real ones; only the digest the service reports for them is changed. A page that
+         measures the bytes but trusts the reported digest cannot tell these two answers apart. */
+      await opened.route("**/api/v1/download",async route=>{const response=await route.fetch();
+        await route.fulfill({response,headers:{...response.headers(),"x-content-sha256":"0".repeat(64)}});});
+      const saving=opened.waitForEvent("download",{timeout:1500}).then(()=>false,()=>true);
+      await opened.click("#browse-download");
+      await opened.waitForFunction(()=>document.querySelector('#browse-detail p[role="status"]').textContent!=="Fetching the selected revision…");
+      const nothingSaved=await saving;
+      note("browse_refuses_a_download_whose_reported_digest_disagrees",nothingSaved
+        &&(await browseStatus(opened)).includes("Nothing was saved."),{status:await browseStatus(opened)});
+      await opened.unroute("**/api/v1/download");
+    },
+    changed_item:async (opened,note)=>{
+      await loadBrowse(opened);
+      await opened.route("**/api/v1/provisioning",async route=>{
+        const sent=route.request().postDataJSON();
+        if(sent?.operation!=="manifest")return route.continue();
+        const response=await route.fetch(),value=await response.json();
+        value.result.digest="0".repeat(64);
+        await route.fulfill({response,json:value});});
+      await openItem(opened,"context.review");
+      note("browse_refuses_an_item_that_changed_since_the_list",
+        (await browseStatus(opened))==="This item changed since the list was loaded. Load the catalogue again before fetching it."
+        &&await opened.locator("#browse-download").count()===0
+        &&await opened.locator("#browse-detail dl").count()===0,{status:await browseStatus(opened)});
+      await opened.unroute("**/api/v1/provisioning");
+    },
+    wrong_version:async (opened,note)=>{
+      await opened.route("**/api/v1/provisioning",async route=>{
+        const sent=route.request().postDataJSON();
+        if(sent?.operation!=="list")return route.continue();
+        const response=await route.fetch(),value=await response.json();
+        value.result.record_type="provisioning_list/v3";
+        await route.fulfill({response,json:value});});
+      await loadBrowse(opened);
+      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_record_version_it_was_not_written_for","context.review");
+      await opened.unroute("**/api/v1/provisioning");
+    },
+    unknown_group:async (opened,note)=>{
+      await opened.route("**/api/v1/provisioning",async route=>{
+        const sent=route.request().postDataJSON();
+        if(sent?.operation!=="list")return route.continue();
+        const response=await route.fetch(),value=await response.json();
+        value.result.items[0].source_layer="mystery_intelligence";
+        await route.fulfill({response,json:value});});
+      await loadBrowse(opened);
+      await refusedBrowse(opened,note,"browse_refuses_a_catalogue_that_names_a_group_it_does_not_know","context.review");
+      note("browse_names_the_reason_it_refused_a_catalogue",(await opened.locator("#browse-message").innerText()).includes("a group this page does not know"));
+      await opened.unroute("**/api/v1/provisioning");
+    },
+    delayed_reply:async (opened,note)=>{
+      await loadBrowse(opened);await openItem(opened,"context.review");
+      let release;const gate=new Promise(resolve=>{release=resolve;});let held=false;
+      await opened.route("**/api/v1/provisioning",async route=>{
+        if(route.request().postDataJSON()?.operation==="list"){held=true;await gate;}
+        await route.continue().catch(()=>{});});
+      await opened.click("#refresh-browse");
+      await new Promise((resolve,reject)=>{const deadline=setTimeout(()=>{clearInterval(poll);reject(new Error("No held catalogue request"));},5000);
+        const poll=setInterval(()=>{if(held){clearInterval(poll);clearTimeout(deadline);resolve();}},10);});
+      await opened.locator('header a[data-page="login"]').click();
+      await opened.click("#disconnect");
+      await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
+      release();
+      const signedOut="Sign in to browse the material published for your account.";
+      await opened.waitForFunction(text=>document.querySelector("#browse-message").textContent!==text,signedOut,{timeout:1200}).catch(()=>{});
+      note("browse_sign_out_clears_a_delayed_catalogue_reply",
+        await opened.locator("#browse-groups .browse-group").count()===0
+        &&await opened.locator("#browse-count").innerText()==="Sign in to browse"
+        &&await opened.locator("#browse-message").innerText()===signedOut
+        &&await opened.locator("#browse-detail dl").count()===0
+        &&await opened.locator("#browse-kind").isDisabled()&&await opened.locator("#refresh-browse").isDisabled(),
+        {message:await opened.locator("#browse-message").innerText()});
+      await opened.unroute("**/api/v1/provisioning");
+    }};
+  for(const name of Object.keys(browseScenarios)){
+    const {context:browseContext,page:browsePage}=await openBrowseWorkspace(null);
+    await browseScenarios[name](browsePage,check);
+    await browseContext.close();
+  }
+  /* Removed-guard controls for browsing. The served module is changed in memory only. A control is
+     detected when every check it names fails with the guard removed. */
+  const browseControls=[
+    {name:"accept_any_catalogue_record_version",scenario:"wrong_version",find:"value.record_type !== listVersion",replacement:"false",
+     expected:["browse_refuses_a_catalogue_record_version_it_was_not_written_for"]},
+    {name:"accept_a_group_the_page_does_not_know",scenario:"unknown_group",
+     find:'if (!knownLayers.has(row.source_layer)) return "a group this page does not know";',replacement:"",
+     expected:["browse_refuses_a_catalogue_that_names_a_group_it_does_not_know","browse_names_the_reason_it_refused_a_catalogue"]},
+    {name:"trust_the_downloaded_bytes",scenario:"changed_download",find:"measured !== row.digest || ",replacement:"",
+     expected:["browse_refuses_changed_download_bytes_and_saves_nothing"]},
+    {name:"trust_the_reported_download_digest",scenario:"reported_digest",find:" || measured !== result.digest",replacement:"",
+     expected:["browse_refuses_a_download_whose_reported_digest_disagrees"]},
+    {name:"ignore_an_item_that_changed_since_the_list",scenario:"changed_item",find:"if (value.digest !== row.digest) {",replacement:"if (false) {",
+     expected:["browse_refuses_an_item_that_changed_since_the_list"]},
+    {name:"keep_a_delayed_catalogue_reply_after_sign_out",scenario:"delayed_reply",find:"if (epoch !== current().generation) return;",replacement:"",
+     expected:["browse_sign_out_clears_a_delayed_catalogue_reply"]},
+    {name:"hide_a_group_that_holds_nothing",scenario:"catalogue",find:"if (group.outside && !held.length) continue;",replacement:"if (!held.length) continue;",
+     expected:["browse_shows_the_four_groups_with_plain_names","browse_counts_and_membership_match_the_service_reply","browse_says_plainly_when_a_group_holds_nothing"]},
+    {name:"ignore_the_kind_filter",scenario:"kind_filter",find:"kind ? {kinds:[kind]} : {}",replacement:"{}",
+     expected:["browse_filters_by_kind_through_the_service","browse_says_a_filter_hid_a_group_rather_than_calling_it_unpublished"]},
+    {name:"ignore_the_development_tool_filter",scenario:"tool_filter",find:"style ? {style} : {}",replacement:"{}",
+     expected:["browse_filters_by_development_tool_through_the_service"]}];
+  for(const control of browseControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{
+      const {context:changedContext,page:changedPage,state}=await openBrowseWorkspace({find:control.find,replacement:control.replacement});
+      applied=state.applied;
+      await browseScenarios[control.scenario](changedPage,note);
+      await changedContext.close();
+    }catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
+  }
   await page.goto(fixture.base+"/"); await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:output.replace(/\.json$/,"-desktop.png"),fullPage:true});
   await page.setViewportSize({width:390,height:1000}); await page.click("#theme");
@@ -698,7 +1007,7 @@ finally{
   if(browser)await browser.close(); child.stdin.end("\n");
   await new Promise(resolve=>{if(child.exitCode!==null)return resolve();const timer=setTimeout(()=>{child.kill("SIGTERM");resolve();},5000);child.once("exit",()=>{clearTimeout(timer);resolve();});}); lines.close();
 }
-const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','architecture-story.js','architecture.css','client-recipes.json'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
+const paths=[...['http.py','records.py','access.py','access_checks.py','http_entrypoint.py','runtime.py','browser_identity.py','browser_identity_checks.py'].map(name=>"src/loop_engine/core/service_runtime/"+name),...['index.html','service.css','service.js','client-access.js','catalogue-browser.js','architecture-story.js','architecture.css','client-recipes.json'].map(name=>"src/loop_engine/core/service_runtime/web_assets/"+name)];
 /* Version 2 of this report carries the removed-guard controls, and all_passed is true only when every check passed and every control was detected. Version 1 had neither. */
 const result={record_type:"service_workspace_browser_checks/v2",scope:"real browser and loopback service; provider fixtures only",external_provider_calls:0,checks,passed:checks.filter(x=>x.passed).length,total:checks.length,mutants,mutants_detected:mutants.filter(x=>x.detected).length,all_passed:checks.every(x=>x.passed)&&mutants.every(x=>x.detected),source_sha256:Object.fromEntries(paths.map(path=>[path,createHash("sha256").update(readFileSync(resolve(root,path))).digest("hex")]))};
 writeFileSync(output,JSON.stringify(result,null,2)+"\n",{flag:"wx"}); console.log(JSON.stringify({passed:result.passed,total:result.total,mutants_detected:result.mutants_detected,mutants:mutants.length,all_passed:result.all_passed,failures:checks.filter(x=>!x.passed),output})); process.exitCode=result.all_passed?0:1;

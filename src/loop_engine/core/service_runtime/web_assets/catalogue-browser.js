@@ -91,7 +91,7 @@ window.BaltorCatalogueBrowser = {
       for (const value of values) { const choice = element("option", names[value] || value); choice.value = value; select.append(choice); }
       select.value = [...select.options].some(choice => choice.value === previous) ? previous : "";
     }
-    function render(rows, total) {
+    function render(rows, total, filtered) {
       const groupsElement = $("browse-groups");
       groupsElement.replaceChildren();
       for (const group of groups) {
@@ -102,7 +102,8 @@ window.BaltorCatalogueBrowser = {
         const heading = element("div", "", "browse-group-heading");
         heading.append(element("h3", group.name), element("span", count(held.length), "badge"));
         section.append(heading, element("p", group.note, "caption"));
-        if (!held.length) section.append(element("p", "Nothing is published in this group yet.", "browse-empty"));
+        if (!held.length) section.append(element("p", filtered
+          ? "Nothing in this group matches your filters." : "Nothing is published in this group yet.", "browse-empty"));
         else {
           const list = element("ul", "", "browse-list");
           for (const row of held) {
@@ -228,7 +229,7 @@ window.BaltorCatalogueBrowser = {
         }
         shown = value.items;
         if (!shown.some(row => row.identity === selected)) { selected = ""; clearDetail("Open an item to read its details."); }
-        render(shown, listed.length);
+        render(shown, listed.length, Boolean(kind || style));
         const withheld = Array.isArray(value.withheld) ? value.withheld.length : 0;
         message("browse-message", "Showing " + count(shown.length) + " for " + value.tenant_id + ". "
           + (withheld ? count(withheld) + " were held back by the filters or by this account's permissions. " : "")
