@@ -1,0 +1,177 @@
+record_type: component_guide_map/v1
+version: 1.0.0
+source_of_truth: docs/components/COMPONENT-GUIDE-MAP.yaml
+checked_by: tools/check_component_guides.py
+description: >-
+  Which component guide owns each source directory that runs a registered
+  operational boundary, and which guides exist. The check in
+  tools/check_component_guides.py refuses a registered boundary whose
+  directory has no guide, a guide that is not listed here, and a listed guide
+  that is missing. With --run-documented-checks it also runs each self-test
+  command the guides give a reader and refuses the ones that fail.
+limits: >-
+  The coverage rule resolves one guide for each source directory, not one
+  guide for each boundary. A directory holding several components sends all
+  of them to the same guide, so this map proves that no boundary is
+  undocumented at directory level; it does not prove that a guide describes
+  every boundary inside its directory. Splitting a directory's guides needs a
+  finer rule than a directory lookup. A reviewer still reads the prose: the
+  check decides whether the names a guide uses exist and its commands run, not
+  whether its sentences are true.
+
+# Every source directory reached by an envelope in
+# loop_engine.core.boundary_registry.BOUNDARIES. A directory is written
+# relative to src/loop_engine. "." is the package root.
+components:
+  ".":
+    guide: docs/components/managed-records/README.md
+    covers: >-
+      The record tool dispatched from the package root, which is the only
+      registered boundary whose module sits beside the package folders.
+  loop:
+    guide: docs/components/loop-object/README.md
+    covers: >-
+      The canonical Loop runtime, its definition, relationships, modes, step
+      profiles, spawning, checkpoints and effect approvals.
+  core:
+    guide: docs/components/core-architecture/README.md
+    covers: >-
+      The three public capability groups and the internal runtime mechanics:
+      the model gateway, harness adapters, workspaces, settings, retrieval,
+      Runtime Memory, reusable capabilities and the semantic runtime.
+  core/decisions:
+    guide: docs/components/typed-decisions/README.md
+    covers: >-
+      Typed decision requests, their provider capability and the configured
+      decision endpoints the model gateway dispatches to.
+  core/service_runtime:
+    guide: docs/components/service-runtime/README.md
+    covers: >-
+      The hosted intelligence service: its versioned operations, tenant
+      authority, client keys, request limits and usage records.
+  code_nodes:
+    guide: docs/components/solution-canvas/README.md
+    covers: >-
+      Solution Canvas execution, the solution graph adapter and the other
+      reusable solution capabilities that run as Solution or Practitioner
+      Loops.
+  generation:
+    guide: docs/components/configuration-search/README.md
+    covers: >-
+      The configuration space, its proposal adapters and the search that
+      proposes exact configuration candidates.
+
+# Every Markdown file under docs/components, with what it covers. A new guide
+# has to be listed here, and a listing without a file fails the check.
+guides:
+  docs/components/README.md: The reading order across every component guide.
+  docs/components/configuration-search/README.md:
+    The configuration space and the search that proposes candidates.
+  docs/components/core-architecture/README.md:
+    The three public capability groups and the internal runtime mechanics.
+  docs/components/core-architecture/BRAVE-SEARCH-PLUGIN.md:
+    The Web Research example capability and its declared handshake.
+  docs/components/core-architecture/CONTEXT-ARTIFACTS.md:
+    Large-context references and compaction.
+  docs/components/core-architecture/EFFECT-APPROVALS.md:
+    Durable approval decisions bound to one exact requested effect.
+  docs/components/core-architecture/EXTERNAL-HARNESS-ADAPTERS.md:
+    Registered external harness adapters and their declared capabilities.
+  docs/components/core-architecture/HARNESS-FALLBACK.md:
+    Per-step harness recovery, response evaluation and wrapper layering.
+  docs/components/core-architecture/MCP-AND-SKILLS.md:
+    Model Context Protocol tools and skills as typed adapters.
+  docs/components/core-architecture/MODEL-GATEWAY.md:
+    Provider-neutral model routing, capacity and accounting.
+  docs/components/core-architecture/MODEL-RESPONSE-ADMISSION.md:
+    Structural admission of a model response before it is used.
+  docs/components/core-architecture/OPENTELEMETRY.md:
+    Exporting Run History as spans without exporting secrets.
+  docs/components/core-architecture/SEARCH-AND-STORAGE.md:
+    The retrieval backends and where intelligence bodies live.
+  docs/components/core-architecture/WORKSPACE-BACKENDS.md:
+    Path-confined workspaces and the sandboxes that run commands.
+  docs/components/intelligence-layers/README.md:
+    The four persistent intelligence layers and one search across them.
+  docs/components/intelligence-layers/CODE-INTELLIGENCE-TEMPLATES.md:
+    The reusable templates that describe one Code Intelligence item.
+  docs/components/intelligence-layers/CONTEXT-HIERARCHY.md:
+    The composable Context Intelligence ontology.
+  docs/components/intelligence-layers/EXTERNAL-HARNESS-IMPORTS.md:
+    Importing harness memory and instruction files as candidates.
+  docs/components/intelligence-layers/INTELLIGENCE-AS-LOOPS.md:
+    Search, materialization and invocation as Loop operations.
+  docs/components/intelligence-layers/INTELLIGENCE-PORTFOLIOS.md:
+    Selecting a bounded portfolio of intelligence for one step.
+  docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md:
+    Candidate, qualification, promotion and reuse of generated code.
+  docs/components/intelligence-layers/RUNTIME-HISTORY-AND-SOLUTION-INTELLIGENCE.md:
+    Saved run history, replay and comparison.
+  docs/components/intelligence-layers/USER-FEEDBACK-INTELLIGENCE.md:
+    Scoped guidance supplied by a person, and its precedence rules.
+  docs/components/loop-object/README.md:
+    The Loop object, its definition, modes and runtime context.
+  docs/components/loop-object/LOOP-PROFILE-ONTOLOGY.md:
+    The registered role profile tree and its version handshake.
+  docs/components/loop-object/RECORD-COMPATIBILITY.md:
+    Contract cardinality and version-preserving historical reads.
+  docs/components/loop-object/SEMANTIC-RUNTIME.md:
+    Executing one exact contract without a conventional body.
+  docs/components/managed-records/README.md:
+    The bounded record tool and the record operation service.
+  docs/components/practitioner/README.md:
+    The Practitioner role, its profiles and its ambiguity handling.
+  docs/components/practitioner/COGNITIVE-ACT-RECOVERY.md:
+    Repeated-work diagnosis and optional recovery learning.
+  docs/components/self-improvement/README.md:
+    Self-improvement as a bounded Practitioner task.
+  docs/components/service-runtime/README.md:
+    The hosted intelligence service and its versioned operations.
+  docs/components/solution-canvas/README.md:
+    The Solution Canvas, its contracts and its execution boundary.
+  docs/components/typed-decisions/README.md:
+    Typed decision requests and configured decision endpoints.
+
+# Names a guide may cite that Loop Engine does not define. Each one belongs to
+# another project and is named so a reader can find the real dependency.
+external_names:
+  ClientSession: >-
+    The Model Context Protocol client session class from the mcp package.
+  FastMCP: >-
+    The server class from the mcp package, used by a host that publishes
+    tools to Loop Engine.
+  mcp.server.fastmcp.FastMCP: >-
+    The fully qualified path to that same mcp server class.
+  TracerProvider: >-
+    The OpenTelemetry tracer provider a host configures before export.
+  UsageLimits: >-
+    The request limit object from the pydantic-ai package used by one
+    external harness adapter.
+  SKILL.md: >-
+    The file name an external harness uses for a skill instruction file.
+  events.jsonl: >-
+    The file name inside a saved run directory, not a Python name.
+
+# Placeholder names an example asks the reader to supply. The package defines
+# none of them, and a reader substitutes their own value.
+reader_supplied_names:
+  configured_recording_tracer: >-
+    The OpenTelemetry tracer the reader builds from their own TracerProvider
+    before calling the exporter in the export example.
+
+# Contract names a guide invents to make an example concrete. The package
+# defines none of these, and a reader must not look for them.
+example_record_types:
+  invoice_and_rate_table/v1: >-
+    The input contract of the invented invoice tool in the Code Intelligence
+    registration example.
+  normalized_invoice/v1: >-
+    The output contract of that same invented invoice tool.
+  import_failure/v1: >-
+    The input port role of the invented customer-import repair task in the
+    profile binding example.
+  repair_patch/v1: >-
+    The output port role of that same invented repair task.
+  context_item/v1: >-
+    The schema_version written in the illustrative Context Intelligence
+    record. The package stores the field but defines no such value.

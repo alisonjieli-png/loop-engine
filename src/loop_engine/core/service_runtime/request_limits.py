@@ -98,7 +98,8 @@ class ServiceRequestLimits:
         tell a caller which header to forge and how many addresses empty the table.
         """
         return {"record_type": PUBLISHED_LIMIT_RECORD_TYPE, "active": self.active,
-                "counted": ["refused_authentication", "refused_account_activation"],
+                "counted": ["refused_authentication", "refused_account_activation",
+                            "refused_promotion_redemption"],
                 "failures_allowed": self.failures_allowed, "window_seconds": self.window_seconds,
                 "client_address_source": self.client_address_source,
                 "ipv6_prefix_bits": self.ipv6_prefix_bits,

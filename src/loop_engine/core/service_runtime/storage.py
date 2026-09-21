@@ -87,6 +87,18 @@ class ServiceCatalogBinding:
                 and row.get("source_collection") == SERVICE_COLLECTION and row.get("artifact_kind") == kind
                 and row.get("attributes", {}).get("tenant_id") == tenant_id]
 
+    def rows_all(self, store, kind):
+        """Every record of one kind in this namespace, for a host-side report.
+
+        The tenant attribute is not part of this query, so an operator report
+        can walk all accounts. No customer path uses it; a request that acts for
+        one account keeps using `rows`, which filters on the exact tenant.
+        """
+        rows = store.query(IntelligenceQuery(namespaces=(self.config.namespace,),
+            source_collections=(SERVICE_COLLECTION,), artifact_kinds=(kind,)))
+        return [row for row in rows if row.get("namespace") == self.config.namespace
+                and row.get("source_collection") == SERVICE_COLLECTION and row.get("artifact_kind") == kind]
+
     @staticmethod
     def guard(row, identity=None):
         return (CatalogRecordPrecondition(identity, must_not_exist=True) if row is None else
