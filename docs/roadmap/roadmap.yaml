@@ -10,7 +10,7 @@ continuation:
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
-  updated_at: "2026-09-20T21:50:00Z"
+  updated_at: "2026-09-21T02:30:00Z"
   baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
   plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
   artifact: docs/roadmap/CONTINUATION-STATUS.md
@@ -819,17 +819,16 @@ continuation:
           negative_control: "With the pause removed, the number of key reads must grow with the burst."
   owner_actions:
     - id: OWNER-01
-      title: Review the selected private pilot limits
-      phase: now
+      title: "Private pilot limits are recorded"
+      phase: prepared
       depends_on: []
       steps: [S-6.13, S-6.15, S-6.16]
       guide: docs/guides/launch-setup-runbook.md
       instructions:
-        - Choose a private test group and the tasks the first release must support. The broader requested product remains on the engineering worklist.
-        - The owner delegated reasonable deployment choices. The selected region is iad, with 50 United States dollars per month for infrastructure and up to 10 dollars for setup. Model calls and live customer charges remain disabled.
-        - One Fly Machine and one encrypted volume have been created. Request a change if these limits do not fit the intended pilot. Account access alone still does not authorize unrelated resources.
+        - "Nothing to do. The recorded limits are 50 United States dollars each month for infrastructure, up to 10 dollars for setup, no model calls by the service and no live charges."
+        - "Engineering works inside these limits and records any request to change them as a separate decision."
       return_fields: [pilot scope, deployment region, monthly infrastructure ceiling, model test allowance, permitted resource actions]
-      completion: The limits and pilot scope are written down and approved by you.
+      completion: "The limits are recorded in the hosting authority decision and engineering works inside them."
       safety: Do not grant unlimited spending or treat alerts as hard spending caps.
     - id: OWNER-02
       title: Fly account and private pilot are prepared
@@ -845,18 +844,16 @@ continuation:
       completion: Account access and the private diagnostic deployment are observed; the complete release decision remains separate.
       safety: The current SQLite profile requires one instance and persistent storage. Do not use an ephemeral function filesystem.
     - id: OWNER-03
-      title: Supabase project access is prepared; authentication settings need a separate grant
-      phase: now
+      title: "Optional: grant authentication-settings access at the identity provider"
+      phase: optional
       depends_on: [OWNER-01]
       steps: [S-6.5, S-6.12, S-6.24]
       guide: docs/guides/launch-setup-runbook.md
       instructions:
-        - The existing project qfzxmjznlwiopgvfgtsw is connected for database, storage and key access. Do not create another account or project.
-        - The owner confirmed Site URL https://baltor-pilot.fly.dev and redirect https://baltor-pilot.fly.dev/auth/callback. Engineering has not independently read back those settings.
-        - The current management connection refuses authentication-settings changes. Engineering must supply a fresh authorization or protected credential request for that exact work instead of asking for repeated manual configuration.
-        - Two controlled ordinary test identities will be needed for email delivery tests. No project administrator role or disabled email confirmation is required.
+        - "Nothing is needed for sign-up. The service creates confirmation and recovery links through the identity provider's administration interface and sends its own email, so the journey stays on the baltor.ai domain."
+        - "Grant authentication-settings access only if you later want the identity provider to send its own email or to change its redirect settings."
       return_fields: ["Approve an exact authentication-settings permission request when supplied","Controlled test-recipient labels when delivery testing is ready"]
-      completion: Existing project access is prepared. Authentication-settings access and real customer-journey qualification remain separate.
+      completion: "Project access is prepared. Sign-up no longer depends on this grant."
       safety: A publishable application key, user access token and privileged server key have different authority. Never interchange them.
     - id: OWNER-04
       title: Engineering prepares private intelligence storage
@@ -912,17 +909,16 @@ continuation:
       completion: Existing credential storage is prepared; this does not grant a missing provider permission.
       safety: This checklist records preparation only. It is not a secret vault or an access grant.
     - id: OWNER-08
-      title: Choose the first local harness and building model
-      phase: now
+      title: "Engineering chose the first client and leaves the model to the customer"
+      phase: engineering
       depends_on: [OWNER-01]
       steps: [S-6.9, S-6.24]
       guide: docs/guides/jev-and-harness-decision-tools.md
       instructions:
-        - Choose one installed harness for the first qualification, such as OpenCode or Codex, and record its exact version and operating system.
-        - Prepare its model-provider account and local key or approved login. Keep the model allowance separate from the intelligence subscription.
-        - Identify the local workspace that may hold the test files and the allowed file, command and network effects.
+        - "Nothing to do. OpenCode is the first supported client because it already connects to the deployed service; Codex and Claude Code have connection recipes."
+        - "Customers use their own model accounts. A model-call allowance for a measured task trial remains a separate decision."
       return_fields: [operating system, harness and version, building model, local credential reference, workspace and permitted effects]
-      completion: One exact customer-controlled execution profile is available for testing.
+      completion: "The client journey is tested in containers without a model turn; a trial that calls a model needs a separate allowance."
       safety: Installing or connecting the harness does not prove it loaded retrieved material or completed a task.
     - id: OWNER-09
       title: Choose optional decision engines and fallback order
@@ -939,30 +935,28 @@ continuation:
       completion: The optional engine configuration and trial authority are explicit.
       safety: You or the provider operate the model service. Loop Engine connects to it; it does not install, launch or manage the model. A compatible response is not proof of decision quality.
     - id: OWNER-10
-      title: Choose real pilot tasks and distributable starter material
-      phase: now
+      title: "Engineering compiles the starter catalogue and independent reviewers approve each item"
+      phase: engineering
       depends_on: []
       steps: [S-6.10, S-6.9, S-6.23]
       guide: docs/guides/launch-owner-checklist.md
       instructions:
-        - Supply a small set of real tasks with expected outputs and checks. Include at least one task that should refuse or request missing information.
-        - Identify instructions, skills and reusable code you own or have rights to distribute. Keep provenance and license information.
-        - Remove private customer information from the initial pilot material. Engineering will independently review and package the material.
+        - "Nothing to do. The owner delegated item approval on 2026-09-20 to an independent review: reviewers who did not write an item approve or reject it against written criteria, and the approval record names them."
+        - "You can withdraw any published item at any time by telling engineering its name."
       return_fields: [task descriptions, acceptance checks, material locations, provenance and license records]
-      completion: The first useful test population and review inputs are identified.
+      completion: "The published catalogue contains only items with a recorded independent approval."
       safety: Uploading or generating a file does not make it qualified intelligence.
     - id: OWNER-11
-      title: Approve privacy, retention and support choices
-      phase: before_public
+      title: "Read the drafted privacy notice and terms before live charging"
+      phase: before_charging
       depends_on: [OWNER-01]
       steps: [S-6.6, S-6.12, S-6.16]
       guide: docs/guides/launch-owner-checklist.md
       instructions:
-        - Choose the support contact, account recovery policy, cancellation behavior and proposed service terms; obtain appropriate review.
-        - Decide retention and deletion expectations for accounts, usage records and optional telemetry.
-        - Keep raw prompts, task files and outputs out of default telemetry. Any training reuse needs explicit consent.
+        - "Engineering drafts a plain privacy notice that states what the service stores, and draft terms for the paid plan."
+        - "Read both before live charging starts and say what to change. Support during the beta uses the public issue tracker of the repository."
       return_fields: [support contact, policy documents or decisions, retention periods, raw-content and training-consent policy]
-      completion: Engineering has approved product-policy inputs to implement and test.
+      completion: "The privacy notice and terms that customers see are ones you have read."
       safety: Embeddings are confidential derived data, not automatically anonymous.
     - id: OWNER-12
       title: Resend management is authorized; engineering completes email
@@ -991,31 +985,28 @@ continuation:
       completion: The selected deployment has observed callback, webhook, sender and domain bindings.
       safety: This task waits for the endpoint; checking this box does not deploy software.
     - id: OWNER-14
-      title: Run the invited-user acceptance journey
+      title: "Invite real people when you choose; engineering has tested the journey in containers"
       phase: after_endpoint
       depends_on: [OWNER-08, OWNER-10, OWNER-13]
       steps: [S-6.14, S-6.15, S-6.24]
       guide: docs/guides/launch-owner-checklist.md
       instructions:
-        - Use an ordinary account to sign in, take a test subscription, connect the supported client and retrieve the selected material.
-        - Run the task locally, inspect the independent result and confirm the exact usage record.
-        - Repeat with the second tenant, then revoke access and confirm both website and protocol requests refuse.
-        - Return failures and missing information as well as successful observations.
+        - "Engineering tests sign-up, sign-in, personal keys, connection, search, download and installation in containers and on the deployed service."
+        - "When you want real users, give engineering the email addresses, or let people sign up once sign-up is open."
       return_fields: [test-user labels, exact client versions, run and request references, observed failures and successes]
-      completion: Engineering has a recorded real-user journey to compare with release gates.
+      completion: "A recorded journey by a real person exists beside the container tests."
       safety: A successful payment page or process exit is not a verified task result.
     - id: OWNER-15
-      title: Make the paid-release decision
+      title: "Activate the live Stripe account and say go"
       phase: before_charging
       depends_on: [OWNER-11, OWNER-12, OWNER-14]
       steps: [S-6.16]
       guide: docs/guides/launch-owner-checklist.md
       instructions:
-        - Review the exact release record, unresolved limitations, restore and rollback evidence, and all required launch gates.
-        - Approve the public price, terms, customer group and live-payment scope separately from the sandbox settings.
-        - Authorize publication and activation only for that qualified release. Keep the ability to revoke access and roll back.
+        - "Everything is built and qualified in Stripe test mode with one plan at 29 United States dollars each month."
+        - "Only you can activate a live Stripe account, because it needs your identity and bank verification. After that, give engineering the live restricted key reference and say go; switching is one credential change."
       return_fields: [release identity, approved pricing and terms, activation scope, explicit publication and live-payment decision]
-      completion: You have made a recorded release decision after the required evidence exists.
+      completion: "Live charging starts only after your activation and your recorded go."
       safety: No checkbox, elapsed target date or passing component count can substitute for this approval.
   recurring_reviews:
     - id: quarterly_retrieval_landscape
