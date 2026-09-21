@@ -1,0 +1,25 @@
+{
+  "record_type": "layer_coverage_source_tree/v1",
+  "source_revision": "6a489b2eff78d1e7251d65e143edbd89f7250c4e",
+  "note": "The object name of every cited path at that revision, read with git ls-tree. The check resolves a citation here, so it is bound to the revision and not to the working tree.",
+  "sources": {
+    "AGENTS.md": "498c90c8488d3f8390b2653c3bf2a72f2193b4f1",
+    "ASTRA.md": "de504001273562f4296f8896c81823b10372cde4",
+    "CLAUDE.md": "81a8620e76e4e3b14f65576c683adca5398aa7bc",
+    "artifacts/architecture-audit-2026-09-19/fly-service-container-attempt-1.json": "eb2ec775281243ee1ac83e0eb3e4fa4fbc4d86f9",
+    "artifacts/architecture-audit-2026-09-19/fly-service-container-attempt-3.json": "6d3ba8491ee7e042cb20ce1919c5cee682980bad",
+    "artifacts/architecture-audit-2026-09-19/guided-connection-browser-1.json": "9c6214cbe4617699dd53ee926e7afe134795272c",
+    "artifacts/architecture-audit-2026-09-19/guided-connection-browser-3.json": "94fe701182569018656c210cf61eddde4a3869bc",
+    "artifacts/architecture-audit-2026-09-19/intelligence-access-repairs.md": "ddc766b592b3b8ecde35659a80e895a1a68c9abd",
+    "artifacts/architecture-audit-2026-09-19/pilot-backup-restore-1.json": "478062c14e76a75931a50229a8d69c6cb57f176b",
+    "artifacts/architecture-audit-2026-09-19/pilot-backup-restore-2.json": "fe2f0b6c0dce4a5555a75b1e2aeca6f60784e009",
+    "artifacts/architecture-audit-2026-09-19/provisioning-access-repairs.md": "8ca539f5f6608c83a01fc983a82528b3fedcee30",
+    "artifacts/architecture-audit-2026-09-19/runtime-regression-repairs.md": "1a2705cd33fe9c18fac4b7701750839f40c4b264",
+    "artifacts/architecture-audit-2026-09-19/service-latency-1.json": "54bebfc1aaa5b3847d374a5217f446f666d09071",
+    "artifacts/architecture-audit-2026-09-19/storage-write-repairs.md": "e94467a9cf68240fb16fb475364b9cb85398e621",
+    "docs/architecture/ADR-PERSISTENT-GENERAL-SOLVING-AND-CONTRACT-FAILURE-REVIEW.md": "5315b99b6f41e5e127e405b6983ac1ce6d666f17",
+    "docs/guides/product-style-guide.md": "9e494b411221a7a3f1223a018a01a5bbf2077e36",
+    "src/loop_engine/core/retrieval.py": "cc8480ea4da5b364fe663d4e309e677cc80ec249",
+    "src/loop_engine/core/service_runtime/web_assets/service.js": "8b2b418aacb62466e7dd0eec4155c02a7393c31d"
+  }
+}

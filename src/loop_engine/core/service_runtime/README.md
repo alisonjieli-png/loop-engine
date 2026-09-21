@@ -391,12 +391,179 @@ are release 8 and every earlier release. A rollback is the usual case.
   callers together.
 - People who share one address share one count. While one of them keeps
   failing, the others wait too.
-- Only sign-in and account activation are limited. The billing webhook, the
+- This table limits sign-in and account activation. The public sign-up and
+  recovery routes are limited too, but by their own two tables described in
+  the next section, because a sign-up that is accepted still sends a message
+  and this table counts only refused attempts. The billing webhook, the
   public pages, the capabilities record and the identity configuration are
   anonymous routes without such a limit.
 - A governed operation can run its work twice for one refused request, because
   its Loop runs up to two steps. The limit counts one refused attempt for that
   request.
+
+## Public sign-up and password recovery email
+
+This section describes current behavior. `account_email.py` owns it.
+`http.py` owns the two routes that use it. It is an internal service
+mechanic and an adapter used by Loops. It adds no runtime type, no store and
+no graph vertex. The whole journey stays on the service domain, and no
+setting of the identity provider has to change.
+
+```text
+Public sign-up or password recovery
+├── POST /api/v1/account/signup or /api/v1/account/recovery
+├── The adapter is not installed
+│   └── status 404, code account_email_unavailable, no provider request
+├── The operation is switched off for this host
+│   └── status 503, code account_signup_unavailable or account_recovery_unavailable
+├── prepare: read the request and count the attempt
+│   ├── unknown record version, unknown field, unreadable address or password
+│   │   └── status 400 with a stable code, before any provider request
+│   └── over the allowance of the client address or of the email address
+│       └── status 429, Retry-After, code failed_attempt_limit_reached
+└── deliver: exactly one request to each provider
+    ├── the identity provider generates a link and sends nothing
+    │   ├── a token hash for this address and this action
+    │   │   └── the message carries this service's link
+    │   ├── a definite refusal that could be about the address
+    │   │   └── the message carries a notice, with no link and no token
+    │   └── a refusal of this service itself, status 401, 403 or 429
+    │       └── status 503, code identity_link_refused, nothing is sent
+    ├── the mail provider sends exactly one message
+    └── status 202 with the same record either way
+```
+
+The refusal branch is the one that keeps the interface from saying who is
+registered. This release reads no field of a refusal body. Only the three
+statuses that answer the same way for every address reach the caller: the
+server key was refused, this service may not use the interface, or this
+service is over the provider's own rate. Every other definite refusal, in any
+shape, takes the same path as the expected one, so a caller reads the same
+status and the same bytes whether or not the address has an account. The cost
+is that a refusal this release cannot explain, such as a password that the
+provider's own policy rejects, sends the notice message instead of reporting
+the problem. Set `minimum_password_length` at or above the identity provider's
+own minimum so that this does not happen.
+
+The result record is `service_account_signup_result/v1` with status
+`confirmation_sent`, or `service_account_recovery_result/v1` with status
+`recovery_sent`. Like every other route under `/api/v1/`, the record is
+carried inside `service_http_result/v1`, so a caller reads
+`result.record_type` and `result.status`. The answer is the same for an
+address that already has an account and for one that does not, and both
+paths do the same amount of work: one request to each provider and one
+message. `GET /api/v1/account/identity` reports `signup_available` and
+`recovery_available` as Booleans.
+
+The link in the message is
+`<public origin>/auth/confirm?token_hash=<value>&type=signup` or
+`&type=recovery`. The website's `/auth/confirm` view gives that token hash to
+the identity library's `verifyOtp`. For sign-up it then calls
+`POST /api/v1/account/activate`. For recovery it asks for a new password,
+calls `updateUser`, and then activates. The link that the identity provider
+generates for itself is never read and never appears in a message.
+
+### What this adapter refuses
+
+- A password shorter than `minimum_password_length`, longer than 72 bytes, or
+  equal to the email address. The length ceiling is a service rule, so that a
+  password cannot be silently shortened later by a hash function with a block
+  limit.
+- An address that is not printable ASCII with one `@`, a local part of at most
+  64 characters and a domain of at least two labels. An address written with
+  the letters of another script can look the same as one written with Latin
+  letters, and this service cannot tell the owners apart.
+- A generated link whose answer names another address or another action. The
+  provider returns `email` and `verification_type` beside the token hash, and
+  both must match the request. Without this rule a token hash for another
+  account would be put in a link and sent to the address that asked, and
+  whoever opened it could confirm that account and then set its password.
+- A redirect answer, an oversized answer, an answer that is not one JSON
+  object, an answer with a repeated field, and an answer that arrives after
+  the deadline. Each is reported with status 503 and a stable code, and
+  nothing is sent a second time.
+- A host file that opens sign-up or recovery without a stated client address
+  source in `http.request_limits`. Code
+  `account_email_needs_a_stated_client_address_source`.
+- A host file that opens sign-up while `browser_identity.registration_enabled`
+  or `browser_identity.email_signup_enabled` is false. Code
+  `account_email_signup_needs_open_registration`. Sign-up finishes at
+  `POST /api/v1/account/activate`, which refuses while account creation is
+  closed, so opening sign-up against a closed browser identity would confirm
+  an address at the identity provider and leave the person with no account of
+  this service and no record. Recovery alone is not refused: a person who
+  already has an account may need a new password while account creation stays
+  closed, which is the private beta state.
+- An installed adapter that declares a boundary other than `account_email/v1`,
+  or none. The application refuses it before it serves either route.
+- A provider key whose text does not start with the prefix of the key kind
+  that slot needs, so a publishable browser key pasted into the server slot
+  stops the request before it leaves.
+- A host block with an unknown key, another record version or another
+  provider pair. The loader refuses it before the service serves anything.
+
+### Two allowances
+
+Sign-up and recovery use the same limiter class as the sign-in limit, with
+two tables of their own. Every attempt is counted, accepted or refused,
+because the cost being limited is the message that an accepted attempt
+sends.
+
+| Table | Key | Default allowance | Active when |
+|---|---|---|---|
+| Client address | The address key the service already computes for sign-in | `attempts_for_each_address`, 10 in `attempt_window_seconds`, 3600 | The host stated an address source in `http.request_limits` |
+| Email address | A SHA-256 digest of the address, so the table holds no address | `attempts_for_each_email`, 3 in the same window | Always |
+
+The client address table follows the same source as the sign-in limit, but it
+is not permitted to stay inactive here. The sign-in limit may: what an
+inactive table costs there is bounded guessing against one credential. Here an
+inactive table would leave only the allowance for each email address, and one
+caller could then send a message to as many different addresses as it chose,
+at the cost and the sender reputation of this deployment. A host that opens
+either operation without a stated source is refused before the service starts.
+
+### Limits of the account email design
+
+- Nothing is stored. The service keeps no record that a message was asked for
+  or sent. The two tables are in the memory of one service process and are
+  empty again after a restart.
+- A message that the mail provider accepted may still not arrive. The service
+  reports what the provider answered, not delivery.
+- The identity provider creates the account when sign-up generates a link.
+  Until the address is confirmed the account cannot be used, because the
+  browser identity adapter requires a confirmed address.
+- Asking for sign-up with an address that already has an account sends a
+  notice to that address. The two allowances bound how often that can happen.
+- The sign-up and recovery routes are public. The service does not know who
+  asked, only the address the request came from.
+- What the identity provider answers for an address that has an account but
+  has never been confirmed is not established. Two behaviors are reported in
+  public: that the pending password is kept, and that a fresh link is returned
+  which invalidates the earlier one. Supabase issue 29347 reports the first
+  for the provider's own public sign-up route, not for the administration
+  interface this service uses, and it is open with no maintainer answer. If
+  the pending password were replaced, an unauthenticated caller could set the
+  password of any unconfirmed account and the real owner would confirm it by
+  opening the newest message. The saved probe,
+  `artifacts/architecture-audit-2026-09-19/account-email-path-probe-1.json`,
+  did not cover this case. Observe it against the project and save the answer
+  before `signup_enabled` is set to true. Nothing in the generated link answer
+  tells this service whether the address already existed, so there is no guard
+  to add until that observation exists.
+- A refusal this release cannot explain is indistinguishable, to the caller,
+  from an address that is not eligible. That is deliberate. The operator's
+  signal for such a refusal is the identity provider's own log, not this
+  service, because this service stores nothing and its answer must not vary
+  with the address.
+- The deadline for one provider request bounds the whole body read from the
+  moment the request started. The client's own deadline applies separately to
+  connecting, writing and waiting for the answer's first line, so the worst
+  case for one request is a small multiple of `timeout_seconds` rather than
+  exactly that number. A provider that dripped the answer's headers, before
+  any body, would still be bounded only by that per-phase deadline.
+
+The operator guide is
+[account email operations](../../../../docs/guides/account-email-operations.md).
 
 ## Persistence and concurrency contract
 
