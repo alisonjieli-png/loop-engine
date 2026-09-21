@@ -1271,6 +1271,281 @@
         "src/loop_engine/core/service_runtime/http_entrypoint.py"
       ],
       "symbols": []
+    },
+    {
+      "id": "review_a_new_dependency_before_adding_it",
+      "layer": "context",
+      "family": "review",
+      "title": "Review a new dependency before adding it",
+      "tags": [
+        "dependency",
+        "third party library",
+        "supply chain",
+        "build size"
+      ],
+      "text": "# Review a new dependency before adding it\n\nDecide whether a package is worth the permanent cost of depending on it, before the first import reaches the main branch.\n\n## When to use it\n\nUse it whenever someone proposes a new library, a new service or a new tool, including one an agent added while solving a task.\n\n## Steps\n\n1. Write down what the dependency is for, in one sentence, and what happens if it is not added.\n2. Estimate the code you would write instead. If it is under about a hundred lines you understand, prefer your own.\n3. Check the licence and whether it allows your use and your distribution. Record the exact identifier.\n4. Check the maintenance signals: last release, open issue count, how quickly security reports are answered, how many people can publish a release.\n5. Count what it brings with it. A package with forty of its own dependencies adds forty places a problem can start.\n6. Check the size it adds to your build, the start time it adds, and whether it pulls in a runtime you do not already have.\n7. Check what it does at import time: network calls, file writes, environment reads. A package that acts on import is hard to contain.\n8. Write the decision with the reason, the version chosen and who will notice when it stops being maintained.\n\n## Checks\n\n- The licence identifier is recorded and allowed.\n- The full dependency list, not only the direct one, was read.\n- The alternative of writing it yourself was estimated, not dismissed.\n- An owner is named for watching the dependency after it is added.\n\n## Known-wrong example\n\nA team adds a small package to pad strings, because writing it seemed wasteful. The package is one file and has one maintainer. It is later removed from the registry, and every build in the company fails at once, including the release that was meant to repair it. Twelve lines of local code would have carried no such risk.\n\n## What to record\n\n- The purpose, the alternative considered and the decision.\n- The exact version, the licence identifier and the full dependency list.\n- The owner who watches it.\n\n## Source\n\n- `src/loop_engine/core/code_intelligence_assets.py`: before a reusable code asset is treated as active here, its record must carry a source identity, a version, its dependencies, its declared effects, a licence, a typed input and output contract and a digest.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/code_intelligence_assets.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "record_the_licence_of_every_bundled_component",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Record the licence of every component you ship",
+      "tags": [
+        "licence",
+        "open source compliance",
+        "notice file",
+        "release"
+      ],
+      "text": "# Record the licence of every component you ship\n\nKeep an accurate list of what you distribute and under which terms, so a licence question can be answered from a file instead of from memory.\n\n## When to use it\n\nUse it before any release that leaves your own machines: a package, a container image, a desktop program, a website bundle, or material a service hands to customers.\n\n## Steps\n\n1. List everything that goes out: your own code, direct dependencies, the dependencies they bring, fonts, images, data sets, models and sample files.\n2. For each one, record the exact identifier of its licence, the version you ship and where the licence text came from.\n3. Do not guess. If the licence is missing, unclear or dual, record it as unknown and treat unknown as a blocker, not as permission.\n4. Check the obligations of each licence you ship: keeping a notice, offering the source, naming changes, restrictions on combining.\n5. Produce the notice file the obligations require, and ship it with the release.\n6. Keep the list in the repository beside the code, and regenerate it as part of the build, not by hand.\n7. Compare the generated list with the previous release and review each difference.\n8. Decide, once, which licence identifiers are acceptable for your product, and refuse the rest at build time.\n\n## Checks\n\n- Every shipped component appears in the list with an exact licence identifier.\n- Unknown entries block the release rather than being treated as allowed.\n- The notice file is present in the built artifact and matches the list.\n- The list is regenerated by the build and is not edited by hand.\n\n## Known-wrong example\n\nA product ships a data set that was free to download. A customer asks for the terms. Nobody recorded them, and the page the file came from now says that commercial use needs a paid agreement. The product has been sold for two years. A recorded identifier at the time of first use, and a rule refusing unknown, would have raised the question before any money changed hands.\n\n## What to record\n\n- The component list with versions and licence identifiers.\n- The obligations for each licence and how each one is met.\n- The differences from the previous release and who reviewed them.\n\n## Source\n\n- `src/loop_engine/core/harness_intelligence.py`: every item this repository can hand to a harness carries a licence name beside its digest and its size, so the terms travel with the material.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/harness_intelligence.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "pin_dependency_versions_and_verify_them",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Pin dependency versions and verify what you install",
+      "tags": [
+        "lock file",
+        "reproducible build",
+        "version pinning",
+        "digest"
+      ],
+      "text": "# Pin dependency versions and verify what you install\n\nMake every build install exactly the same bytes, and check those bytes before they run.\n\n## When to use it\n\nUse it for any project that builds more than once: a service, a library you publish, a container image, or a tool your team installs.\n\n## Steps\n\n1. Separate the versions you accept from the versions you install. The first is a range you choose; the second is one exact version per package.\n2. Keep the exact list in a file in the repository, produced by the package tool, and install from that file everywhere.\n3. Store the digest of each downloaded file in that same list, and make the installer refuse a file whose digest does not match.\n4. Pin your own build inputs too: the language version, the base image by digest rather than by tag, and the tool versions.\n5. Update deliberately, on a schedule, in a change that only updates dependencies, so a failure has one cause.\n6. Read the notes for each update that crosses a major version, and run the full suite before merging.\n7. Keep one command that rebuilds the exact list from the accepted ranges, so an update is reproducible.\n8. Check in continuous integration that the committed list is the one the accepted ranges produce.\n\n## Checks\n\n- Two builds from the same revision install the same versions and the same digests.\n- The installer refuses a file whose digest does not match.\n- The base image is named by digest, not by a moving tag.\n- Dependency updates arrive in their own change with the suite run.\n\n## Known-wrong example\n\nA build installs the latest version that matches a range. It works for months. One morning a dependency of a dependency publishes a broken release, and every build fails, including the one carrying the urgent fix. Nobody can say which versions the last good build used. An exact committed list would have kept the build working and made the difference one line.\n\n## What to record\n\n- The exact version list with digests, committed.\n- The base image digest and the language version.\n- The date and content of each dependency update.\n\n## Source\n\n- `src/loop_engine/core/skill_registry.py`: this repository computes an exact reference and a digest for each file of a packaged skill, and keeps discovery of a skill separate from loading its full text.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/skill_registry.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "respond_to_a_vulnerable_dependency_report",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Respond to a report that a dependency is vulnerable",
+      "tags": [
+        "security advisory",
+        "vulnerability",
+        "upgrade",
+        "scanner"
+      ],
+      "text": "# Respond to a report that a dependency is vulnerable\n\nTurn a security advisory into a decision you can defend, instead of upgrading everything or ignoring it.\n\n## When to use it\n\nUse it when a scanner, a mailing list or a customer reports a weakness in something you ship or run.\n\n## Steps\n\n1. Confirm that you actually use the affected package and the affected version. Read your exact version list, not the accepted range.\n2. Read what the weakness needs in order to be exploited: a particular function, a particular setting, or input from outside.\n3. Decide whether your use reaches it. A parser weakness does not apply if you never parse untrusted input with that package.\n4. Record the decision as one of three: not affected with the reason, affected and fixed by an upgrade, or affected with a temporary limit in place.\n5. If you upgrade, upgrade only that package first and run the full suite. Keep the upgrade separate from other work.\n6. If you cannot upgrade, write down the limit you applied, who approved it and when it will be reviewed again.\n7. Mark the old version as one that must not be used, so a later change cannot bring it back quietly.\n8. Tell the people who need to know, with the exact versions and the date.\n\n## Checks\n\n- The affected version is confirmed against the exact installed list.\n- The reason for not affected, if that is the answer, names the code path that is absent.\n- An upgrade was released and observed working, not only merged.\n- The old version cannot be installed again without a new decision.\n\n## Known-wrong example\n\nA scanner reports a serious weakness. The team upgrades twelve packages on the same afternoon to clear the report. Two of them change behaviour, the service breaks, and the rollback also removes the security fix. One upgrade at a time, with the suite run between them, would have shipped the fix the same day and kept the service up.\n\n## What to record\n\n- The advisory, the affected versions and your exact installed version.\n- The decision with its reason and the approver for any temporary limit.\n- The version you moved to and the date it was observed running.\n\n## Source\n\n- `src/loop_engine/core/asset_lifecycle.py`: this repository keeps one vocabulary for how far a resource has been promoted, with deprecated and retired as final states, so a resource that must not be used can be marked once for every consumer.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/asset_lifecycle.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "plan_a_schema_change_in_compatible_steps",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Plan a schema change in compatible steps",
+      "tags": [
+        "database schema",
+        "zero downtime",
+        "add then remove",
+        "column rename"
+      ],
+      "text": "# Plan a schema change in compatible steps\n\nChange a database shape in separate releases so that the old code and the new code can both run while the change is in flight.\n\n## When to use it\n\nUse it whenever more than one copy of the service runs at a time, whenever a rollback must stay possible, or whenever another system reads the same tables.\n\n## Steps\n\n1. Write down which readers and writers touch the table, including reports, exports and other teams.\n2. Add first. Create the new column, table or index as optional, with a default or nothing at all. Release and observe.\n3. Write to both the old and the new shape in the next release. Do not read the new one yet.\n4. Fill the existing rows in bounded batches, outside the request path.\n5. Read from the new shape, with the old one still present, and compare the two for a period you decide in advance.\n6. Stop writing the old shape.\n7. Remove the old shape only after every reader has been released and observed, and after the period in which you might roll back has passed.\n8. Never rename in one step. A rename is an add, a copy, a switch and a remove.\n\n## Checks\n\n- At every step, the previous release still runs correctly against the changed database.\n- The change can be rolled back at each step without data loss.\n- Every reader was found before the removal step, including reports and other teams.\n- The comparison between the old and the new shape ran on real rows and agreed.\n\n## Known-wrong example\n\nA release renames a column and deploys the new code at the same time. During the rollout half of the servers run the old code, which selects a column that no longer exists, and every request from them fails. The rollback cannot restore the column contents because the rename already moved them. Adding, copying, switching and removing over four releases keeps every step reversible.\n\n## What to record\n\n- The reader and writer list for the table.\n- The step plan with the release that carries each step.\n- The comparison result before the old shape was removed.\n\n## Source\n\n- `src/loop_engine/core/service_runtime/http_entrypoint.py`: the host settings and the served manifest each carry an exact record version, and loading refuses a record whose version it does not support rather than reading it loosely.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/service_runtime/http_entrypoint.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "write_a_migration_that_is_safe_to_run_twice",
+      "layer": "context",
+      "family": "method",
+      "title": "Write a migration that is safe to run twice",
+      "tags": [
+        "migration",
+        "idempotent",
+        "rerun",
+        "deployment retry"
+      ],
+      "text": "# Write a migration that is safe to run twice\n\nWrite the change so that running it again finishes quietly instead of failing halfway or doubling the data.\n\n## When to use it\n\nUse it for every database migration, data repair script or one time job, because deployments are retried, jobs are restarted and people run scripts twice.\n\n## Steps\n\n1. State what the database should look like after the change, not the actions to take.\n2. Make each statement conditional on the current state: create if it does not exist, drop if it exists, add the column only when it is absent.\n3. For data changes, write the update so that applying it to an already updated row changes nothing.\n4. Give each run a name and record in a table which migrations have completed, so the runner can skip finished work.\n5. Split a long migration into steps that each complete on their own and record their own completion.\n6. Never depend on the order of rows or on a row count that a second run would change.\n7. Run it twice in a test environment and compare the database contents after each run.\n8. Write down what to do if it fails in the middle: rerun, or run a named repair.\n\n## Checks\n\n- Running the migration twice leaves the same database as running it once.\n- Each step records its own completion.\n- A failure in the middle leaves a state the rerun can continue from.\n- The double run was actually performed and compared, not assumed.\n\n## Known-wrong example\n\nA migration adds a fee row for every order that does not have one, using a count taken at the start. The deployment times out and is retried. The second run counts the orders again, sees the same orders, and adds a second fee row to each because the check looked at the count rather than at the order. Customers are charged twice. A condition on the order itself would have made the second run do nothing.\n\n## What to record\n\n- The intended final state of the database.\n- The completion table entries for each step.\n- The result of the double run in the test environment.\n\n## Source\n\n- `src/loop_engine/catalog/protocol.py`: this repository applies a group of writes as one batch with explicit preconditions, such as requiring a record to be absent, and returns an acknowledgement, so a repeated batch is refused rather than applied again.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/catalog/protocol.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "backfill_a_large_table_in_bounded_batches",
+      "layer": "context",
+      "family": "method",
+      "title": "Fill a large table in bounded batches",
+      "tags": [
+        "backfill",
+        "batch size",
+        "long running job",
+        "table lock"
+      ],
+      "text": "# Fill a large table in bounded batches\n\nUpdate millions of rows without locking the table, filling the log or making the service slow for everyone else.\n\n## When to use it\n\nUse it when a schema change leaves existing rows to fill, when a repair must touch many rows, or when a new field must be computed for history.\n\n## Steps\n\n1. Count the rows to change and measure how long a small batch takes on production-like data.\n2. Choose a batch size from that measurement, not from habit. Start small and raise it while you watch.\n3. Order the work by a stable key, such as the primary key, and remember the last key you finished.\n4. Commit after each batch. Never hold one transaction over the whole job.\n5. Pause between batches, and make the pause longer when the database is busy. Watch the delay of any copy that follows the main database.\n6. Make each batch safe to repeat, so a restart continues from the recorded key without redoing work incorrectly.\n7. Provide a way to stop the job that takes effect between batches, and a way to resume it.\n8. Report progress: rows done, rows left, current rate and the estimated finish.\n\n## Checks\n\n- One batch was timed on real sized data before the full run.\n- The job can be stopped and resumed without loss or repetition.\n- The delay of the following copy of the database stayed inside its limit during the run.\n- The final count of changed rows matches the count of rows that needed changing.\n\n## Known-wrong example\n\nAn engineer runs a single update over forty million rows in one transaction. The table is locked for eleven minutes, requests time out, the transaction log fills the disk, and the database refuses new writes. The rollback then takes longer than the update. Batches of a few thousand rows with a pause between them would have finished in an hour with nobody noticing.\n\n## What to record\n\n- The measured time for one batch and the chosen batch size.\n- The last completed key, kept while the job runs.\n- The final counts and the time the job took.\n\n## Source\n\n- `src/loop_engine/core/night_budget.py`: this repository grants each step a share of the time that remains instead of a fixed limit, so a long job cannot consume the whole window, and every grant is reported with the reason for its size.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/night_budget.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "rehearse_a_migration_on_a_copy_of_real_data",
+      "layer": "context",
+      "family": "procedure",
+      "title": "Rehearse a migration on a copy of real data",
+      "tags": [
+        "migration rehearsal",
+        "production copy",
+        "lock duration",
+        "rollback"
+      ],
+      "text": "# Rehearse a migration on a copy of real data\n\nRun the change against a copy of production before you run it against production, and measure what it does.\n\n## When to use it\n\nUse it for any migration that changes many rows, holds a lock, or cannot be undone easily. Use it whenever the test database is much smaller than the real one.\n\n## Steps\n\n1. Take a recent copy of the real database, in an environment that cannot reach real customers or real services.\n2. Remove or replace personal data you do not need for the rehearsal, and record what you removed.\n3. Record the size and shape before: row counts per table, index sizes, disk used.\n4. Run the migration exactly as it will run in production, with the same runner and the same settings.\n5. Measure the time, the lock duration, the log growth and the delay of any following copy.\n6. Compare the result with the expected final state, row by row for a sample and by counts for the whole.\n7. Run the previous version of the application against the migrated copy, to prove the release order works.\n8. Rehearse the rollback as well, and measure how long it takes.\n\n## Checks\n\n- The copy is recent enough that its shape matches production.\n- The measured time and lock duration fit inside the window you have.\n- The previous application version still works against the migrated copy.\n- The rollback was rehearsed and its duration is known.\n\n## Known-wrong example\n\nA migration takes four seconds on a test database with a thousand rows. On production it adds an index to a table of ninety million rows, holds a lock for twenty minutes and takes the shop offline during the evening peak. A rehearsal on a copy would have shown the twenty minutes and moved the work to a quiet window, or to a method that does not hold the lock.\n\n## What to record\n\n- The copy taken, its date and what was removed from it.\n- The measured times, lock duration and growth.\n- The comparison result and the rehearsed rollback duration.\n\n## Source\n\n- `src/loop_engine/code_nodes/database_copy.py`: this repository applies corrections by writing a new target rather than changing the source, refuses a target that already exists or that is the source itself, and records digests of what it read and wrote.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/code_nodes/database_copy.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "design_a_request_and_response_contract",
+      "layer": "context",
+      "family": "method",
+      "title": "Design a request and response contract",
+      "tags": [
+        "api design",
+        "request",
+        "response",
+        "field types",
+        "examples"
+      ],
+      "text": "# Design a request and response contract\n\nDecide what an interface accepts and returns before writing the handler, and write it down where both sides can read it.\n\n## When to use it\n\nUse it when you add an endpoint, a message, a job input or a function that another team, another service or an agent will call.\n\n## Steps\n\n1. Name the one thing the call does, in a verb and a noun. If you need the word \"and\", it is probably two calls.\n2. List the inputs. For each, give the type, whether it is required, the allowed values or range, and the unit.\n3. Decide what identifies the subject of the call, and whether the caller supplies that identity or the service creates it.\n4. Describe the successful result: its fields, their types and their units. Return an object, not a bare list or a bare string, so that fields can be added later.\n5. List the failures the caller must handle, each with a stable code and a message meant for a developer.\n6. Say what is guaranteed: ordering, uniqueness, what happens when the same call arrives twice, and what is only promised at some later time.\n7. Use one naming style and one date and time format across the whole interface, and state the time zone.\n8. Write an example request and an example response, and keep them in the tests so they cannot drift.\n\n## Checks\n\n- Every input has a type, a requirement state and a unit or allowed set.\n- The result is an object with room for new fields.\n- Each failure has a stable code that the caller can branch on.\n- The examples in the document are executed by a test.\n\n## Known-wrong example\n\nAn endpoint returns a plain list of orders. Six months later the team needs to add paging, so they change the result into an object with a list inside it. Every caller breaks at once, and the change cannot be released gradually. Returning an object from the start, with the list as one field, would have made paging a new field instead of a new shape.\n\n## What to record\n\n- The contract: inputs, result, failures and guarantees.\n- The example request and response used in the tests.\n- The decisions about identity, ordering and repeated calls.\n\n## Source\n\n- `src/loop_engine/core/workspace_contracts.py`: this repository passes typed request, result and policy objects across a boundary, so a caller supplies one named object rather than a long list of positional arguments.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/workspace_contracts.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "version_an_interface_so_older_callers_keep_working",
+      "layer": "context",
+      "family": "method",
+      "title": "Version an interface so older callers keep working",
+      "tags": [
+        "api versioning",
+        "breaking change",
+        "backward compatible",
+        "deprecation"
+      ],
+      "text": "# Version an interface so older callers keep working\n\nChange an interface in a way that does not break the programs already calling it, and make the breaking change visible when it is unavoidable.\n\n## When to use it\n\nUse it for any interface someone else calls: an endpoint, a message format, a stored record shape, a library function or a file format.\n\n## Steps\n\n1. Sort each proposed change into two groups. Adding an optional field, adding a new value a caller may ignore, or accepting a wider input is compatible. Removing a field, renaming one, narrowing what is accepted, changing a type, changing a unit or changing a default is not.\n2. Make compatible changes without a new version, and announce them.\n3. For a change that is not compatible, add the new form beside the old one and give it an explicit version identifier.\n4. Carry that version in the record itself, in the path or in a header. Never decide by guessing from the fields present.\n5. Refuse a version you do not support, with a clear message, instead of reading it as the nearest one you know.\n6. Measure who still uses the old version before planning its removal, and tell them with a date.\n7. Keep the old version working until the measurement shows no traffic, then remove it in its own release.\n8. Write down, for each version, what changed and what a caller must do to move.\n\n## Checks\n\n- Every change is classified as compatible or not, and the classification is written down.\n- The version travels with the record or the request and is never inferred.\n- An unsupported version is refused, not reinterpreted.\n- The old version has measured traffic before it is removed.\n\n## Known-wrong example\n\nA team changes a duration field from seconds to milliseconds and keeps the same name and version. Callers that were not updated schedule work a thousand times too early. Nothing refuses the old caller, because the field still holds a number. A new field name, or a new version that refuses the old shape, would have turned a silent wrong answer into a visible refusal.\n\n## What to record\n\n- The classification of each change.\n- The version identifier and the differences from the previous one.\n- The measured traffic on each version and the removal date.\n\n## Source\n\n- `src/loop_engine/catalog/protocol.py`: an adapter in this repository declares which operations it really supports in a handshake, and refuses an operation it cannot support instead of quietly doing something weaker.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/catalog/protocol.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "negotiate_a_supported_version_at_connection_time",
+      "layer": "context",
+      "family": "method",
+      "title": "Agree on a supported version when the connection opens",
+      "tags": [
+        "version negotiation",
+        "handshake",
+        "client and server",
+        "downgrade"
+      ],
+      "text": "# Agree on a supported version when the connection opens\n\nLet the two sides state what they support and choose one shared form at the start, instead of discovering the mismatch in the middle of the work.\n\n## When to use it\n\nUse it when two parts are released separately: a client and a server, a worker and a queue, a plugin and a host, or two services that exchange records.\n\n## Steps\n\n1. Give each side a list of the exact versions and features it supports, not a single number.\n2. At the start of the connection, exchange the lists and select the highest version that both sides support.\n3. Record the selected version and the selected features, and use only those for the rest of the session.\n4. If no shared version exists, refuse with a message naming both lists. Do not fall back to a guess.\n5. Refuse a downgrade that would lose a required behaviour, such as an integrity check or a permission check, even when both sides support the older form.\n6. Check the selection again at the point of use, so a later message cannot quietly use something outside the agreement.\n7. Keep the agreement in the record you write, so a reader later knows which form produced it.\n8. Test the three cases: an exact match, an overlap where the older side wins, and no overlap at all.\n\n## Checks\n\n- The selected version is recorded and used consistently.\n- No shared version produces a refusal with both lists named.\n- A downgrade that removes a safety behaviour is refused.\n- All three negotiation cases have tests.\n\n## Known-wrong example\n\nA worker is upgraded and starts writing records in a new shape. The reader, still on the old release, does not recognise a field and ignores it, so approvals are silently dropped. Nothing fails, and the loss is found weeks later during an audit. An agreement at connection time, with the reader refusing a shape it does not support, would have stopped the first message instead of losing hundreds.\n\n## What to record\n\n- Both supported lists and the selected version.\n- The refusals, with the lists that did not overlap.\n- The selected version stored beside every record written in the session.\n\n## Source\n\n- `src/loop_engine/core/template_negotiation.py`: this repository marks which parts of a requested answer shape the other side may argue with and which parts it may not, so a reply that changes a required part is refused rather than accepted.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/template_negotiation.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "return_errors_a_caller_can_act_on",
+      "layer": "context",
+      "family": "method",
+      "title": "Return errors a caller can act on",
+      "tags": [
+        "error codes",
+        "error message",
+        "api errors",
+        "remedy"
+      ],
+      "text": "# Return errors a caller can act on\n\nMake a failure carry a stable code, a message for a developer and a clear statement of what to do next.\n\n## When to use it\n\nUse it for every interface that other code calls, and for every command line tool whose output another program reads.\n\n## Steps\n\n1. Decide, for each failure, who can fix it: the caller, the operator, or nobody right now.\n2. Give each failure a stable code that never changes its meaning. Callers branch on the code, never on the message text.\n3. Say in the message what was wrong, using the caller's own words: which field, which value, which limit.\n4. Add a remedy sentence for the codes an operator can act on, such as which setting to change or which permission to grant.\n5. Say whether repeating the same call could succeed. A caller cannot decide to retry without that.\n6. Keep secrets, internal paths and stack details out of the message the caller sees, and keep them in your own log with an identifier the caller can quote.\n7. Separate one failure per call from many: for a batch, return the list of failures with the item each belongs to.\n8. Group the codes so a caller can handle a whole group it does not know in detail.\n\n## Checks\n\n- Every failure has a stable code and a message that names the field or limit.\n- The message contains no secret, no internal path and no stack text.\n- Each failure says whether repeating could succeed.\n- A caller can handle an unknown code by its group.\n\n## Known-wrong example\n\nA service returns the same general failure with the text \"request failed\" for a missing field, an expired key and a database outage. The caller can only give up or retry forever. Retrying the missing field wastes the service's capacity and never succeeds, and the expired key is never renewed because nobody knows that is the cause. Three codes with three remedies would have made each case obvious.\n\n## What to record\n\n- The code list with meanings, remedies and whether repeating may succeed.\n- The identifier that ties a caller's report to your own log entry.\n- Any code whose meaning changed, and when.\n\n## Source\n\n- `src/loop_engine/core/model_token_preflight.py`: this repository pairs each refusal code with a stable message and a separate sentence saying what an operator can do about it, and keeps provider and prompt text out of the refusal.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/model_token_preflight.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "bound_a_list_endpoint_with_paging_and_limits",
+      "layer": "context",
+      "family": "method",
+      "title": "Bound a list endpoint with paging and limits",
+      "tags": [
+        "pagination",
+        "page size",
+        "rate limit",
+        "request size",
+        "timeout"
+      ],
+      "text": "# Bound a list endpoint with paging and limits\n\nMake sure no single call can ask for an unbounded amount of work, data or time.\n\n## When to use it\n\nUse it for any endpoint, query or export that returns many records, and for any input whose size the caller controls.\n\n## Steps\n\n1. Set a maximum page size and a default page size. Apply the maximum even when the caller asks for more, and say so in the response.\n2. Choose a paging method. Paging by a stable key and a limit is steadier than paging by offset when rows are being inserted.\n3. Return the position to continue from as an opaque value the caller passes back, so you can change the method later.\n4. Give the listing a fixed order, including a tie breaker such as the identifier, or paging will repeat and skip records.\n5. Set a maximum request body size and refuse larger bodies before reading them into memory.\n6. Set a time limit for the query and a limit on the rows it may examine, not only on the rows it returns.\n7. Rate limit per caller, and return the limit, the remaining count and the reset time.\n8. Provide a separate path for a genuinely large export, such as a background job that produces a file, and point callers to it.\n\n## Checks\n\n- Asking for a page larger than the maximum returns the maximum, not the request.\n- Paging through a table that is being written does not repeat or skip records.\n- A body larger than the limit is refused before it is fully read.\n- The query has both a row limit and a time limit.\n\n## Known-wrong example\n\nA reporting endpoint accepts a page size chosen by the caller. A script asks for one million rows, the service builds the whole result in memory, and the process is killed for using too much memory. The restart drops every other request in progress. A maximum page size and a row limit would have turned one bad request into one refusal.\n\n## What to record\n\n- The default and maximum page size and the paging method.\n- The body size, row and time limits.\n- The rate limits and what the response tells the caller about them.\n\n## Source\n\n- `src/loop_engine/core/service_api.py`: the hosted surface in this repository declares its endpoints and refuses a request body larger than a fixed maximum, and it records a metering entry for the work it did.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/service_api.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "classify_a_failure_before_deciding_to_retry",
+      "layer": "context",
+      "family": "method",
+      "title": "Classify a failure before deciding to retry",
+      "tags": [
+        "retry",
+        "failure class",
+        "outage",
+        "rate limit",
+        "bad request"
+      ],
+      "text": "# Classify a failure before deciding to retry\n\nDecide what kind of failure you are looking at, because the right answer differs completely between kinds.\n\n## When to use it\n\nUse it whenever a call to another service, a database or a model provider fails, and before you write any automatic retry.\n\n## Steps\n\n1. Put the failure into one of these kinds: the other side is temporarily unavailable, your allowance is used up, your settings or credentials are wrong, your request is wrong, the answer broke the agreed contract, or the cause is unknown.\n2. Retry only the first kind, and only when repeating the call is safe.\n3. For an exhausted allowance, wait for the stated reset time or stop. Retrying sooner makes it worse for everyone.\n4. For wrong settings or a wrong request, do not retry at all. Report it so a person or the caller can change it.\n5. For a broken contract, repair the shape once if a deterministic repair exists, and otherwise treat it as a failure. Never invent the missing answer.\n6. For an unknown cause, treat it as not safe to retry until it has been classified.\n7. Keep these apart in your code and in your reports: another attempt on the same route, another provider, a repair of the format, and giving up.\n8. Record the kind with every failure, so the report shows which kinds actually happen.\n\n## Checks\n\n- Every failure is recorded with its kind.\n- Only temporary failures are retried automatically.\n- A wrong request or wrong credential is never retried in a series.\n- A failed call is never replaced by an invented result.\n\n## Known-wrong example\n\nA worker retries every failure five times with a short wait. The credential has expired, so each job makes five refused calls instead of one, the provider treats the traffic as an attack and blocks the address, and the outage spreads to the jobs that would have worked. Classifying the refusal as a settings problem would have stopped after the first call and named the cause.\n\n## What to record\n\n- The kind of each failure and the code that came back.\n- What was decided: retry, wait, stop or report.\n- The number of attempts actually made and their results.\n\n## Source\n\n- `src/loop_engine/core/provider_failure_classes.py`: this repository sorts provider failures into a closed set of classes, such as an outage, an exhausted allowance, a settings problem or a bad request, and decides whether to wait, wait for the allowance or stop using that route.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/provider_failure_classes.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "retry_with_backoff_inside_a_declared_budget",
+      "layer": "context",
+      "family": "method",
+      "title": "Retry with growing waits inside a declared budget",
+      "tags": [
+        "exponential backoff",
+        "jitter",
+        "retry budget",
+        "circuit breaker"
+      ],
+      "text": "# Retry with growing waits inside a declared budget\n\nGive a retry a total budget, grow the wait between attempts, and add a random part so that many callers do not return together.\n\n## When to use it\n\nUse it after you have classified a failure as temporary and confirmed that repeating the call is safe.\n\n## Steps\n\n1. Set the total budget first: how long the whole operation may take, including every attempt. Derive the attempt count from that, not the other way round.\n2. Start with a short wait and multiply it after each attempt.\n3. Add a random amount to each wait. Without it, every caller that failed at the same moment returns at the same moment.\n4. Cap the single wait, so the last attempt does not sit for an hour.\n5. Honour a wait time the other side sends. It knows more than your formula.\n6. Stop early when the failure kind changes to one that is not temporary.\n7. Track failures per destination. When a destination keeps failing, stop calling it for a period rather than retrying each request.\n8. Report the attempts, the waits and the final result, so a slow success is visible and not silent.\n\n## Checks\n\n- The total budget is declared and observed, and the attempt count follows from it.\n- Waits grow, carry a random part and have a maximum.\n- A wait time sent by the other side is used instead of the formula.\n- A repeatedly failing destination is left alone for a period.\n\n## Known-wrong example\n\nTwo thousand workers fail at the same second during a brief outage and all retry after exactly one second, then two, then four. Each wave arrives together and keeps the recovering service down. The outage lasts twenty minutes instead of twenty seconds. A random part added to each wait would have spread the waves out and let the service recover.\n\n## What to record\n\n- The total budget, the waits used and the number of attempts.\n- Any wait time supplied by the other side.\n- The periods during which a destination was left alone.\n\n## Source\n\n- `src/loop_engine/core/recovery.py`: this repository decides what should happen after a failure from the situation rather than from a fixed table of attempt counts and waits, and records the decision with its reason.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/core/recovery.py"
+      ],
+      "symbols": []
+    },
+    {
+      "id": "make_a_write_safe_to_repeat_with_an_idempotency_key",
+      "layer": "context",
+      "family": "method",
+      "title": "Make a write safe to repeat with an idempotency key",
+      "tags": [
+        "idempotency key",
+        "duplicate charge",
+        "exactly once",
+        "timeout retry"
+      ],
+      "text": "# Make a write safe to repeat with an idempotency key\n\nLet a caller repeat a request after a timeout without creating a second charge, a second order or a second message.\n\n## When to use it\n\nUse it for any write a caller might send twice: a payment, an order, an email, a transfer, a job submission, or any call behind a network that can time out.\n\n## Steps\n\n1. Have the caller generate a key for the attempt, unique to that attempt, and send it with the request.\n2. Store the key with the result of the first completed request, in the same transaction that performs the write.\n3. When a request arrives with a key you have already completed, return the stored result rather than doing the work again.\n4. Store the important request fields beside the key. If the same key arrives with different content, refuse it instead of returning the old result.\n5. Handle the request that is still in progress: hold, or return a clear \"in progress\" answer, so two copies never do the work at once.\n6. Decide how long keys are kept, and tell callers. A key that is forgotten too early brings the duplicate back.\n7. Give the operation its own identifier in the result, so the caller can check the state later by that identifier.\n8. Test three cases: the same key twice, the same key with different content, and two copies arriving at the same moment.\n\n## Checks\n\n- The key and the result are stored in the same transaction as the write.\n- The same key with different content is refused.\n- Two requests with one key, arriving together, produce one write.\n- The retention period for keys is stated and longer than the caller's retry window.\n\n## Known-wrong example\n\nA payment endpoint checks for a recent identical charge before writing, to avoid duplicates. Two copies of the same request arrive in the same second. Both checks run before either write, both find nothing, and the customer is charged twice. A key stored in the same transaction as the charge, with a uniqueness rule in the database, would have made the second write fail and return the first result.\n\n## What to record\n\n- The key, the stored result and the request fields it was bound to.\n- The refusals where the same key carried different content.\n- The retention period for keys.\n\n## Source\n\n- `src/loop_engine/catalog/protocol.py`: this repository applies writes as one batch with preconditions and returns an acknowledgement carrying the digest of the batch, so a caller can tell an applied batch from a repeated one.\n\nThe steps above are ordinary engineering practice, written for this catalogue in its own words.\n\nLicence: MIT. Written for this catalogue at revision 381efec.\n",
+      "sources": [
+        "src/loop_engine/catalog/protocol.py"
+      ],
+      "symbols": []
     }
   ]
 }

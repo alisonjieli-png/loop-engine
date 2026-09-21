@@ -535,7 +535,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "copy_a_table_with_corrections_never_in_place",
         "kind": "skill",
-        "purpose": "Apply data corrections and an approved dedupe while copying a delimited file or a SQLite table to a new target. Never updates in place, never overwrites, and returns a manifest with source and target digests and row counts.",
+        "purpose": "Apply data corrections and an approved dedupe while copying a delimited file or a SQLite table to a new target, without touching the original. Never updates in place, never overwrites, and returns a manifest with source and target digests and row counts.",
         "digest": "c9a321227805545b9f690abeb41bf8fd05a7cb7c2223a4317218e1701d5837bb",
         "source_layer": "code_intelligence",
         "source_ref": "src/loop_engine/code_nodes/database_copy.py@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -1605,7 +1605,7 @@
         "record_type": "harness_intelligence_item/v1",
         "identity": "test_driven_change_red_green_refactor",
         "kind": "skill",
-        "purpose": "Test driven development for one bounded requirement: prove the failure first, make the minimum change, refactor while the test passes, run the full suites, and return exact evidence without committing or widening permissions.",
+        "purpose": "Test driven development for one bounded requirement: write the failing test first, make the minimum change, refactor while the test passes, run the full suites, and return exact evidence without committing or widening permissions.",
         "digest": "6c0560a81edb8ebde89c6441fe0da984dd2fb257a48b89e6f355e8238df04795",
         "source_layer": "context_intelligence",
         "source_ref": "src/loop_engine/skills/software-tdd-red-green-refactor/SKILL.md@381efecb8999f50a5d163d501d9590b289a0da8c",
@@ -2370,6 +2370,612 @@
         "body_included": false
       },
       "body_path": "bodies/review_generated_output_before_it_is_executed.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "review_a_new_dependency_before_adding_it",
+        "kind": "skill",
+        "purpose": "Decide whether to add a third party package: what it is for, the licence, the maintenance signals, everything it brings with it, and what it does at import time.",
+        "digest": "672b2b3d1e7eb905aa075178e5daa7e656b22861706cef4a3834a375da1abeb5",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/code_intelligence_assets.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2502,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/review_a_new_dependency_before_adding_it.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "record_the_licence_of_every_bundled_component",
+        "kind": "skill",
+        "purpose": "Keep an accurate list of everything you ship and the licence of each part, produce the notice file the terms require, and block a release when a licence is unknown.",
+        "digest": "53505dcfd8ea5451a78951ac7cd10cb756e332948acdabdbbf4e2de623d6afad",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/harness_intelligence.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2582,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/record_the_licence_of_every_bundled_component.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "pin_dependency_versions_and_verify_them",
+        "kind": "skill",
+        "purpose": "Make every build install the same bytes: keep an exact committed version list with digests, pin the base image by digest, and update dependencies in their own change.",
+        "digest": "0a520953088e066f582fce3d4d1b9bb030cde991886a4bf1b9b545f6ae922e29",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/skill_registry.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2460,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/pin_dependency_versions_and_verify_them.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "respond_to_a_vulnerable_dependency_report",
+        "kind": "skill",
+        "purpose": "Handle a security advisory about a package you use: confirm the version, decide whether your code reaches the weakness, upgrade one package at a time, and record the decision.",
+        "digest": "ac8c73126901559c73490c4a88524c66afe256894079452b6a0d78aef6b2fc09",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/asset_lifecycle.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2544,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/respond_to_a_vulnerable_dependency_report.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "plan_a_schema_change_in_compatible_steps",
+        "kind": "skill",
+        "purpose": "Change a database shape without downtime: add the new shape, write both, fill existing rows, read the new one, then remove the old, so old and new code can run together.",
+        "digest": "c14cff98ac105f1faab5f5e38b8dedbf9ad7385b0ee03ce27fd4939b0b358a6c",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/service_runtime/http_entrypoint.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2436,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/plan_a_schema_change_in_compatible_steps.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "write_a_migration_that_is_safe_to_run_twice",
+        "kind": "skill",
+        "purpose": "Write a database migration or repair script that finishes quietly when it is run again, instead of failing halfway or doubling the data.",
+        "digest": "f1a41ecaded61560523ac17a1bf14d5c646078882e9acd8f82e956e1db34ddd2",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/catalog/protocol.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2438,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/write_a_migration_that_is_safe_to_run_twice.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "backfill_a_large_table_in_bounded_batches",
+        "kind": "skill",
+        "purpose": "Backfill millions of existing rows in bounded batches without locking the table or filling the transaction log: measure one batch, commit between batches, remember the last key, and allow a stop and resume.",
+        "digest": "54dabb7bf645491c38ecb5d86ebb87bc4bc4b6176801c35982622357a82750e0",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/night_budget.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2420,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/backfill_a_large_table_in_bounded_batches.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "rehearse_a_migration_on_a_copy_of_real_data",
+        "kind": "skill",
+        "purpose": "Run a migration against a recent copy of production before running it for real, and measure the time, the lock duration, the log growth and the rollback.",
+        "digest": "b8d412c7b6ea59380009ea322aee7a8e699e77d3825211597b39d594d788d737",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/code_nodes/database_copy.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2391,
+        "license": "MIT",
+        "declared_effects": [
+          "reads_fs",
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/rehearse_a_migration_on_a_copy_of_real_data.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "design_a_request_and_response_contract",
+        "kind": "skill",
+        "purpose": "Design an API endpoint before writing the handler: name one action, give every input a type, unit and requirement, return an object with room to grow, and list the failures a caller must handle.",
+        "digest": "d96c0008e6abdba03787a9616330b92593c0912187fa1441d7b56b555c95932f",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/workspace_contracts.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2506,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/design_a_request_and_response_contract.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "version_an_interface_so_older_callers_keep_working",
+        "kind": "skill",
+        "purpose": "Change an API without breaking existing callers: sort each change into compatible or breaking, carry an explicit version, refuse an unsupported one, and measure traffic before removing the old form.",
+        "digest": "59617d23a366aac076452a4eab16401cf83dd21fb9569c0f9a0840c91b148533",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/catalog/protocol.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2617,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/version_an_interface_so_older_callers_keep_working.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "negotiate_a_supported_version_at_connection_time",
+        "kind": "skill",
+        "purpose": "Let a client and a server agree on one shared version and feature set when the connection opens, refuse when there is no overlap, and refuse a downgrade that loses a safety behaviour.",
+        "digest": "bd18e17e72e7a0d2558ffcb4ae8c914da5ded4a20f77008471f7edf3db883151",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/template_negotiation.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2538,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/negotiate_a_supported_version_at_connection_time.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "return_errors_a_caller_can_act_on",
+        "kind": "skill",
+        "purpose": "Design error responses a caller can branch on: a stable code, a message naming the field or limit, whether retrying may succeed, and no secrets or stack text.",
+        "digest": "194f91a7b923eb0e37d09fd79dacf78850c9e39191efc6e2f528ff6cf6136d15",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/model_token_preflight.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2496,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/return_errors_a_caller_can_act_on.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "bound_a_list_endpoint_with_paging_and_limits",
+        "kind": "skill",
+        "purpose": "Stop one request asking for unbounded work: cap the page size, page by a stable key with a fixed order, limit the body size, the rows examined and the time, and rate limit per caller.",
+        "digest": "5b35f9e45a357574952fc7fa2952c8dc8386d508cc61764030620196085fbe93",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/service_api.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2420,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/bound_a_list_endpoint_with_paging_and_limits.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "classify_a_failure_before_deciding_to_retry",
+        "kind": "skill",
+        "purpose": "Decide what kind of failure you have before retrying: a temporary outage, an exhausted allowance, wrong credentials, a bad request or a broken response each need a different answer.",
+        "digest": "3de8dcc131fb8878429384a14d1b2758a689f8d6cc0c1d608b66df97b2f47cf3",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/provider_failure_classes.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2593,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/classify_a_failure_before_deciding_to_retry.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "retry_with_backoff_inside_a_declared_budget",
+        "kind": "skill",
+        "purpose": "Retry a temporary failure without making an outage worse: set a total time budget first, grow the waits, add a random part, honour the wait time the other side sends, and back off a failing destination.",
+        "digest": "ebc36178ca164d579a395a625e366edd196b16923a19d6efa2debc65d97dabbc",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/core/recovery.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2338,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/retry_with_backoff_inside_a_declared_budget.md",
+      "lifecycle": "candidate",
+      "license_state": "declared",
+      "provenance": {
+        "authoring": "assistant_authored_from_repository_sources",
+        "model_generated_row_digests": [],
+        "grounding": "general_practice_beside_cited_source"
+      }
+    },
+    {
+      "reference": {
+        "record_type": "harness_intelligence_item/v1",
+        "identity": "make_a_write_safe_to_repeat_with_an_idempotency_key",
+        "kind": "skill",
+        "purpose": "Stop a repeated request creating a second charge or order: store the idempotency key with the result in the same transaction, refuse the same key with different content, and handle two copies arriving at once.",
+        "digest": "67136a5002a30658c3d6c4e5be4c4cef98e921d816ac4449052d53aa92816e8e",
+        "source_layer": "context_intelligence",
+        "source_ref": "src/loop_engine/catalog/protocol.py@381efecb8999f50a5d163d501d9590b289a0da8c",
+        "size_bytes": 2635,
+        "license": "MIT",
+        "declared_effects": [
+          "writes_fs",
+          "spawns_process"
+        ],
+        "styles": [],
+        "tags": {
+          "record_type": "intelligence_tags/v1",
+          "lifecycle": [
+            "candidate"
+          ],
+          "language": [
+            "en"
+          ]
+        },
+        "exposure": "metadata_only",
+        "availability": "remote",
+        "body_included": false
+      },
+      "body_path": "bodies/make_a_write_safe_to_repeat_with_an_idempotency_key.md",
       "lifecycle": "candidate",
       "license_state": "declared",
       "provenance": {
