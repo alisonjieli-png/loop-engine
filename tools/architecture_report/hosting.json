@@ -1,58 +1,288 @@
 {
   "record_type": "hosting_decision_snapshot/v1",
-  "checked_at": "2026-09-19",
-  "title": "Fly.io for compute. Supabase for data and identity.",
-  "recommendation": "Use the platform you already know: Fly.io for the Python website and service, Supabase for PostgreSQL, authentication and private file storage, and Stripe for subscriptions. Customers run their harnesses and supply their model endpoints. No model-hosting hardware is required.",
-  "status": "Fly release 7 serves the website at https://baltor.ai, https://www.baltor.ai and https://app.baltor.ai. Cloudflare's Free zone is active and Namecheap's nameserver change is confirmed. Valid certificates cover all three names. The service still uses SQLite and files on one persistent volume. Account integration code is deployed but public registration is disabled. The Resend sender exists with its exact DNS records; verification and real mail delivery remain separate checks. Supabase authentication-settings access is still missing. Customer signup, shared storage, billing and complete native task execution are not qualified. This is not a qualified paid release. GitHub automatic deployment and live customer charging remain disabled.",
-  "assumptions": "Small private pilot, light service traffic, one primary region and no hosted customer harnesses. Start with one service Machine. A second Machine is an option only after shared-state and multi-instance tests pass. Prices are USD planning examples, not a quote or spending approval.",
+  "checked_at": "2026-09-21",
+  "title": "Fly.io runs everything today. Supabase holds identity only.",
+  "recommendation": "One Fly.io Machine in region iad serves the website, the account pages, the /api/v1 interface and the Model Context Protocol endpoint from one origin, and keeps every durable record on one encrypted volume. Supabase is the identity provider and holds two accounts; it holds no application table and no storage bucket. Resend holds the sender domains. Stripe holds payments and the live account is active. Customers run their harnesses and supply their model endpoints, so no model-hosting hardware is required. Moving the records and the files to Supabase is still the plan for a paid public launch, and that work is not done.",
+  "status": "Fly release 10 serves the website and the service at https://app.baltor.ai, https://baltor.ai, https://www.baltor.ai and https://baltor-pilot.fly.dev. One Machine in iad runs image digest sha256:a2d31be0, which releases 8, 9 and 10 all share; releases 9 and 10 restarted that same image after deployment secrets were staged. The service still keeps every durable record in SQLite and in files on one encrypted 1 GB volume, so one Machine is the only writer. Browser sign-in, operator-provisioned client access and the billing webhook, checkout and customer portal are switched on, and public registration is still closed. Live payments are activated on a separate live Stripe account, so a charge is now possible; the earlier note on this page that live charging was disabled is no longer true. Customer signup, shared storage, billing and complete native task execution are not qualified, because no real card has completed a subscription and no customer journey has been run from end to end. This is not a qualified paid release. Automatic deployment from GitHub stays off; the pilot workflow runs only when a person starts it.",
+  "live_state_note": "Every row was read from the provider or from the running service on 21 September 2026. Nothing was changed. Observed means a provider or the service reported it during this check. Inferred means it follows from something observed and is marked as reasoning. Not verified today means the check could not be made, which is recorded here instead of being removed.",
+  "live_state": [
+    {
+      "subject": "Application, organization and region",
+      "fact": "Fly application baltor-pilot in organization baltor, platform version machines. One Machine, 83733ea7779068, in region iad with one shared processor and 2048 MB of memory. Automatic stop is off and one Machine is kept running, so there is no cold start and no second instance.",
+      "standing": "Observed",
+      "checked": "Fly application status"
+    },
+    {
+      "subject": "Is it healthy",
+      "fact": "The check servicecheck-00-http-8080 passes against /api/v1/health. The health record reports healthy true, readiness_checked false and deployed_provider_qualification false. Liveness is proven. Provider qualification is not.",
+      "standing": "Observed",
+      "checked": "Fly application status and the health record it returned"
+    },
+    {
+      "subject": "Which names answer",
+      "fact": "app.baltor.ai, baltor.ai, www.baltor.ai and baltor-pilot.fly.dev each answered HTTP 200 over HTTPS, and each resolved to the Fly shared address 66.241.124.29. The application also holds a dedicated IPv6 address.",
+      "standing": "Observed",
+      "checked": "One request to each name, and the Fly address list"
+    },
+    {
+      "subject": "Which certificate each name presents",
+      "fact": "A Let's Encrypt certificate issued through Fly. There is no custom certificate. app.baltor.ai, baltor.ai and www.baltor.ai are valid from 20 September 2026 to 19 December 2026, and Fly reports all three as Ready. baltor-pilot.fly.dev presents Fly's own wildcard certificate for fly.dev.",
+      "standing": "Observed",
+      "checked": "The certificate each name presented, and the Fly certificate list"
+    },
+    {
+      "subject": "Who owns the domain name",
+      "fact": "Namecheap holds the registration of baltor.ai until 23 April 2028 and publishes dana.ns.cloudflare.com and nile.ns.cloudflare.com. The Cloudflare zone is active on the Free plan and was activated on 20 September 2026.",
+      "standing": "Observed",
+      "checked": "The registrar record and the Cloudflare zone"
+    },
+    {
+      "subject": "Does Cloudflare sit in front of the traffic",
+      "fact": "No. Not one record in the zone is proxied. Cloudflare answers the names and every request goes straight to Fly, which is why a visitor sees the Fly certificate and not a Cloudflare one. Cloudflare's own certificate setting is full and its redirect to HTTPS is off; the Fly service forces HTTPS itself.",
+      "standing": "Observed",
+      "checked": "Every record in the Cloudflare zone, and its certificate settings"
+    },
+    {
+      "subject": "Where the volume is and whether it is encrypted",
+      "fact": "One volume named loop_engine_service in iad, 1 GB, encrypted, attached to the single Machine. Automatic backup is on and five daily snapshots are kept. The Machine log prints Opening encrypted volume at every restart.",
+      "standing": "Observed",
+      "checked": "The Fly volume list and the application log"
+    },
+    {
+      "subject": "Where the durable records live",
+      "fact": "One SQLite database and the served files on that volume. Tenants, key digests, grants, usage and billing state are all in it. One Machine is the only writer, and a copy of the volume on a second Machine would become a second, diverging authority.",
+      "standing": "Observed",
+      "checked": "The service command in the image and the volume mount"
+    },
+    {
+      "subject": "Which provider owns identity",
+      "fact": "Supabase, project qfzxmjznlwiopgvfgtsw at https://qfzxmjznlwiopgvfgtsw.supabase.co. Its auth schema holds two accounts and two linked identities. Its public schema holds no table and its storage holds no bucket, so it owns sign-in and nothing else.",
+      "standing": "Observed",
+      "checked": "The project address, the table listing and the bucket listing"
+    },
+    {
+      "subject": "Which region the Supabase project runs in",
+      "fact": "Not read. The connection available in this session reports no project region. The earlier note on this page said us-east-1; treat that as unverified until someone reads it from the dashboard.",
+      "standing": "Not verified today",
+      "checked": "Attempted through the Supabase connection; no region field is exposed"
+    },
+    {
+      "subject": "Which provider sends email, and from where",
+      "fact": "Resend, with two sender domains in us-east-1. mail.baltor.ai is verified: its signing record, both policy records and its return path are all verified and sending is enabled. auth.baltor.ai is partially failed: its signing record and return path are verified and its two policy records at send.auth are failed. A monitoring-only DMARC record covers the domain.",
+      "standing": "Observed",
+      "checked": "The Resend domain records and the Cloudflare zone"
+    },
+    {
+      "subject": "Has anything actually been sent",
+      "fact": "No. The deployment stages no email credential, and the Python package contains no sending code. A verified sender domain means the provider would accept a message, not that the service can send one.",
+      "standing": "Observed",
+      "checked": "The deployed secret names, and a search of the package for sending code"
+    },
+    {
+      "subject": "Which provider holds payments, and which account",
+      "fact": "Stripe. The live account is acct_1UHZ972IF9bCskLc, with charges and payouts enabled and nothing outstanding. It holds one monthly price of 29 United States dollars, a customer portal configuration, and a webhook endpoint at https://app.baltor.ai/api/v1/billing/webhook for exactly the five subscription and invoice events the service processes. The sandbox account acct_1UHZ9KCCxLfArYED is separate and is what a development session reaches.",
+      "standing": "Observed for the sandbox and for the repository record written today; the live account was not read again during this check",
+      "checked": "The Stripe connection for the sandbox, and the record live-payments-enabled-1.json for the live account"
+    },
+    {
+      "subject": "What is staged as a deployment secret",
+      "fact": "Three, by name only: SUPABASE_PUBLISHABLE_KEY, STRIPE_API_KEY and STRIPE_WEBHOOK_SECRET. Each is reported Deployed. No value was read and no value belongs on this page. There is no email credential and no Supabase secret key in the deployment.",
+      "standing": "Observed",
+      "checked": "The Fly secret list, which returns names and digests only"
+    },
+    {
+      "subject": "What the last release is",
+      "fact": "Release 10, completed on 21 September 2026 at 11:41 UTC, image digest sha256:a2d31be0. Releases 8, 9 and 10 all carry that digest. Release 7 carries sha256:7b45d327 and is the most recent image that differs from the one running.",
+      "standing": "Observed",
+      "checked": "The Fly release list and the application log"
+    },
+    {
+      "subject": "Which release has a record in the repository",
+      "fact": "Release 8 only. Releases 9 and 10 changed the deployment without a release record beside pilot-release-8.json, so the repository cannot say by itself what changed or what to roll back to.",
+      "standing": "Observed",
+      "checked": "The release records in this artifact folder against the Fly release list"
+    },
+    {
+      "subject": "What the service reports about itself",
+      "fact": "The public capabilities record reports the display name Baltor, browser sign-in available, client access available, administration available, and the billing webhook, checkout and portal on. Registration is closed. host_key is the only authentication mode. Search runs on SQLite full-text search with a deterministic character hash where an embedding model would go, and no semantic embedding model is installed. The service accepts exactly protocol version 2025-11-25 and makes no model call.",
+      "standing": "Observed",
+      "checked": "One request to /api/v1/capabilities, without a credential"
+    },
+    {
+      "subject": "Why the same image reports different features",
+      "fact": "The container runs loop-engine service serve with its host configuration at /data/host.json, which is a file on the volume. A setting can therefore change without a new image, and the release number does not move when only that file changes. That is the reason releases 9 and 10 carry the release 8 image and report features that the release 8 record says were off.",
+      "standing": "Inferred from the container command, the release list and the application log",
+      "checked": "The service Dockerfile, the Fly release list and the log lines for each restart"
+    },
+    {
+      "subject": "Can anyone deploy automatically",
+      "fact": "No. The pilot workflow runs only when a person starts it, only from main, only when the deployment switch is true, and only when the person retypes the application name. It also refuses a revision whose continuous integration run did not pass. The release 8 record says the switch was set back to false afterwards; that value was not read again during this check.",
+      "standing": "Observed in the workflow; the switch value is not verified today",
+      "checked": "The workflow file, and the release 8 record for the switch"
+    }
+  ],
+  "corrections": [
+    {
+      "was": "Fly release 7 serves the website.",
+      "now": "Release 10 is serving. Releases 8, 9 and 10 all run the same image digest, and releases 9 and 10 have no release record in the repository."
+    },
+    {
+      "was": "Keep Stripe in test mode. Live charging remains disabled. Do not activate live Stripe charges.",
+      "now": "The owner activated the live account. Charges and payouts are enabled, the price and the webhook exist, and the deployment holds a Stripe credential and a webhook signing secret. Treat every charge as real. Keep the control that refuses a test key where a live key is required."
+    },
+    {
+      "was": "The intended sender is accounts@auth.baltor.ai, and its verification has started.",
+      "now": "auth.baltor.ai is partially failed; its two policy records at send.auth are failed. mail.baltor.ai was created today and is fully verified. Neither one sends anything yet, because the deployment holds no email credential and the package holds no sending code."
+    },
+    {
+      "was": "One private bucket named loop-engine-intelligence-dev.",
+      "now": "No bucket exists. Supabase storage is empty and the public schema holds no table. Bodies are served from the Fly volume."
+    },
+    {
+      "was": "Use the Fly-provided hostname for qualification, then app.baltor.ai if you approve it.",
+      "now": "All four names serve the same release with valid certificates. app.baltor.ai is the address to use, and baltor-pilot.fly.dev is the fallback when Cloudflare cannot answer."
+    },
+    {
+      "was": "Valid certificates cover all three names.",
+      "now": "Four names answer. Three carry their own Let's Encrypt certificate issued through Fly, and the fourth is covered by Fly's wildcard certificate for fly.dev."
+    },
+    {
+      "was": "Account integration code is deployed but public registration is disabled.",
+      "now": "Registration is still disabled, and browser sign-in, client access and the billing endpoints are now switched on. Deployed, switched on and qualified are three different facts, and only the first two are true here."
+    },
+    {
+      "was": "Supabase authentication-settings access is still missing, and the owner should approve that grant.",
+      "now": "The reference supabase-auth-settings still holds no credential, so that part is unchanged. It no longer blocks anything: the recorded decision is that the service creates the confirmation link through the administration interface and sends its own message, so no provider setting has to change. The request to the owner is withdrawn."
+    }
+  ],
+  "operations": [
+    {
+      "title": "How to deploy",
+      "steps": [
+        "Commit to main and wait for the continuous integration run on that exact revision to pass. The workflow reads the run and refuses a revision that has no successful run of its own.",
+        "Set the pilot environment values: the organization, the application, the primary region, the approved monthly allowance and the approval reference, and set the deployment switch to true. A missing or malformed value stops the run before anything is built.",
+        "Start the workflow named Baltor Fly pilot by hand, choose deploy, and retype baltor-pilot into the confirmation field. It runs only from main, and only one run at a time.",
+        "The run installs the pinned Fly command line and checks its digest, confirms the application exists in the approved organization, requires exactly one Machine and the one volume in the primary region, and validates fly.toml strictly.",
+        "It builds the image from Dockerfile.service and runs the container checks with no provider access, then reads main again and refuses if the branch moved while the image was building.",
+        "It pushes the image, reads the exact digest back, and deploys by that digest with one Machine, the immediate strategy, no retries and no new public addresses. It then reads /api/v1/health and requires healthy true.",
+        "Write a release record beside pilot-release-8.json with the revision, the digest, the release kept for rollback and the checks that ran, then set the deployment switch back to false. A deployment without a record cannot be rolled back from the repository alone."
+      ]
+    },
+    {
+      "title": "How to roll back",
+      "steps": [
+        "Decide first whether the image, the host configuration or the data is wrong, and write down why. Restarting the Machine undoes none of them.",
+        "Wrong image: deploy the previous digest with the same configuration. The Fly release list names every digest, and sha256:7b45d327 from release 7 is the most recent image that differs from the one running. An old image on its own is not a complete rollback.",
+        "Wrong host configuration: restore the backup of /data/host.json on the volume and restart the Machine. The release number does not change when only that file changes, so the release list will not show the fault and will not show the repair.",
+        "Wrong data: restore a volume snapshot. Five daily snapshots are kept. A snapshot restores the tenants, the key digests, the grants, the usage and the billing state together; they cannot be restored separately, so a restore can withdraw access that was granted after the snapshot.",
+        "Reconcile the staged secrets by name afterwards. A secret that a rolled-back image does not expect is still staged, and staging or removing one restarts the Machine and creates another release.",
+        "Record the rollback beside the release record it undoes, and keep the failed attempt next to it."
+      ]
+    },
+    {
+      "title": "How to read the logs",
+      "steps": [
+        "An authorized session reads the application log through the Fly connection; ask it for the application baltor-pilot. The same log is on the Fly dashboard for the baltor organization, and from the Fly command line with the credential named fly.",
+        "Four kinds of line matter. runner lines show the image being pulled, the encrypted volume being opened and the Machine starting. app lines are the service itself. health lines show the check failing at every restart and passing a second or two later, which is normal. proxy lines are requests that never reached the service.",
+        "Compare a restart in the log with the release list. A restart with the line Container image already prepared and no new digest means a secret or the host configuration changed, not the code.",
+        "The log carries no key, no authorization header and no tenant body. Keep it that way: do not paste a line into a report without reading it first.",
+        "Fly keeps only a short window of lines. Save the lines that matter into a report under a new name rather than expecting to read them again later."
+      ]
+    }
+  ],
+  "outages": [
+    {
+      "provider": "Fly.io",
+      "first": "Everything hosted. All four names point at one Machine in one region, so the website, the account pages, the /api/v1 interface and the Model Context Protocol endpoint stop together.",
+      "keeps": "A customer's own harness and model, because those run on the customer's machine and do not call this service to work.",
+      "action": "Read the Fly platform status and wait. Do not start a second Machine to route around it: the volume is local to the Machine, so a second copy becomes a second, diverging authority."
+    },
+    {
+      "provider": "Cloudflare",
+      "first": "The names baltor.ai, www.baltor.ai and app.baltor.ai stop resolving. Because no record is proxied, the failure is that the names are not answered, not that traffic is blocked.",
+      "keeps": "baltor-pilot.fly.dev, which Fly answers. It serves the same release and holds a valid certificate.",
+      "action": "Send people to baltor-pilot.fly.dev and wait. Do not move the name servers during an outage; a registrar change takes far longer than a recovery."
+    },
+    {
+      "provider": "Namecheap",
+      "first": "Nothing immediately. A registrar outage does not withdraw a delegation that the registry already publishes.",
+      "keeps": "Every name, because Cloudflare answers them.",
+      "action": "Only a renewal or a name server change is blocked. The registration runs to 23 April 2028, so neither is urgent."
+    },
+    {
+      "provider": "Supabase",
+      "first": "Browser sign-in. A person cannot sign in and cannot recover an account.",
+      "keeps": "Everything a client key reaches: search, download, usage and the protocol endpoint, because those are checked against the records on the Fly volume and not against the identity provider.",
+      "action": "Tell invited users to use their client key. Do not move identity into a local table for the duration; that would create a second account authority."
+    },
+    {
+      "provider": "Resend",
+      "first": "Nothing today, because the service sends no email.",
+      "keeps": "Everything.",
+      "action": "When sending is wired, this becomes the sign-up and recovery path, and the first visible failure will be a new account that cannot confirm. Plan the operator path for that case before wiring it."
+    },
+    {
+      "provider": "Stripe",
+      "first": "Checkout and the customer portal. A new subscription cannot start and an existing customer cannot change one.",
+      "keeps": "Access that was already granted, because entitlement is recorded on the volume and is not re-read from the provider on each request.",
+      "action": "Do not grant access by hand to work around a failed checkout. Failed webhook deliveries are retried by the provider; reconcile them afterwards instead of replaying an effect."
+    },
+    {
+      "provider": "GitHub",
+      "first": "Any new deployment. The pilot workflow is the only path that builds the image and deploys it by digest.",
+      "keeps": "The running service, which does not call GitHub.",
+      "action": "Wait. Do not deploy an image built outside the workflow: it would not be rebuildable from a checked revision, and the release record would be a claim rather than a record."
+    }
+  ],
+  "assumptions": "Small private pilot, light service traffic, one region and no hosted customer harnesses. One service Machine is running. A second Machine is an option only after the records move off the single volume and shared-state tests pass. Prices are USD planning examples read from the providers' published pages, not a quote, an invoice or a spending approval.",
   "stack": [
     {
       "part": "General compute and background work",
       "choice": "Fly Machines",
       "why": "Reuse your existing Fly.io experience. Run the Python service as a container; add a separate worker only when indexing or maintenance needs it.",
-      "initial": "One shared CPU, 2 GB RAM, one primary region, one replica. Measure memory and latency before sizing changes.",
+      "initial": "Running. One Machine in iad, one shared processor, 2 GB of memory, automatic stop off and one Machine kept running. No worker and no second region.",
       "source": "https://fly.io/docs/machines/"
     },
     {
       "part": "Metadata, permissions, usage and retrieval index",
       "choice": "Supabase PostgreSQL",
       "why": "One managed relational store with transactions, full-text search and pgvector. Keep authoritative metadata distinct from rebuildable search projections.",
-      "initial": "One development project. Use Pro for an active paid pilot after approval; begin with the included Micro compute profile and measure it.",
+      "initial": "Not in use. The project exists and its public schema holds no table. The pilot keeps this data in SQLite on the Fly volume. Moving it is roadmap package D-05 and needs a migration rehearsal, a cutover plan and a rollback.",
       "source": "https://supabase.com/pricing"
     },
     {
       "part": "Lexical, typo-tolerant and semantic search",
       "choice": "PostgreSQL full-text search + pg_trgm + pgvector",
       "why": "Combine lexical and dense candidates, apply permission and compatibility filters, and fuse ranks. Native PostgreSQL text ranking is not BM25.",
-      "initial": "One declared embedding space and a measured hybrid profile. Embedding generation, ranking, reindexing and permission checks are engineering work, not automatic Supabase features.",
+      "initial": "Not in use. The running service reports SQLite full-text search as its lexical backend and a deterministic character hash where an embedding model would go, and reports that no semantic embedding model is installed. This row applies after the records move.",
       "source": "https://supabase.com/docs/guides/ai/hybrid-search"
     },
     {
       "part": "Sign-in and client authorization",
       "choice": "Supabase Auth",
       "why": "Use an identity provider rather than implementing password storage. The service still owns tenant bindings, subscription access and authorization.",
-      "initial": "One sign-in method. Protocol consent, token audience, scopes and revocation need integration tests with an actual supported client.",
+      "initial": "In use for sign-in, with two accounts. The service still reports host_key as its only authentication mode, so a client presents an operator-issued key and the service checks scope, expiry and revocation against its own records at every use.",
       "source": "https://supabase.com/docs/guides/auth/oauth-server/mcp-authentication"
     },
     {
       "part": "Files and bundles",
       "choice": "Supabase private Storage bucket",
       "why": "Keep large Markdown files, packages and artifacts outside the metadata database. Return typed references first, then authorize a selected download.",
-      "initial": "One private bucket named loop-engine-intelligence-dev. No public bucket and no private customer uploads during setup.",
+      "initial": "Not created. Storage holds no bucket. Bodies come from the Fly volume, inline up to 16 KB and by download up to 1 MB, after a separate authorization and a digest check.",
       "source": "https://supabase.com/docs/guides/storage/buckets/fundamentals"
     },
     {
       "part": "Website and Model Context Protocol endpoint",
       "choice": "The same Python service on Fly.io",
-      "why": "The current website is packaged with the serving application. Keeping one origin avoids an unnecessary frontend deployment and authentication boundary.",
-      "initial": "Use the Fly-provided hostname for qualification, then app.baltor.ai if you approve it. A Vercel frontend can be added later if the product needs one.",
+      "why": "The website is packaged with the serving application. Keeping one origin avoids an unnecessary frontend deployment and authentication boundary.",
+      "initial": "Running. One origin serves the website, the account pages, /api/v1 and /mcp, on all four names. The service accepts exactly protocol version 2025-11-25 and refuses every other version.",
       "source": "https://fly.io/docs/apps/"
     },
     {
       "part": "Subscriptions",
-      "choice": "Stripe sandbox first",
-      "why": "Test checkout, webhooks, reconciliation and revocation before accepting real payments.",
-      "initial": "No live charges. A successful checkout return must not grant access by itself.",
+      "choice": "Stripe, live account",
+      "why": "The owner activated the live account, so checkout, the customer portal and the webhook now move real money. Reconciliation, cancellation and revocation still decide access; a completed redirect does not.",
+      "initial": "Live. The webhook, checkout and the customer portal are on, and one monthly price of 29 United States dollars exists. No real card has completed a subscription, so the entitlement path is not proven from end to end.",
       "source": "https://docs.stripe.com/billing/subscriptions/webhooks"
     }
   ],
@@ -60,79 +290,85 @@
     {
       "item": "One Fly Machine: shared-cpu-1x, 2 GB, iad",
       "monthly": "About $10.70",
-      "conditions": "Continuously running, regional price example. Additional Machines are billed separately.",
+      "conditions": "This Machine is running now. Automatic stop is off, so it is billed continuously. Additional Machines are billed separately.",
       "source": "https://fly.io/docs/about/pricing/"
     },
     {
-      "item": "Supabase Pro with one Micro project",
-      "monthly": "From $25",
-      "conditions": "The plan includes $10 in compute credits, enough for one Micro project. Additional projects and larger compute add cost.",
+      "item": "One encrypted Fly volume, 1 GB, iad",
+      "monthly": "About $0.15",
+      "conditions": "In use. A volume is billed per provisioned GB and keeps billing while the Machine is stopped. The five daily snapshots are charged separately, and a snapshot is not a complete backup plan.",
+      "source": "https://fly.io/docs/about/pricing/"
+    },
+    {
+      "item": "Supabase project as it is used today",
+      "monthly": "$0 today, from $25 later",
+      "conditions": "The project holds identity only and runs on the free profile. Pro becomes relevant when the records and the files move to it; the plan includes $10 of compute credits, enough for one Micro project.",
       "source": "https://supabase.com/pricing"
     },
     {
-      "item": "One-Machine base total",
-      "monthly": "About $35.70",
-      "conditions": "Compute example plus one Supabase Pro project. Not an all-inclusive bill.",
+      "item": "Resend for sender domains",
+      "monthly": "$0",
+      "conditions": "Pricing snapshot from 19 September: 3,000 emails each month and at most 100 each day. Nothing is being used, because the service sends no email.",
+      "source": "https://resend.com/pricing"
+    },
+    {
+      "item": "What the running pilot costs today",
+      "monthly": "About $10.85",
+      "conditions": "The Machine plus the volume. Supabase and Resend are on free profiles. This is a planning example from published prices, not an invoice.",
       "source": "https://fly.io/docs/about/pricing/"
     },
     {
-      "item": "Two-Machine base total, after scaling qualification",
-      "monthly": "About $46.40",
-      "conditions": "Two $10.70 Machines plus $25 Supabase. This is not permission to replicate the current SQLite deployment.",
-      "source": "https://fly.io/docs/about/pricing/"
+      "item": "Stripe's own charge",
+      "monthly": "Per payment, not monthly",
+      "conditions": "Stripe takes its fee out of each payment, so it does not appear in the monthly example above. It starts to apply the first time a real card completes a subscription.",
+      "source": "https://stripe.com/pricing"
     },
     {
       "item": "Selected pilot infrastructure allowance",
       "monthly": "$50",
-      "conditions": "Owner-delegated limit, not a hard provider cap. Up to $10 setup separately; no model spending or live customer charges. The current Supabase project uses the quoted free profile, not Pro.",
+      "conditions": "Owner-delegated limit, not a provider-enforced cap. Up to $10 setup separately, and no model spending. Measured infrastructure spending today is the Machine and the volume.",
       "source": "https://supabase.com/docs/guides/platform/cost-control"
     },
     {
-      "item": "Resend Free for pilot authentication mail",
-      "monthly": "$0",
-      "conditions": "Pricing snapshot from September 19: 3,000 emails per month and at most 100 per day. Management authorization is prepared; the sender domain and real delivery remain unverified.",
-      "source": "https://resend.com/pricing"
-    },
-    {
-      "item": "Temporary Fly volume if the SQLite profile is used",
-      "monthly": "$0.15 per provisioned GB",
-      "conditions": "Volumes remain billable when the Machine stops. Snapshots have separate charges; a volume is not a shared database or a complete backup plan.",
+      "item": "Two-Machine example, after the records move",
+      "monthly": "About $46.40",
+      "conditions": "Two Machines at $10.70 plus Supabase Pro at $25, with volumes extra. This is not permission to replicate the current SQLite deployment; a second copy of that volume becomes a second, diverging authority.",
       "source": "https://fly.io/docs/about/pricing/"
     }
   ],
   "alternatives": [
     {
       "choice": "Fly.io + Supabase",
-      "fit": "Preferred for you",
-      "tradeoff": "Fits your experience and keeps ordinary compute separate from managed data and identity. Engineering must own deployment, health checks, restore tests and sizing.",
+      "fit": "Deployed",
+      "tradeoff": "This is what runs. It fits your experience and keeps ordinary compute separate from managed data and identity. Engineering owns deployment, health checks, restore tests and sizing. Only compute and identity are actually on it today.",
       "source": "https://fly.io/docs/apps/"
     },
     {
       "choice": "Render + Supabase",
-      "fit": "Managed alternative",
-      "tradeoff": "A 1 CPU / 2 GB web service is $25/month. Workspace fees are separate: Hobby is $0 plus compute; Pro is $25 plus compute. I originally preferred its predictable fixed-size service, not because we measured it as superior to Fly.io.",
+      "fit": "Managed alternative, not deployed",
+      "tradeoff": "A 1 CPU / 2 GB web service is $25 each month. Workspace fees are separate: Hobby is $0 plus compute, Pro is $25 plus compute. It was originally preferred for its predictable fixed-size service, not because it was measured against Fly.io.",
       "source": "https://render.com/pricing"
     },
     {
       "choice": "Railway + Supabase",
-      "fit": "Usage-based alternative",
-      "tradeoff": "Pro has a $20 monthly minimum including $20 of usage, then additional resource usage. Convenient container deployment; memory and sustained CPU make the bill variable.",
+      "fit": "Usage-based alternative, not deployed",
+      "tradeoff": "Pro has a $20 monthly minimum including $20 of usage, then additional resource usage. Convenient container deployment; memory and sustained processor use make the bill variable.",
       "source": "https://railway.com/pricing"
     },
     {
       "choice": "Vercel",
       "fit": "Optional frontend later",
-      "tradeoff": "Useful for a separate frontend, but not required by this packaged Python site. Its free Hobby plan is for personal, non-commercial use; do not assume it covers a paid product.",
+      "tradeoff": "Useful for a separate frontend, but not required by this packaged Python site, which serves its own website from the same origin. Its free Hobby plan is for personal, non-commercial use; do not assume it covers a paid product.",
       "source": "https://vercel.com/docs/plans/hobby"
     },
     {
       "choice": "Dedicated Elasticsearch or Qdrant service",
       "fit": "Add only after a measured retrieval need",
-      "tradeoff": "Keep the backend replaceable. Add a dedicated index when relevance, feature requirements, corpus size or latency justify another service, not because every retrieval project needs one.",
+      "tradeoff": "Keep the backend replaceable. The running service uses SQLite full-text search today. Add a dedicated index when relevance, feature requirements, corpus size or latency justify another service, not because every retrieval project has one.",
       "source": "https://supabase.com/docs/guides/ai/hybrid-search"
     }
   ],
-  "regions": "The selected pilot locations are Fly iad and Supabase us-east-1. Both resources exist. There is no regional failover deployment. Customer residency requirements still need review before admitting private production data; choosing a region alone does not establish compliance.",
+  "regions": "Fly iad holds the Machine and the volume. Resend reports both sender domains in us-east-1. The Supabase project's region was not read during this check, so treat the earlier us-east-1 note as unverified. There is no regional failover: one Machine in one region serves all four names, and a Fly outage in iad stops everything hosted. Customer residency requirements still need review before private production data is admitted; choosing a region alone does not establish compliance.",
   "region_sources": [
     "https://fly.io/docs/reference/regions/",
     "https://supabase.com/docs/guides/platform/regions"
@@ -140,90 +376,92 @@
   "do_now": [
     {
       "title": "1. Open the live pilot",
-      "url": "https://baltor-pilot.fly.dev/",
+      "url": "https://app.baltor.ai/",
       "steps": [
-        "Fly account access and the single-Machine deployment are ready. Do not repeat account or organization setup.",
-        "Use /login for email-free pilot access and /admin for test-token management. The administrator key is in the workstation keyring; the embedded runbook has its copy command.",
-        "The selected limits remain iad, $50/month infrastructure and up to $10 setup, with no model spending or live charges."
+        "Release 10 is serving. Use https://app.baltor.ai; the other three names serve the same release, and baltor-pilot.fly.dev is the fallback if Cloudflare cannot answer.",
+        "Use /login to sign in and /admin to manage test tokens. The administrator token is in the workstation keyring under the name baltor-admin and reaches a command only through the operator credential helper.",
+        "The selected limits remain iad, $50 each month for infrastructure and up to $10 for setup, with no model spending."
       ],
       "send": "Only a problem you observe or a change to the selected limits.",
-      "wait": "Public registration and paid access remain separate release work."
+      "wait": "Public registration is still closed, and no real card has completed a subscription."
     },
     {
       "title": "2. Keep the prepared Supabase project",
       "url": "https://supabase.com/dashboard/project/qfzxmjznlwiopgvfgtsw",
       "steps": [
-        "The Baltor organization is connected and baltor-pilot is healthy in us-east-1. Do not create a second project.",
-        "The quoted project profile is free. Do not upgrade merely to authorize engineering access.",
-        "Database, storage and key access are prepared. Engineering owns schema, indexes, private-bucket creation and runtime binding. Authentication-settings management still needs a separate permitted grant."
+        "The Baltor organization is connected and this project is the only one. Do not create a second project.",
+        "It holds identity only: two accounts, no application table and no storage bucket. The pilot's records stay in SQLite on the Fly volume until roadmap package D-05 moves them.",
+        "The earlier request for an authentication-settings grant is withdrawn. That reference still holds no credential, and it no longer blocks anything, because the service creates the confirmation link through the administration interface and sends its own message."
       ],
-      "send": "Approve only an exact missing authentication-settings grant when engineering requests it. The owner-confirmed Site URL and callback do not need repeated manual entry.",
-      "wait": "Creating a project does not migrate the current SQLite service or qualify customer sign-in."
+      "send": "Nothing. Read this row only to confirm that no second project was created.",
+      "wait": "Moving records and files here needs a migration rehearsal, a cutover plan and a rollback before it replaces the SQLite authority."
     },
     {
-      "title": "3. Resend is connected; engineering completes the sender",
+      "title": "3. Resend holds the sender domains",
       "url": "https://resend.com/domains",
       "steps": [
-        "The account, sending credential and separate management authorization are prepared. The auth.baltor.ai sender exists and verification has started; do not repeat signup or sender creation.",
-        "Exact sender records are installed in Cloudflare. The intended sender is accounts@auth.baltor.ai, with authentication-message tracking disabled.",
-        "Engineering configures the permitted DNS and identity settings, then tests confirmation and recovery. A connection is not proof of delivery."
+        "mail.baltor.ai is verified: its signing record, both policy records and its return path are all verified, and sending is enabled.",
+        "auth.baltor.ai is partially failed: its signing record and return path are verified, and its two policy records at send.auth are failed. Both sets of records are in Cloudflare, and a monitoring-only DMARC record covers the domain.",
+        "No message has been sent. The deployment holds no email credential and the package holds no sending code, so wiring the sender is engineering work that is still to do."
       ],
-      "send": "Controlled test-recipient labels when testing is ready; no repeated key transfer.",
+      "send": "Controlled test recipient addresses when testing is ready.",
       "wait": "Public email signup stays closed until delivery, recovery and abuse controls are verified."
     },
     {
       "title": "4. Domain setup is engineering owned",
       "url": "https://dash.cloudflare.com/",
       "steps": [
-        "Cloudflare write authorization works. The baltor.ai Free zone is active with the selected website, certificate and sender records.",
-        "Namecheap accepted dana.ns.cloudflare.com and nile.ns.cloudflare.com; the registry publishes those servers. The owner confirms no existing mail or forwarding.",
-        "The app, root and www addresses have valid Fly certificates and explicit host permissions. Engineering verifies customer access and sender delivery separately."
+        "Namecheap publishes dana.ns.cloudflare.com and nile.ns.cloudflare.com, and the registration runs to 23 April 2028.",
+        "The Cloudflare zone is active on the Free plan and holds the website records, the Fly ownership and certificate records, both Resend sender sets and a DMARC record that only monitors.",
+        "No record is proxied, so Cloudflare answers the names and traffic goes straight to Fly. That is why a visitor sees the Fly certificate, and why baltor-pilot.fly.dev keeps working if Cloudflare stops answering."
       ],
-      "send": "No manual domain action or repeated authorization is needed.",
-      "wait": "Do not recreate the zone or repeat the nameserver change. Engineering owns remaining integration and verification."
+      "send": "No manual domain action is needed.",
+      "wait": "Do not recreate the zone or repeat the name server change."
     },
     {
-      "title": "5. Keep Stripe in test mode",
+      "title": "5. Stripe is live; treat every charge as real",
       "url": "https://dashboard.stripe.com/",
       "steps": [
-        "The newly approved Baltor sandbox account acct_1UHZ9KCCxLfArYED is reachable with the runtime test credential. Do not use the older operator account or repeat key transfer.",
-        "Engineering owns test product, Price, customer, portal and webhook setup, plus replay, cancellation and reconciliation checks.",
-        "Live charging remains disabled. A completed checkout redirect cannot grant access without verified subscription state."
+        "The owner activated the live account acct_1UHZ972IF9bCskLc. Charges and payouts are enabled and nothing is outstanding. It is separate from the sandbox account acct_1UHZ9KCCxLfArYED that a development session reaches.",
+        "One monthly price of 29 United States dollars, a customer portal configuration and a webhook endpoint at https://app.baltor.ai/api/v1/billing/webhook exist on the live account. The service processes exactly five subscription and invoice events and no others.",
+        "The deployment holds a Stripe credential and a webhook signing secret, by name only. Keep the control that refuses a test key where a live key is required."
       ],
-      "send": "Only business constraints or a later public-pricing decision.",
-      "wait": "Engineering qualifies checkout, webhook replay, reconciliation, cancellation and revocation before any live charge."
+      "send": "Only a business constraint or a change to the price.",
+      "wait": "No real card has completed a subscription. The service cannot create a payment customer by itself yet, so an operator still binds one."
     },
     {
       "title": "6. Exercise the administrator dashboard",
-      "url": "https://baltor-pilot.fly.dev/admin",
+      "url": "https://app.baltor.ai/admin",
       "steps": [
         "Sign in using the owner administrator token, not a model-provider key.",
         "Create a labeled test token with the smallest needed scope and a short expiry. The configured limit is 20 active tokens, 24 hours by default and seven days maximum.",
         "Use pilot-owner for the diagnostic example or pilot-boundary for isolation tests. Tokens on one tenant share its material and usage; they do not create new private workspaces. Revoke test tokens after use."
       ],
       "send": "Any failed step or unclear message. Never include a token value in a screenshot or report.",
-      "wait": "This tests private pilot access, not public email registration or paid launch."
+      "wait": "This tests private pilot access, not public registration or a paid launch."
     }
   ],
   "engineering": [
+    "Write a release record for every deployment. Releases 9 and 10 changed the running service and left no record, so the repository cannot say what changed or what to roll back to.",
+    "Wire the verified sender: stage the email credential as a deployment secret, add sending at the existing boundary, then test confirmation and recovery against a controlled recipient. The service sends no email today.",
+    "Finish the paid journey. The service cannot create a payment customer by itself, so a new account cannot subscribe until an operator binds one, and no real card has completed a subscription.",
     "Implement and test PostgreSQL against the existing catalogue contract, including atomic read-set writes, idempotency, revocation and uncertain-commit recovery. Do not create two competing authoritative tenant stores.",
     "Build the retrieval projection with metadata filters, full-text search, typo handling and a versioned embedding space. PostgreSQL full-text ranking, pgvector and optional reranking must remain separate configurable stages.",
-    "Connect the private bucket to exact artifact references. Authorize each selected body before issuing a short-lived delivery grant; a signed link can remain usable until its expiry.",
-    "Complete website signup, subject-to-tenant binding, protocol consent, intended audience and scope validation. Authentication alone does not prove paid access.",
-    "Prepare a Fly deployment with an explicit Machine count, bounded resources, health checks, secrets, restart behavior and no automatic model-server launch. Keep one region initially.",
-    "Qualify backup restoration, rollback, secret rotation, failed payment and client reconnection. Model Context Protocol transport is stateless, but durable application state still needs the shared database before multi-instance serving."
+    "Create the private bucket and connect it to exact artifact references. Authorize each selected body before issuing a short-lived delivery grant; a signed link can remain usable until its expiry.",
+    "Qualify backup restoration, rollback, failed payment and client reconnection. Model Context Protocol transport is stateless, but durable application state still needs the shared database before a second serving instance."
   ],
   "wait_for": [
     "Do not deploy the current worker Dockerfile as a website; its default command is doctor.",
-    "Do not start multiple copies of the current SQLite service on separate Fly volumes. Volumes are local, not automatically replicated shared storage.",
-    "Do not disable token audience checks or make the bucket public to get a client connected.",
+    "Do not start a second copy of the current SQLite service on another Fly volume. Volumes are local, not automatically replicated shared storage, and the second copy becomes a second authority.",
+    "Do not grant access by hand to work around a failed payment. Live payments are activated, so entitlement must come from a verified subscription and never from a completed redirect.",
+    "Do not disable token audience checks or make a bucket public to get a client connected.",
     "Do not create Fly Managed Postgres as well as Supabase Postgres for this same initial authority store.",
-    "Do not buy GPU compute, LangGraph hosting, several embedding services or a separate search cluster for the initial pilot.",
-    "Do not activate live Stripe charges or change domain records until the exact release and endpoint have been tested."
+    "Do not buy GPU compute, LangGraph hosting, several embedding services or a separate search cluster for this pilot.",
+    "Do not read a provider dashboard as the state of the deployment. The switched-on features come from /data/host.json on the volume, and the release number does not change when that file changes."
   ],
-  "connection_note": "Supabase documents direct connections for persistent backends with IPv6, including Fly.io. Use a bounded application-side pool and verified TLS. If the actual route is IPv4-only, use the dashboard's session-pooler connection string. Do not guess a pooler hostname, and do not use transaction pooling for session features such as LISTEN/NOTIFY.",
+  "connection_note": "Supabase documents direct connections for persistent backends with IPv6, including Fly.io. This matters only after the records move; the running service opens no database connection to Supabase today. Use a bounded application-side pool and verified TLS. If the actual route is IPv4-only, use the dashboard's session-pooler connection string. Do not guess a pooler hostname, and do not use transaction pooling for session features such as LISTEN/NOTIFY.",
   "connection_source": "https://supabase.com/docs/guides/database/connecting-to-postgres",
-  "cost_note": "Fly volumes and some stopped-Machine storage continue billing. Supabase's Spend Cap covers selected usage categories, not every charge, compute upgrade or add-on. Configure small resource limits and inspect both providers' invoices; neither this allowance nor a browser checkbox is a hard spending cap.",
+  "cost_note": "Fly volumes and some stopped-Machine storage continue billing. Supabase's Spend Cap covers selected usage categories, not every charge, compute upgrade or add-on. Configure small resource limits and inspect both providers' invoices; neither this allowance nor a browser checkbox is a hard spending cap. Stripe's fee is taken from each payment and appears in the payment, not in a monthly bill.",
   "cost_sources": [
     "https://fly.io/docs/about/billing/",
     "https://supabase.com/docs/guides/platform/cost-control"

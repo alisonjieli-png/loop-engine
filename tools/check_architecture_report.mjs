@@ -52,7 +52,12 @@ try{
   const developerDownload=page.waitForEvent("download");await page.click("#download-developer-handoff");
   check("developer_download_matches_the_embedded_repository_handoff",readFileSync(await(await developerDownload).path(),"utf8")===readFileSync(join(root,"docs/context/FABLE-5-1-HANDOFF-2026-09-20.md"),"utf8"));
   await page.evaluate(()=>window.LoopSystemMap.openPage("owner"));
-  check("all_fifteen_owner_tasks_have_instructions_and_handoff_fields",await page.locator("#owner-items .owner-item").count()===15&&(await page.locator("#owner-items").innerText()).includes("Send back:"));
+  // Read the content, not the visible text: an owner task keeps its instructions and its
+  // handoff fields inside a disclosure that opens only while the task still needs a decision.
+  const ownerTasks=await page.locator("#owner-items .owner-item").evaluateAll(elements=>elements.map(element=>element.textContent.replace(/\s+/g," ")));
+  const everyTaskCarriesItsHandoff=rows=>rows.length===15&&rows.every(text=>text.includes("Send back:")&&text.includes("Prepared when:")&&text.includes("Engineering work:"));
+  check("all_fifteen_owner_tasks_have_instructions_and_handoff_fields",everyTaskCarriesItsHandoff(ownerTasks));
+  check("owner_task_guard_rejects_a_missing_handoff_field",!everyTaskCarriesItsHandoff(ownerTasks.map((text,index)=>index?text:text.replace("Send back:",""))));
   const gatesBefore=await page.locator("#release-gates").innerText();
   await page.locator('[data-owner-action="OWNER-01"]').check();
   check("owner_marks_are_preparation_not_software_completion",(await page.locator("#owner-progress").innerText()).startsWith("1 of 15")&&(await page.locator("#release-gates").innerText())===gatesBefore);
@@ -75,6 +80,7 @@ try{
   check("engineering_filter_rejects_an_omitted_prepared_provider",!matchesEngineering(visibleEngineering.slice(1)));
   await page.selectOption("#owner-phase","all");
   await page.locator('[data-owner-action="OWNER-01"]').uncheck();
+  await page.locator("#owner-items .owner-item details").first().evaluate(element=>{element.open=true;});
   await page.locator("#owner-items .owner-item .text-button").first().click();
   check("full_setup_guide_is_readable_without_a_companion_file",await page.locator("#owner-guide").isVisible()&&(await page.locator("#owner-guide-text").innerText()).includes("## 1. Set up hosting"));
   await page.click("#close-owner-guide");
@@ -97,6 +103,26 @@ try{
   const retainsIntegrationLimits=text=>text.includes("SQLite")&&text.includes("shared storage, billing and complete native task execution are not qualified")&&text.includes("not a qualified paid release");
   check("hosting_preparation_does_not_claim_database_integration",retainsIntegrationLimits(hostingStatus));
   check("hosting_guard_rejects_false_integration_success",!retainsIntegrationLimits(hostingStatus.replace("are not qualified","are qualified")));
+  const liveRows=(await page.locator("#hosting-live tbody tr").allInnerTexts()).map(text=>text.replace(/\s+/g," "));
+  const standings=(await page.locator("#hosting-live tbody tr td:nth-child(3)").allInnerTexts()).map(text=>text.trim());
+  const flagsWhatWasNotChecked=values=>values.some(text=>text.startsWith("Not verified today"));
+  check("hosting_live_state_labels_every_fact_and_flags_what_was_not_checked",
+    liveRows.length>=16&&standings.length===liveRows.length&&standings.every(text=>text.length>0)
+    &&flagsWhatWasNotChecked(standings)&&liveRows.join(" ").includes("Release 10")&&liveRows.join(" ").includes("encrypted"));
+  check("hosting_guard_rejects_an_unchecked_fact_relabelled_observed",
+    !flagsWhatWasNotChecked(standings.map(text=>text.replace("Not verified today","Observed"))));
+  const procedures=(await page.locator("#hosting-operations article h4").allInnerTexts()).map(text=>text.trim());
+  check("hosting_records_how_to_deploy_roll_back_and_read_the_logs",
+    procedures.join("|")==="How to deploy|How to roll back|How to read the logs"
+    &&await page.locator("#hosting-operations li").count()>=15);
+  const outages=(await page.locator("#hosting-outages tbody tr td:first-child").allInnerTexts()).map(text=>text.trim());
+  check("hosting_names_the_first_failure_for_every_provider",
+    ["Fly.io","Cloudflare","Namecheap","Supabase","Resend","Stripe","GitHub"].every(name=>outages.includes(name))
+    &&(await page.locator("#hosting-outages").innerText()).includes("baltor-pilot.fly.dev"));
+  const corrections=(await page.locator("#hosting-corrections").innerText()).replace(/\s+/g," ");
+  const keepsTheLivePaymentCorrection=text=>text.includes("Live charging remains disabled")&&text.includes("The owner activated the live account");
+  check("hosting_corrects_the_stale_live_payment_statement",keepsTheLivePaymentCorrection(corrections)&&!hostingStatus.includes("live customer charging remain disabled"));
+  check("hosting_guard_rejects_a_dropped_correction",!keepsTheLivePaymentCorrection(corrections.replace("The owner activated the live account","")));
   await page.evaluate(()=>window.LoopSystemMap.openPage("architecture"));await settled();
   check("all_six_original_tables_and_measured_feature_count_are_embedded",state.featureTables===6&&state.featureColumns===77,state);
   check("complete_roadmap_and_source_inventory_are_embedded",state.steps>=106&&state.files>2000,state);
