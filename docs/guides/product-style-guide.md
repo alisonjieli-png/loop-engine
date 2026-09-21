@@ -17,9 +17,34 @@ footer. Technical documentation and GitHub retain the exact architecture
 names, complete definitions and existing code identifiers. Public examples
 illustrate work; they are not labeled executable runtime diagrams.
 
-The [launch benefit guide](launch-benefits-and-evidence.md) separates proposed
-overnight work, token efficiency and expert-context messages from their
-required proof. Do not publish absolute or quantified claims without that proof.
+### Marketing language and factual claims are different things
+
+Owner decision of 2026-09-21. Marketing language does not have to be
+measurable, and treating it as though it must produces flat, lifeless copy
+that says nothing. Two categories, and only one of them needs evidence.
+
+**Write freely.** Evaluative and aspirational words, energy, and a strong
+point of view. "Supercharge your developers and AI agents", "powerful",
+"built for", "stop starting from nothing". A reader understands these as
+the writer's enthusiasm, not as a measurement, and nobody is misled. Also
+write freely about what the product is designed to do and about how it
+works, because the mechanism is real and can be read in the source.
+
+**These need evidence, every time.** A number nobody measured, such as a
+percentage, a multiple or a time saved. A comparison to a named product.
+The words guaranteed, always, never, every or any applied to an outcome. A
+customer, a testimonial, a logo or a count of users that does not exist. A
+capability the product does not have. Each of these is a statement of fact
+that a reader can check and we cannot support, which is a different thing
+from enthusiasm.
+
+The test is simple. Ask whether a reasonable reader would take the sentence
+as a fact they could verify. "Supercharge your agents" fails that test and
+is fine. "Cut your token bill in half" passes it and needs data.
+
+The [launch benefit guide](launch-benefits-and-evidence.md) records the
+proof the three benefit themes need before they are stated as results
+rather than as aims.
 
 Keep statements about available behavior separate from planned work. Use
 "candidate", "qualified", "unavailable", "failed", and "not verified" where
