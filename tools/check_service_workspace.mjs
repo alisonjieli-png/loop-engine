@@ -301,12 +301,16 @@ try {
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
-  /* The headline. It has to name the thing the reader owns and the unit of work this product sells, and it may not
-     carry a word from the connection guidance. A headline that names neither is the known-wrong case beside it. */
+  /* The headline is the owner's line. It has to name the two readers it addresses, the developers and the agents they run.
+     The sentence under it names the unit of work this product sells. Each rule has its own known-wrong case beside it. */
   const headline=await page.locator('[data-view="home"] h1').innerText();
-  const namesReaderAndStep=text=>/your (?:ai )?agents\b|your coding tools\b/i.test(text)&&/each step/i.test(text)&&!/\bharness\b/i.test(text);
-  check("homepage_headline_names_the_reader_and_the_step",namesReaderAndStep(headline)&&await page.locator('[data-view="home"] .boundary-figure').count()===0,{headline});
-  check("headline_check_rejects_a_headline_that_names_neither",["Turn complex problems into reusable solutions.","Harness and agent optimized operation.","Supercharge your workflow.","Give your harness what it needs for each step."].every(claim=>!namesReaderAndStep(claim))&&namesReaderAndStep("Give your AI agents what they need for each step.")&&namesReaderAndStep("Reusable material for your coding tools, chosen for each step."));
+  const namesTheReader=text=>/\byour\b/i.test(text)&&/\bdevelopers?\b/i.test(text)&&/\bagents?\b/i.test(text);
+  const namesTheStep=text=>/\beach step\b/i.test(text);
+  check("homepage_headline_names_the_developer_and_the_agent",namesTheReader(headline)&&await page.locator('[data-view="home"] .boundary-figure').count()===0,{headline});
+  check("headline_check_rejects_a_headline_that_names_neither",["Turn complex problems into reusable solutions.","Harness and agent optimized operation.","Supercharge your workflow.","Material your coding tools can search.","Supercharge your agents."].every(claim=>!namesTheReader(claim))&&namesTheReader("Supercharge your developers and AI agents"));
+  const subhead=await page.locator('[data-view="home"] .hero-subhead').innerText();
+  check("homepage_subhead_names_the_unit_of_work",namesTheStep(subhead),{subhead});
+  check("subhead_check_rejects_a_sentence_that_never_names_the_step",["Baltor is a library your coding tools can search.","Supercharge your developers and AI agents."].every(claim=>!namesTheStep(claim))&&namesTheStep("Give your AI agents what they need for each step."));
   check("homepage_says_the_model_keys_stay_with_the_customer",(await page.locator(".hero-value").innerText()).includes("Your model keys stay with you")&&(await page.locator(".hero-value").innerText()).includes("never asks you for a provider key")&&(await page.locator(".benefit-limits").innerText()).includes("No percentage reduction"));
   check("light_is_default_even_when_operating_system_is_dark",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   await page.emulateMedia({colorScheme:"dark"});await page.reload();
@@ -315,7 +319,15 @@ try {
   check("optimization_message_does_not_guarantee_daily_improvement",(await page.locator(".optimization-callout").innerText()).includes("Model selection, context sizing, tool choice and code reuse")&&(await page.locator(".benefit-limits").innerText()).includes("guaranteed daily performance gain"));
   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
      service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
-  check("homepage_opens_with_the_free_and_paid_split",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Free to install. Paid access to the library.");
+  /* The line above the headline is the owner's name for the positioning, written out in full. The word harness is
+     jargon outside this repository, so a plain sentence has to sit beside the phrase and say what it means. A page
+     that prints the phrase and leaves the reader to guess is the known-wrong case. */
+  check("homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
+  const positioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
+  const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
+  check("the_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(positioning),{positioning});
+  check("category_line_explanation_check_rejects_a_bare_phrase",["Harness and agent optimized operation.","Built for harness and agent optimized operation, one step at a time.","A harness is the program that runs your coding agent."].every(claim=>!explainsTheCategoryLine(claim))&&explainsTheCategoryLine(positioning));
+  check("homepage_states_the_free_and_paid_split",(await page.locator('[data-view="home"] .hero-split').innerText()).startsWith("Free to install. Paid access to the library."));
   const heroPrimary=page.locator('[data-view="home"] .hero .button.primary');
   check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("href")==="/connect"&&(await heroPrimary.innerText()).startsWith("Get started")&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown");
   const startSteps=await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()),startText=await page.locator(".start-strip").innerText();
@@ -328,10 +340,20 @@ try {
   const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;});
   check("homepage_makes_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
   check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
-  /* Every benefit detail says how the product does it, and says what has not been measured where that applies. */
+  /* Owner decision of September 21, 2026. A benefit detail says what the product does, in the present tense, and it
+     names a real limit of what exists today where there is one: the library still holds one example item, and the
+     ranking work is written but not connected to a live run. It does not apologise for a measurement nobody asked
+     for. Both halves of that rule have a known-wrong case: a missing limit and a returned apology each get reported. */
   const benefitText=await page.locator(".benefit-section").evaluate(node=>node.textContent);
-  const unmeasured=["We have not measured how much that changes your token use.","We have not measured how much generated output it saves.","Nobody has measured it yet.","It is not yet connected to a live run","We have not run that as an experiment, so it is an aim and not a result."];
-  check("every_unmeasured_benefit_says_so_in_the_reader_s_own_words",unmeasured.every(sentence=>benefitText.includes(sentence))&&!/\d+\s*%/.test(benefitText),{missing:unmeasured.filter(sentence=>!benefitText.includes(sentence))});
+  const realLimits=["The library on our server holds one example item today","That part is not connected to a live run yet."];
+  const measurementApologies=["We have not measured","Nobody has measured it yet","We have not run that as an experiment","it is an aim and not a result"];
+  const benefitProblems=text=>[...realLimits.filter(sentence=>!text.includes(sentence)).map(sentence=>"missing real limit: "+sentence),
+    ...measurementApologies.filter(sentence=>text.includes(sentence)).map(sentence=>"measurement apology: "+sentence)];
+  check("benefit_details_state_the_real_limits_without_a_measurement_apology",benefitProblems(benefitText).length===0&&!/\d+\s*%/.test(benefitText),{problems:benefitProblems(benefitText)});
+  check("benefit_detail_check_rejects_a_missing_limit_and_a_returned_apology",
+    realLimits.every(sentence=>benefitProblems(benefitText.split(sentence).join("")).length===1)&&
+    measurementApologies.every(sentence=>benefitProblems(benefitText+" "+sentence).length===1),
+    {limits:realLimits.length,apologies:measurementApologies.length});
   await checkBenefitList(page,check);
   /* The detail text belongs to the page, not to the script. A browser that never receives the script shows all six. */
   const withoutScript=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
@@ -346,15 +368,11 @@ try {
   /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
      The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
   const servedRoutes=["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/app","/account","/docs"];
-  /* One sentence still carries the retired word, and it is written in client-access.js, which belongs to another
-     workstream. It is named here rather than hidden, so every other occurrence anywhere still fails this check, and
-     the place it appears is reported. */
-  const recordedException="Your operator manages pilot access.";
-  const vocabularyProblems=[],exceptionSeen=[];
+  /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
+     the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
+  const vocabularyProblems=[];
   const readShownText=target=>target.evaluate(()=>[document.querySelector("header").innerText,[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer").innerText].join("\n"));
-  const scanShownText=(path,rendered)=>{
-    if(rendered.includes(recordedException))exceptionSeen.push(path);
-    const shownText=rendered.split(recordedException).join("");
+  const scanShownText=(path,shownText)=>{
     if(retiredAccessWords.test(shownText))vocabularyProblems.push({path,rule:"retired access word",found:shownText.match(retiredAccessWords)[0]});
     if(path!=="/docs"&&publicVocabulary.test(shownText))vocabularyProblems.push({path,rule:"runtime word",found:shownText.match(publicVocabulary)[0]});
   };
@@ -364,13 +382,19 @@ try {
   await page.goto(fixture.base+"/");
   await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
   scanShownText("/get-started",await readShownText(page));
-  check("the_recorded_trial_word_appears_only_where_it_is_recorded",exceptionSeen.every(path=>path==="/account"),{sentence:recordedException,file:"src/loop_engine/core/service_runtime/web_assets/client-access.js",seen_on:exceptionSeen});
-  const servedMarkup=await (await page.request.get(fixture.base+"/")).text(),servedScript=await (await page.request.get(fixture.base+"/assets/service.js")).text();
-  if(retiredAccessWords.test(servedMarkup))vocabularyProblems.push({path:"the served page source",rule:"retired access word",found:servedMarkup.match(retiredAccessWords)[0]});
-  if(retiredAccessWords.test(servedScript))vocabularyProblems.push({path:"the served page script",rule:"retired access word",found:servedScript.match(retiredAccessWords)[0]});
+  /* Rendered text is not the whole surface. A message can sit in a script the browser fetches and appear only in a
+     state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
+     the browser fetches for a customer page is therefore read, not only the markup and the main script. */
+  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json"];
+  const servedTexts=[];
+  for(const path of servedFiles)servedTexts.push([path,await (await page.request.get(fixture.base+path)).text()]);
+  const retiredIn=(path,text)=>retiredAccessWords.test(text)?[{path:"the served file "+path,rule:"retired access word",found:text.match(retiredAccessWords)[0]}]:[];
+  const servedFileProblems=servedTexts.flatMap(([path,text])=>retiredIn(path,text));
   check("no_customer_page_describes_the_product_as_a_trial",vocabularyProblems.filter(item=>item.rule==="retired access word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="retired access word")});
   check("no_customer_page_uses_the_runtime_vocabulary",vocabularyProblems.filter(item=>item.rule==="runtime word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="runtime word")});
   check("retired_word_check_rejects_a_known_wrong_page",["Join the private pilot.","Beta users get early access.","A pilot user can search.","Our private beta is invitation only."].every(claim=>retiredAccessWords.test(claim))&&!retiredAccessWords.test("Accounts open in small groups. Join the waiting list."));
+  check("no_served_file_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedFileProblems.length===0,{files:servedTexts.length,problems:servedFileProblems});
+  check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedTexts.every(([path,text])=>retiredIn(path,text+"\n/* Join the private beta. */").length===1),{files:servedTexts.length});
   check("runtime_word_check_rejects_a_known_wrong_page",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification.","A Practitioner owns the task."].every(claim=>publicVocabulary.test(claim))&&!publicVocabulary.test("Each step gets the material it needs."));
   /* Get started is the first way into the product, and the page behind it walks through the three steps in order. */
   await page.goto(fixture.base+"/");

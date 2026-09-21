@@ -64,10 +64,7 @@ body[data-page=home]{background:var(--paper)}
 .intelligence-section{padding-top:3.5rem}
 .layer-card{background:var(--bg);border-radius:10px}
 .scoping-callout{background:var(--bg);border:0;padding:2.5rem}
-.pilot-callout{margin-top:3rem;background:var(--soft);color:var(--ink);border:1px solid var(--border)}
-.pilot-callout .eyebrow{color:var(--accent)}
-.pilot-callout p:last-child{color:var(--muted)}
-.pilot-callout .primary{background:var(--accent);color:var(--paper);border-color:var(--accent)}
+.closing-band .primary{background:var(--accent);color:var(--paper);border-color:var(--accent)}
 @media(max-width:1050px){
   .product-hero{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:2rem}
   .friction-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.friction-grid article{grid-column:span 1}.friction-grid article:nth-child(4){grid-column:span 1}.friction-grid article:last-child{grid-column:span 2}

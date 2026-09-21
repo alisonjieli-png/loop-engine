@@ -17,41 +17,55 @@ tools working out the same things again on every task. There is no team
 account, no shared workspace and one plan, so the page speaks to that person
 and not to an engineering manager.
 
-The line above the headline is "Free to install. Paid access to the library."
-It replaces "Harness and agent optimized operation" on September 21, 2026, for
-two reasons that engineering recorded rather than asked about. The owner's
-later direction rewrites the top of the homepage and asks for language that
-says who the user is and what the benefit is. The retired line also carried
-the word harness, which the table of
-[names and where they may appear](product-style-guide.md#names-and-where-they-may-appear)
-keeps off the homepage. The recorded owner decision in `CLAUDE.md` still names
-the retired phrase; an operator should update that row so the record and the
-page agree.
+The line above the headline is the owner's category line, "Harness and agent
+optimized operation", written out in full. An earlier version of this
+document retired it on September 21, 2026, on the reasoning that it carried
+the word harness. That reasoning did not hold and the line is back the same
+day. The buyer is a developer who runs coding agents and already uses the
+word, and the recorded owner decision in `CLAUDE.md` names that phrase under
+public positioning, so the record and the page now agree.
 
-The homepage leads with "Give your AI agents what they need for each step."
-It names the thing the reader owns and the unit of work the product sells.
-The owner's own proposal was "Give your AI agents exactly what they need". The
-word "exactly" was removed because search is text matching over metadata and a
-selection can miss, so precision would be claimed that nobody measured. The
-words "for each step" were added because that is the product's actual shape.
-An agent-free version of the same sentence, "Reusable material for the tools
-that write your code", is kept in the check as an accepted alternative, so the
-owner can change the headline without changing the check.
+The word is still jargon outside this repository, so a plain sentence sits
+directly beside the phrase and says what a harness is: the program that runs
+your coding agent, such as OpenCode, Codex or Claude Code. A reader who has
+never met the word reads the next sentence and follows. Two named checks in
+`tools/check_service_workspace.mjs` hold both halves,
+`homepage_opens_with_the_owner_category_line` and
+`the_owner_category_line_is_explained_in_plain_words`, and each has a
+known-wrong case: a page that prints the phrase and leaves the reader to
+guess fails the second one.
 
-The subhead says what the product is, the supporting line says that model keys
-stay with the customer, and the one primary action is Get started. The action
-whose wording the service controls sits in the caption under it.
+The headline is the owner's line, "Supercharge your developers and AI
+agents". It names the two readers it addresses. It is evaluative language,
+which the
+[product style guide](product-style-guide.md#marketing-language-and-factual-claims-are-different-things)
+says needs no evidence, and it makes no checkable claim.
+
+The sentence under the headline is "Give your AI agents what they need for
+each step." It names the unit of work the product sells and was the headline
+of an earlier draft. The owner's own proposal for it was "Give your AI agents
+exactly what they need". The word "exactly" was removed because search is
+text matching over metadata and a selection can miss, so precision would be
+claimed that nobody measured.
+
+Below that sentence the page says what the product is, then that the part you
+install is free and access to the library is paid, then that model keys stay
+with the customer. The one primary action is Get started. The action whose
+wording the service controls sits in the caption under it.
 
 The homepage sections run in this order:
 
 ```text
 Homepage
-├── Free and paid line, headline and subhead
+├── Category line, headline and the sentence under it
+│   ├── The plain reading of the category line
+│   ├── What the product is, then the free and paid split
+│   ├── Model keys stay with the customer
 │   ├── One primary action to Get started
 │   ├── One secondary action to How it works
 │   └── The waiting list caption, whose wording the service controls
 ├── Six benefits, each opening to say how it works
-│   and what has not been measured
+│   and to name a real limit where there is one
 ├── What works right now: search, selected downloads,
 │   connection settings and usage, with the size of the library
 ├── Three step strip: connect, ask, keep the record
@@ -71,18 +85,26 @@ live on.
 ### The six benefits and how they open
 
 Each benefit is a title and a detail. The detail says how the product does it
-and names the file or the behaviour behind it, and where the outcome is an
-intention rather than a result the detail says so in a sentence the reader
-will actually read.
+and names the file or the behaviour behind it. It then describes what the
+reader gets, in the present tense. Where the part behind a benefit has a real
+limit today, the detail names that limit in a sentence the reader will
+actually read.
 
-| Benefit | What the detail says has not been measured |
+An earlier draft ended every one of the six with a sentence apologising for a
+measurement nobody had asked for. The owner removed those on September 21,
+2026. A real limit is a fact about the product and stays. A missing
+measurement is not a limit, and the page already carries the evidence
+position twice, in the limits note under the closing action and in the notice
+on How it works.
+
+| Benefit | The real limit the detail names |
 |---|---|
-| Each step gets the material it needs | How much it changes your token use |
-| Reuse code instead of writing it again | How much generated output it saves |
-| Not every step needs a large model | Which model fits which work |
-| Solutions you can run without us | Nothing. The mechanism runs today, and the page says it is not a record of a customer task it solved |
-| A failed check is examined, not obeyed | The ranking term is written and not yet connected to a live run |
-| Work that can stop and start again | No overnight task population has been run |
+| Each step gets the material it needs | None. The step carries the material it asked for |
+| Reuse code instead of writing it again | The library on our server holds one example item today, so this works on your own material first |
+| Not every step needs a large model | None. Each real call writes a cost record, and an unknown cost stays unknown |
+| Solutions you can run without us | None. The package is started in an interpreter that cannot load Baltor at all |
+| A failed check is examined, not obeyed | The ranking work is written down and that part is not connected to a live run yet |
+| Work that can stop and start again | None. Reserving, pausing, checkpointing and cancelling stay four separate actions |
 
 The website has a strict content security policy with no inline script and no
 inline style, so the opening behaviour lives in `service.js` and `service.css`.
@@ -112,12 +134,27 @@ change how the product looks or how carefully it is built.
 | join the beta | join the waiting list |
 | the pilot does not support X yet | X is being built |
 
-One sentence outside this file still carries the retired word:
-"Your operator manages pilot access." in
+The scan that holds this rule carries no exception. One sentence used to need
+one, "Your operator manages pilot access." in
 `src/loop_engine/core/service_runtime/web_assets/client-access.js`, shown on
-the account page when customer token management is switched off. The check
-names it as a recorded exception rather than hiding it, so every other
-occurrence anywhere still fails.
+the account page when customer token management is switched off. It now reads
+"Your operator issues and revokes your access." The class name
+`pilot-callout` in the two served stylesheets was retired in the same change;
+the box it styled is `closing-band`.
+
+Four named checks in `tools/check_service_workspace.mjs` hold the rule, and
+each of the two scans has a known-wrong case beside it.
+
+| Check | What it reads |
+|---|---|
+| `no_customer_page_describes_the_product_as_a_trial` | The header, the shown view and the footer of all eleven served addresses and of `/get-started` |
+| `retired_word_check_rejects_a_known_wrong_page` | Four known-wrong sentences, each of which the rule must report, and one accepted sentence it must not |
+| `no_served_file_carries_a_retired_word` | Every file the browser fetches for a customer page: the markup, the four scripts, the two stylesheets and the recipe record |
+| `served_file_scan_rejects_a_file_that_carries_a_retired_word` | Each of those served files with one retired sentence appended, which the scan must report |
+
+The deployed pages are read the same way by
+`no_live_customer_page_describes_the_product_as_a_trial` in
+`tools/check_hosted_website.mjs`, with its own known-wrong case.
 
 ### Get started
 
@@ -242,7 +279,7 @@ a Stripe credential and is not a Supabase customer access token.
 
 | Page | Suitable content | Hold back or qualify |
 |---|---|---|
-| Homepage | The free and paid line, the headline, one primary action to Get started, the six benefits with their unmeasured outcomes named, what works right now, the three step strip, the pricing summary and a closing action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
+| Homepage | The owner's category line with its plain reading, the headline, the sentence that names each step, the free and paid split, one primary action to Get started, the six benefits with their real limits named, what works right now, the three step strip, the pricing summary and a closing action. | Unverified cost savings, automatic task-success promises, customer counts, uptime guarantees, and a signup or purchase button that does not work. |
 | How it works | A concrete task becomes understandable steps: find useful information, choose an approach, reuse or build, and check the result. The five customer problems and the four intelligence layers. Explain what the service supplies and what the user's tools may send to a model. | No runtime taxonomy, Loop branding or unsupported end-to-end success claim. Technical definitions belong in documentation. |
 | Get started | Download, connect your tools and sign up, in that order. Exact released package and supported platform, installation, inspection, one bounded working example, expected output, errors and recovery. | Working-tree-only commands must not be advertised as available from the published package or GitHub main branch. Do not show a download form or a waiting list form before it works. |
 | Harness and context guide | The generated instruction and assignment files, reference-first context, permitted write locations, supported versioned native layouts, and observed loading status. | Empty folders and offered skill references are not installed or loaded material. Do not copy the entire repository into every instance. |
@@ -250,7 +287,7 @@ a Stripe credential and is not a Supabase customer access token.
 | Security and privacy | Actual permission and disclosure boundaries, credential handling, retention settings, local versus external data flows, and known limitations. | Do not promise that all data stays local when queries or model calls can leave the machine. Do not claim formal certification or instantaneous in-flight revocation without evidence. |
 | Examples | Small reproducible tasks with the exact configuration, observed result, evaluator and limitations. | Component fixtures are not full-system benchmarks or proof of general task-solving quality. |
 | Research and roadmap | Dated experiments, candidates such as AutoRAG, measured failures, and a concise public roadmap. | Internal owner decisions, investor or acquisition research, detailed security findings before disclosure review, and old comparison cells presented as current facts. |
-| Pricing and account pages | The plan name, the price, what is free, the measured unit, the beta entitlement, and the payment state read from the service. | A local signed-event fixture or a checkout redirect is not proof of a live paid service. Do not show a purchase button while the service reports that checkout is unavailable. |
+| Pricing and account pages | The plan name, the price, what is free, the measured unit, the invited entitlement, and the payment state read from the service. | A local signed-event fixture or a checkout redirect is not proof of a live paid service. Do not show a purchase button while the service reports that checkout is unavailable. |
 
 ## Pricing view
 
@@ -368,7 +405,7 @@ The main caution is proximity to [Balto](https://www.balto.ai/), an existing
 AI software brand. There are also other businesses named Baltor. This limited
 search is not trademark clearance or a guarantee of exclusive use.
 
-The pilot answers on four hostnames. All four serve the same release with
+The service answers on four hostnames. All four serve the same release with
 valid certificates. The
 [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
 section is the current statement of these facts. Follow that section when

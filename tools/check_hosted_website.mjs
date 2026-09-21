@@ -21,12 +21,19 @@ try{
   check("HTTPS_homepage_is_available",home.status()===200);
   check("live_page_has_four_intelligence_layers",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4);
   const liveHeadline=await page.locator('[data-view="home"] h1').innerText();
-  const namesReaderAndStep=text=>/your (?:ai )?agents\b|your coding tools\b/i.test(text)&&/each step/i.test(text)&&!/\bharness\b/i.test(text);
-  check("live_homepage_headline_names_the_reader_and_the_step",namesReaderAndStep(liveHeadline)&&await page.locator('[data-view="home"] .boundary-figure').count()===0);
-  check("headline_check_rejects_a_headline_that_names_neither",["Turn complex problems into reusable solutions.","Harness and agent optimized operation."].every(claim=>!namesReaderAndStep(claim)));
+  const namesTheReader=text=>/\byour\b/i.test(text)&&/\bdevelopers?\b/i.test(text)&&/\bagents?\b/i.test(text);
+  const namesTheStep=text=>/\beach step\b/i.test(text);
+  check("live_homepage_headline_names_the_developer_and_the_agent",namesTheReader(liveHeadline)&&await page.locator('[data-view="home"] .boundary-figure').count()===0);
+  check("headline_check_rejects_a_headline_that_names_neither",["Turn complex problems into reusable solutions.","Harness and agent optimized operation.","Supercharge your workflow."].every(claim=>!namesTheReader(claim))&&namesTheReader("Supercharge your developers and AI agents"));
+  check("live_homepage_subhead_names_the_unit_of_work",namesTheStep(await page.locator('[data-view="home"] .hero-subhead').innerText()));
   check("live_default_appearance_is_light",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   check("live_how_it_works_covers_five_optimization_problems",await page.locator('[data-view="about"] [data-friction]').count()===5);
-  check("live_homepage_opens_with_the_free_and_paid_split",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Free to install. Paid access to the library.");
+  check("live_homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
+  const livePositioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
+  const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
+  check("live_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(livePositioning));
+  check("category_line_explanation_check_rejects_a_bare_phrase",!explainsTheCategoryLine("Harness and agent optimized operation.")&&explainsTheCategoryLine(livePositioning));
+  check("live_homepage_states_the_free_and_paid_split",(await page.locator('[data-view="home"] .hero-split').innerText()).startsWith("Free to install. Paid access to the library."));
   check("live_homepage_shows_the_three_step_strip",JSON.stringify(await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()))===JSON.stringify(["ask","connect","keep"]));
   check("live_homepage_says_what_an_account_gives_you",JSON.stringify(await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()))===JSON.stringify(["downloads","recipes","search","usage"]));
   check("live_homepage_offers_one_primary_action",await page.locator('[data-view="home"] .hero .button.primary').count()===1&&await page.locator('[data-view="home"] .hero .button.primary').getAttribute("href")==="/connect"&&["waiting","open"].includes(await page.locator("#hero-primary").getAttribute("data-access-state")));
@@ -106,6 +113,17 @@ try{
       check(`live_layout_${width}_${path}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     }
   }
+  /* The retired trial words, read from the deployed pages themselves. The served assets are already compared byte for
+     byte with the tested source above, so this pass covers the markup and anything the deployed service substitutes. */
+  const liveRetired=/\bpilots?\b|\bbetas?\b|early access/i;
+  const liveRetiredProblems=[];
+  for(const path of ["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/app","/account","/docs"]){
+    await page.goto(origin+path);
+    const shown=await page.evaluate(()=>[document.querySelector("header").innerText,[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer").innerText].join("\n"));
+    if(liveRetired.test(shown))liveRetiredProblems.push(path+": "+shown.match(liveRetired)[0]);
+  }
+  check("no_live_customer_page_describes_the_product_as_a_trial",liveRetiredProblems.length===0);
+  check("live_retired_word_check_rejects_a_known_wrong_page",["Join the private pilot.","Beta users get early access.","A pilot user can search."].every(claim=>liveRetired.test(claim))&&!liveRetired.test("Accounts open in small groups. Join the waiting list."));
   const anonymous=await page.request.get(origin+"/api/v1/admin/access",{maxRedirects:0});
   check("deployed_administration_still_requires_credentials",anonymous.status()===401);
   check("no_browser_runtime_errors",errors.length===0);

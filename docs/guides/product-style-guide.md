@@ -52,14 +52,19 @@ they describe the actual state. A subscription grants the declared service
 access. It does not grant a model allowance, permission to execute code, or
 access to a competition's data.
 
-Where a benefit is an intention rather than a result, say so on the page in a
-sentence the reader will actually read, not in small print. Write "give each
-step only the material it needs" rather than a claim about a token bill, and
-"designed so a smaller model can finish a bounded step" rather than a promise
-about finishing overnight. The six benefits on the homepage each carry that
-sentence, and the
+Separate a real limit from a missing measurement. A real limit is a fact
+about the product as it exists today: the library holds one example item
+while a reviewed collection is prepared, or a part is written and not
+connected to a live run yet. Say that on the page, in a sentence the reader
+will actually read, not in small print. A missing measurement is different.
+Nobody owes the reader an apology for a number that was never promised, and
+a page that ends every sentence with one reads as an apology. Describe what
+the product does, in the present tense. The
 [public content direction](public-website-content-and-domain.md#the-six-benefits-and-how-they-open)
-lists what each one does not claim.
+records which of the six homepage benefits carries a real limit, and
+`benefit_details_state_the_real_limits_without_a_measurement_apology` in
+`tools/check_service_workspace.mjs` holds that split, with a known-wrong case
+for a dropped limit and for a returned apology.
 
 Use full descriptive terms. Keep exact identifiers in technical details and
 copyable configuration. Avoid hype, decorative slogans, invented performance
@@ -80,35 +85,46 @@ name and word may appear. It renames nothing.
 | task, each step, information, tools, model, checks, results, reusable solution | Public words | The work as a customer describes it. | Every page. On the homepage, How it works and their shared footer, only these words describe the work. | In technical documentation, in place of an exact runtime term. | Decided by the owner. |
 | Loop, Loop node, discrete cognitive or act step Loop node, runtime classification, role profile, Practitioner, Intelligence, Solution, run mode, step profile | Technical words | The exact runtime terms with their complete definitions. | Technical documentation, the Documentation view of the website, GitHub and source code. Keep the full phrase [discrete cognitive or act step Loop node](../../ASTRA.md#complete-behavioral-explanation) together with its complete behavioral explanation. | The homepage, How it works and their shared footer. | Decided by the owner. |
 | agent, AI agent | Customer words | The thing the customer runs, in the words the customer already uses for it. | Every page a customer reads, including the homepage and How it works. | In place of a code identifier, a record type or the exact runtime term in technical documentation. | Changed on September 21, 2026. The reason is below the table. |
-| harness, prompt cycle | Technical words | The customer's own tools and how they call a model, in the words this repository uses for them. | Technical documentation, connection guidance and GitHub. | The homepage, How it works, Get started and their shared footer. Write "your coding tool". | Decided by the owner. The [public content direction](public-website-content-and-domain.md#current-positioning-and-presentation) records it. |
+| harness | Owner's positioning word | The program that runs the customer's coding agent. | The homepage, inside the owner's category line "harness and agent optimized operation" written out in full, with a plain sentence beside it saying what a harness is. Technical documentation, connection guidance and GitHub. | Anywhere else on the homepage, on How it works, on Get started or in the shared footer. Write "your coding tool". | Corrected on September 21, 2026. The reason is below the table. |
+| prompt cycle | Technical words | How the customer's own tools call a model, in the words this repository uses for it. | Technical documentation, connection guidance and GitHub. | The homepage, How it works, Get started and their shared footer. Write "your coding tool". | Decided by the owner. The [public content direction](public-website-content-and-domain.md#current-positioning-and-presentation) records it. |
 | pilot, beta, private beta, early access | Retired words | A trial. Being invited changes only who can create an account. | Nowhere on a page a customer reads. Dated records and historical evidence keep their original wording. | Every page a customer reads. Write "accounts open in small groups", "invited member", "join the waiting list" and "X is being built". | Changed on September 21, 2026, on the owner's direction. |
 | `le_` | Customer-visible technical identifier: key prefix | The first characters of every client key that the service issues. | Issued keys, and technical documentation that explains them. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 | `loop-engine-intelligence` | Customer-visible technical identifier: protocol server name | The server name that a Model Context Protocol client shows after it connects. | The protocol handshake and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 | `X-Loop-Engine-Record-Type` | Customer-visible technical identifier: response header | The header on a downloaded body that names its record type. A browser client can read it. | Service responses and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
-| `Loop Engine Intelligence` | Customer-visible technical identifier: protected resource name | The `resource_name` field of the protected resource metadata at `/.well-known/oauth-protected-resource`. A client can show this name to the person who authorizes it. The service returns that record only when the host configuration lists the authentication mode `external_jwt`. The pilot lists only `host_key`, so the pilot does not return it today. | The protected resource metadata and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
+| `Loop Engine Intelligence` | Customer-visible technical identifier: protected resource name | The `resource_name` field of the protected resource metadata at `/.well-known/oauth-protected-resource`. A client can show this name to the person who authorizes it. The service returns that record only when the host configuration lists the authentication mode `external_jwt`. The deployed service lists only `host_key`, so it does not return that record today. | The protected resource metadata and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 | `loop-engine` | Customer-visible technical identifier: command and package name | The command that a customer types and the package that a customer installs. | Installation and setup instructions, the Documentation view of the website and technical documentation. | The homepage, How it works and their shared footer. | Open owner decision. Do not rename it. |
 
-### Why the word agent is now allowed on a customer page
+### Why the words agent and harness may appear on a customer page
 
 An earlier row of this table kept "agent" off the homepage and How it works,
 next to "harness" and "prompt cycle". That row was changed on September 21,
 2026, and the reason is recorded here rather than left as a silent break.
 
-1. It is the word the buyer already uses for the thing they run. The owner's
-   own direction for the homepage proposes "Give your AI agents what they
-   need", and the reader is a developer who calls their tool an agent.
-2. It is a customer word, not a runtime word. The rule that matters keeps
+1. Agent is the word the buyer already uses for the thing they run. The
+   owner's own direction for the homepage proposes "Give your AI agents what
+   they need", and the reader is a developer who calls their tool an agent.
+2. Agent is a customer word, not a runtime word. The rule that matters keeps
    Loop, Loop node, Loop Engine, runtime classification, role profiles and
    Practitioner off the public pages, and that rule is unchanged.
-3. "harness" stays off the public pages. It is jargon that only this
-   repository and a small group use. Write "your coding tool".
 
-The category line "Harness and agent optimized operation" was retired from
-the homepage in the same change, because it carried "harness" and because the
-owner's later direction rewrites the top of the page. The recorded decision
-table in `CLAUDE.md` still names that phrase under public positioning. An
-operator should update that row so the record and the page agree. Engineering
-does not edit that file.
+An earlier version of this guide also retired the category line "harness and
+agent optimized operation" from the homepage, on the reasoning that it
+carried the word harness. That reasoning does not hold, and the line is back.
+The phrase is the owner's name for the positioning, the recorded decision in
+`CLAUDE.md` stands, and the buyer is a developer who runs coding agents and
+already uses the word. So two more rules:
+
+1. The phrase "harness and agent optimized operation" belongs on the
+   homepage, written out in full. Because the word is jargon outside this
+   repository, a plain sentence sits beside it and says what a harness is, so
+   a reader who does not know the word still follows. Two named checks in
+   `tools/check_service_workspace.mjs` hold both halves:
+   `homepage_opens_with_the_owner_category_line` and
+   `the_owner_category_line_is_explained_in_plain_words`, each with a
+   known-wrong case.
+2. Outside that phrase and its explanation, "harness" still does not belong
+   on the homepage, on How it works, on Get started or in the shared footer.
+   Write "your coding tool".
 
 ### Open owner decision: identifiers that carry the engine name
 
@@ -127,9 +143,9 @@ The service display name is a setting, not a fixed identifier. The field
 `display_name` of `ServiceHttpConfiguration` in the same `http.py` has the
 default value `Loop Engine`. The service shows that value in the page title,
 the header and the shared footer of the website, and in its public
-capabilities record. The public capabilities record of the pilot reports
-`Baltor`, and the value can only come from the host configuration, so the
-host configuration of the pilot sets it. A self-hosted service that does not
+capabilities record. The public capabilities record of the deployed service
+reports `Baltor`, and the value can only come from the host configuration, so
+the host configuration of that service sets it. A self-hosted service that does not
 set it shows `Loop Engine` in those places. Whether that default changes
 belongs to the same owner decision. The help text of the service command also
 names Loop Engine. That is command output, where the technical name may
