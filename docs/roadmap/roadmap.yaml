@@ -10,7 +10,7 @@ continuation:
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
-  updated_at: "2026-09-22T22:40:00Z"
+  updated_at: "2026-09-22T23:20:00Z"
   baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
   plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
   artifact: docs/roadmap/CONTINUATION-STATUS.md
@@ -870,7 +870,7 @@ continuation:
     - id: D-21
       title: Meet customers in the harness they already use
       stage: initial_service
-      steps: [S-6.48, S-6.49, S-6.50]
+      steps: [S-6.48, S-6.49, S-6.50, S-6.61]
       depends_on: [D-20]
       actions: ['Offer proven setup paths for every kind of customer, including a container with one process for each step''s harness.', 'Add a website picker for hardware, goals, resources and harness that returns one exact setup.', Seed every download with starter context and instructions that configure the customer's harness for one harness per step., Publish subscription plugins for Hermes Agent and OpenClaw after recorded load tests., Build Baltor forks of OpenCode and Pi and measure them against upstream.]
       acceptance: A customer with any supported harness, hardware and resources follows one exact path to a working connection; the plugins and forks load selected items in recorded sessions.
@@ -1159,7 +1159,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.32, S-6.52, S-6.60, S-6.40, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.61, S-6.32, S-6.52, S-6.60, S-6.40, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1264,7 +1264,7 @@ continuation:
       continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50, S-6.61]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
       continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60]
@@ -2453,7 +2453,7 @@ steps:
     verify: [paid-only pages and views after sign-in, renew an expired subscription, update the payment method, cancel the subscription, delete the account, export the account data, 'usage, request log and trace views', 'connection, query, protocol and key handling that follow common practice so users of other products feel at home']
     adversarial: A cancelled or expired account must lose paid pages and paid search at once; a deleted account must leave no usable key; an export must never include another tenant.
     acceptance: A signed-in customer can manage their subscription, keys, data and account from one familiar dashboard, and every lifecycle action is checked on the live site.
-    evidence: 'September 22: owner direction after the handbook review; persona testers found no terms, privacy or account pages.'
+    evidence: 'September 22: owner direction after the handbook review; persona testers found no terms, privacy or account pages. September 22 research: customer client keys default to one day (at most seven, with a ceiling of thirty days), so a configured harness stops working the next day; familiar products offer 90 days or longer, which needs a new access policy record version.'
     next_local_work: Map the lifecycle actions to Stripe and Supabase features that already exist, then build the pages.
   - id: S-6.39
     phase: 6
@@ -2464,7 +2464,7 @@ steps:
     verify: ['search limited to paying users, with a small visible view for others', a free quota tier with an API key that has limits, rate and volume limits per key and per address that stop bulk harvesting, retrieval engines and rankings never exposed]
     adversarial: A client that pages through search to list the whole library must be refused before it sees more than its allowance; a free key over its quota must be refused with the reason and the upgrade path.
     acceptance: Nobody can reconstruct the library through search, a new user can still try Baltor through their harness with a free key, and the limits are published.
-    evidence: 'September 22: owner direction; the live search answers any signed-in caller up to 50 results per query.'
+    evidence: 'September 22: owner direction; the live search answers any signed-in caller up to 50 results per query. September 22 research: two open doors come first. The protocol tool provisioning_list and the list operation return every offered item in one call, with no page limit and no metering; search responses carry scores and name the backend, and the public capabilities page names sqlite_fts5 and deterministic_character_hash. See docs/research/HARNESS-AND-LIBRARY-PLAN-2026-09-22.md.'
     next_local_work: Research how comparable services limit free tiers and protect catalogues, then implement the policy as an engine slot setting.
   - id: S-6.40
     phase: 6
@@ -2497,7 +2497,7 @@ steps:
     verify: [Pi and OpenCode supported out of the box, 'forks of Pi and OpenCode studied, including the NVIDIA fork of Pi and its paper', 'a decision on an own fork of OpenCode or Pi, with measured efficiency gains', 'a tested answer for Codex, Claude Code, OpenCode and Pi on starting an independent instance or process with new files for one step', 'ZCode, which Z.ai open-sourced under Apache 2.0, tried as a candidate through its app-server path with isolation, cancellation and native loading tested before any support is listed']
     adversarial: A harness that cannot start an isolated instance with only the step files must be marked unsupported for one-harness-per-step, not assumed to work.
     acceptance: The supported harnesses each start a fresh instance per step with exactly the selected material, proven by a recorded test, and the fork decision rests on measurements.
-    evidence: 'September 22: owner direction; opencode 1.18.32, codex 0.155.1, pi and claude are installed on the workstation. ZCode is documented as an unqualified additional harness candidate at source revision 872ad960de7ec172591f7e1952f7849229f94521 in docs/research/ZCODE-AND-HARNESS-INTELLIGENCE-MARKET-REVIEW-2026-09-22.md; no native run was tested.'
+    evidence: 'September 22: owner direction; opencode 1.18.32, codex 0.155.1, pi and claude are installed on the workstation. ZCode is documented as an unqualified additional harness candidate at source revision 872ad960de7ec172591f7e1952f7849229f94521 in docs/research/ZCODE-AND-HARNESS-INTELLIGENCE-MARKET-REVIEW-2026-09-22.md; no native run was tested. September 22: Codex 0.155.1, OpenCode 1.18.32, Claude Code 2.1.280 and Pi 0.73.1 each started as a separate instance for one step with no model call and loaded only that step''s material, once HOME was empty and each harness had its own configuration folder (docs/research/HARNESS-INDEPENDENT-INSTANCES-2026-09-22.md). Loading is proven; use by a model is not. The fork review recommends thin forks whose Baltor behavior lives in a Pi package and an OpenCode plugin (docs/research/HARNESS-FORKS-2026-09-22.md).'
     next_local_work: Research the forks and run the independent-instance tests without model calls where possible.
   - id: S-6.43
     phase: 6
@@ -2697,3 +2697,14 @@ steps:
     acceptance: A step can run through any of the strategies by configuration alone, and the recorded decisions show when several models helped and when one was enough.
     evidence: 'September 22 evening: owner direction. The model gateway already routes a call to the preferred model, and a three-model ensemble example exists. The Codex research session is writing docs/research/MODEL-CALL-STRATEGY-AND-DISAGREEMENT-2026-09-22.md.'
     next_local_work: Read the research record, then define the edge and the pass-through engine first, so that every later strategy is one more engine.
+  - id: S-6.61
+    phase: 6
+    title: One place for the customer's credentials and connections, with scoped access for every step
+    status: proposed
+    depends_on: [S-6.31]
+    boundary: [src/loop_engine/core/harness_process.py, tools/operator_credentials.py]
+    verify: ['a local broker behind a fixed edge that holds the customer''s keys in the operating system keychain by default, with environment variables and an owner-only file as fallbacks and external secret managers as later engines', model calls through a local proxy that speaks the formats harnesses already use; each step gets a random virtual key that expires with the step and names its allowed models and budget; local endpoints such as 127.0.0.1 are upstreams of the proxy, 'protocol servers through a gateway on the same broker that holds their credentials and exposes to each step only the servers and tools that step may use, with each harness given one server entry', 'a fallback that passes a credential only to one step process, as an environment variable on a process started with an empty environment or as a private file removed when the step ends, never on the command line or in the step folder, recorded in Run History as a weaker isolation level', 'containers reach the broker through a mounted socket or the host address, written by the setup path', 'every physical call counted per step, and existing prior art (the engine''s broker socket, LiteLLM virtual keys, protocol server gateways) evaluated before building']
+    adversarial: A step must never receive a key it was not granted, a virtual key must stop working when its step ends, and no credential may reach a command line, a step folder, a log or Run History.
+    acceptance: A task runs several steps in separate harnesses that reach the customer's cloud keys, local endpoints and protocol servers through the broker, and a planted known-wrong step that tries to read another step's key is refused.
+    evidence: 'September 22 evening: the owner asked how every step''s harness gets the customer''s local endpoints, provider keys and protocol connections, and whether a shared credential layer with a secure fallback makes sense. Engineering decision: a local broker with per-step scoped access, and raw keys passed to a single process only as the recorded fallback.'
+    next_local_work: Read how harness_process.py's broker socket forwards model requests today, compare LiteLLM's virtual keys and protocol server gateways, then define the edge and the keychain engine.

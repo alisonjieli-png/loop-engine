@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f9954904bfadf`.
+Source fingerprint: `sha256:f6fe9fd712b62207e5f6b5583958ce9c63d28ed7bc4ab3502a405108720e59df`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f
 |---|---:|
 | Being built now | 32 |
 | Can start next | 11 |
-| Waiting on earlier work | 52 |
+| Waiting on earlier work | 53 |
 | Blocked | 2 |
 | Done | 41 |
 
@@ -84,6 +84,7 @@ Source fingerprint: `sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
 | S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | proposed | S-6.31 |
 | S-6.50 | Baltor forks of OpenCode and Pi | proposed | S-6.42 |
+| S-6.61 | One place for the customer's credentials and connections, with scoped access for every step | proposed | S-6.31 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
@@ -169,7 +170,7 @@ Source fingerprint: `sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f
 | D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 8 |
 | D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 7 |
 | D-20 | Meet the open standards and make served files safe to trust | initial_service | 0 of 5 |
-| D-21 | Meet customers in the harness they already use | initial_service | 0 of 3 |
+| D-21 | Meet customers in the harness they already use | initial_service | 0 of 4 |
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 5 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 4 |
 

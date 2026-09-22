@@ -4,7 +4,7 @@
   "done": 41,
   "next": 11,
   "now": 32,
-  "waiting": 52
+  "waiting": 53
  },
  "lanes": {
   "blocked": [
@@ -1375,6 +1375,21 @@
     "title": "Baltor forks of OpenCode and Pi",
     "waiting_on": [
      "S-6.42"
+    ]
+   },
+   {
+    "acceptance": "A task runs several steps in separate harnesses that reach the customer's cloud keys, local endpoints and protocol servers through the broker, and a planted known-wrong step that tries to read another step's key is refused.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.31"
+    ],
+    "id": "S-6.61",
+    "next_local_work": "Read how harness_process.py's broker socket forwards model requests today, compare LiteLLM's virtual keys and protocol server gateways, then define the edge and the keychain engine.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "One place for the customer's credentials and connections, with scoped access for every step",
+    "waiting_on": [
+     "S-6.31"
     ]
    },
    {
@@ -2974,15 +2989,16 @@
    "id": "D-21",
    "stage": "initial_service",
    "status_counts": {
-    "proposed": 3
+    "proposed": 4
    },
    "steps": [
     "S-6.48",
     "S-6.49",
-    "S-6.50"
+    "S-6.50",
+    "S-6.61"
    ],
    "title": "Meet customers in the harness they already use",
-   "total_steps": 3
+   "total_steps": 4
   },
   {
    "acceptance": "Ranking and prefetch improve from measured fetched-together evidence; the library grows by occupation and data work through independent review; every step records its model and decision method.",
@@ -3042,5 +3058,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f9954904bfadf"
+ "source_fingerprint": "sha256:f6fe9fd712b62207e5f6b5583958ce9c63d28ed7bc4ab3502a405108720e59df"
 }
