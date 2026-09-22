@@ -327,6 +327,25 @@ def _live_http_checks(check, root):
                   and healthy.json()["result"]["ready"] is True
                   and healthy.json()["result"]["readiness_checked"] is True
                   and good.status_code == 200)
+            # Known-wrong case: a required dependency that fails must take the
+            # machine out of rotation, so the route answers 503 with the same
+            # record and names the failed check. A route that answered 200 here
+            # would keep the load balancer sending customers to a machine that
+            # cannot serve them. The store is made to fail for this one
+            # question; nothing in it changes.
+            from unittest.mock import patch
+            from . import observability
+            failed = observability.ReadinessCheck("durable_store_answers", True, False, "store_unavailable")
+            with patch.object(observability, "store_readiness", lambda _config: failed):
+                unready = client.get("/api/v1/health")
+            check("a_service_that_is_not_ready_answers_503_and_names_the_failed_check",
+                  unready.status_code == 503
+                  and unready.json()["result"]["record_type"] == HEALTH_RECORD_VERSION
+                  and unready.json()["result"]["alive"] is True
+                  and unready.json()["result"]["ready"] is False
+                  and [(row["name"], row["code"]) for row in unready.json()["result"]["checks"]
+                       if row["required"] and not row["passed"]]
+                  == [("durable_store_answers", "store_unavailable")])
             anonymous = client.get("/api/v1/session")
             wrong = client.get("/api/v1/session",
                                headers={"Authorization": "Bearer WRONG_PROBE_TOKEN_" + PRIVATE_BODY_MARK})
@@ -371,6 +390,35 @@ def _live_http_checks(check, root):
                   and fixture.keys["alpha"].key not in stored
                   and "Authorization" not in stored and "authorization" not in stored
                   and json.dumps(listed) and PRIVATE_BODY_MARK not in json.dumps(listed))
+
+
+def _deadline_checks(check, root):
+    """A health measurement that misses the request deadline answers 503, not ready."""
+    import httpx
+    import threading
+    from unittest.mock import patch
+    from . import http as transport
+    fixture = HttpDomainFixture(root)
+    release = threading.Event()
+    measured = transport.readiness_report
+
+    def held(**fields):
+        # The measurement stays in flight until this check releases it, so the
+        # deadline passes every time, whatever the load on the machine.
+        release.wait(30)
+        return measured(**fields)
+    with patch.object(transport, "readiness_report", held):
+        with running_http(fixture, request_timeout_seconds=0.5) as (base, _service):
+            try:
+                with httpx.Client(base_url=base, trust_env=False, timeout=10) as client:
+                    late = client.get("/api/v1/health")
+            finally:
+                release.set()
+    answer = late.json()["result"]
+    check("a_health_measurement_that_misses_the_deadline_answers_503_not_ready",
+          late.status_code == 503 and answer["record_type"] == HEALTH_RECORD_VERSION
+          and answer["alive"] is True and answer["ready"] is False
+          and [row["name"] for row in answer["checks"]] == ["readiness_within_deadline"])
 
 
 def _payload_capture_checks(check, root):
@@ -527,7 +575,7 @@ def run_checks(check=None):
                           "detail": "real loopback transport and a real durable store; no external provider"})
     for name, function in (("references", _reference_checks), ("record_shape", _record_shape_checks),
                            ("ring", _ring_checks), ("readiness", _readiness_checks),
-                           ("live_http", _live_http_checks),
+                           ("live_http", _live_http_checks), ("deadline", _deadline_checks),
                            ("payload_capture", _payload_capture_checks),
                            ("credential_body", _credential_body_checks),
                            ("read_command", _read_command_checks)):
