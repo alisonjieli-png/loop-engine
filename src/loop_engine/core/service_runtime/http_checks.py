@@ -282,7 +282,7 @@ async def _protocol_checks(check, root):
     from mcp import ClientSession
     from mcp.client.streamable_http import streamablehttp_client
     fixture = HttpDomainFixture(root)
-    with running_http(fixture) as (base, _service):
+    with running_http(fixture) as (base, service):
         async with streamablehttp_client(base + "/mcp", headers=fixture.headers()) as streams:
             async with ClientSession(streams[0], streams[1]) as session:
                 initialized = await session.initialize()
@@ -306,6 +306,17 @@ async def _protocol_checks(check, root):
                 check("protocol_refusals_hide_cross_tenant_items_and_reject_authority_injection",
                       refused.isError and injected.isError and "PRIVATE_BETA_BODY" not in str(refused)
                       and fixture.usage()["records"] == 1)
+                # A refusal of a protocol tool is a refused request too. The
+                # harness that made it reads the same kind of reference a web
+                # refusal carries, and the operator finds it under the protocol
+                # address with the account that made the call.
+                from .observability import valid_reference
+                named = refused.structuredContent.get("request_reference")
+                found = service.failure_journal.detail(named)["failures"] if valid_reference(named) else []
+                check("a_protocol_tool_refusal_carries_a_reference_the_operator_finds",
+                      valid_reference(named) and len(found) == 1 and found[0]["route"] == "/mcp"
+                      and found[0]["method"] == "POST" and found[0]["tenant_id"] == "alpha"
+                      and found[0]["refusal_code"] == refused.structuredContent["error"]["code"])
                 from ..retrieval import Retriever
                 original = Retriever.search
                 def revoke_after_ranking(retriever, *args, **kwargs):
@@ -508,6 +519,39 @@ async def _cancellation_checks(check, root):
             release.set()
 
 
+def unrun_service_check_modules():
+    """Return the check modules of this service that no suite runs.
+
+    A check module that nothing imports passes forever and proves nothing. The
+    observability checks were in that state after the September 22 merges:
+    written, documented and cited by the operator guide, and run by no suite,
+    because the one call to them was lost in a merge without a conflict.
+
+    A module counts as run when the suite registration names it, or when a
+    module that runs imports it from this folder. Only the imports are read, so
+    nothing is executed to answer the question.
+    """
+    import ast
+    from importlib.resources import files
+    from ..._conformance_scan import _registered_test_modules
+    package = files("loop_engine")
+    folder = package.joinpath("core", "service_runtime")
+    modules = {entry.name[:-3] for entry in folder.iterdir() if entry.name.endswith(".py")}
+    prefix = "core.service_runtime."
+    suite = ast.parse(package.joinpath("_self_test.py").read_text("utf-8"))
+    run = {name[len(prefix):] for name in _registered_test_modules(suite)
+           if name.startswith(prefix) and name[len(prefix):] in modules}
+    pending = list(run)
+    while pending:
+        tree = ast.parse(folder.joinpath(pending.pop() + ".py").read_text("utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.level == 1 and node.module in modules \
+                    and node.module not in run:
+                run.add(node.module)
+                pending.append(node.module)
+    return sorted(name for name in modules - run if name.endswith("_checks"))
+
+
 def self_test():
     try:
         import mcp, httpx, uvicorn, jwt
@@ -550,5 +594,8 @@ def self_test():
                       "detail": "injected provider transports and owned loopback listeners; no provider is contacted"})
     with tempfile.TemporaryDirectory(prefix="service-account-email-") as directory:
         account_email_checks(account_check, Path(directory))
+    from .observability_checks import run_checks as observability_checks
+    observability_checks(check)
+    check("every_service_check_module_is_run_by_a_suite", not unrun_service_check_modules())
     return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),
             "all_passed": all(row["passed"] for row in tests)}

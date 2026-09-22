@@ -598,9 +598,20 @@ def run_http_checks(check, root):
             exhausted = client.post(PROMOTION_REDEMPTION_PATH, json={
                 "record_type": "service_promotion_redemption_request/v1",
                 "code": spent.code, "request_id": "web-3"})
+            # Every refusal carries the reference of its own request, issued at
+            # random before the code is read, so two refusals always differ in
+            # that value and it carries nothing about the code. Every other
+            # byte of the two answers must be the same.
+            from .observability import valid_reference
+            def without_reference(answer):
+                reference = answer.json().get("request_reference")
+                if not valid_reference(reference):
+                    return None
+                return answer.content.replace(reference.encode("ascii"), b"")
             check("the_served_refusal_for_an_unknown_and_an_exhausted_code_is_the_same_answer",
                   unknown.status_code == exhausted.status_code == 403
-                  and unknown.content == exhausted.content
+                  and without_reference(unknown) is not None
+                  and without_reference(unknown) == without_reference(exhausted)
                   and unknown.json()["error"]["code"] == "promotion_code_unusable"
                   and "unknown" not in unknown.text and "exhausted" not in unknown.text)
             anonymous = httpx.post(base + PROMOTION_REDEMPTION_PATH, trust_env=False, json={

@@ -470,6 +470,16 @@ def readiness_report(*, config, provisioning, authentication_modes, policy,
               ReadinessCheck("browser_identity_installed", False, bool(browser_identity_installed)),
               ReadinessCheck("billing_sessions_installed", False, bool(billing_sessions_installed)),
               ReadinessCheck("billing_webhook_installed", False, bool(billing_webhook_installed))]
+    return health_record(checks, policy)
+
+
+def health_record(checks, policy):
+    """Build the one health answer from a list of checks.
+
+    Ready is true only when every required check passed. The measured answer
+    and the answer given when measuring ran out of time are both built here,
+    so the deployment gate and an operator never meet two shapes of it.
+    """
     ready = all(check.passed for check in checks if check.required)
     return {"record_type": HEALTH_RECORD_VERSION, "alive": True, "ready": ready,
             "readiness_checked": True, "checks": [check.to_dict() for check in checks],
@@ -478,3 +488,14 @@ def readiness_report(*, config, provisioning, authentication_modes, policy,
             "failure_records_enabled": policy.record_failures,
             "payload_capture": policy.payload_capture,
             "deployed_provider_qualification": False}
+
+
+def readiness_deadline_report(policy):
+    """Return the health answer for a measurement that did not finish in time.
+
+    A dependency that does not answer inside the request deadline is a
+    dependency that failed. The process is still answering, so it is alive,
+    and it is not ready, with the one failed check that names why.
+    """
+    return health_record([ReadinessCheck("readiness_within_deadline", True, False,
+                                         "readiness_deadline_exceeded")], policy)

@@ -19,8 +19,8 @@ from .http_test_fixtures import HttpDomainFixture, running_http
 from .observability import (
     FAILURE_RECORD_VERSION, HEALTH_RECORD_VERSION, MAXIMUM_FAILURE_LISTING, METADATA_AND_REQUEST_BODY,
     METADATA_ONLY, OTHER_METHOD, REFERENCE_CHARACTERS, UNMATCHED_ROUTE, RequestReference,
-    ServiceFailureJournal, ServiceObservabilityPolicy, new_request_reference, readiness_report,
-    valid_reference,
+    ServiceFailureJournal, ServiceObservabilityPolicy, new_request_reference, readiness_deadline_report,
+    readiness_report, valid_reference,
 )
 from .records import ServiceRuntimeConfig, ServiceRuntimeError
 
@@ -280,6 +280,16 @@ def _readiness_checks(check, root):
                   if row["name"] in ("browser_identity_installed", "billing_sessions_installed",
                                      "billing_webhook_installed", "interface_page_readable",
                                      "catalogue_registered")))
+    # Known-wrong case: measuring did not finish inside the request deadline.
+    # The answer keeps the one health shape the deployment gate reads and says
+    # not ready, with the one failed check that names why.
+    late = readiness_deadline_report(policy)
+    check("a_readiness_answer_that_ran_out_of_time_is_not_ready_in_the_same_shape",
+          late["record_type"] == HEALTH_RECORD_VERSION and late["alive"] is True
+          and late["ready"] is False and late["readiness_checked"] is True
+          and set(late) == set(passing) and late["release_reference"] == "probe-release"
+          and [row["name"] for row in late["checks"] if row["required"] and not row["passed"]]
+          == ["readiness_within_deadline"])
 
 
 def _live_http_checks(check, root):
@@ -409,6 +419,31 @@ def _read_command_checks(check, root):
           and _refused(read_failures, str(host), tenant="beta", reference=saved[0]) == "invalid_request"
           and _refused(read_failures, str(host), reference="not-a-reference")
           == "invalid_request_reference")
+    # The operator reaches the journal through the command, not through the
+    # function. A release once carried this function, its help text and its
+    # guide while the command itself was missing from the entry point, so
+    # asking for it was refused as an unknown command.
+    from contextlib import redirect_stdout
+    from io import StringIO
+    from ...cli_help import COMMAND_HELP
+    from .http_entrypoint import SERVICE_COMMANDS, main
+    printed = StringIO()
+    try:
+        with redirect_stdout(printed):
+            status = main(["failures", "--config", str(host), "--limit", "2"])
+        answered = json.loads(printed.getvalue())
+    except (SystemExit, ValueError):
+        status, answered = None, {}
+    check("the_failures_command_answers_through_the_service_entry_point",
+          status == 0 and answered.get("returned") == 2 and answered.get("stored") == 3
+          and answered.get("failures") == newest["failures"]
+          and (root / "service.db").read_bytes() == before)
+    usage = COMMAND_HELP["service"].splitlines()[0]
+    named = set(usage[usage.index("{") + 1:usage.index("}")].split("|"))
+    if "loop-engine service smoke" in usage:
+        named.add("smoke")
+    check("every_service_command_the_help_names_is_one_the_entry_point_accepts",
+          named == set(SERVICE_COMMANDS))
 
 
 def run_checks(check=None):
@@ -424,7 +459,12 @@ def run_checks(check=None):
                            ("payload_capture", _payload_capture_checks),
                            ("read_command", _read_command_checks)):
         with tempfile.TemporaryDirectory(prefix="service-observability-" + name + "-") as directory:
-            function(check, Path(directory))
+            try:
+                function(check, Path(directory))
+            except Exception:
+                # A group that stops part way is a failure with a name, so a
+                # missing guard is reported as such instead of ending the run.
+                check(f"the_{name}_checks_ran_to_completion", False)
     if not tests:
         return None
     return {"record_type": "service_observability_test/v1", "tests": tests,

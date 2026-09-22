@@ -159,7 +159,9 @@ Every refusal that depends on the code answers with one word,
 `promotion_code_unusable`, and one status, 403. Someone guessing codes cannot
 tell a code the service never issued from a real code that has run out. The
 exact reason stays inside the service and reaches an operator; it is never
-returned to the person who offered the code.
+returned to the person who offered the code. The two answers are the same byte
+for byte except `request_reference`, which names the request, is issued at
+random before the code is read, and so says nothing about the code.
 
 The service also does the same work for both. An unknown code is evaluated
 against a stand-in record, so every state condition runs and the per-account
