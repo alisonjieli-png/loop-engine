@@ -538,7 +538,7 @@ async def _cancellation_checks(check, root):
             release.set()
 
 
-def unrun_service_check_modules():
+def unrun_service_check_modules(sources=None):
     """Return the check modules of this service that no suite runs.
 
     A check module that nothing imports passes forever and proves nothing. The
@@ -547,8 +547,14 @@ def unrun_service_check_modules():
     because the one call to them was lost in a merge without a conflict.
 
     A module counts as run when the suite registration names it, or when a
-    module that runs imports it from this folder. Only the imports are read, so
-    nothing is executed to answer the question.
+    module that runs imports one of its entry points from this folder and calls
+    it: `self_test`, a public function whose name starts with `run_`, or one
+    whose name ends in `_checks`. An import alone does not count, because a
+    merge can drop the call and keep the import beside it, and calling a
+    fixture or reading a constant runs none of the module's checks. Only the
+    source is read, so nothing is executed to answer the question. `sources`
+    replaces the text of named modules, so a check can ask the question of a
+    known-wrong folder.
     """
     import ast
     from importlib.resources import files
@@ -560,12 +566,21 @@ def unrun_service_check_modules():
     suite = ast.parse(package.joinpath("_self_test.py").read_text("utf-8"))
     run = {name[len(prefix):] for name in _registered_test_modules(suite)
            if name.startswith(prefix) and name[len(prefix):] in modules}
+
+    def entry_point(imported):
+        return imported == "self_test" or (not imported.startswith("_")
+            and (imported.startswith("run_") or imported.endswith("_checks")))
     pending = list(run)
     while pending:
-        tree = ast.parse(folder.joinpath(pending.pop() + ".py").read_text("utf-8"))
+        name = pending.pop()
+        tree = ast.parse((sources or {}).get(name) or folder.joinpath(name + ".py").read_text("utf-8"))
+        called = {node.func.id for node in ast.walk(tree)
+                  if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.level == 1 and node.module in modules \
-                    and node.module not in run:
+                    and node.module not in run \
+                    and any(entry_point(alias.name) and (alias.asname or alias.name) in called
+                            for alias in node.names):
                 run.add(node.module)
                 pending.append(node.module)
     return sorted(name for name in modules - run if name.endswith("_checks"))
@@ -616,5 +631,13 @@ def self_test():
     from .observability_checks import run_checks as observability_checks
     observability_checks(check)
     check("every_service_check_module_is_run_by_a_suite", not unrun_service_check_modules())
+    # Known-wrong case for the guard above: a merge can drop the call and keep
+    # the import beside it. Nothing then runs the module, and the import alone
+    # must not count as running it.
+    from importlib.resources import files
+    source = files("loop_engine").joinpath("core", "service_runtime", "http_checks.py").read_text("utf-8")
+    dropped = source.replace("    observability_checks(check)\n", "", 1)
+    check("a_check_module_imported_but_never_called_is_named_as_unrun",
+          dropped != source and "observability_checks" in unrun_service_check_modules({"http_checks": dropped}))
     return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),
             "all_passed": all(row["passed"] for row in tests)}
