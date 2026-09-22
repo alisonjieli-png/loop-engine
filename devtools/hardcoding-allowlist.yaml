@@ -3784,6 +3784,79 @@ entries:
     classification: SECRET_OR_CREDENTIAL_REFERENCE
     created_on: 2026-09-21
     expires_on: 2027-09-21
+  - finding_id: hardcoding.587503b21df3d5569030c5c7
+    owner: loop_engine.conformance_report:_documentation_links_that_do_not_resolve
+    rationale: >-
+      The link check resolves only repository-relative links. The URI scheme
+      prefix https:// names an absolute external link, which the check skips by
+      design; it is the standard scheme name, binds no provider or endpoint and
+      has no caller override need.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.945ae1c213cd44ea40bc8651
+    owner: loop_engine.conformance_report:_documentation_links_that_do_not_resolve
+    rationale: >-
+      Same link check: the URI scheme prefix http:// marks an absolute external
+      link the check skips by design. A standard scheme name, not a provider
+      binding.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.3ed06055378332db7845ec8c
+    owner: loop_engine.core.local_model_readiness:LocalModelRequest.__post_init__
+    rationale: >-
+      Validation of a caller-supplied base address: the request refuses any
+      address whose scheme is not http or https. The scheme names are the
+      validation rule itself, not an endpoint; the endpoint stays the caller's
+      own field.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.4ca3585f39c634fb944d3fec
+    owner: loop_engine.core.local_model_readiness:LocalModelRequest.__post_init__
+    rationale: >-
+      Same address validation, the http scheme name. The endpoint remains the
+      caller's field; this literal only admits the two web schemes.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.053c2330af2a6e293b7f7f8f
+    owner: loop_engine.core.local_model_readiness:Finding.__post_init__
+    rationale: >-
+      The closed three-state vocabulary of one finding inside the versioned
+      local_model_readiness/v1 record: passed, refused, unknown. The states
+      are that record's own contract, checked where the record is built; a
+      new state is a record version change, not a setting.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.4b14756251eb51ef47a13aa1
+    owner: loop_engine.core.local_model_readiness:Finding.__post_init__
+    rationale: >-
+      Same closed finding-state vocabulary of the versioned readiness record,
+      the passed state.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.ad8172924fe12a08f1f9857c
+    owner: loop_engine.core.local_model_readiness:Finding.__post_init__
+    rationale: >-
+      Same closed finding-state vocabulary of the versioned readiness record,
+      the unknown state, which keeps a missing fact from reading as a pass.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.f7e3a36f905e4e33b6728820
+    owner: loop_engine.overnight_cli
+    rationale: >-
+      The default of the --base-url option: the loopback address a local
+      Ollama server listens on out of the box. It is shown in the option's
+      help, every run can replace it with --base-url, it carries no
+      credential and it never leaves the local machine.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
