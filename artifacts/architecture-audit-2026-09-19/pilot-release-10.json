@@ -1,0 +1,106 @@
+{
+  "record_type": "pilot_release_record/v1",
+  "observed_at": "2026-09-22T18:10:00+00:00",
+  "release": 10,
+  "fly_release_version": 12,
+  "application": "baltor-pilot",
+  "region": "iad",
+  "source_revision": "15d365999ffb42e3f00d3b4f39f8d5d00b86f1ba",
+  "source_branch": "main",
+  "image": "registry.fly.io/baltor-pilot@sha256:c75dbff17e53e9d9f1663bf030d0846c87ff5f572468b80a0b2980d6680312b6",
+  "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35763623051, dispatched on main with operation deploy, after the continuous integration run 35731949431 passed on this exact revision.",
+  "deployment_switch": {
+    "set_true_at": "2026-09-22T17:53:54Z",
+    "set_false_at": "2026-09-22T17:55:47Z"
+  },
+  "before_release": {
+    "volume_snapshot_requested": "vs_pw1B1OwvpOjwizMBMYZVYPbb",
+    "previous_daily_snapshot": "vs_jJOKOQJx4QAJtAoq9BJZvO52 (2026-09-22T00:59:23Z)"
+  },
+  "what_this_release_changes": "The owner's public voice reaches the live site: the headline, the first navigation item Get started, and no pilot or beta wording on customer pages. It also carries everything merged to main from 81f341d to 15d3659: the intelligence family serving policy (harness family by default), the starter catalogue reclassified as harness material with its 43 approvals carried across the re-anchor, the retirement of the parked in-process suites from the self-test, and the repaired sign-up, recovery and promotion routes (switched off by host configuration).",
+  "post_deploy_steps": [
+    {
+      "step": "loop-engine service apply-grants --config /data/host.json on machine 83733ea7779068",
+      "why": "The release image carries re-anchored catalogue bodies. Their disclosure grants must be applied to existing tenants after the deploy; the guarded workflow does not do it. Before this step the library offered 0 items.",
+      "result": {
+        "granted_items_by_tenant": {
+          "pilot-owner": 43
+        }
+      }
+    },
+    {
+      "step": "tools/reissue_service_keys.py --origin https://baltor-pilot.fly.dev --account pilot-owner --account pilot-boundary --lifetime-seconds 604800 --confirm-reissue",
+      "why": "The diagnostic keys issued on 2026-09-21 had the default 24 hour life and expired at 12:15 UTC on 2026-09-22, before this release. Not a regression of the release.",
+      "result": {
+        "new_expiry": "2026-09-29T18:02:01Z"
+      }
+    },
+    {
+      "step": "Added http.request_limits {record_type service_request_limits/v1, client_address_source header, client_address_header Fly-Client-IP} to /data/host.json, then restarted the machine",
+      "why": "The failed-attempt limit for each client address was built but inactive in production (persona QA finding 10), and releases after e505eca refuse a public binding without it.",
+      "backup": "/data/host.json.before-request-limits-20260922T181740",
+      "validated_with": [
+        "ServiceRequestLimits.from_host",
+        "ServiceHttpConfiguration(**http)"
+      ],
+      "result": {
+        "capabilities.failed_attempts_per_address.active": true,
+        "failures_allowed": 30,
+        "window_seconds": 60
+      },
+      "evidence": "32 requests with a wrong key, each with a different forged Fly-Client-IP and X-Forwarded-For header, answered 401 thirty times and then 429 failed_attempt_limit_reached: the Fly proxy overwrites the header, so a forged address does not evade the count."
+    }
+  ],
+  "after_release": {
+    "hostnames_answering_200": [
+      "baltor.ai",
+      "www.baltor.ai",
+      "app.baltor.ai",
+      "baltor-pilot.fly.dev",
+      "demo.baltor.ai",
+      "examples.baltor.ai",
+      "docs.baltor.ai",
+      "status.baltor.ai"
+    ],
+    "website_checks": {
+      "baltor.ai": "72/72",
+      "www.baltor.ai": "72/72",
+      "app.baltor.ai": "72/72",
+      "baltor-pilot.fly.dev": "71/72"
+    },
+    "website_check_tool": "tools/check_hosted_website.mjs at 15d3659 (real browser, no credentials)",
+    "catalogue_disclosure_checks": {
+      "app.baltor.ai": "6/6",
+      "baltor.ai": "6/6",
+      "www.baltor.ai": "6/6",
+      "baltor-pilot.fly.dev": "6/6"
+    },
+    "registered_items": 43,
+    "offered_to_pilot_owner": 34,
+    "withheld_for_undeclared_authority": 9,
+    "rejected_items_reachable": 0,
+    "service_checks": "14/14 API checks; the MCP stage was run separately",
+    "mcp_official_client": {
+      "origins": [
+        "https://app.baltor.ai",
+        "https://baltor.ai"
+      ],
+      "protocol": "2025-11-25",
+      "tools": 5,
+      "search_returned_references": 7,
+      "bodies_loaded_by_search": false
+    },
+    "usage_records_added": 1,
+    "physical_model_calls": 0
+  },
+  "known_gaps": [
+    "baltor-pilot.fly.dev fails one browser check because the page shows its own host name, which contains the word pilot. The canonical origin in /data/host.json is still baltor-pilot.fly.dev; moving it to app.baltor.ai needs the identity provider's redirect list changed first.",
+    "demo, examples, docs and status .baltor.ai serve the main site; the per-hostname surfaces are not on main yet.",
+    "The guarded workflow does not run apply-grants; a catalogue-changing release needs it as a recorded post-deploy step until it is automated."
+  ],
+  "rollback": {
+    "previous_release": 11,
+    "previous_image": "registry.fly.io/baltor-pilot@sha256:172782c0be740164b665c51502028a5c8c228d8ed1a73c8b3db89dfe6e5cd4d9",
+    "release_8_image": "registry.fly.io/baltor-pilot@sha256:a2d31be073025fcc4f6f0ad86ef743eeffbd36d8d65671855d7298260862ce0a"
+  }
+}
