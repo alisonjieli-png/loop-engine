@@ -707,6 +707,9 @@ def select_catalogue_items(catalogue: Path, accepted_licenses) -> CatalogueSelec
 
     Only an item whose declared licence this host accepts can be registered.
     One refused row is kept so the drill can show that the host refuses it.
+    The journey's requests hold no effect authority, and the service withholds
+    an item that declares an effect from such a request, so only items that
+    declare none can be offered, fetched and installed here.
     """
     document = json.loads((catalogue / CATALOGUE_ITEMS_FILE).read_text(encoding="utf-8"))
     _refuse_unless(isinstance(document.get("items"), list) and document["items"], "catalogue_has_no_items")
@@ -721,7 +724,8 @@ def select_catalogue_items(catalogue: Path, accepted_licenses) -> CatalogueSelec
         _refuse_unless(hashlib.sha256(content).hexdigest() == reference["digest"]
                        and len(content) == reference["size_bytes"], "catalogue_body_does_not_match_its_reference",
                        reference["identity"])
-    accepted = [row for row in rows if row["reference"]["license"] in accepted_licenses]
+    accepted = [row for row in rows if row["reference"]["license"] in accepted_licenses
+                and not row["reference"].get("declared_effects")]
     refused = [row for row in rows if row["reference"]["license"] not in accepted_licenses]
     _refuse_unless(len(accepted) >= 7, "catalogue_has_too_few_accepted_items")
     return CatalogueSelection(tuple(accepted[0:3]), tuple(accepted[3:5]), tuple(accepted[5:7]),

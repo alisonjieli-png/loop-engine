@@ -280,9 +280,10 @@ install tool records what the client process adds rather than hiding it.
   attempts than the limit allows.
 - The host attests the catalogue items. Host attestation is not independent
   qualification, and no item in the starter catalogue has been approved.
-- The catalogue subset is seven items of the forty nine in the starter
-  catalogue, chosen in a fixed order. A passing run says nothing about the
-  other items.
+- The catalogue subset is seven items, chosen in a fixed order from the
+  starter catalogue items that declare no effect, because the journey's
+  requests hold no effect authority and the service withholds an item that
+  declares one. A passing run says nothing about the other items.
 - The drill runs on one machine with one Docker version. It is not a test of
   the deployed pilot, its volume or its network.
 - The declared values in the report are not measurements. That the drill starts

@@ -641,6 +641,18 @@ class CatalogueSelectionTest(unittest.TestCase):
         self.assertIsNotNone(self.selection.refused_license)
         self.assertNotIn(self.selection.refused_license["reference"]["license"], self.settings.accepted_licenses)
 
+    def test_every_registered_item_declares_no_effect(self):
+        """The journey's requests hold no effect authority, so an item that declares one is withheld.
+
+        A withheld item is left out of search and refused at its manifest with
+        item_withheld, so a drill that registered one could never show it
+        offered, fetched and installed. The catalogue gained effect
+        declarations after the drill was written, and a run on September 22
+        selected three such items and failed eleven checks.
+        """
+        for row in self.selection.registered:
+            self.assertEqual(row["reference"].get("declared_effects", []), [], row["reference"]["identity"])
+
     def test_the_tamper_target_is_not_installed(self):
         self.assertNotIn(self.selection.tamper_target, self.selection.install_identities)
 
