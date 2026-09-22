@@ -174,6 +174,7 @@ What happened after that, on 21 September 2026:
 
 Remaining steps, not done here and not authorized by this folder:
 
+- The 74 items this merge adds, which no reviewer has judged, go to the independent review.
 - The rights of the two items with the licence `unknown` are settled, or those two items are rewritten from material whose licence is known, or they are dropped.
 - The four other rejected items are repaired against their written reasons and resubmitted, which needs a new review.
 - The 74 items with no verdict are put to an independent review.
