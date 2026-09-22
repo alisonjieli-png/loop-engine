@@ -120,7 +120,11 @@ def _documentation_links_that_do_not_resolve(repository: "str | None" = None) ->
                 destination = target.split("#")[0].split("?")[0]
                 if not destination:
                     continue
-                if not os.path.exists(os.path.join(os.path.dirname(path), destination)):
+                # An absolute file path resolves only on the machine that wrote
+                # it, and it tells every reader where that machine keeps its
+                # files. It is refused even when this machine has the file.
+                if (os.path.isabs(destination) or re.match(r"^[A-Za-z]:[\\/]", destination)
+                        or not os.path.exists(os.path.join(os.path.dirname(path), destination))):
                     broken.append({"file": relative, "line": number, "target": target})
     return broken
 
@@ -498,6 +502,17 @@ def self_test() -> dict:
         uncharted = _docs_folders_without_charter(directory)
     check("docs_charter_canary_reports_folders_without_a_kind_and_skips_empty_ones",
           uncharted == ["uncharted", "unmarked"], f"uncharted={uncharted}")
+    with tempfile.TemporaryDirectory() as directory:
+        os.makedirs(os.path.join(directory, "docs"))
+        target = os.path.join(directory, "docs", "guide.md")
+        open(target, "w", encoding="utf-8").write("# Guide\n")
+        # The absolute link names a file that exists on this machine, which is
+        # how the known-wrong link passed here and failed on every other one.
+        open(os.path.join(directory, "README.md"), "w", encoding="utf-8").write(
+            f"[relative](docs/guide.md) [absolute]({target}) [missing](docs/absent.md)\n")
+        reported = [row["target"] for row in _documentation_links_that_do_not_resolve(directory)]
+    check("link_gate_refuses_absolute_paths_and_missing_targets",
+          reported == [target, "docs/absent.md"], f"reported={reported}")
     with tempfile.TemporaryDirectory() as directory:
         installed_package = os.path.join(directory, "loop_engine")
         os.makedirs(installed_package)

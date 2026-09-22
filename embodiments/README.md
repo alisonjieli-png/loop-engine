@@ -1,9 +1,8 @@
 # Loop Engine execution experiments
 
-Current harness integration work belongs in `/home/username/loop-engine/embodiments`.
-Dependencies, trial workspaces and reports for this work stay inside
-`/home/username/loop-engine`. Start with
-[the harness guide](/home/username/loop-engine/embodiments/HARNESS-GUIDE.md).
+Current harness integration work belongs in this `embodiments` folder.
+Dependencies, trial workspaces and reports for this work stay inside the
+repository checkout. Start with [the harness guide](HARNESS-GUIDE.md).
 
 These are Loop Engine-specific execution experiments. Their launchers share the canonical runtime and lab evaluator. They are not independent codebases.
 

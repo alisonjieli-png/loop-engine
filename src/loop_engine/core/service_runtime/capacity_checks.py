@@ -46,12 +46,32 @@ def _deep_body_checks(check, root):
           _deep_body_holds(_deep_body(root / "guarded")))
     with patch("loop_engine.core.service_runtime.http._parse_json", _unguarded_parse_json):
         unguarded = _deep_body(root / "unguarded")
+    # Where this interpreter's parser cannot follow the body, the reader without
+    # the limit turns it into an internal fault that nothing counts. A newer
+    # interpreter may follow it; the limit must still be what answers.
+    faults = _parser_faults_at(DEEP_BODY_DEPTH)
     check("removed_nesting_limit_is_detected",
           not _deep_body_holds(unguarded)
-          and unguarded == {"answers": [(500, "operation_failed")] * 6, "tracked": 0, "identity_calls": 0})
+          and (unguarded == {"answers": [(500, "operation_failed")] * 6, "tracked": 0, "identity_calls": 0}
+               if faults else all(code != NESTING_LIMIT_CODE for _status, code in unguarded["answers"])))
 
 
-def _deep_body(root, *, depth=5000):
+#: Deep enough that the JSON parser of Python 3.10, 3.11 and 3.12 cannot follow
+#: it (the release image runs 3.12, which follows 5,000 levels), and at 60,000
+#: bytes still inside the 65,536 byte request limit, so the body reaches the reader.
+DEEP_BODY_DEPTH = 30_000
+
+
+def _parser_faults_at(depth):
+    """Whether this interpreter's JSON parser runs out of recursion on the body."""
+    try:
+        json.loads("[" * depth + "]" * depth)
+    except RecursionError:
+        return True
+    return False
+
+
+def _deep_body(root, *, depth=DEEP_BODY_DEPTH):
     """A caller with no credential sends a body nested far deeper than any real request.
 
     The account activation route reads its body before any credential exists,
