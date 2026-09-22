@@ -3,7 +3,8 @@
 Use the [main README](../README.md) for the public quickstart.
 For current development, open the
 [single development HTML](../artifacts/architecture-audit-2026-09-19/loop-engine-system-map.html),
-which embeds the [current checkpoint](context/DEVELOPMENT-CHECKPOINT-2026-09-20.md).
+which embeds the dated
+[September 20 development checkpoint](context/DEVELOPMENT-CHECKPOINT-2026-09-20.md).
 Coding agents should also follow the [context route](context/START-HERE.md),
 [continuation plan](roadmap/CONTINUATION-AND-LAUNCH.md), and
 [generated status](roadmap/CONTINUATION-STATUS.md).
@@ -13,10 +14,17 @@ service work. Its [current deployment](architecture/MVP-CLIENT-SERVER.md#current
 section is the current statement of what runs and where. Follow that section
 when another document differs from it.
 
-The [takeover checkpoint](context/TAKEOVER-CHECKPOINT-2026-09-20.md) records
-the verified live state, the open findings, the private beta definition and
-the working cycle. The earlier September 20 checkpoint and handoff remain
-valid as dated snapshots.
+The owner's standing rules for committing, pushing, branching and releasing,
+and what still needs the owner, are in the
+[commit, push and release authority](../AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md. No other document restates them.
+
+The [September 22 session handoff](context/SESSION-HANDOFF-2026-09-22.md) is
+the newest dated record of the live state and the work in flight. The
+[takeover checkpoint](context/TAKEOVER-CHECKPOINT-2026-09-20.md) records the
+working cycle, the open findings of September 20 and the private beta
+definition. The earlier September 20 checkpoint and handoff remain valid as
+dated snapshots.
 
 Baltor is the public brand. Loop Engine is the repository, the Python package
 and the technical name. [terminology.yaml](../terminology.yaml) is the single
@@ -102,7 +110,9 @@ Read [AGENTS.md](../AGENTS.md), then the
 [engineering standards](standards/README.md).
 The [prompt index](prompts/README.md) distinguishes the one broad continuation
 brief, focused workflows, and design history. Select guidance for the current
-task; do not treat old mandates as permission to launch work.
+task; do not treat old mandates as permission to launch work. An old prompt
+that says to hold back commits or pushes is older than the authority section
+of AGENTS.md, and that section is the one in force.
 
 Use [humanizer-context.md](../humanizer-context.md) and
 [the writing templates](templates/README.md) for public prose.
