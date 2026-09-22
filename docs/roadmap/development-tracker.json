@@ -1,0 +1,2349 @@
+{
+ "counts": {
+  "blocked": 3,
+  "done": 41,
+  "next": 11,
+  "now": 26,
+  "waiting": 25
+ },
+ "lanes": {
+  "blocked": [
+   {
+    "acceptance": "",
+    "blocked_on": "a frontier model key the owner authorizes",
+    "depends_on": [
+     "S-3.3"
+    ],
+    "id": "S-3.5",
+    "next_local_work": "",
+    "phase": 3,
+    "status": "blocked",
+    "title": "Unseen tasks on an authorized frontier model and Kaggle export",
+    "waiting_on": [
+     "S-3.3"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "approved public prices and product terms; the Stripe sandbox account exists and nothing has been created in it",
+    "depends_on": [
+     "S-4.4"
+    ],
+    "id": "S-4.5",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "blocked",
+    "title": "Billing with metered usage",
+    "waiting_on": [
+     "S-4.4"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "the owner's package index account",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-4.6",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "blocked",
+    "title": "Package index publication",
+    "waiting_on": []
+   }
+  ],
+  "done": [
+   {
+    "acceptance": "Every existing initiative is retained; the next eligible task and unmet launch gates are computed from the same plan; the artifact is regenerated after every completed batch.",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-6.17",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "offline_verified",
+    "title": "Maintain one continuation plan and regenerate its status artifact",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-0.5",
+    "next_local_work": "",
+    "phase": 0,
+    "status": "published",
+    "title": "Text conformance, standalone export, example 26, export command",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-1.1",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "published",
+    "title": "Temporal fact graph in Context Intelligence",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-1.10",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "offline_verified",
+    "title": "Detection and correction node family with confidence",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.10"
+    ],
+    "id": "S-1.11",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "offline_verified",
+    "title": "Job-description-seeded intelligence pipeline and first seeds",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-1.12",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "offline_verified",
+    "title": "Adversarial validation and audit of every matrix feature",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.1"
+    ],
+    "id": "S-1.2",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "published",
+    "title": "Memory versioning with history, diff, and rollback",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.2"
+    ],
+    "id": "S-1.3",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "published",
+    "title": "Shared memory scopes with writer identity",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-1.5",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "published",
+    "title": "Operation cost records wired into invocations and calls",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.5"
+    ],
+    "id": "S-1.6",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "published",
+    "title": "Model-versus-not decision record per operation",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-1.8",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "published",
+    "title": "Specialist training from learnable call records",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.1",
+     "S-1.2",
+     "S-1.3",
+     "S-1.4",
+     "S-1.5",
+     "S-1.6",
+     "S-1.7",
+     "S-1.8"
+    ],
+    "id": "S-1.9",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "offline_verified",
+    "title": "Feature matrix regeneration with evidence links",
+    "waiting_on": [
+     "S-1.4",
+     "S-1.7"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-2.1",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "published",
+    "title": "Step efficiency review record with a deterministic judge",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-2.12",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Component interface and intelligence flow documentation with inconsistencies",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.1"
+    ],
+    "id": "S-2.13",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Typed-decision model route (a Jev-class judge) behind the model call boundary",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-2.14",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Feature component breakdown with the four intelligence layers as areas",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-2.17",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Records index and folder charters",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.13"
+    ],
+    "id": "S-2.20",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Typed action decisions over an element table",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.2"
+    ],
+    "id": "S-2.22",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Local resource detection and a supervisor for harness instances",
+    "waiting_on": [
+     "S-2.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.22"
+    ],
+    "id": "S-2.24",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Hibernation protocol, capacity reservation, and progress-aware stalls",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.1"
+    ],
+    "id": "S-2.28",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "One instruction file per harness instance, in the name every harness reads",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.28"
+    ],
+    "id": "S-2.32",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Harness Intelligence, one catalogue of what a harness instance can be given",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.10"
+    ],
+    "id": "S-2.33",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "A run searches all four intelligence layers rather than one",
+    "waiting_on": [
+     "S-2.10"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.10"
+    ],
+    "id": "S-2.34",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "External service capabilities, recorded without their credentials",
+    "waiting_on": [
+     "S-2.10"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.32"
+    ],
+    "id": "S-2.35",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Tag dimensions for intelligence, so it can be found and its gaps named",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.28"
+    ],
+    "id": "S-2.36",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "One authentication shared across every harness instance, by lease",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.32"
+    ],
+    "id": "S-2.37",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "One atomic node provisioned into one harness folder",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.35",
+     "S-2.37"
+    ],
+    "id": "S-2.38",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "A queue of exact capability gaps, each one precise enough to build against",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.35",
+     "S-2.37"
+    ],
+    "id": "S-2.39",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Guardrails as records a run carries, evaluated at declared points",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.37",
+     "S-2.39"
+    ],
+    "id": "S-2.40",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "A spawned node's folder is filled before the node starts",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.40"
+    ],
+    "id": "S-2.41",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Keep what a run's model calls can teach, without keeping what must not be kept",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.8"
+    ],
+    "id": "S-2.5",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "published",
+    "title": "Versioned training data store and heuristic adoption policy",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-2.6",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Dimension inventory at every level",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.6"
+    ],
+    "id": "S-2.7",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Prompt element and response-style dimensions as grid axes",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-2.9",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "offline_verified",
+    "title": "Intelligence storage analysis and measurement",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-4.1",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "offline_verified",
+    "title": "Worker image, Kubernetes manifests, placement policy",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-4.11",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "offline_verified",
+    "title": "A usable total token ceiling, or an honest refusal that names what it needs",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.32"
+    ],
+    "id": "S-4.12",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "offline_verified",
+    "title": "The first paid surface serves what goes into a harness instance",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.1"
+    ],
+    "id": "S-4.7",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "published",
+    "title": "Worker image publication to the GitHub Container Registry",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-5.1",
+    "next_local_work": "",
+    "phase": 5,
+    "status": "offline_verified",
+    "title": "Branding record",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-5.1"
+    ],
+    "id": "S-5.2",
+    "next_local_work": "",
+    "phase": 5,
+    "status": "offline_verified",
+    "title": "Business paths record",
+    "waiting_on": []
+   }
+  ],
+  "next": [
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.9"
+    ],
+    "id": "S-2.10",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Intelligence access contract and no-direct-edit conformance rule",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.17"
+    ],
+    "id": "S-2.18",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Relayer each declared boundary package from core one boundary at a time",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.17"
+    ],
+    "id": "S-2.19",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Move the specifications at the docs root into their kind folders with redirect stubs",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.1",
+     "S-2.28"
+    ],
+    "id": "S-2.2",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Harness instance provisioning manifest verified against loaded files",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.22"
+    ],
+    "id": "S-2.23",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "ready",
+    "title": "Cluster placement decision, one pod per node against a worker pool that hosts many nodes",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.24"
+    ],
+    "id": "S-2.26",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Orphan recovery and shared model residency",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.28"
+    ],
+    "id": "S-2.29",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Harness capability profile with a confirmation that the instance loaded what it was given",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-3.7",
+    "next_local_work": "",
+    "phase": 3,
+    "status": "ready",
+    "title": "Mirror the name families in core into folders, one tranche at a time",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.24"
+    ],
+    "id": "S-4.10",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "proposed",
+    "title": "Cost reservation ledger before work, reconciled after",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.12"
+    ],
+    "id": "S-4.13",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "ready",
+    "title": "First release hosts serving and deterministic work, not customer harnesses",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-5.2"
+    ],
+    "id": "S-5.3",
+    "next_local_work": "",
+    "phase": 5,
+    "status": "proposed",
+    "title": "Career research",
+    "waiting_on": []
+   }
+  ],
+  "now": [
+   {
+    "acceptance": "All four intelligence layers, templates, and the harness catalogue use existing record authority and can be served through scoped operations; tenant access, qualification, license state, and body integrity are checked before disclosure.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.4",
+    "next_local_work": "Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification.",
+    "phase": 6,
+    "status": "building",
+    "title": "Bind the provisioning catalogue to durable records and tenant disclosure authority",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "Local containers, application platforms, cloud containers, Kubernetes, virtual servers, dedicated servers, and edge containers have documented deploy, verify, upgrade, rollback, restore, and retirement procedures.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.13",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Prepare portable deployment definitions and procedures for every hosting family",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "Safe identifiers, confined destinations, no unsafe overwrite, and recoverable partial-write handling apply to every provisioned file.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.1",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Confine the complete provisioning write set",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "An unavailable blocking rule records pending review and prevents the effect; review cannot grant authority or weaken a protected contract.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.2",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Make unresolved guardrail decisions stop dependent effects",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "Every physical call has one distinct record; prohibited bodies are excluded; failures and unknowns survive; acknowledged typed rows reload by exact reference.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.3",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Repair model-call occurrence identity, retention, and training persistence",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "Active contracts serve current callers without compatibility-only readers, aliases, or forwarders. Component and subcomponent versions and compatibility handshakes remain explicit.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.26",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Remove unused pre-launch compatibility while retaining versioned handshakes",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "Every confirmed defect has a current owning repair and independent evidence, with unresolved or broader integration requirements still named.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.27",
+    "next_local_work": "Metadata disclosure now binds the initial grant revision and revalidates it at completion. Revocation, replacement and entitlement changes refuse in local tests, and removing the guard is detected. Preserve the original counterexample; qualify hosted behavior and remaining defects separately.",
+    "phase": 6,
+    "status": "building",
+    "title": "Close independently reproduced contract and data-integrity defects",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "The main line serves the harness family by default, every executable step delegates to a standard harness through the existing adapter contracts, parked capabilities keep their folders with marker files naming the checkpoint revision, and the full-capability tree stays frozen on checkpoint/full-capability-2026-09-21.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.28",
+    "next_local_work": "Phase 2 moves execution behind the HarnessProcessSpec delegation contract; after the suite retirement at ea59df0, one executable step through a harness is phase 2's gate, not an in-process run, and a delegation claim met by the retired path is the known-wrong case. Phase 3 retires the in-process execution modules from main, leaving PARKED.md marker files that name the checkpoint branch and revision.",
+    "phase": 6,
+    "status": "building",
+    "title": "Streamline the main line to harness intelligence and delegate every step to a harness",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "A supported client authenticates, discovers, searches all permitted intelligence layers and templates, selects, and reads qualified material over the documented protocol; incompatible clients get a typed refusal. Task-planning operations return canonical graph references without hosting customer harness execution.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.4"
+    ],
+    "id": "S-6.5",
+    "next_local_work": "Verify the installed command and package, a second supported client, and exact protocol refusal; qualify live authorization only after owner setup.",
+    "phase": 6,
+    "status": "building",
+    "title": "Expose provisioning through a versioned Model Context Protocol service",
+    "waiting_on": [
+     "S-6.4"
+    ]
+   },
+   {
+    "acceptance": "Service usage survives restart, idempotent retries reconcile, unknowns remain unknown, and client-reported and server-verified events stay distinct. Engine model-call collection is separately repaired by S-6.3.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.4"
+    ],
+    "id": "S-6.6",
+    "next_local_work": "Exercise retention, tenant export and telemetry outage behavior with raw-content collection disabled; preserve unknown cost and commit outcomes.",
+    "phase": 6,
+    "status": "building",
+    "title": "Persist usage and telemetry with acknowledgments and reconciliation",
+    "waiting_on": [
+     "S-6.4"
+    ]
+   },
+   {
+    "acceptance": "Website and protocol requests read the same durable entitlement decision. Local fixtures test the adapter; provider test-mode and live activation require their exact account authority.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.4"
+    ],
+    "id": "S-6.21",
+    "next_local_work": "Dashboard session routes have local browser checks. Complete periodic reconciliation, automatic customer bootstrap and qualified deployment, then exercise the owner's Stripe test account under explicit authority.",
+    "phase": 6,
+    "status": "building",
+    "title": "Connect payment lifecycle to durable subscription entitlements",
+    "waiting_on": [
+     "S-6.4"
+    ]
+   },
+   {
+    "acceptance": "A public solve decomposes a task into canonical graphs, subgraphs, and atomic assignments, supplies the exact catalogue and applicable guardrails, and records what each Spawned Loop receives. The local/client execution placement is explicit.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.1",
+     "S-6.2",
+     "S-6.4"
+    ],
+    "id": "S-6.7",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Wire public solving to the declared provisioning dependencies",
+    "waiting_on": [
+     "S-6.1",
+     "S-6.2",
+     "S-6.4"
+    ]
+   },
+   {
+    "acceptance": "A subscriber can sign in, manage the subscription, connect a client, use harness intelligence, and inspect usage. An operator can diagnose and recover the service through declared controls.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.5",
+     "S-6.6",
+     "S-6.21"
+    ],
+    "id": "S-6.12",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Build the website, subscriber dashboard, and operator workflows",
+    "waiting_on": [
+     "S-6.5",
+     "S-6.6",
+     "S-6.21"
+    ]
+   },
+   {
+    "acceptance": "Frontend instructions guide a new user from installation through a supported implementation for each governed assignment. Existing local and cloud endpoints, credentials and model authority remain distinct. Customers need not host models. Optional Kaggle access and per-competition terms remain explicit.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.5",
+     "S-6.9",
+     "S-6.12"
+    ],
+    "id": "S-6.24",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Deliver client, authentication, endpoint-based model and native-harness onboarding",
+    "waiting_on": [
+     "S-6.5",
+     "S-6.9",
+     "S-6.12"
+    ]
+   },
+   {
+    "acceptance": "One explicitly chosen target is observed working; every other prepared target retains its own qualification state.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.14"
+    ],
+    "id": "S-6.15",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Deploy an authorized pilot and qualify its real request path",
+    "waiting_on": [
+     "S-6.14"
+    ]
+   },
+   {
+    "acceptance": "The file-level map, focused-review scope, unresolved relationships, current tests, comparative evidence, and hundreds of review questions remain inspectable and reproducible.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.25",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Expand the system map to every source file with explicit evidence limits",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "Physical folders match a stable owning boundary, with a README and contract; behavior changes are reviewed separately from moves.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17",
+     "S-6.1",
+     "S-6.2",
+     "S-6.3"
+    ],
+    "id": "S-6.18",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Reorganize coherent code families and update current callers",
+    "waiting_on": [
+     "S-6.1",
+     "S-6.2",
+     "S-6.3"
+    ]
+   },
+   {
+    "acceptance": "A dated research comparison informs product differentiation and qualified next actions without changing runtime authority or contacting organizations.",
+    "blocked_on": "",
+    "depends_on": [],
+    "id": "S-6.22",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "building",
+    "title": "Maintain sourced competitor, prior-art, funding, and strategic-path research",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-0.5"
+    ],
+    "id": "S-1.4",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "building",
+    "title": "Evaluation product command over a frozen suite",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.4"
+    ],
+    "id": "S-1.7",
+    "next_local_work": "",
+    "phase": 1,
+    "status": "building",
+    "title": "Runnable prompt and harness optimization command",
+    "waiting_on": [
+     "S-1.4"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.7"
+    ],
+    "id": "S-2.15",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "building",
+    "title": "Noise injection and explorative optimization over the evaluation product",
+    "waiting_on": [
+     "S-1.7"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-1.7"
+    ],
+    "id": "S-2.4",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "building",
+    "title": "Node grid over typed input parameters with separate counts",
+    "waiting_on": [
+     "S-1.7"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.4"
+    ],
+    "id": "S-3.1",
+    "next_local_work": "",
+    "phase": 3,
+    "status": "building",
+    "title": "Offline convergence run over a grid with deterministic graders",
+    "waiting_on": [
+     "S-2.4"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.1"
+    ],
+    "id": "S-4.2",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "building",
+    "title": "Service software with tenants, keys, and metering",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.2"
+    ],
+    "id": "S-4.3",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "building",
+    "title": "Packaging tiers and pricing draft",
+    "waiting_on": [
+     "S-4.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.2"
+    ],
+    "id": "S-4.4",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "building",
+    "title": "Deployment to the owner's cloud account",
+    "waiting_on": [
+     "S-4.2"
+    ]
+   }
+  ],
+  "waiting": [
+   {
+    "acceptance": "One host authentication yields scoped leases; starts, waits, stops, and optional resume preserve accounting and authority.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.7"
+    ],
+    "id": "S-6.8",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Connect credential leases and resource admission to harness lifetime",
+    "waiting_on": [
+     "S-6.7"
+    ]
+   },
+   {
+    "acceptance": "Subscribers retrieve a small declared catalogue of useful, independently reviewed skills, instructions, tool references, and reusable code. Missing combinations remain visible; automatic bulk generation is S-6.20.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.4",
+     "S-6.5"
+    ],
+    "id": "S-6.10",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Publish qualified starter packages and prove client retrieval",
+    "waiting_on": [
+     "S-6.4",
+     "S-6.5"
+    ]
+   },
+   {
+    "acceptance": "At least one exact native harness profile completes the supported launch path; a second client/profile proves interchangeability or remains explicitly unqualified.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.5",
+     "S-6.7",
+     "S-6.8"
+    ],
+    "id": "S-6.9",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Qualify actual instruction and capability use in native harnesses",
+    "waiting_on": [
+     "S-6.5",
+     "S-6.7",
+     "S-6.8"
+    ]
+   },
+   {
+    "acceptance": "A declared set of industry, occupation, language, geography, and task combinations becomes reviewed reusable material with failures and exclusions retained.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.3",
+     "S-6.7",
+     "S-6.10"
+    ],
+    "id": "S-6.20",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Complete the classification-grid generation and improvement pipeline",
+    "waiting_on": [
+     "S-6.3",
+     "S-6.7",
+     "S-6.10"
+    ]
+   },
+   {
+    "acceptance": "A supported workflow publishes a verified reusable solution and runs it independently with declared dependencies and new input.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.9",
+     "S-6.20"
+    ],
+    "id": "S-6.11",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Publish solutions and verify standalone reuse on fresh inputs",
+    "waiting_on": [
+     "S-6.9",
+     "S-6.20"
+    ]
+   },
+   {
+    "acceptance": "Every existing required capability is mapped to an owning public or internal entry point, observed invocation, positive and refusal case, and saved evidence. Broad future research remains distinct from this versioned integration inventory.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.3",
+     "S-6.7",
+     "S-6.8",
+     "S-6.9",
+     "S-6.20",
+     "S-6.11"
+    ],
+    "id": "S-6.23",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Exercise every required internal component through its actual owning entry point",
+    "waiting_on": [
+     "S-6.3",
+     "S-6.7",
+     "S-6.8",
+     "S-6.9",
+     "S-6.20",
+     "S-6.11"
+    ]
+   },
+   {
+    "acceptance": "The release record covers the subscription service and the required internal graph, intelligence, template, harness, and solution paths. It names every gate and limitation. Hosting customer harness execution remains optional; internal integration is required.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.4",
+     "S-6.5",
+     "S-6.6",
+     "S-6.10",
+     "S-6.12",
+     "S-6.13",
+     "S-6.21",
+     "S-6.23",
+     "S-6.24",
+     "S-6.26",
+     "S-6.27"
+    ],
+    "id": "S-6.14",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Qualify the release candidate on the exact exported tree",
+    "waiting_on": [
+     "S-6.4",
+     "S-6.5",
+     "S-6.6",
+     "S-6.10",
+     "S-6.12",
+     "S-6.13",
+     "S-6.21",
+     "S-6.23",
+     "S-6.24",
+     "S-6.26",
+     "S-6.27"
+    ]
+   },
+   {
+    "acceptance": "The release is classified honestly as a prepared candidate, hosted pilot, or paid launch according to observed gates.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.6",
+     "S-6.15",
+     "S-6.21"
+    ],
+    "id": "S-6.16",
+    "next_local_work": "",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Activate approved paid access and publish the release decision",
+    "waiting_on": [
+     "S-6.6",
+     "S-6.15",
+     "S-6.21"
+    ]
+   },
+   {
+    "acceptance": "Additional models, prompts, wrappers, cognitive steps, intelligence, and optimizers are tested without removing supported alternatives or claiming a universal winner.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.3",
+     "S-6.20",
+     "S-6.14"
+    ],
+    "id": "S-6.19",
+    "next_local_work": "Qualify an explicit Pi extension profile for SoL-Pi without changing the text-only default; keep its four mechanisms separately configured. Define an honest uncalibrated-score contract and actual endpoint mapping before any SemIf adapter. Preserve independent evaluation and shared budgets.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Continue flexible composition and controlled improvement research",
+    "waiting_on": [
+     "S-6.3",
+     "S-6.20",
+     "S-6.14"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.10"
+    ],
+    "id": "S-2.11",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Search characteristics sidecar and hybrid retrieval over two adapters",
+    "waiting_on": [
+     "S-2.10"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.20",
+     "S-2.2"
+    ],
+    "id": "S-2.21",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Browser harness adapter with an element table reader and independent outcome verification",
+    "waiting_on": [
+     "S-2.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.23"
+    ],
+    "id": "S-2.25",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Execution profile per workload class instead of one shape for every node",
+    "waiting_on": [
+     "S-2.23"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.10"
+    ],
+    "id": "S-2.27",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Skill pack importer from public repositories into candidate Context Intelligence",
+    "waiting_on": [
+     "S-2.10"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.2"
+    ],
+    "id": "S-2.3",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Iterative publication with consumer output digests",
+    "waiting_on": [
+     "S-2.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.2"
+    ],
+    "id": "S-2.30",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Portable capability package, written and read in the published plugin layout",
+    "waiting_on": [
+     "S-2.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.2"
+    ],
+    "id": "S-2.31",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Provisioning set record, separating what was offered, fetched, exposed to the model, used, and verified",
+    "waiting_on": [
+     "S-2.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.2"
+    ],
+    "id": "S-2.8",
+    "next_local_work": "",
+    "phase": 2,
+    "status": "proposed",
+    "title": "Middleware and wrapper abstractions for microservice hosting",
+    "waiting_on": [
+     "S-2.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-3.1"
+    ],
+    "id": "S-3.2",
+    "next_local_work": "",
+    "phase": 3,
+    "status": "proposed",
+    "title": "Live convergence run on an authorized Ollama Cloud route",
+    "waiting_on": [
+     "S-3.1"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-3.2"
+    ],
+    "id": "S-3.3",
+    "next_local_work": "",
+    "phase": 3,
+    "status": "proposed",
+    "title": "Adversarial validation of claimed improvements",
+    "waiting_on": [
+     "S-3.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-3.2"
+    ],
+    "id": "S-3.4",
+    "next_local_work": "",
+    "phase": 3,
+    "status": "proposed",
+    "title": "Runnable optimizer proof on the live suite",
+    "waiting_on": [
+     "S-3.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.13"
+    ],
+    "id": "S-4.14",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "ready",
+    "title": "Measure occupancy and egress from one instrumented deployment before choosing a host",
+    "waiting_on": [
+     "S-4.13"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.13"
+    ],
+    "id": "S-4.15",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "ready",
+    "title": "Honest units for a release the customer executes",
+    "waiting_on": [
+     "S-4.13"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.13"
+    ],
+    "id": "S-4.16",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "ready",
+    "title": "Define the deployment in the repository, not in a console",
+    "waiting_on": [
+     "S-4.13"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.23",
+     "S-4.2"
+    ],
+    "id": "S-4.8",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "proposed",
+    "title": "Cloud capacity within a client budget, quotas, and spin-up policy",
+    "waiting_on": [
+     "S-2.23",
+     "S-4.2"
+    ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-2.22",
+     "S-4.8"
+    ],
+    "id": "S-4.9",
+    "next_local_work": "",
+    "phase": 4,
+    "status": "proposed",
+    "title": "Administrator surfaces for system and client administrators",
+    "waiting_on": [
+     "S-4.8"
+    ]
+   }
+  ]
+ },
+ "launch_gates": [
+  {
+   "id": "product",
+   "met": false,
+   "steps": [
+    "S-6.12",
+    "S-6.21"
+   ],
+   "title": "A visitor can subscribe, use the dashboard, connect a client, and manage access"
+  },
+  {
+   "id": "service",
+   "met": false,
+   "steps": [
+    "S-6.4",
+    "S-6.5",
+    "S-6.6"
+   ],
+   "title": "An authenticated client retrieves qualified material with durable accounting"
+  },
+  {
+   "id": "intelligence",
+   "met": false,
+   "steps": [
+    "S-6.10"
+   ],
+   "title": "The declared starter catalogue is qualified, versioned, and retrievable by supported clients"
+  },
+  {
+   "id": "internal_integration",
+   "met": false,
+   "steps": [
+    "S-6.1",
+    "S-6.2",
+    "S-6.3",
+    "S-6.7",
+    "S-6.8",
+    "S-6.9",
+    "S-6.20",
+    "S-6.11",
+    "S-6.23"
+   ],
+   "title": "Task graphs, atomic harness assignments, every intelligence layer, templates, and existing internal capability paths are connected and tested"
+  },
+  {
+   "id": "onboarding",
+   "met": false,
+   "steps": [
+    "S-6.24"
+   ],
+   "title": "A new user can install, authenticate, configure a provider, and use the supported harness architecture"
+  },
+  {
+   "id": "operations",
+   "met": false,
+   "steps": [
+    "S-6.12",
+    "S-6.13",
+    "S-6.14"
+   ],
+   "title": "Tenant operations, restart, restore, upgrade, and rollback are exercised"
+  },
+  {
+   "id": "hosted_pilot",
+   "met": false,
+   "steps": [
+    "S-6.15"
+   ],
+   "title": "The chosen authorized hosting target passes the same acceptance suite"
+  },
+  {
+   "id": "paid_launch",
+   "met": false,
+   "steps": [
+    "S-6.16"
+   ],
+   "title": "Approved pricing and payment integration reconcile with durable usage"
+  }
+ ],
+ "outcome": "A subscription website and dashboard with payments, all intelligence layers and templates served through one authenticated service, and a verified internal graph-to-harness architecture; customers run their harnesses.",
+ "owner_actions": [
+  {
+   "completion": "The limits are recorded in the hosting authority decision and engineering works inside them.",
+   "id": "OWNER-01",
+   "instructions": [
+    "Nothing to do. The recorded limits are 50 United States dollars each month for infrastructure, up to 10 dollars for setup, no model calls by the service and no live charges.",
+    "Engineering works inside these limits and records any request to change them as a separate decision."
+   ],
+   "phase": "prepared",
+   "title": "Private pilot limits are recorded"
+  },
+  {
+   "completion": "Account access and the private diagnostic deployment are observed; the complete release decision remains separate.",
+   "id": "OWNER-02",
+   "instructions": [
+    "The Baltor organization, existing Fly Machine and command-line access are verified. Do not recreate accounts or transfer the token again.",
+    "The pilot runs in iad under the recorded limits. Automatic GitHub deployment remains disabled; direct deployment used the tested service image.",
+    "Engineering owns later deployment and restore checks. No action is needed unless the selected region or limits should change."
+   ],
+   "phase": "prepared",
+   "title": "Fly account and private pilot are prepared"
+  },
+  {
+   "completion": "Project access is prepared. Sign-up no longer depends on this grant.",
+   "id": "OWNER-03",
+   "instructions": [
+    "Nothing is needed for sign-up. The service creates confirmation and recovery links through the identity provider's administration interface and sends its own email, so the journey stays on the baltor.ai domain.",
+    "Grant authentication-settings access only if you later want the identity provider to send its own email or to change its redirect settings."
+   ],
+   "phase": "optional",
+   "title": "Optional: grant authentication-settings access at the identity provider"
+  },
+  {
+   "completion": "The empty private bucket and its actual delivery adapter are separately verified by engineering.",
+   "id": "OWNER-04",
+   "instructions": [
+    "Project-scoped storage access is available. Engineering owns creating the private bucket and qualifying the existing artifact adapter.",
+    "Public access stays disabled. Do not upload private customer data or unreviewed third-party packages to complete setup.",
+    "No owner bucket-creation task remains; engineering records the resulting identifier and real delivery tests."
+   ],
+   "phase": "engineering",
+   "title": "Engineering prepares private intelligence storage"
+  },
+  {
+   "completion": "The runtime test credential and account are verified. The subscription journey is not yet qualified.",
+   "id": "OWNER-05",
+   "instructions": [
+    "Stripe command-line authorization succeeded for Baltor sandbox, account acct_1UHZ9KCCxLfArYED. The runtime test key is in the workstation keyring.",
+    "Use this account, not the older operator connection acct_1UHZ972IF9bCskLc or the unrelated temporary sandbox. Do not repeat account creation or key transfer.",
+    "Engineering owns test products, prices, customers, portal settings, webhooks and lifecycle checks. Live charges stay disabled."
+   ],
+   "phase": "engineering",
+   "title": "Stripe sandbox credentials are prepared"
+  },
+  {
+   "completion": "Domain and registrar authority are prepared and the nameserver change is confirmed. Customer account and email qualification remain separate.",
+   "id": "OWNER-06",
+   "instructions": [
+    "The new Cloudflare write grant created the Free baltor.ai zone. Namecheap accepted dana.ns.cloudflare.com and nile.ns.cloudflare.com, and the registry now publishes them.",
+    "Cloudflare reports the zone active. The app, root and www website records and certificates are installed; engineering verifies browsers and protocol behavior.",
+    "The owner confirms no existing email or forwarding. The complete Resend record set is installed; sender verification and real authentication email remain engineering work.",
+    "Do not recreate the zone, repeat authorization or manually change nameservers. Engineering keeps the previous settings in the cutover record."
+   ],
+   "phase": "engineering",
+   "title": "Domain and registrar access are prepared"
+  },
+  {
+   "completion": "Existing credential storage is prepared; this does not grant a missing provider permission.",
+   "id": "OWNER-07",
+   "instructions": [
+    "Fly, Stripe test, Supabase application and server credentials, and the Resend sending key are stored privately in the workstation keyring. Operator authorization records are also private.",
+    "Engineering should reuse the named references in the setup runbook. Do not repeat secret transfer or put values in this HTML, chat, source, logs or screenshots.",
+    "Local model keys remain with the customer-controlled executor. Missing Supabase authentication-settings permission is distinct from storing the existing keys; registrar access is already authorized."
+   ],
+   "phase": "prepared",
+   "title": "Existing credentials are privately stored"
+  },
+  {
+   "completion": "The client journey is tested in containers without a model turn; a trial that calls a model needs a separate allowance.",
+   "id": "OWNER-08",
+   "instructions": [
+    "Nothing to do. OpenCode is the first supported client because it already connects to the deployed service; Codex and Claude Code have connection recipes.",
+    "Customers use their own model accounts. A model-call allowance for a measured task trial remains a separate decision."
+   ],
+   "phase": "engineering",
+   "title": "Engineering chose the first client and leaves the model to the customer"
+  },
+  {
+   "completion": "The optional engine configuration and trial authority are explicit.",
+   "id": "OWNER-09",
+   "instructions": [
+    "Choose Jev, a separately served Circuit model, another compatible endpoint, or no decision provider for the first trial.",
+    "For Jev, prepare a TypeSafe secret reference and exact supported model. For Circuit or another service, provide an existing compatible endpoint, its exact reported model identity and a separate credential reference.",
+    "State the initial engine and whether cross-provider fallback is allowed. Assign separate credentials to different provider origins.",
+    "Keep live model tests disabled until the allowance and permitted context are approved."
+   ],
+   "phase": "optional",
+   "title": "Choose optional decision engines and fallback order"
+  },
+  {
+   "completion": "The published catalogue contains only items with a recorded independent approval.",
+   "id": "OWNER-10",
+   "instructions": [
+    "Nothing to do. The owner delegated item approval on 2026-09-20 to an independent review: reviewers who did not write an item approve or reject it against written criteria, and the approval record names them.",
+    "You can withdraw any published item at any time by telling engineering its name."
+   ],
+   "phase": "engineering",
+   "title": "Engineering compiles the starter catalogue and independent reviewers approve each item"
+  },
+  {
+   "completion": "The privacy notice and terms that customers see are ones you have read.",
+   "id": "OWNER-11",
+   "instructions": [
+    "Engineering drafts a plain privacy notice that states what the service stores, and draft terms for the paid plan.",
+    "Read both before live charging starts and say what to change. Support during the beta uses the public issue tracker of the repository."
+   ],
+   "phase": "before_charging",
+   "title": "Read the drafted privacy notice and terms before live charging"
+  },
+  {
+   "completion": "A real confirmation and recovery journey succeeds; authorization alone is not email delivery.",
+   "id": "OWNER-12",
+   "instructions": [
+    "The Resend account and sending credential exist. Fresh management authorization succeeded and listing domains returned none. Do not repeat signup or authorization without a new failure.",
+    "Engineering creates auth.baltor.ai, prepares the exact verification records and configures accounts@auth.baltor.ai after the required DNS and identity-management permissions are available.",
+    "Engineering tests confirmation, recovery and failure handling with tracking disabled. The sender domain and delivery are not yet verified."
+   ],
+   "phase": "engineering",
+   "title": "Resend management is authorized; engineering completes email"
+  },
+  {
+   "completion": "The selected deployment has observed callback, webhook, sender and domain bindings.",
+   "id": "OWNER-13",
+   "instructions": [
+    "Use the current Fly origin until the custom hostname and certificate pass. The owner-reported identity callback values are recorded, not independently verified.",
+    "Engineering registers the test webhook and stores its signing secret separately. Engineering applies approved domain records and verifies the exact origins.",
+    "Request missing permission through authorization or a protected credential reference. Do not repeat manual dashboard tasks when the permitted management interface can perform them."
+   ],
+   "phase": "engineering",
+   "title": "Engineering applies exact hosted settings"
+  },
+  {
+   "completion": "A recorded journey by a real person exists beside the container tests.",
+   "id": "OWNER-14",
+   "instructions": [
+    "Engineering tests sign-up, sign-in, personal keys, connection, search, download and installation in containers and on the deployed service.",
+    "When you want real users, give engineering the email addresses, or let people sign up once sign-up is open."
+   ],
+   "phase": "after_endpoint",
+   "title": "Invite real people when you choose; engineering has tested the journey in containers"
+  },
+  {
+   "completion": "Live charging starts only after your activation and your recorded go.",
+   "id": "OWNER-15",
+   "instructions": [
+    "Everything is built and qualified in Stripe test mode with one plan at 29 United States dollars each month.",
+    "Only you can activate a live Stripe account, because it needs your identity and bank verification. After that, give engineering the live restricted key reference and say go; switching is one credential change."
+   ],
+   "phase": "before_charging",
+   "title": "Activate the live Stripe account and say go"
+  }
+ ],
+ "packages": [
+  {
+   "acceptance": "The exact candidate tree passes its declared local checks and conformance, with all failed attempts and untested provider journeys retained.",
+   "actions": [
+    "Record the exact deployed image separately from the dirty working tree and preserve all unrelated changes.",
+    "Preserve the reviewed exact identity network registrations and recheck conformance after further changes; earlier failures remain in their original reports.",
+    "Review browser identity session lifetime, logout, duplicate account activation, provider outages, token audience and registration limits.",
+    "Review browser dependency licenses and include all required distribution notices.",
+    "Run focused checks and removed-guard controls before a frozen full-suite capture; do not reuse stale green reports.",
+    "Record which files are being changed by each active developer and keep unrelated work outside the release batch.",
+    "Bind each evidence artifact to the source, dependencies, host settings and exact test population it actually exercised.",
+    "Classify a failed check as implementation, test or environment failure before repair; keep the original result and a discriminating control."
+   ],
+   "depends_on": [],
+   "done_steps": 1,
+   "id": "D-01",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 2,
+    "offline_verified": 1
+   },
+   "steps": [
+    "S-6.17",
+    "S-6.26",
+    "S-6.27"
+   ],
+   "title": "Freeze the handoff and repair release blockers",
+   "total_steps": 3
+  },
+  {
+   "acceptance": "The chosen hostname and sender work through the real customer path without disrupting existing website or mail behavior.",
+   "actions": [
+    "Reuse the created auth.baltor.ai sender, its exact records and the running verification request; confirm success before enabling authentication mail.",
+    "Reuse the approved Cloudflare write grant and existing Free zone; verify activation and all records without recreating resources.",
+    "Verify registry publication of the nameserver change already accepted by Namecheap. The owner confirms no existing mail or forwarding; preserve the old delegation in the rollback record.",
+    "Configure the exact website record and certificate, then exact identity redirects and private sender settings under a permitted management connection.",
+    "Test confirmation, recovery, expired and reused links, duplicate submissions, delivery failure and sender authentication with controlled recipients.",
+    "Record authoritative and recursive DNS observations separately, including negative caching, DNSSEC state and certificate renewal.",
+    "Add sender failure, suppression, bounce and complaint handling without storing raw account email content in general traces.",
+    "Move canonical service and callback addresses only through an explicit migration that preserves accepted old connections until their retirement."
+   ],
+   "depends_on": [],
+   "done_steps": 0,
+   "id": "D-02",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 3
+   },
+   "steps": [
+    "S-6.12",
+    "S-6.15",
+    "S-6.24"
+   ],
+   "title": "Finish domain and authentication email",
+   "total_steps": 3
+  },
+  {
+   "acceptance": "A new customer signs in, obtains only permitted client access and loses that access when revoked, across browser and native clients.",
+   "actions": [
+    "Exercise the real identity provider with two ordinary test identities and server-owned tenant creation.",
+    "Complete confirmation, password recovery, session expiry, logout and account-disable behavior without accepting editable tenant metadata.",
+    "Add scoped self-service client credentials through the existing access boundary, with short lifetime, one-time display and revocation.",
+    "Qualify native client authorization separately from browser sign-in; never accept a generic browser audience as the service resource audience.",
+    "Test account switching, delayed responses, concurrent activation, request limits and two supported client implementations.",
+    "Require a verified browser session for personal credential management; service tokens cannot mint more credentials or delegate billing and administration.",
+    "Bind personal tokens to their issuing subject, account state, explicit scopes and expiry; cap active tokens and retained token history.",
+    "Test logout during pending reads and writes, provider outages, account disablement and subject revocation without leaking stale results."
+   ],
+   "depends_on": [
+    "D-01",
+    "D-02"
+   ],
+   "done_steps": 0,
+   "id": "D-03",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 3
+   },
+   "steps": [
+    "S-6.5",
+    "S-6.12",
+    "S-6.24"
+   ],
+   "title": "Connect customer accounts and client access",
+   "total_steps": 3
+  },
+  {
+   "acceptance": "One complete real test-mode subscription lifecycle changes the same durable entitlement used by both transports.",
+   "actions": [
+    "Bind all test operations to the approved Baltor sandbox account and privately stored runtime test credential.",
+    "Create the test product, recurring Price and portal settings with idempotency and reconcile uncertain outcomes.",
+    "Implement server-owned customer creation through the existing billing boundary; customers cannot choose another customer's identifier.",
+    "Register the exact test webhook and separate signing-secret reference; complete periodic reconciliation and outage recovery.",
+    "Exercise activation, failed payment, cancellation, reactivation, duplicate and reordered events, and access revocation in website and client requests.",
+    "Separate customer creation, checkout session creation, subscription state and material entitlement, with durable identities for each effect.",
+    "Handle multiple subscriptions, changed prices, trials, refunds and payment disputes through explicit owner-approved entitlement policy.",
+    "Verify checkout return and cancellation destinations against configured origins; never accept a browser-supplied customer, Price or redirect."
+   ],
+   "depends_on": [
+    "D-01",
+    "D-03"
+   ],
+   "done_steps": 0,
+   "id": "D-04",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 2,
+    "proposed": 1
+   },
+   "steps": [
+    "S-6.21",
+    "S-6.12",
+    "S-6.16"
+   ],
+   "title": "Complete sandbox subscriptions",
+   "total_steps": 3
+  },
+  {
+   "acceptance": "Two tenants retrieve only permitted exact revisions through real shared-state and storage adapters; search indexes can be rebuilt from authoritative records.",
+   "actions": [
+    "Implement PostgreSQL behind the existing catalogue transaction contract, including read-set guards and unknown-commit reconciliation.",
+    "Create the private bucket under the existing project; map immutable references to exact bytes without a second source of truth.",
+    "Add one versioned semantic embedding profile beside exact and lexical retrieval; separate filters, candidate generation, fusion and optional ranking.",
+    "Preserve missing-feature and incompatible-embedding-space states, deletion, grant revocation and index rebuild behavior.",
+    "Measure permission-filtered recall, search and delivery latency, cold starts, payload sizes and concurrency on a declared corpus.",
+    "Define migration rehearsal, cutover, rollback and consistency checks before replacing the live SQLite authority.",
+    "Keep index projections rebuildable and file objects immutable; record versions, deletion state and access decisions outside provider-owned indexes.",
+    "Test object size limits, partial transfers, expiry, cache isolation and tampered bytes across inline, streamed and signed delivery."
+   ],
+   "depends_on": [
+    "D-01"
+   ],
+   "done_steps": 0,
+   "id": "D-05",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 3
+   },
+   "steps": [
+    "S-6.4",
+    "S-6.5",
+    "S-6.6"
+   ],
+   "title": "Connect cloud records, files and retrieval",
+   "total_steps": 3
+  },
+  {
+   "acceptance": "A supported client demonstrably loads selected material and completes a checked task; file presence and connection success are insufficient.",
+   "actions": [
+    "Connect search, selection, authorized download and digest verification through the existing provisioner.",
+    "Resolve required dependencies and compile a versioned native layout for one named client version.",
+    "Record offered, selected, downloaded, placed, loaded and used material separately, including inherited user-level instructions and truncation.",
+    "Compare useful material with withheld, changed and malicious material; preserve relevant limits across a permitted harness change.",
+    "Run one complete task through independent verification and preserve the exact files and outputs consumed by each step.",
+    "Resolve dependency closure, license state, executable effects and layout compatibility before writing a selected bundle.",
+    "Give instructions, reusable material, writable outputs and host-owned authority separate filesystem scopes.",
+    "Track inherited configuration, actual discovery, truncation and use independently from successful download and placement."
+   ],
+   "depends_on": [
+    "D-01",
+    "D-05"
+   ],
+   "done_steps": 0,
+   "id": "D-06",
+   "stage": "core_proof",
+   "status_counts": {
+    "building": 3,
+    "proposed": 1
+   },
+   "steps": [
+    "S-6.1",
+    "S-6.2",
+    "S-6.7",
+    "S-6.9"
+   ],
+   "title": "Prove selected material reaches each step",
+   "total_steps": 4
+  },
+  {
+   "acceptance": "A named local configuration performs bounded unattended work and resumes or stops honestly, without hidden cloud-model fallback or repeated external effects.",
+   "actions": [
+    "Connect an existing local model endpoint and one supported development tool; record hardware, model identity, context capacity and effective settings.",
+    "Bind resource admission, scoped credential use and cancellation to the existing process lifetime owner.",
+    "Compare fresh processes, retained workers and trust-group sandboxes; do not require a separate operating-system image for every step or assume Python for every tool.",
+    "Persist work and remaining limits across process crash, machine restart, sleep, network loss and unavailable model service; uncertain effects require reconciliation.",
+    "Test a declared overnight duration with multiple real task types, an independently checked result and a morning report that distinguishes complete, blocked and unfinished work.",
+    "Set explicit maximum running processes, memory reservations, disk use, output growth and slow-consumer behavior for each supported execution profile.",
+    "Keep external model serving separate from worker placement; accept user-operated endpoints without taking ownership of their model processes.",
+    "Test operating-system-specific shutdown, signal handling and checkpoint restoration with the same declared task authority."
+   ],
+   "depends_on": [
+    "D-01",
+    "D-06"
+   ],
+   "done_steps": 0,
+   "id": "D-07",
+   "stage": "core_proof",
+   "status_counts": {
+    "building": 2,
+    "proposed": 2
+   },
+   "steps": [
+    "S-6.8",
+    "S-6.9",
+    "S-6.24",
+    "S-6.13"
+   ],
+   "title": "Qualify overnight local work and recovery",
+   "total_steps": 4
+  },
+  {
+   "acceptance": "Reviewed material helps a declared task population, and at least one accepted solution is independently reusable on changed inputs.",
+   "actions": [
+    "Select a small useful starter population across the four persistent intelligence layers, with licenses, provenance and coverage gaps recorded.",
+    "Independently review the existing twelve candidate records; distinguish code reference cards from executable packages.",
+    "Add expert methods, mistakes, constraints, code and example outputs where actual task coverage is missing, through existing catalogue writes.",
+    "Exercise bounded generation, review, promotion, later-task retrieval and withdrawal; a generator cannot approve its own work.",
+    "Export an accepted solution into a clean environment and run fresh inputs without the builder conversation or undeclared dependencies.",
+    "Specify applicability, contraindications, version validity and dependency limits for each reusable item rather than promoting generic descriptions.",
+    "Preserve rejected candidates and corrective findings so later retrieval can distinguish failure evidence from approved guidance.",
+    "Bind consumer feedback to the exact item and output revision used; never overwrite a consumed result with a later improvement."
+   ],
+   "depends_on": [
+    "D-05",
+    "D-06"
+   ],
+   "done_steps": 0,
+   "id": "D-08",
+   "stage": "core_proof",
+   "status_counts": {
+    "proposed": 4
+   },
+   "steps": [
+    "S-6.10",
+    "S-6.20",
+    "S-6.11",
+    "S-6.23"
+   ],
+   "title": "Build useful expertise and reusable outputs",
+   "total_steps": 4
+  },
+  {
+   "acceptance": "A source-bound report can support or reject each launch benefit without changing the quality standard to make savings appear.",
+   "actions": [
+    "Capture each physical model attempt exactly once across retries, helpers and native sessions, with unknown usage kept unknown.",
+    "Freeze matched tasks, evaluator, quality tolerance, model and non-treatment settings before measuring changes.",
+    "Compare selected versus full, insufficient, expanded and misleading context, and code reuse versus generation where both meet the task.",
+    "Report input, cached input, output, reasoning usage when available, cost, elapsed time, memory and failures separately; include retrieval and verification overhead.",
+    "Use repeated trials and uncertainty estimates; record task-specific regressions, withheld cases and the exact limits of any public claim.",
+    "Track retrieval, feature generation, model startup, context transfer, execution, retries and verification in the same route-cost accounting.",
+    "Separate optimization search cost from later serving savings and report the workload needed to recover that investment.",
+    "Predeclare quality floors and task-group regression limits; publish absolute outcomes and uncertainty as well as relative savings."
+   ],
+   "depends_on": [
+    "D-06",
+    "D-08"
+   ],
+   "done_steps": 0,
+   "id": "D-09",
+   "stage": "core_proof",
+   "status_counts": {
+    "building": 2,
+    "proposed": 2
+   },
+   "steps": [
+    "S-6.3",
+    "S-6.6",
+    "S-6.19",
+    "S-6.23"
+   ],
+   "title": "Measure token savings and context usefulness",
+   "total_steps": 4
+  },
+  {
+   "acceptance": "A new user can understand the product and complete the supported journey without knowing internal architecture terms or copying a secret into the wrong field.",
+   "actions": [
+    "Use Baltor, task, step, model, tools and results on public pages; keep runtime names in technical documentation and GitHub.",
+    "Keep How it works focused on the example and benefits, with a short honest pilot limitation instead of a runtime taxonomy.",
+    "Complete sign-in, account, client setup, first successful retrieval, usage, access revocation, billing and clear failure states.",
+    "Check keyboard navigation, small screens, enlarged text, loading races and expired sessions; test whether a new reader understands the page.",
+    "Plan public documentation, examples and approved showcase subdomains without presenting an unconfigured docs hostname as live.",
+    "Show connection, authentication, material loading, task success and subscription state as separate observable stages.",
+    "Make one-time secrets, ambiguous outcomes, expired links, empty results and unavailable features understandable without support intervention.",
+    "Compare public pages and setup journeys against the existing competitor matrix without copying claims or hiding current product limits."
+   ],
+   "depends_on": [
+    "D-03",
+    "D-04"
+   ],
+   "done_steps": 0,
+   "id": "D-10",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 3
+   },
+   "steps": [
+    "S-6.12",
+    "S-6.24",
+    "S-6.22"
+   ],
+   "title": "Simplify the website and finish customer journeys",
+   "total_steps": 3
+  },
+  {
+   "acceptance": "Every required launch gate has current reviewed evidence, a supported-customer scope and a rehearsed recovery path; otherwise remain a named private pilot.",
+   "actions": [
+    "Freeze the exact source, image, database migration and host settings; run clean installation, full checks, examples and real customer journeys.",
+    "Test backup, restored revocations, rollback, secret rotation, payment reconciliation, abuse limits, tenant deletion and retention.",
+    "Establish alerts, support contact, incident ownership and a tested maintenance path; record single-machine availability limitations.",
+    "Review security boundaries, dependencies, license obligations, privacy settings, terms, cancellation and public claims.",
+    "Obtain the separate paid-release decision and publish only reviewed source under explicit commit and push authority.",
+    "Define the supported pilot contract separately from optional research engines and later enterprise features.",
+    "Require exact evidence for every release gate and an explicit owner decision for live charging and source publication.",
+    "Rehearse a failed release with account and payment state changing during rollback, not only a clean image replacement."
+   ],
+   "depends_on": [
+    "D-02",
+    "D-03",
+    "D-04",
+    "D-05",
+    "D-06",
+    "D-08",
+    "D-10",
+    "D-13",
+    "D-14",
+    "D-15",
+    "D-16"
+   ],
+   "done_steps": 0,
+   "id": "D-11",
+   "stage": "public_launch",
+   "status_counts": {
+    "building": 3,
+    "proposed": 2
+   },
+   "steps": [
+    "S-6.14",
+    "S-6.15",
+    "S-6.16",
+    "S-6.6",
+    "S-6.13"
+   ],
+   "title": "Exercise operations and make the release decision",
+   "total_steps": 5
+  },
+  {
+   "acceptance": "New engines replace implementations at existing typed boundaries without new runtimes, stores or silent authority changes; supported combinations have specific evidence.",
+   "actions": [
+    "Review exact, hybrid and bounded agentic retrieval profiles behind the same reference-first interface; qualify challengers only for demonstrated gaps.",
+    "Compare configured decision endpoints, including Jev, Circuit and a separately specified SemIf score adapter, without assuming confidence is calibrated.",
+    "Keep SoL-Pi mechanisms optional within the existing harness boundary; compare whole-task quality, cost and omission failures before promotion.",
+    "Compare direct requests, scripted browsers and native tool access under the same permission and outcome rules.",
+    "Stage proposed routing, context and intelligence changes for independent replay and review, with rollback and the existing learned-adoption policy preserved.",
+    "Record each engine's license, supported protocol, actual feature coverage, initialization cost and unavailable states in configuration.",
+    "Compare configured preference with learned selection, keeping confidence calibration, downstream utility and factual verification distinct.",
+    "Preserve one owner for retries, cancellation and cumulative budgets across nested wrappers and native harness controls."
+   ],
+   "depends_on": [
+    "D-01"
+   ],
+   "done_steps": 0,
+   "id": "D-12",
+   "stage": "continued_improvement",
+   "status_counts": {
+    "building": 3,
+    "proposed": 1
+   },
+   "steps": [
+    "S-6.18",
+    "S-6.19",
+    "S-6.22",
+    "S-6.25"
+   ],
+   "title": "Continue interchangeable engines and governed improvement",
+   "total_steps": 4
+  },
+  {
+   "acceptance": "The supported client and service profiles withstand declared adversarial cases without crossing tenant, workspace, credential or effect boundaries.",
+   "actions": [
+    "Write a threat model for browser accounts, service tokens, retrieved material, plugins, local workers and operator infrastructure access.",
+    "Separate trusted control state and credential brokers from model-editable workspaces and retrieved instructions.",
+    "Test filesystem, archive, network, process and resource confinement for each supported isolation profile.",
+    "Make prompt injection and malicious tool output tests cross the actual retrieval-to-execution path.",
+    "Apply request limits, exact origins, redirect refusal and destination checks at the existing transport boundaries.",
+    "Review package installation, executable dependencies and native user-level configuration before allowing a harness profile.",
+    "Document credential rotation, account revocation and incident containment without exporting raw secrets.",
+    "Keep unsupported sandbox, provider and protocol combinations unavailable instead of silently weakening isolation."
+   ],
+   "depends_on": [
+    "D-01",
+    "D-03",
+    "D-06"
+   ],
+   "done_steps": 0,
+   "id": "D-13",
+   "stage": "core_proof",
+   "status_counts": {
+    "building": 1,
+    "proposed": 3
+   },
+   "steps": [
+    "S-6.8",
+    "S-6.9",
+    "S-6.14",
+    "S-6.24"
+   ],
+   "title": "Qualify execution and service security boundaries",
+   "total_steps": 4
+  },
+  {
+   "acceptance": "Every served starter item has traceable rights, exact bytes, an appropriate review basis and a tested withdrawal path.",
+   "actions": [
+    "Define the supported source formats, size limits, provenance fields and trust classifications for intake.",
+    "Preserve immutable source revisions, license evidence and dependency identities before extraction or chunking.",
+    "Stage imported and generated material through existing catalogue contracts with candidate-only lifecycle state.",
+    "Keep prompts, skills, contracts, code packages and history distinct as content families within the four persistent layers.",
+    "Route semantic review and executable verification to an independent process with a fixed subject digest.",
+    "Track applicability, freshness, contradictions and withdrawal reasons without silently rewriting consumed history.",
+    "Propagate deletion and revocation to indexes, caches and delivery while preserving legally permitted audit metadata.",
+    "Build a useful starter population from real task gaps and measure coverage rather than the number of generated files."
+   ],
+   "depends_on": [
+    "D-05",
+    "D-06"
+   ],
+   "done_steps": 0,
+   "id": "D-14",
+   "stage": "core_proof",
+   "status_counts": {
+    "building": 1,
+    "proposed": 4
+   },
+   "steps": [
+    "S-6.4",
+    "S-6.10",
+    "S-6.11",
+    "S-6.20",
+    "S-6.23"
+   ],
+   "title": "Operate intelligence ingestion, review and withdrawal",
+   "total_steps": 5
+  },
+  {
+   "acceptance": "Operators can detect, diagnose and recover declared failures without leaking private content, reviving revoked access or exceeding approved resources.",
+   "actions": [
+    "Define availability, latency, recovery and data-loss objectives for the supported pilot without promising unmeasured guarantees.",
+    "Measure cold and reused connections, simultaneous customers, large files and slow clients with failures retained.",
+    "Add alerts for identity outages, failed delivery, reconciliation backlog, storage growth and exhausted capacity.",
+    "Use structural telemetry by default and separate raw-content retention, embeddings and training reuse behind explicit settings and consent.",
+    "Implement customer export, deletion, retention and backup-expiry procedures across records, files, indexes and logs.",
+    "Rehearse private backups, restore, secret rotation and incident response using exact manifests and owner-selected limits.",
+    "Split stateless serving, workers, indexes or storage onto separate resources only when measurements and consistency contracts justify it.",
+    "Keep infrastructure budgets, model budgets and customer subscription entitlements separately enforced and observable."
+   ],
+   "depends_on": [
+    "D-03",
+    "D-04",
+    "D-05"
+   ],
+   "done_steps": 0,
+   "id": "D-15",
+   "stage": "public_launch",
+   "status_counts": {
+    "building": 3,
+    "proposed": 2
+   },
+   "steps": [
+    "S-6.6",
+    "S-6.13",
+    "S-6.14",
+    "S-6.15",
+    "S-6.16"
+   ],
+   "title": "Operate reliability, telemetry and customer data lifecycle",
+   "total_steps": 5
+  },
+  {
+   "acceptance": "A new customer can install the supported profile, connect securely, run the documented task and recover or uninstall without hidden dependencies or data loss.",
+   "actions": [
+    "Choose and document the exact operating systems, Python versions, native clients and transport profiles supported by the pilot.",
+    "Test clean installation and upgrade without relying on developer caches, user-level instructions or untracked packages.",
+    "Keep model endpoints user-operated and credential references local; do not require installing a model server to connect an existing endpoint.",
+    "Provide container and process profiles that separate dependency images, workers, workspaces and inference services.",
+    "Pin distributed dependencies, retain notices and produce source and image identities that match the tested release.",
+    "Verify protocol negotiation and explicit unsupported states across independently deployed client and server versions.",
+    "Document uninstall, credential removal, workspace retention and rollback without broad filesystem deletion.",
+    "Publish packages, source and images only after reviewed ownership and explicit release authority, keeping automatic deployment disabled until then."
+   ],
+   "depends_on": [
+    "D-01",
+    "D-06",
+    "D-13"
+   ],
+   "done_steps": 0,
+   "id": "D-16",
+   "stage": "public_launch",
+   "status_counts": {
+    "building": 5,
+    "proposed": 1
+   },
+   "steps": [
+    "S-6.1",
+    "S-6.2",
+    "S-6.9",
+    "S-6.15",
+    "S-6.24",
+    "S-6.26"
+   ],
+   "title": "Qualify installation, distribution and compatibility",
+   "total_steps": 6
+  },
+  {
+   "acceptance": "An invited person signs in, creates a client key, connects a supported client, finds and downloads useful starter material, sees usage, and loses access when the operator disables the account. Every release comes from a committed revision and has a rehearsed rollback.",
+   "actions": [
+    "Release only from a committed revision whose continuous integration run passed, through the guarded pilot workflow, so that the deployed image can always be rebuilt from the repository.",
+    "Enable browser sign-in on the pilot for accounts that the operator prepared in advance, with public registration closed, and supply the identity provider's publishable key as a deployment secret reference.",
+    "Give the operator one command that prepares an invited account and returns a single-use link for setting a password, so that an invitation does not depend on outgoing email.",
+    "Let each invited person create, label, see and revoke personal client keys, and show copy-ready connection settings for OpenCode, Codex and Claude Code.",
+    "Compile a starter catalogue of useful, skill-sized material from existing repository sources across the four persistent intelligence layers, refuse an item without a known licence, keep every item a candidate until the owner approves it, then publish the approved items with exact digests.",
+    "Prove with one supported native client that selected material is downloaded, placed in that client's native layout and actually loaded, and record what the client received.",
+    "Bound the cost of anonymous requests before inviting anyone: limit sign-in and activation attempts for each address and keep the pause between identity key reads.",
+    "Run the invited-user journey with two people outside engineering, record every obstacle as roadmap work, and repeat the restore and rollback drills on the release that they used."
+   ],
+   "depends_on": [
+    "D-01",
+    "D-03"
+   ],
+   "done_steps": 0,
+   "id": "D-17",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 5,
+    "proposed": 1
+   },
+   "steps": [
+    "S-6.5",
+    "S-6.10",
+    "S-6.12",
+    "S-6.15",
+    "S-6.24",
+    "S-6.28"
+   ],
+   "title": "Open a private beta for invited users",
+   "total_steps": 6
+  }
+ ],
+ "record_type": "development_tracker/v1",
+ "source": "docs/roadmap/roadmap.yaml",
+ "source_fingerprint": "sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d8820f7693d1a"
+}
