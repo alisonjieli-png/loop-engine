@@ -539,13 +539,18 @@ def _service_checks(check, root):
                   and identity["redirect_url"] == base + "/auth/callback")
             malformed = client.post("/api/v1/account/signup", json={"record_type": "another/v1"})
             page = client.get("/auth/confirm")
-            # Another method on the same path is not this route. It answers the
-            # standing missing-page answer rather than asking for a credential,
-            # so only the exact method reaches a provider.
+            # Another method on the same path is not this route. Since September 21, 2026 the router
+            # decides whether it serves the address and the method before it asks who is calling, so a
+            # wrong method is a missing address rather than a credential fault. Either way no provider
+            # is reached, which is what this check is for; the exact refusal is pinned so that a method
+            # quietly becoming served would fail here.
+            wrong_method = client.get("/api/v1/account/signup")
             check("a_malformed_request_is_400_another_method_reaches_no_provider_and_the_page_is_served",
                   malformed.status_code == 400 and malformed.json()["error"]["code"] == "invalid_account_signup"
                   and malformed.json()["automatic_retry"] is False and len(provider.identity_requests) == 3
-                  and client.get("/api/v1/account/signup").status_code == 404 and page.status_code == 200
+                  and wrong_method.status_code == 404
+                  and wrong_method.json()["error"]["code"] == "route_unavailable"
+                  and page.status_code == 200
                   and page.headers["content-type"].startswith("text/html"))
     fixture = _fixture(root, "limited")
     many = _Provider()

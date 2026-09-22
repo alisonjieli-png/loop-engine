@@ -26,6 +26,7 @@ from .http_auth import (
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
 from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
+from .web_pages import HTML_MEDIA_TYPE, missing_address_page, served_asset
 
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
@@ -44,28 +45,6 @@ BILLING_PORTAL_PATH = "/api/v1/billing/portal"
 #: receives the entitlement the code declares. There is no address that reads a
 #: code back, because the service stores a digest and never the code itself.
 PROMOTION_REDEMPTION_PATH = "/api/v1/account/promotion"
-HTML_MEDIA_TYPE = "text/html"
-WEB_ASSETS = {
-    "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
-    "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),
-    "/account": ("index.html", HTML_MEDIA_TYPE),
-    "/admin": ("index.html", HTML_MEDIA_TYPE),
-    "/connect": ("index.html", HTML_MEDIA_TYPE),
-    "/examples": ("index.html", HTML_MEDIA_TYPE),
-    "/security": ("index.html", HTML_MEDIA_TYPE),
-    "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
-    "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
-    "/pricing": ("index.html", HTML_MEDIA_TYPE),
-    "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
-    "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
-    "/assets/service.css": ("service.css", "text/css"),
-    "/assets/architecture.css": ("architecture.css", "text/css"),
-    "/assets/client-access.js": ("client-access.js", "text/javascript"),
-    "/assets/service.js": ("service.js", "text/javascript"),
-    "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
-    # The licence terms of the packaged browser library travel with it.
-    "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
-}
 # Every address the interface router answers, with the methods it answers for
 # it. The router reads this before it asks who is calling, so that an address
 # the service does not serve is a missing page rather than a credential
@@ -97,22 +76,6 @@ API_ROUTES = {
     BILLING_CHECKOUT_PATH: ("POST",),
     BILLING_PORTAL_PATH: ("POST",),
 }
-MISSING_ADDRESS_PAGE = """<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{name} | Address not found</title><link rel="stylesheet" href="/assets/service.css"></head>
-<body><main id="main" class="reading" style="padding:4rem 4vw">
-<p class="eyebrow">Address not found</p>
-<h1>This service has no page at that address.</h1>
-<p class="lede">The address in your browser is not one {name} serves. It may have been
-mistyped, or it may be an older address that has since changed. Nothing is wrong with
-your account or your key.</p>
-<div class="actions"><a class="button primary" href="/">Go to the home page</a>
-<a class="button quiet" href="/docs">Open the setup guide</a></div>
-<p class="caption">If you followed a link from {name} to get here, the link is wrong and
-we would like to know. Tell the person who runs this service which page you came from.</p>
-</main></body></html>
-"""
 
 
 class ServiceHttpError(ValueError):
@@ -742,9 +705,8 @@ class ServiceHttpApplication:
                 # repeats nothing from the request, so nothing can be reflected
                 # into it.
                 if status == 404 and "text/html" in request.headers.get("accept", ""):
-                    from html import escape
                     response = Response(
-                        MISSING_ADDRESS_PAGE.format(name=escape(config.display_name)).encode("utf-8"),
+                        missing_address_page(config.display_name),
                         status_code=404, media_type=HTML_MEDIA_TYPE,
                         headers={**cors, **self._page_headers()})
                 else:
@@ -792,13 +754,9 @@ class ServiceHttpApplication:
 
     async def _web_route(self, request, Response, JSONResponse):
         path, method, status_code = request.url.path, request.method, 200
-        if method == "GET" and path in WEB_ASSETS:
-            from html import escape
-            from importlib.resources import files
-            name, media_type = WEB_ASSETS[path]
-            body = files("loop_engine").joinpath("core", "service_runtime", "web_assets", name).read_bytes()
-            if media_type == HTML_MEDIA_TYPE:
-                body = body.replace(b"{{SERVICE_NAME}}", escape(self.configuration.display_name, quote=True).encode("utf-8"))
+        asset = served_asset(path, method, self.configuration.display_name)
+        if asset is not None:
+            body, media_type = asset
             return Response(body, media_type=media_type, headers=self._page_headers())
         # Decide whether this service serves the address before asking who is
         # calling. An unknown address that is authenticated first answers 401

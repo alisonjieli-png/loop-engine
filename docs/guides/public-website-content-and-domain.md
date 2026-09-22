@@ -348,7 +348,7 @@ service does not serve is decided before authentication and answers
 with a link back, so this failure can no longer look like a credential fault.
 The entry
 `"/pricing": ("index.html", HTML_MEDIA_TYPE)` in `WEB_ASSETS` in
-`src/loop_engine/core/service_runtime/http.py` is now on the main branch, so
+`src/loop_engine/core/service_runtime/web_pages.py` is now on the main branch, so
 the source serves the address. Four named checks hold it:
 `pricing_address_is_served_on_a_direct_visit`,
 `pricing_address_opens_the_pricing_view_after_a_reload`, and `/pricing` in the
