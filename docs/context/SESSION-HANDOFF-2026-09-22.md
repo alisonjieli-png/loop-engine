@@ -267,9 +267,12 @@ section lists. Today that means:
    integration and released.
 2. `release/catalogue-live` exists on GitHub beside the two permitted
    branches. Local `main` has merged it.
-3. `tools/check_component_guides.py` reports 8 findings on local `main`:
-   `docs/components/intelligence-layers/SEARCH-QUALITY.md` is not in the guide
-   map and names seven identifiers the package does not define.
+3. `tools/check_component_guides.py` reported 8 findings at `97e805f`:
+   `docs/components/intelligence-layers/SEARCH-QUALITY.md` was not in the
+   guide map and named seven identifiers the package does not define. Commit
+   `7c3ec6d` on local `main` registers the guide; an export of `4249eca`
+   reports 0 findings. On that same revision the roadmap holds 19 delivery
+   packages while `tools/test_architecture_audit.py` still expects 17.
 4. The host configuration still names `baltor-pilot.fly.dev` as the canonical
    origin, and the four newer hostnames serve the main site.
 5. The guarded workflow does not apply grants after a catalogue change.

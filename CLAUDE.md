@@ -21,8 +21,8 @@ changes them are in one place, the
 section of AGENTS.md. This file adds nothing to that section and takes
 nothing away from it.
 
-The machine-readable work authority is [roadmap.yaml](docs/roadmap/roadmap.yaml),
-with seventeen delivery packages. The single development HTML is generated
+The machine-readable work authority is [roadmap.yaml](docs/roadmap/roadmap.yaml)
+and its delivery packages. The single development HTML is generated
 from the roadmap and the source; do not edit it by hand and do not start
 another dashboard.
 

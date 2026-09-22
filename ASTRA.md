@@ -25,11 +25,12 @@ records the deployed pilot, simpler public copy and account code whose live
 customer integration remains incomplete.
 The [takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md)
 records the state verified afterwards, the repairs, the private beta
-definition and the working cycle. The roadmap holds seventeen delivery
-packages with explicit code owners, verification
-levels, negative controls and rollback procedures, plus evidence requirements for overnight
-local-model work, token efficiency and useful expertise. Public pages use
-Baltor and each step; technical documents retain exact runtime definitions.
+definition and the working cycle. The roadmap's delivery packages carry
+explicit code owners, verification levels, negative controls and rollback
+procedures, plus evidence requirements for overnight local-model work, token
+efficiency and useful expertise. Count them in the roadmap, not in a note that
+can go stale. Public pages use Baltor and each step; technical documents
+retain exact runtime definitions.
 
 Start with the [continuation plan](docs/roadmap/CONTINUATION-AND-LAUNCH.md),
 its [generated status](docs/roadmap/CONTINUATION-STATUS.md), and the
