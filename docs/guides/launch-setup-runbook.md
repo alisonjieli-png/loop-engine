@@ -321,19 +321,25 @@ the one Machine. Stored grants name the items of the release that wrote them,
 so a release that changes the catalogue offers nothing until the grants of
 its packaged manifest are applied again: Fly release 12 offered no item until
 `loop-engine service apply-grants --config /data/host.json` was run by hand.
-The workflow now runs that command itself, through `flyctl ssh console` on
-the single started Machine, as user `65534` by way of `setpriv`, because the
-remote shell starts as root. The command registers no tenant and replaces the
-grants of each tenant the packaged manifest names. The step fails unless the
-command reports exactly one grant record, for the manifest at
-`/opt/baltor/catalogue/manifest.json`, with at least one item for every named
-tenant and no tenant registered. It then repeats the readiness check. A search
-that is in flight while the grants are replaced is refused once with
-`disclosure_grant_changed` and succeeds when it is sent again. The container
-check runs the same command against the image before it is published: it
-clears the grants, shows that nothing is offered, runs the command as root the
-way the remote shell does, and requires the packaged grants back with every
-file on the volume still owned by the service user.
+The workflow now runs that command itself on the single started Machine,
+through `flyctl machine exec`, which calls the Machines API the way the command
+run by hand did. It does not open a remote shell, because from a new runner
+each shell session adds a WireGuard peer to the organization that nothing
+removes. The exec call starts the command as root, so the command runs as user
+`65534` by way of `setpriv`. The command registers no tenant and replaces the
+grants of each tenant the packaged manifest names. The step reads the JSON
+answer of the exec call, which leaves out the exit code when it is zero. It
+fails unless the exit code is zero and the command printed exactly one grant
+record, for the manifest at `/opt/baltor/catalogue/manifest.json`, with at
+least one item for every named tenant and no tenant registered. It then repeats
+the readiness check. A search that is in flight while the grants are replaced
+is refused once with `disclosure_grant_changed` and succeeds when it is sent
+again. The container check runs the same command against the image before it
+is published: it clears the grants, shows that nothing is offered, runs the
+command as root, and requires exactly one record, the packaged grants back and
+every file on the volume still owned by the service user. If the step fails,
+the release is already deployed; apply the grants by hand as after release 12,
+then run `tools/check_hosted_catalogue.py`.
 
 | Pilot environment setting | Required value or current state |
 |---|---|

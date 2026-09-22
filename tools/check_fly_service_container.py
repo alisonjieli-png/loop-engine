@@ -47,8 +47,11 @@ FLY_REQUEST_LIMITS = {"record_type": "service_request_limits/v1",
 #: release. Stored grants name the items of the release that wrote them, so a
 #: release that changes the catalogue offers nothing until the packaged
 #: manifest's grants are applied again. The command registers no tenant and
-#: replaces the grants of each tenant the manifest names. The machine's remote
-#: shell starts as root, so setpriv runs it as the service user that owns /data.
+#: replaces the grants of each tenant the manifest names. The workflow sends it
+#: through the Machines API exec call, which starts it as root, so setpriv runs
+#: it as the service user that owns /data. The command holds no quotation mark
+#: and no shell syntax, so however the exec call splits it into words, the
+#: words are these.
 POST_DEPLOY_GRANT_COMMAND = ("setpriv", f"--reuid={SERVICE_USER}", f"--regid={SERVICE_USER}", "--clear-groups",
                              "loop-engine", "service", "apply-grants", "--config", "/data/host.json")
 
@@ -470,16 +473,22 @@ def check_post_deploy_grant_command(container, tenants, granted, approved, recor
     previous items, and the library then offers nothing. Fly release 12 did
     exactly that until the command was run by hand. Clearing the grants
     reproduces the state here. The command the deployment workflow runs is then
-    started as root, which is how the machine's remote shell starts, and it
-    must bring back exactly the packaged grants, register no tenant, and leave
-    every file on the volume owned by the service user.
+    started as root, which is how the Machines API exec call starts it, and it
+    must print exactly one record, bring back exactly the packaged grants,
+    register no tenant, and leave every file on the volume owned by the service
+    user. The workflow's gate reads the command's whole output as that one
+    record, so this check does too.
     """
     as_service = ["docker", "exec", "--user", f"{SERVICE_USER}:{SERVICE_USER}", container, "python", "-c"]
     as_root = ["docker", "exec", "--user", "0:0", container]
     command([*as_service, CLEAR_GRANTS.format(tenants=list(tenants), count=len(tenants))], timeout=180)
     stale = json.loads(command([*as_service, REGISTERED_ITEMS], timeout=60))["registered"]
-    printed = command([*as_root, *POST_DEPLOY_GRANT_COMMAND], timeout=180).strip().splitlines()
-    applied = json.loads(printed[-1]) if printed else {}
+    printed = command([*as_root, *POST_DEPLOY_GRANT_COMMAND], timeout=180)
+    try:
+        applied = json.loads(printed)
+    except ValueError:
+        applied = None
+    applied = applied if isinstance(applied, dict) else {}
     restored = json.loads(command([*as_service, REGISTERED_ITEMS], timeout=60))["registered"]
     owners = json.loads(command([*as_root, "python", "-c", VOLUME_OWNERS.format(user=SERVICE_USER)], timeout=60))
     record("cleared_grants_offer_nothing_as_after_a_catalogue_release", stale == [])
