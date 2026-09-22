@@ -244,15 +244,17 @@ second runtime type.
 | 13:12 UTC | "all of our work should be merged into main!" and "Only the snapshot should survive as a backup branch" |
 | 13:30 UTC | "Use your best judgement, document it, etc" |
 | 17:25 UTC | "stop creating too many confusing branches, get all improvements live fully working" |
-| 17:36 UTC | One artifact that explains everything, engines for each functional component, a clean-up of every README, a tracking file and page, readiness for a Y Combinator application |
-| 18:19 UTC | "make sure we are deploying and updating fly.io", "full automated QA of all aspects" on the real website, swappable components and a search for existing work |
+| 17:33 to 17:46 UTC | One artifact that explains everything, engines for each functional component, a clean-up of every README, a tracking file and page, readiness for a Y Combinator application |
+| 17:52 UTC | "make sure we are deploying and updating fly.io", "full automated QA of all aspects" on the real website |
+| 18:19 UTC | Swappable components and a search for existing work, with the 17:52 words repeated |
 | 18:25 UTC | "push improvements into production/main branch", "centralize, consolidate, rules, authorities", "you can more aggressively push numerous fixes and adjustments at once to main" |
 
 ## What still needs the owner
 
-Only what the
+What the
 [commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
-section lists. Today that means:
+section lists, and steps that only the owner's own accounts can take. Today
+that means:
 
 - the privacy notice and the terms, which are [drafts](../legal/README.md)
   until the owner publishes them;
