@@ -101,7 +101,7 @@ There is no framework, no bundler and no build step for the pages themselves.
 - `index.html` loads two stylesheets and five scripts with the `defer`
   attribute, all from `/assets/`. Four are written by hand:
   `architecture-story.js`, `catalogue-browser.js`, `client-access.js` and
-  `service.js`, 1,048 lines together on September 22, 2026. The fifth,
+  `service.js`, 1,052 lines together on September 22, 2026. The fifth,
   `supabase-client.js`, is a generated bundle of 223,189 bytes. Its line
   count means nothing, because it is minified.
 - The response header `Content-Security-Policy` is
