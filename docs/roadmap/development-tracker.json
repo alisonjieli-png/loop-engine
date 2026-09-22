@@ -4,7 +4,7 @@
   "done": 41,
   "next": 11,
   "now": 32,
-  "waiting": 51
+  "waiting": 52
  },
  "lanes": {
   "blocked": [
@@ -1405,6 +1405,21 @@
     "title": "More retrieval engines behind the search slot",
     "waiting_on": [
      "S-6.32"
+    ]
+   },
+   {
+    "acceptance": "A step can run through any of the strategies by configuration alone, and the recorded decisions show when several models helped and when one was enough.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30"
+    ],
+    "id": "S-6.60",
+    "next_local_work": "Read the research record, then define the edge and the pass-through engine first, so that every later strategy is one more engine.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A layer before every model call that decides one model or several",
+    "waiting_on": [
+     "S-6.30"
     ]
    },
    {
@@ -2901,7 +2916,7 @@
    "id": "D-19",
    "stage": "continued_improvement",
    "status_counts": {
-    "proposed": 6
+    "proposed": 7
    },
    "steps": [
     "S-6.30",
@@ -2909,10 +2924,11 @@
     "S-6.32",
     "S-6.40",
     "S-6.41",
-    "S-6.42"
+    "S-6.42",
+    "S-6.60"
    ],
    "title": "Engines behind fixed edges for every functional component",
-   "total_steps": 6
+   "total_steps": 7
   },
   {
    "acceptance": "A client on either protocol revision connects and loads an approved item in its own layout; every served item shows its licence, digest and measured or unmeasured effect; the dated deadlines are met.",
@@ -3026,5 +3042,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:a0e100fd0485aaad245bda4083f32ea2e039c85cbe15cbfbcd1d83ca75f32539"
+ "source_fingerprint": "sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f9954904bfadf"
 }
