@@ -1,10 +1,10 @@
 {
  "counts": {
-  "blocked": 3,
+  "blocked": 2,
   "done": 41,
   "next": 11,
-  "now": 26,
-  "waiting": 25
+  "now": 32,
+  "waiting": 28
  },
  "lanes": {
   "blocked": [
@@ -21,21 +21,6 @@
     "title": "Unseen tasks on an authorized frontier model and Kaggle export",
     "waiting_on": [
      "S-3.3"
-    ]
-   },
-   {
-    "acceptance": "",
-    "blocked_on": "approved public prices and product terms; the Stripe sandbox account exists and nothing has been created in it",
-    "depends_on": [
-     "S-4.4"
-    ],
-    "id": "S-4.5",
-    "next_local_work": "",
-    "phase": 4,
-    "status": "blocked",
-    "title": "Billing with metered usage",
-    "waiting_on": [
-     "S-4.4"
     ]
    },
    {
@@ -742,6 +727,79 @@
   ],
   "now": [
    {
+    "acceptance": "Local main, GitHub main and production describe one state; every branch other than the snapshot is merged or proven contained and removed; the safety archive of September 22 holds every ref and every uncommitted worktree.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.28"
+    ],
+    "id": "S-6.29",
+    "next_local_work": "Finish the four consolidation groups, restore the measured losses, push, and remove merged branches and worktrees.",
+    "phase": 6,
+    "status": "building",
+    "title": "Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch",
+    "waiting_on": [
+     "S-6.28"
+    ]
+   },
+   {
+    "acceptance": "A release leaves the library serving, the checks recorded, and the deploy switch off, with no manual step.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.26"
+    ],
+    "id": "S-6.35",
+    "next_local_work": "Add the grant step and the drill settings, then run the automated checks after the next release.",
+    "phase": 6,
+    "status": "building",
+    "title": "Release automation and automated live checks after every release",
+    "waiting_on": [
+     "S-6.26"
+    ]
+   },
+   {
+    "acceptance": "A first-time visitor can see what is in the library, request an invitation, and follow Get started to a working connection without contradictions, on every hostname.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.12"
+    ],
+    "id": "S-6.33",
+    "next_local_work": "Implement the fixes on the consolidated main and release them.",
+    "phase": 6,
+    "status": "building",
+    "title": "Website fixes from the persona and interface reviews",
+    "waiting_on": [
+     "S-6.12"
+    ]
+   },
+   {
+    "acceptance": "Every agent reads one consistent set of rules; every README matches the code and the live state; historical documents are archived, not deleted.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.34",
+    "next_local_work": "Land the authority section, reconcile the entry points, then apply the README plan.",
+    "phase": 6,
+    "status": "building",
+    "title": "One home for rules and authority, and a documentation cleanup",
+    "waiting_on": []
+   },
+   {
+    "acceptance": "The application is ready for the owner to add the founder-only facts and submit before November 2, 2026, 8 p.m. Pacific.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.34"
+    ],
+    "id": "S-6.36",
+    "next_local_work": "Finish the draft and the fact check; the owner adds personal background, contact details and equity facts.",
+    "phase": 6,
+    "status": "building",
+    "title": "Y Combinator application package, fact-checked",
+    "waiting_on": [
+     "S-6.34"
+    ]
+   },
+   {
     "acceptance": "All four intelligence layers, templates, and the harness catalogue use existing record authority and can be served through scoped operations; tenant access, qualification, license state, and body integrity are checked before disclosure.",
     "blocked_on": "",
     "depends_on": [
@@ -1121,9 +1179,69 @@
     "waiting_on": [
      "S-4.2"
     ]
+   },
+   {
+    "acceptance": "",
+    "blocked_on": "",
+    "depends_on": [
+     "S-4.4"
+    ],
+    "id": "S-4.5",
+    "next_local_work": "Publish the monthly allowance the plan includes; keep overage billing off at launch as decided.",
+    "phase": 4,
+    "status": "building",
+    "title": "Billing with metered usage",
+    "waiting_on": [
+     "S-4.4"
+    ]
    }
   ],
   "waiting": [
+   {
+    "acceptance": "Every functional component names its edge, engines and selection; adding an engine changes one adapter and one declaration and no call site; every selection is recorded with its reasons.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.28"
+    ],
+    "id": "S-6.30",
+    "next_local_work": "Build the framework package, then adopt it in the executor, search, email, store, model, identity and billing slots.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Engines behind fixed edges: the shared engine framework",
+    "waiting_on": [
+     "S-6.28"
+    ]
+   },
+   {
+    "acceptance": "One real step runs through a harness engine chosen by the slot, with its cost, time and acceptance recorded, and a second harness can replace it by configuration.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30"
+    ],
+    "id": "S-6.31",
+    "next_local_work": "Implement the records and the first adapter after the framework package.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "The harness executor slot: delegate each step to a standard harness",
+    "waiting_on": [
+     "S-6.30"
+    ]
+   },
+   {
+    "acceptance": "Served search chooses its policy by declaration, reports a poor match honestly, and a new ranking engine can be added without touching the route.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30"
+    ],
+    "id": "S-6.32",
+    "next_local_work": "Wire the policy through the slot and add the floor with its known-wrong checks.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Hosted search as an engine slot with the measured policy and a relevance floor",
+    "waiting_on": [
+     "S-6.30"
+    ]
+   },
    {
     "acceptance": "One host authentication yields scoped leases; starts, waits, stops, and optional resume preserve accounting and authority.",
     "blocked_on": "",
@@ -1787,14 +1905,35 @@
    "title": "Invite real people when you choose; engineering has tested the journey in containers"
   },
   {
-   "completion": "Live charging starts only after your activation and your recorded go.",
+   "completion": "Live charging starts only after your activation and your recorded go. Done on September 21: the live account is active with charges and payouts enabled, and the product, price, portal and webhook exist.",
    "id": "OWNER-15",
    "instructions": [
     "Everything is built and qualified in Stripe test mode with one plan at 29 United States dollars each month.",
     "Only you can activate a live Stripe account, because it needs your identity and bank verification. After that, give engineering the live restricted key reference and say go; switching is one credential change."
    ],
-   "phase": "before_charging",
+   "phase": "prepared",
    "title": "Activate the live Stripe account and say go"
+  },
+  {
+   "completion": "The footer names the operator, the contact address receives mail, and /terms and /privacy are live.",
+   "id": "OWNER-16",
+   "instructions": [
+    "Tell engineering the legal name and country of the company that operates Baltor.",
+    "Choose the public contact address (for example hello at baltor.ai); engineering sets up inbound mail and publishes it.",
+    "Approve or edit the drafted terms and privacy notice so the pages can be published."
+   ],
+   "phase": "before_public",
+   "title": "Give the legal entity name and a contact address, and approve the terms and privacy text"
+  },
+  {
+   "completion": "Measured results with their evidence support the numbers used on the website and in the application.",
+   "id": "OWNER-17",
+   "instructions": [
+    "Choose the models and the spending ceiling engineering may use for matched benefit runs.",
+    "Say which benefits to measure first: overnight local work, fewer repeated tokens, or useful expertise for each step."
+   ],
+   "phase": "optional",
+   "title": "Grant a model-call budget for measuring the launch benefits"
   }
  ],
  "packages": [
@@ -2341,9 +2480,69 @@
    ],
    "title": "Open a private beta for invited users",
    "total_steps": 6
+  },
+  {
+   "acceptance": "GitHub main, local main and production are one state; the live site passes every hosted check on every hostname; a first-time visitor can request an invitation and follow Get started to a working connection; the rules have one home.",
+   "actions": [
+    "Merge every branch and worktree onto main with a line-survival check after each merge, and keep only the snapshot branch.",
+    "Restore what the September 22 merges dropped and prove it with the same check.",
+    "Put the commit, push and release authority in one section of AGENTS.md and make every entry point agree.",
+    "Apply the README plan so every entry point matches the code and the live state.",
+    "Apply grants automatically after a catalogue release and state the client address source in every drill.",
+    "Run the hosted website, catalogue, service and protocol checks on every hostname after each release and record them.",
+    "Ship the website fixes from the persona and interface reviews.",
+    "Prepare the fact-checked Y Combinator package for the owner."
+   ],
+   "depends_on": [
+    "D-17"
+   ],
+   "done_steps": 0,
+   "id": "D-18",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 5
+   },
+   "steps": [
+    "S-6.29",
+    "S-6.33",
+    "S-6.34",
+    "S-6.35",
+    "S-6.36"
+   ],
+   "title": "Ship the September 22 review: one main line, live checks and launch readiness",
+   "total_steps": 5
+  },
+  {
+   "acceptance": "Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.",
+   "actions": [
+    "Index every engine slot in the boundary registry with its edge, protocol, engines and check.",
+    "Declare engines with lifecycle, capabilities, effects, licence and cost model.",
+    "Let the host declare installed engines, the initial choice and ordered fallbacks for each slot.",
+    "Select engines without effects and record every decision with its reasons.",
+    "Measure every engine inside the envelope and read qualified evidence for ranking.",
+    "Build the harness executor slot with the Agent Client Protocol adapter first.",
+    "Make hosted search a slot with the measured policy and a relevance floor.",
+    "Search for existing projects and papers before each engine is built and record the decision."
+   ],
+   "depends_on": [
+    "D-12"
+   ],
+   "done_steps": 0,
+   "id": "D-19",
+   "stage": "continued_improvement",
+   "status_counts": {
+    "proposed": 3
+   },
+   "steps": [
+    "S-6.30",
+    "S-6.31",
+    "S-6.32"
+   ],
+   "title": "Engines behind fixed edges for every functional component",
+   "total_steps": 3
   }
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d8820f7693d1a"
+ "source_fingerprint": "sha256:342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c227c437857ea2e"
 }

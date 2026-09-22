@@ -3,22 +3,27 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d8820f7693d1a`.
+Source fingerprint: `sha256:342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c227c437857ea2e`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 26 |
+| Being built now | 32 |
 | Can start next | 11 |
-| Waiting on earlier work | 25 |
-| Blocked | 3 |
+| Waiting on earlier work | 28 |
+| Blocked | 2 |
 | Done | 41 |
 
 ## Being built now
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
+| S-6.29 | Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch | building | S-6.28 |
+| S-6.35 | Release automation and automated live checks after every release | building | S-6.26 |
+| S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
+| S-6.34 | One home for rules and authority, and a documentation cleanup | building | Land the authority section, reconcile the entry points, then apply the README plan. |
+| S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification. |
 | S-6.13 | Prepare portable deployment definitions and procedures for every hosting family | building |  |
 | S-6.1 | Confine the complete provisioning write set | building |  |
@@ -45,6 +50,7 @@ Source fingerprint: `sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d
 | S-4.2 | Service software with tenants, keys, and metering | building |  |
 | S-4.3 | Packaging tiers and pricing draft | building | S-4.2 |
 | S-4.4 | Deployment to the owner's cloud account | building | S-4.2 |
+| S-4.5 | Billing with metered usage | building | S-4.4 |
 
 ## Can start next
 
@@ -66,6 +72,9 @@ Source fingerprint: `sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
+| S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
+| S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
+| S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
 | S-6.8 | Connect credential leases and resource admission to harness lifetime | proposed | S-6.7 |
 | S-6.10 | Publish qualified starter packages and prove client retrieval | proposed | S-6.4, S-6.5 |
 | S-6.9 | Qualify actual instruction and capability use in native harnesses | proposed | S-6.5, S-6.7, S-6.8 |
@@ -97,7 +106,6 @@ Source fingerprint: `sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
 | S-3.5 | Unseen tasks on an authorized frontier model and Kaggle export | blocked | S-3.3 |
-| S-4.5 | Billing with metered usage | blocked | S-4.4 |
 | S-4.6 | Package index publication | blocked | the owner's package index account |
 
 ## Launch gates
@@ -134,6 +142,8 @@ Source fingerprint: `sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d
 | D-15 | Operate reliability, telemetry and customer data lifecycle | public_launch | 0 of 5 |
 | D-16 | Qualify installation, distribution and compatibility | public_launch | 0 of 6 |
 | D-17 | Open a private beta for invited users | initial_service | 0 of 6 |
+| D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 5 |
+| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 3 |
 
 ## Only the owner can do these
 
@@ -153,7 +163,9 @@ Source fingerprint: `sha256:7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d
 | OWNER-12 | Resend management is authorized; engineering completes email | engineering |
 | OWNER-13 | Engineering applies exact hosted settings | engineering |
 | OWNER-14 | Invite real people when you choose; engineering has tested the journey in containers | after_endpoint |
-| OWNER-15 | Activate the live Stripe account and say go | before_charging |
+| OWNER-15 | Activate the live Stripe account and say go | prepared |
+| OWNER-16 | Give the legal entity name and a contact address, and approve the terms and privacy text | before_public |
+| OWNER-17 | Grant a model-call budget for measuring the launch benefits | optional |
 
 ## Done (41 steps)
 

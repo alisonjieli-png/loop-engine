@@ -10,7 +10,7 @@ continuation:
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
-  updated_at: "2026-09-21T02:30:00Z"
+  updated_at: "2026-09-22T19:00:00Z"
   baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
   plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
   artifact: docs/roadmap/CONTINUATION-STATUS.md
@@ -822,6 +822,36 @@ continuation:
           scenario: "Anchor the catalogue to a new revision, which rewrites the trailing anchor line of every body, and carry the independent approvals across the move."
           pass_condition: "An approval carries only when the sole difference between the bytes its reviewers read and the body today is that line and the revision it names. A carried approval keeps its reviewers, their decisions and the digest they judged, and records that it was carried rather than freshly approved."
           negative_control: "A body with a changed sentence beside the changed anchor line, a removed anchor line, a second anchor-looking line, a changed word inside the anchor line other than the revision, changed trailing whitespace, and a body whose recorded digest does not match it must each refuse the carry and return the item to candidate state, and a comparison that always carries must let every one of those cases through."
+    - id: D-18
+      title: 'Ship the September 22 review: one main line, live checks and launch readiness'
+      stage: initial_service
+      steps: [S-6.29, S-6.33, S-6.34, S-6.35, S-6.36]
+      depends_on: [D-17]
+      actions: ['Merge every branch and worktree onto main with a line-survival check after each merge, and keep only the snapshot branch.', Restore what the September 22 merges dropped and prove it with the same check., 'Put the commit, push and release authority in one section of AGENTS.md and make every entry point agree.', Apply the README plan so every entry point matches the code and the live state., Apply grants automatically after a catalogue release and state the client address source in every drill., 'Run the hosted website, catalogue, service and protocol checks on every hostname after each release and record them.', Ship the website fixes from the persona and interface reviews., Prepare the fact-checked Y Combinator package for the owner.]
+      acceptance: GitHub main, local main and production are one state; the live site passes every hosted check on every hostname; a first-time visitor can request an invitation and follow Get started to a working connection; the rules have one home.
+      adversarial: A merge that drops branch lines, a release that leaves the library empty, and a page that contradicts the live payment state must each fail a named check.
+      authority_note: Commit, push and release under the owner authority recorded in CLAUDE.md and AGENTS.md; legal text, spending beyond the allowance and destructive operations still need the owner.
+      owning_paths: [AGENTS.md, .github/workflows/fly-pilot.yml, src/loop_engine/core/service_runtime/web_assets/index.html, tools/test_context_routes.py]
+      verification_cases:
+      - {id: D-18-T01, proof_level: operational_drill, scenario: Release from main through the guarded workflow and run the hosted checks on every hostname., pass_condition: 'Every hostname passes the website, catalogue and service checks and the library offers the approved items.', negative_control: Removing the grant step must leave the library empty and fail the catalogue check.}
+      - {id: D-18-T02, proof_level: local_contract, scenario: Replay each September 22 merge and compare the branch lines with the result., pass_condition: Every line a branch added is present or its replacement is recorded., negative_control: The unrepaired merges must fail the check.}
+      - {id: D-18-T03, proof_level: end_to_end, scenario: A first-time visitor requests an invitation and follows Get started., pass_condition: The request is stored for review and every setup step works in order., negative_control: A payment state that contradicts registration must fail the page check.}
+      rollback: Redeploy the previous image digest recorded in the newest release record; restore any ref from the September 22 archive bundle.
+    - id: D-19
+      title: Engines behind fixed edges for every functional component
+      stage: continued_improvement
+      steps: [S-6.30, S-6.31, S-6.32]
+      depends_on: [D-12]
+      actions: ['Index every engine slot in the boundary registry with its edge, protocol, engines and check.', 'Declare engines with lifecycle, capabilities, effects, licence and cost model.', 'Let the host declare installed engines, the initial choice and ordered fallbacks for each slot.', Select engines without effects and record every decision with its reasons., Measure every engine inside the envelope and read qualified evidence for ranking., Build the harness executor slot with the Agent Client Protocol adapter first., Make hosted search a slot with the measured policy and a relevance floor., Search for existing projects and papers before each engine is built and record the decision.]
+      acceptance: Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.
+      adversarial: A slot without an edge, default or collected check fails conformance; evidence below the minimum sample cannot reorder engines; an in-process engine cannot satisfy a delegation step.
+      authority_note: Engine choice never grants file, network, model or spending authority; comparison traffic for model-backed engines defaults to zero.
+      owning_paths: [src/loop_engine/core/boundary_registry.py, src/loop_engine/core/external_harness.py, src/loop_engine/core/harness_intelligence_search.py]
+      verification_cases:
+      - {id: D-19-T01, proof_level: local_contract, scenario: Register a new engine in one slot with only its adapter and declaration., pass_condition: The engine becomes selectable after qualification with no call-site change., negative_control: An engine missing a required capability must be removed at eligibility with a recorded reason.}
+      - {id: D-19-T02, proof_level: held_out_comparison, scenario: Run two engines side by side on a deterministic sample of one slot., pass_condition: The decision records and measurements identify which engine served each request., negative_control: Evidence below the minimum sample must leave the declared order unchanged.}
+      - {id: D-19-T03, proof_level: end_to_end, scenario: Delegate one real step through a harness engine chosen by the executor slot., pass_condition: 'The step result, cost, time and acceptance are recorded and a second harness can replace the first by configuration.', negative_control: An in-process engine must be refused for a step that requires delegation.}
+      rollback: Switch the host choice back to the previous engine; engines are never deleted, only retired.
   owner_actions:
     - id: OWNER-01
       title: "Private pilot limits are recorded"
@@ -1003,7 +1033,7 @@ continuation:
       safety: A successful payment page or process exit is not a verified task result.
     - id: OWNER-15
       title: "Activate the live Stripe account and say go"
-      phase: before_charging
+      phase: prepared
       depends_on: [OWNER-11, OWNER-12, OWNER-14]
       steps: [S-6.16]
       guide: docs/guides/launch-owner-checklist.md
@@ -1011,8 +1041,28 @@ continuation:
         - "Everything is built and qualified in Stripe test mode with one plan at 29 United States dollars each month."
         - "Only you can activate a live Stripe account, because it needs your identity and bank verification. After that, give engineering the live restricted key reference and say go; switching is one credential change."
       return_fields: [release identity, approved pricing and terms, activation scope, explicit publication and live-payment decision]
-      completion: "Live charging starts only after your activation and your recorded go."
+      completion: "Live charging starts only after your activation and your recorded go. Done on September 21: the live account is active with charges and payouts enabled, and the product, price, portal and webhook exist."
       safety: No checkbox, elapsed target date or passing component count can substitute for this approval.
+    - id: OWNER-16
+      title: Give the legal entity name and a contact address, and approve the terms and privacy text
+      phase: before_public
+      depends_on: [OWNER-11]
+      steps: [S-6.33]
+      guide: docs/legal/README.md
+      instructions: [Tell engineering the legal name and country of the company that operates Baltor., Choose the public contact address (for example hello at baltor.ai); engineering sets up inbound mail and publishes it., Approve or edit the drafted terms and privacy notice so the pages can be published.]
+      return_fields: [legal entity name, country, public contact address, approval of the terms and privacy text]
+      completion: The footer names the operator, the contact address receives mail, and /terms and /privacy are live.
+      safety: Legal text is a commitment only the owner can make; engineering never publishes it without approval.
+    - id: OWNER-17
+      title: Grant a model-call budget for measuring the launch benefits
+      phase: optional
+      depends_on: []
+      steps: [S-6.36]
+      guide: docs/guides/launch-benefits-and-evidence.md
+      instructions: [Choose the models and the spending ceiling engineering may use for matched benefit runs., 'Say which benefits to measure first: overnight local work, fewer repeated tokens, or useful expertise for each step.']
+      return_fields: [allowed models, spending ceiling, benefits to measure first]
+      completion: Measured results with their evidence support the numbers used on the website and in the application.
+      safety: Model calls and spending need explicit owner authority; engineering records every call and stops before the ceiling.
   recurring_reviews:
     - id: quarterly_retrieval_landscape
       title: Review agentic retrieval and improvement systems quarterly
@@ -1029,7 +1079,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.29, S-6.35, S-6.33, S-6.34, S-6.30, S-6.31, S-6.32, S-6.36, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1131,28 +1181,28 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
       continuation_steps: [S-6.3, S-6.6, S-6.19]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
-      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23]
+      continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30]
     - title: Resource management, hibernation, and cloud capacity
       legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
       continuation_steps: [S-6.8, S-6.12, S-6.13]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
-      continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27]
+      continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22]
+      continuation_steps: [S-6.16, S-6.22, S-6.36]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -1867,11 +1917,11 @@ steps:
   - id: S-4.5
     phase: 4
     title: Billing with metered usage
-    status: blocked
-    blocked_on: "approved public prices and product terms; the Stripe sandbox account exists and nothing has been created in it"
+    status: building
     depends_on: [S-4.4]
     verify: [a test-mode charge recorded]
-    evidence: ""
+    evidence: "September 22 update: the price was decided on September 20 (one plan, Baltor Pro, 29 dollars a month, one downloaded item as the measured unit, no overage billing at launch) and the live Stripe account was activated on September 21 with its product, price, portal and webhook."
+    next_local_work: "Publish the monthly allowance the plan includes; keep overage billing off at launch as decided."
   - id: S-4.6
     phase: 4
     title: Package index publication
@@ -2214,3 +2264,91 @@ steps:
     acceptance: The main line serves the harness family by default, every executable step delegates to a standard harness through the existing adapter contracts, parked capabilities keep their folders with marker files naming the checkpoint revision, and the full-capability tree stays frozen on checkpoint/full-capability-2026-09-21.
     evidence: "The family axis and its four known-wrong-case checks are on main (a3bd0f1, 6229/6229). Phase 1 landed at commit 6781c89 — the typed, versioned intelligence_family_policy record in the host configuration, harness-only by default, refusing a manifest item whose family the host has not declared before its body or licence is read, with the six named checks in core/service_runtime/http_boundary_checks.py including the removed-guard control. The four intelligence layer folders restate as open folders that serve the harness family and hold the others off (commit 88714c2). The self-test is at 2349/2349. The decision record docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md holds the three-phase plan. The checkpoint branch is recorded at revision a3bd0f1."
     next_local_work: Phase 2 moves execution behind the HarnessProcessSpec delegation contract; after the suite retirement at ea59df0, one executable step through a harness is phase 2's gate, not an in-process run, and a delegation claim met by the retired path is the known-wrong case. Phase 3 retires the in-process execution modules from main, leaving PARKED.md marker files that name the checkpoint branch and revision.
+  - id: S-6.29
+    phase: 6
+    title: Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch
+    status: building
+    depends_on: [S-6.28]
+    boundary: [docs/context/SESSION-HANDOFF-2026-09-21.md, tools/build_records_index.py]
+    verify: [every unmerged branch merged or proven content-contained, line-survival check after every merge, uncommitted worktree work integrated or recorded as superseded, only main and checkpoint/full-capability-2026-09-21 remain as branches]
+    adversarial: A merge that silently drops lines a branch added must be caught by the line-survival check before it is committed; a branch whose history holds key-shaped fixtures must be squash-merged, never merged normally.
+    acceptance: Local main, GitHub main and production describe one state; every branch other than the snapshot is merged or proven contained and removed; the safety archive of September 22 holds every ref and every uncommitted worktree.
+    evidence: 'September 22: every ref and every dirty worktree archived in ~/loop-engine-archive-2026-09-22; the open security merge finished with its two silent losses restored and two new checks; silent losses of five earlier merges measured; consolidation running in detached worktrees.'
+    next_local_work: Finish the four consolidation groups, restore the measured losses, push, and remove merged branches and worktrees.
+  - id: S-6.30
+    phase: 6
+    title: 'Engines behind fixed edges: the shared engine framework'
+    status: proposed
+    depends_on: [S-6.28]
+    boundary: [src/loop_engine/core/boundary_registry.py, src/loop_engine/data/component_interactions.yaml]
+    verify: [engine slot declarations indexed by the boundary registry, engine declarations with lifecycle and capabilities, 'one host record for installed engines, initial choice and ordered fallbacks', effect-free selection with a decision record, envelope measurement and an evidence reader, a conformance gate for slots]
+    adversarial: A slot without a declared edge, default or collected check must fail conformance; evidence below the minimum sample must not reorder the declared engines; a retired or unqualified engine must never be selected.
+    acceptance: Every functional component names its edge, engines and selection; adding an engine changes one adapter and one declaration and no call site; every selection is recorded with its reasons.
+    evidence: 'September 22: three independent designs, a judge synthesis and prior-art research (standard-library entry points for discovery, exact sign tests for evidence, deterministic hash bucketing for side-by-side samples).'
+    next_local_work: Build the framework package, then adopt it in the executor, search, email, store, model, identity and billing slots.
+  - id: S-6.31
+    phase: 6
+    title: 'The harness executor slot: delegate each step to a standard harness'
+    status: proposed
+    depends_on: [S-6.30]
+    boundary: [src/loop_engine/core/external_harness.py]
+    verify: [typed step run request and result records, an executor profile record for each engine, an Agent Client Protocol adapter with OpenCode first, harness recipe records replacing the closed style list]
+    adversarial: A step that requires delegation must refuse an in-process engine or an engine with no isolation; removing that guard must fail a named check.
+    acceptance: One real step runs through a harness engine chosen by the slot, with its cost, time and acceptance recorded, and a second harness can replace it by configuration.
+    evidence: 'September 22 research: the Agent Client Protocol Python library (Apache 2.0, Python 3.10 or newer) reaches about 39 agents; OpenCode supports it natively.'
+    next_local_work: Implement the records and the first adapter after the framework package.
+  - id: S-6.32
+    phase: 6
+    title: Hosted search as an engine slot with the measured policy and a relevance floor
+    status: proposed
+    depends_on: [S-6.30]
+    boundary: [src/loop_engine/core/harness_intelligence_search.py]
+    verify: [the measured purpose-match policy selectable as an engine, a relevance floor that marks a poor match, a second vector engine]
+    adversarial: A query with no good match must say so instead of returning the best poor items; switching policies must not change results for the fixed evaluation set without a recorded comparison.
+    acceptance: Served search chooses its policy by declaration, reports a poor match honestly, and a new ranking engine can be added without touching the route.
+    evidence: 'September 21: the purpose-match policy was measured on 354 queries and is not used by the served route.'
+    next_local_work: Wire the policy through the slot and add the floor with its known-wrong checks.
+  - id: S-6.33
+    phase: 6
+    title: Website fixes from the persona and interface reviews
+    status: building
+    depends_on: [S-6.12]
+    boundary: [src/loop_engine/core/service_runtime/web_assets/index.html, src/loop_engine/core/service_runtime/web_pages.py]
+    verify: [a working invitation request, a link to the source and install commands, one payment state that follows registration, the library contents with a live count, per-hostname surfaces, setup steps in order, one name for the credential, HEAD support and strict transport security, agent-facing tool descriptions]
+    adversarial: A page that says payment is open while registration is closed must fail a named check; a subdomain that serves the homepage byte for byte must fail.
+    acceptance: A first-time visitor can see what is in the library, request an invitation, and follow Get started to a working connection without contradictions, on every hostname.
+    evidence: 'September 22: five persona testers and an interface review on the live site; no persona would sign up or pay; ten ranked fixes with exact copy and code locations.'
+    next_local_work: Implement the fixes on the consolidated main and release them.
+  - id: S-6.34
+    phase: 6
+    title: One home for rules and authority, and a documentation cleanup
+    status: building
+    depends_on: [S-6.17]
+    boundary: [AGENTS.md, CLAUDE.md, tools/test_context_routes.py]
+    verify: ['one commit, push and release authority section', start-here documents and ASTRA.md point to it, 'the README plan applied: update, merge, archive or remove each entry point', unrecorded owner rules written down]
+    adversarial: A route document that forbids committing reviewed work must fail the context route check; a README that contradicts the live release must be caught by the documentation checks.
+    acceptance: Every agent reads one consistent set of rules; every README matches the code and the live state; historical documents are archived, not deleted.
+    evidence: 'September 22: a README audit of 259 entry points (keep 173, update 72, archive 8, merge 5, remove 1) and a register of 128 owner directions, nine recorded nowhere.'
+    next_local_work: Land the authority section, reconcile the entry points, then apply the README plan.
+  - id: S-6.35
+    phase: 6
+    title: Release automation and automated live checks after every release
+    status: building
+    depends_on: [S-6.26]
+    boundary: [.github/workflows/fly-pilot.yml, tools/check_fly_service_container.py]
+    verify: [grants applied automatically after a catalogue release, container drills that state the client address source, 'hosted website, catalogue, service and protocol checks on every hostname after each release', a release record for each release]
+    adversarial: Removing the grant step from the release workflow must fail a named check; a drill without the client address setting must fail to start, as production would.
+    acceptance: A release leaves the library serving, the checks recorded, and the deploy switch off, with no manual step.
+    evidence: 'September 22: release 12 needed a manual apply-grants and a key reissue; the failed-attempt limit was switched on in the host file and proven against a forged address.'
+    next_local_work: Add the grant step and the drill settings, then run the automated checks after the next release.
+  - id: S-6.36
+    phase: 6
+    title: Y Combinator application package, fact-checked
+    status: building
+    depends_on: [S-6.34]
+    boundary: [docs/guides/launch-benefits-and-evidence.md]
+    verify: [application answers, a ten slide deck outline, a demo script on the live site, an adversarial fact check of every claim]
+    adversarial: A number, comparison or customer claim without saved evidence must be caught by the fact check before the application is sent.
+    acceptance: The application is ready for the owner to add the founder-only facts and submit before November 2, 2026, 8 p.m. Pacific.
+    evidence: 'September 22: market analysis with dated competitor prices and a fact-checked draft in progress.'
+    next_local_work: Finish the draft and the fact check; the owner adds personal background, contact details and equity facts.

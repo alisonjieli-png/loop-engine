@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d8820f7693d1a`.
+Plan fingerprint: `342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c227c437857ea2e`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -24,6 +24,11 @@ These steps are already being built. They are not completed dependencies or perm
 
 | Step | Current evidence | Next local work |
 |---|---|---|
+| S-6.29 | September 22: every ref and every dirty worktree archived in ~/loop-engine-archive-2026-09-22; the open security merge finished with its two silent losses restored and two new checks; silent losses of five earlier merges measured; consolidation running in detached worktrees. | Finish the four consolidation groups, restore the measured losses, push, and remove merged branches and worktrees. |
+| S-6.35 | September 22: release 12 needed a manual apply-grants and a key reissue; the failed-attempt limit was switched on in the host file and proven against a forged address. | Add the grant step and the drill settings, then run the automated checks after the next release. |
+| S-6.33 | September 22: five persona testers and an interface review on the live site; no persona would sign up or pay; ten ranked fixes with exact copy and code locations. | Implement the fixes on the consolidated main and release them. |
+| S-6.34 | September 22: a README audit of 259 entry points (keep 173, update 72, archive 8, merge 5, remove 1) and a register of 128 owner directions, nine recorded nowhere. | Land the authority section, reconcile the entry points, then apply the README plan. |
+| S-6.36 | September 22: market analysis with dated competitor prices and a fact-checked draft in progress. | Finish the draft and the fact check; the owner adds personal background, contact details and equity facts. |
 | S-6.4 | The SQLite-backed service persists tenants, key digests, subject bindings, exact grants, revocation and usage. The durable checkpoint records 153 owning and dependent checks and 11 detected mutants. Canonical all-layer qualification adapters and hosted database deployment remain open. | Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification. |
 | S-6.13 | One tested service image runs on the existing Fly Machine and encrypted volume. A prior deployed backup passed 15 local restore checks. Release 7 carries the account code, switched off by host configuration. Releases one to seven were built on one workstation from an uncommitted working tree, so none can be rebuilt from the repository. Release 8 (2026-09-20) is the first built by the guarded workflow from a committed revision, e63f614, after its continuous integration run passed; 46 website checks pass on each of four hostnames and 16 service and protocol checks pass. The record is artifacts/architecture-audit-2026-09-19/pilot-release-8.json. Shared-state scaling, current-image rollback and other hosting profiles remain unqualified. | Continue the declared acceptance checks |
 | S-6.1 | Path, link, overwrite, immutable authority, and guardrail repairs have owning and independent checks in artifacts/architecture-audit-2026-09-19/root-changes-independent-review.md; full frozen-tree integration pending. | Continue the declared acceptance checks |
@@ -624,6 +629,68 @@ Verification cases are required evidence, not recorded passes.
 | D-17-T05 | local_contract | Send a burst of forged sign-in tokens that carry unknown key identifiers. | At most one identity key read happens inside the pause and ordinary requests keep working. | With the pause removed, the number of key reads must grow with the burst. |
 | D-17-T06 | local_contract | Anchor the catalogue to a new revision, which rewrites the trailing anchor line of every body, and carry the independent approvals across the move. | An approval carries only when the sole difference between the bytes its reviewers read and the body today is that line and the revision it names. A carried approval keeps its reviewers, their decisions and the digest they judged, and records that it was carried rather than freshly approved. | A body with a changed sentence beside the changed anchor line, a removed anchor line, a second anchor-looking line, a changed word inside the anchor line other than the revision, changed trailing whitespace, and a body whose recorded digest does not match it must each refuse the carry and return the item to candidate state, and a comparison that always carries must let every one of those cases through. |
 
+### D-18: Ship the September 22 review: one main line, live checks and launch readiness
+
+Owning steps: S-6.29, S-6.33, S-6.34, S-6.35, S-6.36. Acceptance dependencies: D-17.
+
+Owning boundaries: `AGENTS.md`; `.github/workflows/fly-pilot.yml`; `src/loop_engine/core/service_runtime/web_assets/index.html`; `tools/test_context_routes.py`.
+
+- Merge every branch and worktree onto main with a line-survival check after each merge, and keep only the snapshot branch.
+- Restore what the September 22 merges dropped and prove it with the same check.
+- Put the commit, push and release authority in one section of AGENTS.md and make every entry point agree.
+- Apply the README plan so every entry point matches the code and the live state.
+- Apply grants automatically after a catalogue release and state the client address source in every drill.
+- Run the hosted website, catalogue, service and protocol checks on every hostname after each release and record them.
+- Ship the website fixes from the persona and interface reviews.
+- Prepare the fact-checked Y Combinator package for the owner.
+
+Complete when: GitHub main, local main and production are one state; the live site passes every hosted check on every hostname; a first-time visitor can request an invitation and follow Get started to a working connection; the rules have one home.
+
+Failure control: A merge that drops branch lines, a release that leaves the library empty, and a page that contradicts the live payment state must each fail a named check.
+
+Authority: Commit, push and release under the owner authority recorded in CLAUDE.md and AGENTS.md; legal text, spending beyond the allowance and destructive operations still need the owner.
+
+Rollback or safe stop: Redeploy the previous image digest recorded in the newest release record; restore any ref from the September 22 archive bundle.
+
+Verification cases are required evidence, not recorded passes.
+
+| Case | Evidence level | Scenario | Pass condition | Negative control |
+|---|---|---|---|---|
+| D-18-T01 | operational_drill | Release from main through the guarded workflow and run the hosted checks on every hostname. | Every hostname passes the website, catalogue and service checks and the library offers the approved items. | Removing the grant step must leave the library empty and fail the catalogue check. |
+| D-18-T02 | local_contract | Replay each September 22 merge and compare the branch lines with the result. | Every line a branch added is present or its replacement is recorded. | The unrepaired merges must fail the check. |
+| D-18-T03 | end_to_end | A first-time visitor requests an invitation and follows Get started. | The request is stored for review and every setup step works in order. | A payment state that contradicts registration must fail the page check. |
+
+### D-19: Engines behind fixed edges for every functional component
+
+Owning steps: S-6.30, S-6.31, S-6.32. Acceptance dependencies: D-12.
+
+Owning boundaries: `src/loop_engine/core/boundary_registry.py`; `src/loop_engine/core/external_harness.py`; `src/loop_engine/core/harness_intelligence_search.py`.
+
+- Index every engine slot in the boundary registry with its edge, protocol, engines and check.
+- Declare engines with lifecycle, capabilities, effects, licence and cost model.
+- Let the host declare installed engines, the initial choice and ordered fallbacks for each slot.
+- Select engines without effects and record every decision with its reasons.
+- Measure every engine inside the envelope and read qualified evidence for ranking.
+- Build the harness executor slot with the Agent Client Protocol adapter first.
+- Make hosted search a slot with the measured policy and a relevance floor.
+- Search for existing projects and papers before each engine is built and record the decision.
+
+Complete when: Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.
+
+Failure control: A slot without an edge, default or collected check fails conformance; evidence below the minimum sample cannot reorder engines; an in-process engine cannot satisfy a delegation step.
+
+Authority: Engine choice never grants file, network, model or spending authority; comparison traffic for model-backed engines defaults to zero.
+
+Rollback or safe stop: Switch the host choice back to the previous engine; engines are never deleted, only retired.
+
+Verification cases are required evidence, not recorded passes.
+
+| Case | Evidence level | Scenario | Pass condition | Negative control |
+|---|---|---|---|---|
+| D-19-T01 | local_contract | Register a new engine in one slot with only its adapter and declaration. | The engine becomes selectable after qualification with no call-site change. | An engine missing a required capability must be removed at eligibility with a recorded reason. |
+| D-19-T02 | held_out_comparison | Run two engines side by side on a deterministic sample of one slot. | The decision records and measurements identify which engine served each request. | Evidence below the minimum sample must leave the declared order unchanged. |
+| D-19-T03 | end_to_end | Delegate one real step through a harness engine chosen by the executor slot. | The step result, cost, time and acceptance are recorded and a second harness can replace the first by configuration. | An in-process engine must be refused for a step that requires delegation. |
+
 ## Launch benefit drafts
 
 These are proposed messages, not qualified performance claims.
@@ -671,6 +738,14 @@ Historical planning targets, not a current schedule, release forecast or complet
 
 | Step | Deliverable | Status | Dependencies |
 |---|---|---|---|
+| S-6.29 | Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch | building | S-6.28 |
+| S-6.35 | Release automation and automated live checks after every release | building | S-6.26 |
+| S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
+| S-6.34 | One home for rules and authority, and a documentation cleanup | building | S-6.17 |
+| S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
+| S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
+| S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
+| S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.17 | Maintain one continuation plan and regenerate its status artifact | offline_verified | none |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | S-6.17 |
 | S-6.13 | Prepare portable deployment definitions and procedures for every hosting family | building | S-6.17 |
@@ -712,14 +787,14 @@ Legacy statuses remain historical component claims until current integration evi
 | Workstream | Earlier steps | Continuation steps |
 |---|---|---|
 | Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11 |
-| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23 |
-| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28 |
+| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32 |
+| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31 |
 | Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19 |
-| Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23 |
+| Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13 |
-| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24 |
-| Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27 |
-| Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22 |
+| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33 |
+| Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34 |
+| Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36 |
 
 ## Hosting coverage
 
