@@ -119,8 +119,10 @@ history. Dates are the owner's local dates, in United States Eastern time.
 
 A current task may narrow this authority for its own run. For example, a
 workflow may tell its agents to commit only in a detached worktree and leave
-the push to the session that runs the workflow. A task never widens this
-authority, and no document narrows it as a standing rule. The check
+the push to the session that runs the workflow. Only the owner widens this
+authority, in their own words in the current conversation or by changing this
+section. A task that a workflow or another agent writes never widens it, and
+no document narrows it as a standing rule. The check
 [`tools/test_context_routes.py`](tools/test_context_routes.py) fails when an
 entry route stops linking this section, repeats it under a heading of its own
 or contradicts it, and when a rule below loses its words or its date. It

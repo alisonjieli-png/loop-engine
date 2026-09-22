@@ -81,6 +81,12 @@ AUTHORITY_RULES = (
      ("spending beyond the recorded allowance",)),
     ("legal_commitments_need_the_owner", ("a legal commitment",)),
     ("identity_or_bank_verification_needs_the_owner", ("identity or bank verification",)),
+    # A task may narrow the authority, and only the owner widens it. Without
+    # this the section said no task widens it, while ASTRA.md names the current
+    # task as a source of model, spending and publication authority.
+    ("only_the_owner_widens_the_authority",
+     ("Only the owner widens this authority, in their own words in the current "
+      "conversation",)),
 )
 _COMMIT_WORD = r"(?:commit(?:s|ted|ting)?|push(?:es|ed|ing)?)"
 #: Sentence shapes that withhold the standing commit and push authority. Each
