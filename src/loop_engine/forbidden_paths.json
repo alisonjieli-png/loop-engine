@@ -188,7 +188,8 @@
   "core/service_runtime/browser_identity.py",
   "core/service_runtime/browser_identity_checks.py",
   "core/service_runtime/account_email.py",
-  "core/service_runtime/account_email_checks.py"
+  "core/service_runtime/account_email_checks.py",
+  "core/service_runtime/promotion_checks.py"
  ],
  "notes": [
   "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
@@ -849,6 +850,7 @@
   "core/service_runtime/browser_identity.py": "Host-installed browser identity adapter. Network authority is checked before any key or provider read; the signed issuer, browser-only audience and current user are validated at the configured HTTPS origin. The bounded user request refuses redirects, inherited proxies, oversized or duplicate-key responses. It cannot authorize the MCP resource audience.",
   "core/service_runtime/browser_identity_checks.py": "Real loopback-only identity acceptance with locally signed tokens, owned temporary listeners and an injected current-user transport. No remote identity account, email, credential or provider request is used.",
   "core/service_runtime/account_email.py": "Account sign-up and password recovery adapter. Two fixed-origin requests only, each under explicit host network authority: one to the identity provider's administration interface that generates a link without sending a message, and one to the mail provider's send interface. Each request is sent once and never repeated after an uncertain answer; redirects, inherited proxy settings, oversized and non-object answers are refused. Discovery and the default configuration perform no request.",
-  "core/service_runtime/account_email_checks.py": "Account email checks. The adapter itself runs with injected transports; the two real transport functions are exercised against owned loopback listeners that the module starts and stops, so that redirect refusal, the response ceiling and the deadline are observed rather than asserted. No identity provider, mail provider, real address or external network is used."
+  "core/service_runtime/account_email_checks.py": "Account email checks. The adapter itself runs with injected transports; the two real transport functions are exercised against owned loopback listeners that the module starts and stops, so that redirect refusal, the response ceiling and the deadline are observed rather than asserted. No identity provider, mail provider, real address or external network is used.",
+  "core/service_runtime/promotion_checks.py": "Promotion code checks. The redemption path itself is a durable record operation and opens no socket; the client library is used only to reach owned loopback listeners that the module starts and stops, so that the served refusal for an unknown and an exhausted code is observed byte for byte rather than asserted, and so that a guessed code is seen reaching the existing failed-attempt limit. No payment provider, identity provider or external network is used."
  }
 }
