@@ -1,0 +1,3203 @@
+{
+  "record_type": "catalogue_search_judgements/v1",
+  "catalogue": "examples/29_intelligence_service/starter-catalogue",
+  "catalogue_items": 123,
+  "written_on": "2026-09-21",
+  "note": "Requests and the catalogue items that should be returned for each, over the 123 published items of examples/29_intelligence_service/starter-catalogue on 21 September 2026. The first group of 105 is taken unchanged from that catalogue's own search-queries.json, which records one expected item for each query and who wrote it. That file and the catalogue's REVIEW.md state that the item purposes were given the words those queries used until every one passed, so the group is a smoke check and not independent evidence; it is kept here and reported separately for exactly that reason. The second group of 249 was written for this measurement from each item's title and declared tags, in the words a customer's coding tool would send, before any ranking was measured against them, and it was not revised afterwards. Every catalogue item is expected by at least one request. A request with an empty relevant list is one this catalogue cannot answer, kept so that a confident wrong answer is visible rather than invisible.",
+  "authors": {
+    "starter_catalogue_author": "the author of the item purposes, recorded in search-queries.json",
+    "starter_catalogue_reviewer": "an adversarial reviewer who wrote queries after the purposes existed, recorded in search-queries.json",
+    "search_quality_session": "the engineering session of 2026-09-21 that built this measurement; it wrote no item purpose and changed no catalogue item"
+  },
+  "split_rule": {
+    "method": "sha256_of_query_text",
+    "held_back_when": "the first eight hexadecimal characters of the SHA-256 digest of the query text, read as a base sixteen number, leave no remainder when divided by four",
+    "decided_on": "2026-09-21",
+    "decided_by": "search_quality_session",
+    "why": "the split follows from the query text, so no result can move a query between the two groups"
+  },
+  "judgements": [
+    {
+      "query": "how do I remove duplicate customers from a CRM export",
+      "relevant": [
+        "find_duplicate_records_with_blocking_keys"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "fuzzy match two company records",
+      "relevant": [
+        "score_duplicate_pairs_by_weakest_signal"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "names are in ALL CAPS fix the casing",
+      "relevant": [
+        "restore_capitalisation_of_names"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "standardize Inc and LLC in company names",
+      "relevant": [
+        "canonicalize_company_legal_suffixes"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "format phone numbers with country code",
+      "relevant": [
+        "normalize_phone_numbers"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "fix typos in email domains like gmail.con",
+      "relevant": [
+        "normalize_and_recover_email_addresses"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "clean URLs lowercase host",
+      "relevant": [
+        "normalize_website_addresses"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "strip non-breaking spaces and zero width characters",
+      "relevant": [
+        "normalize_whitespace_and_unicode_text"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "which corrections can be applied automatically and which need review",
+      "relevant": [
+        "apply_hold_or_escalate_each_correction"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "find invalid dates in a column",
+      "relevant": [
+        "detect_malformed_values_by_dominant_pattern"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "parse street address into parts",
+      "relevant": [
+        "split_address_lines_into_components"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "update a table without touching the original",
+      "relevant": [
+        "copy_a_table_with_corrections_never_in_place"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "is my model overfitting",
+      "relevant": [
+        "read_the_train_validation_gap"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "which metric for imbalanced classification",
+      "relevant": [
+        "choose_metrics_by_task_type_and_industry"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "data leakage between train and test",
+      "relevant": [
+        "audit_data_splits_for_errors_and_leakage"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the agent keeps retrying the same failing fix",
+      "relevant": [
+        "diagnose_a_stall_and_change_strategy"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the request is ambiguous what should I build",
+      "relevant": [
+        "carry_competing_readings_of_a_request"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "do I need an LLM for this step or can code do it",
+      "relevant": [
+        "decide_whether_a_step_needs_a_model"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "write a failing test first",
+      "relevant": [
+        "test_driven_change_red_green_refactor"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "make my ETL job idempotent",
+      "relevant": [
+        "make_a_data_pipeline_safe_to_run_again"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "join duplicated my rows",
+      "relevant": [
+        "check_a_table_join_before_trusting_it"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "Dockerfile for a batch job pinned image",
+      "relevant": [
+        "write_a_pinned_container_and_batch_job"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "scan generated code for API keys",
+      "relevant": [
+        "refuse_secrets_and_unsafe_paths_in_generated_files"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "how to report what I could not verify",
+      "relevant": [
+        "report_observed_derived_assumed_and_unknown"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "what to ask before starting a big task",
+      "relevant": [
+        "questions_to_ask_before_starting_work"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "publish a skill for claude code and codex",
+      "relevant": [
+        "package_one_skill_for_two_coding_harnesses"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "dedupe my contacts csv",
+      "relevant": [
+        "find_duplicate_records_with_blocking_keys"
+      ],
+      "written_by": "starter_catalogue_reviewer",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "classes are skewed",
+      "relevant": [
+        "choose_metrics_by_task_type_and_industry"
+      ],
+      "written_by": "starter_catalogue_reviewer",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "german umlauts got stripped",
+      "relevant": [
+        "normalize_whitespace_and_unicode_text"
+      ],
+      "written_by": "starter_catalogue_reviewer",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "cannot reach the database",
+      "relevant": [
+        "deliver_the_best_available_result_when_blocked"
+      ],
+      "written_by": "starter_catalogue_reviewer",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "when should an agent ask the user",
+      "relevant": [
+        "resolve_missing_information"
+      ],
+      "written_by": "starter_catalogue_reviewer",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "how do I write a regression test for a bug I just fixed",
+      "relevant": [
+        "write_a_regression_test_that_pins_a_defect"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "which test cases should I write for a field with a range",
+      "relevant": [
+        "choose_test_cases_from_boundaries_and_classes"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "my test passes sometimes and fails sometimes",
+      "relevant": [
+        "isolate_a_flaky_test_before_trusting_it"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "how do I know my new guard actually works",
+      "relevant": [
+        "prove_a_check_can_fail_when_the_behaviour_is_removed"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "make a small reproduction from a huge failing file",
+      "relevant": [
+        "reduce_a_failure_to_a_minimal_reproduction"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "find the commit that broke the build",
+      "relevant": [
+        "bisect_a_regression_across_revisions"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "works on my machine but fails on the server",
+      "relevant": [
+        "bisect_a_failure_across_inputs_and_settings"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "how do I read a stack trace",
+      "relevant": [
+        "read_a_failure_report_and_name_the_first_wrong_value"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "what should I look for when reviewing a pull request",
+      "relevant": [
+        "review_a_change_for_correctness"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "the change looks fine but something is missing",
+      "relevant": [
+        "review_a_change_for_what_is_missing"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "what happens if one write succeeds and the next one fails",
+      "relevant": [
+        "review_error_paths_and_partial_failure"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "two workers updating the same row race condition",
+      "relevant": [
+        "review_shared_state_for_ordering_defects"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "check my code for sql injection",
+      "relevant": [
+        "review_untrusted_input_for_injection"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "can another customer read this data through the export",
+      "relevant": [
+        "review_authorisation_on_every_path"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "is my file upload safe from path traversal",
+      "relevant": [
+        "review_file_paths_for_traversal_and_link_escape"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "is it safe to run code the model wrote",
+      "relevant": [
+        "review_generated_output_before_it_is_executed"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "should we add this npm package",
+      "relevant": [
+        "review_a_new_dependency_before_adding_it"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "what licences are in the thing we ship",
+      "relevant": [
+        "record_the_licence_of_every_bundled_component"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "lock file and reproducible builds",
+      "relevant": [
+        "pin_dependency_versions_and_verify_them"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the scanner says one of our packages is vulnerable",
+      "relevant": [
+        "respond_to_a_vulnerable_dependency_report"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "rename a database column without downtime",
+      "relevant": [
+        "plan_a_schema_change_in_compatible_steps"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the deployment retried and ran my migration twice",
+      "relevant": [
+        "write_a_migration_that_is_safe_to_run_twice"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "update forty million rows without locking the table",
+      "relevant": [
+        "backfill_a_large_table_in_bounded_batches"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "test a migration on production sized data first",
+      "relevant": [
+        "rehearse_a_migration_on_a_copy_of_real_data"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "design a new rest endpoint request and response",
+      "relevant": [
+        "design_a_request_and_response_contract"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "add a field without breaking existing clients",
+      "relevant": [
+        "version_an_interface_so_older_callers_keep_working"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "client and server disagree about the protocol version",
+      "relevant": [
+        "negotiate_a_supported_version_at_connection_time"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "what should an api error response contain",
+      "relevant": [
+        "return_errors_a_caller_can_act_on"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "someone asked my endpoint for a million rows",
+      "relevant": [
+        "bound_a_list_endpoint_with_paging_and_limits"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "should I retry this failure or not",
+      "relevant": [
+        "classify_a_failure_before_deciding_to_retry"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "exponential backoff and jitter",
+      "relevant": [
+        "retry_with_backoff_inside_a_declared_budget"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "the customer was charged twice after a timeout",
+      "relevant": [
+        "make_a_write_safe_to_repeat_with_an_idempotency_key"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "one slow service is holding all my threads",
+      "relevant": [
+        "set_timeouts_and_cancel_an_outbound_call"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the overnight job restarted and lost everything",
+      "relevant": [
+        "keep_partial_work_when_a_long_job_is_interrupted"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "where should I put my api keys",
+      "relevant": [
+        "keep_secrets_out_of_source_and_settings"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "least privilege for a service account",
+      "relevant": [
+        "scope_a_credential_to_the_smallest_permission"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "change an api key while the service is running",
+      "relevant": [
+        "rotate_a_credential_without_an_outage"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "a password got committed to the repository",
+      "relevant": [
+        "respond_to_a_leaked_credential"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "what should go in a log line",
+      "relevant": [
+        "write_a_log_line_that_is_safe_to_share"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "stop customer names appearing in our logs",
+      "relevant": [
+        "remove_personal_data_before_it_reaches_a_log"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "when should something be an error and when a warning",
+      "relevant": [
+        "choose_log_levels_and_what_belongs_in_each"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "trace one request across several services",
+      "relevant": [
+        "carry_one_correlation_identifier_across_services"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "where is my application actually spending time",
+      "relevant": [
+        "measure_before_optimising"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "my benchmark gives a different number every run",
+      "relevant": [
+        "build_a_repeatable_performance_test"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "how do I read profiler output",
+      "relevant": [
+        "read_a_profile_and_find_the_dominant_cost"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "average response time looks fine but users complain",
+      "relevant": [
+        "use_percentiles_not_averages_for_response_time"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "where should I validate incoming json",
+      "relevant": [
+        "validate_input_at_the_boundary_and_refuse_early"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the upstream team changed a column and broke my report",
+      "relevant": [
+        "write_a_data_contract_for_a_table_or_feed"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "should a missing price become zero",
+      "relevant": [
+        "handle_missing_values_without_inventing_them"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "what should I put in the prompt for one step",
+      "relevant": [
+        "assemble_the_context_for_one_step"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "my prompt is too long for the window",
+      "relevant": [
+        "decide_what_to_leave_out_of_a_prompt"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "stop prompt injection from a support ticket",
+      "relevant": [
+        "keep_instructions_and_supplied_text_apart"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "the agent forgot a decision from earlier in the task",
+      "relevant": [
+        "carry_earlier_decisions_forward_without_the_whole_transcript"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "can I use a cheaper model for this classification",
+      "relevant": [
+        "choose_a_smaller_model_for_a_bounded_decision"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "compare two models on my own task",
+      "relevant": [
+        "compare_a_smaller_model_against_the_larger_one"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the model answer keeps getting cut off",
+      "relevant": [
+        "set_an_output_size_from_a_known_limit"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "write acceptance criteria for a ticket",
+      "relevant": [
+        "write_acceptance_criteria_a_reviewer_can_check"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the request just says make it better",
+      "relevant": [
+        "turn_a_vague_request_into_a_testable_statement"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "must have versus nice to have",
+      "relevant": [
+        "separate_required_from_optional_in_a_request"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "what to check before deploying to production",
+      "relevant": [
+        "run_a_release_check_list_before_deploying"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "how do we undo this release if it goes wrong",
+      "relevant": [
+        "write_a_rollback_plan_before_the_release"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "ship it behind a feature flag",
+      "relevant": [
+        "release_behind_a_switch_that_can_be_turned_off"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the deploy finished but did it actually work",
+      "relevant": [
+        "verify_a_release_after_it_is_live"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "how do we run a postmortem",
+      "relevant": [
+        "run_an_incident_review_without_blame"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "put the outage events in order",
+      "relevant": [
+        "build_an_incident_timeline_from_evidence"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "turn the lesson from an outage into an alarm",
+      "relevant": [
+        "turn_an_incident_into_a_check_that_would_have_caught_it"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "write instructions for a coding agent",
+      "relevant": [
+        "write_a_task_brief_for_an_agent"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "what should an agent be allowed to do",
+      "relevant": [
+        "state_the_permissions_and_limits_of_an_assignment"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "break a big job into smaller assignments",
+      "relevant": [
+        "split_a_large_request_into_assignable_parts"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "which files should I attach to the assignment",
+      "relevant": [
+        "supply_the_files_and_facts_an_assignment_needs"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "the agent says it is done, how do I know",
+      "relevant": [
+        "verify_an_agent_result_without_trusting_its_summary"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "the model wrote the code and the tests",
+      "relevant": [
+        "check_generated_code_against_the_request"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "can I trust this benchmark number",
+      "relevant": [
+        "reproduce_the_evidence_a_report_claims"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "development"
+    },
+    {
+      "query": "a test is failing, should I change the test",
+      "relevant": [
+        "review_a_failed_check_before_repairing_the_work"
+      ],
+      "written_by": "starter_catalogue_author",
+      "origin": "starter_catalogue_search_queries/v1",
+      "split": "held_back"
+    },
+    {
+      "query": "what is actually in this column before I clean it",
+      "relevant": [
+        "profile_text_column_before_cleaning"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "survey a messy text column first",
+      "relevant": [
+        "profile_text_column_before_cleaning"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "remove weird invisible characters from my data",
+      "relevant": [
+        "normalize_whitespace_and_unicode_text"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "curly quotes and tabs are breaking my import",
+      "relevant": [
+        "normalize_whitespace_and_unicode_text"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "fix capitalization of customer names",
+      "relevant": [
+        "restore_capitalisation_of_names"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "surnames like mcdonald are all lowercase",
+      "relevant": [
+        "restore_capitalisation_of_names"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "make all the company suffixes consistent",
+      "relevant": [
+        "canonicalize_company_legal_suffixes"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "ltd and limited should be written one way",
+      "relevant": [
+        "canonicalize_company_legal_suffixes"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "telephone numbers are in ten different formats",
+      "relevant": [
+        "normalize_phone_numbers"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "put contact numbers into international form",
+      "relevant": [
+        "normalize_phone_numbers"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "web addresses are missing http",
+      "relevant": [
+        "normalize_website_addresses"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "tidy up the homepage column",
+      "relevant": [
+        "normalize_website_addresses"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "mail addresses have spaces and angle brackets in them",
+      "relevant": [
+        "normalize_and_recover_email_addresses"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "repair mistyped mail domains",
+      "relevant": [
+        "normalize_and_recover_email_addresses"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "when is a fix safe enough to apply without a person",
+      "relevant": [
+        "apply_hold_or_escalate_each_correction"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what confidence should let a change go through automatically",
+      "relevant": [
+        "apply_hold_or_escalate_each_correction"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "an override list that wins over the general rules",
+      "relevant": [
+        "layer_exception_catalogs_with_precedence"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "per project overrides for cleaning rules",
+      "relevant": [
+        "layer_exception_catalogs_with_precedence"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "ask a person about a value I am not sure of",
+      "relevant": [
+        "escalate_uncertain_values_with_candidates"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "build a review request with ranked options",
+      "relevant": [
+        "escalate_uncertain_values_with_candidates"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the same customer appears twice in my table",
+      "relevant": [
+        "find_duplicate_records_with_blocking_keys"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "too slow to compare every row with every other row",
+      "relevant": [
+        "find_duplicate_records_with_blocking_keys"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "how similar are these two records",
+      "relevant": [
+        "score_duplicate_pairs_by_weakest_signal"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "are these two companies the same business",
+      "relevant": [
+        "score_duplicate_pairs_by_weakest_signal"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "merge duplicates but keep every row",
+      "relevant": [
+        "propose_a_dedupe_without_deleting_rows"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "pick which record survives a merge",
+      "relevant": [
+        "propose_a_dedupe_without_deleting_rows"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "some postcodes in this column look wrong",
+      "relevant": [
+        "detect_malformed_values_by_dominant_pattern"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "spot values that do not fit the column format",
+      "relevant": [
+        "detect_malformed_values_by_dominant_pattern"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "break one address field into street city and postcode",
+      "relevant": [
+        "split_address_lines_into_components"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "pull the house number out of a single address line",
+      "relevant": [
+        "split_address_lines_into_components"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "write results to a new table and leave the old one alone",
+      "relevant": [
+        "copy_a_table_with_corrections_never_in_place"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "non destructive cleanup of a sqlite file",
+      "relevant": [
+        "copy_a_table_with_corrections_never_in_place"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "ship this script as an installable package",
+      "relevant": [
+        "export_a_standalone_python_package"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "turn generated code into a deliverable with tests",
+      "relevant": [
+        "export_a_standalone_python_package"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "does my package work on a clean machine",
+      "relevant": [
+        "verify_an_export_in_an_isolated_interpreter"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "check for a hidden dependency before handing code over",
+      "relevant": [
+        "verify_an_export_in_an_isolated_interpreter"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "make sure no credentials end up in the output files",
+      "relevant": [
+        "refuse_secrets_and_unsafe_paths_in_generated_files"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "block directory traversal in files I generate",
+      "relevant": [
+        "refuse_secrets_and_unsafe_paths_in_generated_files"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "container image for a nightly batch run",
+      "relevant": [
+        "write_a_pinned_container_and_batch_job"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a scheduled job that must not run twice on failure",
+      "relevant": [
+        "write_a_pinned_container_and_batch_job"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "training accuracy is far above validation accuracy",
+      "relevant": [
+        "read_the_train_validation_gap"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what score should I use for fraud detection",
+      "relevant": [
+        "choose_metrics_by_task_type_and_industry"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "accuracy is useless when positives are rare",
+      "relevant": [
+        "choose_metrics_by_task_type_and_industry"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "decide what good looks like before the experiment",
+      "relevant": [
+        "freeze_the_success_metric_before_measuring"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "we keep moving the goalposts on this project",
+      "relevant": [
+        "freeze_the_success_metric_before_measuring"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what exactly is being asked of me here",
+      "relevant": [
+        "orient_on_a_task_and_write_its_contracts"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "write down the inputs outputs and definition of done",
+      "relevant": [
+        "orient_on_a_task_and_write_its_contracts",
+        "questions_to_ask_before_starting_work"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the brief can be read two different ways",
+      "relevant": [
+        "carry_competing_readings_of_a_request"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "predict the cost before running the big job",
+      "relevant": [
+        "forecast_an_action_then_compare"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "sanity check an expensive run in advance",
+      "relevant": [
+        "forecast_an_action_then_compare"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the same error keeps coming back",
+      "relevant": [
+        "diagnose_a_stall_and_change_strategy"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "no progress for an hour what now",
+      "relevant": [
+        "diagnose_a_stall_and_change_strategy"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "it exited zero but is the output actually right",
+      "relevant": [
+        "verify_the_requested_output"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what angles should a reviewer take",
+      "relevant": [
+        "choose_review_perspectives"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "better feedback than looks good to me",
+      "relevant": [
+        "choose_review_perspectives"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "cannot finish because the service is unreachable",
+      "relevant": [
+        "deliver_the_best_available_result_when_blocked"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "give a partial answer with the gaps marked",
+      "relevant": [
+        "deliver_the_best_available_result_when_blocked"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "should I guess this or ask the person",
+      "relevant": [
+        "resolve_missing_information"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what should I do next out of three options",
+      "relevant": [
+        "choose_one_next_action"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "separate facts from guesses in the write up",
+      "relevant": [
+        "report_observed_derived_assumed_and_unknown"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "an honest status report about what I could not check",
+      "relevant": [
+        "report_observed_derived_assumed_and_unknown"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "has someone already built this",
+      "relevant": [
+        "check_for_existing_work_before_building"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "avoid rewriting code that already exists",
+      "relevant": [
+        "check_for_existing_work_before_building"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "will this file fit in memory",
+      "relevant": [
+        "measure_the_environment_before_relying_on_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "how much disk and how many processors do I have",
+      "relevant": [
+        "measure_the_environment_before_relying_on_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "write the handover for whoever picks this up",
+      "relevant": [
+        "hand_over_a_result_its_consumer_can_use"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "break a big job into pieces that can run in parallel",
+      "relevant": [
+        "plan_and_split_work_with_explicit_joins"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "dependencies between subtasks and where they join",
+      "relevant": [
+        "plan_and_split_work_with_explicit_joins"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "get a reliable json reply out of the model",
+      "relevant": [
+        "ask_a_model_with_a_declared_answer_shape"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "a reusable prompt with a fixed reply format",
+      "relevant": [
+        "ask_a_model_with_a_declared_answer_shape"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "checklist before starting a big piece of work",
+      "relevant": [
+        "questions_to_ask_before_starting_work"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "can plain code do this instead of a language model",
+      "relevant": [
+        "decide_whether_a_step_needs_a_model"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "cut the token spend of each step",
+      "relevant": [
+        "decide_whether_a_step_needs_a_model"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the residuals still have a pattern in them",
+      "relevant": [
+        "look_for_structure_the_model_missed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what is my fitted model not using",
+      "relevant": [
+        "look_for_structure_the_model_missed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "does the score hold with a different random seed",
+      "relevant": [
+        "check_that_a_result_is_stable_and_generalizes"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "is this improvement real or just noise",
+      "relevant": [
+        "check_that_a_result_is_stable_and_generalizes"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "check my train test split",
+      "relevant": [
+        "audit_data_splits_for_errors_and_leakage"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the same customer is in both the training and the test set",
+      "relevant": [
+        "audit_data_splits_for_errors_and_leakage"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "where is the model failing most",
+      "relevant": [
+        "analyse_errors_by_segment_and_cluster"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "group the mistakes into types",
+      "relevant": [
+        "analyse_errors_by_segment_and_cluster"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "poke holes in a design we already accepted",
+      "relevant": [
+        "review_an_accepted_solution_adversarially"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "imagine this failed and work out why",
+      "relevant": [
+        "review_an_accepted_solution_adversarially"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "write the failing test before the fix",
+      "relevant": [
+        "test_driven_change_red_green_refactor"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "same skill published for two coding agents",
+      "relevant": [
+        "package_one_skill_for_two_coding_harnesses"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "row count exploded after a join",
+      "relevant": [
+        "check_a_table_join_before_trusting_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "sanity check a sql join before trusting it",
+      "relevant": [
+        "check_a_table_join_before_trusting_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "safe to run the load twice",
+      "relevant": [
+        "make_a_data_pipeline_safe_to_run_again"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "backfill without doubling the rows",
+      "relevant": [
+        "make_a_data_pipeline_safe_to_run_again"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "deduplicate my customer list",
+      "relevant": [
+        "find_duplicate_records_with_blocking_keys",
+        "score_duplicate_pairs_by_weakest_signal",
+        "propose_a_dedupe_without_deleting_rows"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "clean up a messy spreadsheet of companies",
+      "relevant": [
+        "profile_text_column_before_cleaning",
+        "canonicalize_company_legal_suffixes",
+        "restore_capitalisation_of_names",
+        "normalize_whitespace_and_unicode_text"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "my model looks too good to be true",
+      "relevant": [
+        "read_the_train_validation_gap",
+        "audit_data_splits_for_errors_and_leakage",
+        "check_that_a_result_is_stable_and_generalizes"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "get this code ready for production",
+      "relevant": [
+        "export_a_standalone_python_package",
+        "verify_an_export_in_an_isolated_interpreter",
+        "refuse_secrets_and_unsafe_paths_in_generated_files",
+        "write_a_pinned_container_and_batch_job"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "standardise the text fields in a contact table",
+      "relevant": [
+        "normalize_whitespace_and_unicode_text",
+        "restore_capitalisation_of_names",
+        "normalize_phone_numbers",
+        "normalize_and_recover_email_addresses",
+        "normalize_website_addresses"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "convert a video file to another format",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what is the capital city of peru",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "set up a login page with google sign in",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "write a marketing email for a product launch",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "compile a c program with make",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "book a meeting room for tomorrow morning",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "i fixed a bug how do i stop it coming back",
+      "relevant": [
+        "write_a_regression_test_that_pins_a_defect"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "add a test that fails without the fix",
+      "relevant": [
+        "write_a_regression_test_that_pins_a_defect"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "which test cases should i write for this validation",
+      "relevant": [
+        "choose_test_cases_from_boundaries_and_classes"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "pick input values at the edges of the allowed range",
+      "relevant": [
+        "choose_test_cases_from_boundaries_and_classes"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "this test passes sometimes and fails sometimes",
+      "relevant": [
+        "isolate_a_flaky_test_before_trusting_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "stop retrying an unreliable test and find the cause",
+      "relevant": [
+        "isolate_a_flaky_test_before_trusting_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "how do i know my new alarm actually fires",
+      "relevant": [
+        "prove_a_check_can_fail_when_the_behaviour_is_removed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "break the code on purpose to see the guard reject it",
+      "relevant": [
+        "prove_a_check_can_fail_when_the_behaviour_is_removed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "shrink this huge failing input to something i can paste",
+      "relevant": [
+        "reduce_a_failure_to_a_minimal_reproduction"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "smallest example that still shows the bug",
+      "relevant": [
+        "reduce_a_failure_to_a_minimal_reproduction"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "which commit broke this",
+      "relevant": [
+        "bisect_a_regression_across_revisions"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "it worked last release and not now find the change",
+      "relevant": [
+        "bisect_a_regression_across_revisions"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "works on my machine but fails in continuous integration",
+      "relevant": [
+        "bisect_a_failure_across_inputs_and_settings"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "narrow down which environment setting causes the failure",
+      "relevant": [
+        "bisect_a_failure_across_inputs_and_settings"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "i have a stack trace where do i start",
+      "relevant": [
+        "read_a_failure_report_and_name_the_first_wrong_value"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the crash line is not where the value went wrong",
+      "relevant": [
+        "read_a_failure_report_and_name_the_first_wrong_value"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "review this pull request for bugs",
+      "relevant": [
+        "review_a_change_for_correctness"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "check the new branches and edge cases in this diff",
+      "relevant": [
+        "review_a_change_for_correctness"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what did this change forget to do",
+      "relevant": [
+        "review_a_change_for_what_is_missing"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "did the author update every caller",
+      "relevant": [
+        "review_a_change_for_what_is_missing"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what happens if step three of five fails halfway",
+      "relevant": [
+        "review_error_paths_and_partial_failure"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "half the writes went through and half did not",
+      "relevant": [
+        "review_error_paths_and_partial_failure"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "two requests update the same row at the same time",
+      "relevant": [
+        "review_shared_state_for_ordering_defects"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "look for race conditions in this code",
+      "relevant": [
+        "review_shared_state_for_ordering_defects"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "could a user smuggle sql through this field",
+      "relevant": [
+        "review_untrusted_input_for_injection"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a model answer is being passed straight into a shell command",
+      "relevant": [
+        "review_untrusted_input_for_injection"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "can one tenant read another tenant's rows",
+      "relevant": [
+        "review_authorisation_on_every_path"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "check permissions on the export and the background job too",
+      "relevant": [
+        "review_authorisation_on_every_path"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a zip entry could write outside the upload folder",
+      "relevant": [
+        "review_file_paths_for_traversal_and_link_escape"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "stop dot dot slash in a download filename",
+      "relevant": [
+        "review_file_paths_for_traversal_and_link_escape"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "is it safe to run the code the model just wrote",
+      "relevant": [
+        "review_generated_output_before_it_is_executed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "avoid eval on a generated expression",
+      "relevant": [
+        "review_generated_output_before_it_is_executed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "should i add this library to the project",
+      "relevant": [
+        "review_a_new_dependency_before_adding_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what does this package pull in and what does it do on import",
+      "relevant": [
+        "review_a_new_dependency_before_adding_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "produce the third party notice file for a release",
+      "relevant": [
+        "record_the_licence_of_every_bundled_component"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "i do not know the licence of one of our fonts",
+      "relevant": [
+        "record_the_licence_of_every_bundled_component"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "builds are not reproducible between machines",
+      "relevant": [
+        "pin_dependency_versions_and_verify_them"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "lock every package to an exact version and hash",
+      "relevant": [
+        "pin_dependency_versions_and_verify_them"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a scanner says one of our packages has a vulnerability",
+      "relevant": [
+        "respond_to_a_vulnerable_dependency_report"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "do we actually reach the vulnerable function",
+      "relevant": [
+        "respond_to_a_vulnerable_dependency_report"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "change a column without taking the service down",
+      "relevant": [
+        "plan_a_schema_change_in_compatible_steps"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "old and new application versions must share one database",
+      "relevant": [
+        "plan_a_schema_change_in_compatible_steps"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the migration failed halfway and i need to run it again",
+      "relevant": [
+        "write_a_migration_that_is_safe_to_run_twice"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "repair script that does nothing the second time",
+      "relevant": [
+        "write_a_migration_that_is_safe_to_run_twice"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "update twenty million rows without locking the table",
+      "relevant": [
+        "backfill_a_large_table_in_bounded_batches"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "fill a new column in batches i can stop and resume",
+      "relevant": [
+        "backfill_a_large_table_in_bounded_batches"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "practise the migration on a copy first",
+      "relevant": [
+        "rehearse_a_migration_on_a_copy_of_real_data"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "how long will this alter table take on real volumes",
+      "relevant": [
+        "rehearse_a_migration_on_a_copy_of_real_data"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "design the endpoint before i write the handler",
+      "relevant": [
+        "design_a_request_and_response_contract"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what should the request and response look like",
+      "relevant": [
+        "design_a_request_and_response_contract"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "change the api without breaking existing clients",
+      "relevant": [
+        "version_an_interface_so_older_callers_keep_working"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "is this a breaking change or a compatible one",
+      "relevant": [
+        "version_an_interface_so_older_callers_keep_working"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "client and server should agree a protocol when they connect",
+      "relevant": [
+        "negotiate_a_supported_version_at_connection_time"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "refuse a downgrade during the handshake",
+      "relevant": [
+        "negotiate_a_supported_version_at_connection_time"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "what should go in an error response",
+      "relevant": [
+        "return_errors_a_caller_can_act_on"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "give callers a stable code they can branch on",
+      "relevant": [
+        "return_errors_a_caller_can_act_on"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "someone asked for a hundred thousand rows in one request",
+      "relevant": [
+        "bound_a_list_endpoint_with_paging_and_limits"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "cap the page size and add a cursor",
+      "relevant": [
+        "bound_a_list_endpoint_with_paging_and_limits"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "should this failure be retried at all",
+      "relevant": [
+        "classify_a_failure_before_deciding_to_retry"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "tell a temporary outage apart from a bad request",
+      "relevant": [
+        "classify_a_failure_before_deciding_to_retry"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "our retries are making the outage worse",
+      "relevant": [
+        "retry_with_backoff_inside_a_declared_budget"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "add jitter and honour the retry after header",
+      "relevant": [
+        "retry_with_backoff_inside_a_declared_budget"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "make a payment request safe to send again",
+      "relevant": [
+        "make_a_write_safe_to_repeat_with_an_idempotency_key"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "one slow upstream is using all our threads",
+      "relevant": [
+        "set_timeouts_and_cancel_an_outbound_call"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "set a deadline on every outbound call and cancel it",
+      "relevant": [
+        "set_timeouts_and_cancel_an_outbound_call"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the overnight job died at hour six and lost everything",
+      "relevant": [
+        "keep_partial_work_when_a_long_job_is_interrupted"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "checkpoint a long run so a restart resumes",
+      "relevant": [
+        "keep_partial_work_when_a_long_job_is_interrupted"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "there is a password in our repository",
+      "relevant": [
+        "keep_secrets_out_of_source_and_settings"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "where should api keys live instead of the settings file",
+      "relevant": [
+        "keep_secrets_out_of_source_and_settings"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "our service account can do far more than it needs",
+      "relevant": [
+        "scope_a_credential_to_the_smallest_permission"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "least privilege for a database user",
+      "relevant": [
+        "scope_a_credential_to_the_smallest_permission"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "replace a key without downtime",
+      "relevant": [
+        "rotate_a_credential_without_an_outage"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "run two valid keys while callers move over",
+      "relevant": [
+        "rotate_a_credential_without_an_outage"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a token was pasted into a chat channel what now",
+      "relevant": [
+        "respond_to_a_leaked_credential"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "a secret was committed and i must handle the exposure",
+      "relevant": [
+        "respond_to_a_leaked_credential"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what should one log line contain",
+      "relevant": [
+        "write_a_log_line_that_is_safe_to_share"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "logs i can hand to support without leaking content",
+      "relevant": [
+        "write_a_log_line_that_is_safe_to_share"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "customer names are showing up in our error reports",
+      "relevant": [
+        "remove_personal_data_before_it_reaches_a_log"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "strip personal fields before anything is written out",
+      "relevant": [
+        "remove_personal_data_before_it_reaches_a_log"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "when is something a warning and when is it an error",
+      "relevant": [
+        "choose_log_levels_and_what_belongs_in_each"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "one failure is logged at every level on the way up",
+      "relevant": [
+        "choose_log_levels_and_what_belongs_in_each"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "follow one request through five services",
+      "relevant": [
+        "carry_one_correlation_identifier_across_services"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a trace id that survives the queue and the worker",
+      "relevant": [
+        "carry_one_correlation_identifier_across_services"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the app feels slow where do i even start",
+      "relevant": [
+        "measure_before_optimising"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "stop guessing which function to speed up",
+      "relevant": [
+        "measure_before_optimising"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "my timings are different every run",
+      "relevant": [
+        "build_a_repeatable_performance_test"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "how many runs before a speed difference is real",
+      "relevant": [
+        "build_a_repeatable_performance_test"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "i have profiler output and cannot read it",
+      "relevant": [
+        "read_a_profile_and_find_the_dominant_cost"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "tell waiting on io apart from burning cpu in a profile",
+      "relevant": [
+        "read_a_profile_and_find_the_dominant_cost"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "the average response time looks fine but users complain",
+      "relevant": [
+        "use_percentiles_not_averages_for_response_time"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "report p95 and p99 properly",
+      "relevant": [
+        "use_percentiles_not_averages_for_response_time"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "check the incoming payload at the edge",
+      "relevant": [
+        "validate_input_at_the_boundary_and_refuse_early"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "reject unknown fields instead of ignoring them",
+      "relevant": [
+        "validate_input_at_the_boundary_and_refuse_early"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "an upstream team renamed a column and broke my report",
+      "relevant": [
+        "write_a_data_contract_for_a_table_or_feed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "write down what this feed promises and how fresh it is",
+      "relevant": [
+        "write_a_data_contract_for_a_table_or_feed"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "zero and blank and unknown are being mixed together",
+      "relevant": [
+        "handle_missing_values_without_inventing_them"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "stop using minus one to mean no value",
+      "relevant": [
+        "handle_missing_values_without_inventing_them"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what should i put in the prompt for this one step",
+      "relevant": [
+        "assemble_the_context_for_one_step",
+        "decide_what_to_leave_out_of_a_prompt"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "give the step only the material it needs to act on",
+      "relevant": [
+        "assemble_the_context_for_one_step"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "the prompt is too long for the context window",
+      "relevant": [
+        "decide_what_to_leave_out_of_a_prompt"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what do i drop first when the input does not fit",
+      "relevant": [
+        "decide_what_to_leave_out_of_a_prompt"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a ticket contained an instruction and the agent obeyed it",
+      "relevant": [
+        "keep_instructions_and_supplied_text_apart"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "keep my instruction and the pasted document separate",
+      "relevant": [
+        "keep_instructions_and_supplied_text_apart"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the agent forgot a decision we made an hour ago",
+      "relevant": [
+        "carry_earlier_decisions_forward_without_the_whole_transcript"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "summarise decisions instead of resending the whole conversation",
+      "relevant": [
+        "carry_earlier_decisions_forward_without_the_whole_transcript"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "can a cheaper model do this classification step",
+      "relevant": [
+        "choose_a_smaller_model_for_a_bounded_decision"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "use a small model for picking one of five labels",
+      "relevant": [
+        "choose_a_smaller_model_for_a_bounded_decision"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "is the small model good enough on our own tasks",
+      "relevant": [
+        "compare_a_smaller_model_against_the_larger_one"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "run a fair head to head between two models",
+      "relevant": [
+        "compare_a_smaller_model_against_the_larger_one"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what should i set the maximum tokens to",
+      "relevant": [
+        "set_an_output_size_from_a_known_limit"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "the answer is being cut off halfway",
+      "relevant": [
+        "set_an_output_size_from_a_known_limit"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "write conditions for done a reviewer can check",
+      "relevant": [
+        "write_acceptance_criteria_a_reviewer_can_check"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "two people read our definition of finished differently",
+      "relevant": [
+        "write_acceptance_criteria_a_reviewer_can_check"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "turn a fuzzy ask into something i can be wrong about",
+      "relevant": [
+        "turn_a_vague_request_into_a_testable_statement"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "sort this wish list into must have and nice to have",
+      "relevant": [
+        "separate_required_from_optional_in_a_request"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "which of these requirements are actually assumptions",
+      "relevant": [
+        "separate_required_from_optional_in_a_request"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what do i check before every deploy",
+      "relevant": [
+        "run_a_release_check_list_before_deploying"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the order of database and application steps at release",
+      "relevant": [
+        "run_a_release_check_list_before_deploying"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "what number tells us to roll back",
+      "relevant": [
+        "write_a_rollback_plan_before_the_release"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "ship it turned off and switch it on slowly",
+      "relevant": [
+        "release_behind_a_switch_that_can_be_turned_off"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "turn a change off without deploying again",
+      "relevant": [
+        "release_behind_a_switch_that_can_be_turned_off"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "did the deploy actually take effect",
+      "relevant": [
+        "verify_a_release_after_it_is_live"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "confirm the running revision and do one real action",
+      "relevant": [
+        "verify_a_release_after_it_is_live"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "run a postmortem that does not blame a person",
+      "relevant": [
+        "run_an_incident_review_without_blame"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "why did the system let that mistake happen",
+      "relevant": [
+        "run_an_incident_review_without_blame"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "put the outage events in order with times",
+      "relevant": [
+        "build_an_incident_timeline_from_evidence"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "when did it start and when did anyone notice",
+      "relevant": [
+        "build_an_incident_timeline_from_evidence"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "turn last week's outage into an automatic check",
+      "relevant": [
+        "turn_an_incident_into_a_check_that_would_have_caught_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "a monitor that would have caught the recorded failure",
+      "relevant": [
+        "turn_an_incident_into_a_check_that_would_have_caught_it"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "write an assignment an agent can finish on its own",
+      "relevant": [
+        "write_a_task_brief_for_an_agent"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what belongs in a brief so i can check the result",
+      "relevant": [
+        "write_a_task_brief_for_an_agent"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "declare what an unattended job may write and spend",
+      "relevant": [
+        "state_the_permissions_and_limits_of_an_assignment"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "limit which commands and folders the agent may touch",
+      "relevant": [
+        "state_the_permissions_and_limits_of_an_assignment"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "break this big job into parts i can hand out",
+      "relevant": [
+        "split_a_large_request_into_assignable_parts"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "cut the work so each piece can be checked alone",
+      "relevant": [
+        "split_a_large_request_into_assignable_parts"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "give the worker the files instead of describing where they are",
+      "relevant": [
+        "supply_the_files_and_facts_an_assignment_needs"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "exact paths and a revision for the material a step needs",
+      "relevant": [
+        "supply_the_files_and_facts_an_assignment_needs"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the agent says it is done but i do not believe it",
+      "relevant": [
+        "verify_an_agent_result_without_trusting_its_summary"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "check whether any tests were skipped or weakened",
+      "relevant": [
+        "verify_an_agent_result_without_trusting_its_summary"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "test code the model wrote without using its own expectations",
+      "relevant": [
+        "check_generated_code_against_the_request"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "did it just copy the values from my example",
+      "relevant": [
+        "check_generated_code_against_the_request"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "can i reproduce the numbers in this benchmark report",
+      "relevant": [
+        "reproduce_the_evidence_a_report_claims"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "check the denominator and the exclusions behind an accuracy claim",
+      "relevant": [
+        "reproduce_the_evidence_a_report_claims"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "the test is failing should i change the test",
+      "relevant": [
+        "review_a_failed_check_before_repairing_the_work"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "held_back"
+    },
+    {
+      "query": "decide whether the code the test or the environment is wrong",
+      "relevant": [
+        "review_a_failed_check_before_repairing_the_work"
+      ],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "book a meeting room for tomorrow afternoon",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "what is the weather in singapore",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "translate this contract into japanese",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    },
+    {
+      "query": "recommend a restaurant near the office",
+      "relevant": [],
+      "written_by": "search_quality_session",
+      "origin": "written_for_this_measurement",
+      "split": "development"
+    }
+  ]
+}

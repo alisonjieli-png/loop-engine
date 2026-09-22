@@ -208,6 +208,11 @@ Intelligence, and User Feedback Intelligence all use this flow. Read
 [Intelligence is returned through loops](INTELLIGENCE-AS-LOOPS.md) for the
 contracts and examples.
 
+How a request is compared with what an item declares, and how well the
+resulting order holds up against measured requests, is recorded in
+[catalogue search quality](SEARCH-QUALITY.md). The matching mode is a typed
+field of `core.harness_intelligence_search`, not a default buried in a call.
+
 ## Runtime Memory is separate
 
 Runtime Memory is the temporary note board for the current run. It is not a

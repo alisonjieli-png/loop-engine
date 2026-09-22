@@ -29,6 +29,7 @@ installation instructions before running them.
 | [26 export a standalone solution](26_export_a_standalone_solution/) | Conforms a messy company file with a confidence per correction, then exports and verifies a package that runs without Loop Engine. |
 | [27 optimize a node grid](27_optimize_a_node_grid/) | Walks a declared grid over one node's parameters on a frozen suite, counts every stage separately, and accepts only a cell that gains on training cases without a held-out loss. |
 | [28 containerized worker](28_containerized_worker/) | Validates the engine image recipe and the Kubernetes worker and Job manifests offline; nothing is built or deployed. |
+| [30 search quality](30_search_quality/) | Measures whether catalogue search returns the right references over 354 requests, compares named search policies, and reports the failing requests by name and the held-back group separately. |
 | [Downloadable tasks](tasks/) | Plain text tasks and matching sample inputs for the GitHub quickstart. |
 
 ## Models and intelligence
