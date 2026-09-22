@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a1365b0e1f8a7`.
+Plan fingerprint: `21617883adee2661601aedd8644cf5d14866eeb3fdb03d771e1286bcc9651ca6`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -631,7 +631,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-18: Ship the September 22 review: one main line, live checks and launch readiness
 
-Owning steps: S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37. Acceptance dependencies: D-17.
+Owning steps: S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37, S-6.38, S-6.39. Acceptance dependencies: D-17.
 
 Owning boundaries: `AGENTS.md`; `.github/workflows/fly-pilot.yml`; `src/loop_engine/core/service_runtime/web_assets/index.html`; `tools/test_context_routes.py`.
 
@@ -662,7 +662,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-19: Engines behind fixed edges for every functional component
 
-Owning steps: S-6.30, S-6.31, S-6.32. Acceptance dependencies: D-12.
+Owning steps: S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42. Acceptance dependencies: D-12.
 
 Owning boundaries: `src/loop_engine/core/boundary_registry.py`; `src/loop_engine/core/external_harness.py`; `src/loop_engine/core/harness_intelligence_search.py`.
 
@@ -742,9 +742,14 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.35 | Release automation and automated live checks after every release | building | S-6.26 |
 | S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | S-6.17 |
+| S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
+| S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
+| S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | proposed | S-6.31 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
+| S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
+| S-6.41 | Harness run records for self-improvement | proposed | S-6.31 |
 | S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | proposed | S-6.33 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.17 | Maintain one continuation plan and regenerate its status artifact | offline_verified | none |
@@ -788,12 +793,12 @@ Legacy statuses remain historical component claims until current integration evi
 | Workstream | Earlier steps | Continuation steps |
 |---|---|---|
 | Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11 |
-| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32 |
-| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31 |
+| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40 |
+| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42 |
 | Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13 |
-| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33 |
+| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39 |
 | Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34 |
 | Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37 |
 

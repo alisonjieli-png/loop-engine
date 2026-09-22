@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a1365b0e1f8a7`.
+Source fingerprint: `sha256:21617883adee2661601aedd8644cf5d14866eeb3fdb03d771e1286bcc9651ca6`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a
 |---|---:|
 | Being built now | 32 |
 | Can start next | 11 |
-| Waiting on earlier work | 29 |
+| Waiting on earlier work | 34 |
 | Blocked | 2 |
 | Done | 41 |
 
@@ -72,9 +72,14 @@ Source fingerprint: `sha256:ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
+| S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
+| S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
+| S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | proposed | S-6.31 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
+| S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
+| S-6.41 | Harness run records for self-improvement | proposed | S-6.31 |
 | S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | proposed | S-6.33 |
 | S-6.8 | Connect credential leases and resource admission to harness lifetime | proposed | S-6.7 |
 | S-6.10 | Publish qualified starter packages and prove client retrieval | proposed | S-6.4, S-6.5 |
@@ -143,8 +148,8 @@ Source fingerprint: `sha256:ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a
 | D-15 | Operate reliability, telemetry and customer data lifecycle | public_launch | 0 of 5 |
 | D-16 | Qualify installation, distribution and compatibility | public_launch | 0 of 6 |
 | D-17 | Open a private beta for invited users | initial_service | 0 of 6 |
-| D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 6 |
-| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 3 |
+| D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 8 |
+| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 6 |
 
 ## Only the owner can do these
 

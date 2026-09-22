@@ -825,7 +825,7 @@ continuation:
     - id: D-18
       title: 'Ship the September 22 review: one main line, live checks and launch readiness'
       stage: initial_service
-      steps: [S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37]
+      steps: [S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37, S-6.38, S-6.39]
       depends_on: [D-17]
       actions: ['Merge every branch and worktree onto main with a line-survival check after each merge, and keep only the snapshot branch.', Restore what the September 22 merges dropped and prove it with the same check., 'Put the commit, push and release authority in one section of AGENTS.md and make every entry point agree.', Apply the README plan so every entry point matches the code and the live state., Apply grants automatically after a catalogue release and state the client address source in every drill., 'Run the hosted website, catalogue, service and protocol checks on every hostname after each release and record them.', Ship the website fixes from the persona and interface reviews., Prepare the fact-checked Y Combinator package for the owner.]
       acceptance: GitHub main, local main and production are one state; the live site passes every hosted check on every hostname; a first-time visitor can request an invitation and follow Get started to a working connection; the rules have one home.
@@ -840,7 +840,7 @@ continuation:
     - id: D-19
       title: Engines behind fixed edges for every functional component
       stage: continued_improvement
-      steps: [S-6.30, S-6.31, S-6.32]
+      steps: [S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42]
       depends_on: [D-12]
       actions: ['Index every engine slot in the boundary registry with its edge, protocol, engines and check.', 'Declare engines with lifecycle, capabilities, effects, licence and cost model.', 'Let the host declare installed engines, the initial choice and ordered fallbacks for each slot.', Select engines without effects and record every decision with its reasons., Measure every engine inside the envelope and read qualified evidence for ranking., Build the harness executor slot with the Agent Client Protocol adapter first., Make hosted search a slot with the measured policy and a relevance floor., Search for existing projects and papers before each engine is built and record the decision.]
       acceptance: Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.
@@ -1079,7 +1079,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.33, S-6.34, S-6.30, S-6.31, S-6.32, S-6.37, S-6.36, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.29, S-6.35, S-6.33, S-6.34, S-6.39, S-6.38, S-6.30, S-6.31, S-6.42, S-6.32, S-6.40, S-6.41, S-6.37, S-6.36, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1181,10 +1181,10 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
       continuation_steps: [S-6.3, S-6.6, S-6.19]
@@ -1196,7 +1196,7 @@ continuation:
       continuation_steps: [S-6.8, S-6.12, S-6.13]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
-      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33]
+      continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34]
@@ -2363,3 +2363,58 @@ steps:
     acceptance: Each demonstration and benchmark has its own subdomain and page, a recorded run with and without Baltor, and the evidence a visitor can follow; every number on those pages traces to a saved record.
     evidence: 'September 22: the owner asked for subdomains that show full demonstrations and benchmarks, and case studies such as overnight tickets and data cleanup.'
     next_local_work: Pick the first demonstration (data cleanup) and the first benchmark; the model budget for benchmark runs needs OWNER-17.
+  - id: S-6.38
+    phase: 6
+    title: A familiar customer dashboard with the full account lifecycle
+    status: proposed
+    depends_on: [S-6.33]
+    boundary: [src/loop_engine/core/service_runtime/web_assets/index.html, src/loop_engine/core/service_runtime/access.py]
+    verify: [paid-only pages and views after sign-in, renew an expired subscription, update the payment method, cancel the subscription, delete the account, export the account data, 'usage, request log and trace views', 'connection, query, protocol and key handling that follow common practice so users of other products feel at home']
+    adversarial: A cancelled or expired account must lose paid pages and paid search at once; a deleted account must leave no usable key; an export must never include another tenant.
+    acceptance: A signed-in customer can manage their subscription, keys, data and account from one familiar dashboard, and every lifecycle action is checked on the live site.
+    evidence: 'September 22: owner direction after the handbook review; persona testers found no terms, privacy or account pages.'
+    next_local_work: Map the lifecycle actions to Stripe and Supabase features that already exist, then build the pages.
+  - id: S-6.39
+    phase: 6
+    title: 'Search access policy: protect the library from scraping, with a free quota to start'
+    status: proposed
+    depends_on: [S-6.32]
+    boundary: [src/loop_engine/core/service_runtime/provisioning.py, src/loop_engine/core/service_runtime/request_limits.py]
+    verify: ['search limited to paying users, with a small visible view for others', a free quota tier with an API key that has limits, rate and volume limits per key and per address that stop bulk harvesting, retrieval engines and rankings never exposed]
+    adversarial: A client that pages through search to list the whole library must be refused before it sees more than its allowance; a free key over its quota must be refused with the reason and the upgrade path.
+    acceptance: Nobody can reconstruct the library through search, a new user can still try Baltor through their harness with a free key, and the limits are published.
+    evidence: 'September 22: owner direction; the live search answers any signed-in caller up to 50 results per query.'
+    next_local_work: Research how comparable services limit free tiers and protect catalogues, then implement the policy as an engine slot setting.
+  - id: S-6.40
+    phase: 6
+    title: 'Grow the library: a scheduled ingestion worker for skills, plugins and context'
+    status: proposed
+    depends_on: [S-6.30]
+    boundary: [tools/build_host_catalogue_manifest.py, examples/29_intelligence_service/starter-catalogue/reviews.json]
+    verify: ['sources scanned on a schedule: public repositories, skill directories, plugin and server registries', 'licence gate: permissive material imported with its licence and source, other material recreated as original work', deduplication and quality scoring, every new item a candidate until independent reviewers approve it, progress measured toward the largest curated library]
+    adversarial: An item without an accepted licence must never be imported verbatim; a generated item must never approve itself; a duplicate of an existing item must be merged, not added.
+    acceptance: The worker adds reviewed, licensed items continuously without manual work, and the library size and quality are measured and published only from evidence.
+    evidence: 'September 22: owner direction to be the largest curated library of harness material, aiming at millions of files; 123 candidates exist today, 43 served.'
+    next_local_work: Survey the sources and their licences, then build the worker behind an ingestion engine slot.
+  - id: S-6.41
+    phase: 6
+    title: Harness run records for self-improvement
+    status: proposed
+    depends_on: [S-6.31]
+    boundary: [src/loop_engine/core/external_harness.py]
+    verify: ['how each harness and step broke a problem down, which items it loaded and whether the step was accepted', 'per model, per harness and per item outcomes', 'customer consent and privacy settings, metadata only by default', records that feed engine selection and library quality]
+    adversarial: Raw prompts, code or data must never be collected without explicit opt-in; a record must never carry a credential.
+    acceptance: Consenting customers contribute run records that measurably improve item ranking and engine choice, and the data policy is published.
+    evidence: 'September 22: owner direction; the telemetry baseline in the continuation plan already requires explicit settings and metadata only.'
+    next_local_work: Define the record, the consent setting and the first use in ranking.
+  - id: S-6.42
+    phase: 6
+    title: 'Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness'
+    status: proposed
+    depends_on: [S-6.31]
+    boundary: [src/loop_engine/core/external_harness.py, embodiments/opencode]
+    verify: [Pi and OpenCode supported out of the box, 'forks of Pi and OpenCode studied, including the NVIDIA fork of Pi and its paper', 'a decision on an own fork of OpenCode or Pi, with measured efficiency gains', 'a tested answer for Codex, Claude Code, OpenCode and Pi on starting an independent instance or process with new files for one step']
+    adversarial: A harness that cannot start an isolated instance with only the step files must be marked unsupported for one-harness-per-step, not assumed to work.
+    acceptance: The supported harnesses each start a fresh instance per step with exactly the selected material, proven by a recorded test, and the fork decision rests on measurements.
+    evidence: 'September 22: owner direction; opencode 1.18.32, codex 0.155.1, pi and claude are installed on the workstation.'
+    next_local_work: Research the forks and run the independent-instance tests without model calls where possible.
