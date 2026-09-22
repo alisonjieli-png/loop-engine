@@ -37,6 +37,19 @@ HTTP_CONFIGURATION_RECORD_TYPE = "service_http_configuration/v1"
 #: the version it speaks, and an adapter that speaks another one is refused
 #: before the application serves either public account route.
 ACCOUNT_EMAIL_PROTOCOL = "account_email/v1"
+TENANT_CONCURRENCY_REFUSAL_VERSION = "service_tenant_concurrency_refusal/v1"
+TENANT_CONCURRENCY_CODE = "tenant_concurrency_limit_reached"
+EXTERNAL_PROVIDER_REFUSAL_VERSION = "service_external_provider_capacity_refusal/v1"
+EXTERNAL_PROVIDER_CODE = "external_provider_capacity_reached"
+#: The name of the share held by work that waits on another service. A tenant
+#: identity may not contain a space, so no account can ever name this share.
+EXTERNAL_PROVIDER_SHARE = "external provider"
+NESTING_LIMIT_CODE = "nesting_limit_exceeded"
+#: The deepest request or host file this service reads nests about five
+#: containers. The reader refuses anything deeper before it parses, because the
+#: parser opens one recursive call for each container and the interpreter's
+#: recursion allowance belongs to the whole process, not to one request.
+MAXIMUM_JSON_NESTING_DEPTH = 64
 DISCOVER_OPERATION, LIST_OPERATION, MANIFEST_OPERATION, READ_OPERATION = OPERATIONS
 BILLING_PLANS_PATH = "/api/v1/billing/plans"
 BILLING_CHECKOUT_PATH = "/api/v1/billing/checkout"
@@ -143,6 +156,21 @@ class ServiceHttpConfiguration:
         # Other origins still require an exact host configuration entry.
         object.__setattr__(self, "allowed_origins", tuple(dict.fromkeys((base.rstrip("/"), *origins))))
 
+    @property
+    def maximum_concurrent_operations_for_each_tenant(self):
+        """How many workers one share may hold at once: half the pool, at least one.
+
+        A worker stays reserved until its operation finishes, so a share that
+        could hold every worker could refuse every other share. Half the pool
+        leaves room for a second share at any moment. A pool of one cannot be
+        shared, and the share is then the pool.
+
+        One account is a share. All work that waits on another service is one
+        further share, so a slow or flooded identity or payment provider can
+        never hold the workers that this service's own records need.
+        """
+        return max(1, self.maximum_concurrent_operations // 2)
+
 
 def speaks_the_account_email_boundary(adapter):
     """True when an installed account email adapter declares the boundary this release serves."""
@@ -175,7 +203,55 @@ def _json_bytes(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
-def _parse_json(body):
+def _json_nesting_depth(body, limit):
+    """Deepest container nesting in raw JSON bytes, stopping once over the limit.
+
+    The reader must know the depth before it parses. The parser opens one
+    recursive call for each container it enters, and the interpreter's
+    recursion allowance is shared by everything running in this process, so a
+    body deep enough to exhaust it is an internal fault rather than a bounded
+    refusal. A bracket inside a quoted string is text, not a container, so the
+    scan tracks strings and their escapes.
+    """
+    if isinstance(body, str):
+        body = body.encode("utf-8", "surrogatepass")
+    depth = highest = 0
+    inside = escaped = False
+    for byte in body:
+        if escaped:
+            escaped = False
+        elif inside:
+            if byte == 0x5C:
+                escaped = True
+            elif byte == 0x22:
+                inside = False
+        elif byte == 0x22:
+            inside = True
+        elif byte in (0x7B, 0x5B):
+            depth += 1
+            if depth > highest:
+                highest = depth
+                if highest > limit:
+                    return highest
+        elif byte in (0x7D, 0x5D):
+            depth -= 1
+    return highest
+
+
+def selected_origin(sent_origins):
+    """The one origin a request names, or None when it names none or several.
+
+    A request that names more than one origin names none. Reading the first of
+    them would let a caller pair an allowed origin with another one and still
+    be answered with the allowed origin's sharing headers, on the refusal as
+    well as on a result.
+    """
+    return sent_origins[0] if len(sent_origins) == 1 else None
+
+
+def _parse_json(body, *, maximum_depth=MAXIMUM_JSON_NESTING_DEPTH):
+    if _json_nesting_depth(body, maximum_depth) > maximum_depth:
+        raise ServiceHttpError(NESTING_LIMIT_CODE)
     def unique(pairs):
         value = {}
         for key, item in pairs:
@@ -188,6 +264,10 @@ def _parse_json(body):
                            parse_constant=lambda _value: (_ for _ in ()).throw(ValueError("nonfinite value")))
     except (ValueError, UnicodeError):
         raise ServiceHttpError("invalid_json") from None
+    except RecursionError:
+        # The depth scan above is the guard. This second refusal keeps a
+        # parser that recurses on some other shape from becoming a fault.
+        raise ServiceHttpError(NESTING_LIMIT_CODE) from None
     if not isinstance(value, dict):
         raise ServiceHttpError("object_required")
     return value
@@ -323,6 +403,13 @@ class ServiceHttpApplication:
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
+        # Workers each share holds right now: one entry for each account with
+        # an operation running, and one for all work waiting on another
+        # service. An entry exists only while that share holds a worker, so
+        # the table cannot grow past the pool. It belongs to one service
+        # process, like the failed-attempt table.
+        self._share_operations = {}
+        self._share_lock = threading.Lock()
         self.request_limiter = FailedAttemptLimiter(self.configuration.request_limits)
 
     def capabilities(self):
@@ -358,6 +445,11 @@ class ServiceHttpApplication:
                            "response_bytes": self.configuration.maximum_response_bytes,
                            "search_results": self.configuration.maximum_search_results,
                            "concurrent_operations": self.configuration.maximum_concurrent_operations,
+                           "concurrent_operations_for_each_account":
+                               self.configuration.maximum_concurrent_operations_for_each_tenant,
+                           "concurrent_operations_waiting_on_another_service":
+                               self.configuration.maximum_concurrent_operations_for_each_tenant,
+                           "request_nesting_depth": MAXIMUM_JSON_NESTING_DEPTH,
                            "failed_attempts_per_address": self.configuration.request_limits.published()},
                 "billing": {"webhook": self.billing_processor is not None,
                             "checkout": session_options.get("checkout_available", False),
@@ -390,17 +482,94 @@ class ServiceHttpApplication:
         if len(request.headers.getlist("authorization")) != 1:
             raise HttpAuthenticationError()
         async with self._limited(request):
-            return await self._work(lambda: self._authenticate_request(request))
+            return await self._authenticate_request(request)
 
-    async def _work(self, function):
+    @staticmethod
+    def _share_refusal(name, ceiling):
+        if name == EXTERNAL_PROVIDER_SHARE:
+            # Not the caller's own allowance and not their fault, so it is a
+            # capacity state of this service and is not a refused attempt.
+            return ServiceHttpError(EXTERNAL_PROVIDER_CODE, 503, headers={"Retry-After": "1"},
+                details={"record_type": EXTERNAL_PROVIDER_REFUSAL_VERSION,
+                         "concurrent_operations_for_each_share": ceiling, "retry_after_seconds": 1})
+        return ServiceHttpError(TENANT_CONCURRENCY_CODE, 429, headers={"Retry-After": "1"},
+            details={"record_type": TENANT_CONCURRENCY_REFUSAL_VERSION,
+                     "concurrent_operations_for_each_tenant": ceiling, "retry_after_seconds": 1})
+
+    def _reserve(self, shares):
+        """Hold one worker in each named share of the pool; refuse over any share.
+
+        Returns the callable that gives the held workers back. Calling it twice
+        gives back one set, so a refusal on the way in cannot free a worker
+        that a different operation is holding. Nothing is taken unless every
+        named share has room, so a refusal leaves no share short.
+        """
+        names = tuple(dict.fromkeys(name for name in shares if name))
+        if not names:
+            return lambda: None
+        ceiling = self.configuration.maximum_concurrent_operations_for_each_tenant
+        with self._share_lock:
+            for name in names:
+                if self._share_operations.get(name, 0) >= ceiling:
+                    raise self._share_refusal(name, ceiling)
+            for name in names:
+                self._share_operations[name] = self._share_operations.get(name, 0) + 1
+        given_back = []
+        def release():
+            with self._share_lock:
+                if given_back:
+                    return
+                given_back.append(True)
+                for name in names:
+                    remaining = self._share_operations.get(name, 1) - 1
+                    if remaining > 0:
+                        self._share_operations[name] = remaining
+                    else:
+                        self._share_operations.pop(name, None)
+        return release
+
+    def _tenant_work(self, context, function):
+        """Run one authenticated operation inside its own account's share."""
+        return self._work(function, shares=(context.principal.tenant_id,))
+
+    async def _authenticate_request(self, request):
+        """Resolve one credential: this service's own records first, then a provider read.
+
+        A host-issued key is resolved from local records in microseconds. A
+        browser session or an external token needs a read at the identity
+        provider, which waits on a machine this service does not control. The
+        two are separate work with separate shares of the worker pool, so
+        callers waiting on a slow or flooded identity provider can never hold
+        the workers that a host key needs. Where no mode consults another
+        service, one attempt remains one piece of work.
+        """
+        purpose = "website" if request.url.path.startswith("/api/") else "service"
+        if len(request.headers.getlist("authorization")) != 1:
+            raise HttpAuthenticationError()
+        authorization = request.headers["authorization"]
+        if not self.authenticator.consults_another_service(purpose=purpose):
+            return await self._work(lambda: self.authenticator.authenticate(authorization, purpose=purpose))
+        held = await self._work(lambda: self.authenticator.host_key(authorization, purpose=purpose))
+        if held is not None:
+            return held
+        return await self._work(lambda: self.authenticator.remote_credential(authorization, purpose=purpose),
+                                shares=(EXTERNAL_PROVIDER_SHARE,))
+
+    async def _work(self, function, *, shares=()):
+        release_shares = self._reserve(shares)
         if not self._slots.acquire(blocking=False):
+            release_shares()
             raise ServiceHttpError("service_busy", 503)
         try:
             future = self._workers.submit(function)
         except Exception:
             self._slots.release()
+            release_shares()
             raise
-        future.add_done_callback(lambda _future: self._slots.release())
+        def finished(_future):
+            self._slots.release()
+            release_shares()
+        future.add_done_callback(finished)
         waiting = asyncio.wrap_future(future)
         try:
             return await asyncio.wait_for(asyncio.shield(waiting), self.configuration.request_timeout_seconds)
@@ -605,7 +774,7 @@ class ServiceHttpApplication:
                 context = sdk.request_context.request.scope["service_authentication"]
                 if name == "intelligence_search":
                     fields = self._validate_search(arguments, versioned=False)
-                    output = await self._work(lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
+                    output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
                 else:
                     operation = TOOL_OPERATIONS.get(name)
                     if operation is None:
@@ -613,7 +782,7 @@ class ServiceHttpApplication:
                     validate(arguments, http_provisioning_schema(operation))
                     if operation == READ_OPERATION and not arguments.get("request_id"):
                         raise ServiceHttpError("request_identity_required")
-                    output = await self._work(lambda: invoke_http_service_as_loop(operation,
+                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
                         lambda: self._invoke(context, operation, arguments)))
                 response = types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(output).decode())],
                                                 structuredContent=output, isError=False)
@@ -650,16 +819,16 @@ class ServiceHttpApplication:
 
         async def transport(scope, receive, send):
             request = Request(scope, receive)
-            origin = request.headers.get("origin")
+            sent_origins = request.headers.getlist("origin")
+            origin = selected_origin(sent_origins)
             cors = ({"Access-Control-Allow-Origin": origin, "Vary": "Origin",
                      "Access-Control-Expose-Headers": "X-Content-SHA256, X-Loop-Engine-Record-Type"}
-                    if origin in config.allowed_origins else {})
+                    if origin is not None and origin in config.allowed_origins else {})
             try:
                 if (len(request.headers.getlist("host")) != 1
                         or request.headers["host"] not in config.allowed_hosts):
                     raise ServiceHttpError("invalid_host", 421)
-                if origin is not None and (len(request.headers.getlist("origin")) != 1
-                                           or origin not in config.allowed_origins):
+                if sent_origins and (origin is None or origin not in config.allowed_origins):
                     raise ServiceHttpError("invalid_origin", 403)
                 if request.method == "OPTIONS":
                     if origin not in config.allowed_origins:
@@ -720,12 +889,6 @@ class ServiceHttpApplication:
             response.headers["X-Content-Type-Options"] = "nosniff"
             await response(scope, receive, send)
         return Starlette(routes=[Mount("/", app=transport)], lifespan=lifespan)
-
-    def _authenticate_request(self, request):
-        if len(request.headers.getlist("authorization")) != 1:
-            raise HttpAuthenticationError()
-        return self.authenticator.authenticate(request.headers["authorization"],
-            purpose="website" if request.url.path.startswith("/api/") else "service")
 
     async def _body(self, request):
         if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
@@ -809,8 +972,11 @@ class ServiceHttpApplication:
                         or not request.headers["authorization"].startswith("Bearer ")
                         or request.headers["authorization"].count(" ") != 1):
                     raise HttpAuthenticationError()
+                # Account activation reads the identity provider, so it draws
+                # on the share held by work that waits on another service.
                 output = await self._work(lambda: invoke_http_service_as_loop("account_activation",
-                    lambda: self.browser_identity.activate(request.headers["authorization"][7:])))
+                    lambda: self.browser_identity.activate(request.headers["authorization"][7:])),
+                    shares=(EXTERNAL_PROVIDER_SHARE,))
         elif path in ("/api/v1/account/signup", "/api/v1/account/recovery") and method == "POST":
             if self.account_email is None:
                 raise ServiceHttpError("account_email_unavailable", 404)
@@ -830,16 +996,16 @@ class ServiceHttpApplication:
                 if (self.browser_identity is None or context.mode != BROWSER_IDENTITY_AUTHENTICATION
                         or fields != {"record_type": "service_browser_logout_request/v1"}):
                     raise ServiceHttpError("browser_session_required", 403)
-                output = await self._work(lambda: invoke_http_service_as_loop("account_logout",
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("account_logout",
                     lambda: self.browser_identity.logout(context)))
             elif path == "/api/v1/usage" and method == "GET":
-                output = await self._work(lambda: invoke_http_service_as_loop("usage",
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("usage",
                     lambda: self._usage(context)))
             elif path == "/api/v1/account/access" and method in ("GET", "POST"):
                 if request.query_params:
                     raise ServiceHttpError("unknown_request_field")
                 fields = _parse_json(await self._body(request)) if method == "POST" else None
-                output = await self._work(lambda: invoke_http_service_as_loop("client_access",
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("client_access",
                     lambda: self._client_access(context, fields)))
             elif path == PROMOTION_REDEMPTION_PATH and method == "POST":
                 from .promotions import PromotionRedemptionRequest
@@ -863,16 +1029,19 @@ class ServiceHttpApplication:
                     self._require_scope(current, ACCESS_MANAGE_SCOPE)
                     return (self.access_administration.inspect(current.principal) if request_data is None
                             else self.access_administration.apply(current.principal, request_data))
-                output = await self._work(lambda: invoke_http_service_as_loop("access_administration", administer))
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("access_administration", administer))
             elif path == BILLING_PLANS_PATH and method == "GET":
-                output = await self._work(lambda: invoke_http_service_as_loop("billing_plans",
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("billing_plans",
                     lambda: self._session_options(context)))
             elif path in (BILLING_CHECKOUT_PATH, BILLING_PORTAL_PATH) and method == "POST":
                 from .stripe_sessions import BillingSessionRequest, CHECKOUT_OPERATION, PORTAL_OPERATION
                 operation = CHECKOUT_OPERATION if path == BILLING_CHECKOUT_PATH else PORTAL_OPERATION
                 payload = BillingSessionRequest.from_dict(_parse_json(await self._body(request)), operation)
+                # Creating a session calls the payment provider and waits for
+                # it, so it draws on the same share as every other provider wait.
                 output = await self._work(lambda: invoke_http_service_as_loop(operation,
-                    lambda: self._create_billing_session(context, payload)))
+                    lambda: self._create_billing_session(context, payload)),
+                    shares=(context.principal.tenant_id, EXTERNAL_PROVIDER_SHARE))
             elif path in ("/api/v1/provisioning", "/api/v1/download") and method == "POST":
                 operation, fields = self._validate_provisioning(_parse_json(await self._body(request)))
                 if path.endswith("download"):
@@ -890,17 +1059,17 @@ class ServiceHttpApplication:
                         if len(value["body"].encode("utf-8")) > self.configuration.maximum_download_bytes:
                             raise ServiceHttpError("download_limit_exceeded", 413)
                         return value
-                    output = await self._work(lambda: invoke_http_service_as_loop("download", download))
+                    output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("download", download))
                     value = output["result"]
                     return Response(value["body"].encode("utf-8"), media_type="application/octet-stream",
                         headers={"X-Loop-Engine-Record-Type": "service_download/v1",
                                  "X-Content-SHA256": value["digest"],
                                  "Content-Disposition": 'attachment; filename="intelligence.txt"'})
-                output = await self._work(lambda: invoke_http_service_as_loop(operation,
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(operation,
                     lambda: self._invoke(context, operation, fields)))
             elif path == "/api/v1/retrieval" and method == "POST":
                 fields = self._validate_search(_parse_json(await self._body(request)))
-                output = await self._work(lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
+                output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
             else:
                 raise ServiceHttpError("route_unavailable", 404)
         if output.get("record_type") != RESULT_VERSION:

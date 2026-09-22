@@ -229,6 +229,84 @@ when the host configuration installs the `promotions` block. The operator side
 is `tools/promotion_codes.py`. The full procedure is in
 [the promotion code guide](../../../../docs/guides/promotion-codes.md).
 
+## Shares of the worker pool
+
+This section describes current behavior. The transport runs every operation
+in a pool of `maximum_concurrent_operations` workers. A worker stays reserved
+until its operation finishes, so anything that could hold every worker could
+refuse every other caller. Each piece of work therefore names the shares of
+the pool it draws on, and no share may hold more than
+`maximum_concurrent_operations_for_each_tenant`, which is half the pool and
+at least one.
+
+```text
+Shares of the worker pool
+├── One account
+│   ├── every operation that has already resolved its credential
+│   └── over the share: status 429, Retry-After, tenant_concurrency_limit_reached
+├── Work that waits on another service
+│   ├── confirming a browser session or an external token at the identity provider
+│   ├── account activation, which reads the identity provider
+│   ├── creating a payment session, which also draws on the account's share
+│   └── over the share: status 503, Retry-After, external_provider_capacity_reached
+└── Everything else
+    ├── resolving a host-issued key from this service's own records
+    ├── the billing webhook and the public routes
+    └── no worker free: status 503, service_busy
+```
+
+Resolving a host-issued key reads this service's own records and takes
+microseconds. Confirming a browser session or an external token needs a read
+at the identity provider, a machine this service does not control and cannot
+hurry. One sign-in attempt is therefore up to two pieces of work: the local
+record first, and the provider read only if the credential is not a host key.
+Where no installed mode consults another service, one attempt stays one piece
+of work.
+
+The account share cannot be named by the provider share or the other way
+round. A tenant identity may not contain a space, and the provider share is
+named `external provider`.
+
+Both ceilings are published under `limits` in the capabilities record, as
+`concurrent_operations_for_each_account` and
+`concurrent_operations_waiting_on_another_service`.
+
+### Limits of the worker pool shares
+
+- A signed browser session that a paying account already holds still reads
+  the identity provider again inside its own operation, when that operation
+  revalidates. That read draws on the account's share, not the provider
+  share, so one account can hold half the pool across provider reads.
+- The share is a count of workers, not of processor time. An account within
+  its share can still ask for costly work. Metadata retrieval builds its
+  index for each request, and on a catalogue of four hundred items one
+  search took about one second of processor time in the probe of
+  September 21, 2026.
+- The shares are in the memory of one service process, like the
+  failed-attempt table. More than one machine needs a shared count.
+
+## Request nesting depth
+
+This section describes current behavior. Every request body is scanned for
+its deepest container nesting before it is parsed, and a body deeper than
+`MAXIMUM_JSON_NESTING_DEPTH` is refused with status 400 and the code
+`nesting_limit_exceeded`. The parser opens one recursive call for each
+container it enters, and the interpreter's recursion allowance belongs to the
+whole process, so a body deep enough to exhaust it would be an internal fault
+rather than a bounded refusal. An internal fault is not a refused attempt, so
+nothing counted it and nothing stopped an anonymous caller from sending it
+again without end. The depth is published under `limits` as
+`request_nesting_depth`.
+
+## A binding the public can reach
+
+This section describes current behavior. `serve` refuses to start on a
+non-loopback binding unless the host has both declared a trusted proxy and
+stated where the client address comes from. Without that statement the
+failed-attempt limit is inactive, and nothing in a running service says so
+out loud. The refusal names the exact repair. A loopback binding serves only
+its own machine and needs no such statement.
+
 ## Failed-attempt limit for each client address
 
 This section describes current behavior. The HTTP transport counts refused
@@ -369,6 +447,15 @@ therefore still accepts unlimited refused sign-in attempts that carry a
 credential, and each one still uses a worker slot. One change needs no
 operator work: a request without exactly one credential no longer uses a
 worker slot.
+
+A release built from this branch will not start without that mapping. The
+hosted service starts with `--host 0.0.0.0 --behind-trusted-tls-proxy`, and
+`serve` now refuses a binding the public can reach when the host has not
+stated where the client address comes from. Add the mapping to the host file
+on the volume before deploying such a release, or the machine will not come
+up. The refusal names the exact repair. Release 10 and every earlier release
+started before that refusal existed, so the deployed service runs today with
+`limits.failed_attempts_per_address.active` false.
 
 Do these steps in order, after the release that contains this limit runs:
 
@@ -727,8 +814,8 @@ authentication calls and worker entries. The clock moves between the refused
 requests of a waiting address, so a refusal that was counted would show as a
 wait that stops falling.
 
-Six guards have a removed-guard control inside the suite. Each control reruns
-a scenario with the guard patched away and requires the scenario's own
+Nine guards have a removed-guard control inside the suite. Each control
+reruns a scenario with the guard patched away and requires the scenario's own
 predicate to fail. The other guards have named checks but no such control
 inside the suite.
 
@@ -740,6 +827,9 @@ inside the suite.
 | The table stays bounded | `removed_eviction_is_detected` |
 | An address header that the host did not configure is never read | `removed_header_configuration_rule_is_detected` |
 | An unstated address source leaves the limit inactive | `removed_unstated_source_rule_is_detected` |
+| A body nested past the reader is a counted refusal, not an internal fault | `removed_nesting_limit_is_detected` |
+| Provider reads have their own share of the worker pool | `removed_provider_share_is_detected` |
+| A request that names two origins names none | `removed_single_origin_rule_is_detected` |
 
 `a_caller_controlled_header_is_the_known_wrong_case` runs the forged header
 scenario with a known-wrong configuration. One more check sends a failure

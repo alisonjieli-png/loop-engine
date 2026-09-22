@@ -18,7 +18,7 @@ import json
 import threading
 from unittest.mock import patch
 
-from .http import ServiceHttpApplication, ServiceHttpConfiguration
+from .http import MAXIMUM_JSON_NESTING_DEPTH, ServiceHttpApplication, ServiceHttpConfiguration
 from .http_auth import HttpAuthenticationError
 from .http_test_fixtures import HttpDomainFixture
 from .request_limits import (
@@ -28,6 +28,8 @@ from .request_limits import (
 
 HOST, ORIGIN = "service.test", "https://service.test"
 PROXY_HEADER = "Fly-Client-IP"
+# Every address of this machine: the binding a hosted service uses.
+PUBLIC_BINDING = "0.0.0.0"
 # Documentation address ranges: no check can name a real machine.
 FIRST, SECOND, VICTIM, PROXY = "198.51.100.10", "198.51.100.20", "203.0.113.9", "192.0.2.2"
 WRONG = {"Authorization": "Bearer WRONG_FIXTURE_TOKEN"}
@@ -53,15 +55,28 @@ class _Clock:
 
 
 class _IdentityStandIn:
-    """Injected activation outcomes behind the browser_identity/v1 boundary."""
+    """Injected activation outcomes behind the browser_identity/v1 boundary.
+
+    Both entry points read the identity provider, a machine the service does
+    not control and cannot hurry. `hold` lets a check keep those reads in
+    flight, the way a slow or flooded provider does. It is set by default, so
+    a read returns at once unless a check asks for otherwise.
+    """
 
     protocol_version = "browser_identity/v1"
 
     def __init__(self, runtime):
         self.runtime, self.outcome, self.calls = runtime, "refused", 0
+        self.hold, self.arrived = threading.Event(), threading.Semaphore(0)
+        self.hold.set()
+
+    def _provider_read(self):
+        self.arrived.release()
+        self.hold.wait(timeout=20)
 
     def activate(self, _credential):
         self.calls += 1
+        self._provider_read()
         if self.outcome == "outage":
             raise HttpAuthenticationError("identity_provider_unavailable")
         if self.outcome == "refused":
@@ -69,6 +84,7 @@ class _IdentityStandIn:
         return {"record_type": "fixture_account_activation/v1", "created": True}
 
     def authenticate(self, _credential):
+        self._provider_read()
         raise HttpAuthenticationError()
 
 
@@ -95,25 +111,31 @@ class _OutsideFailure(RuntimeError):
 class _Service:
     """One real application driven through ASGI, with counted sign-in and worker entries."""
 
-    def __init__(self, root, limits, *, identity=False):
+    def __init__(self, root, limits, *, identity=False, **configuration):
         root.mkdir()
         self.fixture, self.clock = HttpDomainFixture(root), _Clock()
         self.identity = _IdentityStandIn(self.fixture.runtime) if identity else None
         self.application = ServiceHttpApplication(self.fixture.runtime, self.fixture.provisioning,
-            ServiceHttpConfiguration(ORIGIN, (HOST,), request_limits=limits), browser_identity=self.identity)
+            ServiceHttpConfiguration(ORIGIN, (HOST,), request_limits=limits, **configuration),
+            browser_identity=self.identity)
         self.application.request_limiter = FailedAttemptLimiter(limits, clock=self.clock)
         self.authentications = self.worker_entries = 0
-        authenticate, work = self.application._authenticate_request, self.application._work
+        # The counted seam is the credential resolution that runs inside a
+        # worker, not the transport method around it. The transport now
+        # decides which share of the pool an attempt may take before it takes
+        # any, so an attempt that is refused for want of capacity never
+        # reaches this seam, which is the fact these checks measure.
+        resolve, work = self.application.authenticator.host_key, self.application._work
 
-        def counted_authentication(request):
+        def counted_resolution(authorization, **fields):
             self.authentications += 1
-            return authenticate(request)
+            return resolve(authorization, **fields)
 
-        async def counted_work(function):
+        async def counted_work(function, **reservation):
             self.worker_entries += 1
-            return await work(function)
+            return await work(function, **reservation)
 
-        self.application._authenticate_request, self.application._work = counted_authentication, counted_work
+        self.application.authenticator.host_key, self.application._work = counted_resolution, counted_work
         self.app = self.application.create_app()
 
     def close(self):
@@ -123,11 +145,13 @@ class _Service:
     def valid(self):
         return self.fixture.headers()
 
-    async def _exchange(self, method, path, *, peer=FIRST, headers=(), body=None):
+    async def _exchange(self, method, path, *, peer=FIRST, headers=(), body=None, raw_body=None):
         pairs = list(headers.items()) if isinstance(headers, dict) else list(headers)
         raw = [(b"host", HOST.encode())] + [(name.lower().encode(), value.encode()) for name, value in pairs]
-        content = b"" if body is None else json.dumps(body).encode()
-        if body is not None:
+        # `raw_body` sends exact bytes, for a shape that a JSON writer in this
+        # process could not produce without failing here instead of there.
+        content = raw_body if raw_body is not None else (b"" if body is None else json.dumps(body).encode())
+        if body is not None or raw_body is not None:
             raw.append((b"content-type", b"application/json"))
         scope = {"type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1", "method": method,
                  "scheme": "https", "path": path, "raw_path": path.encode(), "query_string": b"", "root_path": "",
@@ -449,6 +473,29 @@ def _outside_failure_holds(seen):
                     "counted": 0, "own_refusal": (404, "route_unavailable")}
 
 
+FOREIGN_ORIGIN = "https://foreign.invalid"
+
+
+def _first_origin(sent_origins):
+    """The known-wrong rule: read the first origin and ignore the rest."""
+    return sent_origins[0] if sent_origins else None
+
+
+def _two_origins(service):
+    """One request naming the declared origin and a foreign one, and one naming each alone."""
+    def sent(*origins):
+        status, headers, _body = service.send("GET", "/api/v1/session", headers=[
+            *service.valid.items(), *[("Origin", value) for value in origins]])
+        return status, headers.get("access-control-allow-origin")
+    return {"both": sent(ORIGIN, FOREIGN_ORIGIN), "reversed": sent(FOREIGN_ORIGIN, ORIGIN),
+            "declared alone": sent(ORIGIN), "foreign alone": sent(FOREIGN_ORIGIN)}
+
+
+def _two_origins_holds(seen):
+    return seen == {"both": (403, None), "reversed": (403, None),
+                    "declared alone": (200, ORIGIN), "foreign alone": (403, None)}
+
+
 def _transport_checks(check, root):
     # Behind a proxy the socket peer is the proxy. A limit that guessed the
     # socket peer would put every caller in one count, so it must not guess.
@@ -505,6 +552,14 @@ def _transport_checks(check, root):
               anonymous == [401, 404, 404] * 4 and doubled == 401
               and (service.authentications, service.worker_entries) == (0, 0)
               and len(service.application.request_limiter) == 0)
+        # A caller can pair the browser origin the host declared with another
+        # one. Reading the first of them would answer that caller with the
+        # declared origin's sharing headers, on the refusal as well.
+        check("a_request_that_names_two_origins_is_refused_and_shares_with_neither",
+              _two_origins_holds(_two_origins(service)))
+        with patch("loop_engine.core.service_runtime.http.selected_origin", _first_origin):
+            check("removed_single_origin_rule_is_detected",
+                  not _two_origins_holds(_two_origins(_Service(root / "first-origin", _peer()))))
         signed_in = [service.status("GET", "/api/v1/unknown", headers=service.valid) for _attempt in range(5)]
         signed_in += [service.status("GET", "/api/v1/admin/access", headers=service.valid) for _attempt in range(5)]
         check("a_refusal_after_sign_in_is_not_counted",
@@ -520,9 +575,18 @@ def _transport_checks(check, root):
 
     service = _Service(root / "overlap", _peer(failures_allowed=3))
     try:
+        # Every worker slot is held inside authentication first, and only then
+        # are the further attempts sent. Sending them all at once and reading
+        # the order back left the result to the scheduler: when the held
+        # attempts finished before the later ones asked for a slot, the later
+        # ones got a slot too and the check measured nothing. Holding and
+        # releasing explicitly measures the same property every time.
         slots = service.application.configuration.maximum_concurrent_operations
-        authenticate = service.application._authenticate_request
-        # Hold every worker slot open until the check releases it. An earlier
+        # Hold every worker slot open until the check releases it, at the key
+        # resolution inside the slot. Provider reads hold their own share of
+        # the worker pool, so the hold sits where a slot is actually occupied;
+        # holding the whole authentication step would hold requests before
+        # they take a slot, and the check would measure nothing. An earlier
         # version used a barrier of `slots` parties. When the machine was
         # loaded, the first attempts finished and freed their slots before the
         # extra ones arrived, so the extras took a slot, waited alone at a
@@ -530,33 +594,36 @@ def _transport_checks(check, root):
         # seconds. The check then failed for a timing the service never
         # promised, roughly half the time, which is worse than no check: it
         # taught a reader to rerun rather than to look.
-        arrived, release = threading.Semaphore(0), threading.Event()
+        arrived, holding = threading.Semaphore(0), threading.Event()
+        resolve = service.application.authenticator.host_key
 
-        def held_authentication(request):
+        def held_resolution(authorization, **fields):
             arrived.release()
-            release.wait(timeout=30)
-            return authenticate(request)
+            holding.wait(timeout=20)
+            return resolve(authorization, **fields)
 
-        service.application._authenticate_request = held_authentication
-        held = []
-        waiter = threading.Thread(target=lambda: held.extend(
-            service.answers_together(slots, "GET", "/api/v1/session", headers=WRONG)))
-        waiter.start()
+        service.application.authenticator.host_key = held_resolution
+        answers = []
+        occupying = [threading.Thread(daemon=True, target=lambda: answers.append(
+            service.status("GET", "/api/v1/session", headers=WRONG))) for _each in range(slots)]
+        for worker in occupying:
+            worker.start()
         # Every worker slot is occupied, and stays occupied, until this check
         # says otherwise. Only then are the extra attempts sent, so what they
         # answer is a property of the full service and not of the order the
         # event loop happened to choose.
-        entered = all(arrived.acquire(timeout=30) for _slot in range(slots))
+        inside = all(arrived.acquire(timeout=20) for _each in range(slots))
         extra = [service.send("GET", "/api/v1/session", headers=WRONG) for _attempt in range(4)]
-        release.set()
-        waiter.join(timeout=60)
-        service.application._authenticate_request = authenticate
+        holding.set()
+        for worker in occupying:
+            worker.join(30)
+        service.application.authenticator.host_key = resolve
         # Known limit, stated in the README: attempts already inside
         # authentication finish, and the worker slots bound how many there
         # are. The rest must be told the service is busy. An unplanned 500
         # would satisfy a status count alone, so the refusal code is checked.
         check("attempts_already_inside_authentication_finish_and_the_worker_slots_bound_them",
-              entered and len(held) == slots and all(row[0] == 401 for row in held)
+              inside and sorted(answers) == [401] * slots
               and [row[0] for row in extra] == [503] * 4
               and [row[2]["error"]["code"] for row in extra] == ["service_busy"] * 4
               and service.authentications == slots
@@ -633,17 +700,27 @@ def _transport_checks(check, root):
               statuses == {401} and len(service.application.request_limiter) == 4)
         limits = service.send("GET", "/api/v1/capabilities")[2]["result"]["limits"]
         configuration = service.application.configuration
+        from .http import MAXIMUM_JSON_NESTING_DEPTH
         check("capabilities_publish_the_limit_beside_the_unchanged_existing_limits",
-              {key: limits[key] for key in ("request_bytes", "response_bytes", "search_results", "concurrent_operations")}
+              {key: limits[key] for key in ("request_bytes", "response_bytes", "search_results", "concurrent_operations",
+                                            "concurrent_operations_for_each_account", "request_nesting_depth",
+                                            "concurrent_operations_waiting_on_another_service")}
               == {"request_bytes": configuration.maximum_request_bytes,
                   "response_bytes": configuration.maximum_response_bytes,
                   "search_results": configuration.maximum_search_results,
-                  "concurrent_operations": configuration.maximum_concurrent_operations}
+                  "concurrent_operations": configuration.maximum_concurrent_operations,
+                  "concurrent_operations_for_each_account":
+                      configuration.maximum_concurrent_operations_for_each_tenant,
+                  "concurrent_operations_waiting_on_another_service":
+                      configuration.maximum_concurrent_operations_for_each_tenant,
+                  "request_nesting_depth": MAXIMUM_JSON_NESTING_DEPTH}
               and limits["failed_attempts_per_address"] == configuration.request_limits.published()
               and limits["failed_attempts_per_address"]["failures_allowed"] == 3
               and limits["failed_attempts_per_address"]["active"] is True
               and limits["failed_attempts_per_address"]["client_address_source"] == SOCKET_PEER_SOURCE
               and set(limits) == {"request_bytes", "response_bytes", "search_results", "concurrent_operations",
+                                  "concurrent_operations_for_each_account", "request_nesting_depth",
+                                  "concurrent_operations_waiting_on_another_service",
                                   "failed_attempts_per_address"})
     finally:
         service.close()
@@ -682,8 +759,10 @@ def _host_file_checks(check, root):
 
 
 def run_checks(check, root):
+    from .capacity_checks import run_checks as capacity_checks
     _setting_checks(check)
     _host_file_checks(check, root / "host-file")
+    capacity_checks(check, root / "capacity")
     _limiter_checks(check)
     _address_checks(check)
     _transport_checks(check, root)

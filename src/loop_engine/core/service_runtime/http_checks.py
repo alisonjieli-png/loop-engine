@@ -398,9 +398,16 @@ def _identity_checks(check, root):
                       and set(key_set["paths"]) == {"/jwks"})
                 third_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
                 key_set["keys"] = [public_key(third_key, "second")]
+                # The pause is a length of time, not a moment of this machine's
+                # clock. Waiting for real time to pass let a loaded machine
+                # cross the pause before the first request and hide the refusal
+                # this check exists to show, so both moments are named here.
+                moment = [keys.last_attempt if keys.last_attempt is not None else 0.0]
+                keys.clock = lambda: moment[0]
                 early = session(token(third_key, "second"))
-                time.sleep(1.1)
+                moment[0] += service.authentication.minimum_key_refresh_seconds + 0.1
                 same_identifier = session(token(third_key, "second"))
+                del keys.clock
                 check("key_rotation_inside_the_pause_is_refused_not_guessed", early.status_code == 401)
                 check("same_identifier_key_rotation_refreshes_after_signature_failure",
                       same_identifier.status_code == 200)

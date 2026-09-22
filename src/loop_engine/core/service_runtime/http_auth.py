@@ -211,7 +211,7 @@ class ServiceHttpAuthenticator:
             self._keys = BoundedJwkClient(configuration.jwks_url, cache_keys=False,
                 lifespan=configuration.key_cache_seconds, timeout=configuration.request_timeout_seconds)
 
-    def authenticate(self, authorization, *, purpose="service"):
+    def _credential(self, authorization, purpose):
         if purpose not in ("service", "website"):
             raise HttpAuthenticationError()
         if (not isinstance(authorization, str) or len(authorization) > 16_384
@@ -220,18 +220,50 @@ class ServiceHttpAuthenticator:
         credential = authorization[7:]
         if not credential or any(character.isspace() for character in credential):
             raise HttpAuthenticationError()
-        if HOST_KEY_AUTHENTICATION in self.configuration.modes:
-            try:
-                principal = self.runtime.authenticate_key(credential)
-            except Exception:
-                principal = None
-            if principal is not None:
-                return AuthenticatedHttpRequest(principal, credential, HOST_KEY_AUTHENTICATION)
+        return credential
+
+    def consults_another_service(self, *, purpose="service"):
+        """Whether resolving a credential this way needs a read at another service.
+
+        A host-issued key is resolved from this service's own records. A
+        browser session or an external token is confirmed by the identity
+        provider, a machine this service does not control and cannot hurry.
+        The caller uses this answer to decide which part of its own capacity
+        the work may take, before it commits any.
+        """
+        return ((purpose == "website" and self.browser_identity is not None)
+                or EXTERNAL_JWT_AUTHENTICATION in self.configuration.modes)
+
+    def host_key(self, authorization, *, purpose="service"):
+        """Resolve a host-issued key from local records, or return None.
+
+        Returning None means only that this credential is not a host key. It
+        is not a refusal, because another mode may still confirm it. This
+        call reaches no other service, so its cost is this machine's alone.
+        """
+        credential = self._credential(authorization, purpose)
+        if HOST_KEY_AUTHENTICATION not in self.configuration.modes:
+            return None
+        try:
+            principal = self.runtime.authenticate_key(credential)
+        except Exception:
+            principal = None
+        if principal is None:
+            return None
+        return AuthenticatedHttpRequest(principal, credential, HOST_KEY_AUTHENTICATION)
+
+    def remote_credential(self, authorization, *, purpose="service"):
+        """Confirm a credential that only another service can confirm."""
+        credential = self._credential(authorization, purpose)
         if purpose == "website" and self.browser_identity is not None:
             return self.browser_identity.authenticate(credential)
         if EXTERNAL_JWT_AUTHENTICATION not in self.configuration.modes:
             raise HttpAuthenticationError()
         return self._external_token(credential)
+
+    def authenticate(self, authorization, *, purpose="service"):
+        held = self.host_key(authorization, purpose=purpose)
+        return held if held is not None else self.remote_credential(authorization, purpose=purpose)
 
     def verified_external_claims(self, credential):
         """Verify the configured token profile before any durable subject lookup.

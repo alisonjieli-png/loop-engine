@@ -440,14 +440,23 @@ def _limits(check, root):
     delayed_root.mkdir()
     fixture = HttpDomainFixture(delayed_root)
     entered, release = threading.Event(), threading.Event()
-    fixture.before_read = lambda _item: (entered.set(), release.wait(2))
+    # The read is held until this check releases it, not for a fixed moment.
+    # A two second hold let a loaded machine finish the read before the next
+    # request asked for a slot, and the check then measured nothing. The
+    # number here is only a safety cap for a check that never reaches its
+    # release; the property measured is unchanged.
+    fixture.before_read = lambda _item: (entered.set(), release.wait(20))
     with running_http(fixture, request_timeout_seconds=0.1, maximum_concurrent_operations=1) as (base, _service):
         try:
             with httpx.Client(base_url=base, headers=fixture.headers(), trust_env=False, timeout=2) as client:
                 late = client.post("/api/v1/provisioning", json=_request("read", identity="skill.alpha", request_id="late-once"))
+                # The response wait can expire before the held work starts. The
+                # next request asks about work that is running, so it waits for
+                # the work to start instead of assuming that it already has.
+                started = entered.wait(20)
                 busy = client.get("/api/v1/session")
                 check("expired_response_wait_is_not_success_and_running_work_keeps_its_capacity_slot",
-                      entered.is_set() and late.status_code == 504 and busy.status_code == 503
+                      started and late.status_code == 504 and busy.status_code == 503
                       and late.json()["effect_commitment"] == "not_asserted"
                       and late.json()["automatic_retry"] is False)
                 release.set()
