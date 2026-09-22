@@ -399,6 +399,58 @@ def _payload_capture_checks(check, root):
               and fixture.keys["alpha"].key not in stored)
 
 
+def _credential_body_checks(check, root):
+    """A body that carries a credential stays out of the record, whatever the host chose.
+
+    Sign-up carries the password of a new account, and promotion redemption
+    carries a code that grants paid access to whoever holds it. Body capture was
+    written before either address reached this transport, and on September 22,
+    2026 it kept their bodies as it keeps any other, so a host that captured
+    bodies stored a password and a code as plain text. Both refusals must still
+    be recorded, only without the body, and a body that carries no credential
+    must still be kept, so the host's choice holds everywhere else.
+    """
+    import httpx
+    from .account_email import SIGNUP_PATH, AccountEmailAdapter
+    from .account_email_checks import SIGNUP_REQUEST, SIGNUP_SECRET_VALUE, _Provider, _secrets, _settings
+    from .http import PROMOTION_REDEMPTION_PATH, ServiceHttpApplication
+    from .promotion_checks import GUESSED_BODY, PREFIX
+    from .promotions import PromotionPolicy, PromotionRedemption
+    from .request_limits import SOCKET_PEER_SOURCE, ServiceRequestLimits
+    capture = ServiceObservabilityPolicy(payload_capture=METADATA_AND_REQUEST_BODY)
+    fixture = HttpDomainFixture(root)
+    provider = _Provider()
+    promotions = PromotionRedemption(fixture.runtime, PromotionPolicy(redemption_enabled=True))
+    code = PREFIX + "-" + GUESSED_BODY
+
+    def build(configuration):
+        adapter = AccountEmailAdapter(_settings(allow_loopback=True), _secrets,
+            public_base_url=configuration.public_base_url, address_limits=configuration.request_limits,
+            display_name=configuration.display_name, identity_transport=provider.identity,
+            mail_transport=provider.mail)
+        return ServiceHttpApplication(fixture.runtime, fixture.provisioning, configuration,
+                                      account_email=adapter, promotions=promotions, observability=capture)
+    limits = ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE, failures_allowed=50, window_seconds=600)
+    with running_http(fixture, application_factory=build, request_limits=limits) as (base, service):
+        with httpx.Client(base_url=base, trust_env=False, timeout=5) as client:
+            signup = client.post(SIGNUP_PATH, json={**SIGNUP_REQUEST, "unexpected": True})
+            redemption = client.post(PROMOTION_REDEMPTION_PATH, headers=fixture.headers(), json={
+                "record_type": "service_promotion_redemption_request/v1", "code": code,
+                "request_id": "credential-body"})
+            private = client.post("/api/v1/provisioning", headers=fixture.headers(), json={
+                "record_type": PROVISIONING_REQUEST_VERSION, "operation": "manifest",
+                "identity": PRIVATE_BODY_MARK})
+        recorded = {row["route"]: row for row in service.failure_journal.recent(limit=10)["failures"]}
+    stored = _stored_text(root)
+    check("a_body_that_carries_a_credential_is_never_captured_even_when_the_host_captures_bodies",
+          signup.status_code == 400 and redemption.status_code == 403 and private.status_code == 404
+          and {SIGNUP_PATH, PROMOTION_REDEMPTION_PATH, "/api/v1/provisioning"} <= set(recorded)
+          and "request_body" not in recorded[SIGNUP_PATH]
+          and "request_body" not in recorded[PROMOTION_REDEMPTION_PATH]
+          and "request_body" in recorded["/api/v1/provisioning"]
+          and SIGNUP_SECRET_VALUE not in stored and code not in stored and PRIVATE_BODY_MARK in stored)
+
+
 def _read_command_checks(check, root):
     """The operator command reads and cannot write, even by mistake."""
     from .http_entrypoint import read_failures
@@ -477,6 +529,7 @@ def run_checks(check=None):
                            ("ring", _ring_checks), ("readiness", _readiness_checks),
                            ("live_http", _live_http_checks),
                            ("payload_capture", _payload_capture_checks),
+                           ("credential_body", _credential_body_checks),
                            ("read_command", _read_command_checks)):
         with tempfile.TemporaryDirectory(prefix="service-observability-" + name + "-") as directory:
             try:

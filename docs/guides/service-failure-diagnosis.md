@@ -286,6 +286,13 @@ Recording choices
 ```
 
 Credentials are never recorded under any of the three. That is not a setting.
+Two request bodies are themselves credentials: sign-up carries the password of
+the new account, and promotion redemption carries a code that grants paid
+access to whoever holds it. Neither body is kept under any choice. The refusal
+is still recorded, without the body. The check
+`a_body_that_carries_a_credential_is_never_captured_even_when_the_host_captures_bodies`
+sends both through the real transport with body capture chosen and reads every
+byte of the store afterwards.
 
 ## Checks
 

@@ -100,6 +100,12 @@ PROTOCOL_PATH = "/mcp"
 #: record keeps the path only when it is one of these; anything else is
 #: recorded as the unmatched name, because a stranger chooses that text.
 DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS)
+#: The addresses whose request body is itself a credential: sign-up carries the
+#: password of a new account, and promotion redemption carries a code that
+#: grants paid access to whoever holds it. Their bodies never reach a failure
+#: record, whatever the host chose to capture, because no recording choice may
+#: record a credential. The refusal itself is still recorded.
+CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH)
 
 
 class ServiceHttpError(ValueError):
@@ -999,8 +1005,9 @@ class ServiceHttpApplication:
         # The body is kept for a later failure record only when the host has
         # chosen to capture request bodies. Under the default choice nothing is
         # kept, so there is nothing a failure record could disclose. A header is
-        # never kept here, so the credential cannot reach a record this way.
-        if self.observability.captures_request_body:
+        # never kept here, so the credential cannot reach a record this way, and
+        # a body that is itself a credential is never kept under any choice.
+        if self.observability.captures_request_body and request.url.path not in CREDENTIAL_BODY_ROUTES:
             request.scope[CAPTURED_BODY_KEY] = body
         return body
 

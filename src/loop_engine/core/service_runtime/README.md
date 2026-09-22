@@ -748,7 +748,10 @@ Recording is governed by `service_observability_policy/v1`. The default records
 metadata and no request body; `metadata_and_request_body` is an explicit host
 choice, and asking to record a body without it is refused with
 `payload_capture_not_authorized`. A credential, an authorization header and any
-other header that carries authority are never recorded under any setting.
+other header that carries authority are never recorded under any setting. The
+bodies of sign-up and promotion redemption carry a password and a promotion
+code, so `CREDENTIAL_BODY_ROUTES` in `http.py` keeps both out of every failure
+record even when the host captures bodies.
 
 `loop-engine service failures` reads the journal by newest, by tenant or by
 reference. It builds the journal from the host configuration with host write
