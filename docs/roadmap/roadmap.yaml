@@ -2279,7 +2279,8 @@ steps:
     verify: [primary-source links, current dates and revisions, claimed versus observed capability, independent counterexamples, uncertainty labels]
     adversarial: Missing documentation cannot become proof of absence; strategic fit cannot become claimed acquisition or funding interest.
     acceptance: A dated research comparison informs product differentiation and qualified next actions without changing runtime authority or contacting organizations.
-    evidence: Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. Ongoing research and broader comparison refresh remain open; no outreach occurred.
+    evidence: Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. The September 22 ZCode review and docs/research/CROSS-FUNCTIONAL-HARNESS-AND-LAUNCH-REVIEW-2026-09-22.md add pinned harness sources, theory, current competing offers, stakeholder questions, a launch audit and proposed discriminating checks. tools/refresh_research_sources.py made a bounded read-only check of ten primary sources with a new dated report. Ongoing research remains open; no outreach occurred.
+    next_local_work: Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state.
   - id: S-6.23
     phase: 6
     title: Exercise every required internal component through its actual owning entry point
@@ -2397,8 +2398,8 @@ steps:
     verify: [a working invitation request, a link to the source and install commands, one payment state that follows registration, the library contents with a live count, per-hostname surfaces, setup steps in order, one name for the credential, HEAD support and strict transport security, agent-facing tool descriptions]
     adversarial: A page that says payment is open while registration is closed must fail a named check; a subdomain that serves the homepage byte for byte must fail.
     acceptance: A first-time visitor can see what is in the library, request an invitation, and follow Get started to a working connection without contradictions, on every hostname.
-    evidence: 'September 22: five persona testers and an interface review on the live site; no persona would sign up or pay; ten ranked fixes with exact copy and code locations.'
-    next_local_work: Implement the fixes on the consolidated main and release them.
+    evidence: 'September 22: five persona testers and an interface review on the live site; no persona would sign up or pay; ten ranked fixes with exact copy and code locations. A local homepage repair removed the right-hand example workflow and put working steps first. The named old-layout check failed before repair; the local browser suite then passed 318 of 318 checks and 33 removed-guard controls. The changed page has not been deployed.'
+    next_local_work: Implement the remaining fixes on the consolidated main, verify the released homepage on every hostname, and repeat the live persona review.
   - id: S-6.34
     phase: 6
     title: One home for rules and authority, and a documentation cleanup
@@ -2474,7 +2475,7 @@ steps:
     verify: ['sources scanned on a schedule: public repositories, skill directories, plugin and server registries', 'licence gate: permissive material imported with its licence and source, other material recreated as original work', deduplication and quality scoring, every new item a candidate until independent reviewers approve it, progress measured toward the largest curated library]
     adversarial: An item without an accepted licence must never be imported verbatim; a generated item must never approve itself; a duplicate of an existing item must be merged, not added.
     acceptance: The worker adds reviewed, licensed items continuously without manual work, and the library size and quality are measured and published only from evidence.
-    evidence: 'September 22: owner direction to be the largest curated library of harness material, aiming at millions of files; 123 candidates exist today, 43 served.'
+    evidence: 'September 22: owner direction to be the largest curated library of harness material, aiming at millions of files; 123 candidates exist today, 43 served. tools/prepare_harness_candidates.py prepares local source-grounded text candidates in fifty-item populations; a temporary synthetic fixture prepared and staged 1,000 review-only candidates with no stale derived fields. External import, file-level rights, useful task outcomes and approval were not established.'
     next_local_work: Survey the sources and their licences, then build the worker behind an ingestion engine slot.
   - id: S-6.41
     phase: 6
@@ -2496,7 +2497,7 @@ steps:
     verify: [Pi and OpenCode supported out of the box, 'forks of Pi and OpenCode studied, including the NVIDIA fork of Pi and its paper', 'a decision on an own fork of OpenCode or Pi, with measured efficiency gains', 'a tested answer for Codex, Claude Code, OpenCode and Pi on starting an independent instance or process with new files for one step']
     adversarial: A harness that cannot start an isolated instance with only the step files must be marked unsupported for one-harness-per-step, not assumed to work.
     acceptance: The supported harnesses each start a fresh instance per step with exactly the selected material, proven by a recorded test, and the fork decision rests on measurements.
-    evidence: 'September 22: owner direction; opencode 1.18.32, codex 0.155.1, pi and claude are installed on the workstation.'
+    evidence: 'September 22: owner direction; opencode 1.18.32, codex 0.155.1, pi and claude are installed on the workstation. ZCode is documented as an unqualified additional harness candidate at source revision 872ad960de7ec172591f7e1952f7849229f94521 in docs/research/ZCODE-AND-HARNESS-INTELLIGENCE-MARKET-REVIEW-2026-09-22.md; no native run was tested.'
     next_local_work: Research the forks and run the independent-instance tests without model calls where possible.
   - id: S-6.43
     phase: 6

@@ -763,7 +763,7 @@
      "S-6.12"
     ],
     "id": "S-6.33",
-    "next_local_work": "Implement the fixes on the consolidated main and release them.",
+    "next_local_work": "Implement the remaining fixes on the consolidated main, verify the released homepage on every hostname, and repeat the live persona review.",
     "phase": 6,
     "status": "building",
     "title": "Website fixes from the persona and interface reviews",
@@ -1058,7 +1058,7 @@
     "blocked_on": "",
     "depends_on": [],
     "id": "S-6.22",
-    "next_local_work": "",
+    "next_local_work": "Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state.",
     "phase": 6,
     "status": "building",
     "title": "Maintain sourced competitor, prior-art, funding, and strategic-path research",
@@ -3026,5 +3026,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa437150e222d49849"
+ "source_fingerprint": "sha256:a0e100fd0485aaad245bda4083f32ea2e039c85cbe15cbfbcd1d83ca75f32539"
 }

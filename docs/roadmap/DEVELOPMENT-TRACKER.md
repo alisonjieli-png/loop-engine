@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa437150e222d49849`.
+Source fingerprint: `sha256:a0e100fd0485aaad245bda4083f32ea2e039c85cbe15cbfbcd1d83ca75f32539`.
 
 ## Where things stand
 
@@ -41,7 +41,7 @@ Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa4371
 | S-6.15 | Deploy an authorized pilot and qualify its real request path | building | S-6.14 |
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
-| S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building |  |
+| S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
 | S-1.4 | Evaluation product command over a frozen suite | building |  |
 | S-1.7 | Runnable prompt and harness optimization command | building | S-1.4 |
 | S-2.15 | Noise injection and explorative optimization over the evaluation product | building | S-1.7 |
