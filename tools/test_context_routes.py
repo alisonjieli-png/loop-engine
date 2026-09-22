@@ -104,8 +104,9 @@ AUTHORITY_RULES = (
      ("Intelligence is published only after the independent review process in the "
       "decision table approves it, and a producer never approves its own work",)),
     # A task may narrow the authority, and only the owner widens it. Without
-    # this the section said no task widens it, while ASTRA.md names the current
+    # this the section said no task widens it, while ASTRA.md named the current
     # task as a source of model, spending and publication authority.
+    # TASK_AS_AUTHORITY_SOURCE holds the other side of that line.
     ("only_the_owner_widens_the_authority",
      ("Only the owner widens this authority, in their own words in the current "
       "conversation",)),
@@ -134,6 +135,12 @@ SIDE_BRANCH = re.compile(
     r"\b(?:(?:feature|topic|fork|side|task|personal|separate)[ -]branch(?:es)?"
     r"|own (?:git )?branch(?:es)?)\b")
 NEGATION = re.compile(r"\b(?:no|not|never|nor|without|instead of|rather than)\b")
+#: A task narrows the authority and only the owner widens it. A sentence that
+#: says authority comes from a task contradicts that, because a task that a
+#: workflow or another agent writes would then widen it.
+TASK_AS_AUTHORITY_SOURCE = re.compile(
+    r"\b(?:authority|authori[sz]ation|permission)\b[^.;:!?]*\b(?:comes?|derives?|flows?)\s+"
+    r"from\b[^.;:!?]*\btasks?\b")
 
 
 class HtmlReferences(HTMLParser):
@@ -316,6 +323,8 @@ def authority_findings(documents, root=ROOT):
             for match in SIDE_BRANCH.finditer(unit):
                 if not NEGATION.search(unit[:match.start()]):
                     findings.append((path, "branch_outside_main_and_checkpoint", unit[:160]))
+            if TASK_AS_AUTHORITY_SOURCE.search(unit):
+                findings.append((path, "task_named_as_a_source_of_authority", unit[:160]))
     return findings
 
 
@@ -366,6 +375,17 @@ CONSISTENT_WITH_AUTHORITY = (
     "Treat existing changes as user or concurrent-agent work. Do not discard, restore, "
     "reformat, commit, or publish changes without resolving ownership.",
     "Unknown calls, tokens, costs, commit outcomes, and deployment status remain unknown.",
+    "Model, network, file, spending and publication authority comes from that section, "
+    "never from this note. A current task may narrow that authority, and only the owner "
+    "widens it.",
+    "The current task sets the scope and may narrow that authority for its own run.",
+)
+#: Sentences that name a task as a source of authority. The first is the one
+#: ASTRA.md carried after the authority section was written on September 22, 2026.
+AUTHORITY_FROM_A_TASK = (
+    "Model, network, file, spending and publication authority comes from that section "
+    "and the current task, never from this note.",
+    "Deployment and spending permission come from the workflow's task.",
 )
 
 
@@ -423,6 +443,15 @@ class ContextRouteTests(unittest.TestCase):
         changed["docs/README.md"] += "\n\nEach agent works on its own branch and opens a pull request.\n"
         self.assertIn(("docs/README.md", "branch_outside_main_and_checkpoint"),
                       {(row[0], row[1]) for row in authority_findings(changed)})
+
+    def test_a_task_named_as_a_source_of_authority_is_detected(self):
+        for path in AUTHORITY_SCOPE:
+            for sentence in AUTHORITY_FROM_A_TASK:
+                changed = dict(self.authority_documents)
+                changed[path] += "\n\n" + sentence + "\n"
+                self.assertIn((path, "task_named_as_a_source_of_authority"),
+                              {(row[0], row[1]) for row in authority_findings(changed)},
+                              (path, sentence))
 
     def test_each_dropped_owner_rule_is_detected_by_name(self):
         source = self.authority_documents[AUTHORITY_SOURCE]

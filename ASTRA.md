@@ -7,7 +7,8 @@ own. The owner's standing rules for committing, pushing, branching and
 releasing, and what still needs the owner, are in the
 [commit, push and release authority](AGENTS.md#commit-push-and-release-authority)
 section of AGENTS.md. Model, network, file, spending and publication authority
-comes from that section and the current task, never from this note.
+comes from that section, never from this note. A current task may narrow that
+authority, and only the owner widens it.
 
 ## Current work and evidence
 
