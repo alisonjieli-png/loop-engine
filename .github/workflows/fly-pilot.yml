@@ -160,8 +160,8 @@ jobs:
             --config fly.toml --image "${exact}" --ha=false --strategy immediate \
             --max-concurrent 1 --deploy-retries 0 --no-public-ips --wait-timeout 5m --yes
           curl --fail --silent --show-error --max-time 20 \
-            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e '.result.healthy == true and .result.readiness_checked == false' >/dev/null
-          echo "Service liveness passed. This does not qualify customer onboarding or payments."
+            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e '.result.record_type == "service_health/v2" and .result.alive == true and .result.ready == true and .result.readiness_checked == true and ([.result.checks[] | select(.required) | .passed] | length > 0 and all)' >/dev/null
+          echo "Service readiness passed: every required dependency answered. This does not qualify customer onboarding or payments."
 
       - name: Remove registry login from the temporary runner
         if: always() && inputs.operation == 'deploy'

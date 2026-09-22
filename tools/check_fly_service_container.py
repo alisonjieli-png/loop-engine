@@ -79,7 +79,9 @@ for path in root.iterdir():
 import json, urllib.error, urllib.request
 with urllib.request.urlopen('http://localhost:8080/api/v1/health', timeout=2) as response:
     health = json.load(response)['result']
-assert health['healthy'] is True and health['readiness_checked'] is False
+assert health['record_type'] == 'service_health/v2'
+assert health['alive'] is True and health['ready'] is True and health['readiness_checked'] is True
+assert all(row['passed'] for row in health['checks'] if row['required'])
 try:
     urllib.request.urlopen('http://localhost:8080/api/v1/session', timeout=2)
 except urllib.error.HTTPError as error:

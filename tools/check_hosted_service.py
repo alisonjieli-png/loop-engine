@@ -18,6 +18,10 @@ import urllib.parse
 import urllib.request
 import uuid
 
+#: The exact number of checks this probe runs when nothing interrupts it. A
+#: report that carries fewer has stopped early and is not a pass.
+PLANNED_CHECKS = 18
+
 
 class RefuseRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
@@ -79,7 +83,27 @@ def main():
         return {"record_type": "service_provisioning_request/v1", "operation": operation, **fields}
     try:
         status, health = request("/api/v1/health")
-        check("public_health_responds", status == 200 and health["result"]["healthy"] is True)
+        # The deployed release decides which health record it serves, so this
+        # probe reads the version it was given and asserts what that version
+        # can actually tell it. A release serving `service_health/v1` reports
+        # `healthy` and states that readiness was not checked, so the probe
+        # cannot claim the service is ready. A release serving
+        # `service_health/v2` measured every required dependency, so the probe
+        # requires `ready`. An unnamed version is refused rather than guessed.
+        served = (health.get("result") or {}).get("record_type")
+        if served == "service_health/v2":
+            answered = (health["result"]["alive"] is True and health["result"]["ready"] is True
+                        and health["result"]["readiness_checked"] is True
+                        and all(row["passed"] for row in health["result"]["checks"] if row["required"]))
+        elif served == "service_health/v1":
+            answered = health["result"]["healthy"] is True
+        else:
+            answered = False
+        check("public_health_responds", status == 200 and answered)
+        check("the_served_health_record_names_a_version_this_probe_reads",
+              served in ("service_health/v1", "service_health/v2"))
+        check("readiness_is_measured_by_the_deployed_release",
+              served == "service_health/v2" and health["result"]["readiness_checked"] is True)
         status, _ = request("/api/v1/session")
         check("missing_key_refuses", status == 401)
         status, _ = request("/api/v1/session", "invalid-diagnostic-credential")
@@ -154,7 +178,13 @@ asyncio.run(run())
         "metered_read_request_id": request_id, "usage_records_before": usage_before,
         "usage_records_after": usage_after, "checker_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "checks": checks, "passed": sum(row["passed"] for row in checks), "executed": len(checks),
-        "planned_checks": 16, "all_passed": len(checks) == 16 and all(row["passed"] for row in checks),
+        # Every check this probe can run must have run. The count is declared
+        # here so that a probe interrupted part way through can never report a
+        # pass, and it is compared against the checks in the source by
+        # `test_check_hosted_service.py`, so adding one without declaring it
+        # fails a test instead of quietly making a pass impossible.
+        "planned_checks": PLANNED_CHECKS,
+        "all_passed": len(checks) == PLANNED_CHECKS and all(row["passed"] for row in checks),
         "http_calls": calls, "physical_model_calls": 0, "hosted_harness_used": False,
         "supabase_qualified": False, "stripe_runtime_qualified": False, "paid_release_qualified": False,
         "limits": "Private host-attested diagnostic material only; not a full-system customer-task benchmark."}

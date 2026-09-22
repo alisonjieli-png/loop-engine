@@ -47,6 +47,12 @@ The first-release guides are [hosting procedures](hosting-and-deployment-procedu
 service paths are labeled separately from commands available today. The
 hosting procedures name the [current host](hosting-and-deployment-procedures.md#current-host).
 
+The [service failure diagnosis guide](service-failure-diagnosis.md) is the
+operator procedure for the deployed service: the reference that names one
+request in both the customer's refusal and the durable record, the read-only
+command that finds those records, what the health route measures, and the first
+failure of each dependency. Every command in it reads and changes nothing.
+
 The [launch setup runbook](launch-setup-runbook.md) lists the account, hosting,
 identity, storage, payment and secret-reference work for the owner. The
 [decision-tool guide](jev-and-harness-decision-tools.md) covers optional Jev
