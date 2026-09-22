@@ -73,6 +73,20 @@ for path in root.iterdir():
 '''
         command(["docker", "run", "--rm", "--network", "none", "--user", "0:0",
                  "--mount", f"type=volume,src={volume},dst=/data", "--entrypoint", "python", image, "-c", setup])
+        # A store that nothing has written yet does not answer a read, so the
+        # measured health answer is not ready on an empty volume. Production
+        # creates the store when the host registers its tenants; this check
+        # registers one tenant, as the service user and with no key, so the
+        # default command serves a configured store as it does in production.
+        configure = '''
+from loop_engine.core.service_runtime.http_entrypoint import load_host_application
+from loop_engine.core.service_runtime.records import TenantRegistration
+application, _configuration = load_host_application("/data/host.json")
+application.runtime.register_tenant(TenantRegistration("container-check", "container-check:private"))
+'''
+        command(["docker", "run", "--rm", "--network", "none", "--read-only",
+                 "--tmpfs", "/tmp:rw,nosuid,nodev,size=256m", "--user", f"{SERVICE_USER}:{SERVICE_USER}",
+                 "--mount", f"type=volume,src={volume},dst=/data", "--entrypoint", "python", image, "-c", configure])
         container = command(["docker", "run", "--detach", "--network", "none", "--read-only",
             "--tmpfs", "/tmp:rw,nosuid,nodev,size=256m", "--mount", f"type=volume,src={volume},dst=/data", image]).strip()
         probe = '''

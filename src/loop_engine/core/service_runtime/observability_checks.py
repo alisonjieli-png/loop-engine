@@ -290,6 +290,26 @@ def _readiness_checks(check, root):
           and set(late) == set(passing) and late["release_reference"] == "probe-release"
           and [row["name"] for row in late["checks"] if row["required"] and not row["passed"]]
           == ["readiness_within_deadline"])
+    # A store nothing has written yet does not answer a read, so a service on
+    # a fresh volume is alive and not ready until its host registers a tenant,
+    # which is what creates the store. A release check that starts the image
+    # on an empty volume must configure it first, as production does.
+    (root / "fresh").mkdir()
+    fresh = ServiceRuntimeConfig(str(root / "fresh" / "service.db"), writes_authorized=True)
+    unconfigured = readiness_report(config=fresh, provisioning=fixture.provisioning,
+        authentication_modes=("host_key",), policy=policy, browser_identity_installed=False,
+        billing_sessions_installed=False, billing_webhook_installed=False)
+    from .records import TenantRegistration
+    from .runtime import ServiceRuntime
+    ServiceRuntime(fresh).register_tenant(TenantRegistration("fresh", "fresh:private"))
+    configured = readiness_report(config=fresh, provisioning=fixture.provisioning,
+        authentication_modes=("host_key",), policy=policy, browser_identity_installed=False,
+        billing_sessions_installed=False, billing_webhook_installed=False)
+    check("a_store_nothing_has_created_is_not_ready_until_a_tenant_is_registered",
+          unconfigured["alive"] is True and unconfigured["ready"] is False
+          and [(row["name"], row["code"]) for row in unconfigured["checks"]
+               if row["required"] and not row["passed"]] == [("durable_store_answers", "store_unavailable")]
+          and configured["ready"] is True)
 
 
 def _live_http_checks(check, root):
