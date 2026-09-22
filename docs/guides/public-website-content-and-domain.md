@@ -151,7 +151,7 @@ each scan has a known-wrong case beside it.
 | `retired_word_check_rejects_a_known_wrong_page` | Five known-wrong sentences, one for each retired phrase, each of which the rule must report, and one accepted sentence it must not |
 | `no_served_file_carries_a_retired_word` | Every file the browser fetches for a customer page: the markup, the four scripts, the two stylesheets, the recipe record and the open-source notices the footer links to |
 | `served_file_scan_rejects_a_file_that_carries_a_retired_word` | Each of those served files with one retired sentence appended, twice: once naming a private beta and once asking for early access |
-| `every_served_asset_route_is_scanned_for_retired_words` | The scanned list against `WEB_ASSETS` in `src/loop_engine/core/service_runtime/http.py`, so an asset added to the route table alone cannot escape the scan |
+| `every_served_asset_route_is_scanned_for_retired_words` | The scanned list against `WEB_ASSETS` in `src/loop_engine/core/service_runtime/web_pages.py`, so an asset added to the route table alone cannot escape the scan |
 | `served_asset_coverage_check_rejects_a_route_left_out_of_the_scan` | The same comparison with each served asset route removed from the list in turn, which must report exactly that route |
 | `both_public_page_checks_use_one_retired_word_rule` | The rule text of `retiredAccessWords` here and of `liveRetired` in `tools/check_hosted_website.mjs`, which must be the same string |
 | `retired_word_rule_comparison_rejects_a_drifted_copy` | The same rule with its `early access` branch dropped, which must then miss a page that asks for early access |
@@ -184,7 +184,7 @@ waiting list form is being built.
 The page answers at `/connect`, which the serving route table lists. The
 address `/get-started` opens the same page through the navigation, and a
 direct visit to it is not served yet. It needs one entry in `WEB_ASSETS` in
-`src/loop_engine/core/service_runtime/http.py`, next to the entry that
+`src/loop_engine/core/service_runtime/web_pages.py`, next to the entry that
 `/pricing` received on September 21, 2026. Until it has one, every link on
 the website points at `/connect`, so no customer reaches a refused address.
 

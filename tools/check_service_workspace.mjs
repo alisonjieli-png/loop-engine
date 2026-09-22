@@ -389,10 +389,11 @@ try {
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. */
   const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt"];
-  /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
-     so a customer reaches that file from every page, and a served asset added in the route table alone is a named
-     failure here rather than a file nobody scans. */
-  const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/http.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
+  /* The list is compared with the route table the service actually serves, which lives in web_pages.py since the table
+     left http.py on September 21, 2026. Read from the old module, the table was not found and this check could not pass.
+     The footer links to the open-source notices, so a customer reaches that file from every page, and a served asset
+     added in the route table alone is a named failure here rather than a file nobody scans. */
+  const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_pages.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
   const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
   check("every_served_asset_route_is_scanned_for_retired_words",assetRoutes.length>0&&unscannedFor(servedFiles).length===0,{routes:assetRoutes.length,unscanned:unscannedFor(servedFiles)});

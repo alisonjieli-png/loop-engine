@@ -47,6 +47,9 @@ SERVICE_SOURCES = (
 )
 RECIPES = "src/loop_engine/core/service_runtime/web_assets/client-recipes.json"
 HTTP_MODULE = "src/loop_engine/core/service_runtime/http.py"
+#: The website address table moved out of the transport module on September
+#: 21, 2026. The addresses it serves are read from here as well.
+PAGES_MODULE = "src/loop_engine/core/service_runtime/web_pages.py"
 RECORDS_MODULE = "src/loop_engine/core/service_runtime/records.py"
 ENTRYPOINT_MODULE = "src/loop_engine/core/service_runtime/http_entrypoint.py"
 CLI_HELP_MODULE = "src/loop_engine/cli_help.py"
@@ -150,11 +153,11 @@ def source_facts(root: Path) -> dict:
                             and NAME_TOKEN.match(constants[inner.id])):
                         refusals.add(constants[inner.id])
 
-    http_tree = trees[root / HTTP_MODULE]
     addresses = {"/mcp"}
-    for node in ast.walk(http_tree):
-        if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value.startswith("/"):
-            addresses.add(node.value)
+    for module in (HTTP_MODULE, PAGES_MODULE):
+        for node in ast.walk(trees[root / module]):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str) and node.value.startswith("/"):
+                addresses.add(node.value)
     addresses.update(value for value in constants.values() if value.startswith("/"))
 
     scopes = set()
