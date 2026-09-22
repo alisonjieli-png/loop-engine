@@ -40,4 +40,4 @@ A review of an accepted forecasting model asks only whether the code is clean. N
 - `src/loop_engine/strings/question_engine.py`: the question forms named `devils_advocate`, `premortem` and `analogy_probe`.
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the perspectives of the adversary, the contrarian and the independent verifier.
 
-Licence: MIT. Compiled from revision eb757bc.
+Licence: MIT. Compiled from revision ae7362f.

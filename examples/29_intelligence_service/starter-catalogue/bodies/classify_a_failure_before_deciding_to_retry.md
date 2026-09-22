@@ -40,4 +40,4 @@ A worker retries every failure five times with a short wait. The credential has 
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision eb757bc.
+Licence: MIT. Written for this catalogue at revision ae7362f.

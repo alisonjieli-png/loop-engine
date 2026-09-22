@@ -66,9 +66,12 @@ MINIMUM_EXAMPLES, MINIMUM_EXAMPLE_ITEMS = 40, 10
 #: One span between single backticks, which is how a body writes a path, a name or a value.
 QUOTATION = re.compile(r"`([^`\n]+)`")
 IDENTITY = re.compile(r"[a-z][a-z0-9_]{2,79}")
-#: The two layers that can hold compiled material today. The other two canonical
-#: layers need real runs and real feedback, so an item there would be invented.
+#: The two provenance layers the bodies were compiled from. The other two
+#: canonical layers need real runs and real feedback, so an item there would be
+#: invented. Every served item is a drop-in skill file, so its source layer is
+#: ``harness_local`` whatever layer its sources came from.
 LAYERS = {"context": "context_intelligence", "code": "code_intelligence"}
+SERVED_SOURCE_LAYER = "harness_local"
 MODEL_GENERATED_SOURCE = "src/loop_engine/governance/candidates/part-00000.jsonl"
 #: Each licence state, with the licence the reference must carry and the sentence the body states.
 LICENCE_STATES = {"declared": ("MIT", "Licence: MIT."),
@@ -97,7 +100,7 @@ LICENCE_REFUSED_ITEMS = ("check_a_table_join_before_trusting_it", "make_a_data_p
 #: `GPL-3.0-only` is a real licence identifier that this host does not list.
 UNACCEPTABLE_LICENCES = (("unknown", LICENSE_UNKNOWN), ("", LICENSE_MISSING), ("   ", LICENSE_MISSING),
                          ("GPL-3.0-only", LICENSE_NOT_ACCEPTED))
-REVIEW_LAYER = {"context_intelligence": "Context Intelligence", "code_intelligence": "Code Intelligence"}
+REVIEW_LAYER = {"harness_local": "Harness Intelligence"}
 EMPTY_LAYERS = ("Runtime History and Solution Intelligence", "User Feedback Intelligence")
 REQUIRED_PARTS = ("## When to use it", "## Steps", "## Checks", "## Known-wrong example",
                   "## What to record", "## Source")
@@ -385,9 +388,9 @@ def rule_layers_kinds_effects_and_styles_are_declared(snapshot):
     found = []
     for row, item in snapshot.rows():
         identity, reference = row.get("id"), item.get("reference", {})
-        if LAYERS.get(row.get("layer")) is None or reference.get("source_layer") != LAYERS.get(row.get("layer")):
-            found.append(f"{identity}: only compiled context and code material exists; history and feedback need "
-                         "real runs and real feedback")
+        if row.get("layer") not in LAYERS or reference.get("source_layer") != SERVED_SOURCE_LAYER:
+            found.append(f"{identity}: every item is a drop-in skill on {SERVED_SOURCE_LAYER}, with provenance "
+                         "in context or code; history and feedback need real runs and real feedback")
         if reference.get("record_type") != ITEM_RECORD_TYPE or reference.get("kind") not in KINDS:
             found.append(f"{identity}: the reference is not a current item of a known kind")
         effects = reference.get("declared_effects")
@@ -912,6 +915,8 @@ KNOWN_WRONG = {
             s, specifications=lambda rows: _set(rows[0], "layer", "runtime_history_solution"),
             items=lambda items: _set(_first_reference(items), "source_layer",
                                      "runtime_history_solution_intelligence"))),
+        ("an item outside the harness source layer", lambda s: _changed(
+            s, items=lambda items: _set(_first_reference(items), "source_layer", "context_intelligence"))),
         ("pure is declared as an effect to hold", lambda s: _changed(
             s, items=lambda items: _set(_first_reference(items), "declared_effects", [EFFECTS[0]]))),
         ("an unknown harness style", lambda s: _changed(
@@ -1275,10 +1280,16 @@ class StarterCatalogueChecks(unittest.TestCase):
         self.assertLessEqual(set(queries.values()), {row["id"] for row, _item in self.snapshot.rows()})
         self.assertIn("reviewer", {row["written_by"] for row in record["queries"]})
 
+        # The hosted search reads the identity, the kind and the provenance layer the
+        # body was compiled from, never the uniform harness source layer, which would
+        # make the keyword set identical for every item.
+        specification_layers = {row["id"]: row.get("layer") for row, _item in self.snapshot.rows()}
+
         def first_three(items, query):
             records = [StoreRecord(row["reference"]["identity"], "context", row["reference"]["purpose"], body={
                 "description": row["reference"]["purpose"],
-                "keywords": [row["reference"]["identity"], row["reference"]["kind"], row["reference"]["source_layer"]]})
+                "keywords": [row["reference"]["identity"], row["reference"]["kind"],
+                             LAYERS.get(specification_layers.get(row["reference"]["identity"]), SERVED_SOURCE_LAYER)]})
                 for row in items]
             return [hit["record_id"] for hit in Retriever(records).search(query, mode="lexical", top_n=3)["hits"]]
 

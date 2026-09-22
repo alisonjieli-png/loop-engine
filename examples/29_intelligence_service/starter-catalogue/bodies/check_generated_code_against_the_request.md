@@ -40,4 +40,4 @@ A model writes a date parsing function and a test suite for it. Every test passe
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision eb757bc.
+Licence: MIT. Written for this catalogue at revision ae7362f.

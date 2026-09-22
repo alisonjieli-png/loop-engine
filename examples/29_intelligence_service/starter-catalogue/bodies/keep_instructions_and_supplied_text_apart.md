@@ -40,4 +40,4 @@ A support tool builds one long text from the ticket, the customer history and th
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision eb757bc.
+Licence: MIT. Written for this catalogue at revision ae7362f.

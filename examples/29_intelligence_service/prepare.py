@@ -47,7 +47,7 @@ def prepare(request):
     http = ServiceHttpConfiguration(request.public_origin, (urlsplit(request.public_origin).netloc,),
                                     allow_loopback_http=True)
     item = item_from_body(HarnessIntelligenceDraft("example.review_inputs", "instruction_file",
-        "Review supplied material and preserve missing evidence", "context_intelligence",
+        "Review supplied material and preserve missing evidence", "harness_local",
         "example:review-inputs@1", "MIT"), BODY)
     root.mkdir()
     artifacts = root / "artifacts"

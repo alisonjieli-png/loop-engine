@@ -323,7 +323,7 @@ def _drop_one_layer(snapshot: Snapshot) -> Snapshot:
 
 
 def _move_one_item_to_another_layer(snapshot: Snapshot) -> Snapshot:
-    return _edit_first_reference(snapshot, source_layer="context_intelligence")
+    return _edit_first_reference(snapshot, source_layer="harness_local")
 
 
 def _edit_a_body_without_rebuilding(snapshot: Snapshot) -> Snapshot:
