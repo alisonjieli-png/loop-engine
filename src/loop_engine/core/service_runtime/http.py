@@ -23,10 +23,14 @@ from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
     EXTERNAL_JWT_AUTHENTICATION,
 )
+from .observability import (
+    CAPTURED_BODY_KEY, SCOPE_REFERENCE_KEY, ServiceFailureJournal, ServiceObservabilityPolicy,
+    new_request_reference, readiness_deadline_report, readiness_report,
+)
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
 from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
-from .web_pages import HTML_MEDIA_TYPE, missing_address_page, served_asset
+from .web_pages import HTML_MEDIA_TYPE, WEB_ASSETS, missing_address_page, served_asset
 
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
@@ -89,6 +93,19 @@ API_ROUTES = {
     BILLING_CHECKOUT_PATH: ("POST",),
     BILLING_PORTAL_PATH: ("POST",),
 }
+#: The address the protocol transport answers, ahead of the interface router.
+PROTOCOL_PATH = "/mcp"
+#: Every address this service answers, named once and built from the tables
+#: that decide what is served, so that it cannot drift from them. A failure
+#: record keeps the path only when it is one of these; anything else is
+#: recorded as the unmatched name, because a stranger chooses that text.
+DECLARED_ROUTES = (*API_ROUTES, PROTOCOL_PATH, *WEB_ASSETS)
+#: The addresses whose request body is itself a credential: sign-up carries the
+#: password of a new account, and promotion redemption carries a code that
+#: grants paid access to whoever holds it. Their bodies never reach a failure
+#: record, whatever the host chose to capture, because no recording choice may
+#: record a credential. The refusal itself is still recorded.
+CREDENTIAL_BODY_ROUTES = ("/api/v1/account/signup", PROMOTION_REDEMPTION_PATH)
 
 
 class ServiceHttpError(ValueError):
@@ -273,7 +290,13 @@ def _parse_json(body, *, maximum_depth=MAXIMUM_JSON_NESTING_DEPTH):
     return value
 
 
-def _error_record(code, status, details=None):
+def _error_record(code, status, details=None, request_reference=None):
+    """Build the one refusal shape. The reference names this exact request.
+
+    The customer reads the reference back to an operator, who searches for it.
+    It carries no information about the credential, the caller or the body; it
+    is a name issued from the operating system random source.
+    """
     # The code stays exactly what it was, because a client matches on it. The
     # two sentences beside it are for whoever has to act: a person reading the
     # website, and an agent that has to choose a next step without one. They
@@ -283,6 +306,8 @@ def _error_record(code, status, details=None):
     result = {"record_type": ERROR_VERSION,
               "error": {"code": code, "message": message, "next_action": next_action},
               "effect_commitment": "not_asserted", "automatic_retry": False}
+    if request_reference is not None:
+        result["request_reference"] = request_reference
     if details is not None:
         result["error"]["details"] = details
         if details.get("record_type") == "billing_event_result/v1" and details.get("committed") is True and details.get("status") == "pending":
@@ -379,6 +404,7 @@ class ServiceHttpApplication:
     client_access: object | None = field(default=None, repr=False)
     promotions: object | None = field(default=None, repr=False)
     account_email: object | None = field(default=None, repr=False)
+    observability: ServiceObservabilityPolicy = ServiceObservabilityPolicy()
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -400,6 +426,8 @@ class ServiceHttpApplication:
                 raise ValueError("customer access must bind the same runtime and a browser identity provider")
         if self.account_email is not None and not speaks_the_account_email_boundary(self.account_email):
             raise ValueError(f"an installed account email adapter must speak {ACCOUNT_EMAIL_PROTOCOL}")
+        if not isinstance(self.observability, ServiceObservabilityPolicy):
+            raise TypeError("a typed observability policy is required")
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -411,6 +439,9 @@ class ServiceHttpApplication:
         self._share_operations = {}
         self._share_lock = threading.Lock()
         self.request_limiter = FailedAttemptLimiter(self.configuration.request_limits)
+        # The durable record of refused requests, in the same service store.
+        self.failure_journal = ServiceFailureJournal(self.runtime.config, DECLARED_ROUTES,
+                                                     policy=self.observability)
 
     def capabilities(self):
         from importlib.metadata import version
@@ -482,7 +513,11 @@ class ServiceHttpApplication:
         if len(request.headers.getlist("authorization")) != 1:
             raise HttpAuthenticationError()
         async with self._limited(request):
-            return await self._authenticate_request(request)
+            context = await self._authenticate_request(request)
+        # The tenant of a signed-in request, kept so that a later refusal names
+        # the account an operator must look at. The credential is not kept.
+        request.scope["service_failure_tenant"] = context.principal.tenant_id
+        return context
 
     @staticmethod
     def _share_refusal(name, ceiling):
@@ -554,6 +589,52 @@ class ServiceHttpApplication:
             return held
         return await self._work(lambda: self.authenticator.remote_credential(authorization, purpose=purpose),
                                 shares=(EXTERNAL_PROVIDER_SHARE,))
+
+    async def _readiness(self):
+        """Measure every dependency now, off the bounded customer worker pool.
+
+        Readiness runs on the default executor so that a busy service still
+        answers the question truthfully instead of reporting itself unready
+        merely because every customer slot is in use. A dependency that does
+        not answer inside the request deadline is a dependency that failed.
+        """
+        def measure():
+            return readiness_report(config=self.runtime.config, provisioning=self.provisioning,
+                authentication_modes=self.authentication.modes, policy=self.observability,
+                browser_identity_installed=self.browser_identity is not None,
+                billing_sessions_installed=self.billing_sessions is not None,
+                billing_webhook_installed=self.billing_processor is not None)
+        waiting = asyncio.get_running_loop().run_in_executor(None, measure)
+        try:
+            return await asyncio.wait_for(asyncio.shield(waiting), self.configuration.request_timeout_seconds)
+        except asyncio.TimeoutError:
+            waiting.add_done_callback(lambda done: done.exception() if not done.cancelled() else None)
+            return readiness_deadline_report(self.observability)
+
+    async def _record_failure(self, scope, request, code, status):
+        """Write one metadata failure record without letting it raise.
+
+        This runs on the default executor, not on the bounded service pool, so
+        recording a refusal can never consume a slot a customer needs.
+        """
+        reference = scope.get(SCOPE_REFERENCE_KEY)
+        if reference is None:
+            return {"recorded": False, "reason": "no_request_reference"}
+        # Everything is inside the guard, including reading the route and the
+        # method off the request. The customer is already being refused, and
+        # nothing done to record that may turn their typed refusal into a
+        # different failure.
+        try:
+            journal = self.failure_journal
+            fields = {"route": journal.route_of(request.url.path),
+                      "method": journal.method_of(request.method),
+                      "refusal_code": code, "status": status,
+                      "tenant_id": scope.get("service_failure_tenant", ""),
+                      "request_body": scope.get(CAPTURED_BODY_KEY)}
+            return await asyncio.get_running_loop().run_in_executor(
+                None, lambda: journal.record(reference, **fields))
+        except Exception:
+            return {"recorded": False, "reason": "failure_not_recorded"}
 
     async def _work(self, function, *, shares=()):
         release_shares = self._reserve(shares)
@@ -770,8 +851,9 @@ class ServiceHttpApplication:
 
         @sdk.call_tool(validate_input=False)
         async def call_tool(name, arguments):
+            scope = sdk.request_context.request.scope
             try:
-                context = sdk.request_context.request.scope["service_authentication"]
+                context = scope["service_authentication"]
                 if name == "intelligence_search":
                     fields = self._validate_search(arguments, versioned=False)
                     output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
@@ -793,7 +875,13 @@ class ServiceHttpApplication:
                 status, code = 400, "invalid_request"
             except Exception as error:
                 status, code = _status(error)
-            refused = _error_record(code, status)
+            # A protocol tool refusal is a failed request too, and the harness
+            # that made it sees the same reference the operator searches for.
+            # The record goes through the same guarded writer as every other
+            # refusal, so recording it can never turn into a different failure.
+            await self._record_failure(scope, sdk.request_context.request, code, status)
+            reference = scope.get(SCOPE_REFERENCE_KEY)
+            refused = _error_record(code, status, None, reference.value if reference is not None else None)
             return types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(refused).decode())],
                                         structuredContent=refused, isError=True)
         return sdk
@@ -819,6 +907,10 @@ class ServiceHttpApplication:
 
         async def transport(scope, receive, send):
             request = Request(scope, receive)
+            # Every request is named before any work, so a refusal raised at the
+            # very first check still carries an identity the operator can find.
+            reference = new_request_reference()
+            scope[SCOPE_REFERENCE_KEY] = reference
             sent_origins = request.headers.getlist("origin")
             origin = selected_origin(sent_origins)
             cors = ({"Access-Control-Allow-Origin": origin, "Vary": "Origin",
@@ -836,7 +928,7 @@ class ServiceHttpApplication:
                     response = Response(status_code=204, headers={**cors,
                         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
                         "Access-Control-Allow-Headers": "Authorization, Content-Type, MCP-Protocol-Version, Stripe-Signature"})
-                elif request.url.path == "/mcp":
+                elif request.url.path == PROTOCOL_PATH:
                     context = await self._authenticated(request)
                     body = await self._body(request) if request.method == "POST" else b""
                     payload = _parse_json(body) if body else {}
@@ -868,6 +960,9 @@ class ServiceHttpApplication:
             except Exception as error:
                 status, code = _status(error)
                 details, added = (error.details, error.headers) if isinstance(error, ServiceHttpError) else (None, None)
+                # The record is committed before the customer is told its name,
+                # so a reference in a refusal is one an operator can search for.
+                await self._record_failure(scope, request, code, status)
                 # A reader who arrived in a browser needs a sentence and a way
                 # back. A record shape is the right answer to a program and the
                 # wrong answer to a person. The page names no address and
@@ -879,8 +974,8 @@ class ServiceHttpApplication:
                         status_code=404, media_type=HTML_MEDIA_TYPE,
                         headers={**cors, **self._page_headers()})
                 else:
-                    response = JSONResponse(_error_record(code, status, details), status_code=status,
-                                            headers={**cors, **(added or {})})
+                    response = JSONResponse(_error_record(code, status, details, reference.value),
+                                            status_code=status, headers={**cors, **(added or {})})
                 if status == 401:
                     response.headers["WWW-Authenticate"] = ("Bearer resource_metadata=\""
                         + config.public_base_url + "/.well-known/oauth-protected-resource/mcp\""
@@ -905,7 +1000,16 @@ class ServiceHttpApplication:
             await asyncio.wait_for(collect(), self.configuration.request_timeout_seconds)
         except asyncio.TimeoutError:
             raise ServiceHttpError("request_body_deadline", 408) from None
-        return b"".join(chunks)
+        body = b"".join(chunks)
+        # This is the one place every JSON body of this service passes through.
+        # The body is kept for a later failure record only when the host has
+        # chosen to capture request bodies. Under the default choice nothing is
+        # kept, so there is nothing a failure record could disclose. A header is
+        # never kept here, so the credential cannot reach a record this way, and
+        # a body that is itself a credential is never kept under any choice.
+        if self.observability.captures_request_body and request.url.path not in CREDENTIAL_BODY_ROUTES:
+            request.scope[CAPTURED_BODY_KEY] = body
+        return body
 
     def _page_headers(self):
         """The headers every served page carries, refusals included."""
@@ -939,8 +1043,12 @@ class ServiceHttpApplication:
                 "scopes_supported": sorted(set(SCOPES) | set(self.authentication.required_scopes)),
                 "bearer_methods_supported": ["header"], "resource_name": "Loop Engine Intelligence"})
         if path == "/api/v1/health" and method == "GET":
-            output = {"record_type": "service_health/v1", "healthy": True, "readiness_checked": False,
-                      "deployed_provider_qualification": False}
+            # Alive and ready are different answers. Alive says this process is
+            # running. Ready says every required dependency answered just now.
+            # A machine that is not ready answers 503, so the load balancer in
+            # front of it stops sending customers to it.
+            output = await self._readiness()
+            status_code = 200 if output["ready"] else 503
         elif path == "/api/v1/billing/webhook" and method == "POST":
             if self.billing_processor is None:
                 raise ServiceHttpError("billing_webhook_unavailable", 501)

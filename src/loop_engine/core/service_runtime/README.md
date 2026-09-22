@@ -197,7 +197,9 @@ Three entitlement sources exist and they stay apart. `stripe_snapshot` is the
 only revenue-bearing source. `explicit_host_grant` and `promotion_code_grant`
 are comped. `ServiceRuntime.access_source_report` separates them and counts
 them separately; it reads the recorded source and never infers money from an
-expiry, a grant or a name. A release that predates `promotion_code_grant` reads
+expiry, a grant or a name. Every record it reads goes through the same version
+check the rest of the service uses, so a record this release cannot read stops
+the report instead of being counted. A release that predates `promotion_code_grant` reads
 an unknown source as metadata only, so an older server refuses the access
 rather than honoring a record whose rules it does not know.
 
@@ -746,7 +748,10 @@ Recording is governed by `service_observability_policy/v1`. The default records
 metadata and no request body; `metadata_and_request_body` is an explicit host
 choice, and asking to record a body without it is refused with
 `payload_capture_not_authorized`. A credential, an authorization header and any
-other header that carries authority are never recorded under any setting.
+other header that carries authority are never recorded under any setting. The
+bodies of sign-up and promotion redemption carry a password and a promotion
+code, so `CREDENTIAL_BODY_ROUTES` in `http.py` keeps both out of every failure
+record even when the host captures bodies.
 
 `loop-engine service failures` reads the journal by newest, by tenant or by
 reference. It builds the journal from the host configuration with host write

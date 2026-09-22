@@ -80,7 +80,7 @@ effect, so an older release cannot silently reinterpret a newer request.
 | Operation | Request | Result |
 |---|---|---|
 | Capabilities | none | `service_capabilities/v1` |
-| Health | none | `service_health/v1` |
+| Health | none | `service_health/v2` |
 | Session | `service_session/v1` | `service_session/v1` |
 | Provisioning | `service_provisioning_request/v1` | `provisioning_discover/v2`, `provisioning_list/v2`, `provisioning_manifest/v2` or `provisioning_body/v2` |
 | Download | `service_provisioning_request/v1` with operation `read` | `provisioning_body/v2` |
@@ -97,7 +97,7 @@ component guide check rather than surviving here.
 | Address | What it is for |
 |---|---|
 | `/api/v1/capabilities` | What this deployment can do. No credential needed. |
-| `/api/v1/health` | Whether it is answering. No credential needed. |
+| `/api/v1/health` | Whether it is alive and whether it is ready. A machine that is not ready answers 503 and names the failed check. No credential needed. |
 | `/api/v1/session` | Exchange a client key for a session. |
 | `/api/v1/provisioning` | Discover, list, manifest or read the catalogue. |
 | `/api/v1/download` | The body of one selected item. |
@@ -168,6 +168,14 @@ record itself is `service_request_limits/v2`.
 `service_cli_error/v1` with `effect_commitment` set to `not_asserted` and
 `automatic_retry` set to false. An unknown commit is not a success and is never
 retried on its own.
+
+Every refusal also carries `request_reference`, a name issued for that one
+request from the operating system random source and from nothing else. Before
+the service answers, it writes one metadata record of the refusal,
+`service_request_failure/v1`, into its own store. `loop-engine service failures`
+reads those records by newest, by `--tenant` or by the `--reference` a customer
+read out of a refusal, and it writes nothing. The operator procedure is in
+[the service failure diagnosis guide](../../guides/service-failure-diagnosis.md).
 
 ## Current behaviour, observed today
 

@@ -124,6 +124,32 @@ class FlyDeploymentTests(unittest.TestCase):
         self.assertFalse(unready["ready"])
         self.assertNotEqual(run_gate(unready), 0, "the deploy gate accepted a service that is not ready")
 
+    def test_every_container_health_probe_reads_only_fields_the_service_serves(self):
+        """Read each health field the container check asserts from a real health record.
+
+        The container check runs two probes against the image. After the
+        September 22 merges one of them asserted the measured record and the
+        other still asserted the field `healthy`, which only the retired
+        `service_health/v1` record carried, so no release could satisfy both.
+        Every field a probe reads must be a field of the record the code builds.
+        """
+        from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture
+        from loop_engine.core.service_runtime.observability import readiness_report, ServiceObservabilityPolicy
+        with tempfile.TemporaryDirectory(prefix="fly-health-probe-") as directory:
+            fixture = HttpDomainFixture(Path(directory))
+            served = readiness_report(config=fixture.runtime.config, provisioning=fixture.provisioning,
+                authentication_modes=("host_key",), policy=ServiceObservabilityPolicy(),
+                browser_identity_installed=False, billing_sessions_installed=False,
+                billing_webhook_installed=False)
+        source = (ROOT / "tools/check_fly_service_container.py").read_text(encoding="utf-8")
+        read = set(re.findall(r"""health\[(['"])result\1\]\[(['"])(\w+)\2\]""", source))
+        fields = {name for _open, _close, name in read}
+        fields.update(name for _quote, name in re.findall(r"""health\[(['"])(\w+)\1\]""", source)
+                      if name != "result")
+        self.assertTrue(fields, "the container check must read the health record it probes")
+        self.assertEqual(sorted(fields - set(served)), [],
+                         "a container probe reads a health field the service does not serve")
+
     def test_service_profile_has_persistence_tls_and_a_real_server_command(self):
         profile = tomllib.loads((ROOT / "fly.toml").read_text())
         self.assertNotIn("app", profile)

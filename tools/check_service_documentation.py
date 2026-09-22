@@ -166,12 +166,21 @@ def source_facts(root: Path) -> dict:
             scopes.add(node.value)
 
     service_commands = set()
-    for node in ast.walk(trees[root / ENTRYPOINT_MODULE]):
+    entrypoint_tree = trees[root / ENTRYPOINT_MODULE]
+    # The command choices may be written in place or named once as a module
+    # tuple, such as SERVICE_COMMANDS, which the help check compares with.
+    named_tuples = {target.id: node.value for node in entrypoint_tree.body
+                    if isinstance(node, ast.Assign) and isinstance(node.value, ast.Tuple)
+                    for target in node.targets if isinstance(target, ast.Name)}
+    for node in ast.walk(entrypoint_tree):
         if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
                 and node.func.attr == "add_argument"):
             for keyword in node.keywords:
-                if keyword.arg == "choices" and isinstance(keyword.value, ast.Tuple):
-                    values = [literal(item) for item in keyword.value.elts]
+                choices = keyword.value
+                if isinstance(choices, ast.Name):
+                    choices = named_tuples.get(choices.id)
+                if keyword.arg == "choices" and isinstance(choices, ast.Tuple):
+                    values = [literal(item) for item in choices.elts]
                     if all(value and value.isalpha() or value and "-" in value for value in values):
                         service_commands.update(value for value in values if value)
                     break

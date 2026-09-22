@@ -414,7 +414,11 @@ class ServiceRuntime:
                 value = self._payload(row, ENTITLEMENT)
                 tenant_id = value.get("tenant_id", "")
                 tenant_row = self._catalog.read(store, TENANT, tenant_id)
-                tenant = tenant_row["payload"] if tenant_row is not None else {}
+                # The tenant record is read through the same version check every
+                # other reader uses. A record this release does not support is
+                # refused here rather than reinterpreted, because a miscounted
+                # account is worse than a report that stops and names the fault.
+                tenant = self._payload(tenant_row, TENANT) if tenant_row is not None else {}
                 source = value.get("source", "")
                 effective = (self._entitlement(row, policy)
                              if tenant.get("enabled") is True and tenant.get("body_access_revoked") is False

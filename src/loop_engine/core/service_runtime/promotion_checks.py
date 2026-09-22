@@ -28,7 +28,7 @@ from .promotions import (ABSENT_CODE, ALREADY_REDEEMED, CODE_UNUSABLE, PAID_ACCE
                          promotion_code_state)
 from .records import ServiceRuntimeConfig, ServiceRuntimeError, TenantKeyIssue, TenantRegistration
 from .runtime import (CODE_GRANT_SOURCE, ENTITLEMENT, HOST_GRANT_SOURCE, PROMOTION_CODE,
-                      SCHEMAS, STRIPE_SNAPSHOT_SOURCE, ServiceRuntime)
+                      SCHEMAS, STRIPE_SNAPSHOT_SOURCE, TENANT, ServiceRuntime)
 from .storage import ServiceCatalogBinding
 
 #: Fixture codes are composed from a prefix and a separate body, so no whole
@@ -411,6 +411,29 @@ def run_checks():
                 and all(tenant not in report["revenue_bearing_tenants"] for tenant in report["comped_tenants"]))
     check("a_comped_account_is_never_counted_as_revenue_in_the_access_source_report", comped_is_not_revenue)
 
+    def unreadable_tenant_stops_the_report(folder):
+        """Known-wrong case for the report's version check.
+
+        A tenant record this release does not support must stop the report, not
+        be reinterpreted. A report that guessed would count the account, and a
+        miscounted account is the one thing this report exists to prevent.
+        """
+        runtime, clock, keys, administration, redemption = fixture(folder)
+        chosen, _ = created(administration, clock, FIRST_BODY)
+        redemption.redeem(principal_for(runtime, keys, "account-a"), offer(chosen, "r1"))
+        _paying_account(runtime, "account-b", clock)
+        before = runtime.access_source_report()
+        catalog = runtime._catalog
+        with catalog.store(write=True) as store:
+            row = catalog.read(store, TENANT, "account-a")
+            unsupported = {**row, "record_version": "unsupported-version",
+                           "payload": {**row["payload"], "record_type": "service_tenant/v0"}}
+            catalog.commit(store, (unsupported,), (catalog.guard(row),))
+        return (before["counts"]["comped"] == 1 and before["counts"]["revenue_bearing"] == 1
+                and refused(lambda: runtime.access_source_report(), "unsupported_or_corrupt_record"))
+    check("a_tenant_record_this_release_cannot_read_stops_the_report_instead_of_being_counted",
+          unreadable_tenant_stops_the_report)
+
     def no_code_is_ever_returned(folder):
         runtime, clock, keys, administration, redemption = fixture(folder)
         chosen, record = created(administration, clock, FIRST_BODY)
@@ -598,9 +621,20 @@ def run_http_checks(check, root):
             exhausted = client.post(PROMOTION_REDEMPTION_PATH, json={
                 "record_type": "service_promotion_redemption_request/v1",
                 "code": spent.code, "request_id": "web-3"})
+            # Every refusal carries the reference of its own request, issued at
+            # random before the code is read, so two refusals always differ in
+            # that value and it carries nothing about the code. Every other
+            # byte of the two answers must be the same.
+            from .observability import valid_reference
+            def without_reference(answer):
+                reference = answer.json().get("request_reference")
+                if not valid_reference(reference):
+                    return None
+                return answer.content.replace(reference.encode("ascii"), b"")
             check("the_served_refusal_for_an_unknown_and_an_exhausted_code_is_the_same_answer",
                   unknown.status_code == exhausted.status_code == 403
-                  and unknown.content == exhausted.content
+                  and without_reference(unknown) is not None
+                  and without_reference(unknown) == without_reference(exhausted)
                   and unknown.json()["error"]["code"] == "promotion_code_unusable"
                   and "unknown" not in unknown.text and "exhausted" not in unknown.text)
             anonymous = httpx.post(base + PROMOTION_REDEMPTION_PATH, trust_env=False, json={

@@ -19,8 +19,8 @@ from .http_test_fixtures import HttpDomainFixture, running_http
 from .observability import (
     FAILURE_RECORD_VERSION, HEALTH_RECORD_VERSION, MAXIMUM_FAILURE_LISTING, METADATA_AND_REQUEST_BODY,
     METADATA_ONLY, OTHER_METHOD, REFERENCE_CHARACTERS, UNMATCHED_ROUTE, RequestReference,
-    ServiceFailureJournal, ServiceObservabilityPolicy, new_request_reference, readiness_report,
-    valid_reference,
+    ServiceFailureJournal, ServiceObservabilityPolicy, new_request_reference, readiness_deadline_report,
+    readiness_report, valid_reference,
 )
 from .records import ServiceRuntimeConfig, ServiceRuntimeError
 
@@ -280,6 +280,36 @@ def _readiness_checks(check, root):
                   if row["name"] in ("browser_identity_installed", "billing_sessions_installed",
                                      "billing_webhook_installed", "interface_page_readable",
                                      "catalogue_registered")))
+    # Known-wrong case: measuring did not finish inside the request deadline.
+    # The answer keeps the one health shape the deployment gate reads and says
+    # not ready, with the one failed check that names why.
+    late = readiness_deadline_report(policy)
+    check("a_readiness_answer_that_ran_out_of_time_is_not_ready_in_the_same_shape",
+          late["record_type"] == HEALTH_RECORD_VERSION and late["alive"] is True
+          and late["ready"] is False and late["readiness_checked"] is True
+          and set(late) == set(passing) and late["release_reference"] == "probe-release"
+          and [row["name"] for row in late["checks"] if row["required"] and not row["passed"]]
+          == ["readiness_within_deadline"])
+    # A store nothing has written yet does not answer a read, so a service on
+    # a fresh volume is alive and not ready until its host registers a tenant,
+    # which is what creates the store. A release check that starts the image
+    # on an empty volume must configure it first, as production does.
+    (root / "fresh").mkdir()
+    fresh = ServiceRuntimeConfig(str(root / "fresh" / "service.db"), writes_authorized=True)
+    unconfigured = readiness_report(config=fresh, provisioning=fixture.provisioning,
+        authentication_modes=("host_key",), policy=policy, browser_identity_installed=False,
+        billing_sessions_installed=False, billing_webhook_installed=False)
+    from .records import TenantRegistration
+    from .runtime import ServiceRuntime
+    ServiceRuntime(fresh).register_tenant(TenantRegistration("fresh", "fresh:private"))
+    configured = readiness_report(config=fresh, provisioning=fixture.provisioning,
+        authentication_modes=("host_key",), policy=policy, browser_identity_installed=False,
+        billing_sessions_installed=False, billing_webhook_installed=False)
+    check("a_store_nothing_has_created_is_not_ready_until_a_tenant_is_registered",
+          unconfigured["alive"] is True and unconfigured["ready"] is False
+          and [(row["name"], row["code"]) for row in unconfigured["checks"]
+               if row["required"] and not row["passed"]] == [("durable_store_answers", "store_unavailable")]
+          and configured["ready"] is True)
 
 
 def _live_http_checks(check, root):
@@ -297,6 +327,25 @@ def _live_http_checks(check, root):
                   and healthy.json()["result"]["ready"] is True
                   and healthy.json()["result"]["readiness_checked"] is True
                   and good.status_code == 200)
+            # Known-wrong case: a required dependency that fails must take the
+            # machine out of rotation, so the route answers 503 with the same
+            # record and names the failed check. A route that answered 200 here
+            # would keep the load balancer sending customers to a machine that
+            # cannot serve them. The store is made to fail for this one
+            # question; nothing in it changes.
+            from unittest.mock import patch
+            from . import observability
+            failed = observability.ReadinessCheck("durable_store_answers", True, False, "store_unavailable")
+            with patch.object(observability, "store_readiness", lambda _config: failed):
+                unready = client.get("/api/v1/health")
+            check("a_service_that_is_not_ready_answers_503_and_names_the_failed_check",
+                  unready.status_code == 503
+                  and unready.json()["result"]["record_type"] == HEALTH_RECORD_VERSION
+                  and unready.json()["result"]["alive"] is True
+                  and unready.json()["result"]["ready"] is False
+                  and [(row["name"], row["code"]) for row in unready.json()["result"]["checks"]
+                       if row["required"] and not row["passed"]]
+                  == [("durable_store_answers", "store_unavailable")])
             anonymous = client.get("/api/v1/session")
             wrong = client.get("/api/v1/session",
                                headers={"Authorization": "Bearer WRONG_PROBE_TOKEN_" + PRIVATE_BODY_MARK})
@@ -343,6 +392,35 @@ def _live_http_checks(check, root):
                   and json.dumps(listed) and PRIVATE_BODY_MARK not in json.dumps(listed))
 
 
+def _deadline_checks(check, root):
+    """A health measurement that misses the request deadline answers 503, not ready."""
+    import httpx
+    import threading
+    from unittest.mock import patch
+    from . import http as transport
+    fixture = HttpDomainFixture(root)
+    release = threading.Event()
+    measured = transport.readiness_report
+
+    def held(**fields):
+        # The measurement stays in flight until this check releases it, so the
+        # deadline passes every time, whatever the load on the machine.
+        release.wait(30)
+        return measured(**fields)
+    with patch.object(transport, "readiness_report", held):
+        with running_http(fixture, request_timeout_seconds=0.5) as (base, _service):
+            try:
+                with httpx.Client(base_url=base, trust_env=False, timeout=10) as client:
+                    late = client.get("/api/v1/health")
+            finally:
+                release.set()
+    answer = late.json()["result"]
+    check("a_health_measurement_that_misses_the_deadline_answers_503_not_ready",
+          late.status_code == 503 and answer["record_type"] == HEALTH_RECORD_VERSION
+          and answer["alive"] is True and answer["ready"] is False
+          and [row["name"] for row in answer["checks"]] == ["readiness_within_deadline"])
+
+
 def _payload_capture_checks(check, root):
     """The private body of a request is stored only when a host chose that."""
     import httpx
@@ -367,6 +445,93 @@ def _payload_capture_checks(check, root):
               and valid_reference(refused.json()["request_reference"])
               and (PRIVATE_BODY_MARK in stored) is expected
               and fixture.keys["alpha"].key not in stored)
+
+
+def _credential_body_checks(check, root):
+    """A body that carries a credential stays out of the record, whatever the host chose.
+
+    Sign-up carries the password of a new account, and promotion redemption
+    carries a code that grants paid access to whoever holds it. Body capture was
+    written before either address reached this transport, and on September 22,
+    2026 it kept their bodies as it keeps any other, so a host that captured
+    bodies stored a password and a code as plain text. Both refusals must still
+    be recorded, only without the body, and a body that carries no credential
+    must still be kept, so the host's choice holds everywhere else.
+    """
+    import httpx
+    from .account_email import SIGNUP_PATH, AccountEmailAdapter
+    from .account_email_checks import SIGNUP_REQUEST, SIGNUP_SECRET_VALUE, _Provider, _secrets, _settings
+    from .http import PROMOTION_REDEMPTION_PATH, ServiceHttpApplication
+    from .promotion_checks import GUESSED_BODY, PREFIX
+    from .promotions import PromotionPolicy, PromotionRedemption
+    from .request_limits import SOCKET_PEER_SOURCE, ServiceRequestLimits
+    capture = ServiceObservabilityPolicy(payload_capture=METADATA_AND_REQUEST_BODY)
+    fixture = HttpDomainFixture(root)
+    provider = _Provider()
+    promotions = PromotionRedemption(fixture.runtime, PromotionPolicy(redemption_enabled=True))
+    code = PREFIX + "-" + GUESSED_BODY
+
+    def build(configuration):
+        adapter = AccountEmailAdapter(_settings(allow_loopback=True), _secrets,
+            public_base_url=configuration.public_base_url, address_limits=configuration.request_limits,
+            display_name=configuration.display_name, identity_transport=provider.identity,
+            mail_transport=provider.mail)
+        return ServiceHttpApplication(fixture.runtime, fixture.provisioning, configuration,
+                                      account_email=adapter, promotions=promotions, observability=capture)
+    limits = ServiceRequestLimits(client_address_source=SOCKET_PEER_SOURCE, failures_allowed=50, window_seconds=600)
+    with running_http(fixture, application_factory=build, request_limits=limits) as (base, service):
+        with httpx.Client(base_url=base, trust_env=False, timeout=5) as client:
+            signup = client.post(SIGNUP_PATH, json={**SIGNUP_REQUEST, "unexpected": True})
+            redemption = client.post(PROMOTION_REDEMPTION_PATH, headers=fixture.headers(), json={
+                "record_type": "service_promotion_redemption_request/v1", "code": code,
+                "request_id": "credential-body"})
+            private = client.post("/api/v1/provisioning", headers=fixture.headers(), json={
+                "record_type": PROVISIONING_REQUEST_VERSION, "operation": "manifest",
+                "identity": PRIVATE_BODY_MARK})
+        recorded = {row["route"]: row for row in service.failure_journal.recent(limit=10)["failures"]}
+    stored = _stored_text(root)
+    check("a_body_that_carries_a_credential_is_never_captured_even_when_the_host_captures_bodies",
+          signup.status_code == 400 and redemption.status_code == 403 and private.status_code == 404
+          and {SIGNUP_PATH, PROMOTION_REDEMPTION_PATH, "/api/v1/provisioning"} <= set(recorded)
+          and "request_body" not in recorded[SIGNUP_PATH]
+          and "request_body" not in recorded[PROMOTION_REDEMPTION_PATH]
+          and "request_body" in recorded["/api/v1/provisioning"]
+          and SIGNUP_SECRET_VALUE not in stored and code not in stored and PRIVATE_BODY_MARK in stored)
+
+
+def _host_file_checks(check, root):
+    """The observability section of a host file reaches the application `serve` builds.
+
+    The read command builds its journal from the host file and is checked
+    below. The application that serves requests is built by a different path,
+    `load_host_application`, and a host that chose body capture, a retained
+    count or no recording at all must get that choice there as well.
+    """
+    from .http_entrypoint import HOST_CONFIGURATION_VERSION, MANIFEST_VERSION, load_host_application
+    manifest = root / "manifest.json"
+    manifest.write_text(json.dumps({"record_type": MANIFEST_VERSION, "artifact_root": str(root), "items": []}),
+                        encoding="utf-8")
+
+    def load(extra):
+        path = root / "host.json"
+        path.write_text(json.dumps({"record_type": HOST_CONFIGURATION_VERSION, "manifest_path": str(manifest),
+            "runtime": {"database_path": str(root / "host.db"), "writes_authorized": True},
+            "http": {"public_base_url": "https://service.test", "allowed_hosts": ["service.test"]},
+            "authentication": {}, **extra}), encoding="utf-8")
+        application = load_host_application(str(path))[0]
+        application._workers.shutdown(wait=True)
+        return application
+
+    chosen = {"record_failures": False, "retained_failures": 7, "payload_capture": METADATA_AND_REQUEST_BODY,
+              "release_reference": "probe-release"}
+    served, default = load({"observability": chosen}), load({})
+    check("the_observability_section_of_a_host_file_reaches_the_served_application",
+          served.observability == ServiceObservabilityPolicy(**chosen)
+          and served.failure_journal.policy == served.observability
+          and default.observability == ServiceObservabilityPolicy())
+    check("an_observability_section_naming_an_unknown_field_stops_the_host_loader",
+          _refused(load, {"observability": {**chosen, "capture_everything": True}})
+          == "unsupported_observability_policy")
 
 
 def _read_command_checks(check, root):
@@ -409,6 +574,31 @@ def _read_command_checks(check, root):
           and _refused(read_failures, str(host), tenant="beta", reference=saved[0]) == "invalid_request"
           and _refused(read_failures, str(host), reference="not-a-reference")
           == "invalid_request_reference")
+    # The operator reaches the journal through the command, not through the
+    # function. A release once carried this function, its help text and its
+    # guide while the command itself was missing from the entry point, so
+    # asking for it was refused as an unknown command.
+    from contextlib import redirect_stdout
+    from io import StringIO
+    from ...cli_help import COMMAND_HELP
+    from .http_entrypoint import SERVICE_COMMANDS, main
+    printed = StringIO()
+    try:
+        with redirect_stdout(printed):
+            status = main(["failures", "--config", str(host), "--limit", "2"])
+        answered = json.loads(printed.getvalue())
+    except (SystemExit, ValueError):
+        status, answered = None, {}
+    check("the_failures_command_answers_through_the_service_entry_point",
+          status == 0 and answered.get("returned") == 2 and answered.get("stored") == 3
+          and answered.get("failures") == newest["failures"]
+          and (root / "service.db").read_bytes() == before)
+    usage = COMMAND_HELP["service"].splitlines()[0]
+    named = set(usage[usage.index("{") + 1:usage.index("}")].split("|"))
+    if "loop-engine service smoke" in usage:
+        named.add("smoke")
+    check("every_service_command_the_help_names_is_one_the_entry_point_accepts",
+          named == set(SERVICE_COMMANDS))
 
 
 def run_checks(check=None):
@@ -420,11 +610,18 @@ def run_checks(check=None):
                           "detail": "real loopback transport and a real durable store; no external provider"})
     for name, function in (("references", _reference_checks), ("record_shape", _record_shape_checks),
                            ("ring", _ring_checks), ("readiness", _readiness_checks),
-                           ("live_http", _live_http_checks),
+                           ("live_http", _live_http_checks), ("deadline", _deadline_checks),
                            ("payload_capture", _payload_capture_checks),
+                           ("credential_body", _credential_body_checks),
+                           ("host_file", _host_file_checks),
                            ("read_command", _read_command_checks)):
         with tempfile.TemporaryDirectory(prefix="service-observability-" + name + "-") as directory:
-            function(check, Path(directory))
+            try:
+                function(check, Path(directory))
+            except Exception:
+                # A group that stops part way is a failure with a name, so a
+                # missing guard is reported as such instead of ending the run.
+                check(f"the_{name}_checks_ran_to_completion", False)
     if not tests:
         return None
     return {"record_type": "service_observability_test/v1", "tests": tests,

@@ -22,6 +22,7 @@ from ..provisioning_server import (
 )
 from .http import ServiceHttpApplication, ServiceHttpConfiguration, _parse_json
 from .http_auth import ServiceHttpAuthentication
+from .observability import ServiceObservabilityPolicy
 from .provisioning import DurableProvisioningBinding
 from .records import (
     BillingCustomerBindingRequest, ServiceRuntimeConfig, ServiceRuntimeError,
@@ -31,6 +32,11 @@ from .request_limits import HEADER_SOURCE
 from .runtime import ServiceRuntime
 
 HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
+#: Every command this entry point accepts. The public help for
+#: `loop-engine service` names the same set, and a check compares the two,
+#: because a command the help names and the parser refuses fails only on the
+#: day an operator needs it.
+SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures")
 LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
@@ -206,6 +212,22 @@ def host_license_policy(configuration):
     return HostLicensePolicy(**settings)
 
 
+def observability_policy(configuration):
+    """Return the observability policy a host declares, or the recording default.
+
+    The default records metadata about refused requests and no request body.
+    A host that wants request bodies names that choice, so capturing a private
+    payload is always a written decision and never an accident.
+    """
+    if "observability" not in configuration:
+        return ServiceObservabilityPolicy()
+    settings = configuration["observability"]
+    if not isinstance(settings, dict) or set(settings) - {field.name for field in dataclass_fields(ServiceObservabilityPolicy)}:
+        raise ServiceRuntimeError("unsupported_observability_policy",
+            "a host observability policy names only the fields of the declared policy record")
+    return ServiceObservabilityPolicy(**settings)
+
+
 def _host_json(path, *, maximum_bytes=2_000_000):
     selected = Path(path)
     if not selected.is_absolute() or selected.resolve() != selected or not selected.is_file():
@@ -324,7 +346,8 @@ def signup_matches_the_browser_identity(settings, browser_identity):
 def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
-               "browser_identity", "client_access", "promotions", "account_email", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY}
+               "browser_identity", "client_access", "promotions", "account_email", "observability",
+               LICENSE_POLICY_KEY, FAMILY_POLICY_KEY}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
@@ -381,7 +404,8 @@ def load_host_application(path):
     # `account_email/v1` boundary is validated before the application exists.
     application = ServiceHttpApplication(runtime, binding, transport,
         ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
-        client_access=client_access, promotions=promotions, account_email=account_email)
+        client_access=client_access, promotions=promotions, account_email=account_email,
+        observability=observability_policy(configuration))
     if configuration.get("administration"):
         from .access import ServiceAccessAdministration, ServiceAccessPolicy
         application.access_administration = ServiceAccessAdministration(runtime, ServiceAccessPolicy(**configuration["administration"]))
@@ -489,9 +513,34 @@ def public_binding_refusal(host, behind_trusted_tls_proxy, request_limits):
     return ""
 
 
+def read_failures(path, *, limit=20, tenant=None, reference=None):
+    """Read the durable failure journal of one host. This never writes.
+
+    It builds the journal directly from the host configuration instead of
+    starting the application, so an operator can read the records of a service
+    that is refusing every request, or of one that is not running at all. The
+    store is opened for reading only; no command here can change a record.
+    """
+    from .observability import ServiceFailureJournal
+    from .http import DECLARED_ROUTES
+    configuration = _host_json(path)
+    if configuration.get("record_type") != HOST_CONFIGURATION_VERSION or "runtime" not in configuration:
+        raise ServiceRuntimeError("unsupported_host_configuration")
+    if reference is not None and tenant is not None:
+        raise ServiceRuntimeError("invalid_request", "ask for one reference or for one tenant, not both")
+    # The journal is opened with host writes withheld, so this command cannot
+    # write even if a future change tried to. Reading needs no write authority.
+    settings = {**configuration["runtime"], "writes_authorized": False}
+    journal = ServiceFailureJournal(ServiceRuntimeConfig(**settings), DECLARED_ROUTES,
+                                    policy=observability_policy(configuration))
+    if reference is not None:
+        return journal.detail(reference)
+    return journal.recent(limit=limit, tenant_id=tenant)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Serve the versioned Loop Engine intelligence service.")
-    parser.add_argument("command", choices=("serve", "configure", "apply-grants", "issue-key", "smoke"))
+    parser.add_argument("command", choices=SERVICE_COMMANDS)
     parser.add_argument("--config", help="Absolute host configuration file; never supplied by a remote request.")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
@@ -499,6 +548,10 @@ def main(argv=None):
     parser.add_argument("--tenant")
     parser.add_argument("--label", default="host-issued client key")
     parser.add_argument("--expires-at", type=int)
+    parser.add_argument("--limit", type=int, default=20,
+                        help="failures: how many of the newest records to show.")
+    parser.add_argument("--reference",
+                        help="failures: the request reference a customer read out of a refusal.")
     from .records import SCOPES
     parser.add_argument("--scope", action="append", choices=SCOPES,
                         help="Repeat to narrow issued-key scopes; billing requires an explicit billing:manage grant.")
@@ -515,6 +568,13 @@ def main(argv=None):
         return 0
     if arguments.command == "apply-grants":
         print(json.dumps(apply_host_grants(arguments.config), sort_keys=True))
+        return 0
+    if arguments.command == "failures":
+        # A read-only operator view. It loads no manifest, starts no server and
+        # opens no provider connection, so it answers while the service is down.
+        print(json.dumps(read_failures(arguments.config, limit=arguments.limit,
+                                       tenant=arguments.tenant, reference=arguments.reference),
+                         sort_keys=True))
         return 0
     application, _configuration = load_host_application(arguments.config)
     if arguments.command == "issue-key":
