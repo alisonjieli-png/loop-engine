@@ -12,6 +12,7 @@ Start here:
   configure       inspect provider keys without calling them
   doctor          check installation and local requirements
   solve           perform and verify a task
+  overnight       check this machine, then run unattended on a local model
   runs            list saved product outcomes
   report          render one saved run
   records         query or revise scoped notes through a typed tool
@@ -34,6 +35,9 @@ Run the authenticated intelligence service with durable tenant, access, and usag
     "records": """usage: loop-engine records --policy HOST_POLICY --backend sqlite|package-jsonl --artifact-root PATH [--database PATH | --shard PATH] [--approve-effect-digest DIGEST]
 
 Read one JSON request from stdin: create, get, query, update, or retire. Host configuration fixes storage and scope. Mutations first return an exact effect plan and require matching explicit approval. No raw SQL, direct Markdown edits, or promotion authority.""",
+    "overnight": """usage: loop-engine overnight {check|start|resume|report} --model MODEL [--workspace ABSOLUTE_PATH] [options]
+
+Check the machine, then run unattended on a local model and read the result in the morning. Check asks whether a server answers, whether it holds the model, and whether the model and the requested context fit the video memory you declare with --video-memory-mib; undeclared memory is refused rather than assumed. Start declares the authority the night runs under: --hours, --max-model-calls, --read-root, --write-root and the working folder. Nothing outside that authority happens. --keep-resident-seconds declares how long the server keeps the weights loaded between steps and defaults to the whole night. Every effect is written to the working folder's journal before it happens, so resume continues without repeating one. The night ends for a verified result, spent authority, a question only a person can answer, a cancellation, or a recorded provider outage, and the report says which. No credential is read or sent; a local server declares no authentication.""",
     "configure": """usage: loop-engine configure [--format text|json]
 
 Inspect provider key references and print the exact next probe. No provider is called.""",

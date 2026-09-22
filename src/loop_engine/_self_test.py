@@ -80,7 +80,9 @@ def self_test() -> dict:
         "core.user_feedback_intelligence", "core.runtime_memory", "core.task_fingerprint", "core.task_fingerprint_facets", "core.task_similarity_engine", "core.retrieval", "loop.kernel", "loop.recursive_loop",
         "core.autoconfigure", "core.boundary_registry", "core.component_contracts", "core.component_inventory", "core.config", "core.intelligence_registry", "core.knowledge_loader", "core.model_call",
         "core.model_gateway_accounting_checks", "core.model_call_contract", "core.reuse_evidence", "core.model_call_records", "core.operation_cost_records", "catalog.versioning", "core.operation_cost_capture", "core.configuration_optimizer",
-        "core.service_api", "core.local_resources", "core.instance_hibernation", "core.model_discovery", "core.model_routes", "core.operating_profile", "core.persistence", "core.primitive_conformance",
+        "core.service_api", "core.local_resources", "core.local_model_readiness", "core.instance_hibernation", "core.model_discovery", "core.model_routes", "core.operating_profile", "core.persistence", "core.primitive_conformance",
+        "code_nodes.overnight_authority", "code_nodes.overnight_journal",
+        "code_nodes.overnight_night_checks", "overnight_cli",
         "core.saas_routes", "core.store_serve", "core.model_gateway", "core.settings_loader", "core.parameter_resolution", "core.configuration_setters", "core.configuration_preferences",
     ]
     import importlib as _importlib

@@ -38,6 +38,7 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
                 "runtime_ontology_check", "scheduling", "campaign",
                 "parallel_runner", "cli_operations", "parameter_boundary",
                 "solve_cli", "cli_help", "run_history_cli", "record_cli", "service_cli", "decision_cli", "kaggle_report",
+                "overnight_cli",
                 "parameter_boundary_checks", "semantic_conformance",
                 "semantic_freedom_conformance")
 
@@ -171,7 +172,8 @@ MODULE_MAP = {
         "string_foundry",
         "text_conformance", "text_conformance_checks", "text_conformance_operations",
         "duplicate_detection", "field_recovery", "database_copy", "address_components",
-        "data_quality_surfaces",
+        "data_quality_surfaces", "overnight_authority", "overnight_journal", "overnight_night",
+        "overnight_night_checks",
     ),
     "core": (
         "adaptive_practitioner", "adaptive_practitioner_acceptance_checks",
@@ -293,7 +295,8 @@ MODULE_MAP = {
         "specialist_training", "operation_cost_capture",
         "evaluation_suite", "configuration_optimizer", "node_grid", "service_api",
         "seeded_generation", "typed_decision", "route_separation", "route_separation_checks",
-        "prompt_elements", "typed_action_decision", "local_resources", "instance_hibernation",
+        "prompt_elements", "typed_action_decision", "local_resources",
+        "local_model_readiness", "instance_hibernation",
         "registered_capability_call",
         "model_prompt_envelope",
         "model_gateway_accounting", "model_gateway_accounting_checks", "model_token_preflight",

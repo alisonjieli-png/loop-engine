@@ -189,7 +189,8 @@
     "core/service_runtime/browser_identity_checks.py",
     "core/service_runtime/account_email.py",
     "core/service_runtime/account_email_checks.py",
-    "core/service_runtime/observability_checks.py"
+    "core/service_runtime/observability_checks.py",
+    "core/local_model_readiness.py"
   ],
   "notes": [
     "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
