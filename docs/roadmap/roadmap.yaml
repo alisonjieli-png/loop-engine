@@ -2118,10 +2118,11 @@ steps:
     depends_on: [S-6.7]
     boundary: [core.credential_leases, core.local_resources, core.instance_hibernation, core.harness_process]
     related_steps: [S-2.36, S-2.22, S-2.24]
-    verify: [shared authentication, scoped use, expiry and revocation, owned process cleanup, admission reservation, cancellation]
+    verify: [shared customer-side credential acquisition, authenticated scoped use by each instance, expiry and revocation, owned process cleanup, admission reservation, cancellation]
     adversarial: Revoked access must refuse; a second start cannot exceed reservations; lost contact cannot free capacity or repeat an uncertain effect.
-    acceptance: One host authentication yields scoped leases; starts, waits, stops, and optional resume preserve accounting and authority.
-    evidence: Components exist; ordinary harness lifetime integration remains open.
+    acceptance: One customer-side credential acquisition or consent backs scoped leases for multiple instances; starts, waits, stops, and optional resume preserve accounting and authority. Every physical request still performs the provider's required authentication.
+    evidence: Components exist; ordinary harness lifetime integration remains open. docs/research/CUSTOMER-ENDPOINTS-AND-CREDENTIAL-DELEGATION-2026-09-22.md audits the existing parent model relay, credential leases, endpoint placement and separate Model Context Protocol tool connection gap; local offline rechecks passed 7 credential-lease, 11 harness-process and 7 Model Context Protocol transport checks without a real provider or external tool call.
+    next_local_work: Use the dated research record to bind the existing leases to exact process lifetime and authenticated model use; settle the owning typed edge for a per-step tool bridge before implementation.
   - id: S-6.9
     phase: 6
     title: Qualify actual instruction and capability use in native harnesses
@@ -2279,7 +2280,7 @@ steps:
     verify: [primary-source links, current dates and revisions, claimed versus observed capability, independent counterexamples, uncertainty labels]
     adversarial: Missing documentation cannot become proof of absence; strategic fit cannot become claimed acquisition or funding interest.
     acceptance: A dated research comparison informs product differentiation and qualified next actions without changing runtime authority or contacting organizations.
-    evidence: Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. The September 22 ZCode review and docs/research/CROSS-FUNCTIONAL-HARNESS-AND-LAUNCH-REVIEW-2026-09-22.md add pinned harness sources, theory, current competing offers, stakeholder questions, a launch audit and proposed discriminating checks. tools/refresh_research_sources.py made a bounded read-only check of ten primary sources with a new dated report. Ongoing research remains open; no outreach occurred.
+    evidence: Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. The September 22 ZCode review and docs/research/CROSS-FUNCTIONAL-HARNESS-AND-LAUNCH-REVIEW-2026-09-22.md add pinned harness sources, theory, current competing offers, stakeholder questions, a launch audit and proposed discriminating checks. Six further September 22 records in docs/research cover frontier harness positioning and Google context-state work, model-call strategy and disagreement, benchmark and showcase options, CodeGraph and Graphify alongside retrieval engines, library scale with paid acquisition readiness, and customer-side credential and endpoint delegation. They distinguish observed behavior from proposals and identify tests for Claude Code's build work. tools/refresh_research_sources.py made a bounded read-only check of ten primary sources with a new dated report. Ongoing research remains open; no outreach occurred.
     next_local_work: Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state.
   - id: S-6.23
     phase: 6

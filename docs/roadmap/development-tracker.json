@@ -1603,13 +1603,13 @@
     ]
    },
    {
-    "acceptance": "One host authentication yields scoped leases; starts, waits, stops, and optional resume preserve accounting and authority.",
+    "acceptance": "One customer-side credential acquisition or consent backs scoped leases for multiple instances; starts, waits, stops, and optional resume preserve accounting and authority. Every physical request still performs the provider's required authentication.",
     "blocked_on": "",
     "depends_on": [
      "S-6.7"
     ],
     "id": "S-6.8",
-    "next_local_work": "",
+    "next_local_work": "Use the dated research record to bind the existing leases to exact process lifetime and authenticated model use; settle the owning typed edge for a per-step tool bridge before implementation.",
     "phase": 6,
     "status": "proposed",
     "title": "Connect credential leases and resource admission to harness lifetime",
@@ -3042,5 +3042,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f9954904bfadf"
+ "source_fingerprint": "sha256:7e2d5cbd4bbb78c5c7ca1b1ce2835129136d6c911e85a1ce54a49591e6baa91e"
 }
