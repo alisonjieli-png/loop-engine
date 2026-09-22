@@ -1,0 +1,86 @@
+{
+  "record_type": "research_source_watch_manifest/v1",
+  "sources": [
+    {
+      "id": "zcode",
+      "name": "ZCode source",
+      "kind": "github_repository",
+      "url": "https://github.com/zai-org/ZCode",
+      "roadmap_step": "S-6.42",
+      "license_state": "first-party Apache-2.0 reported at the September 20 revision; third-party notices need separate review",
+      "baseline_revision": "872ad960de7ec172591f7e1952f7849229f94521"
+    },
+    {
+      "id": "pi",
+      "name": "Pi agent harness source",
+      "kind": "github_repository",
+      "url": "https://github.com/earendil-works/pi",
+      "roadmap_step": "S-6.42",
+      "license_state": "unknown"
+    },
+    {
+      "id": "sol_pi",
+      "name": "SoL-Pi extension source",
+      "kind": "github_repository",
+      "url": "https://github.com/NVlabs/SoL-Pi",
+      "roadmap_step": "S-6.42",
+      "license_state": "source-declared MIT; third-party notices unreviewed"
+    },
+    {
+      "id": "sol_pi_paper",
+      "name": "SoL-Pi paper",
+      "kind": "web_page",
+      "url": "https://arxiv.org/abs/2609.20519",
+      "roadmap_step": "S-6.22",
+      "license_state": "unknown"
+    },
+    {
+      "id": "opencode",
+      "name": "OpenCode source",
+      "kind": "github_repository",
+      "url": "https://github.com/anomalyco/opencode",
+      "roadmap_step": "S-6.42",
+      "license_state": "unknown"
+    },
+    {
+      "id": "codex",
+      "name": "Codex source",
+      "kind": "github_repository",
+      "url": "https://github.com/openai/codex",
+      "roadmap_step": "S-6.42",
+      "license_state": "unknown"
+    },
+    {
+      "id": "claude_code",
+      "name": "Claude Code public repository",
+      "kind": "github_repository",
+      "url": "https://github.com/anthropics/claude-code",
+      "roadmap_step": "S-6.42",
+      "license_state": "unknown"
+    },
+    {
+      "id": "acp_specification",
+      "name": "Agent Client Protocol specification",
+      "kind": "github_repository",
+      "url": "https://github.com/agentclientprotocol/agent-client-protocol",
+      "roadmap_step": "S-6.31",
+      "license_state": "unknown"
+    },
+    {
+      "id": "acp_python",
+      "name": "Agent Client Protocol Python library",
+      "kind": "github_repository",
+      "url": "https://github.com/agentclientprotocol/python-sdk",
+      "roadmap_step": "S-6.31",
+      "license_state": "unknown"
+    },
+    {
+      "id": "mcp_specification",
+      "name": "Model Context Protocol specification",
+      "kind": "web_page",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25",
+      "roadmap_step": "S-6.43",
+      "license_state": "unknown"
+    }
+  ]
+}

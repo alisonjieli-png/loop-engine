@@ -3857,6 +3857,85 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-22
     expires_on: 2027-09-22
+  - finding_id: hardcoding.06050b4298bbaa26337122fc
+    owner: tools.research_source_watch.json:sources[1].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.09621482e0e3d33fa23efa54
+    owner: tools.research_source_watch.json:sources[2].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.349c56e9c3cf0318eb3f7185
+    owner: tools.refresh_research_sources:_request_url
+    rationale: >-
+      A repository source is checked through GitHub's documented public commits interface, read-only and bounded, to learn the newest revision. This developer research tool exists to watch those public sources; it binds no product provider, sends no credential and never runs in the service.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.42106c5d899f292c8f4a5d47
+    owner: tools.research_source_watch.json:sources[6].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.49c2634cceaec8512c8ee380
+    owner: tools.refresh_research_sources:_validate_url
+    rationale: >-
+      The research source watcher accepts only a bounded HTTPS address on a public host before any request. The scheme name, the reserved suffixes it refuses and the GitHub host it requires for a repository source are the closed validation vocabulary of that rule; they bind no provider for the product and no caller needs to override them.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-22
+  - finding_id: hardcoding.4f4feedf51da516499ff5d88
+    owner: tools.research_source_watch.json:sources[4].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.66a389233f38f73e98d20f32
+    owner: tools.research_source_watch.json:sources[8].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.7fc046d211318c74b99e5035
+    owner: tools.research_source_watch.json:sources[3].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.877590af4f1a546067f12598
+    owner: tools.research_source_watch.json:sources[0].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.b281c67d12855853f0130aba
+    owner: tools.research_source_watch.json:sources[9].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.b3842f567b21a89fb237a2bc
+    owner: tools.research_source_watch.json:sources[5].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.eee312f3dc5dfe7503f2ddeb
+    owner: tools.research_source_watch.json:sources[7].url
+    rationale: >-
+      The research source watch list is a declared manifest of the primary sources a developer research review cites. Naming each address is the purpose of the file; the watcher reads them only in an explicit, bounded online run and writes a new dated report. Nothing in the product reads this list.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.f6d096dbe06505f2cccf8f82
+    owner: tools.refresh_research_sources:_validate_url
+    rationale: >-
+      The research source watcher accepts only a bounded HTTPS address on a public host before any request. The scheme name, the reserved suffixes it refuses and the GitHub host it requires for a repository source are the closed validation vocabulary of that rule; they bind no provider for the product and no caller needs to override them.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-22
+
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

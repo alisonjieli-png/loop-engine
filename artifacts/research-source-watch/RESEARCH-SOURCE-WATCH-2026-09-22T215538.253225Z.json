@@ -1,0 +1,215 @@
+{
+  "created_at": "2026-09-22T21:55:42Z",
+  "interpretation": "Changes are review prompts, not source claims, candidate approval, or runtime authority.",
+  "limits": {
+    "max_bytes": 512000,
+    "max_online_sources": 12,
+    "timeout_seconds": 5.0
+  },
+  "manifest_sha256": "a0d94f361931febf13dcdb14fbdffc5f9533f6fc07402837cdfe1d8dee951af2",
+  "mode": "online",
+  "record_type": "research_source_watch_report/v1",
+  "sources": [
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:38Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "zcode",
+      "kind": "github_repository",
+      "license_state": "first-party Apache-2.0 reported at the September 20 revision; third-party notices need separate review",
+      "name": "ZCode source",
+      "observed": {
+        "etag": "W/\"12da619bde6838f2e941c426f38d467a75d4f83ada0e4c7b7da70e7c6cfcb737\"",
+        "fingerprint": "872ad960de7ec172591f7e1952f7849229f94521",
+        "last_modified": "Sun, 20 Sep 2026 21:14:32 GMT",
+        "request_url": "https://api.github.com/repos/zai-org/ZCode/commits?per_page=1",
+        "revision": "872ad960de7ec172591f7e1952f7849229f94521"
+      },
+      "retrieved_at": "2026-09-22T21:55:38Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/zai-org/ZCode"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:38Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "pi",
+      "kind": "github_repository",
+      "license_state": "unknown",
+      "name": "Pi agent harness source",
+      "observed": {
+        "etag": "W/\"7284914842129e4025d5e6f88bd252fa4e827956ec3e6ec490a88e14e73bc917\"",
+        "fingerprint": "a32782520f69cd81b54814c3a13df4c7bd1f3ad7",
+        "last_modified": "Tue, 22 Sep 2026 21:46:19 GMT",
+        "request_url": "https://api.github.com/repos/earendil-works/pi/commits?per_page=1",
+        "revision": "a32782520f69cd81b54814c3a13df4c7bd1f3ad7"
+      },
+      "retrieved_at": "2026-09-22T21:55:39Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/earendil-works/pi"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:39Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "sol_pi",
+      "kind": "github_repository",
+      "license_state": "source-declared MIT; third-party notices unreviewed",
+      "name": "SoL-Pi extension source",
+      "observed": {
+        "etag": "W/\"f26b7464da2e6199a13cdfb4974e74fc7d812769146a86074508897a64a621ec\"",
+        "fingerprint": "1559b5cb12c72da4a485bc50fe326586b216fb19",
+        "last_modified": "Tue, 22 Sep 2026 06:52:09 GMT",
+        "request_url": "https://api.github.com/repos/NVlabs/SoL-Pi/commits?per_page=1",
+        "revision": "1559b5cb12c72da4a485bc50fe326586b216fb19"
+      },
+      "retrieved_at": "2026-09-22T21:55:39Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/NVlabs/SoL-Pi"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:39Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "sol_pi_paper",
+      "kind": "web_page",
+      "license_state": "unknown",
+      "name": "SoL-Pi paper",
+      "observed": {
+        "content_sha256": "e892a9ea0bf05dc0a4a048ed32b9325db0793863fff1f6550f694a893f6708b3",
+        "etag": null,
+        "fingerprint": "e892a9ea0bf05dc0a4a048ed32b9325db0793863fff1f6550f694a893f6708b3",
+        "last_modified": "Fri, 18 Sep 2026 01:06:03 GMT",
+        "request_url": "https://arxiv.org/abs/2609.20519"
+      },
+      "retrieved_at": "2026-09-22T21:55:39Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://arxiv.org/abs/2609.20519"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:39Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "opencode",
+      "kind": "github_repository",
+      "license_state": "unknown",
+      "name": "OpenCode source",
+      "observed": {
+        "etag": "W/\"8da5933d1ddfed06c0bf8a4e601f436bdd265906e74904dae5c8ef801c88b47f\"",
+        "fingerprint": "2406400f0aeb07b36d0495af4e05aaca49159832",
+        "last_modified": "Tue, 22 Sep 2026 19:25:10 GMT",
+        "request_url": "https://api.github.com/repos/anomalyco/opencode/commits?per_page=1",
+        "revision": "2406400f0aeb07b36d0495af4e05aaca49159832"
+      },
+      "retrieved_at": "2026-09-22T21:55:40Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/anomalyco/opencode"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:40Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "codex",
+      "kind": "github_repository",
+      "license_state": "unknown",
+      "name": "Codex source",
+      "observed": {
+        "etag": "W/\"fa45e29b5254ca5b2399ef8879da0df108f61b623e584093eeba79fd36a65062\"",
+        "fingerprint": "78fdcd2311bf979d4938cd8ba671fd8f04eb87c3",
+        "last_modified": "Tue, 22 Sep 2026 21:42:11 GMT",
+        "request_url": "https://api.github.com/repos/openai/codex/commits?per_page=1",
+        "revision": "78fdcd2311bf979d4938cd8ba671fd8f04eb87c3"
+      },
+      "retrieved_at": "2026-09-22T21:55:40Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/openai/codex"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:40Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "claude_code",
+      "kind": "github_repository",
+      "license_state": "unknown",
+      "name": "Claude Code public repository",
+      "observed": {
+        "etag": "W/\"15ae53cf14df8f634363d66366b081ab80bf757cdecf73b80c19904359077541\"",
+        "fingerprint": "56f36532530f88b572854538d685fcf781141e8c",
+        "last_modified": "Tue, 22 Sep 2026 16:37:53 GMT",
+        "request_url": "https://api.github.com/repos/anthropics/claude-code/commits?per_page=1",
+        "revision": "56f36532530f88b572854538d685fcf781141e8c"
+      },
+      "retrieved_at": "2026-09-22T21:55:40Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/anthropics/claude-code"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:40Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "acp_specification",
+      "kind": "github_repository",
+      "license_state": "unknown",
+      "name": "Agent Client Protocol specification",
+      "observed": {
+        "etag": "W/\"9d059c356e6a62c052f8e3ba26d0ce92437f676b4a89ae7b0ac753375953d8ae\"",
+        "fingerprint": "8391634411c057e3361930ceadfd00af42fa98bf",
+        "last_modified": "Tue, 22 Sep 2026 18:57:49 GMT",
+        "request_url": "https://api.github.com/repos/agentclientprotocol/agent-client-protocol/commits?per_page=1",
+        "revision": "8391634411c057e3361930ceadfd00af42fa98bf"
+      },
+      "retrieved_at": "2026-09-22T21:55:41Z",
+      "roadmap_step": "S-6.31",
+      "url": "https://github.com/agentclientprotocol/agent-client-protocol"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:41Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "acp_python",
+      "kind": "github_repository",
+      "license_state": "unknown",
+      "name": "Agent Client Protocol Python library",
+      "observed": {
+        "etag": "W/\"fd1f328653f8e72c55bb0c0fb71b23a3d473d2779ce83c46bd20b20470c9b8f9\"",
+        "fingerprint": "9d07d7871ef4b220b8507e15fc4b1560f0950a64",
+        "last_modified": "Mon, 21 Sep 2026 09:12:17 GMT",
+        "request_url": "https://api.github.com/repos/agentclientprotocol/python-sdk/commits?per_page=1",
+        "revision": "9d07d7871ef4b220b8507e15fc4b1560f0950a64"
+      },
+      "retrieved_at": "2026-09-22T21:55:41Z",
+      "roadmap_step": "S-6.31",
+      "url": "https://github.com/agentclientprotocol/python-sdk"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-22T21:55:41Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215348.040164Z.json",
+      "failure": null,
+      "id": "mcp_specification",
+      "kind": "web_page",
+      "license_state": "unknown",
+      "name": "Model Context Protocol specification",
+      "observed": {
+        "content_sha256": "3cdc3b019a5d06f19ff32b861740f07d0f1a114efbd6e121b0f4a757c37753e1",
+        "etag": null,
+        "fingerprint": "3cdc3b019a5d06f19ff32b861740f07d0f1a114efbd6e121b0f4a757c37753e1",
+        "last_modified": null,
+        "request_url": "https://modelcontextprotocol.io/specification/2025-11-25"
+      },
+      "retrieved_at": "2026-09-22T21:55:42Z",
+      "roadmap_step": "S-6.43",
+      "url": "https://modelcontextprotocol.io/specification/2025-11-25"
+    }
+  ],
+  "tool_sha256": "170ace8e6f41cad340209ddbd23e728083279341a0ff2a187569890bbcb4ec13"
+}
