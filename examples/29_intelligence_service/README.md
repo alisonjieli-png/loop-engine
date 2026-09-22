@@ -28,7 +28,8 @@ privately. Do not capture it in logs or paste it into chat.
 Visit `http://127.0.0.1:8000/app`, connect with that service key and search for
 `review`. Inspect the source and digest, then fetch the selected file. The
 browser verifies the downloaded bytes. The endpoint for a compatible client
-is `http://127.0.0.1:8000/mcp`, with protocol `2025-11-25`.
+is `http://127.0.0.1:8000/mcp`, with protocol `2025-11-25` through the
+`initialize` handshake or `2026-07-28` named on every request.
 
 Stop the process with your terminal's interrupt control. Serving again reopens
 the existing state. Do not run `configure` as a restart command: it is an

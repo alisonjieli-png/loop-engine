@@ -138,6 +138,46 @@ Metering follows the same separation. The metered unit is
 items, a manifest with digests and sizes, a refusal before metering, and
 reading the tenant's own usage.
 
+## Model Context Protocol versions
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it. The deployed release observed on
+September 21, 2026 served 2025-11-25 alone.
+
+The endpoint `/mcp` serves two protocol versions, and the capabilities record
+names both under `protocol.versions`. They reach the service in two different
+ways, which the record also names.
+
+| Version | How a client reaches it | Capabilities field |
+|---|---|---|
+| `2025-11-25` | The `initialize` handshake, then the version in the `MCP-Protocol-Version` header of every later request | `protocol.handshake_versions` |
+| `2026-07-28` | No handshake. The version in the header and in `_meta` of every request, and `server/discover` to ask which versions are served | `protocol.per_request_versions` |
+
+The service chooses the version of every request before the protocol library
+sees it, because the library also speaks older versions that this release has
+not qualified.
+
+```text
+One request to /mcp
+├── initialize         the 2025-11-25 handshake, whatever version header it carries
+│   ├── a served version        answered with that version
+│   └── any other version       answered with 2025-11-25; the client decides whether to continue
+├── any other request  the version in MCP-Protocol-Version
+│   ├── a served version        served at that version
+│   ├── another version         400 and error -32022, listing every served version, newest first
+│   └── no header, a repeated header or one that is not a version
+│                               400 and error -32020
+└── GET or DELETE      405 with Allow: POST, because the service keeps no session
+```
+
+A host can serve fewer versions. The `protocol_versions` member of the host's
+HTTP configuration, record `service_http_configuration/v2`, names them, and
+both are served when it is absent. Version 1 of that record pinned one version
+in `protocol_version`, and a release with this change refuses it rather than
+read it as both. The
+[service runtime guide](../../../src/loop_engine/core/service_runtime/README.md#model-context-protocol-versions)
+has the host file change a release needs and the checks that hold each rule.
+
 ## Refusals
 
 The domain raises `ServiceRuntimeError` with an exact code before any effect.

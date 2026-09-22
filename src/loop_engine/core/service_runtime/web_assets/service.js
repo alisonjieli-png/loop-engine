@@ -454,9 +454,10 @@
   });
   $("test-protocol").addEventListener("click", async () => {
     if (connectionBusy || !token || !capabilities) return;
-    connectionBusy = true; const epoch = generation, version = capabilities.protocol.versions[0];
+    connectionBusy = true; const epoch = generation, version = (capabilities.protocol.handshake_versions || [])[0];
     $("test-protocol").disabled = true; $("protocol-tools").replaceChildren(); message("protocol-result", "Checking the protocol handshake and available tools…");
     try {
+      if (!version) throw new Error("This service offers no handshake protocol version, so this browser check cannot run.");
       const profile = {protocol:version};
       const initialized = await request("/mcp", {jsonrpc:"2.0", id:crypto.randomUUID(), method:"initialize", params:{protocolVersion:version, capabilities:{}, clientInfo:{name:"baltor-browser-check",version:"1.0.0"}}}, true, false, profile);
       if (initialized.protocolVersion !== version) throw new Error("The returned protocol version is not the selected service version.");

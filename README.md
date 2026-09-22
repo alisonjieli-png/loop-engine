@@ -30,8 +30,9 @@ authenticated Model Context Protocol endpoint. The service does not run
 customer tasks and does not call a model.
 
 Current behavior: a private pilot of the service runs. It is not open to the
-public, and it is not a paid service. The service accepts Model Context
-Protocol version `2025-11-25` only. The
+public, and it is not a paid service. The deployed pilot accepts Model Context
+Protocol version `2025-11-25` only. The source in this repository also serves
+`2026-07-28`; a deployment serves it once a release includes that source. The
 [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
 section of the client and server map records the running release, the kinds
 of access that are switched on and what the catalogue holds. Follow that

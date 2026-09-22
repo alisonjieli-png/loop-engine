@@ -10,6 +10,7 @@ This module is the declared subprocess boundary for stdio MCP servers.
 from __future__ import annotations
 
 import asyncio
+from contextlib import asynccontextmanager
 import os
 from dataclasses import dataclass, replace
 from typing import Mapping, Protocol, runtime_checkable
@@ -42,6 +43,16 @@ def _exception_leaves(error: Exception) -> tuple[Exception, ...]:
     for item in nested:
         leaves.extend(_exception_leaves(item))
     return tuple(leaves)
+
+
+@asynccontextmanager
+async def _streamable_http(url: str, headers: dict[str, str]):
+    """The official Streamable HTTP client with the resolved headers, closed on exit."""
+    from mcp.client.streamable_http import streamable_http_client
+    from mcp.shared._httpx_utils import create_mcp_http_client
+    async with create_mcp_http_client(headers=headers) as client:
+        async with streamable_http_client(url, http_client=client) as streams:
+            yield streams
 
 
 class McpSdkTransport(McpTransport):
@@ -129,8 +140,7 @@ class McpSdkTransport(McpTransport):
         if values:
             headers["Authorization"] = "Bearer " + next(iter(values.values()))
         if server.transport == "streamable_http":
-            from mcp.client.streamable_http import streamablehttp_client
-            return streamablehttp_client(server.url, headers=headers)
+            return _streamable_http(server.url, headers)
         if server.transport == "sse":
             from mcp.client.sse import sse_client
             return sse_client(server.url, headers=headers)
@@ -177,7 +187,8 @@ class McpSdkTransport(McpTransport):
             response = await session.call_tool(
                 request.tool_name, request.transport_arguments())
             if hasattr(response, "model_dump"):
-                return response.model_dump(mode="json")
+                # The protocol's own field names, as the result travelled.
+                return response.model_dump(mode="json", by_alias=True)
             return response
         return self._run(asyncio.wait_for(
             self._with_session(server, operation),
@@ -197,7 +208,6 @@ def self_test() -> dict:
 
     try:
         import mcp
-        from mcp.shared.version import LATEST_PROTOCOL_VERSION
     except ImportError:
         return {"tests": [{
             "test": "official_mcp_sdk_is_installed",
@@ -206,6 +216,11 @@ def self_test() -> dict:
             "missing_optional_dependencies": ["mcp"],
             "detail": "Optional MCP adapter is not installed."}],
             "passed": 1, "total": 1, "all_passed": True}
+    # Outside the absence guard on purpose: an installed library that moved
+    # this name must fail the self-test, not report the adapter as absent.
+    # Until September 22, 2026 this import sat inside the guard, and the 2.x
+    # library, which moved it, was reported as not installed and passed.
+    from mcp.types.version import LATEST_HANDSHAKE_VERSION as LATEST_PROTOCOL_VERSION
 
     with tempfile.TemporaryDirectory(prefix="loop-engine-mcp-sdk-") as root:
         class FixtureSecretResolver:
@@ -221,8 +236,8 @@ def self_test() -> dict:
         script.write_text(
             "import asyncio\n"
             "import os\n"
-            "from mcp.server.fastmcp import FastMCP\n"
-            "server = FastMCP('loop-engine-official-sdk-test')\n"
+            "from mcp.server.mcpserver import MCPServer\n"
+            "server = MCPServer('loop-engine-official-sdk-test')\n"
             "@server.tool(description='Add two integers')\n"
             "def add(a: int, b: int) -> int:\n"
             "    return a + b\n"
@@ -322,7 +337,7 @@ def self_test() -> dict:
                 services=McpInvocationServices(
                     runtime=runtime, artifact_manager=artifacts))
             text = str(result.output)
-            check("official_FastMCP_server_executes_through_the_SDK_client",
+            check("official_high_level_server_executes_through_the_SDK_client",
                   result.status == "completed"
                   and result.loop_id.startswith("loop")
                   and "5" in text

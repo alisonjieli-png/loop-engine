@@ -12,12 +12,13 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 import json
 import math
+import re
 import threading
 from urllib.parse import urlsplit
 
 from ...loop.encapsulate import as_loop
 from ...loop.loop_role import LoopRole, LoopRoleIdentity
-from ..provisioning_mcp import PROTOCOL_VERSION, TOOL_OPERATIONS, _schema
+from ..provisioning_mcp import TOOL_OPERATIONS, _schema
 from ..provisioning_server import OPERATIONS, ProvisioningError, ProvisioningItemBinding
 from .http_auth import (
     HttpAuthenticationError, ServiceHttpAuthentication, ServiceHttpAuthenticator, validate_public_url,
@@ -32,7 +33,27 @@ RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
 PROVISIONING_REQUEST_VERSION = "service_provisioning_request/v1"
 RETRIEVAL_REQUEST_VERSION = "service_retrieval_request/v1"
-HTTP_CONFIGURATION_RECORD_TYPE = "service_http_configuration/v1"
+#: Version 2 replaced the one pinned protocol version of version 1 with the
+#: set of versions the host serves. A release that reads version 1 refuses
+#: version 2, and this release refuses version 1, so neither can widen or
+#: narrow what a host file meant.
+HTTP_CONFIGURATION_RECORD_TYPE = "service_http_configuration/v2"
+#: Model Context Protocol versions a client reaches through the `initialize`
+#: handshake, oldest first. Each one is qualified by the protocol checks in
+#: `http_checks.py`.
+HANDSHAKE_PROTOCOL_VERSIONS = ("2025-11-25",)
+#: Versions that carry the protocol version on every request instead of a
+#: handshake, oldest first, qualified by the same checks.
+PER_REQUEST_PROTOCOL_VERSIONS = ("2026-07-28",)
+#: Every protocol version this release can serve, oldest first. A host serves
+#: all of them unless its configuration names fewer.
+QUALIFIED_PROTOCOL_VERSIONS = HANDSHAKE_PROTOCOL_VERSIONS + PER_REQUEST_PROTOCOL_VERSIONS
+#: How long a client may reuse a tool list or a discovery answer, in
+#: milliseconds. Both change only with a release or a host configuration
+#: change, and both are answers to an authenticated caller, so a shared cache
+#: must not hand them to anyone else.
+PROTOCOL_CACHE_TTL_MS = 300_000
+PROTOCOL_CACHE_SCOPE = "private"
 #: The account email boundary this release serves. An installed adapter states
 #: the version it speaks, and an adapter that speaks another one is refused
 #: before the application serves either public account route.
@@ -92,12 +113,18 @@ API_ROUTES = {
 
 
 class ServiceHttpError(ValueError):
-    """A bounded versioned transport refusal with no private exception text; no other failure adds details or headers."""
+    """A bounded versioned transport refusal with no private exception text; no other failure adds details or headers.
 
-    def __init__(self, code, status=400, *, details=None, headers=None):
+    A refusal of the protocol endpoint itself carries `protocol_error`, the
+    JSON-RPC error response a protocol client reads, and is answered in that
+    shape instead of the service's own record.
+    """
+
+    def __init__(self, code, status=400, *, details=None, headers=None, protocol_error=None):
         super().__init__(code)
         self.code, self.status = code, status
         self.details, self.headers = details, headers
+        self.protocol_error = protocol_error
 
 
 @dataclass(frozen=True)
@@ -117,15 +144,23 @@ class ServiceHttpConfiguration:
     request_timeout_seconds: float = 30.0
     allow_loopback_http: bool = False
     request_limits: ServiceRequestLimits = ServiceRequestLimits()
-    protocol_version: str = PROTOCOL_VERSION
+    protocol_versions: tuple[str, ...] = QUALIFIED_PROTOCOL_VERSIONS
     record_type: str = HTTP_CONFIGURATION_RECORD_TYPE
 
     def __post_init__(self):
         if (not isinstance(self.display_name, str) or not self.display_name.strip()
                 or len(self.display_name) > 80 or any(ord(ch) < 32 for ch in self.display_name)):
             raise ValueError("service display name must be bounded printable text")
-        if self.record_type != HTTP_CONFIGURATION_RECORD_TYPE or self.protocol_version != PROTOCOL_VERSION:
+        if self.record_type != HTTP_CONFIGURATION_RECORD_TYPE:
             raise ValueError("unsupported HTTP service profile")
+        versions = self.protocol_versions
+        if (not isinstance(versions, (tuple, list)) or not versions or len(set(map(str, versions))) != len(versions)
+                or any(not isinstance(value, str) or value not in QUALIFIED_PROTOCOL_VERSIONS for value in versions)):
+            raise ValueError("protocol versions must be distinct versions this release qualified")
+        # The release order, not the host file's order, so no order in a host
+        # file can carry a meaning of its own.
+        object.__setattr__(self, "protocol_versions",
+                           tuple(value for value in QUALIFIED_PROTOCOL_VERSIONS if value in versions))
         if type(self.allow_loopback_http) is not bool:
             raise ValueError("loopback HTTP requires explicit Boolean configuration")
         base = validate_public_url(self.public_base_url, permit_loopback=self.allow_loopback_http)
@@ -171,6 +206,16 @@ class ServiceHttpConfiguration:
         """
         return max(1, self.maximum_concurrent_operations // 2)
 
+    @property
+    def handshake_protocol_versions(self):
+        """The served versions a client reaches with `initialize`, oldest first."""
+        return tuple(value for value in self.protocol_versions if value in HANDSHAKE_PROTOCOL_VERSIONS)
+
+    @property
+    def per_request_protocol_versions(self):
+        """The served versions a client names on every request instead, oldest first."""
+        return tuple(value for value in self.protocol_versions if value in PER_REQUEST_PROTOCOL_VERSIONS)
+
 
 def speaks_the_account_email_boundary(adapter):
     """True when an installed account email adapter declares the boundary this release serves."""
@@ -203,30 +248,75 @@ def _json_bytes(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
-#: The protocol versions this release answers an `initialize` handshake with,
-#: oldest first. Only a qualified version belongs here.
-HANDSHAKE_PROTOCOL_VERSIONS = (PROTOCOL_VERSION,)
+#: The protocol's own error codes, defined by the 2026-07-28 revision.
+HEADER_MISMATCH_ERROR = -32020
+UNSUPPORTED_PROTOCOL_VERSION_ERROR = -32022
+PROTOCOL_VERSION_HEADER = "mcp-protocol-version"
+#: The shape of a protocol version a refusal may name back to the client. A
+#: header outside it is refused as malformed and is not repeated.
+_VERSION_TOKEN = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}")
 
 
-def initialize_with_selected_version(payload, body):
-    """The initialize request the protocol library serves, naming the version this service selected.
+def _protocol_error(protocol_code, message, request_id, data=None):
+    """The protocol's own error response for one refused request."""
+    error = {"code": protocol_code, "message": message}
+    if data is not None:
+        error["data"] = data
+    return {"jsonrpc": "2.0", "id": request_id, "error": error}
 
-    The 2025-11-25 lifecycle: when the server does not support the version a
-    client asks for, it MUST answer with another version it supports, normally
-    its newest, and the client then decides whether to disconnect. Refusing the
-    request instead breaks every client that asks for a newer version first.
 
-    The service selects the version, not the protocol library, because the
-    library also accepts older versions that this release has not qualified. A
-    request whose version is not text is passed on unchanged, so the library
-    refuses it as malformed rather than having a version filled in for it.
+def select_protocol_binding(configuration, payload, header_values):
+    """The protocol version one request to `/mcp` is served at, or a refusal before any effect.
+
+    Returns `(version, message)`: the version handed to the protocol library
+    and the message it serves. The message differs from the request only when
+    an `initialize` asked for a version this service does not serve.
+
+    An `initialize` always selects the handshake, whatever header it carries,
+    as the 2026-07-28 revision requires of a server that serves both kinds of
+    version. When the requested version is not served, the 2025-11-25
+    lifecycle requires an answer that names one that is, normally the newest,
+    and the client decides whether to continue. The service selects that
+    version itself, because the protocol library would also accept older
+    versions this release has not qualified. A requested version that is not
+    text is passed on unchanged, so the library refuses it as malformed.
+
+    Every other request names its version in `MCP-Protocol-Version`, and that
+    version selects the binding. A version the service does not serve is
+    answered with the 2026-07-28 error that lists the versions it does serve,
+    newest first, so that a client can choose one and retry.
     """
-    params = payload.get("params")
-    if not isinstance(params, dict) or not isinstance(params.get("protocolVersion"), str):
-        return body
-    if params["protocolVersion"] in HANDSHAKE_PROTOCOL_VERSIONS:
-        return body
-    return _json_bytes({**payload, "params": {**params, "protocolVersion": HANDSHAKE_PROTOCOL_VERSIONS[-1]}})
+    identity = payload.get("id")
+    request_id = identity if isinstance(identity, (str, int)) and not isinstance(identity, bool) else None
+    supported = list(reversed(configuration.protocol_versions))
+    if len(header_values) > 1:
+        raise ServiceHttpError("protocol_version_header_repeated", protocol_error=_protocol_error(
+            HEADER_MISMATCH_ERROR, "The MCP-Protocol-Version header appears more than once", request_id))
+    if payload.get("method") == "initialize":
+        handshake = configuration.handshake_protocol_versions
+        params = payload.get("params")
+        requested = params.get("protocolVersion") if isinstance(params, dict) else None
+        if not handshake:
+            data = {"supported": supported}
+            if isinstance(requested, str) and _VERSION_TOKEN.fullmatch(requested):
+                data["requested"] = requested
+            raise ServiceHttpError("unsupported_protocol_version", protocol_error=_protocol_error(
+                UNSUPPORTED_PROTOCOL_VERSION_ERROR, "Unsupported protocol version", request_id, data))
+        if not isinstance(requested, str) or requested in handshake:
+            return (requested if requested in handshake else handshake[-1]), payload
+        return handshake[-1], {**payload, "params": {**params, "protocolVersion": handshake[-1]}}
+    if not header_values:
+        raise ServiceHttpError("protocol_version_header_missing", protocol_error=_protocol_error(
+            HEADER_MISMATCH_ERROR, "The MCP-Protocol-Version header is required", request_id))
+    version = header_values[0]
+    if not _VERSION_TOKEN.fullmatch(version):
+        raise ServiceHttpError("protocol_version_header_malformed", protocol_error=_protocol_error(
+            HEADER_MISMATCH_ERROR, "The MCP-Protocol-Version header is not a protocol version", request_id))
+    if version not in configuration.protocol_versions:
+        raise ServiceHttpError("unsupported_protocol_version", protocol_error=_protocol_error(
+            UNSUPPORTED_PROTOCOL_VERSION_ERROR, "Unsupported protocol version", request_id,
+            {"supported": supported, "requested": version}))
+    return version, payload
 
 
 def _json_nesting_depth(body, limit):
@@ -450,7 +540,10 @@ class ServiceHttpApplication:
                             "client_access_available": self.client_access is not None,
                             "promotion_redemption_available": self.promotions is not None,
                             "promotion_redemption_endpoint": PROMOTION_REDEMPTION_PATH},
-                "protocol": {"transport": "streamable_http", "versions": [PROTOCOL_VERSION],
+                "protocol": {"transport": "streamable_http",
+                             "versions": list(self.configuration.protocol_versions),
+                             "handshake_versions": list(self.configuration.handshake_protocol_versions),
+                             "per_request_versions": list(self.configuration.per_request_protocol_versions),
                              "sdk_version": version("mcp"), "session_state": "stateless",
                              "oauth_resource_metadata": EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes,
                              "oauth_authorization_server_installed": False,
@@ -775,15 +868,28 @@ class ServiceHttpApplication:
         return operation, fields
 
     def _sdk_server(self):
-        import mcp.types as types
-        from mcp.server.lowlevel import Server
-        from jsonschema import validate, ValidationError
-        sdk = Server("loop-engine-intelligence", version="1.0.0")
+        """The protocol library's server, bound to exactly the versions this host serves.
 
-        @sdk.list_tools()
-        async def list_tools():
-            context = sdk.request_context.request.scope["service_authentication"]
-            self.authenticator.revalidate(context)
+        The library speaks more versions than this release has qualified, so
+        the transport selects the version of every request before the library
+        sees it. The library must still speak each version the host serves;
+        a missing one refuses the whole application before it answers anyone.
+        """
+        import mcp.types as types
+        from mcp.server.caching import CacheHint
+        from mcp.server.lowlevel import Server
+        from mcp.types.version import HANDSHAKE_PROTOCOL_VERSIONS as LIBRARY_HANDSHAKE
+        from mcp.types.version import MODERN_PROTOCOL_VERSIONS as LIBRARY_PER_REQUEST
+        from jsonschema import validate, ValidationError
+        configuration = self.configuration
+        unserved = ([value for value in configuration.handshake_protocol_versions if value not in LIBRARY_HANDSHAKE]
+                    + [value for value in configuration.per_request_protocol_versions
+                       if value not in LIBRARY_PER_REQUEST])
+        if unserved:
+            raise ValueError("the installed protocol library does not serve " + ", ".join(unserved))
+
+        async def list_tools(ctx, _params):
+            self.authenticator.revalidate(ctx.request.scope["service_authentication"])
             tools = [types.Tool(name=name, description="Authorized intelligence " + operation,
                 inputSchema=http_provisioning_schema(operation), annotations=types.ToolAnnotations(
                     readOnlyHint=operation != READ_OPERATION, destructiveHint=False, idempotentHint=True))
@@ -792,12 +898,14 @@ class ServiceHttpApplication:
                 inputSchema={"type": "object", "required": ["query"], "additionalProperties": False,
                     "properties": {"query": {"type": "string"}, "mode": {"enum": ["lexical", "hybrid"]},
                                    "top_n": {"type": "integer", "minimum": 1}}}))
-            return tools
+            return types.ListToolsResult(tools=tools)
 
-        @sdk.call_tool(validate_input=False)
-        async def call_tool(name, arguments):
+        async def call_tool(ctx, params):
+            # The library passes the arguments as sent; this transport has
+            # always read an absent argument object as an empty one.
+            name, arguments = params.name, params.arguments or {}
             try:
-                context = sdk.request_context.request.scope["service_authentication"]
+                context = ctx.request.scope["service_authentication"]
                 if name == "intelligence_search":
                     fields = self._validate_search(arguments, versioned=False)
                     output = await self._tenant_work(context, lambda: invoke_http_retrieval_as_loop(lambda: self._search(context, fields)))
@@ -822,6 +930,23 @@ class ServiceHttpApplication:
             refused = _error_record(code, status)
             return types.CallToolResult(content=[types.TextContent(type="text", text=_json_bytes(refused).decode())],
                                         structuredContent=refused, isError=True)
+
+        hint = CacheHint(ttl_ms=PROTOCOL_CACHE_TTL_MS, scope=PROTOCOL_CACHE_SCOPE)
+        sdk = Server("loop-engine-intelligence", version="1.0.0", on_list_tools=list_tools, on_call_tool=call_tool,
+                     cache_hints={"tools/list": hint, "server/discover": hint})
+
+        async def discover(ctx, _params):
+            # The library's own answer lists every version it can speak. This
+            # one lists what this host serves, newest first, in both kinds, as
+            # the specification's example of a server that serves both does.
+            self.authenticator.revalidate(ctx.request.scope["service_authentication"])
+            return types.DiscoverResult(supported_versions=list(reversed(configuration.protocol_versions)),
+                                        capabilities=sdk.get_capabilities(protocol_version=ctx.protocol_version))
+        sdk.add_request_handler("server/discover", types.RequestParams, discover)
+        # The library records every protocol message as a trace span by
+        # default. The service has no telemetry setting for protocol traffic,
+        # and telemetry needs an explicit one, so it records none.
+        sdk.middleware = []
         return sdk
 
     def create_app(self):
@@ -864,15 +989,27 @@ class ServiceHttpApplication:
                         "Access-Control-Allow-Headers": "Authorization, Content-Type, MCP-Protocol-Version, Stripe-Signature"})
                 elif request.url.path == "/mcp":
                     context = await self._authenticated(request)
-                    body = await self._body(request) if request.method == "POST" else b""
+                    if request.method != "POST":
+                        # One POST endpoint in both kinds of version: this
+                        # service keeps no session, so there is no stream to
+                        # open with GET and no session to end with DELETE.
+                        raise ServiceHttpError("protocol_method_not_allowed", 405, headers={"Allow": "POST"})
+                    body = await self._body(request)
                     payload = _parse_json(body) if body else {}
-                    if payload.get("method") == "initialize":
-                        # Negotiation, not refusal: the answer names the
-                        # version selected here, and every later request must
-                        # name it in its header before it reaches any effect.
-                        body = initialize_with_selected_version(payload, body)
-                    elif request.headers.get("mcp-protocol-version") not in HANDSHAKE_PROTOCOL_VERSIONS:
-                        raise ServiceHttpError("unsupported_protocol_version")
+                    if not isinstance(payload, dict):
+                        raise ServiceHttpError("object_required")
+                    # The version is chosen here, before the protocol library
+                    # or any effect, and the library is told the choice in the
+                    # header it routes on. Every later request is checked
+                    # against the served versions the same way.
+                    selected, served = select_protocol_binding(
+                        config, payload, request.headers.getlist(PROTOCOL_VERSION_HEADER))
+                    if served is not payload:
+                        body = _json_bytes(served)
+                    scope["headers"] = [(name, value) for name, value in scope["headers"]
+                                        if name not in (PROTOCOL_VERSION_HEADER.encode(), b"content-length")] + [
+                        (PROTOCOL_VERSION_HEADER.encode(), selected.encode("ascii")),
+                        (b"content-length", str(len(body)).encode("ascii"))]
                     scope["service_authentication"] = context
                     delivered = False
                     async def replay():
@@ -901,7 +1038,12 @@ class ServiceHttpApplication:
                 # wrong answer to a person. The page names no address and
                 # repeats nothing from the request, so nothing can be reflected
                 # into it.
-                if status == 404 and "text/html" in request.headers.get("accept", ""):
+                if isinstance(error, ServiceHttpError) and error.protocol_error is not None:
+                    # A protocol client reads the protocol's own error shape.
+                    # Its code and its list of versions are what a client uses
+                    # to choose a version it shares with this service.
+                    response = JSONResponse(error.protocol_error, status_code=status, headers=cors)
+                elif status == 404 and "text/html" in request.headers.get("accept", ""):
                     response = Response(
                         missing_address_page(config.display_name),
                         status_code=404, media_type=HTML_MEDIA_TYPE,
