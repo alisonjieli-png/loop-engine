@@ -68,6 +68,15 @@ solution runner, the campaign runner and the Kaggle executor move behind the
 same typed executor interface so a host chooses the executor the way it
 chooses a harness: by declared, tested profile, not by import path.
 
+Sequencing condition, recorded September 21, 2026: phase 3 began with the
+suite retirement (`ea59df0`) before phase 2 existed, because the owner
+directed the main line to stop paying for the in-process checks. That order
+is deliberate, not an accident, and it narrows the proof: until the first
+delegated execution runs, phase 2's own acceptance is that one executable
+step goes only through a harness — the retired in-process path may not be
+used to meet it. A delegation claim met by the in-process path, however
+the call site is disguised, is the known-wrong case for phase 2.
+
 ### Phase 3: retirement from the main line
 
 When the delegated path carries the same checks (cancellation, deadline,

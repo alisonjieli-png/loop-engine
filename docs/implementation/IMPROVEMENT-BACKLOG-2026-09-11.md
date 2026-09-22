@@ -54,14 +54,32 @@ without explicit authorization.
   declares output maximum 1048576 against route window 131072, so every
   allocation-free standard call fails context preflight. Same structural
   defect tactical had before the fit-window allocation.
-- Work: confirm with one live call, then apply the same pattern
-  (explicit per-attempt allocation within the window) or correct the
-  declared values with measured provenance.
+- Status, September 21, 2026: **superseded on `main`** by the harness-first
+  decision in
+  [ADR-HARNESS-FIRST-SERVING-AND-EXECUTION](../architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md).
+  Every executable step on `main` delegates to a standard harness, and the
+  customer brings their own models and provider routes. The in-process
+  `ollama_client` route table that carried this defect is on the checkpoint
+  branch (`checkpoint/full-capability-2026-09-21`, revision `a3bd0f1`), so
+  the route table is not a live path on `main` and the defect cannot fail
+  a served customer call here. The underlying arithmetic defect — a
+  declared output maximum larger than the route window fails preflight —
+  stays recorded because it is the known-wrong case any future provider
+  route record must reject: fix or re-measure the values on the checkpoint
+  branch if the owner restores the in-process path as the custom loop-node
+  harness, behind the typed executor interface named in the ADR. A route
+  record whose declared maximum exceeds its window must refuse to load,
+  not fail on first use.
+- Work (checkpoint branch, or a live `main` harness adapter that adds a
+  provider route): confirm with one live call, then apply the same
+  pattern (explicit per-attempt allocation within the window) or correct
+  the declared values with measured provenance.
 - Pointers: `core/ollama_client.py:55` (capability record),
   `core/model_routes.py` (cloud_caps), `core/harness_semantic.py`
   `_fit_window` (precedent).
-- Acceptance: live `--verify-live-model` on the glm route succeeds;
-  no invented numbers (probe transcript as source).
+- Acceptance: a route whose declared maximum exceeds its window is
+  refused at load; a live probe transcript is the source for any
+  corrected number; no invented numbers.
 
 ### 3. Campaign runner outcome-scan gap
 
