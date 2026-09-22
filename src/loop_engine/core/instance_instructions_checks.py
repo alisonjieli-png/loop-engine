@@ -13,6 +13,7 @@ from pathlib import Path
 
 from .external_harness import (
     HarnessAdapterInfo, HarnessRunResult, HarnessServices, run_external_harness)
+from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from .harness_execution_contracts import HarnessExecutionCapabilities
 
 
@@ -33,7 +34,10 @@ def instruction_file_checks(check, request, parent, services) -> None:
             return HarnessAdapterInfo("host_gateway", "fixture/v1", "not-imported",
                                       available=True,
                                       execution_capabilities=HarnessExecutionCapabilities(
-                                          supported_features=("model_routes",)))
+                                          supported_features=("model_routes",)),
+                                      adapter_contract_version=ADAPTER_CONTRACT_VERSION,
+                                      engine_kind="text_relay_harness",
+                                      supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
         def run(self, current, active_services):
             self.ran += 1

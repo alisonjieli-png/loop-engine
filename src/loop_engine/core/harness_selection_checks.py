@@ -129,9 +129,12 @@ class _FixtureHarness:
     def __init__(self,name):self.name=name;self.requests=[]
     def info(self):
         from .external_harness import HarnessAdapterInfo
+        from .external_harness_contract import ADAPTER_CONTRACT_VERSION,MODEL_RESPONSE_EDGE
         from .harness_execution_contracts import HarnessExecutionCapabilities
         return HarnessAdapterInfo(self.name,'1.0.0','explicit-offline-fixture',available=True,
-            execution_capabilities=HarnessExecutionCapabilities(supported_features=('model_routes',)))
+            execution_capabilities=HarnessExecutionCapabilities(supported_features=('model_routes',)),
+            adapter_contract_version=ADAPTER_CONTRACT_VERSION,engine_kind='text_relay_harness',
+            supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
     def run(self,request,services):
         from .external_harness import HarnessModelCall,HarnessRunResult
         self.requests.append(request);client=services.runtime_binding.runtime_object;output=None

@@ -20,6 +20,7 @@ def run_self_test_checks():
     from .context_artifacts import (
         ContextArtifactManager, ContextArtifactServices, ContextArtifactStore, ContextArtifactStoreSpec)
     from .external_harness import HarnessAdapterInfo, HarnessModelCall, HarnessRegistry, HarnessRunResult
+    from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
     from .harness_execution_contracts import HarnessExecutionCapabilities
     from .harness_semantic import HarnessSemanticBinding
     from .model_gateway import ModelGatewayResult
@@ -48,7 +49,9 @@ def run_self_test_checks():
             return HarnessAdapterInfo(self.identity, '1.0.0', 'offline_fixture',
                 available=self.behavior != 'unavailable',
                 execution_capabilities=HarnessExecutionCapabilities(
-                    supported_features=('model_routes',), native_controls=self.native_controls))
+                    supported_features=('model_routes',), native_controls=self.native_controls),
+                adapter_contract_version=ADAPTER_CONTRACT_VERSION, engine_kind='text_relay_harness',
+                supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
         def run(self, request, services):
             self.requests.append(request)
@@ -199,7 +202,11 @@ def run_self_test_checks():
         refuses('exhausted_order_is_a_failure', lambda: session.invoke(base, owner))
         check('finite_order_does_not_cycle', all(len(a.requests) == 1 for a in adapters))
         registry = session.authority.harness.registry
-        registry.register(FixtureHarness('second'), replace=True)
+
+        class ReplacementHarness(FixtureHarness):
+            """Another implementation under one identifier: a new registration digest."""
+
+        registry.register(ReplacementHarness('second'), replace=True)
         refuses('changed_alternative_registration_refused', lambda: session.authority.harness.invoke(
             None, gateway=session.authority.gateway, parent=owner))
 

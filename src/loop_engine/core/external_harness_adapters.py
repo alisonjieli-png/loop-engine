@@ -25,6 +25,7 @@ from .external_harness import (
     HarnessAdapterInfo, HarnessError, HarnessModelCall, HarnessRunRequest,
     HarnessRunResult, HarnessRuntimeBinding, HarnessServices, ModelOutputLimit,
     resolve_harness_output_limit)
+from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from .harness_execution_contracts import (
     SDK_FRAMEWORKS as _FRAMEWORKS,
     HarnessExecutionCapabilities, plain_harness_json, unmet_harness_requirements,
@@ -374,7 +375,11 @@ class ConfiguredHarnessAdapter:
             availability_reason=reason,
             execution_capabilities=HarnessExecutionCapabilities(
                 supported_features=("context_refs",), isolation="none",
-                evidence_refs=("source:core.external_harness_adapters",)))
+                evidence_refs=("source:core.external_harness_adapters",)),
+            # A framework kit runs in this process and never counts as delegation.
+            adapter_contract_version=ADAPTER_CONTRACT_VERSION,
+            engine_kind="agent_framework_kit",
+            supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
     def run(self, request: HarnessRunRequest,
             services: HarnessServices) -> HarnessRunResult:
