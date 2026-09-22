@@ -53,8 +53,8 @@ access. It does not grant a model allowance, permission to execute code, or
 access to a competition's data.
 
 Separate a real limit from a missing measurement. A real limit is a fact
-about the product as it exists today: the library holds one example item
-while a reviewed collection is prepared, or a part is written and not
+about the product as it exists today: the library holds a small first
+collection of reviewed items, or a part is written and not
 connected to a live run yet. Say that on the page, in a sentence the reader
 will actually read, not in small print. A missing measurement is different.
 Nobody owes the reader an apology for a number that was never promised, and

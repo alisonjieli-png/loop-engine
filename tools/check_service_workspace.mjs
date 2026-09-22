@@ -333,6 +333,14 @@ try {
   check("homepage_states_the_free_and_paid_split",(await page.locator('[data-view="home"] .hero-split').innerText()).startsWith("Free to install. Paid access to the library."));
   const heroPrimary=page.locator('[data-view="home"] .hero .button.primary');
   check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("href")==="/connect"&&(await heroPrimary.innerText()).startsWith("Get started")&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown");
+  const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>{
+    const hero=home.querySelector('.product-hero'),start=home.querySelector('.start-strip'),offer=home.querySelector('.offer-section'),benefits=home.querySelector('.benefit-section');
+    const before=(first,second)=>Boolean(first.compareDocumentPosition(second)&Node.DOCUMENT_POSITION_FOLLOWING);
+    return {hasWorkflowRail:Boolean(hero.querySelector('.solution-preview')),startBeforeOffer:before(start,offer),offerBeforeBenefits:before(offer,benefits)};
+  });
+  const currentPathFirst=flow=>!flow.hasWorkflowRail&&flow.startBeforeOffer&&flow.offerBeforeBenefits;
+  check("homepage_starts_with_the_current_customer_path",currentPathFirst(homeFlow),homeFlow);
+  check("homepage_flow_check_rejects_the_workflow_rail_and_old_order",!currentPathFirst({...homeFlow,hasWorkflowRail:true})&&!currentPathFirst({...homeFlow,startBeforeOffer:false})&&!currentPathFirst({...homeFlow,offerBeforeBenefits:false}));
   const startSteps=await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()),startText=await page.locator(".start-strip").innerText();
   check("homepage_shows_a_three_step_strip",JSON.stringify(startSteps)===JSON.stringify(["ask","connect","keep"])&&["OpenCode","Codex","Claude Code"].every(client=>startText.includes(client)),{steps:startSteps});
   const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),offerText=await page.locator(".offer-section").innerText();
@@ -344,11 +352,11 @@ try {
   check("homepage_makes_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
   check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
   /* Owner decision of September 21, 2026. A benefit detail says what the product does, in the present tense, and it
-     names a real limit of what exists today where there is one: the library still holds one example item, and the
+     names a real limit of what exists today where there is one: the library holds a small first collection, and the
      ranking work is written but not connected to a live run. It does not apologise for a measurement nobody asked
      for. Both halves of that rule have a known-wrong case: a missing limit and a returned apology each get reported. */
   const benefitText=await page.locator(".benefit-section").evaluate(node=>node.textContent);
-  const realLimits=["The library on our server holds one example item today","That part is not connected to a live run yet."];
+  const realLimits=["The library on our server holds a small first collection of reviewed items today","That part is not connected to a live run yet."];
   const measurementApologies=["We have not measured","Nobody has measured it yet","We have not run that as an experiment","it is an aim and not a result"];
   const benefitProblems=text=>[...realLimits.filter(sentence=>!text.includes(sentence)).map(sentence=>"missing real limit: "+sentence),
     ...measurementApologies.filter(sentence=>text.includes(sentence)).map(sentence=>"measurement apology: "+sentence)];
