@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c227c437857ea2e`.
+Plan fingerprint: `ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a1365b0e1f8a7`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -631,7 +631,7 @@ Verification cases are required evidence, not recorded passes.
 
 ### D-18: Ship the September 22 review: one main line, live checks and launch readiness
 
-Owning steps: S-6.29, S-6.33, S-6.34, S-6.35, S-6.36. Acceptance dependencies: D-17.
+Owning steps: S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37. Acceptance dependencies: D-17.
 
 Owning boundaries: `AGENTS.md`; `.github/workflows/fly-pilot.yml`; `src/loop_engine/core/service_runtime/web_assets/index.html`; `tools/test_context_routes.py`.
 
@@ -745,6 +745,7 @@ Historical planning targets, not a current schedule, release forecast or complet
 | S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
+| S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | proposed | S-6.33 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.17 | Maintain one continuation plan and regenerate its status artifact | offline_verified | none |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | S-6.17 |
@@ -794,7 +795,7 @@ Legacy statuses remain historical component claims until current integration evi
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13 |
 | Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33 |
 | Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34 |
-| Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36 |
+| Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37 |
 
 ## Hosting coverage
 

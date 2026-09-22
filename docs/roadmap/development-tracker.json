@@ -4,7 +4,7 @@
   "done": 41,
   "next": 11,
   "now": 32,
-  "waiting": 28
+  "waiting": 29
  },
  "lanes": {
   "blocked": [
@@ -1240,6 +1240,21 @@
     "title": "Hosted search as an engine slot with the measured policy and a relevance floor",
     "waiting_on": [
      "S-6.30"
+    ]
+   },
+   {
+    "acceptance": "Each demonstration and benchmark has its own subdomain and page, a recorded run with and without Baltor, and the evidence a visitor can follow; every number on those pages traces to a saved record.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.33"
+    ],
+    "id": "S-6.37",
+    "next_local_work": "Pick the first demonstration (data cleanup) and the first benchmark; the model budget for benchmark runs needs OWNER-17.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain",
+    "waiting_on": [
+     "S-6.33"
     ]
    },
    {
@@ -2500,17 +2515,19 @@
    "id": "D-18",
    "stage": "initial_service",
    "status_counts": {
-    "building": 5
+    "building": 5,
+    "proposed": 1
    },
    "steps": [
     "S-6.29",
     "S-6.33",
     "S-6.34",
     "S-6.35",
-    "S-6.36"
+    "S-6.36",
+    "S-6.37"
    ],
    "title": "Ship the September 22 review: one main line, live checks and launch readiness",
-   "total_steps": 5
+   "total_steps": 6
   },
   {
    "acceptance": "Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.",
@@ -2544,5 +2561,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c227c437857ea2e"
+ "source_fingerprint": "sha256:ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a1365b0e1f8a7"
 }

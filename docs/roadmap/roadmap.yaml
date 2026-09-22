@@ -825,7 +825,7 @@ continuation:
     - id: D-18
       title: 'Ship the September 22 review: one main line, live checks and launch readiness'
       stage: initial_service
-      steps: [S-6.29, S-6.33, S-6.34, S-6.35, S-6.36]
+      steps: [S-6.29, S-6.33, S-6.34, S-6.35, S-6.36, S-6.37]
       depends_on: [D-17]
       actions: ['Merge every branch and worktree onto main with a line-survival check after each merge, and keep only the snapshot branch.', Restore what the September 22 merges dropped and prove it with the same check., 'Put the commit, push and release authority in one section of AGENTS.md and make every entry point agree.', Apply the README plan so every entry point matches the code and the live state., Apply grants automatically after a catalogue release and state the client address source in every drill., 'Run the hosted website, catalogue, service and protocol checks on every hostname after each release and record them.', Ship the website fixes from the persona and interface reviews., Prepare the fact-checked Y Combinator package for the owner.]
       acceptance: GitHub main, local main and production are one state; the live site passes every hosted check on every hostname; a first-time visitor can request an invitation and follow Get started to a working connection; the rules have one home.
@@ -1079,7 +1079,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.33, S-6.34, S-6.30, S-6.31, S-6.32, S-6.36, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.29, S-6.35, S-6.33, S-6.34, S-6.30, S-6.31, S-6.32, S-6.37, S-6.36, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1202,7 +1202,7 @@ continuation:
       continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -2281,7 +2281,7 @@ steps:
     status: proposed
     depends_on: [S-6.28]
     boundary: [src/loop_engine/core/boundary_registry.py, src/loop_engine/data/component_interactions.yaml]
-    verify: [engine slot declarations indexed by the boundary registry, engine declarations with lifecycle and capabilities, 'one host record for installed engines, initial choice and ordered fallbacks', effect-free selection with a decision record, envelope measurement and an evidence reader, a conformance gate for slots]
+    verify: [engine slot declarations indexed by the boundary registry, engine declarations with lifecycle and capabilities, 'one host record for installed engines, initial choice and ordered fallbacks', effect-free selection with a decision record, envelope measurement and an evidence reader, a conformance gate for slots, 'engine preferences sent by a harness or a Loop, applied within its authority', 'slots nested at every level, from a whole step down to search and model access', a folder structure with one folder per functional component and one module per engine, the earlier custom loop-node engine kept restorable as one more executor engine]
     adversarial: A slot without a declared edge, default or collected check must fail conformance; evidence below the minimum sample must not reorder the declared engines; a retired or unqualified engine must never be selected.
     acceptance: Every functional component names its edge, engines and selection; adding an engine changes one adapter and one declaration and no call site; every selection is recorded with its reasons.
     evidence: 'September 22: three independent designs, a judge synthesis and prior-art research (standard-library entry points for discovery, exact sign tests for evidence, deterministic hash bucketing for side-by-side samples).'
@@ -2347,8 +2347,19 @@ steps:
     status: building
     depends_on: [S-6.34]
     boundary: [docs/guides/launch-benefits-and-evidence.md]
-    verify: [application answers, a ten slide deck outline, a demo script on the live site, an adversarial fact check of every claim]
+    verify: [application answers, a ten slide deck outline, a demo script on the live site, an adversarial fact check of every claim, 'market research on how competitors connect and are used, so Baltor feels familiar']
     adversarial: A number, comparison or customer claim without saved evidence must be caught by the fact check before the application is sent.
     acceptance: The application is ready for the owner to add the founder-only facts and submit before November 2, 2026, 8 p.m. Pacific.
     evidence: 'September 22: market analysis with dated competitor prices and a fact-checked draft in progress.'
     next_local_work: Finish the draft and the fact check; the owner adds personal background, contact details and equity facts.
+  - id: S-6.37
+    phase: 6
+    title: Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain
+    status: proposed
+    depends_on: [S-6.33]
+    boundary: [src/loop_engine/core/service_runtime/web_pages.py, docs/guides/launch-benefits-and-evidence.md]
+    verify: ['a full data science competition solved from task to submission, shown on a demonstration subdomain', a data cleanup demonstration with and without Baltor, tickets worked overnight on a local model, 'benchmark pages comparing results with and without Baltor on agentic, competition and reasoning suites', each case study with its evidence record]
+    adversarial: A demonstration or benchmark page that shows a number without its saved run record must fail the page check; a comparison without the same task population on both sides must be refused.
+    acceptance: Each demonstration and benchmark has its own subdomain and page, a recorded run with and without Baltor, and the evidence a visitor can follow; every number on those pages traces to a saved record.
+    evidence: 'September 22: the owner asked for subdomains that show full demonstrations and benchmarks, and case studies such as overnight tickets and data cleanup.'
+    next_local_work: Pick the first demonstration (data cleanup) and the first benchmark; the model budget for benchmark runs needs OWNER-17.

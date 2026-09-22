@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c227c437857ea2e`.
+Source fingerprint: `sha256:ce12a3af3ea9cdce29adbfc2e9413cfa7e8335186d1389a1de1a1365b0e1f8a7`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c22
 |---|---:|
 | Being built now | 32 |
 | Can start next | 11 |
-| Waiting on earlier work | 28 |
+| Waiting on earlier work | 29 |
 | Blocked | 2 |
 | Done | 41 |
 
@@ -75,6 +75,7 @@ Source fingerprint: `sha256:342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c22
 | S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
+| S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | proposed | S-6.33 |
 | S-6.8 | Connect credential leases and resource admission to harness lifetime | proposed | S-6.7 |
 | S-6.10 | Publish qualified starter packages and prove client retrieval | proposed | S-6.4, S-6.5 |
 | S-6.9 | Qualify actual instruction and capability use in native harnesses | proposed | S-6.5, S-6.7, S-6.8 |
@@ -142,7 +143,7 @@ Source fingerprint: `sha256:342f1d6a7f92da842bc3cca9dd14654b6ab0e88e1125c17d5c22
 | D-15 | Operate reliability, telemetry and customer data lifecycle | public_launch | 0 of 5 |
 | D-16 | Qualify installation, distribution and compatibility | public_launch | 0 of 6 |
 | D-17 | Open a private beta for invited users | initial_service | 0 of 6 |
-| D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 5 |
+| D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 6 |
 | D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 3 |
 
 ## Only the owner can do these
