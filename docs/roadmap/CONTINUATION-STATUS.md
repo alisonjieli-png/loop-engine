@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `21617883adee2661601aedd8644cf5d14866eeb3fdb03d771e1286bcc9651ca6`.
+Plan fingerprint: `efcc2883c5edf5bf70211f7a7756cbbbb058f953884830ee917c9278a95c07e1`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -691,6 +691,34 @@ Verification cases are required evidence, not recorded passes.
 | D-19-T02 | held_out_comparison | Run two engines side by side on a deterministic sample of one slot. | The decision records and measurements identify which engine served each request. | Evidence below the minimum sample must leave the declared order unchanged. |
 | D-19-T03 | end_to_end | Delegate one real step through a harness engine chosen by the executor slot. | The step result, cost, time and acceptance are recorded and a second harness can replace the first by configuration. | An in-process engine must be refused for a step that requires delegation. |
 
+### D-20: Meet the open standards and make served files safe to trust
+
+Owning steps: S-6.43, S-6.44, S-6.45, S-6.46, S-6.47. Acceptance dependencies: D-17.
+
+Owning boundaries: `src/loop_engine/core/service_runtime/http.py`; `src/loop_engine/core/plugin_bundles.py`; `tools/build_host_catalogue_manifest.py`; `pyproject.toml`.
+
+- Negotiate the current and the previous Model Context Protocol revision at runtime and refuse unknown ones with the supported list.
+- Serve skills, context files and plugins in the open formats and in each harness's own layout, and ship a package for Pi.
+- Admit outside material only through a malicious-skill regression set, SPDX licences and a bill of materials.
+- Close the dated deadlines and the small public-site and release gaps before inviting users.
+- Measure each item against a no-skill arm and a raw-source arm before any benefit claim.
+
+Complete when: A client on either protocol revision connects and loads an approved item in its own layout; every served item shows its licence, digest and measured or unmeasured effect; the dated deadlines are met.
+
+Failure control: An unknown protocol revision, an item that breaks a harness's limits, a malicious skill, an unknown licence and an unmeasured benefit claim must each be refused by a named check.
+
+Authority: Protocol and format work are engineering decisions. Model calls for the measurement arms need OWNER-17; paid plans above the allowance need OWNER-18.
+
+Rollback or safe stop: Turn off the new protocol binding in the host configuration and keep serving 2025-11-25; withdraw a format layout without touching the items.
+
+Verification cases are required evidence, not recorded passes.
+
+| Case | Evidence level | Scenario | Pass condition | Negative control |
+|---|---|---|---|---|
+| D-20-T01 | end_to_end | Connect one client with the 2026-07-28 revision and one with 2025-11-25 and download an approved item with each. | Both connect, list the tools and download the item, and each decision names the selected revision. | A request for an unknown revision must be refused with the supported list before any effect. |
+| D-20-T02 | local_contract | Emit one plugin item as an Agent Plugins 1.0.0 folder and lint every served skill. | The folder validates against the pinned schema and every skill passes each harness's limits. | A skill whose name breaks a harness's limit must be withheld from that harness. |
+| D-20-T03 | local_contract | Run admission over the malicious-skill regression set. | Every malicious item is refused with a named reason and every benign item is accepted. | Replacing the scanner with one that accepts everything must fail the regression check. |
+
 ## Launch benefit drafts
 
 These are proposed messages, not qualified performance claims.
@@ -740,17 +768,22 @@ Historical planning targets, not a current schedule, release forecast or complet
 |---|---|---|---|
 | S-6.29 | Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch | building | S-6.28 |
 | S-6.35 | Release automation and automated live checks after every release | building | S-6.26 |
+| S-6.43 | Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 | proposed | S-6.29 |
 | S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
+| S-6.46 | Close the dated deadlines and small gaps before inviting users | proposed | S-6.35 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | S-6.17 |
 | S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
 | S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
+| S-6.44 | Serve the open formats in each harness's own layout | proposed | S-6.43 |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
 | S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | proposed | S-6.31 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
 | S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
+| S-6.45 | Make served files safe to trust: a malicious-skill regression set, exact licences and a bill of materials | proposed | S-6.40 |
 | S-6.41 | Harness run records for self-improvement | proposed | S-6.31 |
 | S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | proposed | S-6.33 |
+| S-6.47 | Measure each item against a no-skill arm and a raw-source arm before claiming a benefit | proposed | S-6.37 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.17 | Maintain one continuation plan and regenerate its status artifact | offline_verified | none |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | S-6.17 |
@@ -793,12 +826,12 @@ Legacy statuses remain historical component claims until current integration evi
 | Workstream | Earlier steps | Continuation steps |
 |---|---|---|
 | Reusable capabilities and detection | S-0.5, S-1.10 | S-6.10, S-6.20, S-6.11 |
-| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40 |
-| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42 |
-| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19 |
+| Intelligence, storage, classification, and qualification | S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39 | S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45 |
+| Harnesses, provisioning, loaded-file evidence, and authentication | S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40 | S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44 |
+| Models, decisions, efficiency, cost, and learning | S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11 | S-6.3, S-6.6, S-6.19, S-6.47 |
 | Flexible composition, solutions, configuration search, and research | S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5 | S-6.11, S-6.19, S-6.22, S-6.23, S-6.30 |
 | Resource management, hibernation, and cloud capacity | S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10 | S-6.8, S-6.12, S-6.13 |
-| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39 |
+| Hosted service, portability, packaging, and paid operation | S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16 | S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46 |
 | Organization, architecture artifact, and adversarial review | S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7 | S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34 |
 | Branding, business paths, and later career research | S-5.1, S-5.2, S-5.3 | S-6.16, S-6.22, S-6.36, S-6.37 |
 
