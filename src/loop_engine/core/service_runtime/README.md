@@ -459,11 +459,15 @@ hosted service starts with `--host 0.0.0.0 --behind-trusted-tls-proxy`, and
 `serve` refuses a binding the public can reach when the host has not stated
 where the client address comes from. The refusal names the exact repair.
 Release 10 and every earlier release started before that refusal existed.
-Every container check that starts the image's own command states a client
-address source in its own host file. `tools/check_fly_service_container.py`
-writes the Fly mapping above, and `tools/check_client_journey_in_containers.py`
-names a header of its own because it has no proxy. Each keeps a case that
-removes the statement and requires the service to refuse to start.
+Every container check that writes its own host file and starts the image's
+own command states a client address source in that file.
+`tools/check_fly_service_container.py` writes the Fly mapping above, and
+`tools/check_client_journey_in_containers.py` names a header of its own
+because it has no proxy. Each keeps a case that removes the statement and
+requires the service to refuse to start. The backup restore check,
+`tools/check_pilot_backup_restore.py`, has no host file of its own. It starts
+the image's own command with the host file it restored from the volume, so
+its service starts only when that restored file carries the mapping.
 
 Do these steps in order to switch the limit on, and repeat steps 2 to 4 after
 any change to the proxy in front of the service:
