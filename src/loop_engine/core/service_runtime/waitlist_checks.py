@@ -81,7 +81,10 @@ def run_checks(check, root):
     for value in ("", "   ", "ada", "ada@", "@example.com", "ada@example", "ada lovelace@example.com",
                   "ada@exa mple.com", "ada@@example.com", "a" * 65 + "@example.com", "ada\n@example.com",
                   "ada@example.com,eve@example.com", "x" * 250 + "@example.com"):
-        check("malformed_address_refused_" + (value.strip()[:24].replace("\n", " ") or "empty"),
+        # An empty value and a value of spaces both strip to nothing, so each
+        # keeps a name of its own and a failure names the value that caused it.
+        check("malformed_address_refused_" + (value.strip()[:24].replace("\n", " ")
+                                              or ("empty" if value == "" else "only_spaces")),
               refused(lambda value=value: waitlist.join(request(value)), ADDRESS_INVALID))
     check("space_around_an_address_is_trimmed_rather_than_refused",
           waitlist.join(request("  Bea@Example.com \n"))["state"] == WAITING
