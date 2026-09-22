@@ -118,7 +118,7 @@ declarations themselves.
 
 | Record | Purpose |
 |---|---|
-| `configuration_axis/v1` | One declared axis with its values and applicability. |
+| `configuration_space/v1` | One declared space: its axes with their values, the fixed context, and the conditional rules that decide where a value applies. |
 | `configuration_search_batch/v1` | One proposal batch with its seed, cursor, shard, batch size and draw allowance beside the request digest. |
 | `SearchCursor` | A resume point bound to one space digest and one shard. |
 | `SearchObservation` | One measured trial, naming its task, space, metric definitions, address, occurrence, Run History, evaluation and evaluation partition. |

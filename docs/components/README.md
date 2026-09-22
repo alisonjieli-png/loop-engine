@@ -26,7 +26,12 @@ the guide that owns it in
 [the component guide map](COMPONENT-GUIDE-MAP.yaml). The check in
 `tools/check_component_guides.py` refuses a registered boundary whose directory
 has no guide, and a guide that names a command, a record type, a refusal code or
-a class the source does not define. Run it after changing a guide:
+a class the source does not define. It reads each name whole: a class member
+must be defined on that class, and a value that only a check spells to show it
+is refused does not count. A name that no runtime module defines, such as a
+value in an example measurement's data, is declared in the map with the
+repository file that holds it, and the check reads that file. Run it after
+changing a guide:
 
 ```bash
 PYTHONPATH=src python tools/check_component_guides.py

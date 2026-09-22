@@ -38,6 +38,10 @@ jobs:
       FLY_SERVICE_CONFIGURED: ${{ vars.FLY_SERVICE_CONFIGURED }}
       FLY_APPROVED_MONTHLY_USD: ${{ vars.FLY_APPROVED_MONTHLY_USD }}
       FLY_DEPLOYMENT_APPROVAL_REF: ${{ vars.FLY_DEPLOYMENT_APPROVAL_REF }}
+      # The one readiness gate that every step changing the running service
+      # ends with: the health record answers, and every required dependency
+      # answered just now. A process that only answers does not pass it.
+      SERVICE_READINESS_GATE: '.result.record_type == "service_health/v2" and .result.alive == true and .result.ready == true and .result.readiness_checked == true and ([.result.checks[] | select(.required) | .passed] | length > 0 and all)'
 
     steps:
       - name: Require explicit deployment settings
@@ -160,8 +164,39 @@ jobs:
             --config fly.toml --image "${exact}" --ha=false --strategy immediate \
             --max-concurrent 1 --deploy-retries 0 --no-public-ips --wait-timeout 5m --yes
           curl --fail --silent --show-error --max-time 20 \
-            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e '.result.record_type == "service_health/v2" and .result.alive == true and .result.ready == true and .result.readiness_checked == true and ([.result.checks[] | select(.required) | .passed] | length > 0 and all)' >/dev/null
+            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null
           echo "Service readiness passed: every required dependency answered. This does not qualify customer onboarding or payments."
+
+      - name: Apply the packaged catalogue grants on the one Machine
+        if: inputs.operation == 'deploy'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          PACKAGED_MANIFEST: /opt/baltor/catalogue/manifest.json
+          GRANT_COMMAND: setpriv --reuid=65534 --regid=65534 --clear-groups loop-engine service apply-grants --config /data/host.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Stored grants name the items of the release that wrote them, so a
+          # release that changes the catalogue offers nothing until the grants
+          # of the packaged manifest are applied again. Fly release 12 offered
+          # no item until this command was run by hand. The command registers
+          # no tenant and replaces the grants of each tenant the manifest
+          # names. It goes through the Machines API exec call, as the command
+          # run by hand did, because a remote shell from a new runner adds a
+          # WireGuard peer to the organization that nothing removes. The call
+          # starts the command as root, so setpriv runs it as the service user
+          # that owns /data. The JSON answer carries the exit code, which is
+          # left out when it is zero, and the command's exact output.
+          # tools/check_fly_service_container.py ran the same command against
+          # this image before it was published.
+          machine="$(flyctl machine list --app "${FLY_APP}" --json \
+            | jq -e -r 'if type == "array" and length == 1 and .[0].state == "started" then .[0].id else error("expected exactly one started Machine") end')"
+          [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
+          applied="$(flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json)"
+          printf '%s\n' "${applied}" | jq -e --arg manifest "${PACKAGED_MANIFEST}" '(.exit_code // 0) == 0 and (((.stdout // "") | fromjson?) // null | .record_type == "service_host_grant_application/v1" and .manifest_path == $manifest and .tenants_registered == 0 and .remote_accounts_created == false and (.granted_items_by_tenant | type == "object" and length > 0 and all(.[]; type == "number" and . > 0)))' >/dev/null
+          curl --fail --silent --show-error --max-time 20 \
+            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null
+          echo "The packaged grants were applied on Machine ${machine}, and service readiness passed again."
 
       - name: Remove registry login from the temporary runner
         if: always() && inputs.operation == 'deploy'

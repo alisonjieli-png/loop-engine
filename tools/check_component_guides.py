@@ -34,9 +34,21 @@ What it decides
    is declared once in the map's ``external_names`` list with the reason it is
    not a Loop Engine name. A placeholder an example asks the reader to supply
    is declared the same way in ``reader_supplied_names``, and a contract name
-   invented to make an example concrete in ``example_record_types``. A single
-   lower case word carrying no underscore is too common to decide from its
-   name, so the rule stays silent on it rather than guessing.
+   invented to make an example concrete in ``example_record_types``. A name
+   that no runtime module defines, such as a value in an example measurement's
+   data or a retired name that only a check still spells to show that it is
+   refused, is declared in ``repository_file_names`` with the file that holds
+   it, and the check reads that file: the declaration counts only while the
+   file is inside the repository and holds that exact name. A single lower
+   case word carrying no underscore is too common to decide from its name, so
+   the rule stays silent on it rather than guessing.
+
+   Names are read whole. Part of a longer name does not count, a class and
+   its member must both be defined, with the member on that class, and a
+   name after a module must be defined, not merely follow a real module. A
+   check module, whose name ends in ``_checks.py``, vouches for its module
+   path and its top level entry points only, because a check spells wrong
+   versions and builds stand-ins on purpose.
 
 3. Guide registration. Every Markdown file under ``docs/components`` is listed
    in the map, so a new guide carries a decision about what it covers and a
@@ -88,6 +100,12 @@ HELP_MODULE = "src/loop_engine/cli_help.py"
 REGISTER_MODULE = "src/loop_engine/core/boundary_registry.py"
 #: Files whose text can carry a record type or a literal identity.
 SOURCE_SUFFIXES = (".py", ".yaml", ".yml", ".json", ".toml", ".md")
+#: The name ending of a package module that holds self-test checks.
+CHECK_MODULE_SUFFIX = "_checks.py"
+#: The map's lists of names a guide may cite that no runtime module defines.
+#: A name belongs to at most one of them.
+DECLARATION_LISTS = ("external_names", "reader_supplied_names",
+                     "example_record_types", "repository_file_names")
 
 _RECORD_TYPE = re.compile(r"\b([a-z][a-z0-9_]*/v[0-9]+)\b")
 _UPPER_CODE = re.compile(r"^[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+$")
@@ -144,24 +162,48 @@ class SourceFacts:
     options: frozenset
     text: str
 
+    def names_module(self, name: str) -> bool:
+        """Whether this dotted name is a package module, in full or by its tail."""
+        return any(module == name or module.endswith("." + name)
+                   for module in self.modules)
+
     def defines(self, name: str) -> bool:
-        """Whether the package defines this exact name or a dotted path to it."""
-        if name in self.definitions or name in self.modules:
+        """Whether the package defines this exact name or a dotted path to it.
+
+        A dotted path is read from the left. Its longest leading part that
+        names a module is that module, and what follows must be defined: one
+        name, or a class and a member that the class body itself defines. A
+        path that starts with a class name needs that class to define the
+        member it names, so a member name defined somewhere else does not
+        vouch for a class that does not exist. A path that reaches through a
+        value, such as a field of a configuration, is decided by its last name.
+        A file name ending in ``.py`` must name a package module.
+        """
+        if name in self.definitions or self.names_module(name):
             return True
-        if any(module == name or module.endswith("." + name)
-               for module in self.modules):
-            return True
-        leaf = name.split(".")[-1]
-        if leaf in self.definitions:
-            return True
-        head = ".".join(name.split(".")[:-1])
-        return bool(head) and any(
-            module == head or module.endswith("." + head)
-            for module in self.modules)
+        parts = name.split(".")
+        if len(parts) == 2 and parts[1] == "py":
+            return self.names_module(parts[0])
+        rest = parts
+        for cut in range(len(parts) - 1, 0, -1):
+            if self.names_module(".".join(parts[:cut])):
+                rest = parts[cut:]
+                break
+        if len(rest) > 1 and _CAMEL_NAME.match(rest[0]):
+            return ".".join(rest[:2]) in self.definitions
+        return rest[-1] in self.definitions
 
     def holds_literal(self, value: str) -> bool:
-        """Whether this exact text appears anywhere in the package."""
-        return value in self.literals or value in self.text
+        """Whether this exact text appears in the package as a whole word.
+
+        Part of a longer name does not count, so a truncated or misspelt code
+        is not found inside the real one.
+        """
+        if value in self.literals:
+            return True
+        return value in self.text and re.search(
+            r"(?<![A-Za-z0-9_])" + re.escape(value) + r"(?![A-Za-z0-9_])",
+            self.text) is not None
 
 
 def _read(path: Path) -> str:
@@ -173,7 +215,13 @@ def _read(path: Path) -> str:
 
 def build_source_facts(package_root: Path, main_module: Path,
                        help_module: Path) -> SourceFacts:
-    """Index the package's definitions, literals, modules and command surface."""
+    """Index the package's definitions, literals, modules and command surface.
+
+    A check module, one whose name ends in ``_checks.py``, is read for its
+    module path and its top level entry points only. A check spells wrong
+    versions and builds stand-in hooks on purpose, to show that the runtime
+    refuses them, so its values and inner names do not vouch for a guide.
+    """
     definitions: set = set()
     literals: set = set()
     modules: set = set()
@@ -184,10 +232,10 @@ def build_source_facts(package_root: Path, main_module: Path,
         if not path.is_file() or path.suffix not in SOURCE_SUFFIXES:
             continue
         text = _read(path)
-        blob.append(text)
         relative = path.relative_to(package_root)
         directories.add(str(relative.parent))
         if path.suffix != ".py":
+            blob.append(text)
             literals.update(re.findall(r"[A-Za-z_][A-Za-z_0-9]*", text))
             continue
         dotted = ".".join(relative.with_suffix("").parts)
@@ -197,6 +245,10 @@ def build_source_facts(package_root: Path, main_module: Path,
             tree = ast.parse(text)
         except SyntaxError:
             continue
+        if path.name.endswith(CHECK_MODULE_SUFFIX):
+            definitions.update(_top_level_names(tree))
+            continue
+        blob.append(text)
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 definitions.add(node.name)
@@ -237,6 +289,19 @@ def build_source_facts(package_root: Path, main_module: Path,
         commands=frozenset(_command_names(help_module)),
         options=frozenset(_root_options(main_module)),
         text="\n".join(blob))
+
+
+def _top_level_names(tree) -> set:
+    """The functions, classes and assigned names a module defines at its top level."""
+    names: set = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            names.add(node.name)
+        elif isinstance(node, ast.Assign):
+            names.update(target.id for target in node.targets if isinstance(target, ast.Name))
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            names.add(node.target.id)
+    return names
 
 
 def _command_names(help_module: Path) -> set:
@@ -340,6 +405,65 @@ def _registered_boundaries(repository: Path) -> tuple:
     return tuple(
         {"boundary": row["boundary"], "envelope": row.get("envelope", "")}
         for row in rows)
+
+
+def _held_strings(path: Path) -> set:
+    """Every exact string one repository data file holds.
+
+    A JSON or YAML file is parsed, and each key and each string value counts
+    whole, so ``held_back`` is not held by a file whose only value is
+    ``held_back_when``. Any other file counts each run of name characters,
+    including the slash of a record type, as one word.
+    """
+    text = _read(path)
+    if path.suffix not in (".json", ".yaml", ".yml"):
+        return set(re.findall(r"[A-Za-z0-9_./:-]+", text))
+    try:
+        document = json.loads(text) if path.suffix == ".json" else yaml.safe_load(text)
+    except (ValueError, yaml.YAMLError):
+        return set()
+    held: set = set()
+    pending = [document]
+    while pending:
+        value = pending.pop()
+        if isinstance(value, dict):
+            held.update(key for key in value if isinstance(key, str))
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+        elif isinstance(value, str):
+            held.add(value)
+    return held
+
+
+def resolve_repository_file_names(repository: Path, declared) -> tuple:
+    """Return the declared names their files really hold, and a finding for each other one.
+
+    Each entry of the map's ``repository_file_names`` names one file relative
+    to the repository. An entry whose file is missing, absolute or outside the
+    repository, or whose file does not hold the exact name, resolves nothing,
+    so every guide line citing that name is refused as well.
+    """
+    root = repository.resolve()
+    resolved: set = set()
+    findings: list = []
+    for name, entry in sorted((declared or {}).items()):
+        relative = entry.get("file", "") if isinstance(entry, dict) else ""
+        target = (root / relative).resolve() if isinstance(relative, str) and relative else None
+        if (target is None or Path(relative).is_absolute() or root not in target.parents
+                or not target.is_file()):
+            findings.append(Finding(
+                "declared name without its file", MAP_PATH, 0, str(name),
+                f"the map says {relative!r} holds it, and that is not a file "
+                "inside this repository"))
+            continue
+        if name not in _held_strings(target):
+            findings.append(Finding(
+                "declared name not in its file", MAP_PATH, 0, str(name),
+                f"{relative} does not hold this exact name"))
+            continue
+        resolved.add(name)
+    return frozenset(resolved), findings
 
 
 def _guide_claims(text: str):
@@ -473,6 +597,32 @@ def run_documented_checks(guides_root: Path, repository: Path) -> list:
     return findings
 
 
+def load_map(text: str) -> tuple:
+    """Load the map, and name every mapping key written twice with its line.
+
+    YAML keeps only the last of two equal keys and says nothing, so a merge
+    that writes the same guide or the same declared name twice would silently
+    lose one of the two statements.
+    """
+    repeated: list = []
+
+    class MapLoader(yaml.SafeLoader):
+        """A safe loader that records repeated mapping keys."""
+
+    def construct_mapping(loader, node, deep=False):
+        seen = set()
+        for key_node, _value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            if key in seen:
+                repeated.append((key_node.start_mark.line + 1, str(key)))
+            seen.add(key)
+        return yaml.SafeLoader.construct_mapping(loader, node, deep=deep)
+
+    MapLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping)
+    return (yaml.load(text, Loader=MapLoader) or {}), repeated
+
+
 def audit(repository: Path, boundaries=None) -> list:
     """Return every component guide statement the source does not support."""
     findings: list = []
@@ -483,12 +633,28 @@ def audit(repository: Path, boundaries=None) -> list:
     if not map_path.exists():
         return [Finding("missing map", MAP_PATH, 0, MAP_PATH,
                         "the component guide map is required")]
-    document = yaml.safe_load(_read(map_path)) or {}
+    document, repeated = load_map(_read(map_path))
+    findings.extend(Finding(
+        "duplicate map key", MAP_PATH, line, key,
+        "YAML keeps only the last of two equal keys, so one of them says "
+        "nothing; write each key once") for line, key in repeated)
     components = document.get("components") or {}
     guides = document.get("guides") or {}
-    external = set(document.get("external_names") or {})
-    external |= set(document.get("reader_supplied_names") or {})
-    examples = set(document.get("example_record_types") or {})
+    declared_lists = {name: set(document.get(name) or {}) for name in DECLARATION_LISTS}
+    for name in sorted(set().union(*declared_lists.values())):
+        lists = [label for label, names in declared_lists.items() if name in names]
+        if len(lists) > 1:
+            findings.append(Finding(
+                "name declared more than once", MAP_PATH, 0, name,
+                "the map declares it in " + " and ".join(lists) + "; one name "
+                "is one kind of thing, so declare it once"))
+    external = declared_lists["external_names"] | declared_lists["reader_supplied_names"]
+    examples = set(declared_lists["example_record_types"])
+    held_elsewhere, unresolved = resolve_repository_file_names(
+        repository, document.get("repository_file_names"))
+    findings.extend(unresolved)
+    external |= held_elsewhere
+    examples |= held_elsewhere
 
     facts = build_source_facts(
         package_root, repository / MAIN_MODULE, repository / HELP_MODULE)

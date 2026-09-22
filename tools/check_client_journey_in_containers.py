@@ -46,6 +46,7 @@ if _TOOLS_FOLDER not in sys.path:
 
 import install_selected_material as install_tool  # noqa: E402
 from loop_engine.core.service_runtime.http_auth import validate_public_url  # noqa: E402
+from loop_engine.core.service_runtime.request_limits import HEADER_SOURCE, ServiceRequestLimits  # noqa: E402
 
 REPORT_RECORD_TYPE = "client_journey_container_drill/v1"
 SETTINGS_RECORD_TYPE = "client_journey_drill_settings/v1"
@@ -119,6 +120,7 @@ SOURCE_FILES = (
     "src/loop_engine/core/service_runtime/http_auth.py",
     "src/loop_engine/core/service_runtime/http_entrypoint.py",
     "src/loop_engine/core/service_runtime/provisioning.py",
+    "src/loop_engine/core/service_runtime/request_limits.py",
     "src/loop_engine/core/service_runtime/runtime.py",
     "examples/29_intelligence_service/starter-catalogue/items.json",
 )
@@ -152,6 +154,15 @@ LOOPBACK_ADDRESS = "127.0.0.1"
 #: anywhere, so the host configuration declares a public base URL that reaches
 #: nothing while still satisfying the rule that the URL uses a secure scheme.
 UNRESOLVABLE_DRILL_NAME = "client-journey-drill.invalid"
+#: The server container runs the image's own command, which binds every address
+#: and declares a trusted proxy in front of the service. The service refuses to
+#: start that way until the host configuration names the header that proxy
+#: writes with each caller's address, because behind a proxy the socket peer is
+#: the proxy and every caller would share one count of refused sign-in
+#: attempts. This drill has no proxy, so no request carries the header, and the
+#: service then counts each refused attempt under the socket peer: the client
+#: container that sent it. The name belongs to this drill and to no provider.
+CLIENT_ADDRESS_HEADER = "X-Journey-Drill-Client-Address"
 #: The scheme names this drill offers the service's own address owner, and the
 #: separator the address syntax puts after a scheme name.
 CANDIDATE_SCHEME_NAMES = ("https", "http")
@@ -313,6 +324,7 @@ class DrillSettings:
     loopback_address: str = LOOPBACK_ADDRESS
     private_network_scheme: str = PRIVATE_NETWORK_SCHEME
     declared_public_base_url: str = DECLARED_PUBLIC_BASE_URL
+    client_address_header: str = CLIENT_ADDRESS_HEADER
     build_timeout_seconds: float = BUILD_TIMEOUT_SECONDS
     docker_timeout_seconds: float = DOCKER_TIMEOUT_SECONDS
     journey_timeout_seconds: float = JOURNEY_TIMEOUT_SECONDS
@@ -352,6 +364,13 @@ class DrillSettings:
                        "declared_public_base_url_must_be_an_https_origin")
         _refuse_unless(self.private_network_scheme in SUPPORTED_SCHEMES, "unsupported_private_network_scheme")
         _refuse_unless(bool(self.loopback_address) and " " not in self.loopback_address, "invalid_loopback_address")
+        # The service's own settings record decides which header names it
+        # accepts, so a name it would refuse is refused before any container.
+        try:
+            ServiceRequestLimits(client_address_source=HEADER_SOURCE,
+                                 client_address_header=self.client_address_header)
+        except (TypeError, ValueError):
+            raise DrillRefusal("invalid_client_address_header") from None
         if self.client_executable_on_this_machine is not None:
             path = self.client_executable_on_this_machine
             _refuse_unless(isinstance(path, Path) and path.is_absolute(), "client_executable_must_be_absolute")
@@ -385,6 +404,19 @@ class DrillSettings:
     def declared_public_host(self) -> str:
         """The host part of the public base URL the host configuration declares."""
         return self.declared_public_base_url.split("//", 1)[1]
+
+    @property
+    def request_limits(self) -> dict:
+        """The host configuration's statement of where each caller's address comes from.
+
+        The service's own settings record checks the statement, so the drill
+        writes only what that record accepts. The allowance and the window are
+        left to the service's defaults, as the hosted host file leaves them.
+        """
+        stated = ServiceRequestLimits(client_address_source=HEADER_SOURCE,
+                                      client_address_header=self.client_address_header)
+        return {"record_type": stated.record_type, "client_address_source": stated.client_address_source,
+                "client_address_header": stated.client_address_header}
 
     def public_summary(self) -> dict:
         """The settings a report may repeat. No path outside the repository, no key value."""
@@ -675,6 +707,9 @@ def select_catalogue_items(catalogue: Path, accepted_licenses) -> CatalogueSelec
 
     Only an item whose declared licence this host accepts can be registered.
     One refused row is kept so the drill can show that the host refuses it.
+    The journey's requests hold no effect authority, and the service withholds
+    an item that declares an effect from such a request, so only items that
+    declare none can be offered, fetched and installed here.
     """
     document = json.loads((catalogue / CATALOGUE_ITEMS_FILE).read_text(encoding="utf-8"))
     _refuse_unless(isinstance(document.get("items"), list) and document["items"], "catalogue_has_no_items")
@@ -689,7 +724,8 @@ def select_catalogue_items(catalogue: Path, accepted_licenses) -> CatalogueSelec
         _refuse_unless(hashlib.sha256(content).hexdigest() == reference["digest"]
                        and len(content) == reference["size_bytes"], "catalogue_body_does_not_match_its_reference",
                        reference["identity"])
-    accepted = [row for row in rows if row["reference"]["license"] in accepted_licenses]
+    accepted = [row for row in rows if row["reference"]["license"] in accepted_licenses
+                and not row["reference"].get("declared_effects")]
     refused = [row for row in rows if row["reference"]["license"] not in accepted_licenses]
     _refuse_unless(len(accepted) >= 7, "catalogue_has_too_few_accepted_items")
     return CatalogueSelection(tuple(accepted[0:3]), tuple(accepted[3:5]), tuple(accepted[5:7]),
@@ -718,7 +754,8 @@ def host_configuration(settings: DrillSettings, valid_until: int) -> dict:
 
     Every address comes from the settings record, which owns them. The service
     answers a request whose Host header is one of these exact values and
-    refuses any other.
+    refuses any other. The file also states where each caller's address comes
+    from, without which the image's own command refuses to serve at all.
     """
     tenants = []
     for plan in (settings.first_tenant, settings.second_tenant):
@@ -730,7 +767,8 @@ def host_configuration(settings: DrillSettings, valid_until: int) -> dict:
             "http": {"public_base_url": settings.declared_public_base_url,
                      "allowed_hosts": [settings.declared_public_host, settings.server_host,
                                        settings.loopback_host],
-                     "allowed_origins": []},
+                     "allowed_origins": [],
+                     "request_limits": settings.request_limits},
             "authentication": {"modes": ["host_key"]},
             "license_policy": {"record_type": "service_host_license_policy/v1",
                                "accepted_licenses": list(settings.accepted_licenses)},

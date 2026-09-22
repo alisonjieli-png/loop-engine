@@ -44,6 +44,19 @@ server listens on, the loopback port the client container forwards, and the
 public base URL the host configuration declares. That last one is a name under
 the reserved `.invalid` top level name, so it can never resolve anywhere.
 
+The server container runs the image's own command, which binds every address
+and declares a trusted proxy in front of the service. The service refuses to
+start that way until its host configuration states where each caller's address
+comes from, because behind a proxy every caller would otherwise share one count
+of refused sign-in attempts. The host configuration therefore carries
+`request_limits` with the `header` source and a header name that the settings
+record owns and that belongs to no provider. The service's own settings record,
+`ServiceRequestLimits`, checks the name before any container starts. The drill
+has no proxy, so no request carries that header, and the service counts each
+refused attempt under the address of the client container that sent it. A test
+removes the statement from the host configuration and requires the drill to
+fail where the server stops.
+
 The drill states no address vocabulary of its own. It asks the service's own
 address owner, `validate_public_url` in
 [the authentication adapter](../../src/loop_engine/core/service_runtime/http_auth.py),
@@ -262,11 +275,15 @@ install tool records what the client process adds rather than hiding it.
   discovered. It is not material a model read, used or benefited from.
 - There is no public name, no certificate and no proxy. Two containers talk to
   each other over plain HTTP on a private network.
+- The limit on refused sign-in attempts is stated but not reached. No request
+  carries the client address header, and the drill sends far fewer refused
+  attempts than the limit allows.
 - The host attests the catalogue items. Host attestation is not independent
   qualification, and no item in the starter catalogue has been approved.
-- The catalogue subset is seven items of the forty nine in the starter
-  catalogue, chosen in a fixed order. A passing run says nothing about the
-  other items.
+- The catalogue subset is seven items, chosen in a fixed order from the
+  starter catalogue items that declare no effect, because the journey's
+  requests hold no effect authority and the service withholds an item that
+  declares one. A passing run says nothing about the other items.
 - The drill runs on one machine with one Docker version. It is not a test of
   the deployed pilot, its volume or its network.
 - The declared values in the report are not measurements. That the drill starts

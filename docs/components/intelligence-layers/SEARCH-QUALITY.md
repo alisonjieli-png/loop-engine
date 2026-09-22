@@ -12,7 +12,7 @@ does now, how the change was measured and what is still wrong.
 
 ## What search did before this measurement
 
-Read from `core.service_runtime.http.ServiceHttp._search` and
+Read from `core.service_runtime.http.ServiceHttpApplication._search` and
 `core.retrieval.record_search_text` on 21 September 2026.
 
 The deployed service answers a search by building one record for each item the
@@ -142,12 +142,13 @@ unanswerable requests were answered with references anyway.
 
 The baseline row is not an invented straw man.
 `tools/test_search_quality.py` builds the records exactly as
-`ServiceHttp._search` builds them, hands them to the same retrieval engine,
-and requires the same first three as the baseline policy for all 354 requests.
-A policy that reads fewer fields fails that same comparison, which is what
-makes it worth running. Two limits are worth stating: the comparison uses a
-copy of that method's record construction read from the source on 21 September
-2026, not a call to the running service, and it compares the ordering only.
+`ServiceHttpApplication._search` builds them, hands them to the same
+retrieval engine, and requires the same first three as the baseline policy
+for all 354 requests. A policy that reads fewer fields fails that same
+comparison, which is what makes it worth running. Two limits are worth
+stating: the comparison uses a copy of that method's record construction read
+from the source on 21 September 2026, not a call to the running service, and
+it compares the ordering only.
 
 ## What changed, and what the numbers say
 
@@ -249,10 +250,11 @@ person`, and `works on my machine but fails on the server`.
 2. Fifty-two of the 344 answerable requests still fail: the wanted item is
    below third or absent, and fifteen of those return it nowhere in the first
    twenty. They are named above and in the saved report.
-3. The hosted service does not use this contract yet. `ServiceHttp._search`
-   still builds its own records and calls the retrieval engine directly, so the
-   deployed behaviour is the baseline row, not the default row. Wiring it is a
-   change inside `core.service_runtime`, which this work did not touch.
+3. The hosted service does not use this contract yet.
+   `ServiceHttpApplication._search` still builds its own records and calls the
+   retrieval engine directly, so the deployed behaviour is the baseline row,
+   not the default row. Wiring it is a change inside `core.service_runtime`,
+   which this work did not touch.
 
 ## Running it
 

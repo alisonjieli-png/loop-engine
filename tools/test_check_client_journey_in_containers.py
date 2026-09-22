@@ -17,14 +17,40 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 import check_client_journey_in_containers as drill  # noqa: E402
+from loop_engine.core.service_runtime.http import ServiceHttpConfiguration  # noqa: E402
+from loop_engine.core.service_runtime.http_entrypoint import public_binding_refusal  # noqa: E402
+from loop_engine.core.service_runtime.request_limits import (  # noqa: E402
+    HEADER_SOURCE, REQUEST_LIMITS_RECORD_TYPE)
 
 REPOSITORY = Path(__file__).resolve().parents[1]
 REPORT = Path("/nonexistent/container-journey-report.json")
+
+
+def image_default_command():
+    """The command the service image runs when it is started without one."""
+    for line in (REPOSITORY / "Dockerfile.service").read_text("utf-8").splitlines():
+        if line.startswith("CMD "):
+            return json.loads(line[len("CMD "):])
+    raise AssertionError("Dockerfile.service names no default command")
+
+
+def refusal_of_the_image_command(host):
+    """What the service's own start rule says about this host file under the image's command.
+
+    The server container runs the image's default command, so the binding and
+    the trusted proxy flag are read from the Dockerfile, and the address
+    statement is read by the service's own transport settings record.
+    """
+    arguments = image_default_command()
+    transport = ServiceHttpConfiguration(**host["http"])
+    return public_binding_refusal(arguments[arguments.index("--host") + 1],
+                                  "--behind-trusted-tls-proxy" in arguments, transport.request_limits)
 
 
 def settings(**changes):
@@ -66,6 +92,10 @@ class RecordedDocker:
         self.usage = 0.0
         self.revoked = set()
         self.tampered = set()
+        # The host file the drill seeded, and every container whose own command
+        # stopped before it served anyone.
+        self.host_file = None
+        self.stopped = set()
         self.world = {
             "network_internal": True, "has_default_route": False, "resolves_external_name": False,
             "refuses_without_a_key": True, "serves_the_correct_body": True,
@@ -138,10 +168,26 @@ class RecordedDocker:
         if "--detach" in arguments:
             name = arguments[arguments.index("--name") + 1]
             self.created["container"].append(name)
+            # A container started without its own entry point runs the image's
+            # default command, which applies the service's start rule to the
+            # seeded host file and stops before serving anyone when it refuses.
+            if "--entrypoint" not in arguments and (self.host_file is None
+                                                    or refusal_of_the_image_command(self.host_file)):
+                self.stopped.add(name)
             return "container-" + name
         return self._step(arguments, input_text)
 
+    @staticmethod
+    def _exec_target(arguments):
+        """The container a docker exec names, after its options."""
+        index = 1
+        while arguments[index].startswith("-"):
+            index += 2 if arguments[index] == "--user" else 1
+        return arguments[index]
+
     def _exec(self, arguments, input_text):
+        if self._exec_target(arguments) in self.stopped:
+            return (1, "", "container is not running")
         if "loop-engine" in arguments and "issue-key" in arguments:
             tenant = arguments[arguments.index("--tenant") + 1]
             label = arguments[arguments.index("--label") + 1]
@@ -169,6 +215,7 @@ class RecordedDocker:
         plan = json.loads(input_text) if input_text else {}
         if step in ("seed-server-volume",):
             self.artifact_root = "/data/artifacts"
+            self.host_file = plan["host"]
             return json.dumps({"step": step, "registered_items": len(plan["items"]),
                                "artifact_root": self.artifact_root})
         if step == "seed-client-volume":
@@ -429,6 +476,28 @@ class DrillRecordTest(unittest.TestCase):
         allowed = drill.host_configuration(chosen, 1)["http"]["allowed_hosts"]
         self.assertEqual(allowed, [chosen.declared_public_host, chosen.server_host, chosen.loopback_host])
 
+    def test_a_client_address_header_the_service_would_refuse_is_refused(self):
+        with self.assertRaises(drill.DrillRefusal) as caught:
+            settings(client_address_header="Not A Header")
+        self.assertEqual(caught.exception.code, "invalid_client_address_header")
+
+    def test_the_host_configuration_states_where_each_callers_address_comes_from(self):
+        stated = drill.host_configuration(settings(), 1)["http"]["request_limits"]
+        self.assertEqual(stated, {"record_type": REQUEST_LIMITS_RECORD_TYPE, "client_address_source": HEADER_SOURCE,
+                                  "client_address_header": drill.CLIENT_ADDRESS_HEADER})
+
+    def test_the_image_command_serves_this_host_configuration_only_with_the_statement(self):
+        """The service's own start rule accepts the drill's host file and refuses it without the statement.
+
+        The known-wrong case is the same file with the client address
+        statement removed. The image's command must refuse it and name the
+        missing setting, or the drill's own host file would prove nothing.
+        """
+        configuration = drill.host_configuration(settings(), 1)
+        self.assertEqual(refusal_of_the_image_command(configuration), "")
+        del configuration["http"]["request_limits"]
+        self.assertIn("request_limits", refusal_of_the_image_command(configuration))
+
 
 class SchemeVocabularyTest(unittest.TestCase):
     """The drill reads its address vocabulary from the service, not from itself."""
@@ -572,6 +641,18 @@ class CatalogueSelectionTest(unittest.TestCase):
         self.assertIsNotNone(self.selection.refused_license)
         self.assertNotIn(self.selection.refused_license["reference"]["license"], self.settings.accepted_licenses)
 
+    def test_every_registered_item_declares_no_effect(self):
+        """The journey's requests hold no effect authority, so an item that declares one is withheld.
+
+        A withheld item is left out of search and refused at its manifest with
+        item_withheld, so a drill that registered one could never show it
+        offered, fetched and installed. The catalogue gained effect
+        declarations after the drill was written, and a run on September 22
+        selected three such items and failed eleven checks.
+        """
+        for row in self.selection.registered:
+            self.assertEqual(row["reference"].get("declared_effects", []), [], row["reference"]["identity"])
+
     def test_the_tamper_target_is_not_installed(self):
         self.assertNotIn(self.selection.tamper_target, self.selection.install_identities)
 
@@ -603,6 +684,10 @@ class HealthyRunTest(unittest.TestCase):
         self.assertEqual(failing(self.report), [])
         self.assertTrue(self.report["all_passed"])
         self.assertIsNone(self.report["failure"])
+
+    def test_the_image_command_serves_the_host_file_the_drill_seeded(self):
+        self.assertIsNotNone(self.runner.host_file)
+        self.assertEqual(self.runner.stopped, set())
 
     def test_offered_fetched_installed_and_verified_are_separate_facts(self):
         facts = self.report["facts"]
@@ -788,6 +873,28 @@ class MutantTest(unittest.TestCase):
     def test_a_client_that_does_not_list_the_installed_material(self):
         report, _runner = run_with({"the_client_lists_installed_material": False})
         self.assertIn("the_client_reports_every_installed_item_under_its_own_name", failing(report))
+
+    def test_a_host_file_that_does_not_state_where_each_callers_address_comes_from(self):
+        """The image's own command refuses to serve it, so the drill stops at the server.
+
+        This is the drill's own known-wrong configuration rather than a changed
+        service: the same host file with the client address statement removed.
+        The recorded server applies the service's real start rule, so the drill
+        cannot pass unless the file it writes carries the statement. In a real
+        run the stopped server can surface one step later, at key issuance.
+        """
+        stated = drill.host_configuration
+
+        def unstated(chosen, valid_until):
+            configuration = stated(chosen, valid_until)
+            del configuration["http"]["request_limits"]
+            return configuration
+
+        with mock.patch.object(drill, "host_configuration", unstated):
+            report, runner = run_with()
+        self.assertFalse(report["all_passed"])
+        self.assertEqual(report["failure"]["code"], "host_not_configured")
+        self.assertEqual(runner.stopped, {settings().name("server")})
 
 
 class RefusalTest(unittest.TestCase):

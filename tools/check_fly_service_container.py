@@ -2,6 +2,9 @@
 
 Only an explicitly named local image is used. The disposable volume contains
 an empty catalogue and no credential. No container has external networking.
+
+The deployment workflow runs this check with the runner's own Python and no
+installed package, so it imports nothing from the repository.
 """
 from __future__ import annotations
 
@@ -24,10 +27,109 @@ REVIEW_RECORD = "examples/29_intelligence_service/starter-catalogue/reviews.json
 #: The service runs as this identity, so the packaged catalogue is owned by it
 #: and carries no write bit for anyone.
 SERVICE_USER = 65534
+#: The command the image runs when it is started without one. It binds every
+#: address and declares a trusted proxy in front of the service.
+DEFAULT_COMMAND = ["service", "serve", "--config", "/data/host.json",
+                   "--host", "0.0.0.0", "--port", "8080", "--behind-trusted-tls-proxy"]
+HOST_CONFIGURATION_RECORD_TYPE = "service_http_host_configuration/v1"
+MANIFEST_RECORD_TYPE = "host_attested_intelligence_manifest/v1"
+GRANT_APPLICATION_RECORD_TYPE = "service_host_grant_application/v1"
+#: Where the hosted service reads each caller's address. A service bound to
+#: every address behind a trusted proxy refuses to start until its host file
+#: names the header that proxy writes on every request, because the socket peer
+#: is then the proxy and every caller would share one count of refused sign-in
+#: attempts. The host file on the Fly volume names the Fly proxy's header, so
+#: every host file this check writes names the same one, and the image starts
+#: here the way it starts in production.
+FLY_REQUEST_LIMITS = {"record_type": "service_request_limits/v1",
+                      "client_address_source": "header", "client_address_header": "Fly-Client-IP"}
+#: The command the deployment workflow runs on the one machine after each
+#: release. Stored grants name the items of the release that wrote them, so a
+#: release that changes the catalogue offers nothing until the packaged
+#: manifest's grants are applied again. The command registers no tenant and
+#: replaces the grants of each tenant the manifest names. The workflow sends it
+#: through the Machines API exec call, which starts it as root, so setpriv runs
+#: it as the service user that owns /data. The command holds no quotation mark
+#: and no shell syntax, so however the exec call splits it into words, the
+#: words are these.
+POST_DEPLOY_GRANT_COMMAND = ("setpriv", f"--reuid={SERVICE_USER}", f"--regid={SERVICE_USER}", "--clear-groups",
+                             "loop-engine", "service", "apply-grants", "--config", "/data/host.json")
 
 
 def command(arguments, timeout=60):
     return subprocess.run(arguments, capture_output=True, text=True, timeout=timeout, check=True).stdout
+
+
+def default_command_host_configuration():
+    """The host file of the default command check: an empty catalogue and no tenant.
+
+    Its public origin is a name under the reserved `.invalid` top level name,
+    which can never resolve anywhere.
+    """
+    origin = "https://pilot-test.invalid"
+    return {"record_type": HOST_CONFIGURATION_RECORD_TYPE,
+            "runtime": {"database_path": "/data/service.sqlite3", "writes_authorized": True},
+            "http": {"public_base_url": origin,
+                     "allowed_hosts": ["pilot-test.invalid", "localhost:8080"],
+                     "allowed_origins": [origin],
+                     "request_limits": dict(FLY_REQUEST_LIMITS)},
+            "authentication": {"modes": ["host_key"]}, "manifest_path": "/data/manifest.json"}
+
+
+def packaged_catalogue_host_configuration(tenants):
+    """The host file of the packaged catalogue check.
+
+    It names the manifest inside the image and registers exactly the tenants
+    that manifest grants to, each with an operator entitlement that is not a
+    payment. Its public origin is a name under the reserved `.invalid` top
+    level name, which can never resolve anywhere.
+    """
+    origin = "https://catalogue-test.invalid"
+    return {"record_type": HOST_CONFIGURATION_RECORD_TYPE,
+            "runtime": {"database_path": "/data/state/service.db", "writes_authorized": True},
+            "http": {"public_base_url": origin,
+                     "allowed_hosts": ["catalogue-test.invalid", "localhost:8080"],
+                     "allowed_origins": [origin],
+                     "request_limits": dict(FLY_REQUEST_LIMITS)},
+            "authentication": {"modes": ["host_key"]},
+            "manifest_path": IMAGE_MANIFEST_PATH,
+            "tenants": [{"tenant_id": name, "namespace": name + ":private",
+                         "operator_entitlement": {"valid_until": 4102444800,
+                                                  "evidence_ref": "local_container_check_not_payment"}}
+                        for name in tenants]}
+
+
+def without_client_address_source(configuration):
+    """The known-wrong host file: the same file without the client address statement."""
+    changed = json.loads(json.dumps(configuration))
+    del changed["http"]["request_limits"]
+    return changed
+
+
+#: Seed a disposable volume with an empty catalogue and one host file. The host
+#: file arrives as text, so this script states no setting of its own.
+EMPTY_CATALOGUE_VOLUME = '''
+import json, os
+from pathlib import Path
+root = Path("/data")
+(root / "artifacts").mkdir()
+(root / "manifest.json").write_text(json.dumps({{
+    "record_type": {manifest_record_type!r},
+    "artifact_root": "/data/artifacts", "items": []}}))
+(root / "host.json").write_text({host!r})
+os.chown(root, {user}, {user})
+os.chmod(root, 0o700)
+for path in root.iterdir():
+    os.chown(path, {user}, {user})
+    os.chmod(path, 0o700 if path.is_dir() else 0o600)
+'''
+
+
+def seed_empty_catalogue_volume(image, volume, configuration):
+    setup = EMPTY_CATALOGUE_VOLUME.format(manifest_record_type=MANIFEST_RECORD_TYPE,
+                                          host=json.dumps(configuration), user=SERVICE_USER)
+    command(["docker", "run", "--rm", "--network", "none", "--user", "0:0",
+             "--mount", f"type=volume,src={volume},dst=/data", "--entrypoint", "python", image, "-c", setup])
 
 
 def check_image(image):
@@ -38,8 +140,7 @@ def check_image(image):
 
     record("runtime_user_is_unprivileged", details["Config"]["User"] == "65534:65534")
     record("default_command_starts_the_service", details["Config"]["Entrypoint"] == ["loop-engine"]
-           and details["Config"]["Cmd"] == ["service", "serve", "--config", "/data/host.json",
-                "--host", "0.0.0.0", "--port", "8080", "--behind-trusted-tls-proxy"])
+           and details["Config"]["Cmd"] == DEFAULT_COMMAND)
     common = ["docker", "run", "--rm", "--network", "none", "--read-only", "--tmpfs", "/tmp:rw,nosuid,nodev,size=256m", image]
     doctor = json.loads(command([*common, "doctor", "--format", "json"]))
     record("installed_architecture_passes_without_provider_calls", doctor["ok"] and doctor["provider_calls_made"] == 0)
@@ -50,29 +151,7 @@ def check_image(image):
     container = None
     command(["docker", "volume", "create", "--label", "loop-engine.purpose=local-service-check", volume])
     try:
-        setup = '''
-import json, os
-from pathlib import Path
-root = Path('/data')
-(root / 'artifacts').mkdir()
-(root / 'manifest.json').write_text(json.dumps({
-    'record_type': 'host_attested_intelligence_manifest/v1',
-    'artifact_root': '/data/artifacts', 'items': []}))
-(root / 'host.json').write_text(json.dumps({
-    'record_type': 'service_http_host_configuration/v1',
-    'runtime': {'database_path': '/data/service.sqlite3', 'writes_authorized': True},
-    'http': {'public_base_url': 'https://pilot-test.invalid',
-             'allowed_hosts': ['pilot-test.invalid', 'localhost:8080'],
-             'allowed_origins': ['https://pilot-test.invalid']},
-    'authentication': {'modes': ['host_key']}, 'manifest_path': '/data/manifest.json'}))
-os.chown(root, 65534, 65534)
-os.chmod(root, 0o700)
-for path in root.iterdir():
-    os.chown(path, 65534, 65534)
-    os.chmod(path, 0o700 if path.is_dir() else 0o600)
-'''
-        command(["docker", "run", "--rm", "--network", "none", "--user", "0:0",
-                 "--mount", f"type=volume,src={volume},dst=/data", "--entrypoint", "python", image, "-c", setup])
+        seed_empty_catalogue_volume(image, volume, default_command_host_configuration())
         # A store that nothing has written yet does not answer a read, so the
         # measured health answer is not ready on an empty volume. Production
         # creates the store when the host registers its tenants; this check
@@ -130,6 +209,7 @@ print('default service responds and refuses unauthenticated access')
         if container is not None:
             command(["docker", "rm", "--force", container])
         command(["docker", "volume", "rm", volume])
+    check_refusal_without_client_address_source(image, record)
     catalogue = check_packaged_catalogue(image, record)
     paths = ("Dockerfile.service", "fly.toml", ".dockerignore", ".github/workflows/fly-pilot.yml",
              "tools/test_fly_deployment.py", "tools/check_fly_service_container.py",
@@ -141,6 +221,38 @@ print('default service responds and refuses unauthenticated access')
             "all_passed": all(row["passed"] for row in checks), "service_smoke": smoke,
             "packaged_catalogue": catalogue,
             "external_provider_calls": 0, "fly_deployed": False, "local_test_volume_removed": True}
+
+
+def check_refusal_without_client_address_source(image, record):
+    """Start the image's own command with the known-wrong host file and require it to stop.
+
+    The file is the default command check's host file with the client address
+    statement removed and nothing else changed. The service must stop before
+    it serves anyone and name the missing setting. A service that started
+    anyway would serve the public with no limit on refused sign-in attempts,
+    and the default command check above would then prove nothing about the
+    statement it now carries.
+    """
+    volume = "loop-engine-fly-refusal-test-" + uuid.uuid4().hex
+    container = None
+    command(["docker", "volume", "create", "--label", "loop-engine.purpose=local-service-check", volume])
+    try:
+        seed_empty_catalogue_volume(image, volume, without_client_address_source(default_command_host_configuration()))
+        container = command(["docker", "run", "--detach", "--network", "none", "--read-only",
+            "--tmpfs", "/tmp:rw,nosuid,nodev,size=256m", "--mount", f"type=volume,src={volume},dst=/data", image]).strip()
+        try:
+            stopped_with = int(command(["docker", "wait", container], timeout=90).strip())
+        except subprocess.TimeoutExpired:
+            stopped_with = None
+        # The complaint is read for the name of the missing setting only. It is
+        # not copied into the report.
+        complaint = subprocess.run(["docker", "logs", container], capture_output=True, text=True, timeout=30).stderr
+        record("default_command_refuses_a_public_binding_without_a_client_address_source",
+               stopped_with == 2 and '"request_limits"' in complaint)
+    finally:
+        if container is not None:
+            command(["docker", "rm", "--force", container])
+        command(["docker", "volume", "rm", volume])
 
 
 def check_packaged_catalogue(image, record):
@@ -165,6 +277,8 @@ def check_packaged_catalogue(image, record):
     if not tenants:
         raise RuntimeError("The packaged manifest grants no tenant, so nothing could be served")
     subject = tenants[0]
+    granted = {name: sum(1 for row in packaged["items"] if any(grant["tenant_id"] == name for grant in row["grants"]))
+               for name in tenants}
 
     ownership = '''
 import json, os, stat
@@ -191,29 +305,17 @@ print(json.dumps({{
            and layout["no_symbolic_links"])
 
     setup = '''
-import json, os
+import os
 from pathlib import Path
 root = Path("/data")
 (root / "state").mkdir()
-(root / "host.json").write_text(json.dumps({{
-    "record_type": "service_http_host_configuration/v1",
-    "runtime": {{"database_path": "/data/state/service.db", "writes_authorized": True}},
-    "http": {{"public_base_url": "https://catalogue-test.invalid",
-              "allowed_hosts": ["catalogue-test.invalid", "localhost:8080"],
-              "allowed_origins": ["https://catalogue-test.invalid"]}},
-    "authentication": {{"modes": ["host_key"]}},
-    "manifest_path": {manifest!r},
-    "tenants": [{{"tenant_id": name, "namespace": name + ":private",
-                  "operator_entitlement": {{"valid_until": 4102444800,
-                      "evidence_ref": "local_container_check_not_payment"}}}}
-                for name in {tenants!r}],
-}}))
+(root / "host.json").write_text({host!r})
 os.chown(root, {user}, {user})
 os.chmod(root, 0o700)
 for path in root.rglob("*"):
     os.chown(path, {user}, {user})
     os.chmod(path, 0o700 if path.is_dir() else 0o600)
-'''.format(manifest=IMAGE_MANIFEST_PATH, user=SERVICE_USER, tenants=tenants)
+'''.format(host=json.dumps(packaged_catalogue_host_configuration(tenants)), user=SERVICE_USER)
     issue = '''
 import json, os
 from loop_engine.core.service_runtime.http_entrypoint import configure_host, load_host_application
@@ -323,6 +425,7 @@ print(json.dumps({{
                and answered["no_rejected_item_is_offered"])
         record("an_approved_body_is_served_from_the_image_not_from_the_volume",
                answered["an_approved_body_is_served"])
+        repair = check_post_deploy_grant_command(container, tenants, granted, approved, record)
     finally:
         if container is not None:
             command(["docker", "rm", "--force", container])
@@ -334,8 +437,87 @@ print(json.dumps({{
             "withheld_for_undeclared_authority": answered["withheld_for_undeclared_authority"],
             "search_hits": answered["search_hits"],
             "capabilities_record_type": answered["capabilities_record_type"],
+            "post_deploy_grant_command": repair,
             "review_record": REVIEW_RECORD, "local_test_volume_removed": True,
             "one_time_local_key_left_the_container": False}
+
+
+#: Clear every named tenant's grants, as the service user. This is the state a
+#: release that changes the catalogue leaves behind: the stored grants name
+#: items the new manifest no longer holds, so nothing is offered.
+CLEAR_GRANTS = '''
+import json
+from loop_engine.core.service_runtime.http_entrypoint import load_host_application
+application, _configuration = load_host_application("/data/host.json")
+for tenant in {tenants!r}:
+    application.runtime.set_grants(tenant, ())
+print(json.dumps({{"cleared_tenants": {count}}}))
+'''
+
+#: Every item registered for the probe's tenant, offered or withheld.
+REGISTERED_ITEMS = '''
+import json, urllib.request
+with open("/data/state/check.key") as stream:
+    key = stream.read()
+request = urllib.request.Request("http://localhost:8080/api/v1/provisioning",
+    json.dumps({"record_type": "service_provisioning_request/v1", "operation": "list"}).encode(),
+    {"Accept": "application/json", "Content-Type": "application/json", "Authorization": "Bearer " + key})
+with urllib.request.urlopen(request, timeout=20) as response:
+    listing = json.loads(response.read(4_000_000))["result"]
+print(json.dumps({"registered": sorted(row["identity"] for row in listing["items"] + listing["withheld"])}))
+'''
+
+#: Every path on the volume that the service user does not own, and any
+#: rollback journal a write left behind. Run as root, which can read them all.
+VOLUME_OWNERS = '''
+import json
+from pathlib import Path
+root = Path("/data")
+paths = [root, *sorted(root.rglob("*"))]
+print(json.dumps({{"paths": len(paths),
+    "owned_by_another_user": len([path for path in paths
+                                  if path.lstat().st_uid != {user} or path.lstat().st_gid != {user}]),
+    "journals_left": len([path for path in paths if path.name.endswith("-journal")])}}))
+'''
+
+
+def check_post_deploy_grant_command(container, tenants, granted, approved, record):
+    """Run the workflow's post-deploy command the way the workflow runs it.
+
+    A release that changes the catalogue leaves the stored grants naming the
+    previous items, and the library then offers nothing. Fly release 12 did
+    exactly that until the command was run by hand. Clearing the grants
+    reproduces the state here. The command the deployment workflow runs is then
+    started as root, which is how the Machines API exec call starts it, and it
+    must print exactly one record, bring back exactly the packaged grants,
+    register no tenant, and leave every file on the volume owned by the service
+    user. The workflow's gate reads the command's whole output as that one
+    record, so this check does too.
+    """
+    as_service = ["docker", "exec", "--user", f"{SERVICE_USER}:{SERVICE_USER}", container, "python", "-c"]
+    as_root = ["docker", "exec", "--user", "0:0", container]
+    command([*as_service, CLEAR_GRANTS.format(tenants=list(tenants), count=len(tenants))], timeout=180)
+    stale = json.loads(command([*as_service, REGISTERED_ITEMS], timeout=60))["registered"]
+    printed = command([*as_root, *POST_DEPLOY_GRANT_COMMAND], timeout=180)
+    try:
+        applied = json.loads(printed)
+    except ValueError:
+        applied = None
+    applied = applied if isinstance(applied, dict) else {}
+    restored = json.loads(command([*as_service, REGISTERED_ITEMS], timeout=60))["registered"]
+    owners = json.loads(command([*as_root, "python", "-c", VOLUME_OWNERS.format(user=SERVICE_USER)], timeout=60))
+    record("cleared_grants_offer_nothing_as_after_a_catalogue_release", stale == [])
+    record("the_post_deploy_grant_command_applies_exactly_the_packaged_grants",
+           applied.get("record_type") == GRANT_APPLICATION_RECORD_TYPE
+           and applied.get("manifest_path") == IMAGE_MANIFEST_PATH
+           and applied.get("tenants_registered") == 0 and applied.get("remote_accounts_created") is False
+           and applied.get("granted_items_by_tenant") == granted and restored == approved)
+    record("the_post_deploy_grant_command_leaves_the_volume_owned_by_the_service_user",
+           owners["owned_by_another_user"] == 0 and owners["journals_left"] == 0)
+    return {"command": list(POST_DEPLOY_GRANT_COMMAND), "started_as": "root",
+            "registered_after_clearing": len(stale), "registered_after_the_command": len(restored),
+            "granted_items": sum(granted.values()), "volume_paths_checked": owners["paths"],
+            "volume_paths_owned_by_another_user": owners["owned_by_another_user"]}
 
 
 def main():

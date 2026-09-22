@@ -2466,8 +2466,8 @@ steps:
     verify: [grants applied automatically after a catalogue release, container drills that state the client address source, 'hosted website, catalogue, service and protocol checks on every hostname after each release', a release record for each release]
     adversarial: Removing the grant step from the release workflow must fail a named check; a drill without the client address setting must fail to start, as production would.
     acceptance: A release leaves the library serving, the checks recorded, and the deploy switch off, with no manual step.
-    evidence: 'September 22: release 12 needed a manual apply-grants and a key reissue; the failed-attempt limit was switched on in the host file and proven against a forged address.'
-    next_local_work: Add the grant step and the drill settings, then run the automated checks after the next release.
+    evidence: 'September 22: release 12 needed a manual apply-grants and a key reissue; the failed-attempt limit was switched on in the host file and proven against a forged address. The guarded workflow now applies the packaged grants on the one Machine after the deploy, through the Machines API exec call as the service user, requires exit code zero and exactly one grant record, and repeats the readiness check; tools/test_fly_deployment.py fails when the step is removed, moved, pointed at any Machine or stripped of either gate. Both container drills state the client address source, and the Fly container check requires the image to refuse a host file without it. Locally, an image of this work together with the restored measured health record passed the Fly container check 18 of 18 and the client journey drill 34 of 34; without that restore each fails its health check. No release has run the grant step yet.'
+    next_local_work: Release through the guarded workflow once the measured health record is restored on main, confirm the grant step on the live Machine, then add the hosted checks on every hostname and a release record to the workflow.
   - id: S-6.36
     phase: 6
     title: Y Combinator application package, fact-checked
