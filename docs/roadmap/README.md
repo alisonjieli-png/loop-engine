@@ -18,5 +18,13 @@ track in `roadmap.yaml` takes precedence over the earlier list order and
 retains every earlier initiative. Regenerate the status artifact with
 `python tools/build_continuation_status.py`; `--check` detects a stale view.
 
+The [development tracker](DEVELOPMENT-TRACKER.md) is the short view of the
+same plan: what is being built now, what can start next, what is blocked,
+what only the owner can do, the launch gates and the progress of every
+delivery package. Its data file `development-tracker.json` feeds the tracker
+page. Both are generated from `roadmap.yaml` by
+`python tools/build_development_tracker.py`; `--check` detects a stale view.
+Never edit either by hand, and never keep task state anywhere else.
+
 The [fabric roadmap](FABRIC-ROADMAP-2026-09-18.md) preserves the earlier
 requirements and status history.

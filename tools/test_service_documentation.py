@@ -39,12 +39,13 @@ def build_copy(root: Path) -> Path:
     return root
 
 
-def edit(root: Path, relative: str, old: str, new: str) -> None:
+def edit(root: Path, relative: str, old: str, new: str, *, every: bool = False) -> None:
+    """Replace the first occurrence, or with `every` each occurrence, of a fixture text."""
     path = root / relative
     text = path.read_text(encoding="utf-8")
     if old not in text:
         raise AssertionError("the fixture text was not found in " + relative)
-    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+    path.write_text(text.replace(old, new) if every else text.replace(old, new, 1), encoding="utf-8")
 
 
 class ServiceDocumentationCheck(unittest.TestCase):
@@ -98,13 +99,28 @@ class ServiceDocumentationCheck(unittest.TestCase):
             self.assertIn("/api/v1/invoices", self.values(report))
 
     def test_an_address_the_service_stops_serving_is_refused(self):
+        # The address is named twice in the transport: in the route table read
+        # before authentication and in the branch that answers it. The service
+        # stops serving it only when both are renamed, so the known-wrong
+        # source renames every occurrence.
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))
             edit(root, "src/loop_engine/core/service_runtime/http.py",
-                 '"/api/v1/usage"', '"/api/v1/consumption"')
+                 '"/api/v1/usage"', '"/api/v1/consumption"', every=True)
             report = check(root)
             self.assertIn("address", self.kinds(report))
             self.assertIn("/api/v1/usage", self.values(report))
+
+    def test_a_page_address_the_page_table_stops_serving_is_refused(self):
+        """The website addresses live in the page table, not in the transport."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            self.assertEqual(check(root)["findings"], [])
+            edit(root, "src/loop_engine/core/service_runtime/web_pages.py",
+                 '"/connect"', '"/join"', every=True)
+            report = check(root)
+            self.assertIn("address", self.kinds(report))
+            self.assertIn("/connect", self.values(report))
 
     def test_a_record_version_the_source_does_not_declare_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -122,6 +122,8 @@ def report_sections(root: Path) -> dict:
         "public_content": ("Public website content and domain direction", "docs/guides/public-website-content-and-domain.md"),
         "frontier_positioning": ("Frontier harness positioning", "docs/guides/frontier-harness-positioning.md"),
         "launch_setup": ("Hosting, accounts and key setup", "docs/guides/launch-setup-runbook.md"),
+        "legal_setup": ("Operator identity, terms and privacy", "docs/legal/README.md"),
+        "product_style": ("Product style guide and the claim test", "docs/guides/product-style-guide.md"),
         "decision_tools": ("Jev and harness decision tools", "docs/guides/jev-and-harness-decision-tools.md"),
         "circuit_review": ("Circuit decision-engine source review", "docs/research/CIRCUIT-DECISION-ENGINE-REVIEW-2026-09-19.md"),
         "sol_pi_review": ("SoL-Pi: source review, comparison and integration plan", "docs/research/SOL-PI-HARNESS-REVIEW-2026-09-19.md"),

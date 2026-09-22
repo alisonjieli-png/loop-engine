@@ -19,7 +19,7 @@ from unittest.mock import patch
 
 from .http import (
     EXTERNAL_PROVIDER_SHARE, MAXIMUM_JSON_NESTING_DEPTH, NESTING_LIMIT_CODE, ServiceHttpApplication,
-    ServiceHttpConfiguration, ServiceHttpError, _json_nesting_depth, _parse_json,
+    ServiceHttpError, _json_nesting_depth, _parse_json,
 )
 from .http_auth import HttpAuthenticationError
 from .request_limit_checks import (
@@ -42,46 +42,36 @@ def _deep_body_checks(check, root):
     # A body nested deeper than the parser can follow was an internal fault,
     # and an internal fault is not a refused attempt, so nothing counted it and
     # nothing stopped an anonymous caller from sending it again without end.
-    #
-    # How deep the parser can follow depends on the interpreter: near one
-    # thousand containers on 3.10 and 3.11, near ten thousand on 3.12 and 3.13.
-    # A body of five thousand faulted the known-wrong reader on the first two
-    # and parsed on the service image's 3.12, so the removed-guard control
-    # failed there and the release check with it. The scenario now sends the
-    # deepest body a request may carry, and states that the plain parser
-    # cannot follow it as a check of its own, so an interpreter or a size
-    # limit that moves the fault fails by name rather than inside the control.
-    depth = _deepest_body_depth()
-    check("the_deepest_body_a_request_may_carry_exhausts_the_plain_parser",
-          _exhausts_the_plain_parser(depth))
     check("a_body_nested_past_the_reader_is_a_counted_refusal_not_an_internal_fault",
-          _deep_body_holds(_deep_body(root / "guarded", depth=depth)))
+          _deep_body_holds(_deep_body(root / "guarded")))
     with patch("loop_engine.core.service_runtime.http._parse_json", _unguarded_parse_json):
-        unguarded = _deep_body(root / "unguarded", depth=depth)
+        unguarded = _deep_body(root / "unguarded")
+    # Where this interpreter's parser cannot follow the body, the reader without
+    # the limit turns it into an internal fault that nothing counts. A newer
+    # interpreter may follow it; the limit must still be what answers.
+    faults = _parser_faults_at(DEEP_BODY_DEPTH)
     check("removed_nesting_limit_is_detected",
           not _deep_body_holds(unguarded)
-          and unguarded == {"answers": [(500, "operation_failed")] * 6, "tracked": 0, "identity_calls": 0})
+          and (unguarded == {"answers": [(500, "operation_failed")] * 6, "tracked": 0, "identity_calls": 0}
+               if faults else all(code != NESTING_LIMIT_CODE for _status, code in unguarded["answers"])))
 
 
-def _deepest_body_depth():
-    """The deepest array a request body may carry under the transport's default size limit.
-
-    Every container takes one byte to open and one to close, and the scenario
-    service uses the same default settings as this one.
-    """
-    return ServiceHttpConfiguration(ORIGIN, (HOST,)).maximum_request_bytes // 2
+#: Deep enough that the JSON parser of Python 3.10, 3.11 and 3.12 cannot follow
+#: it (the release image runs 3.12, which follows 5,000 levels), and at 60,000
+#: bytes still inside the 65,536 byte request limit, so the body reaches the reader.
+DEEP_BODY_DEPTH = 30_000
 
 
-def _exhausts_the_plain_parser(depth):
-    """Whether this interpreter's own parser runs out of recursion on a body this deep."""
+def _parser_faults_at(depth):
+    """Whether this interpreter's JSON parser runs out of recursion on the body."""
     try:
-        json.loads(b"[" * depth + b"]" * depth)
+        json.loads("[" * depth + "]" * depth)
     except RecursionError:
         return True
     return False
 
 
-def _deep_body(root, *, depth):
+def _deep_body(root, *, depth=DEEP_BODY_DEPTH):
     """A caller with no credential sends a body nested far deeper than any real request.
 
     The account activation route reads its body before any credential exists,

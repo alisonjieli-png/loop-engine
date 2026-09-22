@@ -40,4 +40,4 @@ A team protects the order detail page correctly. The comma separated export of t
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision ae7362f.
+Licence: MIT. Written for this catalogue at revision 4249eca.

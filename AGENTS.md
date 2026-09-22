@@ -25,34 +25,85 @@ local engine. Customers run their own harness and their own models. The
 service gives each step of a task the information, skills, tools and reusable
 code that the step needs, within the budget and permissions the customer sets.
 
-The north star is one sentence: turn a complex problem into a solution that
-can be used again. The engine breaks the work into focused steps. Each step
-is a discrete cognitive or act step Loop node; read the
-[complete behavioral explanation](ASTRA.md#complete-behavioral-explanation)
-before describing one. Success means accepted work under the customer's
-constraints. It does not mean the fewest tokens, steps or model calls.
+The north star, in the owner's words of September 22, 2026: make coding
+harnesses and multi-agent systems as efficient as possible, so that they
+become a frontier harness, a frontier multi-agent system or a frontier
+fabric that can solve any unseen task in the most efficient way. That means
+the exact amount of context for each step, reusing code instead of
+rewriting it, the right amount of intelligence and heuristics for each
+decision, and small models doing much more, including work that runs
+overnight. The task can be anything: building a pipeline, research, data
+work, or software. Turning a complex problem into a solution that can be
+used again is one benefit of this, not the north star. Success means
+accepted work under the customer's constraints; it does not mean the fewest
+tokens, steps or model calls.
 
-The product answers five customer problems: too much context for a small
-task, an expensive model for every decision, missing domain expertise, paying
-to rewrite code that already exists, and the same mistakes appearing again.
-Three launch benefits are drafts, not measured claims: overnight work with
-local models, fewer tokens spent on repetition, and useful expertise for each
-step. Read the [benefit evidence guide](docs/guides/launch-benefits-and-evidence.md)
-before writing a stronger claim.
+The default design gives every step its own harness. The engine breaks the
+work into focused steps, and each step is a discrete cognitive or act step
+Loop node that runs in a unique, freshly started harness holding only the
+context that small step needs, so no harness suffers the context rot of a
+long, overloaded session. Read the
+[complete behavioral explanation](ASTRA.md#complete-behavioral-explanation)
+before describing one.
+
+The customers are developers, teams and agentic systems. A developer can
+leave a local model running overnight (for example Gemma 4) and wake up to
+finished work; an agentic system can solve large problems with smaller,
+cheaper models and the right context for each step. Baltor Pro connects the
+customer's client to a searchable library of anything that drops into a
+harness: AGENTS.md and other context files, skills, plugins and protocol
+server configurations. A paying customer authenticates (today through the
+Model Context Protocol endpoint), searches, retrieves the chosen material,
+and starts a harness for the step with exactly that material.
+
+The product answers six customer problems: too much context for a small
+task, an expensive model for every decision, missing domain expertise,
+paying to rewrite code that already exists, the same mistakes appearing
+again, and large multi-step, long-horizon problems that small and cheap
+models cannot finish alone. The benefits are drafts, not measured claims,
+until the [benefit evidence guide](docs/guides/launch-benefits-and-evidence.md)
+says otherwise: solving complex and long-horizon problems and producing
+reusable solutions, lower cost through cheaper models and fewer tokens, work
+that finishes overnight, and optimization, including turning
+non-deterministic work into deterministic solutions. Use cases to prove and
+show: a developer connects Baltor so that tickets are worked overnight on a
+local model; a developer cleans a data set without asking an expensive model
+to do simple transformations; a full solve of a data science competition from
+task to submission.
+
+Every functional component is wrapped behind a fixed, typed, versioned edge
+with one or more swappable engines behind it, at the component level and
+above and below it. A harness or a Loop may send engine preferences within
+its authority, and the runtime selects the most efficient eligible engine by
+declared order and recorded evidence. The folder structure should follow the
+components and their engines. The earlier custom loop-node engine may return
+as one more engine behind the same executor edge. Before building any
+component, search for existing projects, repositories, designs and papers to
+reuse, and record the decision.
 
 ```text
 Current initiatives, in priority order
-├── 1. Private beta for invited users (roadmap package D-17)
-│   ├── Releases only from a committed revision whose checks passed
-│   ├── Personal accounts and personal client keys, registration closed
-│   ├── A reviewed starter catalogue of harness intelligence (the Loop-native
-│   │   and open-knowledge families follow when a host declares them)
-│   └── One native client that demonstrably loads selected material
-├── 2. Join the hosted service to the local solving path (D-06)
-├── 3. Accounts, authentication email and test subscriptions (D-02 to D-04)
-├── 4. Evidence for the three launch benefits, under explicit model authority (D-07 to D-09)
-├── 5. Durable cloud records, files and retrieval (D-05)
-└── 6. Continuing work: interchangeable engines, research, removal of unused
+├── 1. One main line, live and checked (roadmap package D-18)
+│   ├── Every branch and worktree merged, silent merge losses restored
+│   ├── Releases only from a committed revision whose checks passed, then
+│   │   automated checks on every live hostname
+│   ├── One home for rules and authority; every README matches reality
+│   └── Website fixes from the persona review; sign-up email switched on
+├── 2. Private beta for invited users (D-17)
+│   ├── Personal accounts and personal client keys
+│   ├── Every approved harness intelligence item shipped
+│   └── One native client that demonstrably loads selected material and
+│       finishes a checked step in its own harness
+├── 3. Engines behind fixed edges for every functional component (D-19)
+│   ├── The shared engine framework, harness preferences, evidence ranking
+│   ├── The harness executor slot: one harness per step, Agent Client
+│   │   Protocol first
+│   └── Search and retrieval engines with a relevance floor
+├── 4. Demonstrations, case studies and benchmarks with and without Baltor,
+│      each on its own subdomain (competitions, data cleanup, agent benchmarks)
+├── 5. Evidence for the launch benefits, under explicit model authority (D-07 to D-09)
+├── 6. Durable cloud records, files and retrieval (D-05)
+└── 7. Continuing work: research, the Y Combinator package, removal of unused
        pre-launch compatibility, and reproduced defects (D-12, S-6.26, S-6.27)
 ```
 

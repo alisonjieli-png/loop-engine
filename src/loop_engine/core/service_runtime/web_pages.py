@@ -18,6 +18,12 @@ HTML_MEDIA_TYPE = "text/html"
 SERVICE_NAME_PLACEHOLDER = b"{{SERVICE_NAME}}"
 #: The directory inside the installed package that holds every served file.
 PACKAGED_ASSET_DIRECTORY = ("core", "service_runtime", "web_assets")
+#: Every address the website answers, with the packaged file it returns. A
+#: single page application address answers with `index.html` and the browser
+#: chooses the view; a page that stands on its own names its own file; an
+#: `/assets/` address returns one named stylesheet, script or data file. The
+#: service serves nothing else: not the repository, the source inventory, the
+#: host configuration or an internal report.
 WEB_ASSETS = {
     "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
     "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),

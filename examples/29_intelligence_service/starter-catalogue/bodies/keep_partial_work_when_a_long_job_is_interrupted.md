@@ -40,4 +40,4 @@ An overnight job processes files for nine hours and writes its results at the en
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision ae7362f.
+Licence: MIT. Written for this catalogue at revision 4249eca.

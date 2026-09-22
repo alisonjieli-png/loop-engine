@@ -103,9 +103,18 @@ class StructureTests(unittest.TestCase):
         self.assertIn("owner_checklist", result["documents"])
         self.assertIn("developer_handoff", result["documents"])
         self.assertIn("launch_benefits", result["documents"])
-        self.assertEqual(len(result["roadmap"]["delivery_batches"]), 17)
-        self.assertEqual(sum(len(row["verification_cases"]) for row in result["roadmap"]["delivery_batches"]), 86)
-        self.assertIn("D-17", [row["id"] for row in result["roadmap"]["delivery_batches"]])
+        # The snapshot carries every delivery package the roadmap holds, each with its verification
+        # cases. The roadmap grows, so the report is compared with it rather than with a fixed count.
+        import yaml
+        planned = yaml.safe_load((audit.REPOSITORY / "docs/roadmap/roadmap.yaml").read_text("utf-8"))
+        planned = planned["continuation"]["delivery_batches"]
+        reported = result["roadmap"]["delivery_batches"]
+        self.assertEqual([row["id"] for row in reported], [row["id"] for row in planned])
+        self.assertEqual([len(row["verification_cases"]) for row in reported],
+                         [len(row["verification_cases"]) for row in planned])
+        self.assertGreaterEqual(len(reported), 20)
+        self.assertTrue(all(len(row["verification_cases"]) >= 3 for row in reported))
+        self.assertIn("D-17", [row["id"] for row in reported])
         self.assertEqual(len(result["roadmap"]["launch_benefits"]), 3)
 
     def test_hosting_and_full_architecture_are_embedded_not_external_handoffs(self):

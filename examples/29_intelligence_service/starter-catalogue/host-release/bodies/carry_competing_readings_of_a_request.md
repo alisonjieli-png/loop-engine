@@ -38,4 +38,4 @@ The request says: remove duplicates from the orders table. Reading one deletes r
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the questions of the step that frames alternatives, and the guidance record about carrying competing readings.
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work function for framing alternatives, with its checks.
 
-Licence: MIT. Compiled from revision ae7362f.
+Licence: MIT. Compiled from revision 4249eca.
