@@ -38,4 +38,4 @@ A cleaning script folds every value to ASCII, so `Straße` becomes `Strasse` and
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `whitespace_normalize`, `unicode_normalize` and `ascii_fold`.
 - `src/loop_engine/data/text_conformance_catalogs.yaml`: the declared folding map.
 
-Licence: MIT. Compiled from revision e2898c7. The operations module uses only the Python standard library.
+Licence: MIT. Compiled from revision f29bddc. The operations module uses only the Python standard library.

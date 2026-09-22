@@ -38,4 +38,4 @@ A pipeline sends the whole column to a language model with the instruction to cl
 - `src/loop_engine/code_nodes/text_conformance.py`: `EscalationRequest`, `ConformancePolicy` and `run_conformance`.
 - `src/loop_engine/strings/question_engine.py`: the stored question form named `disambiguate_value`.
 
-Licence: MIT. Compiled from revision e2898c7.
+Licence: MIT. Compiled from revision f29bddc.

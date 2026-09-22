@@ -38,4 +38,4 @@ A column named `contact` is assumed to hold names, so a capitalisation rule is a
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `profile_column`, `induce_pattern` and `duckdb_profile_sql`, which writes five of the counts as one DuckDB query.
 - `src/loop_engine/code_nodes/text_conformance.py`: `propose_rules` and the validate endpoint.
 
-Licence: MIT. Compiled from revision e2898c7. The operations module uses only the Python standard library.
+Licence: MIT. Compiled from revision f29bddc. The operations module uses only the Python standard library.

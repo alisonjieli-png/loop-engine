@@ -40,4 +40,4 @@ A script ends with exit status 0 and prints that it is done. The output file exi
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work function for verifying, falsifying and critiquing.
 - `src/loop_engine/strings/question_engine.py`: the question forms named `format_conformance` and `acceptance_inversion`.
 
-Licence: MIT. Compiled from revision e2898c7.
+Licence: MIT. Compiled from revision f29bddc.

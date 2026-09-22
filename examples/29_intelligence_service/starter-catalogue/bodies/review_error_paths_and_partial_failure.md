@@ -40,4 +40,4 @@ A payment service charges the card, then writes the order, then sends the confir
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision e2898c7.
+Licence: MIT. Written for this catalogue at revision f29bddc.

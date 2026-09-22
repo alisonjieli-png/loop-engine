@@ -40,4 +40,4 @@ An engineer replaces an interface key by editing the value in the store, because
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision e2898c7.
+Licence: MIT. Written for this catalogue at revision f29bddc.

@@ -38,4 +38,4 @@ A database is unreachable, and the agent answers that it cannot help. The empty 
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the guidance record about completing the best available resolution.
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work function of the same name, with its labels and checks.
 
-Licence: MIT. Compiled from revision e2898c7.
+Licence: MIT. Compiled from revision f29bddc.

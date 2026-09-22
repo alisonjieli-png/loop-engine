@@ -36,4 +36,4 @@ A team tunes the settings of a sales model for a week and gains almost nothing. 
 
 - `src/loop_engine/strings/interrogation.py`: the question bank, categories `residual_analysis` and `latent_structure`, each with its way of answering and whether code can answer it.
 
-Licence: MIT. Compiled from revision e2898c7.
+Licence: MIT. Compiled from revision f29bddc.
