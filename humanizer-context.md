@@ -58,7 +58,7 @@ historical source quotations. The canonical runtime identifier remains `Loop`.
 ## Product names
 
 - Product and repository: Loop Engine
-- README title: Building with Loops
+- README title: Baltor
 - Python distribution and command: `loop-engine`
 - Python import: `loop_engine`
 

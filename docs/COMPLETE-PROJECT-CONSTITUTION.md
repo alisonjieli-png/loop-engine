@@ -33,7 +33,7 @@ document repeats that state rather than upgrading it.
 - Product and repository name: Loop Engine.
 - Python distribution and command: `loop-engine`.
 - Python import: `loop_engine`.
-- Public README title: Building with Loops.
+- Public README title: Baltor. Building with Loops was retired on September 22, 2026.
 - Loop Engine is a standalone repository. `/home/username/taedri.dev` is a
   separate design reference only. Loop Engine never imports it, depends on
   it at runtime, or copies registries, naming systems, governance documents,

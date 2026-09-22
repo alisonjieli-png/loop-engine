@@ -10,7 +10,7 @@ continuation:
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
-  updated_at: "2026-09-22T20:00:00Z"
+  updated_at: "2026-09-22T22:40:00Z"
   baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
   plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
   artifact: docs/roadmap/CONTINUATION-STATUS.md
@@ -840,7 +840,7 @@ continuation:
     - id: D-19
       title: Engines behind fixed edges for every functional component
       stage: continued_improvement
-      steps: [S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42]
+      steps: [S-6.30, S-6.31, S-6.32, S-6.40, S-6.41, S-6.42, S-6.60]
       depends_on: [D-12]
       actions: ['Index every engine slot in the boundary registry with its edge, protocol, engines and check.', 'Declare engines with lifecycle, capabilities, effects, licence and cost model.', 'Let the host declare installed engines, the initial choice and ordered fallbacks for each slot.', Select engines without effects and record every decision with its reasons., Measure every engine inside the envelope and read qualified evidence for ranking., Build the harness executor slot with the Agent Client Protocol adapter first., Make hosted search a slot with the measured policy and a relevance floor., Search for existing projects and papers before each engine is built and record the decision.]
       acceptance: Adding, swapping or retiring an engine changes one adapter and one declaration and no neighbour; every selection is recorded; evidence reorders engines only under the declared rule.
@@ -1159,7 +1159,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.32, S-6.52, S-6.40, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.32, S-6.52, S-6.60, S-6.40, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1267,7 +1267,7 @@ continuation:
       continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58, S-6.60]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
       continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30]
@@ -2279,7 +2279,8 @@ steps:
     verify: [primary-source links, current dates and revisions, claimed versus observed capability, independent counterexamples, uncertainty labels]
     adversarial: Missing documentation cannot become proof of absence; strategic fit cannot become claimed acquisition or funding interest.
     acceptance: A dated research comparison informs product differentiation and qualified next actions without changing runtime authority or contacting organizations.
-    evidence: Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. Ongoing research and broader comparison refresh remain open; no outreach occurred.
+    evidence: Three dated primary-source reports are delivered under artifacts/continuation-research-2026-09-19/. They cover eighteen adjacent product surfaces, prior-art families, funding programmes, and acquisition comparables. The September 22 ZCode review and docs/research/CROSS-FUNCTIONAL-HARNESS-AND-LAUNCH-REVIEW-2026-09-22.md add pinned harness sources, theory, current competing offers, stakeholder questions, a launch audit and proposed discriminating checks. tools/refresh_research_sources.py made a bounded read-only check of ten primary sources with a new dated report. Ongoing research remains open; no outreach occurred.
+    next_local_work: Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state.
   - id: S-6.23
     phase: 6
     title: Exercise every required internal component through its actual owning entry point
@@ -2372,7 +2373,7 @@ steps:
     status: proposed
     depends_on: [S-6.30]
     boundary: [src/loop_engine/core/external_harness.py]
-    verify: [typed step run request and result records, an executor profile record for each engine, an Agent Client Protocol adapter with OpenCode first, harness recipe records replacing the closed style list]
+    verify: [typed step run request and result records, an executor profile record for each engine, an Agent Client Protocol adapter with OpenCode first, harness recipe records replacing the closed style list, 'a qualification ladder recorded for each harness: connected, material listed, material loaded, step finished, independently accepted; a documented bridge, a session identifier or a process exit never counts as native loading', 'a pinned first Agent Client Protocol profile, and a fresh process for each step rather than a reused session']
     adversarial: A step that requires delegation must refuse an in-process engine or an engine with no isolation; removing that guard must fail a named check.
     acceptance: One real step runs through a harness engine chosen by the slot, with its cost, time and acceptance recorded, and a second harness can replace it by configuration.
     evidence: 'September 22 research: the Agent Client Protocol Python library (Apache 2.0, Python 3.10 or newer) reaches about 39 agents; OpenCode supports it natively.'
@@ -2397,8 +2398,8 @@ steps:
     verify: [a working invitation request, a link to the source and install commands, one payment state that follows registration, the library contents with a live count, per-hostname surfaces, setup steps in order, one name for the credential, HEAD support and strict transport security, agent-facing tool descriptions]
     adversarial: A page that says payment is open while registration is closed must fail a named check; a subdomain that serves the homepage byte for byte must fail.
     acceptance: A first-time visitor can see what is in the library, request an invitation, and follow Get started to a working connection without contradictions, on every hostname.
-    evidence: 'September 22: five persona testers and an interface review on the live site; no persona would sign up or pay; ten ranked fixes with exact copy and code locations.'
-    next_local_work: Implement the fixes on the consolidated main and release them.
+    evidence: 'September 22: five persona testers and an interface review on the live site; no persona would sign up or pay; ten ranked fixes with exact copy and code locations. A local homepage repair removed the right-hand example workflow and put working steps first. The named old-layout check failed before repair; the local browser suite then passed 318 of 318 checks and 33 removed-guard controls. The changed page has not been deployed.'
+    next_local_work: Implement the remaining fixes on the consolidated main, verify the released homepage on every hostname, and repeat the live persona review.
   - id: S-6.34
     phase: 6
     title: One home for rules and authority, and a documentation cleanup
@@ -2471,10 +2472,10 @@ steps:
     status: proposed
     depends_on: [S-6.30]
     boundary: [tools/build_host_catalogue_manifest.py, examples/29_intelligence_service/starter-catalogue/reviews.json]
-    verify: ['sources scanned on a schedule: public repositories, skill directories, plugin and server registries', 'licence gate: permissive material imported with its licence and source, other material recreated as original work', deduplication and quality scoring, every new item a candidate until independent reviewers approve it, progress measured toward the largest curated library]
+    verify: ['sources scanned on a schedule: public repositories, skill directories, plugin and server registries', 'licence gate: permissive material imported with its licence and source, other material recreated as original work', deduplication and quality scoring, every new item a candidate until independent reviewers approve it, progress measured toward the largest curated library, 'a versioned per-source provenance contract for outside material: origin, immutable revision, path, source digest, licence evidence and fetch date', 'a multi-file package contract for skills with scripts, references and assets']
     adversarial: An item without an accepted licence must never be imported verbatim; a generated item must never approve itself; a duplicate of an existing item must be merged, not added.
     acceptance: The worker adds reviewed, licensed items continuously without manual work, and the library size and quality are measured and published only from evidence.
-    evidence: 'September 22: owner direction to be the largest curated library of harness material, aiming at millions of files; 123 candidates exist today, 43 served.'
+    evidence: 'September 22: owner direction to be the largest curated library of harness material, aiming at millions of files; 123 candidates exist today, 43 served. tools/prepare_harness_candidates.py prepares local source-grounded text candidates in fifty-item populations; a temporary synthetic fixture prepared and staged 1,000 review-only candidates with no stale derived fields. External import, file-level rights, useful task outcomes and approval were not established.'
     next_local_work: Survey the sources and their licences, then build the worker behind an ingestion engine slot.
   - id: S-6.41
     phase: 6
@@ -2493,10 +2494,10 @@ steps:
     status: proposed
     depends_on: [S-6.31]
     boundary: [src/loop_engine/core/external_harness.py, embodiments/opencode]
-    verify: [Pi and OpenCode supported out of the box, 'forks of Pi and OpenCode studied, including the NVIDIA fork of Pi and its paper', 'a decision on an own fork of OpenCode or Pi, with measured efficiency gains', 'a tested answer for Codex, Claude Code, OpenCode and Pi on starting an independent instance or process with new files for one step']
+    verify: [Pi and OpenCode supported out of the box, 'forks of Pi and OpenCode studied, including the NVIDIA fork of Pi and its paper', 'a decision on an own fork of OpenCode or Pi, with measured efficiency gains', 'a tested answer for Codex, Claude Code, OpenCode and Pi on starting an independent instance or process with new files for one step', 'ZCode, which Z.ai open-sourced under Apache 2.0, tried as a candidate through its app-server path with isolation, cancellation and native loading tested before any support is listed']
     adversarial: A harness that cannot start an isolated instance with only the step files must be marked unsupported for one-harness-per-step, not assumed to work.
     acceptance: The supported harnesses each start a fresh instance per step with exactly the selected material, proven by a recorded test, and the fork decision rests on measurements.
-    evidence: 'September 22: owner direction; opencode 1.18.32, codex 0.155.1, pi and claude are installed on the workstation.'
+    evidence: 'September 22: owner direction; opencode 1.18.32, codex 0.155.1, pi and claude are installed on the workstation. ZCode is documented as an unqualified additional harness candidate at source revision 872ad960de7ec172591f7e1952f7849229f94521 in docs/research/ZCODE-AND-HARNESS-INTELLIGENCE-MARKET-REVIEW-2026-09-22.md; no native run was tested.'
     next_local_work: Research the forks and run the independent-instance tests without model calls where possible.
   - id: S-6.43
     phase: 6
@@ -2526,7 +2527,7 @@ steps:
     status: proposed
     depends_on: [S-6.40]
     boundary: [tools/build_host_catalogue_manifest.py, tools/stage_intelligence_candidates.py]
-    verify: ['a malicious-skill regression set that every scanner or reviewer change must still reject, with its benign items still accepted', licences recorded as SPDX expressions and unknown ones refused, a CycloneDX bill of materials for code and plugin items and for release images, licence and advisory fields read from a package metadata service, code scanning on the public repository]
+    verify: ['a malicious-skill regression set that every scanner or reviewer change must still reject, with its benign items still accepted', licences recorded as SPDX expressions and unknown ones refused, a CycloneDX bill of materials for code and plugin items and for release images, licence and advisory fields read from a package metadata service, code scanning on the public repository, 'every rendered SKILL.md validated against the Agent Skills specification with its reference validator']
     adversarial: A leaked system prompt or a model weight under a non-commercial licence must never be admitted, whatever licence label it carries.
     acceptance: Admission rejects the regression set's malicious items with named reasons, and every served item shows its SPDX licence and digest.
     evidence: 'September 22: the owner-shared research record (314 items the owner shared between August 26 and September 22), item 8.'
@@ -2685,3 +2686,14 @@ steps:
     acceptance: Replies go out with a person's approval, and the visits and sign-ups they bring are measured.
     evidence: 'September 22 evening: owner direction on the handbook. Engineering decided that a person approves and posts each reply.'
     next_local_work: Write the finder and the reply template; nothing is posted without a person.
+  - id: S-6.60
+    phase: 6
+    title: A layer before every model call that decides one model or several
+    status: proposed
+    depends_on: [S-6.30]
+    boundary: [src/loop_engine/core/model_gateway.py, examples/18_three_model_ensemble]
+    verify: ['a component between any step and its model call, behind a fixed edge, with engines of its own', 'engines: pass-through; one model chosen from the models the customer configured; a vote among several models; a disagreement chain that asks the models to answer each other; a resolution chain that settles a disagreement with a named method', 'the harness or step sets the preferences, and they flow through each layer to the existing gateway, which still routes each physical call', 'each decision records its inputs, the chosen strategy, every physical call with its usage and cost, and the later acceptance of the result', several models are used only when the step's budget and authority allow every call they make]
+    adversarial: A strategy that calls more models than the step's authority or budget allows must be refused before the first call, and an agreement among models is evidence, never acceptance.
+    acceptance: A step can run through any of the strategies by configuration alone, and the recorded decisions show when several models helped and when one was enough.
+    evidence: 'September 22 evening: owner direction. The model gateway already routes a call to the preferred model, and a three-model ensemble example exists. The Codex research session is writing docs/research/MODEL-CALL-STRATEGY-AND-DISAGREEMENT-2026-09-22.md.'
+    next_local_work: Read the research record, then define the edge and the pass-through engine first, so that every later strategy is one more engine.

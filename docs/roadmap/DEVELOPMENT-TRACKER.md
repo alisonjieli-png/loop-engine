@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa437150e222d49849`.
+Source fingerprint: `sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f9954904bfadf`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa4371
 |---|---:|
 | Being built now | 32 |
 | Can start next | 11 |
-| Waiting on earlier work | 51 |
+| Waiting on earlier work | 52 |
 | Blocked | 2 |
 | Done | 41 |
 
@@ -41,7 +41,7 @@ Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa4371
 | S-6.15 | Deploy an authorized pilot and qualify its real request path | building | S-6.14 |
 | S-6.25 | Expand the system map to every source file with explicit evidence limits | building |  |
 | S-6.18 | Reorganize coherent code families and update current callers | building | S-6.1, S-6.2, S-6.3 |
-| S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building |  |
+| S-6.22 | Maintain sourced competitor, prior-art, funding, and strategic-path research | building | Review each changed or inaccessible source from a new source-watch report before editing a claim; keep the roadmap as the only task state. |
 | S-1.4 | Evaluation product command over a frozen suite | building |  |
 | S-1.7 | Runnable prompt and harness optimization command | building | S-1.4 |
 | S-2.15 | Noise injection and explorative optimization over the evaluation product | building | S-1.7 |
@@ -86,6 +86,7 @@ Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa4371
 | S-6.50 | Baltor forks of OpenCode and Pi | proposed | S-6.42 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
+| S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
 | S-6.54 | Data-work intelligence packs as text and as tested code | proposed | S-6.40 |
 | S-6.53 | Generate intelligence along the occupation grid | proposed | S-6.40 |
@@ -166,7 +167,7 @@ Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa4371
 | D-16 | Qualify installation, distribution and compatibility | public_launch | 0 of 6 |
 | D-17 | Open a private beta for invited users | initial_service | 0 of 6 |
 | D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 8 |
-| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 6 |
+| D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 7 |
 | D-20 | Meet the open standards and make served files safe to trust | initial_service | 0 of 5 |
 | D-21 | Meet customers in the harness they already use | initial_service | 0 of 3 |
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 5 |

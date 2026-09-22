@@ -19,7 +19,7 @@ them would break compatibility.
 | Surface | Name |
 |---|---|
 | Product and repository | Loop Engine |
-| README title | Building with Loops |
+| README title | Baltor (Building with Loops was retired on September 22, 2026) |
 | Python distribution | `loop-engine` |
 | Command-line program | `loop-engine` |
 | Python import | `loop_engine` |

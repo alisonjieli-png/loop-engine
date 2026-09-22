@@ -1,239 +1,196 @@
-# Building with Loops
+# Baltor
 
-Loop Engine coordinates tasks through one shared Loop runtime. Given configured
-capabilities and authority, it attempts the work, checks the results, and saves
-completed work and failures in an inspectable Run History.
+Harness and agent optimized operation.
 
-It takes small steps and selects the next concrete action itself. It records
-typed model decisions and material actions, then checks its work before
-claiming success. Verified code, context, and solutions can become candidates
-for governed reuse.
+Baltor makes coding harnesses and multi-agent systems as efficient as
+possible. The aim is a frontier harness, multi-agent system or fabric that can
+take on any unseen task in the most efficient way:
 
-The built-in quickstart builds small Python projects. Other applications can
-supply their own operations and verification through the
-[host integration API](docs/guides/embedding-loop-engine.md). The host controls
-its files, commands, repository, and acceptance gates; the Loop reasons over
-the available capabilities and their observations. This interface is not a
-claim that arbitrary unseen tasks are already solved.
+- the exact context each step needs, and no more;
+- code that already exists is reused instead of written again;
+- the right amount of intelligence and heuristics for each decision;
+- small models doing much more, including work that runs overnight.
 
-## Baltor and the hosted intelligence service
+The task can be anything: a data pipeline, research, a data cleanup or a piece
+of software. Turning a complex problem into a solution you can run again is
+one benefit of this work. It is not the goal itself.
 
-Baltor is the public brand of this project. Loop Engine remains the name of
-the repository, the Python package, the `loop-engine` command and the runtime
-that this README describes. The public website is <https://baltor.ai>.
+Baltor is the product and the website at <https://baltor.ai>. Loop Engine is
+this repository: the open engine behind Baltor, the Python package
+`loop-engine` and the `loop-engine` command.
 
-The product has two parts. The local engine in this repository runs on your
-machine with your own harness and your own models. The hosted intelligence
-service gives each step of a task the information, skills, tools and reusable
-code that the step is permitted to load. It serves them through an
-authenticated Model Context Protocol endpoint. The service does not run
-customer tasks and does not call a model.
+## One harness for each step
 
-Current behavior: a private pilot of the service runs. It is not open to the
-public, and it is not a paid service. The service accepts Model Context
-Protocol version `2025-11-25` only. The
-[current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
-section of the client and server map records the running release, the kinds
-of access that are switched on and what the catalogue holds. Follow that
-section when this README differs from it.
+A harness is the program that runs a coding agent, such as OpenCode, Codex,
+Claude Code or Pi. Baltor is designed to start a fresh harness for every
+step of a task. Each one holds only the context, skills, tools and code that
+its small step needs, so no step carries the context rot of a long,
+overloaded session.
 
-Planned behavior: a private beta with personal accounts, personal client keys
-and a reviewed starter catalogue, and subscriptions after that. None of this
-is available yet.
+```text
+A task
+├── Step 1: a fresh harness with the material step 1 selected
+├── Step 2: a fresh harness with the material step 2 selected
+├── Step 3: a fresh harness that reuses tested code instead of writing it
+└── Check: an independent step accepts or rejects the result
+```
 
-You can run the same service on your own machine without a cloud account.
+Inside the engine, each step is a discrete cognitive or act step Loop node:
+one independently governed instance of the Loop runtime, responsible for one
+clearly defined cognitive step or action, with its own contracts, permissions
+and history. Read the
+[complete behavioral explanation](ASTRA.md#complete-behavioral-explanation)
+before describing one.
+
+## What Baltor gives your harness
+
+Baltor Pro connects the harness you already run to a searchable library of
+material that drops into a harness working directory:
+
+- `AGENTS.md` and other context files;
+- skills (`SKILL.md`);
+- plugins and protocol server configurations;
+- reusable, tested code.
+
+Your harness searches the library, gets back short references (identity,
+purpose, source, licence, exact version and digest) and downloads only the
+item a step chose. Access is checked again at download, and every delivery is
+recorded in your usage. Your models and your provider keys stay with you:
+Baltor never asks for a provider key and never calls a model on your behalf.
+
+The library is meant to be the one place that holds material scattered today
+across many skill sites, plugin directories and repositories. Each item is
+reviewed by someone other than its author before it is served, and retrieval
+hands each step a small, exact result.
+
+## Who it is for
+
+- **Developers.** Leave a local model such as Gemma 4 running overnight on
+  bounded steps, with a record of every step to read in the morning.
+- **Teams.** Share one reviewed library and one way of breaking work into
+  steps across the harnesses people already use.
+- **Agentic systems.** An agent can call Baltor itself to give each of its
+  steps the right context, so smaller and cheaper models can finish larger
+  problems without context drift.
+
+## The problems it answers
+
+1. Too much context for a small task.
+2. An expensive model for every decision.
+3. Missing domain expertise.
+4. Paying to rewrite code that already exists.
+5. The same mistakes appearing again.
+6. Large, multi-step, long-horizon problems that small and cheap models cannot
+   finish alone.
+
+The benefits we are working to prove are: finishing complex and long-horizon
+work and producing reusable solutions; lower cost through cheaper models and
+fewer tokens; work that finishes overnight; and optimization, including
+turning work that needed a model into a deterministic solution. They are
+drafts until the [benefit evidence guide](docs/guides/launch-benefits-and-evidence.md)
+records a measured run for each one.
+
+Use cases we are building demonstrations for, each with and without Baltor:
+
+- a developer's tickets worked overnight on a local model;
+- a data set cleaned without asking an expensive model to do simple
+  transformations;
+- a data science competition taken from task to submission.
+
+## Status on September 22, 2026
+
+Working on the live service today:
+
+- the website and account sign-in for invited people;
+- personal client keys and copy-ready connection settings for OpenCode, Codex
+  and Claude Code;
+- the Model Context Protocol endpoint (protocol version `2025-11-25`), with
+  search that returns references and downloads that check access and bytes;
+- a first reviewed collection: 43 items approved by three independent
+  reviewers are in the deployed release.
+
+Not open yet:
+
+- public registration and email sign-up (accounts open in small groups);
+- payment (the plan is Baltor Pro, 29 United States dollars a month; the
+  payment account is ready and nobody has been charged);
+- the account dashboard pages for renewing, cancelling, exporting and deleting;
+- a free allowance for accounts without a subscription;
+- starting a fresh standard harness for each step from the engine.
+
+The [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
+section records the running release. The [development tracker](docs/roadmap/DEVELOPMENT-TRACKER.md)
+lists what is being built now, next and later, generated from the
+[roadmap](docs/roadmap/roadmap.yaml).
+
+## Connect your harness
+
+1. Get a personal client key from your account page, or from the person who
+   invited you.
+2. Put it in the environment variable `BALTOR_SERVICE_TOKEN`. A connection
+   entry names that variable and never contains the key.
+3. Add the Baltor server to your harness. The Connect page on
+   <https://baltor.ai> gives the exact entry for OpenCode, Codex and Claude
+   Code, and [getting set up](docs/guides/service-getting-set-up.md) explains
+   each one.
+
+Revoking a key stops its next request. It does not recall files that were
+already downloaded.
+
+## Components and engines
+
+The architecture rule: every functional component sits behind a fixed, typed
+and versioned edge, with one or more engines behind it. Swapping, adding or
+retiring an engine changes that engine and its declaration, not the
+components around it. The rule applies at the component level and above and
+below it, and the folder structure is to follow the components and their
+engines.
+
+| Component | Engines that exist today | Being built |
+|---|---|---|
+| Search and retrieval | SQLite full-text search (the default), LanceDB, hashing and Model2Vec backends behind one handshake | a served relevance floor; self-learning and near-duplicate engines |
+| Record storage | SQLite, DuckDB and an in-memory store | durable cloud records |
+| Model calls | one gateway that resolves each call to a configured provider route with a source-backed output limit | a layer that decides between one model and several (voting, disagreement and resolution) |
+| Decisions | the Jev, Circuit and System One decision engine profiles | logging each decision against its later outcome |
+| Address parsing | standard library, usaddress and libpostal | more data-work engines |
+| Configuration search | grid, random, vector warm start and Optuna | evidence-based ranking across runs |
+| Step execution | the engine's own runtime and registered harness adapters | one fresh standard harness per step through the Agent Client Protocol, OpenCode first |
+
+The shared engine framework is designed and not built yet. It will index
+every slot, let a harness send engine preferences within its authority, and
+choose among eligible engines by declared order and recorded evidence. The
+[components index](docs/components/README.md) holds a guide for each
+component.
+
+## Intelligence
+
+The library keeps four persistent intelligence layers: Context Intelligence,
+Code Intelligence, Runtime History and Solution Intelligence, and User
+Feedback Intelligence. Runtime Memory is separate, temporary and scoped to one
+run.
+
+Material is also organized by family, which says what it is built to follow:
+harness intelligence (files a standard harness already reads, served first),
+Loop-native intelligence and Open Knowledge Format intelligence. Imported and
+generated material stays a candidate until an independent process approves
+it. Nothing is promoted because it was retrieved, executed or scored well. The
+[harness-first decision](docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md)
+explains what the main line serves today.
+
+## Run the service on your own machine
+
+You can run the same intelligence service locally without a cloud account.
 Follow the [local intelligence service example](examples/29_intelligence_service/README.md).
 
-## Solve with human-like loops
+## The local engine
 
-Download the first example task and run the LLM-first (large language model) quickstart profile. The
-Practitioner reads the task, selects the next concrete action, runs Solution
-Loops in a confined workspace, and verifies the real artifacts:
+The engine in this repository can also solve tasks on your machine with your
+own provider. The built-in quickstart builds small Python projects. Other
+applications supply their own operations and checks through the
+[host integration API](docs/guides/embedding-loop-engine.md). This is not a
+claim that arbitrary unseen tasks are already solved.
 
-```bash
-curl -LO \
-  https://raw.githubusercontent.com/alisonjieli-png/loop-engine/main/examples/tasks/01-expense-report.txt
-
-loop-engine solve --file 01-expense-report.txt --quickstart
-```
-
-If the selected hosted model is temporarily unavailable, permit another exact
-route for the same configured provider on the same solve path:
-
-```bash
-loop-engine solve --file 01-expense-report.txt --quickstart \
-  --allow-model-failover
-```
-
-An explicitly selected `--model-id` remains pinned. Failover does not bypass
-authentication, request, permission, effect, output, or verification checks.
-
-`--quickstart` is an explicit authority profile. It selects one configured
-provider, starts the LLM-first Practitioner, asks material
-questions when needed, and permits the existing confined Docker workspace. It
-does not impose a numeric pass, model-call, or token ceiling unless the user or
-settings provide one. It does not authorize deployment, publication, or network
-access from generated code.
-
-The Practitioner reads the task, records a material question when an answer
-would improve the outcome, selects the next concrete action, runs Solution
-Loops in a confined workspace, and verifies the real artifacts. It still
-completes the best available resolution before returning. Users do not choose
-deterministic, hybrid, or model-led execution during the normal solve path.
-The runtime selects model-led reasoning when a model is available. Use
-`--unattended` only when a run must abstain instead of returning a material
-question.
-
-Perspectives, question sets, templates, Intelligence refs, prior solutions,
-and recovery strategies enter the prompt as candidates. The model selects
-among them. Scores and step affinity help comparison but do not choose a task
-meaning or solution.
-
-Task interpretation is not limited to a fixed list or template. The current
-effect capabilities can build small Python utilities, transform supplied local
-files, summarize documents, analyze repositories, and repair small Python
-packages. A task that needs another physical capability returns a complete
-best-available resolution with the exact `CAPABILITY_GAP`, useful preparatory
-work, and next actions preserved inside it.
-
-Every selected action has an intended direction and a separate observed
-outcome vector. Loop Engine distinguishes a successful model response from an
-aligned observable work process, successful capability execution, the
-declared action output, the requested task output, verification, material
-progress, and remaining safe work. A normal stop is rejected while safe
-authorized continuation remains. The same owning-Loop policy applies to the
-custom Practitioner and to registered OpenCode, Codex, Pi, and other harness
-realizations. Private model reasoning is not recorded.
-
-A successful result has this shape:
-
-```text
-COMPLETED_VERIFIED
-Expense report command and verified Markdown output.
-
-Artifacts:
-  .../workspace/attempt-1/expense_report.py (verified)
-  .../workspace/attempt-1/report.md (verified)
-
-Workspace: .../<run-id>-workspace/attempt-1
-Verification: passed
-Run ID: <run-id>
-Run History: ~/.loop-engine/runs/<run-id>
-```
-
-A generated-project solve writes only inside the selected workspace. Commands
-run in the pinned Docker image with bounded resources and no network during
-execute or verify steps. Dependency setup requires separate authority. If
-Docker is absent, the solve stops with a typed sandbox-unavailable result
-unless you pass `--allow-local-execution`, which runs generated code as a host
-process without an operating-system sandbox and records that weaker isolation
-in Run History.
-
-If an answer can materially improve the goal, authority, inputs, or acceptance,
-the completed resolution includes a typed question with a named answer slot
-instead of guessing. The current work, assumptions, provisional outputs,
-missing pieces, and alternatives remain available. Supply the answer
-separately and rerun the unchanged task:
-
-```bash
-loop-engine solve --file task.txt --quickstart \
-  --task-feedback 'required_destination=./results/final-report.md'
-```
-
-Read [LLM-first universal solving](docs/guides/llm-first-universal-solver.md)
-for the model/runtime boundary.
-
-## Compare experimental embodiments
-
-The [embodiment catalog](embodiments/README.md) preserves alternative ways to
-build and run Loop Engine applications. Each design has its own folder,
-launcher, manifest, tradeoffs, and qualification status. Current runnable
-experiments compare native execution, fresh processes, persistent sessions,
-session pools, parallel portfolios, and durable reactive work with a trusted
-deterministic backend. They do not claim live model or harness qualification.
-Additional designs remain explicitly planned. No single embodiment is selected
-as the winner for every project.
-
-Local `solver-lab` project copies have their own source, evaluators,
-dependencies, and run state. Their filesystem location is host-specific;
-they are not part of the Loop Engine distribution. Follow the
-[reference-source boundaries](docs/context/REFERENCE-SOURCES.md) before
-consulting an older copy. Experiments in this repository continue to share
-the canonical Loop runtime.
-
-## Reuse verified work
-
-The [flexible cognitive and action composition direction](docs/architecture/FLEXIBLE-COGNITIVE-AND-ACTION-COMPOSITION.md)
-describes how the design can grow beyond current workflows. Additional steps,
-prompts, questions, intelligence, and action methods are valid extensions,
-alongside compact procedures. Fewer steps or model calls are not the
-universal objective.
-
-The [configuration grid search guide](docs/guides/configuration-grid-search-and-optimization.md)
-explains candidate enumeration, conditional combinations, evaluation,
-fallback-policy comparisons, and the current implementation limits. It
-includes a runnable zero-model-call enumeration example. This direction does
-not claim that Loop Engine has achieved artificial general intelligence.
-
-A careful colleague takes notes and remembers. Loop Engine saves more than the
-final answer: verified code, reusable context, and complete solutions all
-become candidates for the next run. After an accepted generated implementation,
-it can emit a small reuse opportunity and return the source result without
-waiting for packaging. The asynchronous harvest path creates a Code
-Intelligence candidate. A future task can use it only after independent
-qualification and explicit promotion. An exact promoted match executes
-deterministically with zero model calls.
-
-A versioned Loop contract may also execute without a dedicated conventional
-implementation body. The exact semantic specification is bound into its
-`LoopDefinition`. A qualified interpreter produces an untrusted candidate,
-then independent verification and effect control decide whether anything may
-enter trusted state. A later promoted deterministic realization can satisfy the
-same contract with zero model calls for its declared input region. Read
-[Transactional semantic runtime](docs/components/loop-object/SEMANTIC-RUNTIME.md).
-
-Read the
-[Reusable Capability Flywheel](docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md)
-for candidate harvesting, promotion, search, and deterministic reuse.
-
-An offline research foundation now computes candidate diagnostics that compare
-a compact state with history and records procedural-memory probes for control
-boundaries that safe reuse would need. The strongest procedural status remains
-pending canonical reference resolution. These records cannot select or promote
-a procedure. A separate offline public-solve fixture now exposes hydrated
-prior-stage material to a prompt-sensitive provider adapter and links one
-action stage through exact selection, execution, and verification occurrence
-references. Its pre-run control manifest is saved before model work and says
-`mechanism_only` because six controls remain unresolved. It uses injected
-responses, so no live-model quality or assistance benefit is claimed. See the
-[procedural-memory and predictive-state note](docs/research/PROCEDURAL-MEMORY-PREDICTIVE-STATE-AND-INFORMATION-VALUE-2026-09-04.md)
-and the
-[current offline verification report](docs/verification/PREDICTIVE-STATE-PROCEDURAL-MEMORY-AND-STAGE-ASSISTANCE-2026-09-04.md).
-
-## How it works
-
-```text
-Original task
-└─ Starting Practitioner Loop
-   ├─ orient and standardize
-   ├─ select the next concrete action
-   ├─ propose a registered capability or a new local implementation
-   ├─ validate permissions and capability availability
-   ├─ run Solution Loops in a confined workspace
-   ├─ inspect commands and artifacts
-   └─ return one terminal result with Run History
-```
-
-Every executable graph position uses the same runtime type, `Loop`.
-Practitioner, Intelligence, and Solution are roles. Deterministic, hybrid, and
-non-deterministic are per-Loop modes. `LoopGraphDefinition` remains the one
-executable graph authority.
-
-Read [how Loop Engine works](docs/guides/how-it-works.md) after the quickstart.
-The [Architecture Constitution](docs/architecture/CONSTITUTION.md) defines the
-hard runtime, permission, evidence, and governance rules.
-
-## Install
+### Install
 
 You need [Python 3.10 or newer](https://www.python.org/downloads/) and
 [Docker](https://docs.docker.com/get-docker/). Git is not required for the
@@ -258,12 +215,10 @@ loop-engine doctor
 ```
 
 The default install is lightweight. In a source checkout, install `.[data]`
-for the larger ML, Kaggle, vector, and analytical adapters, or `.[all]` for
-every first-party optional adapter. The base self-test reports optional
-adapters as not tested; it does not misreport a lightweight installation as
-broken.
+for the larger machine learning, Kaggle, vector and analytical adapters, or
+`.[all]` for every first-party optional adapter.
 
-## Configure one provider
+### Configure one provider
 
 The shortest hosted path uses Ollama Cloud. Set the key, then inspect the
 configuration without making a provider call:
@@ -284,53 +239,54 @@ loop-engine models probe ollama_cloud \
   --max-total-tokens 70000
 ```
 
-Do not continue if the probe reports authentication, rate-limit, output-limit,
-or availability failure. A configured key is not proof that a provider works.
+Do not continue if the probe reports an authentication, rate-limit,
+output-limit or availability failure. A configured key is not proof that a
+provider works. See [providers and keys](docs/guides/providers-and-keys.md)
+for OpenRouter, Mistral, local Ollama, OpenCode Go and custom endpoints.
 
-See [providers and keys](docs/guides/providers-and-keys.md) for OpenRouter,
-Mistral, local Ollama, OpenCode Go, and custom endpoints.
+### Solve a task
 
-If you have an OpenRouter key and want a current zero-price route, export the
-key and add `--openrouter-api-key` to `solve`. Loop Engine reads OpenRouter's
-live catalog, selects an exact zero-price structured model with a declared
-output maximum, and freezes that route for the run. `--opencode-zen-api-key`
-does the same for current compatible OpenCode Zen zero-cost models.
-
-If several known provider keys are present, quickstart prefers the dynamic
-zero-price OpenRouter route, then the zero-cost OpenCode Zen route, before the
-fixed Ollama Cloud, Mistral, and OpenCode Go routes. This chooses a candidate
-route; it does not promise that the provider quota is currently available.
-
-## Add providers and capabilities with files
-
-Loop Engine automatically checks these optional folders:
-
-```text
-.loop-engine/extensions
-~/.config/loop-engine/extensions
-```
-
-They may contain provider routes, capability candidates, skills, plugin
-bundles, and plugin intelligence. Inspect everything without a provider call:
+Download the first example task and run the quickstart profile:
 
 ```bash
-loop-engine extensions discover
-loop-engine extensions providers --format json
+curl -LO \
+  https://raw.githubusercontent.com/alisonjieli-png/loop-engine/main/examples/tasks/01-expense-report.txt
+
+loop-engine solve --file 01-expense-report.txt --quickstart
 ```
 
-Zero-price routes and local routes activate automatically when their required
-configuration exists. Free-plan allowances and paid routes require
-`--allow-paid-extension-routes` because billing may begin after a quota.
-Dropped code and intelligence remain candidates until their existing admission
-and review requirements pass.
+You can also [download ready-to-run task files](examples/tasks/) from GitHub.
 
-See [added-file extensions](docs/architecture/ADDED-FILE-EXTENSIONS.md) and the
-[complete example](examples/23_drop_in_extensions/). The
-[provider endpoint landscape](docs/guides/provider-endpoint-landscape.md)
-lists the protocol and authentication families, including native cloud APIs
-that still need a reviewed adapter.
+`--quickstart` is an explicit authority profile. It selects one configured
+provider, starts the model-led Practitioner, asks material questions when an
+answer would improve the outcome, and permits the confined Docker workspace.
+It does not authorize deployment, publication or network access from
+generated code. Commands run in the pinned Docker image with bounded
+resources and no network during the execute and verify steps.
 
-## Inspect the result
+A successful result has this shape:
+
+```text
+COMPLETED_VERIFIED
+Expense report command and verified Markdown output.
+
+Artifacts:
+  .../workspace/attempt-1/expense_report.py (verified)
+  .../workspace/attempt-1/report.md (verified)
+
+Workspace: .../<run-id>-workspace/attempt-1
+Verification: passed
+Run ID: <run-id>
+Run History: ~/.loop-engine/runs/<run-id>
+```
+
+A task that needs a capability the engine does not have returns a complete
+best-available result with the exact `CAPABILITY_GAP`, the useful work
+already done and the next actions. Read
+[model-led universal solving](docs/guides/llm-first-universal-solver.md) for
+the boundary between the model and the runtime.
+
+### Inspect the result
 
 ```bash
 loop-engine runs
@@ -338,130 +294,20 @@ loop-engine report @last
 loop-engine studio --port 0
 ```
 
-Studio selects an available local port and prints the address. Open the Result
-tab for artifacts and verification, Playback for the event sequence, Tree for
-the Loop hierarchy, and Calls for provider activity.
+Studio picks a free local port and prints the address. The Result tab shows
+artifacts and verification, Playback the event sequence, Tree the Loop
+hierarchy and Calls the provider activity.
 
-Use JSON when another program consumes the result:
+### Add providers and capabilities with files
 
-```bash
-loop-engine solve \
-  --file task.txt \
-  --quickstart \
-  --format json
-```
+The engine checks `.loop-engine/extensions` and
+`~/.config/loop-engine/extensions` for provider routes, skills, plugin bundles
+and plugin intelligence. Dropped code and intelligence remain candidates until
+their admission and review requirements pass. See
+[added-file extensions](docs/architecture/ADDED-FILE-EXTENSIONS.md) and the
+[complete example](examples/23_drop_in_extensions/).
 
-JSON mode emits one machine-readable solve result with the terminal code,
-artifact records, verification, model usage, tool count, workspace, and Run
-History location.
-
-## Query records and manage notes
-
-One typed catalog query can read canonical JSONL rows, SQLite records, or the
-optional DuckDB file adapter. Backend capabilities remain explicit. Readable
-files do not become writable tables merely because SQL can query them.
-
-`loop-engine records` manages scoped notes with schema validation, exact write
-approval, immutable revisions, and atomic expected-version updates. It does
-not expose raw SQL or let note content grant execution authority.
-See [queryable records and storage](docs/guides/queryable-records-and-storage.md)
-and the [managed-record example](examples/24_managed_records/).
-
-This is a first local tool path. Existing file writers, generated session
-Markdown, and a qualified PostgreSQL backend remain separate work.
-
-## Solve from a task file
-
-You can also [download ready-to-run task files](examples/tasks/) from GitHub.
-
-```bash
-cat > task.txt <<'EOF'
-Create a Python command-line program that reads a JSON file, produces a
-Markdown summary, and includes runnable verification.
-EOF
-
-loop-engine solve --file task.txt --quickstart
-```
-
-## Use a local dataset or repository
-
-Local source content is not sent to a model without a separate grant.
-
-```bash
-loop-engine solve \
-  --dataset ./inventory.csv \
-  --text "Normalize product names, mark quantities of five or lower as low stock, and write a cleaned CSV plus a summary." \
-  --allow-source-to-model \
-  --quickstart
-```
-
-Use `--repository PATH --text "task"` for a document folder or small Python
-package. The Practitioner first sees an input manifest. The model selects the
-text files it needs, then Loop Engine materializes those exact files, excludes
-common dependency and version-control folders, and records input digests.
-
-## What is supported now
-
-| Area | Current behavior |
-|---|---|
-| Small Python utilities | Model proposes typed files and commands. Docker executes and verifies them. |
-| Local data transforms | Selected CSV, JSON, text, and related inputs can be copied into the workspace. |
-| Document and repository analysis | Model-selected text files can be materialized with explicit source-to-model authority. |
-| Source formats | Readable UTF-8 source is admitted by bounded content inspection, not a programming-language suffix list. Exclusions have explicit reasons. |
-| Host-owned work | Python embedding API accepts registered host operations, scoped permissions, and a separate host verifier. Results need not be generated projects. |
-| Small Python package repair | The run can reproduce a nonzero exit, apply a changed source artifact, and rerun verification. |
-| Providers | Ollama Cloud, Mistral, OpenRouter, OpenCode Go, and typed custom endpoints. Availability must be probed. |
-| Effects | Workspace writes and commands require configured sandbox authority and exact per-effect approval. |
-| Unsupported work | Returns a complete best-available resolution with the exact underlying constraint. Provider interruption and cancellation remain distinct operational results. |
-
-Loop Engine does not yet claim arbitrary-domain execution, automatic
-deployment, unrestricted shell access, broad repository repair, or guaranteed
-model quality.
-
-Host integration requires trusted adapter code, explicit permission to share
-host output with a model, and host-enforced execution policy. It does not expose
-unrestricted shell access or install a remote host automatically. The
-[JavaScript repository example](examples/25_host_runtime/README.md) shows the
-boundary using a populated project and fixed `npm test` gates.
-
-The [tabular portfolio example](examples/25_host_runtime/TABULAR-PORTFOLIO.md)
-uses the same binding to train model configurations selected by the engine.
-Three live exercises on Titanic, house prices, and Iris produced 36 fitted
-pipelines with separately scored holdouts. These are familiar-dataset local
-evaluations, not unseen-task or Kaggle leaderboard results. See the
-[complete model comparison](docs/verification/TABULAR-MODEL-PORTFOLIO-2026-09-06.md).
-
-The [adaptive completion checkpoint](docs/verification/ADAPTIVE-COMPLETION-AND-PUBLICATION-2026-09-06.md)
-tests optional host completion gates, typed serial dependency inputs, and
-restart behavior that refuses to replay an unknown running effect. The
-[exported-ticket example](examples/25_host_runtime/EXPORTED-TICKET-PILOT.md)
-produces local review material; production Overnight/Jira integration remains
-unproven. The [TrafficFlowBench capstone](docs/benchmarks/TRAFFICFLOWBENCH-NATIVE-OPENCODE-PLAN.md)
-sets out the native/OpenCode comparison and its independent scoring boundary.
-
-Optional harnesses use the same Loop boundary through explicitly registered
-adapters. Missing tool, skill, isolation, or limit requirements cause refusal
-before execution. The legacy OpenCode raw-host process adapter remains
-quarantined. Separate brokered text-proposal execution and experimental
-native Markdown loading have bounded evidence in the
-[configuration report](docs/verification/CONFIGURATION-AND-NATIVE-INITIALIZATION-2026-09-12.md);
-that evidence does not qualify unrestricted native tools or host execution.
-See the [harness boundary](docs/components/core-architecture/MCP-AND-SKILLS.md#external-harness-boundary)
-and [alternative harness review](docs/research/STORAGE-PACKAGES-HARNESSES-AND-MEMORY-2026-09-04.md#alternatives-to-opencode).
-This does not disable OpenCode Go or Zen provider endpoints, which are separate
-model adapters.
-
-Every Loop exposes the same three-mode policy view through typed configuration:
-deterministic, hybrid, and non-deterministic. Preferences and fallback order do
-not grant permissions or install missing executors. Output capacity is also
-separate from a chosen allowance. A reasoning Loop can use bounded failure and
-history context to select an explicit `ModelOutputAllocation` for a retry;
-without one, the request uses full known capacity. See
-[reasoned output and mode policies](docs/verification/REASONED-OUTPUT-AND-MODE-POLICY-2026-09-05.md).
-Strict total-token requests currently require a host-qualified exact-request
-bound; a production route without one refuses before dispatch.
-
-## Task build is not solve
+### Task build is not solve
 
 ```text
 loop-engine task build
@@ -473,22 +319,59 @@ loop-engine solve
   -> verifies real artifacts or returns an honest blocker
 ```
 
-## Development
+## Repository map
+
+```text
+loop-engine
+├── src/loop_engine       the engine, the Loop runtime and the hosted service
+├── docs                  architecture, contracts, component guides, roadmap
+├── examples              runnable examples, including the local service
+├── tools                 development, release and checking commands
+├── devtools              developer-only audits and qualification labs
+├── embodiments           harness integration experiments
+├── integrations          thin host packages over the command or the service
+├── kaggle                single-cell notebooks that run the engine on Kaggle
+├── benchmarks            frozen task populations and their records
+├── case-studies          worked cases
+├── artifacts             dated evidence and release records
+├── checkpoints           dated snapshots of the whole system
+└── showcase              the interactive architecture view
+```
+
+[Repository organization](docs/REPOSITORY-ORGANIZATION.md) gives the kind and
+the rules of each folder.
+
+## Develop and release
+
+Start with [AGENTS.md](AGENTS.md): the rules, the north star and the
+authority for commits, pushes and releases. Then read
+[START-HERE](docs/context/START-HERE.md) and the
+[Constitution](docs/architecture/CONSTITUTION.md).
 
 ```bash
 python -m pip install -e '.[all]'
 PYTHONPATH=src python -m loop_engine --self-test
 PYTHONPATH=src python -m loop_engine --conformance
+PYTHONPATH=src python -m loop_engine service smoke
 python -m build
 ```
 
-Offline fixtures test typed semantic obligations but do not prove live model
-quality. Live-provider claims require a separately saved authorized result.
+Releases come only from a committed revision whose continuous integration run
+passed. They are deployed by image digest through the guarded workflow, the
+previous image is kept for rollback, and every live hostname is checked after
+the release. Offline fixtures test typed obligations; they do not prove live
+model quality, and a live-provider claim needs a saved, authorized result.
+
+## What is not claimed
+
+- The engine does not yet execute arbitrary tasks in any domain, deploy
+  automatically, or repair large repositories in general.
+- No benefit above has a published measurement yet.
+- A connected client, a downloaded file and a completed step are separate
+  facts. Offered, fetched, loaded, used and verified are recorded separately.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
-
-## Companion workspaces
-
-`stub-test/` is the moved Capability-Reuse Harness/Taedri workspace. It remains a distinct project inside Loop Engine, with its benchmark evidence, datasets, model cache and dirty working tree preserved. The former `/home/username/stub-test` path is a compatibility symlink. Read `stub-test/MOVED_TO_LOOP_ENGINE.md` before running new work.
+MIT. See [LICENSE](LICENSE). [CONTRIBUTING](CONTRIBUTING.md) and
+[SECURITY](SECURITY.md) describe how to contribute and how to report a
+security problem.

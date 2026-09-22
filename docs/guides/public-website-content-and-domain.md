@@ -64,16 +64,22 @@ Homepage
 │   ├── One primary action to Get started
 │   ├── One secondary action to How it works
 │   └── The waiting list caption, whose wording the service controls
-├── Six benefits, each opening to say how it works
-│   and to name a real limit where there is one
+├── Three step strip: connect, ask, keep the record
 ├── What works right now: search, selected downloads,
 │   connection settings and usage, with the size of the library
-├── Three step strip: connect, ask, keep the record
+├── Six benefits, each opening to say how it works
+│   and to name a real limit where there is one
 ├── One workflow for the decisions behind the work
 ├── A starting point for every step
 ├── Pricing summary with a link to the pricing view
 └── Closing action and the limits note
 ```
+
+The hero is one column. The earlier right-hand customer-import workflow
+illustration moved out of the first screen because it described a broader
+workflow than the current search and selected-download service. The first
+section after the hero now shows the three actions a visitor can take. The
+page still links to the illustrative task on How it works.
 
 The five customer problems and the four persistent intelligence layers moved
 to How it works on September 21, 2026. They are the vendor's model of the
@@ -100,7 +106,7 @@ on How it works.
 | Benefit | The real limit the detail names |
 |---|---|
 | Each step gets the material it needs | None. The step carries the material it asked for |
-| Reuse code instead of writing it again | The library on our server holds one example item today, so this works on your own material first |
+| Reuse code instead of writing it again | The library on our server holds a small first collection of reviewed items today, so this works best beside your own material |
 | Not every step needs a large model | None. Each real call writes a cost record, and an unknown cost stays unknown |
 | Solutions you can run without us | None. The package is started in an interpreter that cannot load Baltor at all |
 | A failed check is examined, not obeyed | The ranking work is written down and that part is not connected to a live run yet |
@@ -276,7 +282,8 @@ only. Nothing was copied. Observed on September 21, 2026; these pages change.
 | [Tavily](https://www.tavily.com/) | A hero that names the job in one line, then a small number of wide feature bands, and a closing action that repeats the primary action. | A metrics strip of latency, uptime and request volume. Baltor has no measured figures to publish. |
 
 The shared pattern is: category line, one headline, one primary action, a
-three step explanation, the problems, what you get, pricing, closing action.
+three step explanation, what works now, broader benefits, pricing and a
+closing action.
 The homepage now follows that order. The parts that every one of these pages
 carries and Baltor does not are adoption numbers, customer names and measured
 performance. Those stay off the page until there is saved evidence for them.
