@@ -34,6 +34,18 @@ MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
 LICENSE_POLICY_VERSION = "service_host_license_policy/v1"
 LICENSE_POLICY_KEY = "license_policy"
+#: The family policy mirrors the licence policy. The main line is
+#: harness-first by owner direction (September 21, 2026): the default serves
+#: the harness family alone. A host that serves more lists those exact
+#: families. Unknown families, look-alike names and unsupported record
+#: versions are refused before the manifest is read.
+FAMILY_POLICY_VERSION = "service_host_family_policy/v1"
+FAMILY_POLICY_KEY = "intelligence_family_policy"
+#: The conservative default accepts the harness family alone. Loop-native and
+#: Open Knowledge Format material stay in the library and in the checkpoint;
+#: serving them is a host decision that names them, never a silent default.
+DEFAULT_ACCEPTED_FAMILIES = ("harness",)
+FAMILY_NOT_ACCEPTED = "item_family_not_accepted"
 #: The conservative default accepts only the licence of this repository's own
 #: material. A host that serves anything else lists that exact identifier.
 DEFAULT_ACCEPTED_LICENSES = ("MIT",)
@@ -122,6 +134,65 @@ class HostLicensePolicy:
 DEFAULT_LICENSE_POLICY = HostLicensePolicy()
 
 
+@dataclass(frozen=True)
+class HostFamilyPolicy:
+    """The exact intelligence families that one host serves.
+
+    Mirrors the licence policy. A family is compared exactly as written, in
+    printable ASCII; an unknown, look-alike or duplicated name is refused, and
+    a supplied list replaces the default rather than extending it. The record
+    version is checked, so an older release refuses a host file it does not
+    understand. This is the extensibility toggle: adding a family later is a
+    host configuration change here, never a code change or a silent serve.
+    """
+
+    accepted_families: tuple[str, ...] = DEFAULT_ACCEPTED_FAMILIES
+    record_type: str = FAMILY_POLICY_VERSION
+
+    def __post_init__(self):
+        if self.record_type != FAMILY_POLICY_VERSION:
+            raise ServiceRuntimeError("unsupported_family_policy",
+                f"this release reads the host family policy record {FAMILY_POLICY_VERSION} only")
+        from ..harness_intelligence import FAMILIES as KNOWN_FAMILIES
+        names = self.accepted_families
+        # A family is spelled exactly as the vocabulary declares it. A name
+        # that differs only in case is a look-alike of a known family, and a
+        # name no layer serves is unknown; both are refused here, so a host
+        # that meant to serve one of them names it exactly instead of silently
+        # serving nothing.
+        folded = {name.casefold(): name for name in KNOWN_FAMILIES}
+        def suspect(name):
+            return isinstance(name, str) and (name not in KNOWN_FAMILIES
+                                              or name.casefold() in folded and folded[name.casefold()] != name)
+        if (type(names) not in (tuple, list) or not names or any(
+                not isinstance(name, str) or name != name.strip() or not name
+                or not (name.isascii() and name.isprintable())
+                for name in names) or len(set(names)) != len(names)
+                or any(suspect(name) for name in names)):
+            raise ServiceRuntimeError("invalid_family_policy",
+                "accepted families are exact, distinct, nonempty identifiers written in printable ASCII "
+                "characters, and each names a family the library knows, spelled exactly as declared")
+        object.__setattr__(self, "accepted_families", tuple(names))
+
+    def refusal(self, family):
+        """Return the stable refusal code for one item's family, or empty text when this host serves it."""
+        return "" if family in self.accepted_families else FAMILY_NOT_ACCEPTED
+
+
+DEFAULT_FAMILY_POLICY = HostFamilyPolicy()
+
+
+def host_family_policy(configuration):
+    """Return the family policy that a host configuration declares, or the conservative default."""
+    if FAMILY_POLICY_KEY not in configuration:
+        return DEFAULT_FAMILY_POLICY
+    settings = configuration[FAMILY_POLICY_KEY]
+    if not isinstance(settings, dict) or set(settings) != {field.name for field in dataclass_fields(HostFamilyPolicy)}:
+        raise ServiceRuntimeError("unsupported_family_policy",
+            "a host family policy names its record version and its accepted families, and nothing else")
+    return HostFamilyPolicy(**settings)
+
+
 def host_license_policy(configuration):
     """Return the licence policy that a host configuration declares, or the conservative default."""
     if LICENSE_POLICY_KEY not in configuration:
@@ -142,15 +213,20 @@ def _host_json(path, *, maximum_bytes=2_000_000):
     return _parse_json(selected.read_bytes())
 
 
-def load_host_manifest(path, *, license_policy=DEFAULT_LICENSE_POLICY):
+def load_host_manifest(path, *, license_policy=DEFAULT_LICENSE_POLICY, family_policy=DEFAULT_FAMILY_POLICY):
     """Load exact host attestations; catalogue tags cannot approve a source.
 
-    An item is registered only when the host licence policy accepts the exact
-    licence identifier that the item declares. The conservative default policy
-    applies when the caller supplies none.
+    An item is registered only when the host family policy serves the exact
+    family the item's source layer belongs to and the host licence policy
+    accepts the exact licence identifier that the item declares. The family
+    refusal is decided first, so non-harness material is refused before its
+    body or licence is touched. The conservative default policies apply when
+    the caller supplies none.
     """
     if not isinstance(license_policy, HostLicensePolicy):
         raise ServiceRuntimeError("invalid_license_policy", "a typed host licence policy is required")
+    if not isinstance(family_policy, HostFamilyPolicy):
+        raise ServiceRuntimeError("invalid_family_policy", "a typed host family policy is required")
     manifest = _host_json(path)
     if set(manifest) != {"record_type", "artifact_root", "items"} or manifest["record_type"] != MANIFEST_VERSION:
         raise ServiceRuntimeError("unsupported_manifest")
@@ -164,7 +240,18 @@ def load_host_manifest(path, *, license_policy=DEFAULT_LICENSE_POLICY):
         if not isinstance(row, dict) or set(row) != {"reference", "body_path", "approval_ref", "grants"}:
             raise ServiceRuntimeError("invalid_manifest_item")
         item = _item(row["reference"])
-        # Licence acceptance is decided first and for every row, with or without
+        # The family refusal is decided first and for every row, before the
+        # licence or the body is read, so non-harness material is never
+        # registered, granted, opened or offered by a host that has not
+        # declared it. The message names the item's family and what the host
+        # serves, and is built from short previews only.
+        refused_family = family_policy.refusal(item.family)
+        if refused_family:
+            raise ServiceRuntimeError(refused_family, f"{refused_family}: item {_preview(item.identity, IDENTITY_PREVIEW_CHARACTERS)} "
+                f"serves the family {_preview(item.family)} and this host serves "
+                f"{_preview(list(family_policy.accepted_families))} (listed families: "
+                f"{len(family_policy.accepted_families)})")
+        # Licence acceptance is decided for every row, with or without
         # grants, so the body of a refused item is never opened and the item is
         # never registered, granted or offered as starter material. The message
         # is built from short previews only, so its length has a fixed limit.
@@ -235,13 +322,14 @@ def signup_matches_the_browser_identity(settings, browser_identity):
 def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
-               "browser_identity", "client_access", "promotions", "account_email", LICENSE_POLICY_KEY}
+               "browser_identity", "client_access", "promotions", "account_email", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
     license_policy = host_license_policy(configuration)
+    family_policy = host_family_policy(configuration)
     runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
-    catalogue, resolver, body_reader, _grants = load_host_manifest(configuration["manifest_path"], license_policy=license_policy)
+    catalogue, resolver, body_reader, _grants = load_host_manifest(configuration["manifest_path"], license_policy=license_policy, family_policy=family_policy)
     binding = DurableProvisioningBinding(runtime, catalogue, resolver, body_reader)
     browser_identity = None
     if configuration.get("browser_identity"):
@@ -337,7 +425,8 @@ def configure_host(path):
         if row.get("billing_customer"):
             application.runtime.bind_billing_customer(BillingCustomerBindingRequest(row["tenant_id"], **row["billing_customer"]))
     _catalogue, _resolver, _reader, grants = load_host_manifest(
-        configuration["manifest_path"], license_policy=host_license_policy(configuration))
+        configuration["manifest_path"], license_policy=host_license_policy(configuration),
+        family_policy=host_family_policy(configuration))
     for tenant, selected in grants.items():
         application.runtime.set_grants(tenant, tuple(selected))
     if configuration.get("billing"):
@@ -362,7 +451,8 @@ def apply_host_grants(path):
     _application, configuration = load_host_application(path)
     runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
     _catalogue, _resolver, _reader, grants = load_host_manifest(
-        configuration["manifest_path"], license_policy=host_license_policy(configuration))
+        configuration["manifest_path"], license_policy=host_license_policy(configuration),
+        family_policy=host_family_policy(configuration))
     applied = {tenant: runtime.set_grants(tenant, tuple(selected))["grants"]
                for tenant, selected in sorted(grants.items())}
     return {"record_type": "service_host_grant_application/v1", "manifest_path": configuration["manifest_path"],

@@ -26,6 +26,7 @@ def _request(operation="list", **fields):
 def run_checks(check, root):
     _host_setup(check, root / "host")
     _licence_policy(check, root / "licences")
+    _family_policy(check, root / "families")
     _limits(check, root / "limits")
     _key_endpoint(check, root / "keys")
     _billing(check, root / "billing")
@@ -42,7 +43,7 @@ def _host_setup(check, root):
     body = "Pinned host-reviewed instruction body"
     (artifacts / "instruction.txt").write_text(body)
     item = item_from_body(HarnessIntelligenceDraft("skill.host", "skill", "Host-reviewed source",
-        "context_intelligence", "context:host/v1", "MIT"), body)
+        "harness_local", "harness:host/v1", "MIT"), body)
     manifest = {"record_type": "host_attested_intelligence_manifest/v1", "artifact_root": str(artifacts),
         "items": [{"reference": item.reference(), "body_path": "instruction.txt", "approval_ref": "host-review:fixture",
                    "grants": [{"tenant_id": "host", "body_allowed": True, "metering": "required"}]}]}
@@ -116,7 +117,7 @@ def _licence_policy(check, root):
 
     def row(identity, license_name, body_path="body.txt", granted=True):
         item = item_from_body(HarnessIntelligenceDraft(identity, "skill", "Licence policy fixture",
-            "context_intelligence", "context:licence/v1", license_name), body)
+            "harness_local", "harness:licence/v1", license_name), body)
         return {"reference": item.reference(), "body_path": body_path, "approval_ref": "host-review:fixture",
                 "grants": [{"tenant_id": "host", "body_allowed": True, "metering": "required"}] if granted else []}
 
@@ -297,6 +298,119 @@ def _licence_policy(check, root):
         unguarded = [loaded(manifest(row("skill.refused", value, granted=granted)))[2]
                      for value in ("", "unknown", "pending_review", "Apache-2.0") for granted in (True, False)]
     check("refused_fixtures_load_once_the_licence_guard_is_patched_out", unguarded == [["skill.refused"]] * 8)
+
+
+def _family_policy(check, root):
+    """The host serves only the intelligence families it declares, harness-only by default."""
+    from types import SimpleNamespace
+    from unittest.mock import patch
+    from ..harness_intelligence import HarnessIntelligenceCatalogue, HarnessIntelligenceDraft, item_from_body
+    from .http_entrypoint import (DEFAULT_ACCEPTED_FAMILIES, DEFAULT_FAMILY_POLICY, FAMILY_NOT_ACCEPTED,
+        FAMILY_POLICY_KEY, FAMILY_POLICY_VERSION, HOST_CONFIGURATION_VERSION, MANIFEST_VERSION,
+        HostFamilyPolicy, configure_host, load_host_application, load_host_manifest)
+    from .http import ServiceHttpConfiguration
+    from .records import TenantKeyIssue, ServiceRuntimeError
+    root.mkdir()
+    artifacts = root / "artifacts"
+    artifacts.mkdir()
+    body = "Pinned body served only under a declared family"
+    (artifacts / "body.txt").write_text(body)
+    numbers = iter(range(10_000))
+    origin = "http://127.0.0.1:8000"
+
+    def row(identity, source_layer, family_ref):
+        item = item_from_body(HarnessIntelligenceDraft(identity, "skill", "Family policy fixture",
+            source_layer, family_ref, "MIT"), body)
+        return {"reference": item.reference(), "body_path": "body.txt", "approval_ref": "host-review:fixture",
+                "grants": [{"tenant_id": "host", "body_allowed": True, "metering": "required"}]}
+
+    def manifest(*rows):
+        path = root / f"manifest-{next(numbers)}.json"
+        path.write_text(json.dumps({"record_type": MANIFEST_VERSION, "artifact_root": str(artifacts), "items": list(rows)}))
+        return str(path)
+
+    def host(manifest_path, **settings):
+        path = root / f"host-{next(numbers)}.json"
+        path.write_text(json.dumps({"record_type": HOST_CONFIGURATION_VERSION,
+            "runtime": {"database_path": str(path.with_suffix(".db")), "writes_authorized": True},
+            "http": asdict(ServiceHttpConfiguration(origin, ("127.0.0.1:8000",), allow_loopback_http=True)),
+            "authentication": {"modes": ["host_key"]}, "manifest_path": manifest_path,
+            "tenants": [{"tenant_id": "host", "namespace": "host",
+                "operator_entitlement": {"valid_until": int(time.time()) + 3600, "evidence_ref": "local-host-test"}}],
+            **settings}))
+        return path
+
+    def outcome(action):
+        try:
+            return "", "", action()
+        except ServiceRuntimeError as error:
+            return error.code, str(error), None
+        except Exception as error:  # noqa: BLE001 - an untyped failure is never a stable refusal
+            return "untyped_" + type(error).__name__, str(error), None
+
+    def loaded(manifest_path, **options):
+        return outcome(lambda: sorted(load_host_manifest(manifest_path, **options)[0].items))
+
+    def refused(result, code, identity=""):
+        return result[0] == code and identity in result[1] and result[2] is None
+
+    # Harness-only by default: harness material loads, Loop-native and Open
+    # Knowledge Format material refuse and the refusal names the family.
+    check("default_family_policy_serves_the_harness_family_alone",
+          DEFAULT_ACCEPTED_FAMILIES == ("harness",)
+          and HostFamilyPolicy().refusal("harness") == ""
+          and all(HostFamilyPolicy().refusal(family) == FAMILY_NOT_ACCEPTED
+                  for family in ("loop_native", "open_knowledge")))
+    check("host_serves_only_the_declared_intelligence_families",
+          loaded(manifest(row("skill.harness", "harness_local", "harness:family/v1"))) == ("", "", ["skill.harness"])
+          and all(refused(loaded(manifest(row("skill.loopnative", layer, f"{layer}:family/v1"))),
+                          FAMILY_NOT_ACCEPTED, "skill.loopnative")
+                  for layer in ("context_intelligence", "code_intelligence",
+                                "runtime_history_solution_intelligence", "user_feedback_intelligence")))
+    # The refusal names the family it does not serve and the family the host
+    # does. A look-alike family name is still refused, exactly as written.
+    result = loaded(manifest(row("skill.refused", "context_intelligence", "context:family/v1")))
+    check("family_refusal_names_the_family_it_does_not_serve",
+          refused(result, FAMILY_NOT_ACCEPTED, "skill.refused") and "loop_native" in result[1]
+          and "harness" in result[1])
+    # The record is typed and versioned like the licence policy: an unknown
+    # key, an unsupported version, an untyped value or a look-alike name stops
+    # before the manifest is read.
+    imitation = SimpleNamespace(accepted_families=("harness",), record_type=FAMILY_POLICY_VERSION,
+                                refusal=lambda family: "")
+    harness_manifest = manifest(row("skill.harness", "harness_local", "harness:family/v1"))
+    absent = str(root / "absent-manifest.json")
+    def started(configuration_path):
+        return outcome(lambda: load_host_application(str(configuration_path)))
+    check("family_policy_is_versioned_and_refuses_unknown_keys",
+          refused(started(host(absent, **{FAMILY_POLICY_KEY: None})), "unsupported_family_policy")
+          and refused(started(host(absent, **{FAMILY_POLICY_KEY: {"record_type": FAMILY_POLICY_VERSION,
+              "accepted_families": ["harness"], "accept_unknown": True}})), "unsupported_family_policy")
+          and refused(outcome(lambda: HostFamilyPolicy(("harness",), "service_host_family_policy/v2")),
+                      "unsupported_family_policy")
+          and refused(started(host(absent, **{FAMILY_POLICY_KEY: {"record_type": FAMILY_POLICY_VERSION,
+              "accepted_families": ["harness"]}})), "invalid_configuration"))
+    check("default_family_policy_refuses_untyped_and_look_alike_policy",
+          all(refused(loaded(harness_manifest, family_policy=untyped), "invalid_family_policy")
+              for untyped in ({"accepted_families": ["harness"]}, ("harness",), None, imitation))
+          and all(refused(outcome(lambda names=names: HostFamilyPolicy(names)), "invalid_family_policy")
+                  for names in (("harness", "harness"), (" harness",), ("harness ",), ("Harness",), ("",), (7,), "harness", None)))
+    # Removing the guard is detected: with the family decision patched out, the
+    # same refused Loop-native fixture loads, which shows it is refused for its
+    # family and no other reason.
+    with patch.object(HostFamilyPolicy, "refusal", lambda policy, family: ""):
+        unguarded = loaded(manifest(row("skill.loopnative", "context_intelligence", "context:family/v1")))[2]
+    check("removed_family_policy_guard_is_detected",
+          unguarded == ["skill.loopnative"])
+    # A host that declares the Loop-native family serves that layer: adding a
+    # family is a host configuration change on the typed record, not a code
+    # change.
+    declared = HostFamilyPolicy(("harness", "loop_native"))
+    check("host_declaring_loop_native_also_serves_that_layer",
+          loaded(manifest(row("skill.loopserved", "context_intelligence", "context:family/v1")),
+                 family_policy=declared) == ("", "", ["skill.loopserved"])
+          and loaded(manifest(row("skill.harness", "harness_local", "harness:family/v1")),
+                     family_policy=declared) == ("", "", ["skill.harness"]))
 
 
 def _limits(check, root):
