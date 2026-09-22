@@ -465,15 +465,20 @@ vocabulary:
     - public_website_pages
     status: decided_by_the_owner
   Building with Loops:
-    kind: readme_title
-    definition: The title of the public README. It is not a product name.
+    kind: retired_word
+    definition: >-
+      The former title of the public README. On September 22, 2026 the owner
+      asked why GitHub still showed it; the README now opens with Baltor, the
+      product, and names Loop Engine as the engine in this repository. It was
+      never a product name. Dated records keep their original wording.
+    replacement: Baltor, with Loop Engine named as the engine in this repository.
     pattern: '\bBuilding with Loops\b'
     case_sensitive: true
     may_appear:
     - technical_documents
     must_not_appear:
     - public_website_pages
-    status: decided_by_the_owner
+    status: retired
   Loop:
     kind: technical_word
     definition: >-
