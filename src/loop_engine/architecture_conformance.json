@@ -1,7 +1,7 @@
 {
  "record_type": "architecture_conformance/v1",
  "generated_by": "python3 -m loop_engine --conformance",
- "files_scanned": 663,
+ "files_scanned": 662,
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "docs_folders_without_a_charter_readme": 0,
@@ -21,7 +21,7 @@
   "empty_placeholder_modules": 0,
   "modules_over_size_cap_without_declared_exception": 0,
   "public_interfaces_over_parameter_cap_without_declared_exception": 0,
-  "syntax_newer_than_the_declared_minimum_python": 2,
+  "syntax_newer_than_the_declared_minimum_python": 0,
   "modules_missing_llm_context_docstring": 0,
   "stale_current_architecture_documents": 0,
   "conformance_test_skip_markers": 0,
@@ -116,18 +116,6 @@
   "retired_decision_spine_terms": [],
   "undefined_terms_retired_names_and_misplaced_words": [],
   "scan_violations": [
-   {
-    "rule": "syntax_newer_than_min_python",
-    "file": "core/service_runtime/http.py",
-    "line": 29,
-    "detail": "invalid syntax \u2014 parsed with python3.10; pyproject declares python>=3.10"
-   },
-   {
-    "rule": "syntax_newer_than_min_python",
-    "file": "core/service_runtime/http_checks.py",
-    "line": 58,
-    "detail": "invalid syntax \u2014 parsed with python3.10; pyproject declares python>=3.10"
-   },
    {
     "rule": "dependency_direction",
     "file": "core/adaptive_host_runtime_checks.py",
@@ -584,5 +572,5 @@
   "max_power_grants_no_permissions: power scales budgets only"
  ],
  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
- "all_gates_pass": false
+ "all_gates_pass": true
 }
