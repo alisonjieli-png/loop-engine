@@ -1,41 +1,16 @@
----
-folder_id: intelligence.code
-parent: intelligence
-ontology_version: 2.0.0
----
+# Code Intelligence (off on main)
 
-# Code
+Owner direction, September 21, 2026: the main line serves the harness
+family alone. Code Intelligence is a Loop-native layer, so its material is
+**disabled on main** and no host serves it here.
 
-Persistent code_intelligence collection grouped by provenance.
+This folder is kept open for future use. To enable this layer on a host,
+declare `loop_native` in that host's `intelligence_family_policy` record — a
+typed, versioned host configuration change, not a code change. The refusal a
+harness-only host returns for material of this layer names the family it
+does not serve.
 
-Path reading:
-
-```text
-intelligence -> code
-```
-
-This folder inherits every rule from its ancestor READMEs:
-
-```text
-  intelligence/README.md
-```
-
-This file adds only the rules specific to this level.
-
-## Allowed contents
-
-- Records for intelligence_record
-- One ``README.md`` stating this local contract.
-
-## Prohibited contents
-
-- Runtime Loop instances; work runs only through ``LoopStartRequest`` into the one ``Loop`` runtime.
-- Provider credentials, authorization headers, or raw secrets.
-- Python modules of any kind.
-
-## Relationships
-
-```text
-intelligence
-|  |  -- code (this folder)
-```
+The working content and its qualification are frozen on
+`checkpoint/full-capability-2026-09-21` at revision `a3bd0f1`. Do not add
+material here to make a main-line host serve it; add it to the checkpoint
+behind the typed boundary, then declare the family in the host policy.

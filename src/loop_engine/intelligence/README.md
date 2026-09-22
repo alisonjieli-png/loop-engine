@@ -1,57 +1,36 @@
----
-folder_id: intelligence
-parent: ""
-ontology_version: 2.0.0
----
-
 # Intelligence
 
-The four persistent intelligence layers at rest, each split into core, learned, and plugin provenance.
+The persistent intelligence held by this line, and the single place a
+developer enables another kind.
 
-Path reading:
+Owner direction, September 21, 2026: the main line serves **harness
+intelligence**, and only the harness family. The other families — Loop-native
+and Open Knowledge Format — remain in the library and the records, and are
+**off** here. Serving them is a host decision, never a silent default.
 
 ```text
 intelligence
+├── Served on main: the harness family
+│   └── drop-in files a standard harness reads (SKILL.md, AGENTS.md,
+│       plugin declarations, protocol server configurations)
+├── Declared but off on main
+│   ├── loop_native — material built for the Loop runtime
+│   └── open_knowledge — generalized knowledge in open formats
+└── Add or toggle without changing the serving path
+    ├── a family is named in the host configuration's
+    │   `intelligence_family_policy` record (typed, versioned), or
+    └── an engine or harness is added as a recipe and adapter behind
+        `HarnessProcessSpec`, by declared tested profile
 ```
 
-This folder inherits every rule from its ancestor READMEs:
+Do not add a second runtime, scheduler, credential store or catalogue
+authority. An item whose family the host does not declare is refused before
+its body is opened; the refusal names the family the item serves and the
+families the host accepts. The conservative default is the harness family
+alone (`service_host_family_policy/v1`), mirroring the licence policy.
 
-```text
-```
-
-This file adds only the rules specific to this level.
-
-## Allowed contents
-
-- Records for intelligence_record
-- One ``README.md`` stating this local contract.
-
-## Prohibited contents
-
-- Runtime Loop instances; work runs only through ``LoopStartRequest`` into the one ``Loop`` runtime.
-- Provider credentials, authorization headers, or raw secrets.
-- Python modules of any kind.
-
-## Relationships
-
-```text
-package root
-|  -- intelligence (this folder)
-```
-
-## Where each layer is implemented
-
-This folder declares the four layers and holds their packaged data. The
-behavior lives in modules under ``core``, ``catalog``, ``memory``, and
-``strings``; the [component interface record](../../../docs/architecture/COMPONENT-INTERFACES-AND-INTELLIGENCE-FLOW-2026-09-18.md)
-names every hop between them.
-
-| Layer | Folder | Implemented by |
-|---|---|---|
-| Context Intelligence | ``context/`` | ``core.intelligence_layers`` (search request and four-layer query), ``core.retrieval`` (ranking with reuse evidence), ``core.store_serve`` (store records), ``strings.question_engine`` (question forms), ``core.temporal_facts`` (validity intervals), ``catalog`` adapters (storage) |
-| Code Intelligence | ``code/`` | ``core.capability_directory`` (surfaces and calls), ``core.reusable_capability_records`` and ``core.reusable_capability_flywheel`` (candidate to qualified admission), ``core.adaptive_practitioner_deterministic`` (registered resolvers and the fast path), ``code_nodes`` (the reusable solution capabilities) |
-| Runtime History and Solution Intelligence | ``runtime_history_solution/`` | ``core.reuse_evidence`` (outcome posterior), ``core.operation_cost_records`` and ``core.operation_cost_capture`` (cost), ``core.independent_verification`` (verification reports), ``core.model_call_records`` (learnable call records), ``code_nodes.solutions_space`` (published solutions), ``memory.episodic`` |
-| User Feedback Intelligence | ``user_feedback/`` | the advice store and typed task feedback slots in ``core.adaptive_practitioner_records``, approval state in ``loop.approval_state_store``, ``core.shared_memory_scopes`` (signed writes), ``memory.semantic`` (claims and contradictions) |
-
-Runtime Memory is not a layer: ``core.runtime_memory`` keeps a temporary
-board scoped to one run.
+The full-capability tree, with every family served, is frozen on
+`checkpoint/full-capability-2026-09-21` at revision `a3bd0f1`. Restore is a
+recorded owner decision implemented behind the typed boundary the
+[harness-first decision record](../../../docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md)
+names, never a silent merge.
