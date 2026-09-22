@@ -31,7 +31,10 @@ loop-engine/
 │       ├── code_nodes/        solution graphs, canvases, reports,
 │       │                      benchmarks, examples
 │       ├── strings/           context, question, and template records
-│       ├── intelligence/      four persistent layers at rest
+│       ├── intelligence/      four persistent layers at rest (open folders;
+│       │                      off on main since the September 21 decision; the
+│       │                      main line serves the harness family alone through
+│       │                      the typed intelligence_family_policy host record)
 │       │   ├── context/core/records/part-00000.jsonl
 │       │   ├── code/core/
 │       │   ├── runtime_history_solution/core/
@@ -160,7 +163,10 @@ src/loop_engine/
 │   ├── intelligence_strings.py layer prose and labels
 │   └── ...                   templates, notes, packs
 │
-├── intelligence/              four layers at rest
+├── intelligence/              four layers at rest (open folders, off on main;
+│   │                          the main line serves the harness family alone.
+│   │                          Families toggle on a host's versioned
+│   │                          intelligence_family_policy record: S-6.28)
 │   ├── context/core/         seed corpus (1000 records)
 │   ├── code/core/            provenance pointers
 │   ├── runtime_history_solution/core/ run history pointers

@@ -4,8 +4,8 @@ This glossary defines every major component and the differences
 between similar-sounding components. It is normative for those
 differences: when code, records, tests, and documentation disagree
 about what a component is and how it differs from its neighbors, this
-glossary and the Constitution are the authority until an ADR changes
-them.
+glossary and the Constitution are the authority until an architecture
+decision record changes them.
 
 It is not the authority for names. The single structured source for a
 term, its definition, where it may appear, where it must not appear and

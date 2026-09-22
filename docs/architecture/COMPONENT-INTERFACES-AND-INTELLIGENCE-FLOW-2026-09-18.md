@@ -91,7 +91,8 @@ What a step receives
 ├── context files and instruction files, by exact revision, through step provisioning
 │   (core/opencode_step_provision, core/step_content, core/opencode_step_layers)
 ├── tools and plugins through adapters: core/mcp_adapter and core/mcp_sdk_transport for
-│   MCP servers, core/custom_endpoint for OpenAI-compatible endpoints, the plugin
+│   Model Context Protocol servers, core/custom_endpoint for OpenAI-compatible
+│   endpoints, the plugin
 │   discovery for project plugins; each is a capability surface with a handshake
 ├── intelligence through the capability directory's search and get endpoints, which
 │   cross the Loop envelope, never a bare store call

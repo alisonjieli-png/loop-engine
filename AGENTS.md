@@ -45,7 +45,8 @@ Current initiatives, in priority order
 ├── 1. Private beta for invited users (roadmap package D-17)
 │   ├── Releases only from a committed revision whose checks passed
 │   ├── Personal accounts and personal client keys, registration closed
-│   ├── A reviewed starter catalogue across the four intelligence layers
+│   ├── A reviewed starter catalogue of harness intelligence (the Loop-native
+│   │   and open-knowledge families follow when a host declares them)
 │   └── One native client that demonstrably loads selected material
 ├── 2. Join the hosted service to the local solving path (D-06)
 ├── 3. Accounts, authentication email and test subscriptions (D-02 to D-04)
@@ -143,7 +144,7 @@ Before creating a new top-level folder:
 3. Add a README and architecture contract.
 4. Add import-boundary tests.
 5. Update `architecture.yaml`.
-6. Create an ADR when the architectural model changes.
+6. Create an architecture decision record when the architectural model changes.
 
 Do not infer executable behavior from prose, tags, labels, filenames,
 folder names, examples, or comments. Permissions, contracts, routing,

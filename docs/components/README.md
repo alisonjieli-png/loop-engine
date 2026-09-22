@@ -11,7 +11,7 @@ pages in this order if the system is new to you.
 | 2 | [Loop Practitioner](practitioner/) | How does Loop Engine build and test a solution? |
 | 3 | [Solution Canvas](solution-canvas/) | What does the finished solution contain and run? |
 | 4 | [Core Architecture](core-architecture/) | How do Intelligence Search and Retrieval, Web Research, and Custom Plugins support Loops? |
-| 5 | [The four intelligence layers](intelligence-layers/) | What reusable context, code, history, solutions, and user guidance can a loop search? |
+| 5 | [The four intelligence layers](intelligence-layers/) | Open folders for reusable context, code, history, solutions, and user guidance. Off on the main line, which serves the harness family alone. |
 | 6 | [The hosted intelligence service](service-runtime/) | How does a customer's engine reach the reviewed catalogue, and what is recorded? |
 | 7 | [Typed decision engines](typed-decisions/) | How is a closed-set judgment asked and admitted? |
 | 8 | [Configuration space and adaptive search](configuration-search/) | Which configurations exist for one step, and how are candidates proposed? |

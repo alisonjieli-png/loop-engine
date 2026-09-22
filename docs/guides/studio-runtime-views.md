@@ -24,7 +24,7 @@ ledger with the same field allowlist used for saved runs.
 | Product terminal, verification, workspace, artifacts, and Canvas | Yes | Digest-bound `outcome.json` referenced by the Run History manifest. |
 | Spawned Loop delegation tasks | Yes | `spawned_task_started`, `spawned_task_updated`, and `spawned_task_terminal` details in Run History `custom` events. |
 | External harness runs | Yes | `external_harness_result/v2` safe summaries in Run History `custom` events. |
-| MCP calls | Yes | Completed, failed, refused, unavailable, and approval-required results record safe terminal metadata. |
+| Model Context Protocol calls | Yes | Completed, failed, refused, unavailable, and approval-required results record safe terminal metadata. |
 | Effect approvals | Yes | Requested and decided observations record safe identity, status, action, and revision fields. |
 | Context artifacts and compaction | Yes | Capture and compaction observations record digests, counts, strategy, and Loop profile. |
 | Skill loads | Yes | Terminal observations record skill id, version, lifecycle, manifest digest, and file count. |

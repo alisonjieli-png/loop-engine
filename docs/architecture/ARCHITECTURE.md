@@ -26,9 +26,14 @@ exit condition, permissions, effects, and required capabilities.
 `LoopRuntimeContext`, and event log. A graph, pipeline, or Canvas does not
 inherit one mode.
 
-The four persistent intelligence layers are Context Intelligence, Code
+Intelligence is held in four persistent layers — Context Intelligence, Code
 Intelligence, Runtime History and Solution Intelligence, and User Feedback
 Intelligence. Runtime Memory is temporary and remains outside those layers.
+Owner direction, September 21, 2026: the main line serves the harness family
+alone; the four layers are open folders, off on main, and a host serves any of
+them only when it declares that family in its typed `intelligence_family_policy`
+record. See the
+[harness-first decision record](ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md).
 
 Core Architecture provides Intelligence Search and Retrieval, Web Research,
 and Custom Plugins. These capabilities are not graph vertices. Work that uses

@@ -1,7 +1,18 @@
 # The four intelligence layers
 
-The Intelligence Library gives every loop one searchable view across four
-persistent layers. Every search result names the layer that served it.
+The Intelligence Library holds persistent intelligence in four layers. Every
+search result names the layer that served it.
+
+Owner direction, September 21, 2026: **the main line serves the harness
+family alone, and these four layers are open folders — off on main.** They
+are the Loop-native and Open Knowledge Format storage for material a host can
+choose to serve. A host serves any of them only when it declares that family
+in its typed, versioned `intelligence_family_policy` host record; the default
+refuses every one and the refusal names the family. The full live state of
+these layers is frozen, fully qualified, on
+`checkpoint/full-capability-2026-09-21` at revision `a3bd0f1`. Read the
+[harness-first decision record](../../architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md)
+before changing what a host serves.
 
 ## Intelligence uses query and retrieval relationships
 

@@ -86,5 +86,5 @@ serialized `kind: loop_node` value maps to `LoopDefinitionRecord`; new records
 never emit it.
 
 Changing the public runtime name or another constitutional authority requires
-an explicit ADR and explicit user approval. General cleanup requests are not
+an explicit architecture decision record and explicit user approval. General cleanup requests are not
 approval for a constitutional rename.

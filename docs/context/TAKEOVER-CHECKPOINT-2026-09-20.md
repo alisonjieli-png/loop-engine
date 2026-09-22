@@ -12,6 +12,14 @@ usage limit while it prepared a release. Its own records are the
 [Fable 5.1 handoff](FABLE-5-1-HANDOFF-2026-09-20.md). Both remain valid as
 dated snapshots. This document corrects and extends them.
 
+**Forward pointer, September 21, 2026 (added after):** the harness-first owner
+decision postdates this checkpoint. The live serving state it describes
+predates the family policy. For state after September 21 read
+[the day handoff](SESSION-HANDOFF-2026-09-21.md) and its
+[evening addendum](SESSION-HANDOFF-2026-09-21-EVENING.md), which record the
+harness-only serving policy, the intelligence layers as open folders, and the
+checkpoint branch resting at revision `a3bd0f1`.
+
 ## What was checked
 
 Observed by read-only queries and by an isolated rerun of the check suites.

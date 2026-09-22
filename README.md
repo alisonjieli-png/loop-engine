@@ -46,7 +46,7 @@ Follow the [local intelligence service example](examples/29_intelligence_service
 
 ## Solve with human-like loops
 
-Download the first example task and run the LLM-first quickstart profile. The
+Download the first example task and run the LLM-first (large language model) quickstart profile. The
 Practitioner reads the task, selects the next concrete action, runs Solution
 Loops in a confined workspace, and verifies the real artifacts:
 

@@ -37,7 +37,7 @@ read it.
 | [Practitioner](components/practitioner/README.md) | Task reasoning, actions, verification, and continuation. |
 | [Solution Canvas](components/solution-canvas/README.md) | Reusable Solution definitions and execution. |
 | [Core Architecture](components/core-architecture/README.md) | Intelligence Search and Retrieval, Web Research, and Custom Plugins. |
-| [Intelligence layers](components/intelligence-layers/README.md) | The four persistent layers, references, qualification, and separate Runtime Memory. |
+| [Intelligence layers](components/intelligence-layers/README.md) | The four persistent layers: open folders, off on the main line, which serves the harness family alone. |
 | [Engineering standards](standards/README.md) | The working rules for changing the code: names, records and versions, checks and evidence, service interface conventions, and the language each component uses. |
 
 The [generated architecture diagrams](ARCHITECTURE-DIAGRAMS.md) and

@@ -9,10 +9,10 @@ This folder holds modules of the in-process Loop-native execution path.
    existing adapter contracts. Recorded in
    `docs/architecture/ADR-HARNESS-FIRST-SERVING-AND-EXECUTION.md` and roadmap
    step S-6.28.
-3. **Last working revision on this branch.** `411ee41`, where the full
+3. **Last working revision on this branch.** `a3bd0f1`, where the full
    self-test passed 6229 of 6229 checks with these suites collected.
 4. **Where the working implementation is frozen.**
-   `checkpoint/full-capability-2026-09-21`, revision `411ee41`. The
+   `checkpoint/full-capability-2026-09-21`, revision `a3bd0f1`. The
    checkpoint branch keeps passing every suite this branch retired.
 5. **How it turns on again.** Not a merge. A recorded owner decision, when a
    large number of users justify a custom engine of our own, implemented
