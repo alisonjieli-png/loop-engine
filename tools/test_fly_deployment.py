@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -15,7 +16,29 @@ try:
 except ModuleNotFoundError:  # Python 3.10 is a supported development runtime.
     import tomli as tomllib
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import check_fly_service_container as container_check  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def image_default_command():
+    """The command the service image runs when it is started without one."""
+    for line in (ROOT / "Dockerfile.service").read_text("utf-8").splitlines():
+        if line.startswith("CMD "):
+            return json.loads(line[len("CMD "):])
+    raise AssertionError("Dockerfile.service names no default command")
+
+
+def refusal_of_the_image_command(host):
+    """What the service's own start rule says about this host file under the image's command."""
+    from loop_engine.core.service_runtime.http import ServiceHttpConfiguration
+    from loop_engine.core.service_runtime.http_entrypoint import public_binding_refusal
+    arguments = image_default_command()
+    transport = ServiceHttpConfiguration(**host["http"])
+    return public_binding_refusal(arguments[arguments.index("--host") + 1],
+                                  "--behind-trusted-tls-proxy" in arguments, transport.request_limits)
 
 
 class FlyDeploymentTests(unittest.TestCase):
@@ -123,6 +146,29 @@ class FlyDeploymentTests(unittest.TestCase):
         self.assertEqual(run_gate(ready), 0, "the deploy gate rejected the health record the service serves")
         self.assertFalse(unready["ready"])
         self.assertNotEqual(run_gate(unready), 0, "the deploy gate accepted a service that is not ready")
+
+    def test_the_container_check_expects_the_command_the_image_declares(self):
+        self.assertEqual(container_check.DEFAULT_COMMAND, image_default_command())
+
+    def test_every_host_file_the_container_check_writes_states_the_proxy_header(self):
+        """The image's own command would refuse to serve either file without the statement.
+
+        Each file names the Fly proxy's header, as the host file on the Fly
+        volume does, and the service's own start rule accepts it for the
+        image's default command. The known-wrong file is the same file with
+        the statement removed, which is what the container check starts to
+        prove that the image refuses it.
+        """
+        for name, host in (("default command", container_check.default_command_host_configuration()),
+                           ("packaged catalogue", container_check.packaged_catalogue_host_configuration(
+                               ["pilot-owner"]))):
+            with self.subTest(host=name):
+                self.assertEqual(host["http"]["request_limits"], container_check.FLY_REQUEST_LIMITS)
+                self.assertEqual(refusal_of_the_image_command(host), "")
+                wrong = container_check.without_client_address_source(host)
+                self.assertNotIn("request_limits", wrong["http"])
+                self.assertEqual({**wrong["http"], "request_limits": host["http"]["request_limits"]}, host["http"])
+                self.assertIn("request_limits", refusal_of_the_image_command(wrong))
 
     def test_service_profile_has_persistence_tls_and_a_real_server_command(self):
         profile = tomllib.loads((ROOT / "fly.toml").read_text())

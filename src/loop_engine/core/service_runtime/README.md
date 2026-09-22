@@ -440,24 +440,33 @@ hosted service.
 
 ### Switching the limit on for the hosted service
 
-This subsection describes operator work that is not done yet. Merging or
-deploying this code does not switch the limit on. The host file of the hosted
-service has no `request_limits` mapping. After a deployment the hosted service
-therefore still accepts unlimited refused sign-in attempts that carry a
-credential, and each one still uses a worker slot. One change needs no
-operator work: a request without exactly one credential no longer uses a
-worker slot.
+Merging or deploying code does not switch the limit on. The host file on the
+volume does. A request without exactly one credential never uses a worker
+slot, with or without the mapping.
 
-A release built from this branch will not start without that mapping. The
+State on September 22, 2026. Observed: a read of the public capabilities
+record at 18:39 UTC showed `limits.failed_attempts_per_address.active` as
+`true` and `client_address_source` as `header`, so the host file on the volume
+states the header source. That is step 2 below, on one hostname. Reported the
+same day by the engineering session that changed the host file, and not
+recorded in this repository: the mapping above is in the host file, and the
+Fly proxy overwrites a forged `Fly-Client-IP` value, which is step 3. Step 4
+is not recorded. Under step 5 the limit is therefore not yet recorded as
+working for the hosted service.
+
+A release that contains the limit does not start without the mapping. The
 hosted service starts with `--host 0.0.0.0 --behind-trusted-tls-proxy`, and
-`serve` now refuses a binding the public can reach when the host has not
-stated where the client address comes from. Add the mapping to the host file
-on the volume before deploying such a release, or the machine will not come
-up. The refusal names the exact repair. Release 10 and every earlier release
-started before that refusal existed, so the deployed service runs today with
-`limits.failed_attempts_per_address.active` false.
+`serve` refuses a binding the public can reach when the host has not stated
+where the client address comes from. The refusal names the exact repair.
+Release 10 and every earlier release started before that refusal existed.
+Every container check that starts the image's own command states a client
+address source in its own host file. `tools/check_fly_service_container.py`
+writes the Fly mapping above, and `tools/check_client_journey_in_containers.py`
+names a header of its own because it has no proxy. Each keeps a case that
+removes the statement and requires the service to refuse to start.
 
-Do these steps in order, after the release that contains this limit runs:
+Do these steps in order to switch the limit on, and repeat steps 2 to 4 after
+any change to the proxy in front of the service:
 
 1. Add the mapping above inside `http` in the host file on the volume. Then
    restart the service.

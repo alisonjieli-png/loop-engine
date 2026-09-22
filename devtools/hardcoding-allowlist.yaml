@@ -3857,6 +3857,27 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-22
     expires_on: 2027-09-22
+  - finding_id: hardcoding.0ef3314d2b75f4fa5536dddf
+    owner: tools.check_fly_service_container:default_command_host_configuration
+    rationale: >-
+      The public origin of the disposable host file that the release container
+      check writes for the image's default command. It is a name under the
+      reserved .invalid top level name, which can never resolve anywhere, so it
+      binds no provider or endpoint; the container has no network at all. The
+      hosted origin stays in the host file on the Fly volume.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.caf5667178880d0bb0a0611d
+    owner: tools.check_fly_service_container:packaged_catalogue_host_configuration
+    rationale: >-
+      The public origin of the disposable host file that the release container
+      check writes for the packaged catalogue. Same reserved .invalid name rule:
+      it can never resolve, binds no provider or endpoint, and the container
+      has no network. The hosted origin stays in the host file on the volume.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
