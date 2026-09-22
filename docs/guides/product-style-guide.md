@@ -52,6 +52,20 @@ they describe the actual state. A subscription grants the declared service
 access. It does not grant a model allowance, permission to execute code, or
 access to a competition's data.
 
+Separate a real limit from a missing measurement. A real limit is a fact
+about the product as it exists today: the library holds one example item
+while a reviewed collection is prepared, or a part is written and not
+connected to a live run yet. Say that on the page, in a sentence the reader
+will actually read, not in small print. A missing measurement is different.
+Nobody owes the reader an apology for a number that was never promised, and
+a page that ends every sentence with one reads as an apology. Describe what
+the product does, in the present tense. The
+[public content direction](public-website-content-and-domain.md#the-six-benefits-and-how-they-open)
+records which of the six homepage benefits carries a real limit, and
+`benefit_details_state_the_real_limits_without_a_measurement_apology` in
+`tools/check_service_workspace.mjs` holds that split, with a known-wrong case
+for a dropped limit and for a returned apology.
+
 Use full descriptive terms. Keep exact identifiers in technical details and
 copyable configuration. Avoid hype, decorative slogans, invented performance
 claims, em dashes, and en dashes. Artificial general intelligence remains a
@@ -88,6 +102,45 @@ records both with their reason:
   names. The bare role words are the technical ones, so terminology.yaml
   refuses Practitioner, Intelligence Loop and Solution Loop on a public page
   and allows the layer names everywhere.
+- The words pilot, beta, private beta and early access are retired words.
+  They describe the product as a trial, and being invited changes only who
+  can create an account. terminology.yaml refuses all four on the public
+  pages, on the signed-in views and in the Documentation view, and leaves
+  technical documents and dated records with their original wording. The
+  [public content direction](public-website-content-and-domain.md#the-retired-trial-words)
+  names the checks that read the served pages and every served file.
+
+### Why the words agent and harness may appear on a customer page
+
+An earlier entry kept "agent" off the homepage and How it works, next to
+"harness" and "prompt cycle". That placement was changed on September 21,
+2026, and the reason is recorded here rather than left as a silent break.
+
+1. Agent is the word the buyer already uses for the thing they run. The
+   owner's own direction for the homepage proposes "Give your AI agents what
+   they need", and the reader is a developer who calls their tool an agent.
+2. Agent is a customer word, not a runtime word. The rule that matters keeps
+   Loop, Loop node, Loop Engine, runtime classification, role profiles and
+   Practitioner off the public pages, and that rule is unchanged.
+
+An earlier version of this guide also retired the category line "harness and
+agent optimized operation" from the homepage, on the reasoning that it
+carried the word harness. That reasoning does not hold, and the line is back.
+The phrase is the owner's name for the positioning, the recorded decision in
+`CLAUDE.md` stands, and the buyer is a developer who runs coding agents and
+already uses the word. So two more rules:
+
+1. The phrase "harness and agent optimized operation" belongs on the
+   homepage, written out in full. Because the word is jargon outside this
+   repository, a plain sentence sits beside it and says what a harness is, so
+   a reader who does not know the word still follows. Two named checks in
+   `tools/check_service_workspace.mjs` hold both halves:
+   `homepage_opens_with_the_owner_category_line` and
+   `the_owner_category_line_is_explained_in_plain_words`, each with a
+   known-wrong case.
+2. Outside that phrase and its explanation, "harness" still does not belong
+   on the homepage, on How it works, on Get started or in the shared footer.
+   Write "your coding tool".
 
 ### Open owner decision: identifiers that carry the engine name
 
@@ -107,9 +160,9 @@ The service display name is a setting, not a fixed identifier. The field
 `display_name` of `ServiceHttpConfiguration` in the same `http.py` has the
 default value `Loop Engine`. The service shows that value in the page title,
 the header and the shared footer of the website, and in its public
-capabilities record. The public capabilities record of the pilot reports
-`Baltor`, and the value can only come from the host configuration, so the
-host configuration of the pilot sets it. A self-hosted service that does not
+capabilities record. The public capabilities record of the deployed service
+reports `Baltor`, and the value can only come from the host configuration, so
+the host configuration of that service sets it. A self-hosted service that does not
 set it shows `Loop Engine` in those places. Whether that default changes
 belongs to the same owner decision. The help text of the service command also
 names Loop Engine. That is command output, where the technical name may

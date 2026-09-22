@@ -62,6 +62,59 @@ const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.i
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
+/* Words a customer page may never carry. The first set is the runtime vocabulary, which belongs in the Documentation
+   view and in the repository. The second set describes the product as a trial, which the owner retired: who may create
+   an account is a matter of configuration, not of copy. Each rule is checked against a known-wrong page of its own. */
+const publicVocabulary=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profiles?|\bPractitioner\b/i;
+/* The retired set names all four phrases the style guide retires, so a page that never writes pilot or beta but still
+   offers "early access" is reported. The hosted check reads the deployed pages with the same rule, and a copy that
+   drifts between the two is a named failure below rather than a silent disagreement. */
+const retiredAccessWords=/\bpilots?\b|\bbetas?\b|early access/i;
+/* The six benefits. The titles, the detail sentence that proves the detail was rendered, and the state readers used by
+   the interaction checks and by their removed-guard controls. */
+const benefitNames=["material","reuse","model","export","review","resume"];
+const benefitTitles=["Each step gets the material it needs","Reuse code instead of writing it again","Not every step needs a large model","Solutions you can run without us","A failed check is examined, not obeyed","Work that can stop and start again"];
+const benefitSentences=["A search returns short references, not whole files.","Before a step writes new code, it can look for code that already does the job","Every model route says what kind of model it is","it can be written out as an installable package","A check can be wrong as well as the work it checks.","Long work gets interrupted"];
+const shownBenefits=target=>target.locator("[data-benefit]").evaluateAll(items=>items.filter(item=>getComputedStyle(item.querySelector("[data-benefit-detail]")).display!=="none").map(item=>item.dataset.benefit));
+const expandedBenefits=target=>target.locator("[data-benefit-title]").evaluateAll(items=>items.filter(item=>item.getAttribute("aria-expanded")==="true").map(item=>item.dataset.benefitTitle));
+const only=name=>JSON.stringify([name]);
+/* Hovering, keyboard focus and a press must each reveal one benefit and close the others. A touch screen and a
+   keyboard therefore reach the same detail that a mouse reaches. Every rule here has a removed-guard control below. */
+async function checkBenefitList(opened,note){
+  const shownTitles=await opened.locator("[data-benefit-title] .benefit-name").allInnerTexts();
+  note("homepage_lists_six_benefits_with_their_titles",JSON.stringify(shownTitles)===JSON.stringify(benefitTitles),{titles:shownTitles});
+  /* A press. The event is sent straight to the title, so the pointer never moves and the focus never changes, and this
+     measures the press by itself rather than the hover and the focus that a real click also performs. The order runs
+     backwards from the benefit the page opens first, so the first press has to change something. */
+  const pressed=[];
+  for(const name of [...benefitNames].reverse()){
+    await opened.locator('[data-benefit-title="'+name+'"]').dispatchEvent("click");
+    pressed.push({name,shown:await shownBenefits(opened),expanded:await expandedBenefits(opened),detail:await opened.locator('[data-benefit-detail="'+name+'"]').innerText()});
+  }
+  note("pressing_a_benefit_shows_only_its_own_detail",pressed.length===6&&pressed.every(item=>JSON.stringify(item.shown)===only(item.name)&&JSON.stringify(item.expanded)===only(item.name)&&item.detail.includes(benefitSentences[benefitNames.indexOf(item.name)])),{pressed:pressed.map(item=>({name:item.name,shown:item.shown}))});
+  /* Keyboard alone. The last benefit is opened first, so moving focus to the first one has to change something, and
+     the rest are reached with the Tab key and nothing else. */
+  const keyboard=[];
+  await opened.locator('[data-benefit-title="'+benefitNames[benefitNames.length-1]+'"]').dispatchEvent("click");
+  await opened.locator('[data-benefit-title="'+benefitNames[0]+'"]').focus();
+  for(const name of benefitNames){
+    keyboard.push({name,focused:await opened.evaluate(()=>document.activeElement?.dataset.benefitTitle||""),shown:await shownBenefits(opened)});
+    await opened.keyboard.press("Tab");
+  }
+  note("keyboard_focus_alone_opens_each_benefit",keyboard.length===6&&keyboard.every(item=>item.focused===item.name&&JSON.stringify(item.shown)===only(item.name)),{keyboard});
+  /* Pointing at one. The keyboard pass left the last benefit open, so pointing at the first has to change something. */
+  const hovered=[];
+  for(const name of benefitNames){
+    await opened.locator('[data-benefit="'+name+'"]').hover();
+    hovered.push({name,shown:await shownBenefits(opened)});
+  }
+  note("pointing_at_a_benefit_opens_it",hovered.length===6&&hovered.every(item=>JSON.stringify(item.shown)===only(item.name)),{hovered});
+  const wiring=await opened.locator("[data-benefit]").evaluateAll(items=>items.map(item=>{
+    const title=item.querySelector("[data-benefit-title]"),detail=item.querySelector("[data-benefit-detail]");
+    return {name:item.dataset.benefit,controls:title.getAttribute("aria-controls"),detailId:detail.id,labelled:detail.getAttribute("aria-labelledby"),titleId:title.id,
+      role:detail.getAttribute("role"),expanded:title.getAttribute("aria-expanded"),type:title.getAttribute("type"),heading:title.parentElement.tagName};}));
+  note("every_benefit_title_is_a_button_that_names_its_own_detail",wiring.length===6&&wiring.every(item=>item.controls===item.detailId&&item.labelled===item.titleId&&item.role==="region"&&item.type==="button"&&item.heading==="H3"&&["true","false"].includes(item.expanded)),{wiring});
+}
 const withEndpoint=(value,endpoint)=>value===endpointMark?endpoint:Array.isArray(value)?value.map(item=>withEndpoint(item,endpoint)):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,withEndpoint(item,endpoint)])):value;
 const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(key=>[key,ordered(value[key])])):value;
 const sameValue=(left,right)=>JSON.stringify(ordered(left))===JSON.stringify(ordered(right));
@@ -251,33 +304,132 @@ try {
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
-  check("all_four_persistent_intelligence_layers_are_visible",await page.locator("[data-intelligence-layer]").count()===4&&await page.getByRole("heading",{name:"Context Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Code Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Runtime History and Solution Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"User Feedback Intelligence",exact:true}).isVisible());
-  check("homepage_leads_with_reusable_solutions_not_deployment",(await page.locator('[data-view="home"] h1').innerText()).includes("reusable solutions")&&!(await page.locator('[data-view="home"] h1').innerText()).toLowerCase().match(/local|harness|agent/)&&await page.locator('[data-view="home"] .boundary-figure').count()===0);
-  check("homepage_explains_token_value_without_invented_savings",(await page.locator(".hero-value").innerText()).includes("token budget")&&(await page.locator(".benefit-limits").innerText()).includes("No percentage reduction"));
+  /* The headline is the owner's line. It has to name the two readers it addresses, the developers and the agents they run.
+     The sentence under it names the unit of work this product sells. Each rule has its own known-wrong case beside it. */
+  const headline=await page.locator('[data-view="home"] h1').innerText();
+  const namesTheReader=text=>/\byour\b/i.test(text)&&/\bdevelopers?\b/i.test(text)&&/\bagents?\b/i.test(text);
+  const namesTheStep=text=>/\beach step\b/i.test(text);
+  check("homepage_headline_names_the_developer_and_the_agent",namesTheReader(headline)&&await page.locator('[data-view="home"] .boundary-figure').count()===0,{headline});
+  check("headline_check_rejects_a_headline_that_names_neither",["Turn complex problems into reusable solutions.","Harness and agent optimized operation.","Supercharge your workflow.","Material your coding tools can search.","Supercharge your agents."].every(claim=>!namesTheReader(claim))&&namesTheReader("Supercharge your developers and AI agents"));
+  const subhead=await page.locator('[data-view="home"] .hero-subhead').innerText();
+  check("homepage_subhead_names_the_unit_of_work",namesTheStep(subhead),{subhead});
+  check("subhead_check_rejects_a_sentence_that_never_names_the_step",["Baltor is a library your coding tools can search.","Supercharge your developers and AI agents."].every(claim=>!namesTheStep(claim))&&namesTheStep("Give your AI agents what they need for each step."));
+  check("homepage_says_the_model_keys_stay_with_the_customer",(await page.locator(".hero-value").innerText()).includes("Your model keys stay with you")&&(await page.locator(".hero-value").innerText()).includes("never asks you for a provider key")&&(await page.locator(".benefit-limits").innerText()).includes("No percentage reduction"));
   check("light_is_default_even_when_operating_system_is_dark",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   await page.emulateMedia({colorScheme:"dark"});await page.reload();
   check("operating_system_does_not_override_explicit_light_default",await page.evaluate(()=>document.documentElement.dataset.theme==="light"&&getComputedStyle(document.body).backgroundColor==="rgb(255, 255, 255)"));
   await page.emulateMedia({colorScheme:"light"});
-  check("all_five_owner_pain_points_are_present",JSON.stringify(await page.locator("[data-friction]").evaluateAll(items=>items.map(item=>item.dataset.friction).sort()))===JSON.stringify(["context","expertise","learning","model","reuse"]));
   check("optimization_message_does_not_guarantee_daily_improvement",(await page.locator(".optimization-callout").innerText()).includes("Model selection, context sizing, tool choice and code reuse")&&(await page.locator(".benefit-limits").innerText()).includes("guaranteed daily performance gain"));
   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
      service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
+  /* The line above the headline is the owner's name for the positioning, written out in full. The word harness is
+     jargon outside this repository, so a plain sentence has to sit beside the phrase and say what it means. A page
+     that prints the phrase and leaves the reader to guess is the known-wrong case. */
   check("homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
-  check("homepage_offers_one_primary_action_and_one_secondary",await page.locator('[data-view="home"] .hero .button.primary').count()===1&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown");
+  const positioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
+  const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
+  check("the_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(positioning),{positioning});
+  check("category_line_explanation_check_rejects_a_bare_phrase",["Harness and agent optimized operation.","Built for harness and agent optimized operation, one step at a time.","A harness is the program that runs your coding agent."].every(claim=>!explainsTheCategoryLine(claim))&&explainsTheCategoryLine(positioning));
+  check("homepage_states_the_free_and_paid_split",(await page.locator('[data-view="home"] .hero-split').innerText()).startsWith("Free to install. Paid access to the library."));
+  const heroPrimary=page.locator('[data-view="home"] .hero .button.primary');
+  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("href")==="/connect"&&(await heroPrimary.innerText()).startsWith("Get started")&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown");
   const startSteps=await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()),startText=await page.locator(".start-strip").innerText();
   check("homepage_shows_a_three_step_strip",JSON.stringify(startSteps)===JSON.stringify(["ask","connect","keep"])&&["OpenCode","Codex","Claude Code"].every(client=>startText.includes(client)),{steps:startSteps});
   const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),offerText=await page.locator(".offer-section").innerText();
   check("homepage_says_what_an_account_gives_you",JSON.stringify(offers)===JSON.stringify(["downloads","recipes","search","usage"])&&["search","download","usage"].every(word=>offerText.toLowerCase().includes(word))&&["OpenCode","Codex","Claude Code"].every(client=>offerText.includes(client)),{offers});
   const teaserText=await page.locator(".pricing-teaser").innerText();
-  check("homepage_states_the_plan_price_and_the_measured_unit",teaserText.includes("29 US dollars each month")&&teaserText.includes("one downloaded item")&&teaserText.includes("invited beta users are free")&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing");
+  check("homepage_states_the_plan_price_and_the_measured_unit",teaserText.includes("29 United States dollars each month")&&teaserText.includes("one downloaded item")&&teaserText.includes("invited accounts are free")&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing");
   check("homepage_closes_with_an_action",await page.locator(".closing-callout #closing-primary").isVisible()&&await page.locator(".closing-callout .text-link").isVisible());
   const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;});
   check("homepage_makes_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
   check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
+  /* Owner decision of September 21, 2026. A benefit detail says what the product does, in the present tense, and it
+     names a real limit of what exists today where there is one: the library still holds one example item, and the
+     ranking work is written but not connected to a live run. It does not apologise for a measurement nobody asked
+     for. Both halves of that rule have a known-wrong case: a missing limit and a returned apology each get reported. */
+  const benefitText=await page.locator(".benefit-section").evaluate(node=>node.textContent);
+  const realLimits=["The library on our server holds one example item today","That part is not connected to a live run yet."];
+  const measurementApologies=["We have not measured","Nobody has measured it yet","We have not run that as an experiment","it is an aim and not a result"];
+  const benefitProblems=text=>[...realLimits.filter(sentence=>!text.includes(sentence)).map(sentence=>"missing real limit: "+sentence),
+    ...measurementApologies.filter(sentence=>text.includes(sentence)).map(sentence=>"measurement apology: "+sentence)];
+  check("benefit_details_state_the_real_limits_without_a_measurement_apology",benefitProblems(benefitText).length===0&&!/\d+\s*%/.test(benefitText),{problems:benefitProblems(benefitText)});
+  check("benefit_detail_check_rejects_a_missing_limit_and_a_returned_apology",
+    realLimits.every(sentence=>benefitProblems(benefitText.split(sentence).join("")).length===1)&&
+    measurementApologies.every(sentence=>benefitProblems(benefitText+" "+sentence).length===1),
+    {limits:realLimits.length,apologies:measurementApologies.length});
+  await checkBenefitList(page,check);
+  /* The detail text belongs to the page, not to the script. A browser that never receives the script shows all six. */
+  const withoutScript=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
+  await withoutScript.route("**/*",localOnly);
+  await withoutScript.route("**/assets/service.js",route=>route.abort());
+  const plain=await withoutScript.newPage();
+  plain.on("pageerror",()=>{});
+  await plain.goto(fixture.base+"/");
+  const plainShown=await shownBenefits(plain),plainText=await plain.locator(".benefit-section").innerText();
+  check("benefit_detail_reads_when_the_script_has_not_run",plainShown.length===6&&JSON.stringify(plainShown)===JSON.stringify(benefitNames)&&benefitSentences.every(sentence=>plainText.includes(sentence))&&benefitTitles.every(title=>plainText.includes(title)),{shown:plainShown});
+  await plain.close();await withoutScript.close();
+  /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
+     The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
+  const servedRoutes=["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/app","/account","/docs"];
+  /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
+     the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
+  const vocabularyProblems=[];
+  const readShownText=target=>target.evaluate(()=>[document.querySelector("header").innerText,[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer").innerText].join("\n"));
+  const scanShownText=(path,shownText)=>{
+    if(retiredAccessWords.test(shownText))vocabularyProblems.push({path,rule:"retired access word",found:shownText.match(retiredAccessWords)[0]});
+    if(path!=="/docs"&&publicVocabulary.test(shownText))vocabularyProblems.push({path,rule:"runtime word",found:shownText.match(publicVocabulary)[0]});
+  };
+  for(const path of servedRoutes){await page.goto(fixture.base+path);scanShownText(path,await readShownText(page));}
+  /* The Get started page also answers at "/get-started", which the serving route table does not list yet, so that
+     address is reached through the navigation. Every link on the website points at "/connect", which is served. */
+  await page.goto(fixture.base+"/");
+  await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
+  scanShownText("/get-started",await readShownText(page));
+  /* Rendered text is not the whole surface. A message can sit in a script the browser fetches and appear only in a
+     state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
+     the browser fetches for a customer page is therefore read, not only the markup and the main script. */
+  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt"];
+  /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
+     so a customer reaches that file from every page, and a served asset added in the route table alone is a named
+     failure here rather than a file nobody scans. */
+  const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/http.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
+  const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
+  const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
+  check("every_served_asset_route_is_scanned_for_retired_words",assetRoutes.length>0&&unscannedFor(servedFiles).length===0,{routes:assetRoutes.length,unscanned:unscannedFor(servedFiles)});
+  check("served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",assetRoutes.length>0&&assetRoutes.every(path=>JSON.stringify(unscannedFor(servedFiles.filter(kept=>kept!==path)))===JSON.stringify([path])),{routes:assetRoutes.length});
+  const servedTexts=[];
+  for(const path of servedFiles)servedTexts.push([path,await (await page.request.get(fixture.base+path)).text()]);
+  const retiredIn=(path,text)=>retiredAccessWords.test(text)?[{path:"the served file "+path,rule:"retired access word",found:text.match(retiredAccessWords)[0]}]:[];
+  const servedFileProblems=servedTexts.flatMap(([path,text])=>retiredIn(path,text));
+  check("no_customer_page_describes_the_product_as_a_trial",vocabularyProblems.filter(item=>item.rule==="retired access word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="retired access word")});
+  check("no_customer_page_uses_the_runtime_vocabulary",vocabularyProblems.filter(item=>item.rule==="runtime word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="runtime word")});
+  /* One known-wrong page for each retired phrase, including a page that never writes pilot or beta and still offers
+     early access. An earlier rule read only pilot and beta and let that last page through. */
+  const retiredKnownWrong=["Join the private pilot.","Beta users get early access.","A pilot user can search.","Our private beta is invitation only.","Request early access from your account page."];
+  check("retired_word_check_rejects_a_known_wrong_page",retiredKnownWrong.every(claim=>retiredAccessWords.test(claim))&&!retiredAccessWords.test("Accounts open in small groups. Join the waiting list."),{pages:retiredKnownWrong.length});
+  check("no_served_file_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedFileProblems.length===0,{files:servedTexts.length,problems:servedFileProblems});
+  check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&["\n/* Join the private beta. */","\n/* Ask for early access. */"].every(planted=>servedTexts.every(([path,text])=>retiredIn(path,text+planted).length===1)),{files:servedTexts.length});
+  check("runtime_word_check_rejects_a_known_wrong_page",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification.","A Practitioner owns the task."].every(claim=>publicVocabulary.test(claim))&&!publicVocabulary.test("Each step gets the material it needs."));
+  /* Get started is the first way into the product, and the page behind it walks through the three steps in order. */
+  await page.goto(fixture.base+"/");
+  const navItems=await page.locator("header nav a").evaluateAll(items=>items.map(item=>({label:item.textContent.trim(),href:item.getAttribute("href"),page:item.dataset.page})));
+  const firstIsGetStarted=items=>items.length>1&&items[0].label==="Get started"&&items[0].page==="setup"&&!items.some(item=>item.label==="Connect");
+  check("get_started_is_the_first_navigation_item",firstIsGetStarted(navItems)&&navItems[1].label==="How it works",{nav:navItems});
+  check("navigation_order_check_rejects_a_wrong_first_item",[[{label:"How it works",page:"about"},{label:"Get started",page:"setup"}],[{label:"Connect",page:"setup"},{label:"Get started",page:"setup"}],[{label:"Get started",page:"setup"},{label:"Connect",page:"setup"}]].every(items=>!firstIsGetStarted(items)));
+  await page.locator('header nav a[data-page="setup"]').click();
+  const orderedSteps=await page.locator("[data-get-started-step]").evaluateAll(items=>items.map(item=>({step:item.dataset.getStartedStep,index:item.querySelector(".feature-index").textContent.trim(),title:item.querySelector("[data-get-started-title]").textContent.trim()})));
+  const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["download","connect","sign-up"])&&steps.every((item,index)=>item.index.startsWith("Step "+(index+1)+" / ")&&item.title.length>0);
+  check("get_started_page_names_the_three_steps_in_order",new URL(page.url()).pathname==="/connect"&&namesThreeStepsInOrder(orderedSteps)&&await page.locator('[data-view="setup"]').isVisible(),{steps:orderedSteps});
+  check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]]].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
+  check("get_started_page_carries_the_copyable_connection_settings",await page.locator("#client-choice").count()===1&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
+  // The Get started address opens the same page. The serving route table does not list it yet, so only the navigation reaches it.
+  await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
+  check("get_started_address_opens_the_same_page",new URL(page.url()).pathname==="/get-started"&&await page.locator('[data-view="setup"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1);
+  await page.goto(fixture.base+"/");
   await page.locator('header a[data-page="pricing"]').click();
   check("pricing_view_opens_from_the_navigation",new URL(page.url()).pathname==="/pricing"&&await page.locator('[data-view="pricing"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1&&(await page.title()).endsWith("| Pricing"));
   const pricingText=await page.locator('[data-view="pricing"]').innerText();
-  const pricingFacts=[["plan name","Baltor Pro"],["price","29 US dollars"],["period","each month"],["free search","Search is free."],["measured unit","one downloaded item"],["invited beta","Invited beta users are free."]];
+  const pricingFacts=[["plan name","Baltor Pro"],["price","29 United States dollars"],["period","each month"],["free search","Search is free."],["measured unit","one downloaded item"],["invited accounts","Invited accounts are free."]];
   const missingFacts=text=>pricingFacts.filter(([,fact])=>!text.includes(fact)).map(([name])=>name);
   check("pricing_view_states_every_published_fact",missingFacts(pricingText).length===0,{missing:missingFacts(pricingText)});
   check("pricing_fact_check_fails_when_one_fact_is_missing",pricingFacts.every(([name,fact])=>missingFacts(pricingText.split(fact).join("")).includes(name)),{facts:pricingFacts.length});
@@ -324,8 +476,9 @@ try {
   for(const width of [1440,360]){await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");homeFits.push({width,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1}))});}
   check("homepage_fits_a_360_pixel_screen",homeFits.length===2&&homeFits.every(item=>!item.overflow),{measurements:homeFits});
   await page.setViewportSize({width:1440,height:1000});
-  /* The two states the service can report for public access and for payment, each read from a real service, with the removed-guard controls for both directions. */
-  const expectedAccess={invited:{state:"invited",href:"/signup#request-access",label:"Request access"},open:{state:"open",href:"/signup",label:"Get started"}};
+  /* The three capabilities the service can report, for account creation, for payment and for personal keys, each read from a real
+     service, with the removed-guard controls for both directions and for the record version the page was written against. */
+  const expectedAccess={waiting:{state:"waiting",href:"/signup#waiting-list",label:"Join the waiting list"},open:{state:"open",href:"/signup",label:"Create your account"}};
   const accessActions=target=>target.locator("[data-access-state]").evaluateAll(items=>items.map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("span").textContent})).sort((left,right)=>left.id<right.id?-1:1));
   const sameAccess=(actions,want)=>actions.length===3&&actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label);
   /* A capabilities record whose version this page was not written against may have renamed a field or given it a different meaning.
@@ -344,25 +497,25 @@ try {
   const keyWording={
     open:{offer:"You can also create and revoke a key for each device from your account page.",
           plan:"Create and revoke a key for every client you connect, from your account page."},
-    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. In the private pilot the person who runs the service issues your key.",
-            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. In the private pilot the person who runs the service issues your key."}};
+    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."}};
   const keyState=async opened=>({offer:await opened.locator("#offer-usage-keys").evaluate(node=>node.textContent),plan:await opened.locator("#plan-keys-detail").evaluate(node=>node.textContent)});
   const sameKeys=(keys,want)=>keys.offer===want.offer&&keys.plan===want.plan;
   const carefulState=async (opened,note,name)=>{
     const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened);
-    note(name,sameAccess(actions,expectedAccess.invited)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed),{actions,payment,keys});
+    note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed),{actions,payment,keys});
   };
   const scenarios={
     closed_service:{origin:"base",run:async (opened,note)=>{
       const actions=await accessActions(opened),keys=await keyState(opened);
-      note("public_action_asks_for_an_invitation_when_registration_is_closed",sameAccess(actions,expectedAccess.invited),{actions});
+      note("public_action_offers_the_waiting_list_when_account_creation_is_closed",sameAccess(actions,expectedAccess.waiting),{actions});
       note("personal_key_claim_is_held_back_when_the_service_reports_no_client_access",sameKeys(keys,keyWording.closed),keys);
       const payment=await paymentState(opened);
       note("pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),payment);
     }},
     open_registration:{origin:"signup_base",run:async (opened,note)=>{
       const actions=await accessActions(opened);
-      note("public_action_offers_sign_up_when_the_service_reports_registration",sameAccess(actions,expectedAccess.open),{actions});
+      note("public_action_offers_account_creation_when_the_service_reports_it",sameAccess(actions,expectedAccess.open),{actions});
     }},
     open_checkout:{origin:"billing_base",run:async (opened,note)=>{
       const payment=await paymentState(opened);
@@ -392,8 +545,8 @@ try {
   }
   const versionGate="if (value.record_type === CAPABILITIES_RECORD_TYPE) {";
   const publicControls=[
-    {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_action_asks_for_an_invitation_when_registration_is_closed"]},
-    {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_action_offers_sign_up_when_the_service_reports_registration"]},
+    {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_action_offers_the_waiting_list_when_account_creation_is_closed"]},
+    {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_action_offers_account_creation_when_the_service_reports_it"]},
     {name:"always_say_payment_is_open",scenario:"closed_service",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(true);",expected:["pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout"]},
     {name:"never_say_payment_is_open",scenario:"open_checkout",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(false);",expected:["pricing_view_says_payment_is_open_when_the_service_reports_checkout"]},
     {name:"always_claim_personal_keys",scenario:"closed_service",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(true);",expected:["personal_key_claim_is_held_back_when_the_service_reports_no_client_access"]},
@@ -409,28 +562,58 @@ try {
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
+  /* Removed-guard controls for the benefit list. The served script is changed in memory only, never a source file.
+     Each control takes away one way of reaching a detail, or the rule that closes the others, and must fail a named
+     check. Together they show that a mouse, a keyboard and a touch screen each have their own path to the detail. */
+  const benefitControls=[
+    {name:"never_open_a_benefit_on_a_press",find:'title.addEventListener("click", () => openBenefit(name));',expected:["pressing_a_benefit_shows_only_its_own_detail"]},
+    {name:"never_open_a_benefit_on_keyboard_focus",find:'title.addEventListener("focus", () => openBenefit(name));',expected:["keyboard_focus_alone_opens_each_benefit"]},
+    {name:"never_open_a_benefit_when_it_is_pointed_at",find:'benefitItem(title).addEventListener("mouseenter", () => openBenefit(name));',expected:["pointing_at_a_benefit_opens_it"]},
+    {name:"leave_every_benefit_open_at_once",find:"benefitDetail(title).hidden = !open;",replacement:"benefitDetail(title).hidden = false;",expected:["pressing_a_benefit_shows_only_its_own_detail","keyboard_focus_alone_opens_each_benefit","pointing_at_a_benefit_opens_it"]},
+    {name:"stop_saying_which_benefit_is_open",find:'title.setAttribute("aria-expanded", String(open));',expected:["pressing_a_benefit_shows_only_its_own_detail"]}];
+  for(const control of benefitControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openPublic(fixture.base,{find:control.find,replacement:control.replacement??"void 0;"});applied=state.applied;await checkBenefitList(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
   /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the served text. */
   const servedHome=await (await page.request.get(fixture.base+"/")).text();
-  const carefulDefaults=["Payment not open","Payment is not open yet. Nothing on this page charges you today, and invited beta accounts stay free.",
-    "Payment is not open yet. Nothing on this page charges you today.","Request access",keyWording.closed.offer,keyWording.closed.plan];
+  const carefulDefaults=["Payment not open","Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.",
+    "Payment is not open yet. Nothing on this page charges you today.","Join the waiting list",keyWording.closed.offer,keyWording.closed.plan];
   const unsettled=/Checking payment|Checking whether payment is open/;
   const carefulProblems=text=>[...carefulDefaults.filter(value=>!text.includes(value)),...(unsettled.test(text)?["an unsettled placeholder"]:[])];
   check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedHome).length===0,{problems:carefulProblems(servedHome)});
   const wrongDefault=servedHome.split(carefulDefaults[0]).join("Checking payment").split(carefulDefaults[1]).join("Checking whether payment is open.");
   check("careful_default_check_rejects_a_served_page_that_never_settles",carefulProblems(wrongDefault).length>=3,{problems:carefulProblems(wrongDefault)});
   /* One plain-word rule, used by the workspace check and by the hosted check. A copy that drifts is a named failure, not a silent disagreement. */
-  const ruleSource=path=>{const found=readFileSync(resolve(root,path),"utf8").match(/^const internalTerms=(\/.+\/i);$/m);return found?found[1]:"";};
+  const namedRule=(path,name)=>{const found=readFileSync(resolve(root,path),"utf8").match(new RegExp("^\\s*const "+name+"=(\\/.+\\/i);$","m"));return found?found[1]:"";};
+  const ruleSource=path=>namedRule(path,"internalTerms");
   const workspaceRule=ruleSource("tools/check_service_workspace.mjs"),hostedRule=ruleSource("tools/check_hosted_website.mjs");
   check("both_public_page_checks_use_one_plain_word_rule",workspaceRule!==""&&workspaceRule===hostedRule&&workspaceRule===String(internalTerms),{workspace:workspaceRule,hosted:hostedRule});
   check("plain_word_rule_comparison_rejects_a_drifted_copy",workspaceRule!==workspaceRule.replace("role profile","role profiles")&&workspaceRule!==workspaceRule.replace("| Engine","")&&internalTerms.test("See the role profiles.")&&internalTerms.test("Read the role profile."));
+  /* The retired words are read twice as well, here from the source tree and in the hosted check from the deployed
+     pages. The two rules had drifted: this one carried pilot and beta only while the hosted one also carried early
+     access, so a homepage offering early access passed here and was caught only after a deployment. */
+  const workspaceRetired=namedRule("tools/check_service_workspace.mjs","retiredAccessWords"),hostedRetired=namedRule("tools/check_hosted_website.mjs","liveRetired");
+  check("both_public_page_checks_use_one_retired_word_rule",workspaceRetired!==""&&workspaceRetired===hostedRetired&&workspaceRetired===String(retiredAccessWords),{workspace:workspaceRetired,hosted:hostedRetired});
+  const droppedBranch=workspaceRetired.replace("|early access","");
+  check("retired_word_rule_comparison_rejects_a_drifted_copy",droppedBranch!==workspaceRetired&&!new RegExp(droppedBranch.slice(1,-2),"i").test("Request early access from your account page.")&&retiredAccessWords.test("Request early access from your account page."),{dropped:droppedBranch});
   await page.goto(fixture.base+"/");
   await page.locator("#hero-how-it-works").click();
+  /* The four persistent layers and the five customer problems moved off the homepage, which sells, on to How it works,
+     which explains. Both are still shown to a customer, and both are checked where they now live. */
+  check("all_four_persistent_intelligence_layers_are_visible",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4&&await page.getByRole("heading",{name:"Context Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Code Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Runtime History and Solution Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"User Feedback Intelligence",exact:true}).isVisible());
+  check("all_five_owner_pain_points_are_present",JSON.stringify(await page.locator('[data-view="about"] [data-friction]').evaluateAll(items=>items.map(item=>item.dataset.friction).sort()))===JSON.stringify(["context","expertise","learning","model","reuse"])&&await page.locator(".friction-section").isVisible());
+  check("the_homepage_no_longer_carries_the_explanation_sections",await page.locator('[data-view="home"] [data-intelligence-layer]').count()===0&&await page.locator('[data-view="home"] [data-friction]').count()===0);
   check("technical_layer_definitions_remain_in_documentation",(await page.locator('[data-view="docs"] [data-layer-notes]').textContent()).includes("not a fifth persistent layer")&&(await page.locator('[data-view="docs"] [data-layer-notes]').textContent()).includes("temporary note board"));
   const boundary=page.locator('[data-view="about"] .boundary-figure');
   check("hosted_service_and_local_execution_have_distinct_responsibilities",(await boundary.locator(".service-zone").innerText()).includes("Check your access")&&(await boundary.locator(".client-zone").innerText()).includes("Set the goal and limits")&&await boundary.locator(".boundary-zone").count()===2);
   check("client_server_exchange_names_sent_and_returned_data",(await boundary.locator(".boundary-exchange").innerText()).includes("Relevant help or a selected file")&&(await boundary.locator(".boundary-exchange").innerText()).includes("Matching results or the permitted download"));
   check("external_model_connection_is_separate_from_intelligence_service",(await boundary.locator(".provider-lane").innerText()).includes("Model keys stay in your environment"));
-  check("benefits_are_explicit_without_invented_benchmark_numbers",await page.locator(".friction-grid article").count()===5&&!(await page.locator(".friction-section").innerText()).match(/\d+\s*%/));
+  check("benefits_are_explicit_without_invented_benchmark_numbers",await page.locator(".friction-grid article").count()===5&&!(await page.locator(".friction-section").innerText()).match(/\d+\s*%/)&&!(await page.locator('[data-view="about"]').innerText()).match(/\d+\s*%/));
   await boundary.screenshot({path:output.replace(/\.json$/,"-boundaries.png")});
   check("homepage_deep_link_opens_task_explorer",new URL(page.url()).pathname==="/how-it-works"&&new URL(page.url()).hash==="#task-breakdown"&&await page.locator("#task-breakdown").isVisible());
   const architectureRequests=[]; const requestListener=request=>architectureRequests.push(request.url()); page.on("request",requestListener);

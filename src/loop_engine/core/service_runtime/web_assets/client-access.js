@@ -21,7 +21,7 @@ window.BaltorClientAccess = {
     function connectionChanged() {
       controls();
       if (eligible()) message("client-access-message", "Load your tokens to connect a development tool. These are not model-provider keys.");
-      else if (!current().available) message("client-access-message", "Customer token management is not enabled on this service. Your operator manages pilot access.");
+      else if (!current().available) message("client-access-message", "Customer token management is not enabled on this service. Your operator issues and revokes your access.");
     }
     async function refresh() {
       if (!eligible() || active) return;

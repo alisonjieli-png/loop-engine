@@ -13,32 +13,34 @@
     document.querySelectorAll("[data-view]").forEach(item => { item.hidden = item.dataset.view !== name; });
     document.querySelectorAll("[data-page]").forEach(item => { if (item.dataset.page === name) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current"); });
   };
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/examples":"examples", "/security":"security", "/auth/callback":"login"};
+  // "/get-started" and "/connect" open the same Get started page. The serving route table does not list
+  // "/get-started" yet, so that address works through the navigation and a direct visit is not served.
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
   const serviceName = document.title.split(" | ")[0];
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Reusable solutions with less repeated work", workspace:"Intelligence workspace", login:"Sign in", signup:"Registration status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Connect your client", examples:"Try your first retrieval", security:"Access and data boundaries"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
   /* The public access action, the pricing state and the personal-key wording come from the service capabilities record, never from wording kept in this file.
      They are read only from this exact record version, because another version may rename a field or give it a different meaning.
      Until the service answers, if it never answers, and for any other record version, the page keeps the careful state:
-     access by invitation, payment not open, personal keys described as being prepared. */
+     the waiting list, payment not open, personal keys described as being prepared. */
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
-    open:{label:"Get started", href:"/signup", note:"Create your account. Search is free, and one downloaded item is the measured unit."},
-    invited:{label:"Request access", href:"/signup#request-access", note:"Private pilot. Access is by invitation while public sign-up is closed."}};
+    open:{label:"Create your account", href:"/signup", note:"Account creation is open. Search is free, and one downloaded item is the measured unit."},
+    waiting:{label:"Join the waiting list", href:"/signup#waiting-list", note:"Accounts open in small groups. Join the waiting list and we will write to you when your turn comes."}};
   const paymentStates = {
-    open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited beta accounts stay free."},
-    closed:{badge:"Payment not open", note:"Payment is not open yet. Nothing on this page charges you today, and invited beta accounts stay free.", teaser:"Payment is not open yet. Nothing on this page charges you today."}};
+    open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited accounts stay free."},
+    closed:{badge:"Payment not open", note:"Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.", teaser:"Payment is not open yet. Nothing on this page charges you today."}};
   const applyAccessState = open => {
-    const state = open === true ? accessStates.open : accessStates.invited;
+    const state = open === true ? accessStates.open : accessStates.waiting;
     for (const id of ["hero-primary", "pricing-primary", "closing-primary"]) {
-      $(id).setAttribute("href", state.href); $(id).dataset.accessState = open === true ? "open" : "invited";
+      $(id).setAttribute("href", state.href); $(id).dataset.accessState = open === true ? "open" : "waiting";
       $(id + "-label").textContent = state.label;
     }
     $("hero-access-note").textContent = state.note;
@@ -51,13 +53,35 @@
   const clientAccessStates = {
     open:{offer:"You can also create and revoke a key for each device from your account page.",
           plan:"Create and revoke a key for every client you connect, from your account page."},
-    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. In the private pilot the person who runs the service issues your key.",
-            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. In the private pilot the person who runs the service issues your key."}};
+    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+            plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."}};
   const applyClientAccessState = open => {
     const state = open === true ? clientAccessStates.open : clientAccessStates.closed;
     $("offer-usage-keys").textContent = state.offer; $("plan-keys-detail").textContent = state.plan;
   };
   applyAccessState(false); applyPaymentState(false); applyClientAccessState(false);
+  /* The benefit list on the homepage. Every detail is written in the page source, so a reader who never runs this
+     file sees all six. Once this file runs, one benefit is open at a time. Pointing at a title, moving keyboard focus
+     to it and pressing it each open that one and close the others, so a touch screen and a keyboard reach the same
+     detail that a mouse reaches. Nothing moves or fades, so a reduced-motion setting changes nothing here. */
+  const benefitTitles = [...document.querySelectorAll("[data-benefit-title]")];
+  const benefitItem = title => title.closest("[data-benefit]");
+  const benefitDetail = title => benefitItem(title).querySelector("[data-benefit-detail]");
+  const openBenefit = name => {
+    for (const title of benefitTitles) {
+      const open = title.dataset.benefitTitle === name;
+      title.setAttribute("aria-expanded", String(open));
+      benefitItem(title).dataset.open = String(open);
+      benefitDetail(title).hidden = !open;
+    }
+  };
+  for (const title of benefitTitles) {
+    const name = title.dataset.benefitTitle;
+    title.addEventListener("click", () => openBenefit(name));
+    title.addEventListener("focus", () => openBenefit(name));
+    benefitItem(title).addEventListener("mouseenter", () => openBenefit(name));
+  }
+  if (benefitTitles.length) openBenefit(benefitTitles[0].dataset.benefitTitle);
   const themes = ["system", "light", "dark"];
   const createIdentityClient = settings => window.BaltorIdentitySdk.createClient(settings.project_url, settings.publishable_key,
     {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
@@ -77,7 +101,7 @@
     accessOptions = null; accessRequest = null; $("admin-nav").hidden = true; $("admin-controls").hidden = true; $("admin-login").hidden = false; $("refresh-access").disabled = true;
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
-    $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with a pilot service token to run the connection check.";
+    $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with your service token to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
     clientAccess?.reset();
   }
@@ -467,9 +491,9 @@
         identityClient = createIdentityClient(settings);
         $("email-login").hidden = false; $("email-signup").hidden = !settings.email_signup_enabled;
         $("signup-closed").hidden = settings.email_signup_enabled;
-        $("login-access-description").textContent = "Sign in with your verified email account, or use a service token for operator and pilot access.";
+        $("login-access-description").textContent = "Sign in with your verified email account, or use a service token issued by your operator.";
         $("email-access-note").textContent = "Email credentials are checked by the configured identity provider. Model keys are separate.";
-        $("email-signin-limit").textContent = settings.email_signup_enabled ? "Email sign-in is available. Account creation and subscription access are separate." : "Email sign-in is available for prepared accounts. Public registration remains closed; a service token does not create an account or subscription.";
+        $("email-signin-limit").textContent = settings.email_signup_enabled ? "Email sign-in is available. Account creation and subscription access are separate." : "Email sign-in is available for prepared accounts. Public account creation remains closed; a service token does not create an account or subscription.";
       }).catch(() => message("identity-message", "Email sign-in configuration is unavailable. Operator service tokens remain separate.", true));
     }
   }).catch(() => { $("service-status").textContent = "Service unavailable. Check the host configuration."; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
