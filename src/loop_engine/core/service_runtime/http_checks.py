@@ -27,6 +27,17 @@ def provisioning_request(operation="list", **fields):
     return {"record_type": PROVISIONING_REQUEST_VERSION, "operation": operation, **fields}
 
 
+def _protocol_message(answer):
+    """The one protocol message in an answer sent as JSON or as one event stream, or None."""
+    if answer.headers.get("content-type", "").startswith("text/event-stream"):
+        data = [line[5:].strip() for line in answer.text.splitlines() if line.startswith("data:")]
+        return json.loads(data[-1]) if data else None
+    try:
+        return answer.json()
+    except ValueError:
+        return None
+
+
 def _web_checks(check, root):
     import httpx
     fixture = HttpDomainFixture(root)
@@ -317,12 +328,56 @@ async def _protocol_checks(check, root):
                 check("protocol_search_shares_the_completion_authorization_guard",
                       revoked.isError and revoked.structuredContent["error"]["code"] == "disclosure_grant_changed"
                       and "skill.alpha" not in str(revoked))
-        async with httpx.AsyncClient(trust_env=False) as client:
-            request = {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
-                "protocolVersion": "2026-07-28", "capabilities": {}, "clientInfo": {"name": "unsupported", "version": "1"}}}
-            wrong = await client.post(base + "/mcp", headers=fixture.headers(), json=request)
-            check("remote_protocol_refuses_unqualified_versions_without_silent_negotiation",
-                  wrong.status_code == 400 and wrong.json()["error"]["code"] == "unsupported_protocol_version")
+
+
+async def _negotiation_checks(check, root):
+    """Protocol version selection over real sockets, on a fixture no other check has changed."""
+    import httpx
+    fixture = HttpDomainFixture(root)
+    with running_http(fixture) as (base, _service):
+        async with httpx.AsyncClient(trust_env=False, timeout=5) as client:
+            async def rpc(method, params, version=None, identity=1):
+                headers = {**fixture.headers(), "Accept": "application/json, text/event-stream",
+                           **({"MCP-Protocol-Version": version} if version else {})}
+                answer = await client.post(base + "/mcp", headers=headers, json={
+                    "jsonrpc": "2.0", "id": identity, "method": method, "params": params})
+                return answer, _protocol_message(answer)
+            # The 2025-11-25 lifecycle: when the server does not support the
+            # version a client asks for in initialize, it MUST answer with
+            # another version it supports, and the client decides whether to
+            # disconnect. This endpoint refused such a request with 400 until
+            # September 22, 2026, which broke every client that asks for a
+            # newer version first. A version the protocol library knows but
+            # this release has not qualified is answered the same way, so
+            # handing the choice to the library, which would accept 2025-06-18,
+            # fails this check too.
+            offered = {}
+            for requested in ("2099-01-01", "2026-07-28", "2025-06-18"):
+                answer, message = await rpc("initialize", {"protocolVersion": requested, "capabilities": {},
+                                                           "clientInfo": {"name": "negotiation", "version": "1"}})
+                offered[requested] = (answer.status_code, ((message or {}).get("result") or {}).get("protocolVersion"))
+            check("initialize_for_an_unsupported_version_is_answered_with_a_supported_version",
+                  offered == {requested: (200, "2025-11-25") for requested in offered})
+            # Negotiation is not permission to serve the unsupported version:
+            # every later request names the negotiated version and is refused
+            # before any domain work when it names another one or none.
+            reads, records = len(fixture.reads), fixture.usage()["records"]
+            refused = [await rpc("tools/call", {"name": "provisioning_read", "arguments": {
+                           "identity": "skill.alpha", "request_id": "negotiation-refused"}}, version, identity=2)
+                       for version in ("2099-01-01", "2025-06-18", None)]
+            check("a_request_naming_an_unsupported_version_is_refused_before_any_effect",
+                  [answer.status_code for answer, _message in refused] == [400, 400, 400]
+                  and len(fixture.reads) == reads and fixture.usage()["records"] == records)
+            # The guards above must not be satisfiable by refusing everything:
+            # the negotiated version still lists and calls tools end to end.
+            listed_answer, listed = await rpc("tools/list", {}, "2025-11-25", identity=3)
+            called_answer, called = await rpc("tools/call", {"name": "intelligence_search",
+                                                             "arguments": {"query": "alpha"}}, "2025-11-25", identity=4)
+            check("the_negotiated_version_still_lists_and_calls_tools_end_to_end",
+                  listed_answer.status_code == called_answer.status_code == 200
+                  and len(((listed or {}).get("result") or {}).get("tools", ())) == 5
+                  and ((called or {}).get("result") or {}).get("isError") is False
+                  and bool(called["result"]["structuredContent"]["result"]["hits"]))
 
 
 def _identity_checks(check, root):
@@ -523,7 +578,8 @@ def self_test():
                            ("request_limits", _request_limit_checks)):
         with tempfile.TemporaryDirectory(prefix="service-http-" + name + "-") as directory:
             function(check, Path(directory))
-    for name, function in (("protocol", _protocol_checks), ("cancellation", _cancellation_checks)):
+    for name, function in (("protocol", _protocol_checks), ("negotiation", _negotiation_checks),
+                           ("cancellation", _cancellation_checks)):
         with tempfile.TemporaryDirectory(prefix="service-http-" + name + "-") as directory:
             asyncio.run(function(check, Path(directory)))
     from .http_boundary_checks import run_checks

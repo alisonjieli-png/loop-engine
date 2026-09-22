@@ -116,9 +116,11 @@ list never arriving.
 ```
 
 **What it means.** The service offers exactly one protocol version,
-`2025-11-25`, and refuses anything else rather than guessing. This applies to
-the `initialize` parameters and to the `MCP-Protocol-Version` header on every
-later request.
+`2025-11-25`. The deployed release refused an `initialize` for any other
+version, as shown above. The source in this repository answers such an
+`initialize` with `2025-11-25` instead, and the client decides whether to
+continue. Every later request must carry `MCP-Protocol-Version: 2025-11-25`;
+any other value, or none, is refused with this code before any work is done.
 
 **What to do.** Update the client. Check the version you have with the
 client's own version option, and compare against the version the service

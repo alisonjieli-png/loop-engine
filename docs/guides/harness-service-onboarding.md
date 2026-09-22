@@ -62,9 +62,13 @@ verification, an expired session, and revocation. A successful connection
 does not prove that the harness loaded or used a skill. Record each of those
 observations separately.
 
-Current behavior: the service accepts exactly Model Context Protocol version
-`2025-11-25`. It refuses every other version, including the newer published
-version `2026-07-28`, and it does not negotiate a different version silently.
+Current behavior: the service serves Model Context Protocol version
+`2025-11-25`. When a client asks for another version in `initialize`,
+including the newer published version `2026-07-28`, the answer names
+`2025-11-25`, as the lifecycle rule of that version requires, and the client
+decides whether to continue. Every later request must name `2025-11-25` in its
+`MCP-Protocol-Version` header and is refused before any effect when it names
+another version.
 The version that the service implements is documented in the
 [transport specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
 and the

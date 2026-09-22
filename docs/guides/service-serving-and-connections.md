@@ -36,8 +36,9 @@ One client request
 | External authorization metadata | Not published | `oauth_resource_metadata` is false |
 
 The deployed service reported `sdk_version` as `1.29.1` on 2026-09-21. Only
-one protocol version is offered. There is no negotiation down to an older one
-and no negotiation up.
+one protocol version is offered. A client that asks for another version is
+answered with this one and decides whether to continue. The service never
+selects an older version and never a newer one.
 
 Read the capabilities record without a credential at any time:
 
@@ -101,14 +102,36 @@ gets past the protocol layer is always refused in the service's own shape.
 
 ## What happens when versions do not match
 
-The protocol version is checked in two places, and the refusal is the same
-code in both.
+The protocol version is checked in two places, and they behave differently.
 
-1. On `initialize`, the service compares `protocolVersion` in the parameters.
-2. On every later `/mcp` request, it compares the `MCP-Protocol-Version`
-   header.
+1. On `initialize`, the service reads `protocolVersion` in the parameters.
+   When it names a version the service does not serve, the answer names
+   `2025-11-25` instead. This is the negotiation rule of the 2025-11-25
+   lifecycle: the server answers with a version it supports, and the client
+   decides whether to continue. A client that cannot speak `2025-11-25`
+   disconnects.
+2. On every later `/mcp` request, the service compares the
+   `MCP-Protocol-Version` header. Any other version, or no header, is refused
+   with `unsupported_protocol_version` and status 400 before any work is done.
 
-**Deployed.** An `initialize` that asked for `2025-06-18`:
+**Local**, on 2026-09-22, an `initialize` that asked for `2025-06-18` was
+answered with status 200 and one server-sent event:
+
+```json
+{"jsonrpc": "2.0", "id": 1,
+ "result": {"protocolVersion": "2025-11-25",
+            "capabilities": {"experimental": {}, "tools": {"listChanged": false}},
+            "serverInfo": {"name": "loop-engine-intelligence", "version": "1.0.0"}}}
+```
+
+**Deployed**, the release that ran on 2026-09-21 refused that same
+`initialize` with status 400 and `unsupported_protocol_version`. That refusal
+broke the negotiation rule above. The source in this repository answers it as
+shown, and a deployment serves that answer only after a release that includes
+this change.
+
+**Local**, a `tools/list` request carrying
+`MCP-Protocol-Version: 2025-06-18` was refused with status 400:
 
 ```json
 {"record_type": "service_http_error/v1",
@@ -116,14 +139,11 @@ code in both.
  "effect_commitment": "not_asserted", "automatic_retry": false}
 ```
 
-The status was 400. **Local**, a `tools/list` request carrying
-`MCP-Protocol-Version: 2025-06-18` was refused with the same code and status.
-
-There is no downgrade. A client that cannot speak `2025-11-25` cannot connect,
-and the service will not reinterpret its request under an older profile. The
-record contracts behave the same way: a request record whose `record_type` is
-not the exact supported version is refused with `unsupported_version` rather
-than read under a guess.
+Negotiation is not a downgrade. A later request is never served under a
+version other than the one the answer named, and the service will not
+reinterpret a request under an older profile. The record contracts behave the
+same way: a request record whose `record_type` is not the exact supported
+version is refused with `unsupported_version` rather than read under a guess.
 
 ## Session behaviour
 
@@ -184,7 +204,7 @@ service never repeats your request for you.
 | `request_limit_exceeded` | 413 | The request body is larger than the published `request_bytes`. | Send a smaller request. |
 | `request_body_deadline` | 408 | The body did not arrive within the request deadline. | Send the whole body promptly. |
 | `route_unavailable` | 404 | No such address, or not with that method. | Check the address list on this page. |
-| `unsupported_protocol_version` | 400 | The protocol version does not match. | Use `2025-11-25`. |
+| `unsupported_protocol_version` | 400 | A later `/mcp` request names a protocol version other than the negotiated one, or none. | Send `MCP-Protocol-Version: 2025-11-25`, the version the `initialize` answer named. |
 
 The schema is checked before anything else, so a field that is present but
 malformed answers `invalid_request` rather than a more specific code. Verified

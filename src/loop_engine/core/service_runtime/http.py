@@ -203,6 +203,32 @@ def _json_bytes(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
+#: The protocol versions this release answers an `initialize` handshake with,
+#: oldest first. Only a qualified version belongs here.
+HANDSHAKE_PROTOCOL_VERSIONS = (PROTOCOL_VERSION,)
+
+
+def initialize_with_selected_version(payload, body):
+    """The initialize request the protocol library serves, naming the version this service selected.
+
+    The 2025-11-25 lifecycle: when the server does not support the version a
+    client asks for, it MUST answer with another version it supports, normally
+    its newest, and the client then decides whether to disconnect. Refusing the
+    request instead breaks every client that asks for a newer version first.
+
+    The service selects the version, not the protocol library, because the
+    library also accepts older versions that this release has not qualified. A
+    request whose version is not text is passed on unchanged, so the library
+    refuses it as malformed rather than having a version filled in for it.
+    """
+    params = payload.get("params")
+    if not isinstance(params, dict) or not isinstance(params.get("protocolVersion"), str):
+        return body
+    if params["protocolVersion"] in HANDSHAKE_PROTOCOL_VERSIONS:
+        return body
+    return _json_bytes({**payload, "params": {**params, "protocolVersion": HANDSHAKE_PROTOCOL_VERSIONS[-1]}})
+
+
 def _json_nesting_depth(body, limit):
     """Deepest container nesting in raw JSON bytes, stopping once over the limit.
 
@@ -841,9 +867,11 @@ class ServiceHttpApplication:
                     body = await self._body(request) if request.method == "POST" else b""
                     payload = _parse_json(body) if body else {}
                     if payload.get("method") == "initialize":
-                        if (payload.get("params") or {}).get("protocolVersion") != PROTOCOL_VERSION:
-                            raise ServiceHttpError("unsupported_protocol_version")
-                    elif request.headers.get("mcp-protocol-version") != PROTOCOL_VERSION:
+                        # Negotiation, not refusal: the answer names the
+                        # version selected here, and every later request must
+                        # name it in its header before it reaches any effect.
+                        body = initialize_with_selected_version(payload, body)
+                    elif request.headers.get("mcp-protocol-version") not in HANDSHAKE_PROTOCOL_VERSIONS:
                         raise ServiceHttpError("unsupported_protocol_version")
                     scope["service_authentication"] = context
                     delivered = False

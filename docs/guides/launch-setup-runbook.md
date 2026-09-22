@@ -474,7 +474,8 @@ process is responding; it does not qualify identity, storage or payments.
 
 Model Context Protocol is the tool protocol. Authentication determines who
 may call it. The hosted service needs both. Its current supported protocol is
-`2025-11-25`; `2026-07-28` is not silently accepted.
+`2025-11-25`. A client that asks for another version is answered with
+`2025-11-25` and decides whether to continue; `2026-07-28` is not served.
 
 Use the [Jev and client setup guide](jev-and-harness-decision-tools.md) for
 the decision configuration, direct command and harness tool process. Keep
