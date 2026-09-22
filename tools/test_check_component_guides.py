@@ -16,6 +16,7 @@ rather than being discovered by a reader months later.
 """
 from __future__ import annotations
 
+import json
 import os
 import sys
 import tempfile
@@ -53,6 +54,21 @@ def run_widget(request):
 
 
 ROUTES = ("/api/v1/widget",)
+'''
+
+#: The fixture component's own checks. A check spells wrong values and builds
+#: stand-ins on purpose, to show that the component refuses them.
+FIXTURE_CHECKS = '''
+"""Checks for the fixture component."""
+from .widget import run_widget
+
+
+def self_test():
+    class RetiredWidgetHook:
+        """A stand-in the component must refuse."""
+
+    refused = run_widget({"record_type": "widget_request/v9"})
+    return {"all_passed": refused["status"] == "ok", "hook": RetiredWidgetHook}
 '''
 
 #: A help table with exactly one public command word.
@@ -115,6 +131,8 @@ class FixtureRepository:
         (package / "__init__.py").write_text("", "utf-8")
         (package / "core" / "__init__.py").write_text("", "utf-8")
         (package / "core" / "widget.py").write_text(FIXTURE_SOURCE, "utf-8")
+        (package / "core" / "widget_checks.py").write_text(
+            FIXTURE_CHECKS, "utf-8")
         (package / "core" / "boundary_registry.py").write_text(
             FIXTURE_REGISTER, "utf-8")
         (package / "cli_help.py").write_text(FIXTURE_HELP, "utf-8")
@@ -131,7 +149,8 @@ class FixtureRepository:
         self.guide.write_text(text, "utf-8")
 
     def write_map(self, *, components=None, guides=None, external=None,
-                  examples=None, reader_supplied=None) -> None:
+                  examples=None, reader_supplied=None,
+                  repository_files=None) -> None:
         """Write the map, defaulting every section to the correct fixture."""
         if components is None:
             components = {"core": "docs/components/widget/README.md"}
@@ -154,6 +173,11 @@ class FixtureRepository:
         lines.append("reader_supplied_names:")
         for name in (reader_supplied or []):
             lines.append("  %s: a value the reader supplies" % name)
+        lines.append("repository_file_names:")
+        for name, file in (repository_files or {}).items():
+            lines.append("  %s:" % name)
+            lines.append("    file: %s" % file)
+            lines.append("    meaning: a value of the fixture's example data")
         path = self.root / tool.MAP_PATH
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("\n".join(lines) + "\n", "utf-8")
@@ -272,6 +296,76 @@ class GuideClaimTests(unittest.TestCase):
         self.assertEqual([finding.kind for finding in findings],
                          ["unknown name"])
 
+    def test_a_member_of_a_class_the_package_does_not_define_is_refused(self):
+        # The shape that let `ServiceHttp._search` through: a function of that
+        # member name exists elsewhere in the package, but no class of that
+        # class name does, so reading the last name alone accepted it.
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nIt is built by `WidgetEnvelope.run_widget`.\n")
+        findings = self.repository.audit()
+        self.assertEqual([finding.kind for finding in findings],
+                         ["unknown name"])
+        self.assertEqual(findings[0].claim, "WidgetEnvelope.run_widget")
+
+    def test_a_name_its_module_does_not_define_is_refused(self):
+        # The module is real, so reading the leading part alone accepted any
+        # name after it.
+        self.repository.write_guide(
+            CORRECT_GUIDE.replace("`core.widget.run_widget`",
+                                  "`core.widget.run_gadget`"))
+        findings = self.repository.audit()
+        self.assertEqual([finding.kind for finding in findings],
+                         ["unknown name"])
+        self.assertEqual(findings[0].claim, "core.widget.run_gadget")
+
+    def test_a_member_its_class_defines_is_accepted(self):
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nIts version is `WidgetRequest.record_type`, "
+            "also written `core.widget.WidgetRequest.record_type`.\n")
+        self.assertEqual(self.repository.audit(), [])
+
+    def test_a_package_file_name_resolves_to_its_module(self):
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nThe source is `widget.py`.\n")
+        self.assertEqual(self.repository.audit(), [])
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nThe source is `gadget.py`.\n")
+        self.assertEqual(self.repository.kinds(), ["unknown name"])
+
+    def test_part_of_a_longer_code_is_not_that_code(self):
+        # A truncated code appears inside the real one, so a search for the
+        # text anywhere in the package accepted it.
+        self.repository.write_guide(
+            CORRECT_GUIDE.replace("`WIDGET_REFUSED`", "`WIDGET_REFUSE`"))
+        findings = self.repository.audit()
+        self.assertEqual([finding.kind for finding in findings],
+                         ["unknown refusal or status code"])
+        self.assertEqual(findings[0].claim, "WIDGET_REFUSE")
+
+    def test_a_record_type_only_a_check_spells_is_refused(self):
+        # The shape that let `service_request_limits/v2` through: a check
+        # sends that version to show it is refused, and a search of the whole
+        # package then found it and accepted the guide.
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nA request is `widget_request/v9`.\n")
+        findings = self.repository.audit()
+        self.assertEqual([finding.kind for finding in findings],
+                         ["unknown record type"])
+        self.assertEqual(findings[0].claim, "widget_request/v9")
+
+    def test_a_stand_in_only_a_check_builds_is_refused(self):
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nA host installs `RetiredWidgetHook`.\n")
+        findings = self.repository.audit()
+        self.assertEqual([finding.kind for finding in findings],
+                         ["unknown name"])
+
+    def test_a_check_module_and_its_entry_point_are_accepted(self):
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nRun `core.widget_checks.self_test` to check "
+            "it, from `widget_checks.py`.\n")
+        self.assertEqual(self.repository.audit(), [])
+
     def test_the_finding_names_the_guide_and_the_line(self):
         # A finding a reader cannot act on is not much use. Give the file and
         # the line the claim sits on.
@@ -301,6 +395,115 @@ class GuideClaimTests(unittest.TestCase):
         self.assertEqual(self.repository.kinds(), ["unknown record type"])
         self.repository.write_map(examples=["invoice/v1"])
         self.assertEqual(self.repository.audit(), [])
+
+
+class RepositoryFileNameTests(unittest.TestCase):
+    """A name a guide cites from repository data outside the package.
+
+    The declaration is not an exemption: it names the file that holds the name,
+    and the check reads that file. Each known-wrong case is a declaration the
+    file no longer supports.
+    """
+
+    GUIDE = (CORRECT_GUIDE + "\nThe measurement reads the `held_back` requests "
+             "of `widget_queries/v1`.\n")
+    DATA = "examples/widget/queries.json"
+    DECLARED = {"held_back": DATA, "widget_queries/v1": DATA}
+
+    def setUp(self):
+        self.repository = FixtureRepository()
+        self.addCleanup(self.repository.close)
+        self.data = self.repository.root / self.DATA
+        self.data.parent.mkdir(parents=True)
+        self.write_data({"record_type": "widget_queries/v1",
+                         "rows": [{"split": "held_back"}]})
+        self.repository.write_guide(self.GUIDE)
+
+    def write_data(self, document):
+        self.data.write_text(json.dumps(document), "utf-8")
+
+    def test_an_undeclared_name_from_repository_data_is_refused(self):
+        self.assertEqual(self.repository.kinds(),
+                         ["unknown record type", "unknown refusal or status code"])
+
+    def test_a_name_declared_with_the_file_that_holds_it_is_accepted(self):
+        self.repository.write_map(repository_files=self.DECLARED)
+        self.assertEqual(self.repository.audit(), [])
+
+    def test_a_name_its_declared_file_no_longer_holds_is_refused(self):
+        # The data renamed the value. The declaration fails, and so does
+        # every guide line that cites the old name.
+        self.write_data({"record_type": "widget_queries/v1",
+                         "rows": [{"split": "holdout"}]})
+        self.repository.write_map(repository_files=self.DECLARED)
+        findings = self.repository.audit()
+        self.assertEqual(sorted((finding.kind, finding.claim) for finding in findings),
+                         [("declared name not in its file", "held_back"),
+                          ("unknown refusal or status code", "held_back")])
+
+    def test_part_of_a_longer_value_is_not_that_value(self):
+        self.write_data({"record_type": "widget_queries/v1",
+                         "rows": [{"held_back_when": "never"}]})
+        self.repository.write_map(repository_files=self.DECLARED)
+        self.assertIn("declared name not in its file", self.repository.kinds())
+
+    def test_a_declared_file_outside_the_repository_is_refused(self):
+        outside = tempfile.TemporaryDirectory()
+        self.addCleanup(outside.cleanup)
+        stray = Path(outside.name) / "queries.json"
+        stray.write_text(self.data.read_text("utf-8"), "utf-8")
+        relative = os.path.relpath(stray, self.repository.root)
+        for file in (relative, str(stray)):
+            with self.subTest(file=file):
+                self.repository.write_map(repository_files={
+                    "held_back": file, "widget_queries/v1": self.DATA})
+                self.assertEqual(self.repository.kinds(),
+                                 ["declared name without its file",
+                                  "unknown refusal or status code"])
+
+    def test_a_declared_file_that_is_missing_is_refused(self):
+        self.repository.write_map(repository_files={
+            "held_back": "examples/widget/missing.json",
+            "widget_queries/v1": self.DATA})
+        self.assertEqual(self.repository.kinds(),
+                         ["declared name without its file",
+                          "unknown refusal or status code"])
+
+
+class MapShapeTests(unittest.TestCase):
+    """Known-wrong cases: a map whose loaded meaning is not what it says."""
+
+    def setUp(self):
+        self.repository = FixtureRepository()
+        self.addCleanup(self.repository.close)
+
+    def test_a_map_key_written_twice_is_refused(self):
+        # YAML keeps only the last of two equal keys, silently, so a merge
+        # that adds the same guide twice would hide one of its descriptions.
+        path = self.repository.root / tool.MAP_PATH
+        text = path.read_text("utf-8").replace(
+            "guides:\n", "guides:\n  docs/components/widget/README.md: a second, "
+            "different description\n", 1)
+        path.write_text(text, "utf-8")
+        findings = self.repository.audit()
+        self.assertEqual([finding.kind for finding in findings],
+                         ["duplicate map key"])
+        self.assertEqual(findings[0].claim, "docs/components/widget/README.md")
+
+    def test_a_name_declared_in_two_lists_is_refused(self):
+        # One name, two claims about what it is: another project's name and a
+        # value that a repository file holds cannot both be true.
+        data = self.repository.root / "examples" / "widget" / "queries.json"
+        data.parent.mkdir(parents=True)
+        data.write_text(json.dumps({"split": "held_back"}), "utf-8")
+        self.repository.write_guide(
+            CORRECT_GUIDE + "\nIt reads the `held_back` requests.\n")
+        self.repository.write_map(
+            external=["held_back"],
+            repository_files={"held_back": "examples/widget/queries.json"})
+        findings = self.repository.audit()
+        self.assertEqual([(finding.kind, finding.claim) for finding in findings],
+                         [("name declared more than once", "held_back")])
 
 
 class CoverageTests(unittest.TestCase):

@@ -161,7 +161,7 @@ These are the refusals a client meets most often:
 The request limit is separate. When a client address exceeds the configured
 failed-attempt limit, the service answers with
 `service_request_limit_refusal/v1` carrying `retry_after_seconds`. The limit
-record itself is `service_request_limits/v2`.
+record itself is `service_request_limits/v1`.
 
 `commit_unknown` deserves its own sentence. The command layer in
 `service_cli.py` maps it to the exit code path that prints

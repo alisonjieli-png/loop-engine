@@ -4,10 +4,11 @@ Three things are checked, and each one has a known-wrong case beside it.
 
 1. The measurement's baseline really is what the hosted service does. The
    baseline policy is compared, query by query, against a copy of the record
-   construction in ``core.service_runtime.http.ServiceHttp._search``, read from
-   that source on 21 September 2026 and handed to the same retrieval engine.
-   It compares the ordering, not a call to the running service. A baseline that
-   flattered the new ranking would make every later number meaningless.
+   construction in ``core.service_runtime.http.ServiceHttpApplication._search``,
+   read from that source on 21 September 2026 and handed to the same retrieval
+   engine. It compares the ordering, not a call to the running service. A
+   baseline that flattered the new ranking would make every later number
+   meaningless.
 2. The judgements are a usable population: every expected item exists in the
    catalogue, every catalogue item is expected by at least one query, and the
    split is decided by the query text alone.
@@ -45,9 +46,9 @@ REPORT = Path(__file__).resolve().parents[1] / "examples/30_search_quality/repor
 def _service_records(catalogue):
     """The records the deployed search builds, field for field.
 
-    Read from ``ServiceHttp._search`` on 21 September 2026: the purpose is the
-    title and the description, and the identity, kind and source layer are the
-    keywords. Nothing else of an item reaches the index.
+    Read from ``ServiceHttpApplication._search`` on 21 September 2026: the
+    purpose is the title and the description, and the identity, kind and source
+    layer are the keywords. Nothing else of an item reaches the index.
     """
     from loop_engine.core.store_serve import StoreRecord
     return [StoreRecord(item.identity, "context", item.purpose,
