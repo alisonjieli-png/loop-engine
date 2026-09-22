@@ -60,6 +60,8 @@ MODULE_MAP = {
         "request_limits", "request_limit_checks",
         "promotions", "promotion_checks",
         "account_email", "account_email_checks",
+        "waitlist", "waitlist_checks",
+        "web_pages", "capacity_checks", "observability", "observability_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "ontology": (

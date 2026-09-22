@@ -24,12 +24,71 @@ def _request(operation="list", **fields):
 
 
 def run_checks(check, root):
+    _web_pages_boundary(check)
     _host_setup(check, root / "host")
     _licence_policy(check, root / "licences")
     _family_policy(check, root / "families")
     _limits(check, root / "limits")
     _key_endpoint(check, root / "keys")
     _billing(check, root / "billing")
+
+
+def _imported_service_modules(source):
+    """Name the sibling service modules one module's source imports at any level."""
+    import ast
+    found = set()
+    for statement in ast.walk(ast.parse(source)):
+        if isinstance(statement, ast.ImportFrom) and statement.level and statement.module:
+            found.add(statement.module.split(".")[0])
+        elif isinstance(statement, ast.ImportFrom) and statement.level:
+            found.update(alias.name for alias in statement.names)
+    return found
+
+
+def _web_pages_boundary(check):
+    """The served-address table stays readable without the transport application.
+
+    A check, an operator command or a page test must be able to read which
+    addresses the service answers without importing the application, its
+    authentication or its provisioning bindings. The table therefore lives in
+    its own module, `web_pages`, that imports no sibling service module. These
+    checks came with the waiting list, whose branch had moved the same table
+    out of `http` into a module of its own; main moved it into `web_pages`
+    first, so the checks hold that module to the same rule.
+    """
+    from importlib.resources import files
+    from types import SimpleNamespace
+    from . import web_pages
+    from .http import ServiceHttpApplication
+    from .web_pages import HTML_MEDIA_TYPE, WEB_ASSETS, served_asset
+    source = Path(web_pages.__file__).read_text("utf-8")
+    check("served_address_table_does_not_import_the_transport_application",
+          not _imported_service_modules(source))
+    # Known-wrong case: the same guard applied to a module that does import it.
+    check("served_address_guard_rejects_a_module_that_imports_the_application",
+          _imported_service_modules("from .http import ServiceHttpApplication\n") == {"http"}
+          and _imported_service_modules("from . import runtime\n") == {"runtime"})
+    packaged = files("loop_engine").joinpath("core", "service_runtime", "web_assets")
+    check("every_served_address_names_a_packaged_file",
+          all(packaged.joinpath(name).is_file() for name, _media in WEB_ASSETS.values())
+          and all(path.startswith("/") for path in WEB_ASSETS))
+    first = served_asset("/", "GET", "Fixture Service")
+    # The page policy is built by the application for every served page; the
+    # identity provider's origin is its only variable part.
+    with_identity = ServiceHttpApplication._page_headers(SimpleNamespace(browser_identity=SimpleNamespace(
+        configuration=SimpleNamespace(project_url="https://identity.invalid"))))["Content-Security-Policy"]
+    without_identity = ServiceHttpApplication._page_headers(
+        SimpleNamespace(browser_identity=None))["Content-Security-Policy"]
+    check("a_served_page_carries_the_host_name_and_its_content_policy",
+          first is not None and first[1] == HTML_MEDIA_TYPE
+          and b"{{SERVICE_NAME}}" not in first[0] and b"Fixture Service" in first[0]
+          and "connect-src 'self' https://identity.invalid;" in with_identity
+          and "connect-src 'self';" in without_identity
+          and all("frame-ancestors 'none'" in policy for policy in (with_identity, without_identity)))
+    check("an_unserved_address_or_a_writing_method_gets_no_packaged_file",
+          served_asset("/api/v1/session", "GET", "Fixture Service") is None
+          and served_asset("/", "POST", "Fixture Service") is None
+          and served_asset("/assets/../http.py", "GET", "Fixture Service") is None)
 
 
 def _host_setup(check, root):

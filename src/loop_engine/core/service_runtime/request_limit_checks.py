@@ -336,10 +336,33 @@ def _trusting_address_key(self, peer_host, header_values=()):
     return named or self._canonical(peer_host) or UNKNOWN_PEER_KEY
 
 
+def _naming_address_key(self, peer_host, header_values=()):
+    """The known-wrong rule: name an address although the host declared no source."""
+    values = tuple(header_values) if self.settings.client_address_source == HEADER_SOURCE else ()
+    named = self._canonical(values[0]) if len(values) == 1 else ""
+    return named or self._canonical(peer_host) or UNKNOWN_PEER_KEY
+
+
+def _undeclared_source_names_no_address():
+    """A limiter the host never configured names no address, for any caller."""
+    limiter = FailedAttemptLimiter(ServiceRequestLimits())
+    return (limiter.address_key(FIRST) == "" and limiter.address_key(PROXY, [VICTIM]) == ""
+            and limiter.address_key(None) == "")
+
+
 def _address_checks(check):
     check("an_address_header_the_host_did_not_configure_is_never_read", _unconfigured_header_is_ignored())
     with patch.object(FailedAttemptLimiter, "address_key", _trusting_address_key):
         check("removed_header_configuration_rule_is_detected", not _unconfigured_header_is_ignored())
+    check("a_host_that_declared_no_address_source_names_no_address",
+          _undeclared_source_names_no_address()
+          and FailedAttemptLimiter(_peer()).address_key(FIRST) == FIRST)
+    # Known-wrong case: the same rule without the declared-source guard names
+    # the socket peer anyway, which behind a proxy is one key for everyone.
+    with patch.object(FailedAttemptLimiter, "address_key", _naming_address_key):
+        check("removed_declared_source_rule_is_detected",
+              not _undeclared_source_names_no_address()
+              and FailedAttemptLimiter(ServiceRequestLimits()).address_key(PROXY) == PROXY)
     limiter = FailedAttemptLimiter(_header())
     unusable = ([], [VICTIM, SECOND], [VICTIM + ", " + SECOND], ["not-an-address"], [" " + VICTIM], [""],
                 ["2001:db8::" + "1" * 80], [VICTIM + ":443"])

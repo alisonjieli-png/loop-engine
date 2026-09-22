@@ -112,11 +112,16 @@ PRODUCTS_PATH = "/v1/products"
 PRICES_PATH = "/v1/prices"
 PORTAL_CONFIGURATIONS_PATH = "/v1/billing_portal/configurations"
 WEBHOOK_ENDPOINTS_PATH = "/v1/webhook_endpoints"
+COUPONS_PATH = "/v1/coupons"
+PROMOTION_CODES_PATH = "/v1/promotion_codes"
 GET_METHOD, POST_METHOD = "GET", "POST"
-WRITE_PATHS = (PRODUCTS_PATH, PRICES_PATH, PORTAL_CONFIGURATIONS_PATH, WEBHOOK_ENDPOINTS_PATH)
-LIST_PATHS = (PRICES_PATH, PORTAL_CONFIGURATIONS_PATH, WEBHOOK_ENDPOINTS_PATH)
+WRITE_PATHS = (PRODUCTS_PATH, PRICES_PATH, PORTAL_CONFIGURATIONS_PATH, WEBHOOK_ENDPOINTS_PATH,
+               COUPONS_PATH, PROMOTION_CODES_PATH)
+LIST_PATHS = (PRICES_PATH, PORTAL_CONFIGURATIONS_PATH, WEBHOOK_ENDPOINTS_PATH, PROMOTION_CODES_PATH)
 ACCOUNT_OBJECT, PRODUCT_OBJECT, PRICE_OBJECT = "account", "product", "price"
 PORTAL_OBJECT, ENDPOINT_OBJECT, LIST_OBJECT = "billing_portal.configuration", "webhook_endpoint", "list"
+COUPON_OBJECT, PROMOTION_CODE_OBJECT = "coupon", "promotion_code"
+COUPON_DURATIONS = ("once", "forever")
 RECURRING_PRICE = "recurring"
 ENDPOINT_ENABLED = "enabled"
 CANCEL_AT_PERIOD_END = "at_period_end"
@@ -140,6 +145,7 @@ LIMITATIONS = (
     "A live portal configuration also needs a business profile with a privacy policy address and a terms of service address.",
     "One Stripe account holds one signing secret for the service. A second endpoint address needs the first one removed first.",
     "A run that created the endpoint and could not keep its signing secret leaves an endpoint to delete at Stripe before the next run.",
+    "The report shows that the coupon and its promotion code exist. It does not show a checkout that applied the discount.",
 )
 
 _HOST_LABEL = r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?"
@@ -154,6 +160,12 @@ _API_VERSION = re.compile(r"(\d{4}-\d{2}-\d{2})(?:\.[a-z]{2,32})?")
 _REFERENCE_NAME = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?")
 _ENVIRONMENT_NAME = re.compile(r"[A-Z][A-Z0-9_]{1,63}")
 _PRODUCT_READ_PATH = re.compile(re.escape(PRODUCTS_PATH) + r"/[A-Za-z0-9_]{3,128}")
+_COUPON_READ_PATH = re.compile(re.escape(COUPONS_PATH) + r"/[A-Za-z0-9_]{3,128}")
+# Stripe's promotion code reference documents the customer-facing code as
+# upper and lower case letters and digits. It does not publish a rule for a
+# separator, so this command creates a code without one. A code an operator
+# made by hand in the dashboard is not created or changed here.
+_PROMOTION_CODE = re.compile(r"[A-Z0-9]{3,64}")
 _REPORT_OPEN_FLAGS = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW
 _REPORT_MODE = 0o600
 
@@ -211,6 +223,9 @@ class SetupFailure(str, Enum):
     PORTAL_AMBIGUOUS = "more_than_one_portal_configuration_holds_the_marker"
     ENDPOINT_MISMATCH = "existing_webhook_endpoint_differs_from_the_plan"
     ENDPOINT_AMBIGUOUS = "more_than_one_webhook_endpoint_has_this_address"
+    COUPON_MISMATCH = "existing_coupon_differs_from_the_plan"
+    PROMOTION_CODE_MISMATCH = "existing_promotion_code_differs_from_the_plan"
+    PROMOTION_CODE_AMBIGUOUS = "more_than_one_promotion_code_holds_this_code"
     ENDPOINT_WITHOUT_SECRET = "webhook_endpoint_exists_but_its_signing_secret_is_not_in_the_keyring"
     SECRET_WITHOUT_ENDPOINT = "keyring_holds_a_signing_secret_but_no_endpoint_has_this_address"
     LIST_TOO_LONG = "list_is_longer_than_the_page_allowance"
@@ -289,6 +304,13 @@ class SandboxPlan:
     interval: str = "month"
     interval_count: int = 1
     plan_ref: str = "pro-monthly"
+    # The discount an invitation carries. The coupon is the discount itself;
+    # the promotion code is the readable code the invited person types.
+    coupon_id: str = "baltor_invitation"
+    coupon_name: str = "Baltor invitation"
+    coupon_percent_off: int = 40
+    coupon_duration: str = "once"
+    promotion_code: str = "BALTORFOUNDING40"
     marker_key: str = "baltor_setup"
     event_types: "tuple[str, ...]" = SERVICE_EVENT_TYPES
     record_type: str = PLAN_RECORD_TYPE
@@ -296,9 +318,14 @@ class SandboxPlan:
     def __post_init__(self):
         object.__setattr__(self, "event_types", tuple(self.event_types))
         names = (self.product_id, self.product_name, self.price_lookup_key, self.currency, self.interval,
-                 self.plan_ref, self.marker_key, *self.event_types)
+                 self.plan_ref, self.marker_key, self.coupon_id, self.coupon_name, self.coupon_duration,
+                 self.promotion_code, *self.event_types)
         if (self.record_type != PLAN_RECORD_TYPE or any(not isinstance(name, str) or not name for name in names)
                 or not _OBJECT_IDENTITY.fullmatch(self.product_id)
+                or not _OBJECT_IDENTITY.fullmatch(self.coupon_id)
+                or not _PROMOTION_CODE.fullmatch(self.promotion_code)
+                or self.coupon_duration not in COUPON_DURATIONS
+                or type(self.coupon_percent_off) is not int or not 1 <= self.coupon_percent_off <= 100
                 or type(self.unit_amount) is not int or self.unit_amount <= 0
                 or type(self.interval_count) is not int or self.interval_count <= 0
                 or not self.event_types or len(set(self.event_types)) != len(self.event_types)):
@@ -410,7 +437,8 @@ class StripeRequest:
         object.__setattr__(self, "parameters", parameters)
         read = (self.method == GET_METHOD and not self.idempotency_key
                 and (self.path == ACCOUNT_PATH or self.path in LIST_PATHS
-                     or _PRODUCT_READ_PATH.fullmatch(self.path) is not None))
+                     or _PRODUCT_READ_PATH.fullmatch(self.path) is not None
+                     or _COUPON_READ_PATH.fullmatch(self.path) is not None))
         write = (self.method == POST_METHOD and self.path in WRITE_PATHS
                  and self.idempotency_key.startswith(IDEMPOTENCY_KEY_PREFIX)
                  and len(self.idempotency_key) > len(IDEMPOTENCY_KEY_PREFIX))
@@ -447,6 +475,8 @@ class SetupResult:
     price: ObjectReport
     portal: ObjectReport
     endpoint: ObjectReport
+    coupon: ObjectReport
+    promotion_code: ObjectReport
     secret_in_keyring: bool
     provider_requests: int
     provider_writes: int
@@ -468,6 +498,8 @@ class _Progress:
     price: ObjectReport = field(default_factory=ObjectReport)
     portal: ObjectReport = field(default_factory=ObjectReport)
     endpoint: ObjectReport = field(default_factory=ObjectReport)
+    coupon: ObjectReport = field(default_factory=ObjectReport)
+    promotion_code: ObjectReport = field(default_factory=ObjectReport)
     secret_in_keyring: bool = False
     sensitive: list = field(default_factory=list)
 
@@ -784,6 +816,25 @@ def _require_expected_endpoint(endpoint, request):
         raise _Stop(SetupOutcome.STOPPED, SetupFailure.ENDPOINT_MISMATCH)
 
 
+def _require_expected_coupon(coupon, plan):
+    if (coupon.get("object") != COUPON_OBJECT or coupon.get("id") != plan.coupon_id
+            or coupon.get("valid") is not True or coupon.get("name") != plan.coupon_name
+            or coupon.get("duration") != plan.coupon_duration
+            or coupon.get("percent_off") != plan.coupon_percent_off
+            or coupon.get("amount_off") is not None):
+        raise _Stop(SetupOutcome.STOPPED, SetupFailure.COUPON_MISMATCH)
+
+
+def _require_expected_promotion_code(promotion_code, plan):
+    coupon = promotion_code.get("coupon")
+    if (promotion_code.get("object") != PROMOTION_CODE_OBJECT or promotion_code.get("active") is not True
+            or promotion_code.get("code") != plan.promotion_code
+            or not isinstance(coupon, dict) or coupon.get("id") != plan.coupon_id
+            or promotion_code.get("customer") is not None
+            or not _identity(promotion_code).startswith("promo_")):
+        raise _Stop(SetupOutcome.STOPPED, SetupFailure.PROMOTION_CODE_MISMATCH)
+
+
 def _require_secret_matches_endpoint(endpoint_exists, secret_held):
     """The endpoint and its saved signing secret have to be present together.
 
@@ -911,6 +962,17 @@ def _portal_parameters(plan):
             ("metadata[" + plan.marker_key + "]", plan.marker_value))
 
 
+def _coupon_parameters(plan):
+    return (("id", plan.coupon_id), ("name", plan.coupon_name), ("duration", plan.coupon_duration),
+            ("percent_off", str(plan.coupon_percent_off)),
+            ("metadata[" + plan.marker_key + "]", plan.marker_value))
+
+
+def _promotion_code_parameters(plan):
+    return (("coupon", plan.coupon_id), ("code", plan.promotion_code),
+            ("metadata[" + plan.marker_key + "]", plan.marker_value))
+
+
 def _endpoint_parameters(request):
     events = tuple(("enabled_events[" + str(index) + "]", name)
                    for index, name in enumerate(request.plan.event_types))
@@ -964,6 +1026,23 @@ def _observe(session, binding, secret_held):
             raise _Stop(SetupOutcome.STOPPED, SetupFailure.PORTAL_MISMATCH) from None
         progress.portal = ObjectReport(ObjectState.EXISTING, configuration["id"])
 
+    coupon = session.read(COUPONS_PATH + "/" + plan.coupon_id, missing_allowed=True)
+    if coupon is not None:
+        _require_test_mode_object(coupon)
+        _require_expected_coupon(coupon, plan)
+        progress.coupon = ObjectReport(ObjectState.EXISTING, plan.coupon_id)
+    else:
+        progress.coupon = ObjectReport(ObjectState.MISSING)
+
+    promotion_codes = session.read_list(PROMOTION_CODES_PATH, (("code", plan.promotion_code),
+                                                               ("limit", str(LOOKUP_PAGE_SIZE))))
+    _require_single(promotion_codes, SetupFailure.PROMOTION_CODE_AMBIGUOUS)
+    progress.promotion_code = ObjectReport(ObjectState.MISSING)
+    for promotion_code in promotion_codes:
+        _require_test_mode_object(promotion_code)
+        _require_expected_promotion_code(promotion_code, plan)
+        progress.promotion_code = ObjectReport(ObjectState.EXISTING, promotion_code["id"])
+
     endpoints = [row for row in session.read_list(WEBHOOK_ENDPOINTS_PATH, (("limit", str(PAGE_SIZE)),))
                  if row.get("url") == request.webhook_url]
     _require_single(endpoints, SetupFailure.ENDPOINT_AMBIGUOUS)
@@ -1014,6 +1093,12 @@ def _create_missing(session, reference, store):
     if progress.portal.state is ObjectState.MISSING:
         configuration = session.write(PORTAL_CONFIGURATIONS_PATH, _portal_parameters(plan), progress.portal)
         _as_mismatch(_require_expected_portal, configuration, plan)
+    if progress.coupon.state is ObjectState.MISSING:
+        coupon = session.write(COUPONS_PATH, _coupon_parameters(plan), progress.coupon)
+        _as_mismatch(_require_expected_coupon, coupon, plan)
+    if progress.promotion_code.state is ObjectState.MISSING:
+        promotion_code = session.write(PROMOTION_CODES_PATH, _promotion_code_parameters(plan), progress.promotion_code)
+        _as_mismatch(_require_expected_promotion_code, promotion_code, plan)
     if progress.endpoint.state is ObjectState.MISSING:
         endpoint = session.write(WEBHOOK_ENDPOINTS_PATH, _endpoint_parameters(request), progress.endpoint)
         # The secret is stored first. A later mismatch must not lose the only copy.
@@ -1045,8 +1130,9 @@ def set_up_sandbox(request, binding, credential, reference, *, transport, store,
         # code, from a run that stopped with the account untouched.
         outcome = SetupOutcome.STOPPED_AFTER_WRITES
     return SetupResult(outcome, failure, detail, progress.account_id, progress.product, progress.price,
-                       progress.portal, progress.endpoint, progress.secret_in_keyring, progress.requests,
-                       progress.writes, progress.committed_writes, progress.status, tuple(progress.sensitive))
+                       progress.portal, progress.endpoint, progress.coupon, progress.promotion_code,
+                       progress.secret_in_keyring, progress.requests, progress.writes, progress.committed_writes,
+                       progress.status, tuple(progress.sensitive))
 
 
 # Output.
@@ -1073,7 +1159,8 @@ def host_billing_block(request, result, binding):
                                 "price_id": result.price.identity}],
                      "checkout_success_url": origin + "/app", "checkout_cancel_url": origin + "/app",
                      "portal_return_url": origin + "/app", "portal_configuration_id": result.portal.identity,
-                     "allow_network": True, "allow_session_creation": True},
+                     "allow_network": True, "allow_session_creation": True,
+                     "allow_promotion_codes": True},
     }
 
 
@@ -1095,10 +1182,15 @@ def build_report(request, result, reference, binding, observed_at):
         "plan": {"record_type": plan.record_type, "product_name": plan.product_name,
                  "price_lookup_key": plan.price_lookup_key, "currency": plan.currency,
                  "unit_amount": plan.unit_amount, "interval": plan.interval,
-                 "interval_count": plan.interval_count},
+                 "interval_count": plan.interval_count, "coupon_id": plan.coupon_id,
+                 "promotion_code": plan.promotion_code},
         "product": _entry(result.product),
         "price": _entry(result.price),
         "portal_configuration": _entry(result.portal),
+        "coupon": {**_entry(result.coupon), "percent_off": plan.coupon_percent_off,
+                   "duration": plan.coupon_duration},
+        "promotion_code": {**_entry(result.promotion_code), "code": plan.promotion_code,
+                           "carried_by": "an invitation sent to one reviewed waiting list entry"},
         "webhook_endpoint": {**_entry(result.endpoint), "url": request.webhook_url,
                              "enabled_events": list(plan.event_types)},
         "signing_secret": {"keyring_reference": reference.name, "in_keyring": result.secret_in_keyring,

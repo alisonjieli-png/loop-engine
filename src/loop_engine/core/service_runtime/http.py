@@ -26,6 +26,7 @@ from .http_auth import (
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
 from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
+from .waitlist import ServiceWaitlist, administer_waitlist, join_request
 from .web_pages import HTML_MEDIA_TYPE, missing_address_page, served_asset
 
 RESULT_VERSION = "service_http_result/v1"
@@ -58,6 +59,10 @@ BILLING_PORTAL_PATH = "/api/v1/billing/portal"
 #: receives the entitlement the code declares. There is no address that reads a
 #: code back, because the service stores a digest and never the code itself.
 PROMOTION_REDEMPTION_PATH = "/api/v1/account/promotion"
+#: The public waiting list and its operator view. A visitor posts an address to
+#: the first without signing in. An operator with the administration scope reads
+#: the list and applies one decision at a time at the second.
+WAITLIST_PATH, ADMIN_WAITLIST_PATH = "/api/v1/waitlist", "/api/v1/admin/waitlist"
 # Every address the interface router answers, with the methods it answers for
 # it. The router reads this before it asks who is calling, so that an address
 # the service does not serve is a missing page rather than a credential
@@ -79,7 +84,9 @@ API_ROUTES = {
     "/api/v1/account/signup": ("POST",),
     "/api/v1/account/recovery": ("POST",),
     PROMOTION_REDEMPTION_PATH: ("POST",),
+    WAITLIST_PATH: ("POST",),
     "/api/v1/admin/access": ("GET", "POST"),
+    ADMIN_WAITLIST_PATH: ("GET", "POST"),
     "/api/v1/session": ("GET",),
     "/api/v1/usage": ("GET",),
     "/api/v1/provisioning": ("POST",),
@@ -338,14 +345,21 @@ def _status(error):
         return 403 if code == "insufficient_scope" else 401, code
     if code in ("body_forbidden", "scope_denied", "entitlement_required", "forbidden", "scope_required",
                 "disclosure_grant_changed", "access_administration_forbidden", "access_target_forbidden",
-                "scope_escalation_refused", "access_writes_not_authorized", "browser_session_required"):
+                "scope_escalation_refused", "access_writes_not_authorized", "browser_session_required",
+                "waitlist_administration_forbidden", "waitlist_writes_not_authorized"):
         return 403, code
     if code in ("access_request_identity_conflict", "access_token_limit_reached", "concurrent_update",
                 "access_token_history_limit_reached", "access_token_already_revoked",
                 "promotion_request_identity_conflict", "promotion_code_already_redeemed_by_this_account",
                 "paid_subscription_active",
-                "session_request_identity_conflict", "session_selection_changed", "session_policy_changed"):
+                "session_request_identity_conflict", "session_selection_changed", "session_policy_changed",
+                "waitlist_address_already_listed", "waitlist_address_has_account",
+                "waitlist_transition_refused", "waitlist_decision_identity_conflict"):
         return 409, code
+    # Accepted requests to join the waiting list, counted for one declared
+    # source. It is a wait like the failed-attempt limit, not a bad request.
+    if code == "waitlist_source_flooded":
+        return 429, code
     # Every refusal that depends on the offered code itself answers with one
     # status and one word, so a guess cannot tell an unknown code from a real
     # one that has run out.
@@ -355,11 +369,12 @@ def _status(error):
         return 401, code
     if code == "promotion_redemption_unavailable":
         return 503, code
-    if code in ("item_unavailable", "managed_access_token_not_found"):
+    if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found"):
         return 404, code
     if code in ("meter_commit_unknown", "commit_unknown", "session_operation_in_progress",
                 "session_reconciliation_window_exhausted", "session_network_authority_required",
-                "billing_customer_not_bound", "session_record_unavailable"):
+                "billing_customer_not_bound", "session_record_unavailable",
+                "waitlist_unavailable", "waitlist_account_directory_unavailable"):
         return 503, code
     return 400 if isinstance(error, (ProvisioningError, ServiceRuntimeError)) else 500, code
 
@@ -379,6 +394,7 @@ class ServiceHttpApplication:
     client_access: object | None = field(default=None, repr=False)
     promotions: object | None = field(default=None, repr=False)
     account_email: object | None = field(default=None, repr=False)
+    waitlist: object | None = field(default=None, repr=False)
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -400,6 +416,9 @@ class ServiceHttpApplication:
                 raise ValueError("customer access must bind the same runtime and a browser identity provider")
         if self.account_email is not None and not speaks_the_account_email_boundary(self.account_email):
             raise ValueError(f"an installed account email adapter must speak {ACCOUNT_EMAIL_PROTOCOL}")
+        if self.waitlist is not None and (not isinstance(self.waitlist, ServiceWaitlist)
+                                          or self.waitlist.runtime is not self.runtime):
+            raise ValueError("the waiting list must bind the same durable runtime authority")
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -423,7 +442,8 @@ class ServiceHttpApplication:
                             "access_administration_available": self.access_administration is not None,
                             "client_access_available": self.client_access is not None,
                             "promotion_redemption_available": self.promotions is not None,
-                            "promotion_redemption_endpoint": PROMOTION_REDEMPTION_PATH},
+                            "promotion_redemption_endpoint": PROMOTION_REDEMPTION_PATH,
+                            "waitlist_available": self.waitlist is not None},
                 "protocol": {"transport": "streamable_http", "versions": [PROTOCOL_VERSION],
                              "sdk_version": version("mcp"), "session_state": "stateless",
                              "oauth_resource_metadata": EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes,
@@ -454,8 +474,15 @@ class ServiceHttpApplication:
                 "billing": {"webhook": self.billing_processor is not None,
                             "checkout": session_options.get("checkout_available", False),
                             "portal": session_options.get("portal_available", False),
+                            "discount_code": session_options.get("discount_code_accepted", False),
                             "plans_endpoint": BILLING_PLANS_PATH},
                 "cancellation": "bounded_response_wait; running callbacks may finish; no automatic replay"}
+
+    def _address_key(self, request):
+        """Name the address whose source the host declared, or no address when it declared none."""
+        name = self.configuration.request_limits.client_address_header
+        return self.request_limiter.address_key(request.client.host if request.client else None,
+                                                request.headers.getlist(name) if name else ())
 
     @asynccontextmanager
     async def _limited(self, request):
@@ -463,9 +490,7 @@ class ServiceHttpApplication:
 
         It yields the counted address key, so that a route with its own allowance counts the same caller.
         """
-        name = self.configuration.request_limits.client_address_header
-        key = self.request_limiter.address_key(request.client.host if request.client else None,
-                                               request.headers.getlist(name) if name else ())
+        key = self._address_key(request)
         refusal = self.request_limiter.refusal(key)
         if refusal is not None:
             raise ServiceHttpError(LIMIT_REACHED_CODE, 429, details=refusal,
@@ -984,6 +1009,16 @@ class ServiceHttpApplication:
                 prepared = self.account_email.prepare(path.rsplit("/", 1)[-1], _parse_json(await self._body(request)), address)
                 output, status_code = await self._work(lambda: invoke_http_service_as_loop(prepared.operation,
                     lambda: self.account_email.deliver(prepared))), 202
+        elif path == WAITLIST_PATH and method == "POST":
+            # No sign-in: the address is the request. A refused request counts
+            # as a refused attempt from one client address, and the list itself
+            # counts accepted entries for each declared source. With no declared
+            # source the limiter names no address, and the list records that no
+            # count was taken.
+            async with self._limited(request) as address:
+                joining = join_request(self.waitlist, _parse_json(await self._body(request)), address)
+                output = await self._work(lambda: invoke_http_service_as_loop("waitlist_join",
+                    lambda: self.waitlist.join(joining)))
         else:
             context = await self._authenticated(request)
             if path == "/api/v1/session" and method == "GET":
@@ -1030,6 +1065,12 @@ class ServiceHttpApplication:
                     return (self.access_administration.inspect(current.principal) if request_data is None
                             else self.access_administration.apply(current.principal, request_data))
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("access_administration", administer))
+            elif path == ADMIN_WAITLIST_PATH and method in ("GET", "POST"):
+                self._require_scope(context, ACCESS_MANAGE_SCOPE)
+                decided = _parse_json(await self._body(request)) if method == "POST" else None
+                output = await self._tenant_work(context, lambda: invoke_http_service_as_loop(
+                    "waitlist_administration",
+                    lambda: administer_waitlist(self.waitlist, self.authenticator.revalidate(context), decided)))
             elif path == BILLING_PLANS_PATH and method == "GET":
                 output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("billing_plans",
                     lambda: self._session_options(context)))

@@ -26,6 +26,8 @@ from loop_engine.core.service_runtime.stripe_session_transport_checks import _ap
 from loop_engine.core.service_runtime.http_test_fixtures import running_key_set
 from loop_engine.core.service_runtime.browser_identity import BrowserIdentityAdapter,BrowserIdentityConfiguration
 from loop_engine.core.service_runtime.access import ServiceAccessAdministration,ServiceClientAccessPolicy
+from loop_engine.core.service_runtime.waitlist import ServiceWaitlist,WaitlistPolicy
+from loop_engine.core.service_runtime.records import ACCESS_MANAGE_SCOPE,TenantKeyIssue,TenantRegistration
 from cryptography.hazmat.primitives.asymmetric import rsa
 import jwt
 with ExitStack() as stack:
@@ -45,12 +47,15 @@ with ExitStack() as stack:
     user={"id":subject,"email":"account-test@example.invalid","role":"authenticated","is_anonymous":False,"email_confirmed_at":"2026-01-01T00:00:00Z"}
     identity=BrowserIdentityAdapter(account.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-customers",registration_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(account.bindings["skill.alpha"],),transport=lambda _:user)
     manager=ServiceAccessAdministration(account.runtime,ServiceClientAccessPolicy(writes_authorized=True))
-    account_base,_=stack.enter_context(running_http(account,application_factory=lambda config:ServiceHttpApplication(account.runtime,account.provisioning,config,browser_identity=identity,client_access=manager),display_name="Baltor"))
+    account.runtime.register_tenant(TenantRegistration("operator","operator:private",(ACCESS_MANAGE_SCOPE,)))
+    account_operator=account.runtime.issue_key(TenantKeyIssue("operator","browser waiting list operator"))
+    waiting=ServiceWaitlist(account.runtime,WaitlistPolicy(writes_authorized=True,accepted_for_each_source=3))
+    account_base,_=stack.enter_context(running_http(account,application_factory=lambda config:ServiceHttpApplication(account.runtime,account.provisioning,config,browser_identity=identity,client_access=manager,waitlist=waiting),display_name="Baltor"))
     # A fourth real service whose own configuration opens email sign-up, so the page is compared with a service that reports registration, not with a rewritten reply.
     signups=HttpDomainFixture(root/"signups",operator_access=False)
     signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user)
     signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity),display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"identity_origin":provider,"identity_token":identity_token,"identity_user":user}),flush=True)
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key}),flush=True)
     sys.stdin.readline()
 `;
 const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
@@ -58,7 +63,7 @@ const lines=createInterface({input:child.stdout});
 const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
 const checks=[],errors=[],network=[]; let browser;
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
-const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.identity_token];
+const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.identity_token,fixture.account_admin_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
 const endpointMark="{{ENDPOINT}}",mutants=[];
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
@@ -391,8 +396,9 @@ try {
   const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
-     failure here rather than a file nobody scans. */
-  const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/http.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
+     failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
+     read http.py until September 22 and found no routes at all, which failed both checks below by name. */
+  const routeTable=readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_pages.py"),"utf8").match(/^WEB_ASSETS = \{$([\s\S]*?)^\}$/m);
   const assetRoutes=routeTable?[...routeTable[1].matchAll(/"(\/assets\/[^"]+)":/g)].map(found=>found[1]):[];
   const unscannedFor=list=>assetRoutes.filter(path=>!list.includes(path));
   check("every_served_asset_route_is_scanned_for_retired_words",assetRoutes.length>0&&unscannedFor(servedFiles).length===0,{routes:assetRoutes.length,unscanned:unscannedFor(servedFiles)});
@@ -781,7 +787,7 @@ try {
   check("changed_download_is_refused_by_the_browser",(await page.locator(".result").first().innerText()).includes("do not match")); await page.unroute("**/api/v1/download");
   for(const width of [1440,820,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security"]){
+    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/waitlist"]){
       await page.goto(fixture.base+path);
       const measurement=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(x=>!x.hidden).length}));
       check(`responsive_${width}_${path}`,!measurement.overflow&&measurement.views===1,measurement);
@@ -869,6 +875,26 @@ try {
   await page.locator('header a[data-page="login"]').click();await page.click("#disconnect");releaseCustomer();
   check("customer_sign_out_clears_tokens_before_delayed_reply",await page.locator("#client-access-controls").isHidden()&&await page.inputValue("#client-issued-token")===""&&await page.locator("#refresh-client-access").isDisabled());
   await page.unroute("**/api/v1/account/access");
+  /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. */
+  await page.setViewportSize({width:1440,height:1000});
+  await page.goto(fixture.base+"/waitlist"); await page.waitForFunction(()=>document.querySelector("#waitlist-state").textContent!=="Checking availability");
+  check("a_service_without_a_waiting_list_makes_no_offer",await page.locator("#waitlist-link").isHidden()&&await page.locator("#waitlist-form").isHidden()&&await page.locator("#waitlist-closed").isVisible()&&await page.locator("#waitlist-discount").isHidden());
+  await page.goto(fixture.base+"/signup");
+  check("a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",await page.locator("#signup-waitlist-link").isHidden());
+  await page.goto(fixture.account_base+"/"); await page.waitForFunction(()=>document.querySelector("#waitlist-link")&&!document.querySelector("#waitlist-link").hidden);
+  await page.locator('footer a[data-page="waitlist"]').click();
+  check("a_service_with_a_waiting_list_offers_the_form_from_every_page",new URL(page.url()).pathname==="/waitlist"&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden());
+  check("the_discount_is_named_only_where_checkout_takes_a_code",await page.locator("#waitlist-discount").isHidden(),{discount_code:(await (await page.request.get(fixture.account_base+"/api/v1/capabilities")).json()).result.billing.discount_code});
+  await page.fill("#waitlist-email","browser.request@example.invalid"); await page.fill("#waitlist-note","My agents rebuild the same checks on every task.");
+  await page.click("#waitlist-button"); await page.waitForFunction(()=>document.querySelector("#waitlist-message").textContent.startsWith("Thank you"));
+  check("a_visitor_leaves_an_address_and_is_told_a_person_will_read_it",await page.locator("#waitlist-form").isHidden()&&(await page.locator("#waitlist-state").innerText())==="Request received"&&!(await page.locator("#waitlist-message").innerText()).includes("browser.request@example.invalid"));
+  const listed=await page.request.get(fixture.account_base+"/api/v1/admin/waitlist",{headers:{Authorization:"Bearer "+fixture.account_admin_token}});
+  const entries=listed.status()===200?(await listed.json()).result.entries:[];
+  check("the_address_the_visitor_typed_reached_the_service_record",listed.status()===200&&entries.length===1&&entries[0].email==="browser.request@example.invalid"&&entries[0].state==="waiting",{status:listed.status(),entries:entries.length});
+  await page.goto(fixture.account_base+"/waitlist"); await page.waitForSelector("#waitlist-form:not([hidden])");
+  await page.fill("#waitlist-email","browser.request@example.invalid"); await page.click("#waitlist-button");
+  await page.waitForFunction(()=>document.querySelector("#waitlist-message").textContent.includes("already on the list"));
+  check("a_second_request_from_the_same_address_is_told_the_truth",await page.locator("#waitlist-form").isVisible());
   await page.goto(fixture.base+"/"); await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:output.replace(/\.json$/,"-desktop.png"),fullPage:true});
   await page.setViewportSize({width:390,height:1000}); await page.click("#theme");

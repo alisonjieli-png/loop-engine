@@ -17,7 +17,7 @@ records the deployed pilot, simpler public copy and account code whose live
 customer integration remains incomplete.
 The [takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md)
 records the state verified afterwards, the repairs, the private beta
-definition and the working cycle. The roadmap holds seventeen delivery
+definition and the working cycle. The roadmap holds eighteen delivery
 packages with explicit code owners, verification
 levels, negative controls and rollback procedures, plus evidence requirements for overnight
 local-model work, token efficiency and useful expertise. Public pages use

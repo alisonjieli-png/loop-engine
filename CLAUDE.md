@@ -19,7 +19,7 @@ The earlier [Fable 5.1 handoff](docs/context/FABLE-5-1-HANDOFF-2026-09-20.md)
 and [development checkpoint](docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md)
 remain valid as dated snapshots of the previous developer session. The
 machine-readable work authority is [roadmap.yaml](docs/roadmap/roadmap.yaml),
-with seventeen delivery packages. The single development HTML is generated
+with eighteen delivery packages. The single development HTML is generated
 from the roadmap and the source; do not edit it by hand and do not start
 another dashboard.
 

@@ -50,6 +50,8 @@ Existing service boundary
 ├── billing.py and billing_records.py: signed-event state and reconciliation
 ├── stripe_provider.py: explicitly authorized read-only Stripe adapter
 ├── request_limits.py: failed-attempt settings record and its table in process memory
+├── waitlist.py: the public waiting list, its operator decisions and removal on request
+├── web_pages.py: the served page address table and the packaged files behind it
 └── http*.py: separately owned remote transport and host configuration
 ```
 
@@ -759,6 +761,30 @@ either operation without a stated source is refused before the service starts.
 
 The operator guide is
 [account email operations](../../../../docs/guides/account-email-operations.md).
+
+## Waiting list
+
+This section describes current behavior. `waitlist.py` owns it. A host that
+declares a `waitlist` block in its configuration serves
+`POST /api/v1/waitlist`, where anyone can leave an email address and an
+optional note without signing in, and `GET` and `POST /api/v1/admin/waitlist`,
+where an operator with the administration scope reads the list and applies
+one decision at a time. A host without that block serves neither, and both
+answer `waitlist_unavailable`. The page offers the form, its links and the
+discount sentence only when the capabilities record says
+`waitlist_available`, and names the discount only when it also says
+`discount_code`.
+
+A refused request to join is a refused attempt from one client address, so
+the failed-attempt limit counts it like a refused sign-in. The list counts
+accepted entries for each declared client address source on its own. With no
+declared source, `FailedAttemptLimiter.address_key` names no address, and every
+accepted entry records `no_declared_source` instead of one count shared by
+every caller behind a proxy.
+
+The entries, the decisions, removal on request and the invitation command are
+described in
+[the waiting list guide](../../../../docs/guides/waiting-list-and-invitations.md).
 
 ## Persistence and concurrency contract
 

@@ -113,7 +113,8 @@ class FailedAttemptLimiter:
     An address is refused while it has `failures_allowed` refused attempts in
     the last `window_seconds`. An accepted attempt is never counted and never
     clears the count. The caller decides what a refused attempt is. With no
-    stated address source nothing is counted and nobody is refused.
+    stated address source no address is named, nothing is counted and nobody
+    is refused.
     """
 
     def __init__(self, settings: ServiceRequestLimits, *, clock=time.monotonic):
@@ -130,12 +131,20 @@ class FailedAttemptLimiter:
             return len(self._failures)
 
     def address_key(self, peer_host, header_values=()):
-        """Name the counted address. Only the host-configured header can replace the peer.
+        """Name the counted address, or name none while the host has declared no source.
 
         The header counts only when it appears exactly once and holds exactly
         one address. A missing, repeated, listed or malformed value falls back
         to the socket peer, so a caller can never choose an arbitrary key.
+
+        With no declared source there is no address to name. The socket peer is
+        then whatever connected to this process, which behind a proxy is the
+        proxy itself, so one key would stand for every caller. The empty key
+        says that, and every counter that receives it records that it took no
+        count instead of counting everyone together.
         """
+        if not self.settings.active:
+            return ""
         values = tuple(header_values) if self.settings.client_address_source == HEADER_SOURCE else ()
         named = self._canonical(values[0]) if len(values) == 1 else ""
         return named or self._canonical(peer_host) or UNKNOWN_PEER_KEY

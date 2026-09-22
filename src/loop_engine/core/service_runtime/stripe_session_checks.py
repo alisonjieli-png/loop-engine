@@ -128,7 +128,10 @@ class LocalStripeSessionTransport:
                       "url": ("https://checkout.stripe.com/c/pay/local_fixture#provider_fragment" if request.path == CHECKOUT_PATH
                               else "https://billing.stripe.com/p/session?secret=" + FIXTURE_URL_TOKEN),
                       **{key: value for key, value in parameters.items() if key in (
-                          "mode", "success_url", "cancel_url", "configuration", "return_url")}}
+                          "mode", "success_url", "cancel_url", "configuration", "return_url")},
+                      # The provider answers with a Boolean where the form carried text.
+                      **({"allow_promotion_codes": parameters["allow_promotion_codes"] == "true"}
+                         if "allow_promotion_codes" in parameters else {})}
             self.effects[request.idempotency_key] = ((request.path, request.parameters), result)
         if self.lose_next_response:
             self.lose_next_response = False
@@ -138,7 +141,7 @@ class LocalStripeSessionTransport:
         return self.override_result or dict(result)
 
 
-def fixture(root, *, bind_customers=True):
+def fixture(root, *, bind_customers=True, **policy_changes):
     clock = {"now": int(time.time())}
     configuration = ServiceRuntimeConfig(str(Path(root) / "service.db"), writes_authorized=True)
     runtime = ServiceRuntime(configuration, clock=lambda: clock["now"])
@@ -154,7 +157,7 @@ def fixture(root, *, bind_customers=True):
         plans=(StripeSessionPlan("basic", "Basic service", "price_basic"), StripeSessionPlan("other", "Other service", "price_other")),
         checkout_success_url="https://app.example/billing/success", checkout_cancel_url="https://app.example/billing/cancel",
         portal_return_url="https://app.example/account", portal_configuration_id="bpc_fixture",
-        allow_network=True, allow_session_creation=True)
+        allow_network=True, allow_session_creation=True, **policy_changes)
     provider = LocalStripeSessionTransport()
     provider.clock = lambda: clock["now"]
     secret_calls = []

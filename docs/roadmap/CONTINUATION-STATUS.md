@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `7f1982631a2c311a9e24050e8fd6c6425a4d54b9ccc9450cda9d8820f7693d1a`.
+Plan fingerprint: `06022663ad38a66904b72835cd8eba5becaccd621f9e7a8a886dc040e9a5b86e`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -623,6 +623,39 @@ Verification cases are required evidence, not recorded passes.
 | D-17-T04 | end_to_end | A supported native client downloads selected starter material and loads it from its native layout. | The client's own record shows that it loaded the material, with matching digests. | Tool discovery alone, or a file that exists but is never read, must not count as loading. |
 | D-17-T05 | local_contract | Send a burst of forged sign-in tokens that carry unknown key identifiers. | At most one identity key read happens inside the pause and ordinary requests keep working. | With the pause removed, the number of key reads must grow with the burst. |
 | D-17-T06 | local_contract | Anchor the catalogue to a new revision, which rewrites the trailing anchor line of every body, and carry the independent approvals across the move. | An approval carries only when the sole difference between the bytes its reviewers read and the body today is that line and the revision it names. A carried approval keeps its reviewers, their decisions and the digest they judged, and records that it was carried rather than freshly approved. | A body with a changed sentence beside the changed anchor line, a removed anchor line, a second anchor-looking line, a changed word inside the anchor line other than the revision, changed trailing whitespace, and a body whose recorded digest does not match it must each refuse the carry and return the item to candidate state, and a comparison that always carries must let every one of those cases through. |
+
+### D-18: Take requests for access and invite one person from them
+
+Owning steps: S-6.12, S-6.15, S-6.21. Acceptance dependencies: D-17.
+
+Owning boundaries: `src/loop_engine/core/service_runtime/waitlist.py`; `src/loop_engine/core/service_runtime/waitlist_checks.py`; `src/loop_engine/core/service_runtime/web_assets/index.html`; `tools/waitlist_operator.py`; `docs/guides/waiting-list-and-invitations.md`.
+
+- Serve one public form that takes an email address and a short note, with no sign-in, and give every refusal its own typed code and its own words on the page.
+- Keep the entries in the existing service collection as a versioned record with its own states, written through the same atomic batch contract as every other service record.
+- Let an operator read the list and apply exactly one decision at a time, where repeating the same request identity replays the first decision and writes nothing.
+- Erase the address and the note when a person asks to be taken off the list, through the same decision contract, leaving the one-way digest and the decision history.
+- Offer the form, the links to it and the discount sentence only from the record the service publishes, so that a page never offers what the host cannot honour.
+- Refuse an invitation that promises a discount unless a saved payment account report names that exact code and the service reports that checkout takes one.
+- Count accepted entries for one source only where the host declared where the client address comes from, and record that no count was taken where it did not.
+- Record the invitation before the account is prepared and before the message is sent, and record what happened to that message, sent or unknown, without repeating anything automatically.
+
+Complete when: A visitor leaves an address on a service that keeps a waiting list, an operator sees it, invites one entry with a discount the payment account holds, and can erase an address on request. A service without a waiting list makes no offer at all.
+
+Failure control: A flood from one machine, a repeated address, an address that already has an account, a second invitation for the same entry, an invitation whose code no checkout would take, and a removal that leaves the address in the record must all be refused.
+
+Authority: No public registration. One invitation is one authorized email and one prepared account. The payment objects are created in test mode by the payment setup command, not by the invitation command, which holds no payment credential.
+
+Rollback or safe stop: Remove the waiting list block from the host configuration. The page then offers nothing and the public endpoint answers that the service keeps no list. Entries already recorded stay readable by the operator.
+
+Verification cases are required evidence, not recorded passes.
+
+| Case | Evidence level | Scenario | Pass condition | Negative control |
+|---|---|---|---|---|
+| D-18-T01 | local_contract | Send more requests from one caller than the policy allows, on a host that declared no client address source and on one that declared a forwarded address header. | The undeclared host accepts every caller and answers that no count was taken; the declared host counts each forwarded address on its own. | Naming the socket peer where no source was declared must be shown to close the form after the allowance, which is the collapse the rule prevents. |
+| D-18-T02 | local_contract | Remove one entry on request and read the stored record, not the view. | The address and the note are absent from the stored record, the state is removed, and the same address may ask again. | With nothing named as erased, the stored record must still hold the address, so the check can detect it. |
+| D-18-T03 | end_to_end | Load the served page in a real browser against a service with a waiting list and against one without. | The form, its links and the discount sentence appear only where the service publishes that it keeps a list and that checkout takes a code, and an address typed into the form reaches the operator's listing. | A page that shows the form before the service answers must fail the same check. |
+| D-18-T04 | local_contract | Invite one entry while checkout does not take a discount code, and while no payment account report names the code. | Both stop before the invitation is recorded and before any message is prepared, each with its own reason. | With the checkout rule removed, the code must be sent to someone who has nowhere to type it. |
+| D-18-T05 | real_provider | Read the promotion codes in the payment account, then run the invitation with the report that names the created code. | The code exists in the account and the invitation carries the same code the report names. | An empty promotion code list must refuse the invitation. Read on September 21, 2026: the list was empty and no invitation could be sent. |
 
 ## Launch benefit drafts
 

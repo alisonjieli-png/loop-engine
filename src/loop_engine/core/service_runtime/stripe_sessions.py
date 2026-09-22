@@ -71,8 +71,10 @@ CUSTOMER_METADATA_PARAMETER = "metadata[" + TENANT_METADATA_KEY + "]"
 # carry. A customer this service creates therefore cannot carry an email
 # address, a name or any other personal detail, because the service holds none.
 POST_PARAMETERS = {
+    # `allow_promotion_codes` is sent only when the host set it, so that an
+    # invitation's discount code has a field to go into at checkout.
     CHECKOUT_PATH: frozenset({"customer", "mode", "line_items[0][price]", "line_items[0][quantity]",
-                              "success_url", "cancel_url"}),
+                              "success_url", "cancel_url", "allow_promotion_codes"}),
     PORTAL_PATH: frozenset({"customer", "configuration", "return_url"}),
     CUSTOMER_COLLECTION_PATH: frozenset({CUSTOMER_METADATA_PARAMETER}),
 }
@@ -182,6 +184,9 @@ class StripeSessionConfiguration:
     portal_configuration_id: str = ""
     allow_network: bool = False
     allow_session_creation: bool = False
+    # An invitation carries a discount code. Checkout accepts one only when
+    # the host says so, and the created session has to say so back.
+    allow_promotion_codes: bool = False
     livemode: bool = False
     allow_loopback_return_urls: bool = False
     timeout_seconds: float = 10.0
@@ -196,7 +201,8 @@ class StripeSessionConfiguration:
         text(self.api_version, "Stripe API version")
         secret_reference(self.api_key_ref)
         if any(type(getattr(self, name)) is not bool for name in (
-                "allow_network", "allow_session_creation", "livemode", "allow_loopback_return_urls")):
+                "allow_network", "allow_session_creation", "livemode", "allow_loopback_return_urls",
+                "allow_promotion_codes")):
             raise ServiceRuntimeError("invalid_session_authority")
         plans = tuple(self.plans)
         if (any(not isinstance(plan, StripeSessionPlan) for plan in plans)
@@ -384,6 +390,7 @@ class StripeSessionAdapter:
                 "portal_available": bool(enabled and self.configuration.portal_configuration_id
                                          and (principal is None or bound is not None)),
                 "plans": [{"plan_ref": plan.plan_ref, "label": plan.label} for plan in self.configuration.plans],
+                "discount_code_accepted": self.configuration.allow_promotion_codes,
                 "unavailable_reason": reason or ("session_network_not_authorized" if not enabled else ""),
                 "payment_confirmation_source": "verified_subscription_state", "provider_qualified": False}
 
@@ -552,7 +559,8 @@ class StripeSessionAdapter:
             price_id = selected.price_id
             parameters = (("customer", customer_id), ("mode", SUBSCRIPTION_MODE),
                 ("line_items[0][price]", price_id), ("line_items[0][quantity]", str(selected.quantity)),
-                ("success_url", config.checkout_success_url), ("cancel_url", config.checkout_cancel_url))
+                ("success_url", config.checkout_success_url), ("cancel_url", config.checkout_cancel_url),
+                *((("allow_promotion_codes", "true"),) if config.allow_promotion_codes else ()))
             path = CHECKOUT_PATH
         else:
             if not config.portal_configuration_id:
@@ -602,6 +610,7 @@ class StripeSessionAdapter:
                 if (response.get("mode") != SUBSCRIPTION_MODE or response.get("success_url") != config.checkout_success_url
                         or response.get("cancel_url") != config.checkout_cancel_url
                         or response.get("status") != OPEN_SESSION_STATUS
+                        or (config.allow_promotion_codes and response.get("allow_promotion_codes") is not True)
                         or type(response.get("expires_at")) is not int or response["expires_at"] <= time.time()):
                     raise ServiceRuntimeError("session_response_policy_mismatch")
             elif (response.get("configuration") != config.portal_configuration_id

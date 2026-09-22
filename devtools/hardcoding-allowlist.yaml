@@ -3687,6 +3687,23 @@ entries:
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-20
     expires_on: 2027-09-20
+  - finding_id: hardcoding.c2ee3b059e0ff6e684be1302
+    owner: tools.waitlist_operator
+    rationale: >-
+      The fixed official mail provider origin. The request carries the sending
+      credential in an authorization header and the invited person's address
+      in its body, so the destination must not be settable by a configuration
+      value, an environment proxy or a redirect. The command refuses any other
+      mail address before it builds the request, for the same reason that
+      tools/setup_stripe_sandbox.py pins the payment provider origin. A changed
+      origin has a different finding identity and stays blocking. Reviewed on
+      2026-09-21. Only this exact finding is allowed; a changed or added value
+      has a different finding identity and stays blocking. The audit classifies
+      the address as a strategy or provider binding, and this entry repeats
+      that classification.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-21
+    expires_on: 2027-09-21
   - finding_id: hardcoding.09a7ae1c2fe8b01d5ee23900
     owner: tools.setup_stripe_sandbox:main
     rationale: >-

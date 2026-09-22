@@ -29,8 +29,8 @@ from .records import (
 )
 from .records import PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
 from .stripe_session_checks import (
-    FIXTURE_SECRET, advance, bound, creations, customer_rows, fixture, install_policy, principal,
-    quiet, request, refused, rows,
+    FIXTURE_SECRET, advance, bound, creations, customer_rows, fixture, install_policy, observed_result,
+    principal, quiet, request, refused, rows,
 )
 from .stripe_sessions import ACCOUNT_PATH, MINIMUM_RECONCILIATION_SECONDS
 
@@ -77,6 +77,36 @@ def _response_checks(check):
               and len(held.provider.effects) == before + 1
               and any(row["payload"]["spec"]["request_id"] == "after-post"
                       and row["payload"]["status"] == EFFECT_CONFIRMED for row in rows(held)))
+
+    with tempfile.TemporaryDirectory(prefix="session-discount-") as root:
+        # An invitation carries a discount code, so checkout has to accept one.
+        (Path(root) / "plain").mkdir()
+        (Path(root) / "discount").mkdir()
+        plain = fixture(Path(root) / "plain")
+        plain.adapter.create(principal(plain), request(plain, "no-discount"))
+        sent = dict(next(call for call in plain.provider.calls if call.method == sessions.POST_METHOD).parameters)
+        check("a_host_that_did_not_ask_for_discount_codes_does_not_send_that_parameter",
+              "allow_promotion_codes" not in sent
+              and plain.adapter.options()["discount_code_accepted"] is False)
+        held = fixture(Path(root) / "discount", allow_promotion_codes=True)
+        # A refusal before the provider, such as a checkout form that does not
+        # declare the discount field, fails this check by name rather than
+        # stopping the run.
+        created = observed_result(lambda: held.adapter.create(principal(held), request(held, "with-discount")))
+        posted = [dict(call.parameters) for call in held.provider.calls if call.method == sessions.POST_METHOD]
+        check("a_checkout_session_accepts_the_discount_code_an_invitation_carries",
+              bool(posted) and posted[0].get("allow_promotion_codes") == "true"
+              and isinstance(created, dict) and str(created.get("provider_session_id", "")).startswith("cs_")
+              and held.adapter.options()["discount_code_accepted"] is True)
+        effects = list(held.provider.effects.values())
+        answered = effects[0][1] if effects else {}
+        for name, changed in (("refused", {"allow_promotion_codes": False}), ("absent", {})):
+            held.provider.override_result = {key: value for key, value in {**answered, **changed}.items()
+                                             if name != "absent" or key != "allow_promotion_codes"}
+            check("a_session_that_does_not_accept_the_code_is_not_returned_as_success_" + name,
+                  refused(lambda name=name: held.adapter.create(principal(held), request(held, "discount-" + name)),
+                          "billing_session_uncertain"))
+        held.provider.override_result = None
 
     with tempfile.TemporaryDirectory(prefix="session-commit-") as root:
         held = fixture(root)

@@ -74,12 +74,12 @@ or How it works. This changes audience presentation, not the architecture.
 
 ## Expanded implementation and verification plan
 
-The seventeen delivery packages in `roadmap.yaml` expand existing steps into
-136 actions and 85 verification cases. They cover domain and mail, accounts,
+The eighteen delivery packages in `roadmap.yaml` expand existing steps into
+144 actions and 91 verification cases. They cover domain and mail, accounts,
 payments, cloud records, retrieval, native file use, unattended local
 execution, reviewed expertise, reusable solutions, measured benefits, customer
 experience, release operations, security boundaries, intelligence review,
-reliability, installation and the private beta. Each names acceptance dependencies, a failure control and an
+reliability, installation, the private beta and the waiting list. Each names acceptance dependencies, a failure control and an
 authority limit. The generated status and main HTML render the same records.
 
 This is planning detail, not a second source of task status. The existing
@@ -92,6 +92,7 @@ following the historical launch-order list mechanically.
 |---|---|---|
 | Review first | D-01 | Resolve the current account and conformance findings without weakening guards. |
 | Private beta | D-17 | Invited people sign in, create personal client keys, connect a supported client and use a reviewed starter catalogue. Releases come only from a committed revision. No payment and no public registration. |
+| Access requests | D-18 | A visitor leaves an address on the waiting list, an operator invites one entry with a discount the payment account holds, and an address is erased on request. A service without a waiting list makes no offer. |
 | Service journey | D-02, D-03, D-04, D-05 | A real customer can confirm identity, connect, retrieve permitted material and exercise a test subscription. |
 | Useful work | D-06, D-07, D-08 | Selected material reaches an actual step; supported local work survives interruption and produces reusable checked results. |
 | Evidence and experience | D-09, D-10 | Measure proposed benefits and complete understandable customer journeys. Copy improvements can proceed independently of account integration. |

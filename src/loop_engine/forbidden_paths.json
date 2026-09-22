@@ -176,6 +176,7 @@
     "core/service_runtime/http_checks.py",
     "core/service_runtime/promotion_checks.py",
     "core/service_runtime/access_checks.py",
+    "core/service_runtime/waitlist_checks.py",
     "core/service_runtime/http_test_fixtures.py",
     "core/service_runtime/stripe_provider.py",
     "core/service_runtime/stripe_sessions.py",
@@ -833,6 +834,7 @@
     "maximum_total_bytes"
   ],
   "network_allowed_modules_reasons": {
+    "core/service_runtime/waitlist_checks.py": "Real loopback-only waiting list acceptance. The fixtures use owned temporary listeners and temporary records; no identity, payment or mail provider is contacted and no address is sent anywhere.",
     "core/service_runtime/access_checks.py": "Real loopback-only administrator acceptance uses temporary credentials and the existing owned fixture servers. It does not contact external providers or mint hosted keys.",
     "core/service_runtime/http.py": "The authenticated serving transport owns public Host/Origin checks and loopback-only acceptance. It does not perform customer harness execution.",
     "core/service_runtime/http_auth.py": "The explicitly configured identity adapter fetches a bounded public key set from the exact host-approved endpoint, refuses redirects, and never forwards the bearer token.",

@@ -36,6 +36,7 @@ WEBHOOK_URL = "https://app.baltor.ai/api/v1/billing/webhook"
 PRICE_ID = "price_1SandboxMonthly"
 PORTAL_ID = "bpc_1SandboxPortal"
 ENDPOINT_ID = "we_1SandboxEndpoint"
+PROMOTION_CODE_ID = "promo_1SandboxInvitation"
 MANIFEST = {"record_type": "operator_credential_references/v1",
             "api_keys": {"stripe-test": {"service": "stripe", "account": ACCOUNT,
                                          "purpose": "runtime-test-api", "environment": "STRIPE_API_KEY",
@@ -90,6 +91,21 @@ def portal_object(plan=None, livemode=False, identity=PORTAL_ID):
                          "invoice_history": {"enabled": True}}}
 
 
+def coupon_object(plan=None, livemode=False):
+    plan = plan or _plan()
+    return {"object": "coupon", "id": plan.coupon_id, "name": plan.coupon_name, "valid": True,
+            "duration": plan.coupon_duration, "percent_off": float(plan.coupon_percent_off),
+            "amount_off": None, "livemode": livemode,
+            "metadata": {plan.marker_key: plan.marker_value}}
+
+
+def promotion_code_object(plan=None, livemode=False, identity=PROMOTION_CODE_ID):
+    plan = plan or _plan()
+    return {"object": "promotion_code", "id": identity, "code": plan.promotion_code, "active": True,
+            "coupon": coupon_object(plan, livemode), "customer": None, "livemode": livemode,
+            "metadata": {plan.marker_key: plan.marker_value}}
+
+
 def endpoint_object(plan=None, livemode=False, identity=ENDPOINT_ID, url=WEBHOOK_URL, secret=None,
                     events=None, api_version=API_VERSION):
     plan = plan or _plan()
@@ -109,10 +125,11 @@ def listing(rows):
 class FakeStripe:
     """An injected transport. It records every request and answers from a script."""
 
-    def __init__(self, *, product=None, prices=(), portals=(), endpoints=(),
+    def __init__(self, *, product=None, prices=(), portals=(), endpoints=(), coupon=None, promotion_codes=(),
                  created=None, status=None, raises=None, write_raises=None, account=None):
         self.requests = []
-        self.product = product
+        self.product, self.coupon = product, coupon
+        self.promotion_codes = list(promotion_codes)
         self.prices, self.portals, self.endpoints = list(prices), list(portals), list(endpoints)
         self.created = dict(created or {})
         self.status = dict(status or {})
@@ -129,6 +146,10 @@ class FakeStripe:
             return self.account
         if request.path.startswith(setup.PRODUCTS_PATH + "/"):
             return self.product
+        if request.path.startswith(setup.COUPONS_PATH + "/"):
+            return self.coupon
+        if request.path == setup.PROMOTION_CODES_PATH:
+            return listing(self.promotion_codes)
         if request.path == setup.PRICES_PATH:
             return listing(self.prices)
         if request.path == setup.PORTAL_CONFIGURATIONS_PATH:
@@ -171,14 +192,17 @@ class FakeKeyring:
 
 def everything_exists():
     return FakeStripe(product=product_object(), prices=[price_object()],
-                      portals=[portal_object()], endpoints=[endpoint_object()])
+                      portals=[portal_object()], endpoints=[endpoint_object()],
+                      coupon=coupon_object(), promotion_codes=[promotion_code_object()])
 
 
 def nothing_exists(secret=SIGNING_SECRET):
-    return FakeStripe(product=None, prices=[], portals=[], endpoints=[], created={
+    return FakeStripe(product=None, prices=[], portals=[], endpoints=[], coupon=None, promotion_codes=[], created={
         setup.PRODUCTS_PATH: product_object(),
         setup.PRICES_PATH: price_object(),
         setup.PORTAL_CONFIGURATIONS_PATH: portal_object(),
+        setup.COUPONS_PATH: coupon_object(),
+        setup.PROMOTION_CODES_PATH: promotion_code_object(),
         setup.WEBHOOK_ENDPOINTS_PATH: endpoint_object(secret=secret)})
 
 
@@ -337,6 +361,81 @@ class DryRunAndConfirmationTests(unittest.TestCase):
         self.assertEqual(transport.requests, [])
 
 
+class DiscountTests(unittest.TestCase):
+    """The discount an invitation carries: one coupon and one readable code."""
+
+    def test_the_discount_and_its_code_are_created_in_dependency_order(self):
+        transport = nothing_exists()
+        result = run(transport)
+        self.assertIs(result.outcome, setup.SetupOutcome.READY)
+        self.assertIs(result.coupon.state, setup.ObjectState.CREATED)
+        self.assertIs(result.promotion_code.state, setup.ObjectState.CREATED)
+        self.assertEqual(result.coupon.identity, _plan().coupon_id)
+        self.assertEqual(result.promotion_code.identity, PROMOTION_CODE_ID)
+        paths = [row.path for row in transport.writes]
+        self.assertLess(paths.index(setup.COUPONS_PATH), paths.index(setup.PROMOTION_CODES_PATH))
+        coupon = dict(next(row for row in transport.writes if row.path == setup.COUPONS_PATH).parameters)
+        code = dict(next(row for row in transport.writes if row.path == setup.PROMOTION_CODES_PATH).parameters)
+        self.assertEqual(coupon["percent_off"], "40")
+        self.assertEqual(coupon["duration"], "once")
+        self.assertEqual(code["coupon"], _plan().coupon_id)
+        self.assertEqual(code["code"], _plan().promotion_code)
+
+    def test_an_existing_discount_is_reused_without_any_write(self):
+        transport = everything_exists()
+        result = run(transport, secret_held=True)
+        self.assertIs(result.outcome, setup.SetupOutcome.READY)
+        self.assertEqual(transport.writes, [])
+        self.assertIs(result.coupon.state, setup.ObjectState.EXISTING)
+        self.assertIs(result.promotion_code.state, setup.ObjectState.EXISTING)
+
+    def test_a_coupon_that_differs_from_the_plan_stops_the_run_before_any_write(self):
+        for changed in ({"percent_off": 10.0}, {"duration": "forever"}, {"valid": False},
+                        {"name": "Another discount"}, {"amount_off": 500}, {"object": "price"}):
+            transport = everything_exists()
+            transport.coupon = {**coupon_object(), **changed}
+            result = run(transport, secret_held=True)
+            self.assertIs(result.outcome, setup.SetupOutcome.STOPPED, msg=repr(changed))
+            self.assertIs(result.failure, setup.SetupFailure.COUPON_MISMATCH, msg=repr(changed))
+            self.assertEqual(transport.writes, [])
+
+    def test_a_live_mode_discount_stops_the_run(self):
+        transport = everything_exists()
+        transport.coupon = coupon_object(livemode=True)
+        result = run(transport, secret_held=True)
+        self.assertIs(result.failure, setup.SetupFailure.LIVE_MODE_OBJECT)
+        self.assertEqual(transport.writes, [])
+
+    def test_a_promotion_code_that_differs_from_the_plan_stops_the_run(self):
+        for changed in ({"active": False}, {"code": "SOMEONEELSES"}, {"customer": "cus_1Other"},
+                        {"coupon": {**coupon_object(), "id": "another_coupon"}}, {"id": "price_1NotACode"}):
+            transport = everything_exists()
+            transport.promotion_codes = [{**promotion_code_object(), **changed}]
+            result = run(transport, secret_held=True)
+            self.assertIs(result.failure, setup.SetupFailure.PROMOTION_CODE_MISMATCH, msg=repr(changed))
+            self.assertEqual(transport.writes, [])
+
+    def test_two_promotion_codes_with_this_code_stop_the_run(self):
+        transport = everything_exists()
+        transport.promotion_codes = [promotion_code_object(), promotion_code_object(identity="promo_2Second")]
+        result = run(transport, secret_held=True)
+        self.assertIs(result.failure, setup.SetupFailure.PROMOTION_CODE_AMBIGUOUS)
+        self.assertEqual(transport.writes, [])
+
+    def test_mutant_control_without_the_promotion_code_rule_a_foreign_code_is_accepted(self):
+        # Mutant control for the promotion code rule. With the guard removed
+        # the run ends ready while the account holds a code the plan never
+        # asked for, which is what
+        # test_a_promotion_code_that_differs_from_the_plan_stops_the_run rejects.
+        transport = everything_exists()
+        transport.promotion_codes = [{**promotion_code_object(), "code": "SOMEONEELSES"}]
+        with unittest.mock.patch.object(setup, "_require_expected_promotion_code", lambda *_arguments: None):
+            result = run(transport, secret_held=True)
+        self.assertIs(result.outcome, setup.SetupOutcome.READY)
+        self.assertIs(result.promotion_code.state, setup.ObjectState.EXISTING)
+        self.assertEqual(transport.writes, [])
+
+
 class WriteDisciplineTests(unittest.TestCase):
     def test_every_write_carries_its_own_idempotency_key_and_reads_come_first(self):
         transport = nothing_exists()
@@ -344,14 +443,15 @@ class WriteDisciplineTests(unittest.TestCase):
         self.assertIs(result.outcome, setup.SetupOutcome.READY)
         paths = [row.path for row in transport.writes]
         self.assertEqual(paths, [setup.PRODUCTS_PATH, setup.PRICES_PATH,
-                                 setup.PORTAL_CONFIGURATIONS_PATH, setup.WEBHOOK_ENDPOINTS_PATH])
+                                 setup.PORTAL_CONFIGURATIONS_PATH, setup.COUPONS_PATH, setup.PROMOTION_CODES_PATH,
+            setup.WEBHOOK_ENDPOINTS_PATH])
         keys = [row.idempotency_key for row in transport.writes]
         self.assertEqual(len(set(keys)), len(keys))
         for key in keys:
             self.assertTrue(key.startswith(setup.IDEMPOTENCY_KEY_PREFIX))
         first_write = transport.requests.index(transport.writes[0])
         self.assertTrue(all(row.method == setup.GET_METHOD for row in transport.requests[:first_write]))
-        self.assertEqual(result.provider_writes, 4)
+        self.assertEqual(result.provider_writes, 6)
 
     def test_a_lost_answer_is_an_unknown_outcome_and_the_write_is_not_repeated(self):
         transport = nothing_exists()
@@ -492,8 +592,8 @@ class SigningSecretTests(unittest.TestCase):
             result = run(transport, store=FakeKeyring())
             self.assertIs(result.failure, setup.SetupFailure.SECRET_MISSING, msg=repr(secret))
             self.assertIs(result.outcome, setup.SetupOutcome.STOPPED_AFTER_WRITES, msg=repr(secret))
-            self.assertEqual(result.provider_writes, 4, msg=repr(secret))
-            self.assertEqual(result.committed_writes, 4, msg=repr(secret))
+            self.assertEqual(result.provider_writes, 6, msg=repr(secret))
+            self.assertEqual(result.committed_writes, 6, msg=repr(secret))
             self.assertIs(result.endpoint.state, setup.ObjectState.CREATED, msg=repr(secret))
             self.assertFalse(result.secret_in_keyring, msg=repr(secret))
             self.assertEqual(setup._EXIT_CODES[result.outcome], 4, msg=repr(secret))
@@ -502,7 +602,7 @@ class SigningSecretTests(unittest.TestCase):
         result = run(nothing_exists(), store=FakeKeyring(fail_on_store=True))
         self.assertIs(result.failure, setup.SetupFailure.SECRET_NOT_STORED)
         self.assertIs(result.outcome, setup.SetupOutcome.STOPPED_AFTER_WRITES)
-        self.assertEqual((result.provider_writes, result.committed_writes), (4, 4))
+        self.assertEqual((result.provider_writes, result.committed_writes), (6, 6))
         self.assertIs(result.endpoint.state, setup.ObjectState.CREATED)
         self.assertFalse(result.secret_in_keyring)
         self.assertEqual(setup._EXIT_CODES[result.outcome], 4)
@@ -832,13 +932,13 @@ class CommandTests(unittest.TestCase):
                 saved = json.loads(report.read_text(encoding="utf-8"))
             self.assertEqual(code, 4)
             self.assertEqual(saved["outcome"], "stopped_after_a_committed_write")
-            self.assertEqual(saved["provider_writes"], 4)
-            self.assertEqual(saved["committed_provider_writes"], 4)
+            self.assertEqual(saved["provider_writes"], 6)
+            self.assertEqual(saved["committed_provider_writes"], 6)
             self.assertEqual(saved["webhook_endpoint"]["state"], "created")
             self.assertEqual(saved["webhook_endpoint"]["id"], ENDPOINT_ID)
             self.assertFalse(saved["signing_secret"]["in_keyring"])
             self.assertIsNone(saved["host_billing_block"])
-            self.assertIn('"committed_provider_writes": 4', shown)
+            self.assertIn('"committed_provider_writes": 6', shown)
 
     def test_a_run_whose_report_cannot_be_written_still_says_the_account_changed(self):
         # The exit code follows what exists at Stripe, not what the report
@@ -857,7 +957,7 @@ class CommandTests(unittest.TestCase):
             self.assertEqual(report.read_text(encoding="utf-8"), "")
         self.assertEqual(code, 4)
         self.assertIn('"report_written": false', shown)
-        self.assertIn('"committed_provider_writes": 4', shown)
+        self.assertIn('"committed_provider_writes": 6', shown)
 
     def test_a_dry_run_whose_report_cannot_be_written_stops_with_nothing_written(self):
         def refuse(_report, _sensitive):

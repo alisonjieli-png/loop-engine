@@ -15,14 +15,14 @@
   };
   // "/get-started" and "/connect" open the same Get started page. The serving route table does not list
   // "/get-started" yet, so that address works through the navigation and a direct visit is not served.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/auth/callback":"login"};
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/waitlist":"waitlist", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
   const serviceName = document.title.split(" | ")[0];
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", waitlist:"Ask for an invitation"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
@@ -219,6 +219,42 @@
       else message("identity-message", "The identity provider accepted the login, but the service refused account access. Check the connection message below.", true);
     } catch (error) { message("identity-message", error.message, true); }
     finally { busy = false; $("email-login-button").disabled = false; }
+  });
+  // The waiting list is offered only where the service says it keeps one, and
+  // the discount is named only where checkout says it takes a code. Until the
+  // service answers, neither is offered: an unanswered page must not make an
+  // offer that ends in a refusal.
+  const waitlistOffer = value => {
+    const open = value?.website?.waitlist_available === true;
+    for (const name of ["waitlist-link", "signup-waitlist-link", "waitlist-form"]) $(name).hidden = !open;
+    $("waitlist-closed").hidden = open;
+    // The sign-up page says the form is still being built only while no list is offered.
+    $("waiting-list-pending").hidden = open;
+    $("waitlist-state").textContent = open ? "Open for requests" : "Not taking requests";
+    $("waitlist-discount").hidden = !open || value?.billing?.discount_code !== true;
+  };
+  $("waitlist-form").addEventListener("submit", async event => {
+    event.preventDefault(); if (busy) return; busy = true; $("waitlist-button").disabled = true;
+    const email = $("waitlist-email").value.trim(), note = $("waitlist-note").value.trim();
+    // Answers the service can give this form. Anything else is reported as it
+    // arrived, without guessing that the request was recorded.
+    const answers = {waitlist_address_invalid:"That does not look like an email address we can write to. Check it and try again.",
+      waitlist_address_already_listed:"This address is already on the list. One request is enough, and a person will read it.",
+      waitlist_address_has_account:"This address already has an account. Use sign-in instead.",
+      waitlist_source_flooded:"Too many requests have come from this connection. Please try again later.",
+      waitlist_unavailable:"This service is not taking requests right now. Nothing was recorded.",
+      failed_attempt_limit_reached:"Too many refused attempts from this connection. Please try again later."};
+    message("waitlist-message", "Sending your request…");
+    try {
+      const response = await fetch("/api/v1/waitlist", {method:"POST",credentials:"omit",redirect:"error",cache:"no-store",
+        headers:{"Content-Type":"application/json"},body:JSON.stringify({record_type:"service_waitlist_request/v1",email,note})});
+      const value = await response.json();
+      if (!response.ok) throw new Error(answers[value?.error?.code] || "Your request was not recorded. Please try again.");
+      if (value.result?.state !== "waiting") throw new Error("Your request was not recorded. Please try again.");
+      $("waitlist-form").hidden = true; $("waitlist-state").textContent = "Request received";
+      message("waitlist-message", "Thank you. Your request is on the list and a person will read it. We do not promise a date, and we will only write to you about this.");
+    } catch (error) { message("waitlist-message", error.message, true); }
+    finally { busy = false; $("waitlist-button").disabled = false; }
   });
   $("email-signup-form").addEventListener("submit", async event => {
     event.preventDefault(); if (busy || !identityClient || !identityConfiguration.email_signup_enabled) return;
@@ -473,6 +509,7 @@
   request("/api/v1/capabilities", null, false).then(value => {
     capabilities = value; $("service-status").textContent = "Service available";
     clientAccess.connectionChanged();
+    waitlistOffer(value);
     $("protocol-note").textContent = "Supported protocol: " + value.protocol.versions.join(", ") + ". External identity flow qualified: " + (value.protocol.external_authorization_flow_qualified ? "yes" : "no") + ".";
     $("retrieval-note").textContent = "Installed vector method: " + value.retrieval.vector_backend + ". Semantic embedding model installed: " + (value.retrieval.semantic_embedding_model_installed ? "yes" : "no") + ". Bodies load only after selection.";
     $("setup-protocol").textContent = value.protocol.versions.join(", ");
@@ -496,5 +533,5 @@
         $("email-signin-limit").textContent = settings.email_signup_enabled ? "Email sign-in is available. Account creation and subscription access are separate." : "Email sign-in is available for prepared accounts. Public account creation remains closed; a service token does not create an account or subscription.";
       }).catch(() => message("identity-message", "Email sign-in configuration is unavailable. Operator service tokens remain separate.", true));
     }
-  }).catch(() => { $("service-status").textContent = "Service unavailable. Check the host configuration."; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
+  }).catch(() => { waitlistOffer(null); $("service-status").textContent = "Service unavailable. Check the host configuration."; $("protocol-note").textContent = "Could not confirm the installed protocol. Do not assume client compatibility."; });
 })();
