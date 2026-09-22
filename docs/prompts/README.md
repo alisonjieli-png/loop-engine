@@ -5,6 +5,10 @@ Kind: point-in-time prompt records loaded into agents.
 Every prompt defers to the current repository, `AGENTS.md`, the Architecture
 Constitution, machine-readable contracts, and enforcing tests. Load one prompt
 for the active task. Do not concatenate several prompts into a larger mandate.
+Many older prompts say not to commit or push unless instructed. The owner's
+standing rule is newer: reviewed work is committed to `main` and pushed, as the
+[commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md says.
 
 ## Broad continuation
 

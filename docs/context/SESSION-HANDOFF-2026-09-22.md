@@ -8,7 +8,9 @@ in flight and what is open.
 
 It is a dated snapshot, not new authority. The owner's standing rules for
 committing, pushing, branching and releasing, and what still needs the owner,
-are in [AGENTS.md](../../AGENTS.md). The machine-readable work authority stays
+are in the
+[commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md. The machine-readable work authority stays
 [roadmap.yaml](../roadmap/roadmap.yaml). Do not start a second task list or
 dashboard.
 
@@ -17,7 +19,9 @@ four hours behind UTC, and the git author dates use that clock.
 
 ## Read these first, in this order
 
-1. [AGENTS.md](../../AGENTS.md), for the owner's standing rules.
+1. [AGENTS.md](../../AGENTS.md), including its
+   [commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+   section.
 2. This file, for where the work stands.
 3. [The takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md), for the
    working cycle, which has not changed. Its live-state table describes
@@ -202,9 +206,9 @@ the checkpoint survive as a backup branch. The consolidation follows that:
 - The payment branch repairs come in as a squash, because four payment
   branches carry key-shaped fixtures in their history. The repaired payment
   customer path from `pay/billing-customer` was being brought in at `34a6d04`.
-- The owner's rules are being gathered into one section of AGENTS.md, with a
-  check that every entry route links it and none contradicts it. That change
-  is the one this record belongs to.
+- The owner's rules are gathered into one section of AGENTS.md, with a check
+  in `tools/test_context_routes.py` that every entry route links it and none
+  contradicts it. That change is the one this record belongs to.
 
 When the line is pushed and released, the next release needs the steps above:
 the grants if the catalogue changed, keys that have not expired, and the live
@@ -219,8 +223,9 @@ we have swap points, but we should have "engines" and different types of
 "engines" for each functional component so that the runtime can select the
 most efficient engine". At 18:19 UTC the owner added that every build should
 start with a search for existing "projects, repos, github, designs, or papers".
-The change this record belongs to writes them into AGENTS.md as a standing
-rule.
+They are rule 6 of the
+[commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md.
 
 Where the code stands, from a read-only review of the source on September 22:
 engines already sit behind small typed protocols, among them
@@ -245,7 +250,9 @@ second runtime type.
 
 ## What still needs the owner
 
-Only what AGENTS.md lists as needing the owner. Today that means:
+Only what the
+[commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+section lists. Today that means:
 
 - the privacy notice and the terms, which are [drafts](../legal/README.md)
   until the owner publishes them;

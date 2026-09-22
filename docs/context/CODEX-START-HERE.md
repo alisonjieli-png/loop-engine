@@ -2,9 +2,13 @@
 
 This is the stable entrypoint for Codex and other coding agents after a new or
 compacted session. Read [START-HERE.md](START-HERE.md) and
-[AGENTS.md](../../AGENTS.md). The current task determines authority and scope.
-No standing instruction here authorizes a commit, push, live trial, or
-publication.
+[AGENTS.md](../../AGENTS.md). The owner's standing rules for committing,
+pushing, branching and releasing, and what still needs the owner, are in the
+[commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md. The current task sets the scope and may narrow that
+authority for its own run. Historical instructions and old prompts do not
+authorize a provider call, a live trial, a deployment or a repeated effect
+beyond that recorded authority.
 
 Remove accidental compatibility for unpublished old formats. Keep runtime
 version, capability, and schema negotiation for independently deployed
@@ -16,7 +20,9 @@ that behavior and does not replace the runtime handshake.
 
 | Need | Current route |
 |---|---|
-| Verified live state, repairs, open findings, the private beta definition and the working cycle | [Takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md). Start here after [AGENTS.md](../../AGENTS.md). |
+| Where the work stands: the verified live state, the release that produced it, the work in flight and the open problems | [September 22 session handoff](SESSION-HANDOFF-2026-09-22.md), the newest dated handoff. Start here after [AGENTS.md](../../AGENTS.md). |
+| Committing, pushing, branching, releasing, what still needs the owner, and the decisions that stand | [Commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority) in AGENTS.md. No other document restates it. |
+| The working cycle, the repairs of September 20 and the private beta definition | [Takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md). Its live-state table describes September 20. |
 | What runs and where, and where each name may appear | [Current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment) and [terminology.yaml](../../terminology.yaml), explained by [the developer language guide](../guides/developer-language.md). Baltor is the public brand. Loop Engine is the repository, the Python package and the technical name. |
 | Product priorities, open decisions, and release gates | [Continuation plan](../roadmap/CONTINUATION-AND-LAUNCH.md) and [generated status](../roadmap/CONTINUATION-STATUS.md) |
 | Delivery, exact checks, owner actions and handoff of the previous developer session | [September 20 checkpoint](DEVELOPMENT-CHECKPOINT-2026-09-20.md), a dated snapshot that is also embedded in the main development HTML. Recheck the live source and deployment before continuing. |

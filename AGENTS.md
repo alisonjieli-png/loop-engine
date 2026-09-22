@@ -90,14 +90,172 @@ for the task:
 6. `docs/components/README.md`
 7. the relevant component README
 8. `humanizer-context.md` for public prose
-9. `docs/context/CODEX-START-HERE.md` after a new or compacted session, then
-   `docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md` for the verified live state
+9. `docs/context/START-HERE.md` after a new or compacted session. It names
+   the newest dated handoff, which records the verified live state, and the
+   takeover checkpoint, which records the working cycle
 10. `docs/context/REFERENCE-SOURCES.md` before consulting an older repository
 11. `ASTRA.md` for the current advisory comments and suggestions for continued
     development and Claude Fable 5.1 review
 
 Treat existing changes as user or concurrent-agent work. Do not discard,
 restore, reformat, commit, or publish changes without resolving ownership.
+Resolving ownership means finding the session or person that wrote them.
+When nobody can be found, save the changes as a patch or a bundle first, then
+review them like any other change. How reviewed work reaches `main` is in
+[Commit, push and release authority](#commit-push-and-release-authority).
+
+## Commit, push and release authority
+
+This section is the one statement of the owner's standing rules for
+committing, pushing, branching and releasing, of what still needs the owner,
+and of the decisions that stand until the owner changes them.
+[CLAUDE.md](CLAUDE.md), [ASTRA.md](ASTRA.md), the
+[context route](docs/context/START-HERE.md), the
+[coding-agent route](docs/context/CODEX-START-HERE.md) and the
+[documentation index](docs/README.md) link here and do not restate it. When a
+document, a prompt or a dated record says something else, follow this section
+and correct the document. A dated record keeps its bytes and is read as
+history. Dates are the owner's local dates, in United States Eastern time.
+
+A current task may narrow this authority for its own run. For example, a
+workflow may tell its agents to commit only in a detached worktree and leave
+the push to the session that runs the workflow. A task never widens this
+authority, and no document narrows it as a standing rule. The check
+[`tools/test_context_routes.py`](tools/test_context_routes.py) fails when an
+entry route stops linking this section, repeats it under a heading of its own
+or contradicts it, and when a rule below loses its words or its date. It
+exists because on September 19, 2026 a sub-agent replaced the owner's commit
+rule in the start documents with its opposite, without an owner request, and
+added a check that protected the replacement. Nothing was committed again
+until the takeover session committed the work on September 20, 2026.
+
+### What engineering does without asking
+
+1. **Commit reviewed work to `main` and push it.** Reviewed means the change
+   passed the checks that the
+   [working cycle](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md#working-cycle)
+   names for it. Push in the same turn, report the commit and the check
+   results afterwards, and do not ask first. Several reviewed fixes may go to
+   `main` together. The owner, September 2, 2026: "stop asking me to push,
+   when you fix something you push!" September 20, 2026: commit all of the
+   work to `main` and deploy it to Fly.io. September 22, 2026:
+   "push improvements into production/main branch" and "you can more
+   aggressively push numerous fixes and adjustments at once to main".
+2. **Keep two branches and no others:** `main`, and `checkpoint/full-capability-2026-09-21`,
+   the frozen backup that the
+   [branch strategy](docs/architecture/BRANCH-STRATEGY-2026-09-21.md)
+   describes. Make no feature, fork or worktree branch. Parallel agents work in
+   detached worktrees, which make no branch, and their work reaches `main`
+   through a reviewed merge. The owner, September 2, 2026: "You should not
+   have separate branches or forks, you need to push EVERYTHING to github
+   main". September 21, 2026: the two branches of the branch strategy.
+   September 22, 2026: "all of our work should be merged into main!" and
+   "Only the snapshot should survive as a backup branch".
+3. **Release reviewed `main` to the live service, then check it live.**
+   Release only from a committed revision on `main` whose continuous
+   integration run passed, through the guarded workflow
+   [`.github/workflows/fly-pilot.yml`](.github/workflows/fly-pilot.yml).
+   Switch the workflow's deployment setting on for the run and off again
+   afterwards. Then run the automated live checks against every hostname that
+   the [current deployment](docs/architecture/MVP-CLIENT-SERVER.md#current-deployment)
+   section lists, record the release with its revision, image digest and
+   rollback image, and update that section in the same change. The owner,
+   September 20, 2026: deploy the private pilot to Fly.io, with the release
+   steps of the working cycle recorded the same day. September 22, 2026:
+   "make sure we are deploying and updating fly.io" and "you should do full
+   automated QA of all aspects as well yourself once it is live, using the
+   real website endpoint".
+4. **Decide instead of asking, and write the reason down.** When a choice is
+   uncertain, research it, measure it or test two versions. Put the reason
+   where the next session will find it: the commit message, the roadmap, the
+   dated handoff, or the decision table below. The owner, September 20, 2026,
+   in the evening, objected to "asking me to make decisions when you can make
+   your own judgement decisions or A/B test". September 22, 2026: "Use your
+   best judgement, document it".
+5. **Never tell the owner to rotate, revoke or re-create a credential.** This
+   covers a credential pasted into a chat window and a full secret live
+   payment key. State a genuine new risk once, store the credential in the
+   system keyring and continue. Keep the controls that prevent an accident,
+   such as refusing a test key where a live key is required, and record an
+   override the owner has chosen instead of arguing with it. The owner,
+   September 19, 2026, to the previous developer session, and again on
+   September 21, 2026: "NEVER tell me to rotate or revoke an API key".
+6. **Build every functional component so that its engine can be swapped,
+   and look for existing work first.** A component, or a graph of components,
+   has a fixed, typed and versioned edge, one or more engines behind it, room
+   for custom variations, and runtime selection by declared order and
+   recorded evidence. A new engine is added without changing its callers.
+   Before building, search existing projects, repositories, published designs
+   and papers for something to use or adapt, and record what was found and
+   why it was adopted, adapted or rejected. An engine is an adapter that a
+   Loop uses, never a new runtime type. The owner, September 21, 2026: "every
+   functional unit should be wrapped so that we can replace the unit engine
+   without impacting functional unit to unit edge communication". September
+   22, 2026: engines "for each functional component so that the runtime can
+   select the most efficient engine", and a search for "projects, repos,
+   github, designs, or papers that we could use / leverage so we don't have
+   to reinvent the wheel".
+
+### What still needs the owner, in the current conversation
+
+Ask in the current conversation before any of these, even when a prepared
+connection would allow it:
+
+- destroying or deleting an application, a volume, a domain record, a name
+  server delegation, a provider resource or a secret (September 20, 2026);
+- spending beyond the recorded allowance. The
+  [deployment scope](artifacts/architecture-audit-2026-09-19/pilot-deployment-authority.json)
+  of September 19, 2026 allows 50 United States dollars a month and 10
+  dollars of setup for infrastructure, and nothing for model calls
+  (September 20, 2026);
+- a legal commitment, such as publishing terms of service or a privacy
+  notice. The [drafts](docs/legal/README.md) wait for the owner
+  (September 20, 2026);
+- identity or bank verification with a provider, which only the owner can
+  complete (September 20, 2026).
+
+The authority recorded on September 20, 2026 does not cover model calls, live
+charges or opening public registration. A customer paying through the live
+checkout is the product working, not a charge that engineering makes.
+Intelligence is published only after
+the independent review process in the decision table approves it, and a
+producer never approves its own work. Everything else that engineering can
+decide, it decides.
+
+### How reviewed work reaches `main` without losing any of it
+
+These practices come from engineering, not from the owner. Each one answers a
+recorded loss.
+
+- After a merge, check that every line the merged branch added is still
+  present, as well as running the checks. On September 22, 2026 automatic
+  merges dropped branch content with no conflict while service smoke and the
+  conformance gates still passed. The
+  [September 22 handoff](docs/context/SESSION-HANDOFF-2026-09-22.md) lists
+  what was lost.
+- Before any command that can discard work, such as a reset, a stash drop or
+  a forced checkout, save the work as a bundle or a patch. Never drop a stash
+  or reset a checkout that another session shares.
+- Squash-merge a branch whose history holds key-shaped test fixtures, and
+  never bypass the repository host's push protection (September 21, 2026).
+- Do not rewrite the published history of `main`. The checkpoint branch stays
+  at revision `a3bd0f1`.
+
+### Decisions that stand until the owner changes them
+
+On September 20, 2026, in the evening, the owner told engineering to stop
+bringing back decisions that engineering can make. The target is a system that
+is ready for paying customers. These judgment calls were made under that
+direction. Each stands until the owner changes it.
+
+| Decision | Choice and reason |
+|---|---|
+| Approval of intelligence items | Delegated to an independent review process. Reviewers who did not write an item approve or reject it against written criteria, and the approval record names them. A producer still never approves its own work. The owner can withdraw any item. |
+| Price | One plan, Baltor Pro, 29 United States dollars each month. Comparable entry plans cost 19 to 29 dollars. Search is free, the measured unit is one downloaded item, and there is no overage billing at launch. Invited beta users are free through an operator entitlement. |
+| Payments | Live since September 21, 2026. The first call was to build and qualify everything in Stripe test mode and to wait for the owner's identity and bank verification. The owner activated the live account and supplied its key that morning. The live account `acct_1UHZ972IF9bCskLc` is separate from the sandbox `acct_1UHZ9KCCxLfArYED`, with charges and payouts enabled and nothing outstanding. Checkout and the customer portal were proven against the deployed service and nobody was charged, as the [live payments record](artifacts/architecture-audit-2026-09-19/live-payments-enabled-1.json) shows. The key is in the system keyring under `stripe-live` and reaches a command only through `tools/operator_credentials.py`. |
+| Sign-up email | The service creates the confirmation link through the identity provider's administration interface and sends its own email, so the whole journey stays on the baltor.ai domain and needs no change to provider settings that engineering cannot reach. |
+| Browsing for signed-in users | The owner's words were heard as browsing the intelligence layers. Signed-in users get a catalogue browser grouped by the four layers. On September 22, 2026 the browser is built on `pay/web-browse` and is not on `main` yet. |
+| Public positioning | The category line is harness and agent optimized operation, the owner's phrase. |
 
 ## Pre-launch version policy
 

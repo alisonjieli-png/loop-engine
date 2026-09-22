@@ -2,22 +2,31 @@
 
 Read the current task and [AGENTS.md](../../AGENTS.md) before acting.
 Inspect the branch, revision, dirty paths, active processes, and known writers.
-Preserve work whose ownership is unresolved. A historical instruction does
-not authorize a commit, push, provider call, deployment, or repeated effect.
+Preserve work whose ownership is unresolved. Committing, pushing, branching
+and releasing follow the
+[commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md, which also lists what still needs the owner. A
+historical instruction does not authorize a provider call, a deployment or a
+repeated effect beyond that recorded authority.
 
 ## Current context route
 
-Start with the [takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md). It
-records the verified live state, the repairs of September 20, the open
-findings, the private beta definition and the working cycle for changes,
-tests, checkpoints and releases.
+Start with the newest dated handoff, the
+[September 22 session handoff](SESSION-HANDOFF-2026-09-22.md). It records the
+verified live state, the release that produced it, the merge losses and their
+repair, the work in flight and the open problems. Then read the
+[takeover checkpoint](TAKEOVER-CHECKPOINT-2026-09-20.md) for the working cycle
+for changes, tests, checkpoints and releases, the repairs of September 20 and
+the private beta definition. Its live-state table describes September 20.
 
-The [September 20 development checkpoint](DEVELOPMENT-CHECKPOINT-2026-09-20.md)
+The [September 21 handoff](SESSION-HANDOFF-2026-09-21.md), its
+[evening addendum](SESSION-HANDOFF-2026-09-21-EVENING.md), the
+[September 20 development checkpoint](DEVELOPMENT-CHECKPOINT-2026-09-20.md)
 and the [Fable 5.1 handoff](FABLE-5-1-HANDOFF-2026-09-20.md) remain valid as
-dated snapshots of the previous developer session. The development checkpoint
-records the pilot, website direction, evidence, remaining work and handoff at
-that time. It is also embedded in the single development HTML. Recheck source
-and deployment facts before acting.
+dated snapshots of earlier sessions. The development checkpoint records the
+pilot, website direction, evidence, remaining work and handoff of September 20.
+It is also embedded in the single development HTML. Recheck source and
+deployment facts before acting.
 
 The [current deployment](../architecture/MVP-CLIENT-SERVER.md#current-deployment)
 section is the current statement of what runs and where. Follow that section

@@ -2,10 +2,18 @@
 
 This is the owner's advisory development note. The current task,
 [AGENTS.md](AGENTS.md), the [Constitution](docs/architecture/CONSTITUTION.md),
-and typed contracts govern the work. Advice here does not grant model,
-network, file, spending, deployment, commit, or publication authority.
+and typed contracts govern the work. Advice here grants no authority of its
+own. The owner's standing rules for committing, pushing, branching and
+releasing, and what still needs the owner, are in the
+[commit, push and release authority](AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md. Model, network, file, spending and publication authority
+comes from that section and the current task, never from this note.
 
 ## Current work and evidence
+
+The [September 22 session handoff](docs/context/SESSION-HANDOFF-2026-09-22.md)
+is the newest dated record of what is live, what was repaired and what is in
+flight. The dated records below are earlier snapshots.
 
 The [September 20 checkpoint](docs/context/DEVELOPMENT-CHECKPOINT-2026-09-20.md)
 records the deployed pilot, benefit-led website, administrator access,
@@ -153,10 +161,11 @@ the full owner constraints; the table does not replace them.
 ## Review and verification
 
 Preserve concurrent work and resolve ownership before editing overlapping
-files. Do not commit or push without explicit authority for the current task.
-Use only owned process handles for cleanup. Do not alter historical reports,
-private session logs, benchmark evidence, managed records, or failure baselines
-to make a check pass.
+files. Commit and push reviewed work as the
+[commit, push and release authority](AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md says. Use only owned process handles for cleanup. Do not
+alter historical reports, private session logs, benchmark evidence, managed
+records, or failure baselines to make a check pass.
 
 Start with the smallest relevant check, then owning and dependent checks.
 Use a known-wrong case to show that a new guard rejects the missing behavior.
