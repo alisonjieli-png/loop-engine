@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/assets/architecture.css">
   <script defer src="/assets/supabase-client.js"></script>
   <script defer src="/assets/client-access.js"></script>
+  <script defer src="/assets/catalogue-browser.js"></script>
   <script defer src="/assets/service.js"></script>
   <script defer src="/assets/architecture-story.js"></script>
 </head>
@@ -116,6 +117,21 @@
           <p id="search-message" role="status" aria-live="polite"></p><div id="results" class="results"><div class="empty"><span class="empty-mark" aria-hidden="true">↗</span><h3>Start with an assignment</h3><p>Connect, describe the material you need, then inspect the returned source and permissions before downloading.</p></div></div>
         </section>
       </div>
+      <section class="panel browse" aria-labelledby="browse-heading">
+        <div class="section-heading"><div><p class="eyebrow">Browse what you have</p><h2 id="browse-heading">Everything published for your account</h2></div><span class="badge" id="browse-count">Sign in to browse</span></div>
+        <p class="secondary">Search answers a question. Browsing shows what is there, grouped by where the material comes from. Open an item to read its details before you fetch the file.</p>
+        <div class="browse-controls">
+          <div class="browse-field"><label for="browse-kind">Kind of material</label><select id="browse-kind" disabled><option value="">Every kind</option></select></div>
+          <div class="browse-field"><label for="browse-style">Development tool</label><select id="browse-style" disabled><option value="">Every tool</option></select></div>
+          <button type="button" id="refresh-browse" class="quiet" disabled>Load the catalogue</button>
+        </div>
+        <p class="caption">Material that names no development tool suits every tool, so a tool filter keeps it. Material that declares an effect, such as running a command, is not offered here, because this page holds no permission to run anything.</p>
+        <p id="browse-message" role="status" aria-live="polite">Sign in to browse the material published for your account.</p>
+        <div class="browse-layout">
+          <div id="browse-groups" class="browse-groups"></div>
+          <aside id="browse-detail" class="browse-detail" tabindex="-1" aria-live="polite" aria-label="Selected item"><p class="caption">Open an item to read its details.</p></aside>
+        </div>
+      </section>
     </section>
     <section data-view="account" hidden><div class="page-heading"><div><p class="eyebrow">Your account</p><h1>Access and usage.</h1></div><a class="button quiet" href="/login" data-page="login">Manage this connection</a></div><section class="panel"><div class="section-heading"><h2>Current service identity</h2><span class="badge" id="account-state">Not connected</span></div><p id="account-note">Sign in to see your service identity, usage and available subscription settings.</p><dl id="account-facts"></dl><a href="/login" data-page="login" id="account-access-link">Sign in</a></section>
       <section class="panel"><div class="section-heading"><h2>Connect your development tools</h2><button id="refresh-client-access" type="button" class="quiet" disabled>Load client tokens</button></div><p id="client-access-message" role="status" aria-live="polite">Sign in with your verified account to manage client tokens.</p>

@@ -4,7 +4,7 @@
   let token = "", generation = 0, busy = false, capabilities = null, accessOptions = null, accessRequest = null, accessBusy = false;
   let connectionBusy = false, recipes = null, afterLogin = null, principalScopes = [];
   let identityClient = null, identityConfiguration = null, authenticationMode = "host_key";
-  let clientAccess = null;
+  let clientAccess = null, catalogueBrowser = null;
   const pending = new Set(), downloads = new Map(), billingRequests = new Map();
   const message = (id, text, error = false) => { $(id).textContent = text; $(id).classList.toggle("error", error); };
   const element = (tag, text, className = "") => { const item = document.createElement(tag); item.textContent = text; if (className) item.className = className; return item; };
@@ -103,7 +103,7 @@
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
     $("test-protocol").disabled = true; $("setup-identity").textContent = "Sign in with your service token to run the connection check.";
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
-    clientAccess?.reset();
+    clientAccess?.reset(); catalogueBrowser?.reset();
   }
   $("disconnect").addEventListener("click", async () => {
     const previousToken = token, previousMode = authenticationMode, previousClient = identityClient;
@@ -176,6 +176,13 @@
   clientAccess = window.BaltorClientAccess.create({request, element, message,
     current:() => ({connected:!!token, mode:authenticationMode, generation,
       available:capabilities?.record_type === CAPABILITIES_RECORD_TYPE && capabilities.website.client_access_available === true})});
+  // Browsing the permitted catalogue lives in its own file. It is given the same authenticated request
+  // boundary and reads the connection state rather than keeping its own copy of the token.
+  catalogueBrowser = window.BaltorCatalogueBrowser
+    ? window.BaltorCatalogueBrowser.create({request, element, message,
+        current:() => ({connected:!!token, generation, scopes:principalScopes})})
+    : null;
+  if (!catalogueBrowser) message("browse-message", "Browsing is not available on this page. Search above still works.", true);
   async function connectService(supplied, activate = false) {
     disconnect(); token = supplied; message("connection-message", "Checking access…");
     try {
@@ -197,7 +204,7 @@
       $("admin-nav").hidden = !administrator; $("refresh-access").disabled = !administrator;
       const destination = afterLogin; afterLogin = null; navigate(destination || (administrator ? "/admin" : "/app"));
       if (administrator) await loadAccess();
-      clientAccess.connectionChanged();
+      clientAccess.connectionChanged(); catalogueBrowser?.connectionChanged();
     } catch (error) { disconnect(); message("connection-message", error.name === "AbortError" ? "Connection timed out. No automatic retry was made." : error.message, true); }
   }
   $("connect-form").addEventListener("submit", async event => {
