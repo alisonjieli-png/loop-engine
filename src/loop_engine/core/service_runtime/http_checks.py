@@ -628,6 +628,10 @@ def self_test():
                       "detail": "injected provider transports and owned loopback listeners; no provider is contacted"})
     with tempfile.TemporaryDirectory(prefix="service-account-email-") as directory:
         account_email_checks(account_check, Path(directory))
+    from .waitlist_checks import run_all_checks as waiting_list_checks
+    with tempfile.TemporaryDirectory(prefix="service-waitlist-") as directory:
+        for row in waiting_list_checks(Path(directory))["tests"]:
+            check(row["test"], row["passed"])
     from .observability_checks import run_checks as observability_checks
     observability_checks(check)
     check("every_service_check_module_is_run_by_a_suite", not unrun_service_check_modules())

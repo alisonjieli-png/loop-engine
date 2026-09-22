@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:8f00a68885ea5ed7a8f0df36a0ff6f2445f8aa33e36be1838346ff1fb8415613`.
+Source fingerprint: `sha256:9cce55fb561d1f12e04dacfeb14d51da627c3c737f914f916101bafbd379f757`.
 
 ## Where things stand
 
@@ -173,6 +173,7 @@ Source fingerprint: `sha256:8f00a68885ea5ed7a8f0df36a0ff6f2445f8aa33e36be1838346
 | D-21 | Meet customers in the harness they already use | initial_service | 0 of 4 |
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 5 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 4 |
+| D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
 
 ## Only the owner can do these
 

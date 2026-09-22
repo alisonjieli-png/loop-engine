@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `8f00a68885ea5ed7a8f0df36a0ff6f2445f8aa33e36be1838346ff1fb8415613`.
+Plan fingerprint: `9cce55fb561d1f12e04dacfeb14d51da627c3c737f914f916101bafbd379f757`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -802,6 +802,39 @@ Verification cases are required evidence, not recorded passes.
 | D-23-T01 | end_to_end | Pick a role on the demonstration page. | A recorded run for that role is shown with its cost and limits. | A demonstration whose recorded run is missing must fail the page check. |
 | D-23-T02 | operational_drill | Run the persona review on the live site after a release. | Every finding is recorded as roadmap work or fixed. | A review that did not load the live site must be refused. |
 | D-23-T03 | local_contract | Draft a reply for one found post. | The draft waits for a person's approval. | A configuration that posts without approval must fail the check. |
+
+### D-24: Take requests for access and invite one person from them
+
+Owning steps: S-6.12, S-6.15, S-6.21. Acceptance dependencies: D-17.
+
+Owning boundaries: `src/loop_engine/core/service_runtime/waitlist.py`; `src/loop_engine/core/service_runtime/waitlist_checks.py`; `src/loop_engine/core/service_runtime/web_assets/index.html`; `tools/waitlist_operator.py`; `docs/guides/waiting-list-and-invitations.md`.
+
+- Serve one public form that takes an email address and a short note, with no sign-in, and give every refusal its own typed code and its own words on the page.
+- Keep the entries in the existing service collection as a versioned record with its own states, written through the same atomic batch contract as every other service record.
+- Let an operator read the list and apply exactly one decision at a time, where repeating the same request identity replays the first decision and writes nothing.
+- Erase the address and the note when a person asks to be taken off the list, through the same decision contract, leaving the one-way digest and the decision history.
+- Offer the form, the links to it and the discount sentence only from the record the service publishes, so that a page never offers what the host cannot honour.
+- Refuse an invitation that promises a discount unless a saved payment account report names that exact code and the service reports that checkout takes one.
+- Count accepted entries for one source only where the host declared where the client address comes from, and record that no count was taken where it did not.
+- Record the invitation before the account is prepared and before the message is sent, and record what happened to that message, sent or unknown, without repeating anything automatically.
+
+Complete when: A visitor leaves an address on a service that keeps a waiting list, an operator sees it, invites one entry with a discount the payment account holds, and can erase an address on request. A service without a waiting list makes no offer at all.
+
+Failure control: A flood from one machine, a repeated address, an address that already has an account, a second invitation for the same entry, an invitation whose code no checkout would take, and a removal that leaves the address in the record must all be refused.
+
+Authority: No public registration. One invitation is one authorized email and one prepared account. The payment objects are created in test mode by the payment setup command, not by the invitation command, which holds no payment credential.
+
+Rollback or safe stop: Remove the waiting list block from the host configuration. The page then offers nothing and the public endpoint answers that the service keeps no list. Entries already recorded stay readable by the operator.
+
+Verification cases are required evidence, not recorded passes.
+
+| Case | Evidence level | Scenario | Pass condition | Negative control |
+|---|---|---|---|---|
+| D-24-T01 | local_contract | Send more requests from one caller than the policy allows, on a host that declared no client address source and on one that declared a forwarded address header. | The undeclared host accepts every caller and answers that no count was taken; the declared host counts each forwarded address on its own. | Naming the socket peer where no source was declared must be shown to close the form after the allowance, which is the collapse the rule prevents. |
+| D-24-T02 | local_contract | Remove one entry on request and read the stored record, not the view. | The address and the note are absent from the stored record, the state is removed, and the same address may ask again. | With nothing named as erased, the stored record must still hold the address, so the check can detect it. |
+| D-24-T03 | end_to_end | Load the served page in a real browser against a service with a waiting list and against one without. | The form, its links and the discount sentence appear only where the service publishes that it keeps a list and that checkout takes a code, and an address typed into the form reaches the operator's listing. | A page that shows the form before the service answers must fail the same check. |
+| D-24-T04 | local_contract | Invite one entry while checkout does not take a discount code, and while no payment account report names the code. | Both stop before the invitation is recorded and before any message is prepared, each with its own reason. | With the checkout rule removed, the code must be sent to someone who has nowhere to type it. |
+| D-24-T05 | real_provider | Read the promotion codes in the payment account, then run the invitation with the report that names the created code. | The code exists in the account and the invitation carries the same code the report names. | An empty promotion code list must refuse the invitation. Read on September 21, 2026: the list was empty and no invitation could be sent. |
 
 ## Launch benefit drafts
 

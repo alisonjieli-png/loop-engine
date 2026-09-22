@@ -912,6 +912,51 @@ continuation:
       - {id: D-23-T02, proof_level: operational_drill, scenario: Run the persona review on the live site after a release., pass_condition: Every finding is recorded as roadmap work or fixed., negative_control: A review that did not load the live site must be refused.}
       - {id: D-23-T03, proof_level: local_contract, scenario: Draft a reply for one found post., pass_condition: The draft waits for a person's approval., negative_control: A configuration that posts without approval must fail the check.}
       rollback: Withdraw a page or a demonstration; the scale plan changes nothing until approved.
+    - id: D-24
+      title: Take requests for access and invite one person from them
+      stage: initial_service
+      steps: [S-6.12, S-6.15, S-6.21]
+      depends_on: [D-17]
+      actions:
+        - "Serve one public form that takes an email address and a short note, with no sign-in, and give every refusal its own typed code and its own words on the page."
+        - "Keep the entries in the existing service collection as a versioned record with its own states, written through the same atomic batch contract as every other service record."
+        - "Let an operator read the list and apply exactly one decision at a time, where repeating the same request identity replays the first decision and writes nothing."
+        - "Erase the address and the note when a person asks to be taken off the list, through the same decision contract, leaving the one-way digest and the decision history."
+        - "Offer the form, the links to it and the discount sentence only from the record the service publishes, so that a page never offers what the host cannot honour."
+        - "Refuse an invitation that promises a discount unless a saved payment account report names that exact code and the service reports that checkout takes one."
+        - "Count accepted entries for one source only where the host declared where the client address comes from, and record that no count was taken where it did not."
+        - "Record the invitation before the account is prepared and before the message is sent, and record what happened to that message, sent or unknown, without repeating anything automatically."
+      acceptance: "A visitor leaves an address on a service that keeps a waiting list, an operator sees it, invites one entry with a discount the payment account holds, and can erase an address on request. A service without a waiting list makes no offer at all."
+      adversarial: "A flood from one machine, a repeated address, an address that already has an account, a second invitation for the same entry, an invitation whose code no checkout would take, and a removal that leaves the address in the record must all be refused."
+      authority_note: "No public registration. One invitation is one authorized email and one prepared account. The payment objects are created in test mode by the payment setup command, not by the invitation command, which holds no payment credential."
+      owning_paths: ["src/loop_engine/core/service_runtime/waitlist.py", "src/loop_engine/core/service_runtime/waitlist_checks.py", "src/loop_engine/core/service_runtime/web_assets/index.html", "tools/waitlist_operator.py", "docs/guides/waiting-list-and-invitations.md"]
+      rollback: "Remove the waiting list block from the host configuration. The page then offers nothing and the public endpoint answers that the service keeps no list. Entries already recorded stay readable by the operator."
+      verification_cases:
+        - id: D-24-T01
+          proof_level: "local_contract"
+          scenario: "Send more requests from one caller than the policy allows, on a host that declared no client address source and on one that declared a forwarded address header."
+          pass_condition: "The undeclared host accepts every caller and answers that no count was taken; the declared host counts each forwarded address on its own."
+          negative_control: "Naming the socket peer where no source was declared must be shown to close the form after the allowance, which is the collapse the rule prevents."
+        - id: D-24-T02
+          proof_level: "local_contract"
+          scenario: "Remove one entry on request and read the stored record, not the view."
+          pass_condition: "The address and the note are absent from the stored record, the state is removed, and the same address may ask again."
+          negative_control: "With nothing named as erased, the stored record must still hold the address, so the check can detect it."
+        - id: D-24-T03
+          proof_level: "end_to_end"
+          scenario: "Load the served page in a real browser against a service with a waiting list and against one without."
+          pass_condition: "The form, its links and the discount sentence appear only where the service publishes that it keeps a list and that checkout takes a code, and an address typed into the form reaches the operator's listing."
+          negative_control: "A page that shows the form before the service answers must fail the same check."
+        - id: D-24-T04
+          proof_level: "local_contract"
+          scenario: "Invite one entry while checkout does not take a discount code, and while no payment account report names the code."
+          pass_condition: "Both stop before the invitation is recorded and before any message is prepared, each with its own reason."
+          negative_control: "With the checkout rule removed, the code must be sent to someone who has nowhere to type it."
+        - id: D-24-T05
+          proof_level: "real_provider"
+          scenario: "Read the promotion codes in the payment account, then run the invitation with the report that names the created code."
+          pass_condition: "The code exists in the account and the invitation carries the same code the report names."
+          negative_control: "An empty promotion code list must refuse the invitation. Read on September 21, 2026: the list was empty and no invitation could be sent."
   owner_actions:
     - id: OWNER-01
       title: "Private pilot limits are recorded"

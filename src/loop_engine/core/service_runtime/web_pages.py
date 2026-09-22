@@ -35,11 +35,13 @@ WEB_ASSETS = {
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
+    "/waitlist": ("index.html", HTML_MEDIA_TYPE),
     "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
     "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
     "/assets/service.css": ("service.css", "text/css"),
     "/assets/architecture.css": ("architecture.css", "text/css"),
     "/assets/client-access.js": ("client-access.js", "text/javascript"),
+    "/assets/catalogue-browser.js": ("catalogue-browser.js", "text/javascript"),
     "/assets/service.js": ("service.js", "text/javascript"),
     "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
     # The licence terms of the packaged browser library travel with it.

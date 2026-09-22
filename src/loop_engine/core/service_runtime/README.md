@@ -50,6 +50,8 @@ Existing service boundary
 ├── billing.py and billing_records.py: signed-event state and reconciliation
 ├── stripe_provider.py: explicitly authorized read-only Stripe adapter
 ├── request_limits.py: failed-attempt settings record and its table in process memory
+├── waitlist.py: the public waiting list, its operator decisions and removal on request
+├── web_pages.py: the served page address table and the packaged files behind it
 └── http*.py: separately owned remote transport and host configuration
 ```
 
@@ -84,7 +86,11 @@ evidence and its limits are in
 creation an account may ever need, in one `service_billing_customer_effect`
 record identified by the account itself. The record holds the provider
 idempotency key, the current attempt identity, a lease, the reconciliation
-window, the cycle count and the outcome. `authorize_billing_customer_dispatch`
+window, the attempt's own dispatch deadline, the cycle count and the outcome.
+Its version is `service_billing_customer_effect/v2`, because a release that
+predates the recorded dispatch deadline must refuse the record rather than
+rebuild that deadline from its own caller's lease; version one is refused with
+`unsupported_or_corrupt_record`. `authorize_billing_customer_dispatch`
 rechecks current authority, the lease and every reserved read-set guard before
 the provider call. `bind_billing_customer(request, reservation=...)` commits
 the account record, the absent customer record and the confirmed effect
@@ -100,11 +106,15 @@ provider customer from the other mode, a deleted one, and one whose metadata
 names another account.
 
 ```text
-One customer for each account
+One customer for each account at one provider account
 ├── The durable effect record: one for each account, reused by every attempt
 ├── The lease: a second caller during a running creation is refused
 ├── The search before creation: a customer left behind by an uncertain
-│   attempt is bound instead of duplicated
+│   attempt is bound instead of duplicated, and an answer the provider
+│   marks as truncated is refused whatever its row count
+├── The wait before a new key cycle: a retired key leaves the search as the
+│   only protection, so a new cycle waits for the search to catch up, from
+│   the deadline the attempt that ran recorded for itself
 └── The atomic binding: the existing catalogue guard refuses a second writer
 ```
 
@@ -112,6 +122,46 @@ Within the reconciliation window a retry reuses the stored provider
 idempotency key. After that window the key can no longer reconcile anything,
 so a new cycle takes a new key and the search before creation is what keeps
 the account at one customer. A removed-guard control proves that step.
+
+That last sentence carries an assumption, and the assumption is named in the
+source. The provider customer search is eventually consistent, so
+`PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS` in `records.py` declares how
+stale this service is willing to assume the search may be. It is sixty
+seconds, it is a host choice rather than a measured provider fact, and nothing
+in this repository bounds the real lag. A new key cycle may begin only once
+that allowance has passed since the last moment the previous attempt could
+have reached the provider, which is the earlier of that attempt's lease end
+and its reconciliation window end. Until then the caller is refused with
+`billing_customer_search_not_current_yet` and nothing reaches the provider. A
+session configuration whose reconciliation window is shorter than the
+allowance is refused as well. Both rules have named checks. The wait has a
+removed-guard control inside the suite; the window floor was removed from the
+source instead, and its named check failed. If the real provider search lags
+longer than the allowance, the one
+customer result does not hold for a repeat after a retired key; raise the
+number rather than shortening a window to fit.
+
+That deadline is written by the attempt that ran, as `dispatch_deadline`, and
+read back from the record. It is never rebuilt from the lease of whichever
+caller comes next. The lease follows the host request timeout, so a host that
+lowers that timeout gives the next caller a shorter lease, and a rebuilt
+deadline would land earlier than the real one. A record whose deadline is
+missing or beyond its own window is treated as though its attempt ran to the
+end of that window, which is never earlier than the real deadline.
+
+A customer at one provider account does not exist at another, so the
+configured provider account changing is its own case.
+`begin_billing_customer` lets an account with no binding start a fresh cycle
+at the new provider account, and keeps the provider account it left in
+`superseded_provider_accounts`. An account that is bound stays refused until a
+host calls `release_billing_customer_account` with the exact account identity,
+the provider account being released and the provider account the service uses
+now. The release refuses unless the binding and the creation record both name
+the released provider account, refuses while a creation is running, and keeps
+the customer record of the released provider account as evidence.
+`ensure_customer` reports an account that already has a customer with the
+separate record version `billing_customer_binding_held/v1`, which names the
+customer and provider account the binding really holds.
 
 Every supported provider mutation declares the exact parameter names it may
 carry, in `POST_PARAMETERS`. The customer form may carry only
@@ -127,6 +177,20 @@ a space into the provider query.
 | The account identifier in the customer metadata | `removed_account_identifier_in_customer_metadata_is_detected` |
 | The ownership check on a provider customer | `removed_customer_ownership_check_is_detected` |
 | The provider account check before creation | `removed_provider_account_check_before_creation_is_detected` |
+| The refusal of a truncated search answer | `removed_truncated_search_refusal_is_detected` |
+| The wait before a new key cycle | `removed_search_freshness_wait_before_a_new_key_cycle_is_detected` |
+| The recorded dispatch deadline of the attempt that ran | `removed_recorded_dispatch_deadline_is_detected` |
+| The route from one provider account to another | `removed_provider_account_change_route_is_detected` |
+| The host release of a provider account | `removed_provider_account_release_is_detected` |
+
+A control passes only when its scenario returns a failed predicate. A
+scenario that raises an error fails its control instead, so a patched rule
+whose signature no longer matches its caller cannot pass one. The two rules
+the creation record follows,
+`billing_customer_request_differs_only_by_provider_account` and
+`billing_customer_search_can_show_the_previous_attempt`, live in `records.py`
+beside `PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS`, and `ServiceRuntime`
+binds them, which keeps `runtime.py` inside the module size cap.
 
 The lease has a named check and no removed-guard control inside the suite.
 Removing it does not produce a second customer, because the reserved attempt
@@ -699,6 +763,34 @@ either operation without a stated source is refused before the service starts.
 
 The operator guide is
 [account email operations](../../../../docs/guides/account-email-operations.md).
+
+## Waiting list
+
+This section describes current behavior. `waitlist.py` owns it. A host that
+declares a `waitlist` block in its configuration serves
+`POST /api/v1/waitlist`, where anyone can leave an email address and an
+optional note without signing in, and `GET` and `POST /api/v1/admin/waitlist`,
+where an operator with the administration scope reads the list and applies
+one decision at a time. A host without that block serves neither, and both
+answer `waitlist_unavailable`. The page offers the form, its links and the
+discount sentence only when the capabilities record says
+`waitlist_available`, and names the discount only when it also says
+`discount_code`. Like every other public statement on the page, the offer is
+read only from `service_capabilities/v1`, so a record version the page was not
+written for offers nothing. The pricing page's list of unfinished work and the
+sign-up page's note that the form is still being built name the waiting list
+form only while the service offers no list.
+
+A refused request to join is a refused attempt from one client address, so
+the failed-attempt limit counts it like a refused sign-in. The list counts
+accepted entries for each declared client address source on its own. With no
+declared source, `FailedAttemptLimiter.address_key` names no address, and every
+accepted entry records `no_declared_source` instead of one count shared by
+every caller behind a proxy.
+
+The entries, the decisions, removal on request and the invitation command are
+described in
+[the waiting list guide](../../../../docs/guides/waiting-list-and-invitations.md).
 
 ## Persistence and concurrency contract
 

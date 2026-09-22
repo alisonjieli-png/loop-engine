@@ -21,13 +21,16 @@ from .billing_effects import (
 )
 from .billing_records import StripeEntitlementPolicy, TENANT_METADATA_KEY
 from .records import (
-    BILLING_MANAGE_SCOPE, DEFAULT_SCOPES, BillingCustomerBindingRequest, ServiceRuntimeConfig, ServiceRuntimeError,
+    BILLING_MANAGE_SCOPE, DEFAULT_SCOPES, BillingCustomerAccountRelease, BillingCustomerBindingRequest,
+    BillingCustomerEffectSpec,
+    PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS, ServiceRuntimeConfig, ServiceRuntimeError,
     TenantKeyIssue, TenantRegistration,
 )
 from .runtime import CUSTOMER_EFFECT, ServiceRuntime
 from .stripe_sessions import (
-    ACCOUNT_PATH, CHECKOUT_OPERATION, CHECKOUT_PATH, CUSTOMER_COLLECTION_PATH, CUSTOMER_METADATA_PARAMETER,
-    CUSTOMER_PATH, CUSTOMER_SEARCH_PATH, GET_METHOD, PORTAL_OPERATION,
+    ACCOUNT_PATH, CHECKOUT_OPERATION, CHECKOUT_PATH, CUSTOMER_COLLECTION_PATH, CUSTOMER_HELD_VERSION,
+    CUSTOMER_METADATA_PARAMETER,
+    CUSTOMER_PATH, CUSTOMER_SEARCH_PATH, GET_METHOD, MINIMUM_RECONCILIATION_SECONDS, PORTAL_OPERATION,
     PORTAL_PATH, POST_METHOD, PRICE_PATH, SEARCH_QUERY_PARAMETER, SEARCH_RESULT_OBJECT,
     BillingSessionError, BillingSessionRequest,
     StripeSessionAdapter, StripeSessionConfiguration, StripeSessionPlan,
@@ -43,6 +46,11 @@ class LocalStripeSessionTransport:
     def __init__(self):
         self.calls, self.effects = [], {}
         self.customers = {}
+        # The fixture clock, so a created customer is stamped on the same time
+        # line the scenario advances, and the search can be made to lag behind
+        # it the way an eventually consistent provider search does.
+        self.clock = None
+        self.search_lag_seconds = 0
         self.lose_next_response = False
         self.refuse_next_creation = False
         self.after_read = None
@@ -53,13 +61,23 @@ class LocalStripeSessionTransport:
         self.override_result = None
         self.after_post = None
 
+    def _now(self):
+        return int(self.clock() if self.clock is not None else time.time())
+
     def _search(self, parameters):
-        """Answer a metadata search the way the provider documents it."""
+        """Answer a metadata search the way the provider documents it.
+
+        The answer can be made to lag behind the customer list, because the
+        provider search is eventually consistent. A customer becomes visible
+        `search_lag_seconds` after it was created.
+        """
         match = SEARCH_QUERY_PATTERN.fullmatch(parameters[SEARCH_QUERY_PARAMETER])
         if match is None:
             raise AssertionError("unsupported provider search query")
         key, value = match.group(1), match.group(2)
-        matched = [row for row in self.customers.values() if row["metadata"].get(key) == value]
+        fresh = self._now()
+        matched = [row for row in self.customers.values() if row["metadata"].get(key) == value
+                   and row.get("created", 0) + self.search_lag_seconds <= fresh]
         return {"object": SEARCH_RESULT_OBJECT, "url": CUSTOMER_SEARCH_PATH, "has_more": False, "data": matched}
 
     def __call__(self, request, secret):
@@ -96,7 +114,7 @@ class LocalStripeSessionTransport:
             result = existing[1]
         elif request.path == CUSTOMER_COLLECTION_PATH:
             result = {"id": "cus_fixture_" + str(len(self.customers) + 1), "object": "customer",
-                      "livemode": False, "created": int(time.time()),
+                      "livemode": False, "created": self._now(),
                       "metadata": {METADATA_PARAMETER_PATTERN.fullmatch(key).group(1): value
                                    for key, value in parameters.items()
                                    if METADATA_PARAMETER_PATTERN.fullmatch(key) is not None}}
@@ -110,7 +128,10 @@ class LocalStripeSessionTransport:
                       "url": ("https://checkout.stripe.com/c/pay/local_fixture#provider_fragment" if request.path == CHECKOUT_PATH
                               else "https://billing.stripe.com/p/session?secret=" + FIXTURE_URL_TOKEN),
                       **{key: value for key, value in parameters.items() if key in (
-                          "mode", "success_url", "cancel_url", "configuration", "return_url")}}
+                          "mode", "success_url", "cancel_url", "configuration", "return_url")},
+                      # The provider answers with a Boolean where the form carried text.
+                      **({"allow_promotion_codes": parameters["allow_promotion_codes"] == "true"}
+                         if "allow_promotion_codes" in parameters else {})}
             self.effects[request.idempotency_key] = ((request.path, request.parameters), result)
         if self.lose_next_response:
             self.lose_next_response = False
@@ -120,7 +141,7 @@ class LocalStripeSessionTransport:
         return self.override_result or dict(result)
 
 
-def fixture(root, *, bind_customers=True):
+def fixture(root, *, bind_customers=True, **policy_changes):
     clock = {"now": int(time.time())}
     configuration = ServiceRuntimeConfig(str(Path(root) / "service.db"), writes_authorized=True)
     runtime = ServiceRuntime(configuration, clock=lambda: clock["now"])
@@ -136,8 +157,9 @@ def fixture(root, *, bind_customers=True):
         plans=(StripeSessionPlan("basic", "Basic service", "price_basic"), StripeSessionPlan("other", "Other service", "price_other")),
         checkout_success_url="https://app.example/billing/success", checkout_cancel_url="https://app.example/billing/cancel",
         portal_return_url="https://app.example/account", portal_configuration_id="bpc_fixture",
-        allow_network=True, allow_session_creation=True)
+        allow_network=True, allow_session_creation=True, **policy_changes)
     provider = LocalStripeSessionTransport()
+    provider.clock = lambda: clock["now"]
     secret_calls = []
     def secret(reference):
         secret_calls.append(reference)
@@ -194,6 +216,38 @@ def quiet(function):
         return function()
     except ServiceRuntimeError:
         return None
+
+
+def install_policy(held, adapter):
+    """Install this adapter's own session policy over the one the fixture set."""
+    with held.runtime._catalog.store() as store:
+        row = held.runtime._catalog.read(store, SESSION_POLICY_KIND, "stripe")
+    return adapter.configure_policy(expected_version=row["record_version"])
+
+
+def advance(held, seconds):
+    """Move the fixture clock forward inside a provider call."""
+    held.clock["now"] += seconds
+
+
+def other_account_adapter(held, account_id="acct_live", **fields):
+    """The same service pointed at a different provider account.
+
+    It gets its own transport, because a customer at one provider account does
+    not exist at another.
+    """
+    provider = LocalStripeSessionTransport()
+    provider.clock = lambda: held.clock["now"]
+    provider.override_account = {"id": account_id, "object": "account"}
+    configuration = replace(held.policy, account_id=account_id, **fields)
+    adapter = StripeSessionAdapter(held.runtime, configuration, held.secret, transport=provider)
+    install_policy(held, adapter)
+    return adapter, provider
+
+
+def checkout(adapter, current, identity, plan="basic"):
+    return adapter.create(current, BillingSessionRequest(CHECKOUT_OPERATION, identity,
+                                                         adapter.policy_digest, plan))
 
 
 def customer_rows(held, tenant="alpha"):
@@ -384,6 +438,109 @@ def another_accounts_customer_is_never_bound(root):
     return alpha is None or alpha["provider_customer_id"] != foreign["id"]
 
 
+def a_truncated_search_is_not_read_as_no_customer(root):
+    """The provider answers with no rows and says the page was truncated.
+
+    The account already owns a customer, so reading that answer as absence
+    would give it a second one.
+    """
+    held = fixture(root, bind_customers=False)
+    held.provider.customers["cus_already_there"] = {
+        "id": "cus_already_there", "object": "customer", "livemode": False,
+        "created": held.clock["now"], "metadata": {TENANT_METADATA_KEY: "alpha"}}
+    held.provider.override_search = {"object": SEARCH_RESULT_OBJECT, "url": CUSTOMER_SEARCH_PATH,
+                                     "has_more": True, "data": []}
+    quiet(lambda: held.adapter.create(principal(held), request(held, "truncated-empty-page")))
+    return (not creations(held) and list(held.provider.customers) == ["cus_already_there"]
+            and bound(held) is None)
+
+
+def a_new_cycle_waits_until_the_search_can_show_the_last_attempt(root):
+    """A creation late in the window, whose answer was lost, then a repeat.
+
+    The provider search is given exactly the freshness allowance the service
+    declares, and the creation happens late in the reconciliation window, so
+    the stored key is retired while the search can still be blind to what it
+    made. Only the wait before a new cycle keeps the account at one customer.
+    """
+    held = fixture(root, bind_customers=False)
+    tight = replace(held.policy, reconciliation_seconds=MINIMUM_RECONCILIATION_SECONDS)
+    adapter = StripeSessionAdapter(held.runtime, tight, held.secret, transport=held.provider)
+    install_policy(held, adapter)
+    held.provider.search_lag_seconds = PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+    late = tight.lease_seconds - 5
+    held.provider.after_read = lambda call: advance(held, late) if call.path == ACCOUNT_PATH else None
+    held.provider.lose_next_response = True
+    start = held.clock["now"]
+    quiet(lambda: adapter.ensure_customer(principal(held)))
+    held.provider.after_read = None
+    held.provider.effects.clear()  # the provider no longer keeps the retired key
+    held.clock["now"] = start + tight.reconciliation_seconds + 1
+    early = refused(lambda: adapter.ensure_customer(principal(held)),
+                    "billing_customer_search_not_current_yet")
+    made_nothing_early = len(creations(held)) == 1 and len(held.provider.customers) == 1
+    held.clock["now"] = start + tight.lease_seconds + PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+    quiet(lambda: adapter.ensure_customer(principal(held)))
+    settled = bound(held)
+    return (early and made_nothing_early and len(creations(held)) == 1
+            and len(held.provider.customers) == 1 and settled is not None
+            and settled["provider_customer_id"] in held.provider.customers)
+
+
+def an_unbound_account_reaches_checkout_after_the_account_changes(root):
+    """The account attempted checkout in the sandbox and never bound.
+
+    The service is then pointed at another provider account. The customer the
+    sandbox may hold does not exist there, so the account starts a fresh cycle
+    at the current provider account and keeps the one it left as evidence.
+    """
+    held = fixture(root, bind_customers=False)
+    held.provider.lose_next_response = True
+    start = held.clock["now"]
+    quiet(lambda: held.adapter.ensure_customer(principal(held)))
+    left_behind = list(held.provider.customers)
+    live, live_provider = other_account_adapter(held)
+    held.clock["now"] = start + held.policy.lease_seconds + PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+    result = observed_result(lambda: checkout(live, principal(held), "after-account-change"))
+    settled = bound(held)
+    superseded = customer_rows(held)[0]["payload"]["superseded_provider_accounts"]
+    return (isinstance(result, dict) and result.get("provider_session_id", "").startswith("cs_")
+            and settled is not None and settled["provider_account_id"] == "acct_live"
+            and settled["provider_customer_id"] in live_provider.customers
+            and len(live_provider.customers) == 1
+            and list(held.provider.customers) == left_behind and len(left_behind) == 1
+            and [row["provider_account_id"] for row in superseded] == ["acct_fixture"])
+
+
+def a_released_account_reaches_checkout_at_the_current_account(root):
+    """The account bound a customer in the sandbox, then the service moved.
+
+    A bound account stays refused until a host releases it by name. After the
+    release it reaches checkout at the current provider account, and the
+    customer it had at the account it left is kept as evidence.
+    """
+    held = fixture(root, bind_customers=False)
+    quiet(lambda: held.adapter.create(principal(held), request(held, "sandbox-checkout")))
+    sandbox = bound(held)
+    live, live_provider = other_account_adapter(held)
+    wedged = refused(lambda: checkout(live, principal(held), "before-release"),
+                     "stripe_account_or_customer_mismatch")
+    offered_before = live.options(principal(held))
+    held.runtime.release_billing_customer_account(
+        BillingCustomerAccountRelease("alpha", "acct_fixture", "acct_live"))
+    held.clock["now"] += held.policy.lease_seconds + PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+    result = observed_result(lambda: checkout(live, principal(held), "after-release"))
+    settled = bound(held)
+    return (wedged and offered_before["checkout_available"] is False
+            and sandbox is not None and sandbox["provider_account_id"] == "acct_fixture"
+            and isinstance(result, dict) and result.get("provider_session_id", "").startswith("cs_")
+            and settled is not None and settled["provider_account_id"] == "acct_live"
+            and settled["provider_customer_id"] in live_provider.customers
+            and len(live_provider.customers) == 1
+            and sandbox["provider_customer_id"] in held.provider.customers
+            and len(held.provider.customers) == 1)
+
+
 def another_provider_account_creates_no_customer(root):
     """The configured credential reaches a provider account the host did not choose."""
     held = fixture(root, bind_customers=False)
@@ -460,6 +617,12 @@ def run_customer_checks(check):
               and not held.provider.calls and offered["checkout_available"] is False
               and offered["unavailable_reason"] == "stripe_account_mismatch"
               and held.runtime.billing_customer_for(principal(held))["provider_account_id"] == "acct_other")
+        check("a_binding_this_request_did_not_make_is_reported_with_its_own_record_and_its_real_customer",
+              held_result.get("record_type") == CUSTOMER_HELD_VERSION
+              and held_result.get("provider_customer_id") == "cus_elsewhere"
+              and held_result.get("provider_account_id") == "acct_other"
+              and held_result.get("matches_configured_provider_account") is False
+              and held.adapter.policy_digest and held.adapter.configuration.account_id == "acct_fixture")
 
     with tempfile.TemporaryDirectory(prefix="stripe-customer-uncertain-") as root:
         held = fixture(root, bind_customers=False)
@@ -548,6 +711,10 @@ def run_customer_checks(check):
         check("a_repeat_after_the_idempotency_window_finds_the_existing_customer_instead_of_creating_another",
               repeat_after_the_window_finds_the_existing_customer(root))
 
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-page-") as root:
+        check("an_account_that_already_owns_a_customer_keeps_it_when_the_search_page_is_truncated",
+              a_truncated_search_is_not_read_as_no_customer(root))
+
     with tempfile.TemporaryDirectory(prefix="stripe-customer-foreign-") as root:
         check("a_provider_customer_that_names_another_account_is_never_bound",
               another_accounts_customer_is_never_bound(root))
@@ -556,83 +723,72 @@ def run_customer_checks(check):
         check("a_credential_that_reaches_another_provider_account_creates_no_customer",
               another_provider_account_creates_no_customer(root))
 
-    with tempfile.TemporaryDirectory(prefix="stripe-customer-wire-") as root:
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-truncated-") as root:
         held = fixture(root, bind_customers=False)
-        wire = held.adapter._customer_creation_parameters
-        check("the_customer_wire_contract_refuses_personal_fields_and_an_unbounded_search",
-              refused(lambda: sessions_wire(CUSTOMER_COLLECTION_PATH, (("email", "person@example.test"),)),
-                      "unsupported_session_wire_parameters")
-              and refused(lambda: sessions_wire(CUSTOMER_COLLECTION_PATH, wire("alpha"), idempotency_key=""),
-                          "invalid_request")
-              and refused(lambda: sessions_search_wire(()), "unsupported_customer_search_parameters")
-              and refused(lambda: sessions_search_wire((("expand[]", "data"),)), "unsupported_customer_search_parameters")
-              and refused(lambda: search_query(TENANT_METADATA_KEY, "alpha' or metadata['x']:'y"), "invalid_request"))
+        held.provider.override_search = {"object": SEARCH_RESULT_OBJECT, "url": CUSTOMER_SEARCH_PATH,
+                                         "has_more": True, "data": []}
+        error = captured(lambda: held.adapter.create(principal(held), request(held, "truncated-empty")))
+        check("a_truncated_search_answer_with_no_rows_is_refused_instead_of_read_as_no_customer",
+              isinstance(error, BillingSessionError) and error.code == "billing_customer_not_created"
+              and error.details["diagnostic_code"] == "ambiguous_billing_customer_at_provider"
+              and error.details["creation_attempted"] is False and not creations(held)
+              and not held.provider.customers and bound(held) is None)
 
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-freshness-") as root:
+        check("a_new_provider_key_cycle_waits_until_the_search_can_show_the_last_attempt",
+              a_new_cycle_waits_until_the_search_can_show_the_last_attempt(root))
 
-def run_customer_mutant_controls(check):
-    """Each control reruns a named scenario with one guard removed.
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-floor-") as root:
+        held = fixture(root, bind_customers=False)
+        spec = BillingCustomerEffectSpec("alpha", "acct_fixture", TENANT_METADATA_KEY)
+        check("a_reconciliation_window_below_the_declared_search_freshness_allowance_is_refused",
+              MINIMUM_RECONCILIATION_SECONDS == PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+              and held.policy.lease_seconds < MINIMUM_RECONCILIATION_SECONDS
+              and refused(lambda: replace(held.policy, reconciliation_seconds=MINIMUM_RECONCILIATION_SECONDS - 1),
+                          "invalid_session_allowance")
+              and refused(lambda: held.runtime.begin_billing_customer(
+                  principal(held), spec, lease_seconds=10,
+                  reconciliation_seconds=MINIMUM_RECONCILIATION_SECONDS - 1),
+                  "invalid_billing_customer_effect_allowance")
+              and not customer_rows(held))
 
-    The scenario's own predicate must fail, so the removed behavior is the
-    reason that the named check passes.
-    """
-    from unittest.mock import patch
-    from . import stripe_sessions as adapter_module
-    from .billing_records import StripeCustomerProjection
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-switch-") as root:
+        check("an_unbound_account_reaches_checkout_after_the_configured_provider_account_changes",
+              an_unbound_account_reaches_checkout_after_the_account_changes(root))
 
-    def lenient(cls, value, *, tenant_id, livemode, metadata_key=TENANT_METADATA_KEY):
-        return cls(value["id"], tenant_id, livemode)
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-release-") as root:
+        check("a_released_account_reaches_checkout_at_the_provider_account_the_service_now_uses",
+              a_released_account_reaches_checkout_at_the_current_account(root))
 
-    controls = (
-        ("removed_customer_search_before_creation_is_detected",
-         repeat_after_the_window_finds_the_existing_customer,
-         lambda: patch.object(adapter_module.StripeSessionAdapter, "_search_customer",
-                              lambda self, tenant_id, secret: None)),
-        ("removed_account_identifier_in_customer_metadata_is_detected",
-         first_checkout_binds_one_customer,
-         lambda: patch.object(adapter_module.StripeSessionAdapter, "_customer_creation_parameters",
-                              lambda self, tenant_id: ())),
-        ("removed_customer_ownership_check_is_detected",
-         another_accounts_customer_is_never_bound,
-         lambda: patch.object(StripeCustomerProjection, "from_provider", classmethod(lenient))),
-        ("removed_provider_account_check_before_creation_is_detected",
-         another_provider_account_creates_no_customer,
-         lambda: patch.object(adapter_module.StripeSessionAdapter, "_verified_account",
-                              lambda self, secret: {})),
-    )
-    for name, scenario, mutant in controls:
-        with tempfile.TemporaryDirectory(prefix="stripe-customer-mutant-") as root:
-            with mutant():
-                try:
-                    observed = bool(scenario(root))
-                except Exception:
-                    observed = False
-        check(name, observed is False)
-
-
-def sessions_wire(path, parameters, *, idempotency_key="le-customer-fixture"):
-    from .stripe_sessions import StripeSessionWireRequest
-    return StripeSessionWireRequest(POST_METHOD, path, tuple(parameters), "fixture_version",
-                                    idempotency_key, 2, 1024)
-
-
-def sessions_search_wire(parameters):
-    from .stripe_sessions import StripeSessionWireRequest
-    return StripeSessionWireRequest(GET_METHOD, CUSTOMER_SEARCH_PATH, tuple(parameters), "fixture_version",
-                                    "", 2, 1024)
-
-
-def search_query(metadata_key, tenant_id):
-    from .stripe_sessions import _customer_search_query
-    return _customer_search_query(metadata_key, tenant_id)
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-release-refusal-") as root:
+        held = fixture(root, bind_customers=False)
+        quiet(lambda: held.adapter.create(principal(held), request(held, "sandbox-checkout")))
+        live, _live_provider = other_account_adapter(held)
+        mismatched = refused(lambda: held.runtime.release_billing_customer_account(
+            BillingCustomerAccountRelease("alpha", "acct_live", "acct_other")),
+            "billing_customer_release_account_mismatch")
+        same = refused(lambda: BillingCustomerAccountRelease("alpha", "acct_fixture", "acct_fixture"),
+                       "billing_customer_release_needs_another_account")
+        other_tenant = refused(lambda: held.runtime.release_billing_customer_account(
+            BillingCustomerAccountRelease("beta", "acct_fixture", "acct_live")),
+            "billing_customer_release_account_mismatch")
+        check("a_release_refuses_unless_it_names_the_exact_provider_account_the_account_holds",
+              mismatched and same and other_tenant
+              and held.runtime.billing_customer_for(principal(held))["provider_account_id"] == "acct_fixture"
+              and refused(lambda: checkout(live, principal(held), "still-wedged"),
+                          "stripe_account_or_customer_mismatch"))
 
 
 def run_checks():
     tests = []
     def check(name, passed):
         tests.append({"test": name, "passed": bool(passed), "detail": "durable local state and injected provider, no live Stripe"})
-    from .stripe_session_transport_checks import run_transport_checks
+    from .stripe_session_transport_checks import (
+        run_customer_mutant_controls, run_customer_window_checks, run_transport_checks,
+    )
     run_domain_checks(check)
     run_customer_checks(check)
+    run_customer_window_checks(check)
     run_customer_mutant_controls(check)
     run_transport_checks(check)
     return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),

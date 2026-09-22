@@ -23,6 +23,7 @@ SERVICE_COLLECTION = "hosted_service_state"
 SUBJECT_TENANT_REGISTRATION_VERSION = "service_subject_tenant_registration/v1"
 BILLING_CUSTOMER_EFFECT_SPEC_VERSION = "billing_customer_effect_spec/v1"
 BILLING_CUSTOMER_OUTCOME_VERSION = "billing_customer_effect_outcome/v1"
+BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION = "billing_customer_account_release/v1"
 # One status vocabulary for every externally consequential billing effect.
 # `billing_effects.py` owns the checkout and portal effect and declares the
 # same four words; a check in `runtime_checks.py` fails when they drift apart.
@@ -32,6 +33,16 @@ EFFECT_PENDING, EFFECT_CONFIRMED, EFFECT_UNKNOWN, EFFECT_NOT_ATTEMPTED = (
 # `billing_effects.py` declares the same observed provider fact, and a check
 # fails when the two declarations differ.
 PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS = 24 * 3600
+# How stale this service is willing to assume a provider customer search may
+# be. The provider search is eventually consistent, and this repository holds
+# no measured bound for it, so this number is a declared host allowance and not
+# a provider guarantee. It is used in one place: a new provider idempotency
+# cycle may begin only once this much time has passed since the last moment the
+# previous attempt could have reached the provider. That way a customer the
+# previous attempt created is visible to the search before the search is
+# trusted to say that the account has none. Raise it if a provider report shows
+# a longer lag; never lower it to make a window fit.
+PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS = 60
 
 
 class ServiceRuntimeError(ValueError):
@@ -223,6 +234,77 @@ class BillingCustomerEffectSpec:
     @property
     def digest(self):
         return digest(asdict(self))
+
+
+@dataclass(frozen=True)
+class BillingCustomerAccountRelease:
+    """Host authority to free one account from a provider account it has left.
+
+    A customer created at one provider account does not exist at another, so an
+    account whose service now points at a different provider account needs a
+    new customer there. This record names the exact account, the provider
+    account being released and the provider account the service uses now, so a
+    release can never be read as permission to unbind a current provider
+    account. It is host input, never caller input: no request body can build it.
+    """
+
+    tenant_id: str
+    released_provider_account_id: str
+    current_provider_account_id: str
+    record_type: str = BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION
+
+    def __post_init__(self):
+        if self.record_type != BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION:
+            raise ServiceRuntimeError("unsupported_billing_customer_release")
+        identifier(self.tenant_id, "tenant identity")
+        identifier(self.released_provider_account_id, "released billing account identity")
+        identifier(self.current_provider_account_id, "current billing account identity")
+        if self.released_provider_account_id == self.current_provider_account_id:
+            raise ServiceRuntimeError("billing_customer_release_needs_another_account")
+
+
+def billing_customer_request_differs_only_by_provider_account(stored, requested):
+    """True when the stored request identity differs only by provider account.
+
+    The configured provider account may change, for example when the
+    service moves from the test account to the live one. Nothing else may
+    differ: a different metadata key would send the search before creation
+    to look for the wrong field, so that stays a request identity conflict.
+    `ServiceRuntime.begin_billing_customer` reads this rule.
+    """
+    return (isinstance(stored, dict) and bool(stored.get("provider_account_id"))
+            and {**stored, "provider_account_id": requested["provider_account_id"]} == requested)
+
+
+def billing_customer_search_can_show_the_previous_attempt(state, now):
+    """True when a provider search would already show the previous attempt.
+
+    A new idempotency cycle abandons the stored provider key, so from then
+    on the metadata search before creation is the only thing that keeps the
+    account at one customer. The previous attempt could not have reached
+    the provider later than its own recorded dispatch deadline, because
+    `authorize_billing_customer_dispatch` refuses at that moment. The
+    search is trusted only once the declared freshness allowance has passed
+    since that deadline, so a customer the previous attempt created is
+    visible before the search is read as saying there is none.
+
+    The deadline is read from the record of the attempt that set it. It is
+    never rebuilt from the lease of whichever caller comes next: a host that
+    lowers its request timeout lowers that lease, and a rebuilt deadline
+    would then land earlier than the one the previous attempt really had,
+    which would start a new cycle while the search can still be blind to
+    what that attempt created. `ServiceRuntime.begin_billing_customer` reads
+    this rule with the `service_billing_customer_effect` record as `state`.
+    """
+    if not state.get("attempts"):
+        return True
+    # A record whose deadline is missing or beyond its own window is
+    # treated as though its attempt ran to the end of that window. That is
+    # the longer wait, and it is never earlier than the real deadline.
+    deadline, window = state.get("dispatch_deadline"), state["retry_before"]
+    if type(deadline) not in (int, float) or not deadline <= window:
+        deadline = window
+    return now >= deadline + PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
 
 
 @dataclass(frozen=True)

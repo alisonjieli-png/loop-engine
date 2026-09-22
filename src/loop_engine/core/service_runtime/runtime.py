@@ -20,12 +20,16 @@ from ..provisioning_server import (
     ProvisioningMeterRequest,
 )
 from .records import (
-    BILLING_CUSTOMER_OUTCOME_VERSION, BILLING_MANAGE_SCOPE, CLIENT_ACCESS_PROFILE, BillingCustomerBindingRequest,
+    BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION,
+    BILLING_CUSTOMER_OUTCOME_VERSION, BILLING_MANAGE_SCOPE, CLIENT_ACCESS_PROFILE, BillingCustomerAccountRelease,
+    BillingCustomerBindingRequest,
     BillingCustomerEffectSpec, BillingCustomerReservation, EFFECT_CONFIRMED, EFFECT_NOT_ATTEMPTED, EFFECT_PENDING,
     EFFECT_UNKNOWN, ENTITLEMENTS, IssuedServiceKey, PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS,
+    PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS,
     ServiceCommitUnknown, ServicePrincipal, ServiceRuntimeConfig, ServiceRuntimeError,
-    SubjectBindingRequest, SubjectTenantRegistration, TenantKeyIssue, TenantRegistration, canonical, digest,
-    identifier, scopes,
+    SubjectBindingRequest, SubjectTenantRegistration, TenantKeyIssue, TenantRegistration,
+    billing_customer_request_differs_only_by_provider_account, billing_customer_search_can_show_the_previous_attempt,
+    canonical, digest, identifier, scopes,
 )
 from .storage import ServiceCatalogBinding
 
@@ -44,6 +48,14 @@ CUSTOMER_IDEMPOTENCY_PREFIX = "le-customer-"
 # refuses the record instead of honoring it without that rule after a rollback.
 OWNER_BOUND_KEY_SCHEMA = KEY + "/v2"
 KEY_SCHEMAS = (SCHEMAS[KEY], OWNER_BOUND_KEY_SCHEMA)
+# The creation record carries the exact moment past which its own attempt could
+# no longer have reached the provider. A release that predates that field
+# rebuilds the moment from the lease of whichever caller comes next, and that
+# lease can be shorter than the one the attempt really held. Such a release must
+# refuse this record rather than read it, so the field arrives with its own
+# record version.
+DISPATCH_DEADLINE_CUSTOMER_EFFECT_SCHEMA = CUSTOMER_EFFECT + "/v2"
+CUSTOMER_EFFECT_SCHEMAS = (DISPATCH_DEADLINE_CUSTOMER_EFFECT_SCHEMA,)
 METADATA, BODIES = ENTITLEMENTS
 HOST_GRANT_SOURCE = "explicit_host_grant"
 STRIPE_SNAPSHOT_SOURCE = "stripe_snapshot"
@@ -95,7 +107,8 @@ class ServiceRuntime:
         if row is None:
             raise ServiceRuntimeError("not_found")
         payload = row.get("payload")
-        supported = KEY_SCHEMAS if kind == KEY else (SCHEMAS[kind],)
+        supported = (KEY_SCHEMAS if kind == KEY else
+                     CUSTOMER_EFFECT_SCHEMAS if kind == CUSTOMER_EFFECT else (SCHEMAS[kind],))
         if not isinstance(payload, dict) or payload.get("record_type") not in supported:
             raise ServiceRuntimeError("unsupported_or_corrupt_record")
         return payload
@@ -506,6 +519,12 @@ class ServiceRuntime:
                     and (actual is None or actual["record_version"] != guard.record_version)):
                 raise ServiceRuntimeError("billing_customer_authority_changed")
 
+    # The two rules a creation record follows live beside that record in
+    # `records.py`, with their reasons. They are bound here, so the reservation
+    # below reads them and a removed-guard control can patch them on this class.
+    _only_the_provider_account_changed = staticmethod(billing_customer_request_differs_only_by_provider_account)
+    _search_can_show_the_previous_attempt = staticmethod(billing_customer_search_can_show_the_previous_attempt)
+
     def begin_billing_customer(self, principal, spec: BillingCustomerEffectSpec, *,
                                lease_seconds, reconciliation_seconds) -> BillingCustomerReservation:
         """Reserve the one provider customer creation this account may ever need.
@@ -516,11 +535,20 @@ class ServiceRuntime:
         the reconciliation window has passed, the stored provider idempotency
         key can no longer reconcile an earlier uncertain attempt, so a new
         cycle takes a new key; the metadata search before creation is what
-        then keeps the account at one customer.
+        then keeps the account at one customer, and a new cycle waits until
+        that search can show whatever the previous attempt did.
+
+        The configured provider account may change, for example when the
+        service moves from the test account to the live one. A customer at the
+        account being left does not exist at the new one, so an account with no
+        binding starts a fresh cycle at the new provider account and keeps the
+        account it left as evidence. An account that is bound needs the
+        explicit `release_billing_customer_account` operation first.
         """
         if not isinstance(spec, BillingCustomerEffectSpec):
             raise ServiceRuntimeError("invalid_billing_customer_effect")
         if (type(lease_seconds) is not int or lease_seconds <= 0 or type(reconciliation_seconds) is not int
+                or reconciliation_seconds < PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
                 or not lease_seconds < reconciliation_seconds < PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS):
             raise ServiceRuntimeError("invalid_billing_customer_effect_allowance")
         now = self._now()
@@ -533,24 +561,42 @@ class ServiceRuntime:
                 raise ServiceRuntimeError("billing_customer_already_bound")
             previous = self._catalog.read(store, CUSTOMER_EFFECT, current.tenant_id)
             if previous is None:
-                state = {"record_type": SCHEMAS[CUSTOMER_EFFECT], "tenant_id": current.tenant_id,
+                state = {"record_type": DISPATCH_DEADLINE_CUSTOMER_EFFECT_SCHEMA, "tenant_id": current.tenant_id,
                          "spec": asdict(spec), "spec_digest": spec.digest, "created_at": now,
                          "retry_before": now + reconciliation_seconds, "idempotency_cycles": 0,
                          "idempotency_key": CUSTOMER_IDEMPOTENCY_PREFIX + uuid.uuid4().hex,
                          "attempts": 0, "status": EFFECT_PENDING, "provider_customer_id": "",
-                         "diagnostic_code": ""}
+                         "diagnostic_code": "", "superseded_provider_accounts": []}
             else:
                 state = dict(self._payload(previous, CUSTOMER_EFFECT))
-                if state["spec_digest"] != spec.digest or state["spec"] != asdict(spec):
-                    raise ServiceRuntimeError("billing_customer_request_identity_conflict")
+                stored, requested = state.get("spec"), asdict(spec)
+                account_changed = False
+                if state.get("spec_digest") != spec.digest or stored != requested:
+                    if not self._only_the_provider_account_changed(stored, requested):
+                        raise ServiceRuntimeError("billing_customer_request_identity_conflict")
+                    account_changed = True
                 if state.get("lease_until", 0) > now:
                     raise ServiceRuntimeError("billing_customer_creation_in_progress")
-                if now >= state["retry_before"]:
+                if account_changed or now >= state["retry_before"]:
+                    if not self._search_can_show_the_previous_attempt(state, now):
+                        raise ServiceRuntimeError("billing_customer_search_not_current_yet")
+                    if account_changed:
+                        state.update(spec=requested, spec_digest=spec.digest,
+                                     provider_customer_id="", diagnostic_code="",
+                                     superseded_provider_accounts=[
+                                         *state.get("superseded_provider_accounts", ()),
+                                         {"provider_account_id": stored["provider_account_id"],
+                                          "provider_customer_id": state.get("provider_customer_id", ""),
+                                          "status": state.get("status", ""), "superseded_at": now}])
                     state.update(idempotency_key=CUSTOMER_IDEMPOTENCY_PREFIX + uuid.uuid4().hex,
                                  retry_before=now + reconciliation_seconds,
                                  idempotency_cycles=state["idempotency_cycles"] + 1, status=EFFECT_PENDING)
             attempt_id = uuid.uuid4().hex
+            # The same moment `authorize_billing_customer_dispatch` refuses at,
+            # stored so that a later cycle waits for this attempt rather than
+            # for one rebuilt from its own lease.
             state.update(attempt_id=attempt_id, lease_until=now + lease_seconds,
+                         dispatch_deadline=min(now + lease_seconds, state["retry_before"]),
                          attempts=state["attempts"] + 1, last_attempt_at=now)
             row = self._catalog.record(CUSTOMER_EFFECT, current.tenant_id, state, tenant_id=current.tenant_id)
             self._catalog.commit(store, (row,), (*authority, self._catalog.guard(previous, row["record_id"])))
@@ -633,6 +679,52 @@ class ServiceRuntime:
                 "provider_account_id": request.provider_account_id,
                 "provider_customer_id": request.provider_customer_id,
                 "reconciled_effect": reservation is not None}
+
+    def release_billing_customer_account(self, request: BillingCustomerAccountRelease):
+        """Free one account from a provider account the service has left.
+
+        This is the defined route from a customer at one provider account to a
+        customer at another, for example when the service moves from the test
+        account to the live one. It is an explicit host operation, so an
+        account that is bound to a different provider account stays refused
+        until someone decides to release it. It refuses unless the account's
+        binding and its creation record both name exactly the account being
+        released, and it refuses while a creation is running.
+
+        The released customer record is kept. It is the evidence of what the
+        account had at the provider it left, and the provider event path cannot
+        reach it any more because that path reads the customer record under the
+        provider account the service is configured with. Clearing the binding
+        makes the account eligible for one new customer at the current provider
+        account through the ordinary checkout path.
+        """
+        if not isinstance(request, BillingCustomerAccountRelease):
+            raise ServiceRuntimeError("invalid_request")
+        now = self._now()
+        with self._catalog.store(write=True) as store:
+            tenant, data = self._tenant(store, request.tenant_id)
+            previous = self._catalog.read(store, CUSTOMER_EFFECT, request.tenant_id)
+            state = dict(self._payload(previous, CUSTOMER_EFFECT)) if previous is not None else None
+            stored = state.get("spec") if state is not None else None
+            if state is not None and not isinstance(stored, dict):
+                raise ServiceRuntimeError("unsupported_or_corrupt_record")
+            named = {data.get("billing_account_id") or "",
+                     (stored.get("provider_account_id") if stored is not None else "") or ""}
+            named.discard("")
+            if named != {request.released_provider_account_id}:
+                raise ServiceRuntimeError("billing_customer_release_account_mismatch")
+            if state is not None and state.get("lease_until", 0) > now:
+                raise ServiceRuntimeError("billing_customer_creation_in_progress")
+            released_customer = data.get("billing_customer_id") or ""
+            updated = {**tenant, "record_version": uuid.uuid4().hex,
+                       "payload": {**data, "billing_customer_id": "", "billing_account_id": ""}}
+            self._catalog.commit(store, (updated,), (self._catalog.guard(tenant),))
+        return {"record_type": BILLING_CUSTOMER_ACCOUNT_RELEASE_VERSION, "committed": True,
+                "tenant_id": request.tenant_id,
+                "released_provider_account_id": request.released_provider_account_id,
+                "released_provider_customer_id": released_customer,
+                "current_provider_account_id": request.current_provider_account_id,
+                "released_at": now}
 
     def billing_customer_for(self, principal: ServicePrincipal):
         """Resolve the exact durable provider mapping after current scope validation."""

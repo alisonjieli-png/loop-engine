@@ -115,6 +115,8 @@ class StructureTests(unittest.TestCase):
         self.assertGreaterEqual(len(reported), 20)
         self.assertTrue(all(len(row["verification_cases"]) >= 3 for row in reported))
         self.assertIn("D-17", [row["id"] for row in reported])
+        # The waiting list package joined as D-18 on its own line and became D-24 when it met main.
+        self.assertIn("D-24", [row["id"] for row in reported])
         self.assertEqual(len(result["roadmap"]["launch_benefits"]), 3)
 
     def test_hosting_and_full_architecture_are_embedded_not_external_handoffs(self):

@@ -1,0 +1,3366 @@
+{
+  "record_type": "service_workspace_browser_checks/v2",
+  "scope": "real browser and loopback service; provider fixtures only",
+  "external_provider_calls": 0,
+  "checks": [
+    {
+      "name": "reviewed_recipe_record_contains_no_key",
+      "passed": true,
+      "detail": {
+        "places": []
+      }
+    },
+    {
+      "name": "reviewed_recipe_record_uses_only_the_address_placeholder",
+      "passed": true,
+      "detail": {
+        "places": []
+      }
+    },
+    {
+      "name": "reviewed_recipe_record_gives_plain_check_commands",
+      "passed": true,
+      "detail": {
+        "places": []
+      }
+    },
+    {
+      "name": "reviewed_recipe_record_keeps_schema_addresses_on_its_cited_source_host",
+      "passed": true,
+      "detail": {
+        "places": []
+      }
+    },
+    {
+      "name": "no_key_check_of_the_record_fails_for_every_known_wrong_record",
+      "passed": true,
+      "detail": {
+        "records": 16,
+        "missed": []
+      }
+    },
+    {
+      "name": "address_check_of_the_record_fails_for_every_known_wrong_record",
+      "passed": true,
+      "detail": {
+        "records": 15,
+        "missed": []
+      }
+    },
+    {
+      "name": "command_check_of_the_record_fails_for_every_known_wrong_record",
+      "passed": true,
+      "detail": {
+        "records": 2
+      }
+    },
+    {
+      "name": "schema_check_of_the_record_fails_for_every_known_wrong_record",
+      "passed": true,
+      "detail": {
+        "records": 2
+      }
+    },
+    {
+      "name": "no_key_check_does_not_mistake_a_record_type_or_an_address_for_a_key",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "public_landing_has_real_routes_and_configured_brand",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_headline_names_the_developer_and_the_agent",
+      "passed": true,
+      "detail": {
+        "headline": "Supercharge your developers\nand AI agents."
+      }
+    },
+    {
+      "name": "headline_check_rejects_a_headline_that_names_neither",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_subhead_names_the_unit_of_work",
+      "passed": true,
+      "detail": {
+        "subhead": "Give your AI agents what they need for each step."
+      }
+    },
+    {
+      "name": "subhead_check_rejects_a_sentence_that_never_names_the_step",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_says_the_model_keys_stay_with_the_customer",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "light_is_default_even_when_operating_system_is_dark",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "operating_system_does_not_override_explicit_light_default",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "optimization_message_does_not_guarantee_daily_improvement",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_opens_with_the_owner_category_line",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "the_owner_category_line_is_explained_in_plain_words",
+      "passed": true,
+      "detail": {
+        "positioning": "Harness and agent optimized operation, in plain words: a harness is the program that runs your coding agent, such as OpenCode, Codex or Claude Code. Baltor is built for the way those programs work, one step at a time, with each step asking for the material it needs."
+      }
+    },
+    {
+      "name": "category_line_explanation_check_rejects_a_bare_phrase",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_states_the_free_and_paid_split",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_offers_one_primary_action_and_one_secondary",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_shows_a_three_step_strip",
+      "passed": true,
+      "detail": {
+        "steps": [
+          "ask",
+          "connect",
+          "keep"
+        ]
+      }
+    },
+    {
+      "name": "homepage_says_what_an_account_gives_you",
+      "passed": true,
+      "detail": {
+        "offers": [
+          "downloads",
+          "recipes",
+          "search",
+          "usage"
+        ]
+      }
+    },
+    {
+      "name": "homepage_states_the_plan_price_and_the_measured_unit",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_closes_with_an_action",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_makes_no_unmeasured_promise",
+      "passed": true,
+      "detail": {
+        "words": []
+      }
+    },
+    {
+      "name": "promise_check_rejects_a_known_wrong_claim",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "benefit_details_state_the_real_limits_without_a_measurement_apology",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "benefit_detail_check_rejects_a_missing_limit_and_a_returned_apology",
+      "passed": true,
+      "detail": {
+        "limits": 2,
+        "apologies": 4
+      }
+    },
+    {
+      "name": "homepage_lists_six_benefits_with_their_titles",
+      "passed": true,
+      "detail": {
+        "titles": [
+          "Each step gets the material it needs",
+          "Reuse code instead of writing it again",
+          "Not every step needs a large model",
+          "Solutions you can run without us",
+          "A failed check is examined, not obeyed",
+          "Work that can stop and start again"
+        ]
+      }
+    },
+    {
+      "name": "pressing_a_benefit_shows_only_its_own_detail",
+      "passed": true,
+      "detail": {
+        "pressed": [
+          {
+            "name": "resume",
+            "shown": [
+              "resume"
+            ]
+          },
+          {
+            "name": "review",
+            "shown": [
+              "review"
+            ]
+          },
+          {
+            "name": "export",
+            "shown": [
+              "export"
+            ]
+          },
+          {
+            "name": "model",
+            "shown": [
+              "model"
+            ]
+          },
+          {
+            "name": "reuse",
+            "shown": [
+              "reuse"
+            ]
+          },
+          {
+            "name": "material",
+            "shown": [
+              "material"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "keyboard_focus_alone_opens_each_benefit",
+      "passed": true,
+      "detail": {
+        "keyboard": [
+          {
+            "name": "material",
+            "focused": "material",
+            "shown": [
+              "material"
+            ]
+          },
+          {
+            "name": "reuse",
+            "focused": "reuse",
+            "shown": [
+              "reuse"
+            ]
+          },
+          {
+            "name": "model",
+            "focused": "model",
+            "shown": [
+              "model"
+            ]
+          },
+          {
+            "name": "export",
+            "focused": "export",
+            "shown": [
+              "export"
+            ]
+          },
+          {
+            "name": "review",
+            "focused": "review",
+            "shown": [
+              "review"
+            ]
+          },
+          {
+            "name": "resume",
+            "focused": "resume",
+            "shown": [
+              "resume"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "pointing_at_a_benefit_opens_it",
+      "passed": true,
+      "detail": {
+        "hovered": [
+          {
+            "name": "material",
+            "shown": [
+              "material"
+            ]
+          },
+          {
+            "name": "reuse",
+            "shown": [
+              "reuse"
+            ]
+          },
+          {
+            "name": "model",
+            "shown": [
+              "model"
+            ]
+          },
+          {
+            "name": "export",
+            "shown": [
+              "export"
+            ]
+          },
+          {
+            "name": "review",
+            "shown": [
+              "review"
+            ]
+          },
+          {
+            "name": "resume",
+            "shown": [
+              "resume"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "every_benefit_title_is_a_button_that_names_its_own_detail",
+      "passed": true,
+      "detail": {
+        "wiring": [
+          {
+            "name": "material",
+            "controls": "benefit-detail-material",
+            "detailId": "benefit-detail-material",
+            "labelled": "benefit-title-material",
+            "titleId": "benefit-title-material",
+            "role": "region",
+            "expanded": "false",
+            "type": "button",
+            "heading": "H3"
+          },
+          {
+            "name": "reuse",
+            "controls": "benefit-detail-reuse",
+            "detailId": "benefit-detail-reuse",
+            "labelled": "benefit-title-reuse",
+            "titleId": "benefit-title-reuse",
+            "role": "region",
+            "expanded": "false",
+            "type": "button",
+            "heading": "H3"
+          },
+          {
+            "name": "model",
+            "controls": "benefit-detail-model",
+            "detailId": "benefit-detail-model",
+            "labelled": "benefit-title-model",
+            "titleId": "benefit-title-model",
+            "role": "region",
+            "expanded": "false",
+            "type": "button",
+            "heading": "H3"
+          },
+          {
+            "name": "export",
+            "controls": "benefit-detail-export",
+            "detailId": "benefit-detail-export",
+            "labelled": "benefit-title-export",
+            "titleId": "benefit-title-export",
+            "role": "region",
+            "expanded": "false",
+            "type": "button",
+            "heading": "H3"
+          },
+          {
+            "name": "review",
+            "controls": "benefit-detail-review",
+            "detailId": "benefit-detail-review",
+            "labelled": "benefit-title-review",
+            "titleId": "benefit-title-review",
+            "role": "region",
+            "expanded": "false",
+            "type": "button",
+            "heading": "H3"
+          },
+          {
+            "name": "resume",
+            "controls": "benefit-detail-resume",
+            "detailId": "benefit-detail-resume",
+            "labelled": "benefit-title-resume",
+            "titleId": "benefit-title-resume",
+            "role": "region",
+            "expanded": "true",
+            "type": "button",
+            "heading": "H3"
+          }
+        ]
+      }
+    },
+    {
+      "name": "benefit_detail_reads_when_the_script_has_not_run",
+      "passed": true,
+      "detail": {
+        "shown": [
+          "material",
+          "reuse",
+          "model",
+          "export",
+          "review",
+          "resume"
+        ]
+      }
+    },
+    {
+      "name": "every_served_asset_route_is_scanned_for_retired_words",
+      "passed": true,
+      "detail": {
+        "routes": 8,
+        "unscanned": []
+      }
+    },
+    {
+      "name": "served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",
+      "passed": true,
+      "detail": {
+        "routes": 8
+      }
+    },
+    {
+      "name": "no_customer_page_describes_the_product_as_a_trial",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "no_customer_page_uses_the_runtime_vocabulary",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "retired_word_check_rejects_a_known_wrong_page",
+      "passed": true,
+      "detail": {
+        "pages": 5
+      }
+    },
+    {
+      "name": "no_served_file_carries_a_retired_word",
+      "passed": true,
+      "detail": {
+        "files": 9,
+        "problems": []
+      }
+    },
+    {
+      "name": "served_file_scan_rejects_a_file_that_carries_a_retired_word",
+      "passed": true,
+      "detail": {
+        "files": 9
+      }
+    },
+    {
+      "name": "runtime_word_check_rejects_a_known_wrong_page",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "get_started_is_the_first_navigation_item",
+      "passed": true,
+      "detail": {
+        "nav": [
+          {
+            "label": "Get started",
+            "href": "/connect",
+            "page": "setup"
+          },
+          {
+            "label": "How it works",
+            "href": "/how-it-works",
+            "page": "about"
+          },
+          {
+            "label": "Pricing",
+            "href": "/pricing",
+            "page": "pricing"
+          },
+          {
+            "label": "Documentation",
+            "href": "/docs",
+            "page": "docs"
+          },
+          {
+            "label": "Workspace",
+            "href": "/app",
+            "page": "workspace"
+          },
+          {
+            "label": "Account",
+            "href": "/account",
+            "page": "account"
+          }
+        ]
+      }
+    },
+    {
+      "name": "navigation_order_check_rejects_a_wrong_first_item",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "get_started_page_names_the_three_steps_in_order",
+      "passed": true,
+      "detail": {
+        "steps": [
+          {
+            "step": "download",
+            "index": "Step 1 / Download",
+            "title": "Get the part that runs on your machine."
+          },
+          {
+            "step": "connect",
+            "index": "Step 2 / Connect your tools",
+            "title": "Choose a connection entry for your tool."
+          },
+          {
+            "step": "sign-up",
+            "index": "Step 3 / Sign up",
+            "title": "Create an account when your invitation arrives."
+          }
+        ]
+      }
+    },
+    {
+      "name": "get_started_step_check_rejects_a_wrong_order_or_a_missing_step",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "get_started_page_carries_the_copyable_connection_settings",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "get_started_address_opens_the_same_page",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "pricing_view_opens_from_the_navigation",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "pricing_view_states_every_published_fact",
+      "passed": true,
+      "detail": {
+        "missing": []
+      }
+    },
+    {
+      "name": "pricing_fact_check_fails_when_one_fact_is_missing",
+      "passed": true,
+      "detail": {
+        "facts": 6
+      }
+    },
+    {
+      "name": "pricing_view_offers_exactly_one_plan",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "pricing_view_offers_no_purchase_control_while_checkout_is_closed",
+      "passed": true,
+      "detail": {
+        "controls": []
+      }
+    },
+    {
+      "name": "purchase_control_check_rejects_a_pricing_view_that_offers_one",
+      "passed": true,
+      "detail": {
+        "planted": [
+          "a#known-wrong-purchase"
+        ]
+      }
+    },
+    {
+      "name": "pricing_view_uses_plain_words",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "plain_word_check_rejects_a_page_that_names_the_runtime",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "pricing_view_fits_small_screens_and_enlarged_text",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "pricing_address_is_served_on_a_direct_visit",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "needed_entry": "src/loop_engine/core/service_runtime/web_pages.py, WEB_ASSETS, add \"/pricing\": (\"index.html\", HTML_MEDIA_TYPE)"
+      }
+    },
+    {
+      "name": "pricing_address_opens_the_pricing_view_after_a_reload",
+      "passed": true,
+      "detail": {
+        "views": [
+          "pricing"
+        ]
+      }
+    },
+    {
+      "name": "homepage_fits_a_360_pixel_screen",
+      "passed": true,
+      "detail": {
+        "measurements": [
+          {
+            "width": 1440,
+            "overflow": false
+          },
+          {
+            "width": 360,
+            "overflow": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "the_public_states_are_reported_by_real_services",
+      "passed": true,
+      "detail": {
+        "reported": [
+          {
+            "name": "base",
+            "record_type": "service_capabilities/v1",
+            "registration": false,
+            "checkout": false,
+            "client_access": false
+          },
+          {
+            "name": "signup_base",
+            "record_type": "service_capabilities/v1",
+            "registration": true,
+            "checkout": false,
+            "client_access": false
+          },
+          {
+            "name": "billing_base",
+            "record_type": "service_capabilities/v1",
+            "registration": false,
+            "checkout": true,
+            "client_access": false
+          },
+          {
+            "name": "account_base",
+            "record_type": "service_capabilities/v1",
+            "registration": false,
+            "checkout": false,
+            "client_access": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "public_action_offers_the_waiting_list_when_account_creation_is_closed",
+      "passed": true,
+      "detail": {
+        "actions": [
+          {
+            "id": "closing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "hero-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "pricing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          }
+        ]
+      }
+    },
+    {
+      "name": "personal_key_claim_is_held_back_when_the_service_reports_no_client_access",
+      "passed": true,
+      "detail": {
+        "offer": "Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+        "plan": "Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."
+      }
+    },
+    {
+      "name": "pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout",
+      "passed": true,
+      "detail": {
+        "badge": "Payment not open",
+        "shown": "Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free."
+      }
+    },
+    {
+      "name": "public_action_offers_account_creation_when_the_service_reports_it",
+      "passed": true,
+      "detail": {
+        "actions": [
+          {
+            "id": "closing-primary",
+            "state": "open",
+            "href": "/signup",
+            "label": "Create your account"
+          },
+          {
+            "id": "hero-primary",
+            "state": "open",
+            "href": "/signup",
+            "label": "Create your account"
+          },
+          {
+            "id": "pricing-primary",
+            "state": "open",
+            "href": "/signup",
+            "label": "Create your account"
+          }
+        ]
+      }
+    },
+    {
+      "name": "pricing_view_says_payment_is_open_when_the_service_reports_checkout",
+      "passed": true,
+      "detail": {
+        "badge": "Payment open",
+        "shown": "Payment is open. Start or manage your subscription from your account page."
+      }
+    },
+    {
+      "name": "personal_key_claim_appears_when_the_service_reports_client_access",
+      "passed": true,
+      "detail": {
+        "offer": "You can also create and revoke a key for each device from your account page.",
+        "plan": "Create and revoke a key for every client you connect, from your account page."
+      }
+    },
+    {
+      "name": "unsupported_capabilities_version_keeps_the_careful_state_over_registration",
+      "passed": true,
+      "detail": {
+        "actions": [
+          {
+            "id": "closing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "hero-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "pricing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          }
+        ],
+        "payment": {
+          "badge": "Payment not open",
+          "shown": "Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free."
+        },
+        "keys": {
+          "offer": "Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+          "plan": "Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."
+        }
+      }
+    },
+    {
+      "name": "unsupported_capabilities_version_keeps_the_careful_state_over_checkout",
+      "passed": true,
+      "detail": {
+        "actions": [
+          {
+            "id": "closing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "hero-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "pricing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          }
+        ],
+        "payment": {
+          "badge": "Payment not open",
+          "shown": "Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free."
+        },
+        "keys": {
+          "offer": "Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+          "plan": "Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."
+        }
+      }
+    },
+    {
+      "name": "unsupported_capabilities_version_keeps_the_careful_state_over_client_access",
+      "passed": true,
+      "detail": {
+        "actions": [
+          {
+            "id": "closing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "hero-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          },
+          {
+            "id": "pricing-primary",
+            "state": "waiting",
+            "href": "/signup#waiting-list",
+            "label": "Join the waiting list"
+          }
+        ],
+        "payment": {
+          "badge": "Payment not open",
+          "shown": "Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free."
+        },
+        "keys": {
+          "offer": "Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+          "plan": "Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."
+        }
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_always_offer_sign_up",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_never_offer_sign_up",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_always_say_payment_is_open",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_never_say_payment_is_open",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_always_claim_personal_keys",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_never_claim_personal_keys",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_ignore_the_capabilities_record_version",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_ignore_the_record_version_over_payment",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_ignore_the_record_version_over_personal_keys",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": []
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_never_open_a_benefit_on_a_press",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": [],
+        "failed_checks": [
+          "pressing_a_benefit_shows_only_its_own_detail"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_never_open_a_benefit_on_keyboard_focus",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": [],
+        "failed_checks": [
+          "keyboard_focus_alone_opens_each_benefit"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_never_open_a_benefit_when_it_is_pointed_at",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": [],
+        "failed_checks": [
+          "pointing_at_a_benefit_opens_it"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_leave_every_benefit_open_at_once",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": [],
+        "failed_checks": [
+          "keyboard_focus_alone_opens_each_benefit",
+          "pointing_at_a_benefit_opens_it",
+          "pressing_a_benefit_shows_only_its_own_detail"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_stop_saying_which_benefit_is_open",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "missed_checks": [],
+        "failed_checks": [
+          "pressing_a_benefit_shows_only_its_own_detail"
+        ]
+      }
+    },
+    {
+      "name": "served_page_defaults_to_the_careful_public_state",
+      "passed": true,
+      "detail": {
+        "problems": []
+      }
+    },
+    {
+      "name": "careful_default_check_rejects_a_served_page_that_never_settles",
+      "passed": true,
+      "detail": {
+        "problems": [
+          "Payment not open",
+          "Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.",
+          "an unsettled placeholder"
+        ]
+      }
+    },
+    {
+      "name": "both_public_page_checks_use_one_plain_word_rule",
+      "passed": true,
+      "detail": {
+        "workspace": "/\\bLoop(?:s|[ -]node| Engine)?\\b|runtime classification|role profile/i",
+        "hosted": "/\\bLoop(?:s|[ -]node| Engine)?\\b|runtime classification|role profile/i"
+      }
+    },
+    {
+      "name": "plain_word_rule_comparison_rejects_a_drifted_copy",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "both_public_page_checks_use_one_retired_word_rule",
+      "passed": true,
+      "detail": {
+        "workspace": "/\\bpilots?\\b|\\bbetas?\\b|early access/i",
+        "hosted": "/\\bpilots?\\b|\\bbetas?\\b|early access/i"
+      }
+    },
+    {
+      "name": "retired_word_rule_comparison_rejects_a_drifted_copy",
+      "passed": true,
+      "detail": {
+        "dropped": "/\\bpilots?\\b|\\bbetas?\\b/i"
+      }
+    },
+    {
+      "name": "all_four_persistent_intelligence_layers_are_visible",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "all_five_owner_pain_points_are_present",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "the_homepage_no_longer_carries_the_explanation_sections",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "technical_layer_definitions_remain_in_documentation",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "hosted_service_and_local_execution_have_distinct_responsibilities",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "client_server_exchange_names_sent_and_returned_data",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "external_model_connection_is_separate_from_intelligence_service",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "benefits_are_explicit_without_invented_benchmark_numbers",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "homepage_deep_link_opens_task_explorer",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_inspect",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "public_step_avoids_internal_runtime_terms_inspect",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_decide",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "public_step_avoids_internal_runtime_terms_decide",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_build",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "public_step_avoids_internal_runtime_terms_build",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_selects_its_own_context_verify",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "public_step_avoids_internal_runtime_terms_verify",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "public_footer_has_no_engine_branding",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "complete_runtime_definition_preserved_in_technical_docs",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "verifier_does_not_receive_builders_entire_context",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_home",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_arrows",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "assignment_tabs_support_keyboard_end",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "illustrative_step_selection_launches_no_network_or_model_work",
+      "passed": true,
+      "detail": {
+        "requests": 0
+      }
+    },
+    {
+      "name": "architecture_keeps_live_evidence_separate_from_illustration",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "selected_assignment_has_no_mobile_overflow",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unfinished_signup_is_explicit_and_collects_no_email",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "anonymous_workspace_has_real_setup_and_no_active_search",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "reviewed_recipe_record_is_accepted_by_the_page",
+      "passed": true,
+      "detail": {
+        "refusal": ""
+      }
+    },
+    {
+      "name": "guided_setup_uses_current_origin_and_no_embedded_token",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "anonymous_protocol_test_is_disabled",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "client_selection_changes_real_secret_free_configuration",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "no_key_check_separates_keys_from_variable_references",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "known_wrong_addresses_reach_another_host_in_a_client_address_parser",
+      "passed": true,
+      "detail": {
+        "forms": 2
+      }
+    },
+    {
+      "name": "connect_view_offers_the_three_reviewed_recipes",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_renders_codex",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_contains_no_key_codex",
+      "passed": true,
+      "detail": {
+        "places": []
+      }
+    },
+    {
+      "name": "recipe_uses_current_origin_codex",
+      "passed": true,
+      "detail": {
+        "addresses": 1,
+        "places": []
+      }
+    },
+    {
+      "name": "recipe_copy_matches_displayed_text_codex",
+      "passed": true,
+      "detail": {
+        "copied_length": 148,
+        "shown_length": 148
+      }
+    },
+    {
+      "name": "recipe_states_how_to_check_and_revoke_codex",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_cites_its_source_codex",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "connect_view_uses_plain_words_codex",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_renders_opencode",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_contains_no_key_opencode",
+      "passed": true,
+      "detail": {
+        "places": []
+      }
+    },
+    {
+      "name": "recipe_uses_current_origin_opencode",
+      "passed": true,
+      "detail": {
+        "addresses": 2,
+        "places": []
+      }
+    },
+    {
+      "name": "recipe_copy_matches_displayed_text_opencode",
+      "passed": true,
+      "detail": {
+        "copied_length": 288,
+        "shown_length": 288
+      }
+    },
+    {
+      "name": "recipe_states_how_to_check_and_revoke_opencode",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_cites_its_source_opencode",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "connect_view_uses_plain_words_opencode",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_renders_claude-code",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_contains_no_key_claude-code",
+      "passed": true,
+      "detail": {
+        "places": []
+      }
+    },
+    {
+      "name": "recipe_uses_current_origin_claude-code",
+      "passed": true,
+      "detail": {
+        "addresses": 1,
+        "places": []
+      }
+    },
+    {
+      "name": "recipe_copy_matches_displayed_text_claude-code",
+      "passed": true,
+      "detail": {
+        "copied_length": 197,
+        "shown_length": 197
+      }
+    },
+    {
+      "name": "recipe_states_how_to_check_and_revoke_claude-code",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipe_cites_its_source_claude-code",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "connect_view_uses_plain_words_claude-code",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "every_recipe_and_the_token_instructions_name_one_variable",
+      "passed": true,
+      "detail": {
+        "names": [
+          "BALTOR_SERVICE_TOKEN"
+        ]
+      }
+    },
+    {
+      "name": "every_recipe_names_the_same_server_entry",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "claude_code_recipe_is_a_project_file_with_an_environment_reference",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "codex_recipe_is_a_table_that_names_the_variable",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "copying_a_recipe_stores_nothing_in_the_browser",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "connect_page_keeps_inline_code_forbidden",
+      "passed": true,
+      "detail": {
+        "policy": "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
+      }
+    },
+    {
+      "name": "every_recipe_fits_a_small_screen_and_enlarged_text",
+      "passed": true,
+      "detail": {
+        "fits": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "name": "homepage_and_footer_use_plain_words",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "known_wrong_records_have_distinct_names",
+      "passed": true,
+      "detail": {
+        "records": 36
+      }
+    },
+    {
+      "name": "recipe_with_embedded_key_is_refused_before_display",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_key_in_place_of_the_variable_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_key_as_a_default_value_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_key_in_a_command_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_key_in_a_note_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_short_literal_bearer_value_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_literal_in_a_second_header_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_short_literal_under_a_credential_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_number_under_a_credential_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_literal_in_an_environment_table_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_key_in_the_standard_alphabet_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_key_shaped_variable_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "record_with_key_in_an_unknown_field_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "credential_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_fixed_address_is_refused_before_display",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_unknown_placeholder_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_second_server_entry_at_a_scheme_only_address_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_placeholder_moved_off_the_url_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_second_server_entry_at_a_backslash_address_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_scheme_only_address_under_another_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_second_server_entry_that_runs_a_command_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_plain_host_name_as_its_address_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_the_placeholder_under_a_second_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_schema_address_inside_the_server_entry_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_user_information_in_its_schema_address_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_a_schema_address_on_another_host_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_a_schema_address_on_a_second_host_of_the_cited_vendor_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "address_rule",
+        "closed": true
+      }
+    },
+    {
+      "name": "older_recipe_record_version_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "unsupported_record",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_without_revocation_steps_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "unsupported_record",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_that_cannot_be_written_as_a_table_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "unsupported_record",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_a_list_of_command_arguments_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "unsupported_record",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_a_command_line_that_is_not_plain_words_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "unsupported_record",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_an_address_as_its_entry_name_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "unsupported_record",
+        "closed": true
+      }
+    },
+    {
+      "name": "recipe_with_user_information_in_its_source_address_is_refused",
+      "passed": true,
+      "detail": {
+        "refusal": "unsupported_record",
+        "closed": true
+      }
+    },
+    {
+      "name": "no_key_check_fails_for_a_recipe_with_an_embedded_key",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "recipes_follow_the_origin_that_serves_the_page",
+      "passed": true,
+      "detail": {
+        "origins": 2,
+        "recipes": 3,
+        "followed": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_remove_recipe_credential_rule",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 14,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_contains_no_key_claude-code",
+          "recipe_contains_no_key_codex",
+          "recipe_contains_no_key_opencode",
+          "recipe_with_embedded_key_is_refused_before_display",
+          "recipe_with_key_as_a_default_value_is_refused",
+          "recipe_with_key_in_a_command_is_refused",
+          "recipe_with_key_in_a_note_is_refused",
+          "recipe_with_key_in_place_of_the_variable_name_is_refused",
+          "recipe_with_key_in_the_standard_alphabet_is_refused",
+          "recipe_with_key_shaped_variable_name_is_refused",
+          "recipe_with_literal_in_a_second_header_is_refused",
+          "recipe_with_literal_in_an_environment_table_is_refused",
+          "recipe_with_number_under_a_credential_name_is_refused",
+          "recipe_with_short_literal_bearer_value_is_refused",
+          "recipe_with_short_literal_under_a_credential_name_is_refused",
+          "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+          "record_with_key_in_an_unknown_field_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_remove_recipe_address_rule",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 13,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_claude-code",
+          "recipe_uses_current_origin_codex",
+          "recipe_uses_current_origin_opencode",
+          "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused",
+          "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused",
+          "recipe_with_fixed_address_is_refused_before_display",
+          "recipe_with_placeholder_moved_off_the_url_name_is_refused",
+          "recipe_with_plain_host_name_as_its_address_is_refused",
+          "recipe_with_schema_address_inside_the_server_entry_is_refused",
+          "recipe_with_scheme_only_address_under_another_name_is_refused",
+          "recipe_with_second_server_entry_at_a_backslash_address_is_refused",
+          "recipe_with_second_server_entry_at_a_scheme_only_address_is_refused",
+          "recipe_with_second_server_entry_that_runs_a_command_is_refused",
+          "recipe_with_the_placeholder_under_a_second_name_is_refused",
+          "recipe_with_unknown_placeholder_is_refused",
+          "recipe_with_user_information_in_its_schema_address_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_unsupported_recipe_records",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 7,
+        "missed_checks": [],
+        "failed_checks": [
+          "older_recipe_record_version_is_refused",
+          "recipe_cites_its_source_claude-code",
+          "recipe_states_how_to_check_and_revoke_claude-code",
+          "recipe_states_how_to_check_and_revoke_opencode",
+          "recipe_that_cannot_be_written_as_a_table_is_refused",
+          "recipe_uses_current_origin_claude-code",
+          "recipe_with_a_command_line_that_is_not_plain_words_is_refused",
+          "recipe_with_a_list_of_command_arguments_is_refused",
+          "recipe_with_an_address_as_its_entry_name_is_refused",
+          "recipe_with_user_information_in_its_source_address_is_refused",
+          "recipe_without_revocation_steps_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_copy_other_text_than_shown",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_copy_matches_displayed_text_claude-code",
+          "recipe_copy_matches_displayed_text_codex",
+          "recipe_copy_matches_displayed_text_opencode"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_scan_only_the_displayed_fields_for_keys",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 2,
+        "missed_checks": [],
+        "failed_checks": [
+          "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+          "record_with_key_in_an_unknown_field_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_a_key_shaped_variable_name",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_contains_no_key_codex",
+          "recipe_with_key_shaped_variable_name_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_look_for_keys_in_one_alphabet_only",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_contains_no_key_opencode",
+          "recipe_with_key_in_the_standard_alphabet_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_treat_header_values_as_ordinary_text",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 2,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_contains_no_key_claude-code",
+          "recipe_with_literal_in_a_second_header_is_refused",
+          "recipe_with_literal_in_an_environment_table_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_a_literal_under_a_credential_name",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 2,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_contains_no_key_claude-code",
+          "recipe_contains_no_key_codex",
+          "recipe_with_number_under_a_credential_name_is_refused",
+          "recipe_with_short_literal_under_a_credential_name_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_an_address_that_is_not_the_placeholder",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_codex",
+          "recipe_with_plain_host_name_as_its_address_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_the_placeholder_under_a_second_name",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_claude-code",
+          "recipe_with_the_placeholder_under_a_second_name_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_any_table_inside_the_server_entry",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_claude-code",
+          "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_a_list_in_a_configuration",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_claude-code",
+          "recipe_with_a_list_of_command_arguments_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_any_command_line",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_states_how_to_check_and_revoke_opencode",
+          "recipe_with_a_command_line_that_is_not_plain_words_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_more_than_one_server_entry",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_claude-code",
+          "recipe_with_second_server_entry_that_runs_a_command_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_any_text_beside_the_address",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_codex",
+          "recipe_with_scheme_only_address_under_another_name_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_a_schema_address_anywhere",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_opencode",
+          "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_any_schema_address",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 1,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_opencode",
+          "recipe_with_user_information_in_its_schema_address_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "removed_guard_is_detected_accept_a_schema_address_on_another_host",
+      "passed": true,
+      "detail": {
+        "applied": true,
+        "records": 2,
+        "missed_checks": [],
+        "failed_checks": [
+          "recipe_uses_current_origin_opencode",
+          "recipe_with_a_schema_address_on_a_second_host_of_the_cited_vendor_is_refused",
+          "recipe_with_a_schema_address_on_another_host_is_refused"
+        ]
+      }
+    },
+    {
+      "name": "wrong_key_does_not_enter_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "real_durable_tenant_authentication_reaches_the_workspace",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "credentials_are_not_persisted_in_browser_storage",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "sign_in_returns_to_requested_setup_page",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "protocol_connection_check_reports_actual_success",
+      "passed": true,
+      "detail": {
+        "message": "Service connection passed. Protocol 2025-11-25; 5 tools available. No file bodies fetched or models called. Native client loading is not tested here."
+      }
+    },
+    {
+      "name": "browser_runs_real_initialize_notification_and_tools_list",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_check_does_not_claim_native_harness_qualification",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "mismatched_protocol_response_never_becomes_success",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "first_example_prepares_query_without_submitting",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_search_reaches_the_real_authorized_retriever",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "browser_download_checks_actual_bytes_against_the_selected_digest",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "account_route_retains_same_in_memory_connection",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "usage_is_read_from_durable_service_state",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "unconfigured_billing_is_not_a_fake_purchase_flow",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "retrieved_metadata_is_text_not_executable_HTML",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "changed_download_is_refused_by_the_browser",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "responsive_1440_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/pricing",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_1440_/waitlist",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/pricing",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_820_/waitlist",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/pricing",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_390_/waitlist",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/login",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/signup",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/pricing",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/account",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/admin",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/app",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/docs",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "responsive_320_/waitlist",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/pricing",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_1440_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/how-it-works",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/pricing",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/connect",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/examples",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "enlarged_text_320_/security",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "views": 1,
+        "items": []
+      }
+    },
+    {
+      "name": "disconnect_clears_identity_results_and_controls",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "configured_billing_offers_only_host_defined_plans",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "checkout_uses_the_real_domain_with_a_local_provider_fixture",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "portal_uses_the_real_domain_without_navigating_to_a_provider",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "email_free_administrator_login_reaches_dashboard",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "dashboard_creates_real_usable_test_token",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "generated_secret_not_in_page_text_or_browser_storage",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "one_time_token_clear_removes_secret",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "dashboard_revocation_refuses_next_service_call",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "sign_in_during_public_configuration_loading_preserves_setup",
+      "passed": true,
+      "detail": {
+        "heldPublic": 2
+      }
+    },
+    {
+      "name": "sign_out_still_aborts_credential_bound_protocol_requests",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "verified_customer_can_open_personal_token_controls",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_dashboard_creates_real_personal_access",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_token_secret_stays_out_of_text_and_browser_storage",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_token_cannot_manage_more_credentials",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_can_clear_the_one_time_secret",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_dashboard_revokes_real_client_access",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_controls_fit_1440",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_controls_fit_390",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_controls_fit_320",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_controls_support_enlarged_text",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "customer_sign_out_clears_tokens_before_delayed_reply",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "a_service_without_a_waiting_list_makes_no_offer",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "a_service_with_a_waiting_list_offers_the_form_from_every_page",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "the_discount_is_named_only_where_checkout_takes_a_code",
+      "passed": true,
+      "detail": {
+        "discount_code": false
+      }
+    },
+    {
+      "name": "a_visitor_leaves_an_address_and_is_told_a_person_will_read_it",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "the_address_the_visitor_typed_reached_the_service_record",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "entries": 1
+      }
+    },
+    {
+      "name": "a_second_request_from_the_same_address_is_told_the_truth",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "dark_appearance_remains_an_explicit_option",
+      "passed": true,
+      "detail": {}
+    },
+    {
+      "name": "no_browser_runtime_errors",
+      "passed": true,
+      "detail": {
+        "errors": []
+      }
+    },
+    {
+      "name": "no_external_provider_requests",
+      "passed": true,
+      "detail": {
+        "network": []
+      }
+    }
+  ],
+  "passed": 327,
+  "total": 327,
+  "mutants": [
+    {
+      "name": "always_offer_sign_up",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "public_action_offers_the_waiting_list_when_account_creation_is_closed"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "public_action_offers_the_waiting_list_when_account_creation_is_closed"
+      ]
+    },
+    {
+      "name": "never_offer_sign_up",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "public_action_offers_account_creation_when_the_service_reports_it"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "public_action_offers_account_creation_when_the_service_reports_it"
+      ]
+    },
+    {
+      "name": "always_say_payment_is_open",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout"
+      ]
+    },
+    {
+      "name": "never_say_payment_is_open",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "pricing_view_says_payment_is_open_when_the_service_reports_checkout"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "pricing_view_says_payment_is_open_when_the_service_reports_checkout"
+      ]
+    },
+    {
+      "name": "always_claim_personal_keys",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "personal_key_claim_is_held_back_when_the_service_reports_no_client_access"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "personal_key_claim_is_held_back_when_the_service_reports_no_client_access"
+      ]
+    },
+    {
+      "name": "never_claim_personal_keys",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "personal_key_claim_appears_when_the_service_reports_client_access"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "personal_key_claim_appears_when_the_service_reports_client_access"
+      ]
+    },
+    {
+      "name": "ignore_the_capabilities_record_version",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "unsupported_capabilities_version_keeps_the_careful_state_over_registration"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "unsupported_capabilities_version_keeps_the_careful_state_over_registration"
+      ]
+    },
+    {
+      "name": "ignore_the_record_version_over_payment",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "unsupported_capabilities_version_keeps_the_careful_state_over_checkout"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "unsupported_capabilities_version_keeps_the_careful_state_over_checkout"
+      ]
+    },
+    {
+      "name": "ignore_the_record_version_over_personal_keys",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "unsupported_capabilities_version_keeps_the_careful_state_over_client_access"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "unsupported_capabilities_version_keeps_the_careful_state_over_client_access"
+      ]
+    },
+    {
+      "name": "never_open_a_benefit_on_a_press",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "pressing_a_benefit_shows_only_its_own_detail"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "pressing_a_benefit_shows_only_its_own_detail"
+      ]
+    },
+    {
+      "name": "never_open_a_benefit_on_keyboard_focus",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "keyboard_focus_alone_opens_each_benefit"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "keyboard_focus_alone_opens_each_benefit"
+      ]
+    },
+    {
+      "name": "never_open_a_benefit_when_it_is_pointed_at",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "pointing_at_a_benefit_opens_it"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "pointing_at_a_benefit_opens_it"
+      ]
+    },
+    {
+      "name": "leave_every_benefit_open_at_once",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "pressing_a_benefit_shows_only_its_own_detail",
+        "keyboard_focus_alone_opens_each_benefit",
+        "pointing_at_a_benefit_opens_it"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "keyboard_focus_alone_opens_each_benefit",
+        "pointing_at_a_benefit_opens_it",
+        "pressing_a_benefit_shows_only_its_own_detail"
+      ]
+    },
+    {
+      "name": "stop_saying_which_benefit_is_open",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "pressing_a_benefit_shows_only_its_own_detail"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "pressing_a_benefit_shows_only_its_own_detail"
+      ]
+    },
+    {
+      "name": "remove_recipe_credential_rule",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_embedded_key_is_refused_before_display",
+        "recipe_contains_no_key_claude-code",
+        "recipe_with_key_in_place_of_the_variable_name_is_refused",
+        "recipe_contains_no_key_codex",
+        "recipe_with_key_as_a_default_value_is_refused",
+        "recipe_with_key_in_a_command_is_refused",
+        "recipe_with_key_in_a_note_is_refused",
+        "recipe_contains_no_key_opencode",
+        "recipe_with_short_literal_bearer_value_is_refused",
+        "recipe_with_literal_in_a_second_header_is_refused",
+        "recipe_with_short_literal_under_a_credential_name_is_refused",
+        "recipe_with_number_under_a_credential_name_is_refused",
+        "recipe_with_literal_in_an_environment_table_is_refused",
+        "recipe_with_key_in_the_standard_alphabet_is_refused",
+        "recipe_with_key_shaped_variable_name_is_refused",
+        "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+        "record_with_key_in_an_unknown_field_is_refused"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_contains_no_key_claude-code",
+        "recipe_contains_no_key_codex",
+        "recipe_contains_no_key_opencode",
+        "recipe_with_embedded_key_is_refused_before_display",
+        "recipe_with_key_as_a_default_value_is_refused",
+        "recipe_with_key_in_a_command_is_refused",
+        "recipe_with_key_in_a_note_is_refused",
+        "recipe_with_key_in_place_of_the_variable_name_is_refused",
+        "recipe_with_key_in_the_standard_alphabet_is_refused",
+        "recipe_with_key_shaped_variable_name_is_refused",
+        "recipe_with_literal_in_a_second_header_is_refused",
+        "recipe_with_literal_in_an_environment_table_is_refused",
+        "recipe_with_number_under_a_credential_name_is_refused",
+        "recipe_with_short_literal_bearer_value_is_refused",
+        "recipe_with_short_literal_under_a_credential_name_is_refused",
+        "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+        "record_with_key_in_an_unknown_field_is_refused"
+      ]
+    },
+    {
+      "name": "remove_recipe_address_rule",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_fixed_address_is_refused_before_display",
+        "recipe_uses_current_origin_codex",
+        "recipe_with_unknown_placeholder_is_refused",
+        "recipe_uses_current_origin_claude-code",
+        "recipe_with_second_server_entry_at_a_scheme_only_address_is_refused",
+        "recipe_with_placeholder_moved_off_the_url_name_is_refused",
+        "recipe_with_second_server_entry_at_a_backslash_address_is_refused",
+        "recipe_uses_current_origin_opencode",
+        "recipe_with_scheme_only_address_under_another_name_is_refused",
+        "recipe_with_second_server_entry_that_runs_a_command_is_refused",
+        "recipe_with_plain_host_name_as_its_address_is_refused",
+        "recipe_with_the_placeholder_under_a_second_name_is_refused",
+        "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused",
+        "recipe_with_schema_address_inside_the_server_entry_is_refused",
+        "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused",
+        "recipe_with_user_information_in_its_schema_address_is_refused"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_claude-code",
+        "recipe_uses_current_origin_codex",
+        "recipe_uses_current_origin_opencode",
+        "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused",
+        "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused",
+        "recipe_with_fixed_address_is_refused_before_display",
+        "recipe_with_placeholder_moved_off_the_url_name_is_refused",
+        "recipe_with_plain_host_name_as_its_address_is_refused",
+        "recipe_with_schema_address_inside_the_server_entry_is_refused",
+        "recipe_with_scheme_only_address_under_another_name_is_refused",
+        "recipe_with_second_server_entry_at_a_backslash_address_is_refused",
+        "recipe_with_second_server_entry_at_a_scheme_only_address_is_refused",
+        "recipe_with_second_server_entry_that_runs_a_command_is_refused",
+        "recipe_with_the_placeholder_under_a_second_name_is_refused",
+        "recipe_with_unknown_placeholder_is_refused",
+        "recipe_with_user_information_in_its_schema_address_is_refused"
+      ]
+    },
+    {
+      "name": "accept_unsupported_recipe_records",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "older_recipe_record_version_is_refused",
+        "recipe_without_revocation_steps_is_refused",
+        "recipe_states_how_to_check_and_revoke_claude-code",
+        "recipe_that_cannot_be_written_as_a_table_is_refused",
+        "recipe_with_a_list_of_command_arguments_is_refused",
+        "recipe_uses_current_origin_claude-code",
+        "recipe_with_a_command_line_that_is_not_plain_words_is_refused",
+        "recipe_states_how_to_check_and_revoke_opencode",
+        "recipe_with_an_address_as_its_entry_name_is_refused",
+        "recipe_with_user_information_in_its_source_address_is_refused",
+        "recipe_cites_its_source_claude-code"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "older_recipe_record_version_is_refused",
+        "recipe_cites_its_source_claude-code",
+        "recipe_states_how_to_check_and_revoke_claude-code",
+        "recipe_states_how_to_check_and_revoke_opencode",
+        "recipe_that_cannot_be_written_as_a_table_is_refused",
+        "recipe_uses_current_origin_claude-code",
+        "recipe_with_a_command_line_that_is_not_plain_words_is_refused",
+        "recipe_with_a_list_of_command_arguments_is_refused",
+        "recipe_with_an_address_as_its_entry_name_is_refused",
+        "recipe_with_user_information_in_its_source_address_is_refused",
+        "recipe_without_revocation_steps_is_refused"
+      ]
+    },
+    {
+      "name": "copy_other_text_than_shown",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_copy_matches_displayed_text_codex",
+        "recipe_copy_matches_displayed_text_opencode",
+        "recipe_copy_matches_displayed_text_claude-code"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_copy_matches_displayed_text_claude-code",
+        "recipe_copy_matches_displayed_text_codex",
+        "recipe_copy_matches_displayed_text_opencode"
+      ]
+    },
+    {
+      "name": "scan_only_the_displayed_fields_for_keys",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+        "record_with_key_in_an_unknown_field_is_refused"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "record_with_key_in_a_field_that_is_not_displayed_is_refused",
+        "record_with_key_in_an_unknown_field_is_refused"
+      ]
+    },
+    {
+      "name": "accept_a_key_shaped_variable_name",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_key_shaped_variable_name_is_refused",
+        "recipe_contains_no_key_codex"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_contains_no_key_codex",
+        "recipe_with_key_shaped_variable_name_is_refused"
+      ]
+    },
+    {
+      "name": "look_for_keys_in_one_alphabet_only",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_key_in_the_standard_alphabet_is_refused",
+        "recipe_contains_no_key_opencode"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_contains_no_key_opencode",
+        "recipe_with_key_in_the_standard_alphabet_is_refused"
+      ]
+    },
+    {
+      "name": "treat_header_values_as_ordinary_text",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_literal_in_a_second_header_is_refused",
+        "recipe_contains_no_key_claude-code",
+        "recipe_with_literal_in_an_environment_table_is_refused"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_contains_no_key_claude-code",
+        "recipe_with_literal_in_a_second_header_is_refused",
+        "recipe_with_literal_in_an_environment_table_is_refused"
+      ]
+    },
+    {
+      "name": "accept_a_literal_under_a_credential_name",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_short_literal_under_a_credential_name_is_refused",
+        "recipe_contains_no_key_codex",
+        "recipe_with_number_under_a_credential_name_is_refused",
+        "recipe_contains_no_key_claude-code"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_contains_no_key_claude-code",
+        "recipe_contains_no_key_codex",
+        "recipe_with_number_under_a_credential_name_is_refused",
+        "recipe_with_short_literal_under_a_credential_name_is_refused"
+      ]
+    },
+    {
+      "name": "accept_an_address_that_is_not_the_placeholder",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_plain_host_name_as_its_address_is_refused",
+        "recipe_uses_current_origin_codex"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_codex",
+        "recipe_with_plain_host_name_as_its_address_is_refused"
+      ]
+    },
+    {
+      "name": "accept_the_placeholder_under_a_second_name",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_the_placeholder_under_a_second_name_is_refused",
+        "recipe_uses_current_origin_claude-code"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_claude-code",
+        "recipe_with_the_placeholder_under_a_second_name_is_refused"
+      ]
+    },
+    {
+      "name": "accept_any_table_inside_the_server_entry",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused",
+        "recipe_uses_current_origin_claude-code"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_claude-code",
+        "recipe_with_a_table_of_other_settings_inside_the_server_entry_is_refused"
+      ]
+    },
+    {
+      "name": "accept_a_list_in_a_configuration",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_a_list_of_command_arguments_is_refused",
+        "recipe_uses_current_origin_claude-code"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_claude-code",
+        "recipe_with_a_list_of_command_arguments_is_refused"
+      ]
+    },
+    {
+      "name": "accept_any_command_line",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_a_command_line_that_is_not_plain_words_is_refused",
+        "recipe_states_how_to_check_and_revoke_opencode"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_states_how_to_check_and_revoke_opencode",
+        "recipe_with_a_command_line_that_is_not_plain_words_is_refused"
+      ]
+    },
+    {
+      "name": "accept_more_than_one_server_entry",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_second_server_entry_that_runs_a_command_is_refused",
+        "recipe_uses_current_origin_claude-code"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_claude-code",
+        "recipe_with_second_server_entry_that_runs_a_command_is_refused"
+      ]
+    },
+    {
+      "name": "accept_any_text_beside_the_address",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_scheme_only_address_under_another_name_is_refused",
+        "recipe_uses_current_origin_codex"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_codex",
+        "recipe_with_scheme_only_address_under_another_name_is_refused"
+      ]
+    },
+    {
+      "name": "accept_a_schema_address_anywhere",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused",
+        "recipe_uses_current_origin_opencode"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_opencode",
+        "recipe_with_a_schema_address_of_its_cited_host_inside_the_server_entry_is_refused"
+      ]
+    },
+    {
+      "name": "accept_any_schema_address",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_user_information_in_its_schema_address_is_refused",
+        "recipe_uses_current_origin_opencode"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_opencode",
+        "recipe_with_user_information_in_its_schema_address_is_refused"
+      ]
+    },
+    {
+      "name": "accept_a_schema_address_on_another_host",
+      "applied": true,
+      "detected": true,
+      "required_checks": [
+        "recipe_with_a_schema_address_on_another_host_is_refused",
+        "recipe_uses_current_origin_opencode",
+        "recipe_with_a_schema_address_on_a_second_host_of_the_cited_vendor_is_refused"
+      ],
+      "missed_checks": [],
+      "failed_checks": [
+        "recipe_uses_current_origin_opencode",
+        "recipe_with_a_schema_address_on_a_second_host_of_the_cited_vendor_is_refused",
+        "recipe_with_a_schema_address_on_another_host_is_refused"
+      ]
+    }
+  ],
+  "mutants_detected": 33,
+  "all_passed": true,
+  "source_sha256": {
+    "src/loop_engine/core/service_runtime/http.py": "360d3da0aaedc4538ff9e6591ed814afbbd1502176a15f9ad06516d9fefd36c5",
+    "src/loop_engine/core/service_runtime/records.py": "f956040ed2b1137b21a533a0345fef0235794d88f2a6ce73ed4d64535f63898c",
+    "src/loop_engine/core/service_runtime/access.py": "39d7eae865850832dd77bbb7ee3a842892d4474318490c7c1b71a25b85b23cce",
+    "src/loop_engine/core/service_runtime/access_checks.py": "c4c4dc6d2091ed02a03a57378d5f0d7f436b351062e1affadd26b504d44d6f34",
+    "src/loop_engine/core/service_runtime/http_entrypoint.py": "e17f7d5296d476809e5835458acb2e7d9d9f69bfa25fa574a42a04c5cf282d03",
+    "src/loop_engine/core/service_runtime/runtime.py": "d1f143820cb4ada4dafb83801bc54000648676e5593390f8d3f713c589d9397e",
+    "src/loop_engine/core/service_runtime/browser_identity.py": "831260e33f905f6919a9068d9ed584fbbf9fb3fe9e502995f9e445586c871005",
+    "src/loop_engine/core/service_runtime/browser_identity_checks.py": "897e0449ffd1b633571734edab01c553b3fdfc8509c8c07d195126d0f5a978d8",
+    "src/loop_engine/core/service_runtime/web_assets/index.html": "c8c8a565e33d69587345265d064d5d92ac529206eaca5197250de998bdcaddbe",
+    "src/loop_engine/core/service_runtime/web_assets/service.css": "9cd740dfd1ebf366e96105175a95886324c67bdcfd908c5717971ea08a4d7dbd",
+    "src/loop_engine/core/service_runtime/web_assets/service.js": "63a0b176e432bf8277b11d86e5d2d2c012be9f2782aa12881b348d9c843cd011",
+    "src/loop_engine/core/service_runtime/web_assets/client-access.js": "66dd05e45a797035eff0817b032a3ed3869129cd33e7e913e446f8804e719ef5",
+    "src/loop_engine/core/service_runtime/web_assets/architecture-story.js": "dece31c1c8022098aa38268a1d4d8237a59e7fae6bf7aa08aab1596e01ff2619",
+    "src/loop_engine/core/service_runtime/web_assets/architecture.css": "ef69513f30df4a992962a4738474546c012717cefc1cdbba2583dbaad5bac29a",
+    "src/loop_engine/core/service_runtime/web_assets/client-recipes.json": "36a681f7ac0f4a9a51bb4075cd5b58af89946f26372268e714322937ceb37d38"
+  }
+}

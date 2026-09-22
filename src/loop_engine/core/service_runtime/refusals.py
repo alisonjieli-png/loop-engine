@@ -176,6 +176,22 @@ CODE_GUIDANCE = {
                                    "Send provider notifications through the configured signed webhook only."),
     "invalid_account_activation": ("This activation link is not valid, or it was already used.",
                                    "Request a new confirmation email, then open the newest link."),
+    # The waiting list is the one form a stranger can send without signing in,
+    # so each of its refusals says what happened in the words of that form.
+    "waitlist_address_invalid": ("That email address is not one this service can write to.",
+                                 "Check the address for a typing mistake, then send the request again."),
+    "waitlist_note_invalid": ("The note was too long or held characters this service does not keep.",
+                              "Shorten the note to plain text within the length the form allows, then send it again."),
+    "waitlist_address_already_listed": ("This email address is on the waiting list already, so nothing was added.",
+                                        "Wait for a person to read the request you already sent."),
+    "waitlist_address_has_account": ("This email address already belongs to an account on this service.",
+                                     "Sign in with that address instead of joining the waiting list."),
+    "waitlist_source_flooded": ("Too many requests to join the list came from this connection in a short time.",
+                                "Wait a while, then send the request again. Requests already accepted are kept."),
+    "waitlist_unavailable": ("This service does not keep a waiting list, so nothing was recorded.",
+                             "Ask the person who runs this service for an invitation instead."),
+    "unsupported_waitlist_request": ("The request to join the list did not carry the documented fields.",
+                                     "Send the record version, the email address and an optional note, and nothing else."),
 }
 
 

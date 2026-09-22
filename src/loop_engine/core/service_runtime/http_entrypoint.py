@@ -346,7 +346,7 @@ def signup_matches_the_browser_identity(settings, browser_identity):
 def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
-               "browser_identity", "client_access", "promotions", "account_email", "observability",
+               "browser_identity", "client_access", "promotions", "account_email", "observability", "waitlist",
                LICENSE_POLICY_KEY, FAMILY_POLICY_KEY}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
@@ -374,6 +374,10 @@ def load_host_application(path):
     if configuration.get("promotions"):
         from .promotions import PromotionPolicy, PromotionRedemption
         promotions = PromotionRedemption(runtime, PromotionPolicy(**configuration["promotions"]))
+    waitlist = None
+    if configuration.get("waitlist"):
+        from .waitlist import ServiceWaitlist, WaitlistPolicy
+        waitlist = ServiceWaitlist(runtime, WaitlistPolicy(**configuration["waitlist"]))
     transport = ServiceHttpConfiguration(**configuration["http"])
     account_email = None
     if configuration.get("account_email"):
@@ -404,7 +408,7 @@ def load_host_application(path):
     # `account_email/v1` boundary is validated before the application exists.
     application = ServiceHttpApplication(runtime, binding, transport,
         ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
-        client_access=client_access, promotions=promotions, account_email=account_email,
+        client_access=client_access, promotions=promotions, account_email=account_email, waitlist=waitlist,
         observability=observability_policy(configuration))
     if configuration.get("administration"):
         from .access import ServiceAccessAdministration, ServiceAccessPolicy

@@ -3054,9 +3054,38 @@
    ],
    "title": "Show, review, reach and scale",
    "total_steps": 4
+  },
+  {
+   "acceptance": "A visitor leaves an address on a service that keeps a waiting list, an operator sees it, invites one entry with a discount the payment account holds, and can erase an address on request. A service without a waiting list makes no offer at all.",
+   "actions": [
+    "Serve one public form that takes an email address and a short note, with no sign-in, and give every refusal its own typed code and its own words on the page.",
+    "Keep the entries in the existing service collection as a versioned record with its own states, written through the same atomic batch contract as every other service record.",
+    "Let an operator read the list and apply exactly one decision at a time, where repeating the same request identity replays the first decision and writes nothing.",
+    "Erase the address and the note when a person asks to be taken off the list, through the same decision contract, leaving the one-way digest and the decision history.",
+    "Offer the form, the links to it and the discount sentence only from the record the service publishes, so that a page never offers what the host cannot honour.",
+    "Refuse an invitation that promises a discount unless a saved payment account report names that exact code and the service reports that checkout takes one.",
+    "Count accepted entries for one source only where the host declared where the client address comes from, and record that no count was taken where it did not.",
+    "Record the invitation before the account is prepared and before the message is sent, and record what happened to that message, sent or unknown, without repeating anything automatically."
+   ],
+   "depends_on": [
+    "D-17"
+   ],
+   "done_steps": 0,
+   "id": "D-24",
+   "stage": "initial_service",
+   "status_counts": {
+    "building": 3
+   },
+   "steps": [
+    "S-6.12",
+    "S-6.15",
+    "S-6.21"
+   ],
+   "title": "Take requests for access and invite one person from them",
+   "total_steps": 3
   }
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:8f00a68885ea5ed7a8f0df36a0ff6f2445f8aa33e36be1838346ff1fb8415613"
+ "source_fingerprint": "sha256:9cce55fb561d1f12e04dacfeb14d51da627c3c737f914f916101bafbd379f757"
 }
