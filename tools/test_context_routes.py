@@ -49,38 +49,60 @@ ENTRY_ROUTES = (
 #: entry routes and the other active context routes.
 AUTHORITY_SCOPE = tuple(dict.fromkeys((AUTHORITY_SOURCE, *ENTRY_ROUTES, *ACTIVE)))
 #: The owner's standing rules that the section must keep, each by the words
-#: that carry it and the date the owner gave it. A rewrite that drops one fails
-#: under the rule's name.
+#: that carry it and every date the section cites for it. A rewrite that drops
+#: the words or a date fails under the rule's name.
 AUTHORITY_RULES = (
     ("commit_and_push_reviewed_work",
      ("Commit reviewed work to `main` and push it",
       'September 2, 2026: "stop asking me to push, when you fix something you push!"',
-      '"push improvements into production/main branch"')),
+      "September 20, 2026: commit all of the work to `main` and deploy it to Fly.io",
+      'September 22, 2026: "push improvements into production/main branch"')),
     ("two_branches_and_no_others",
      ("`main`, and `checkpoint/full-capability-2026-09-21`",
       "Make no feature, fork or worktree branch",
+      'September 2, 2026: "You should not have separate branches or forks',
+      "September 21, 2026: the two branches of the branch strategy",
+      'September 22, 2026: "all of our work should be merged into main!" and '
       '"Only the snapshot should survive as a backup branch"')),
     ("guarded_release_then_live_checks",
      ("whose continuous integration run passed", "`.github/workflows/fly-pilot.yml`",
-      "every hostname", 'September 22, 2026: "make sure we are deploying and updating fly.io"')),
+      "every hostname", "September 20, 2026: deploy the private pilot to Fly.io",
+      'September 22, 2026: "make sure we are deploying and updating fly.io"')),
     ("decide_instead_of_asking",
      ("Decide instead of asking", "September 20, 2026, in the evening",
-      '"Use your best judgement, document it"')),
+      'September 22, 2026: "Use your best judgement, document it"')),
     ("never_suggest_rotating_a_credential",
      ("Never tell the owner to rotate, revoke or re-create a credential",
+      "September 19, 2026, to the previous developer session",
       'September 21, 2026: "NEVER tell me to rotate or revoke an API key"')),
     ("swappable_engines_and_prior_art",
      ("so that its engine can be swapped",
       "search existing projects, repositories, published designs and papers",
+      'September 21, 2026: "every functional unit should be wrapped so that we can replace '
+      'the unit engine without impacting functional unit to unit edge communication"',
+      'September 22, 2026: engines "for each functional component so that the runtime can '
+      'select the most efficient engine"',
       '"projects, repos, github, designs, or papers that we could use / leverage so we '
       "don't have to reinvent the wheel\"")),
     ("destructive_operations_need_the_owner",
      ("destroying or deleting an application, a volume, a domain record, a name "
-      "server delegation, a provider resource or a secret",)),
+      "server delegation, a provider resource or a secret (September 20, 2026)",)),
     ("spending_beyond_the_allowance_needs_the_owner",
-     ("spending beyond the recorded allowance",)),
-    ("legal_commitments_need_the_owner", ("a legal commitment",)),
-    ("identity_or_bank_verification_needs_the_owner", ("identity or bank verification",)),
+     ("spending beyond the recorded allowance",
+      "allows 50 United States dollars a month and 10 dollars of setup for infrastructure, "
+      "and nothing for model calls (September 20, 2026)")),
+    ("legal_commitments_need_the_owner",
+     ("a legal commitment, such as publishing terms of service or a privacy notice",
+      "wait for the owner (September 20, 2026)")),
+    ("identity_or_bank_verification_needs_the_owner",
+     ("identity or bank verification with a provider, which only the owner can complete "
+      "(September 20, 2026)",)),
+    ("model_calls_live_charges_and_registration_stay_outside_it",
+     ("The authority recorded on September 20, 2026 does not cover model calls, live "
+      "charges or opening public registration",)),
+    ("independent_review_before_intelligence_is_published",
+     ("Intelligence is published only after the independent review process in the "
+      "decision table approves it, and a producer never approves its own work",)),
     # A task may narrow the authority, and only the owner widens it. Without
     # this the section said no task widens it, while ASTRA.md names the current
     # task as a source of model, spending and publication authority.
