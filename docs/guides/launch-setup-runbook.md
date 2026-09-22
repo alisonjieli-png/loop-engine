@@ -316,6 +316,25 @@ The worker image keeps its existing diagnostic command. The workflow tests
 the service image without external networking, then publishes and deploys
 that exact image by digest. It does not rebuild after the checks.
 
+After the deploy the workflow applies the catalogue grants of the release on
+the one Machine. Stored grants name the items of the release that wrote them,
+so a release that changes the catalogue offers nothing until the grants of
+its packaged manifest are applied again: Fly release 12 offered no item until
+`loop-engine service apply-grants --config /data/host.json` was run by hand.
+The workflow now runs that command itself, through `flyctl ssh console` on
+the single started Machine, as user `65534` by way of `setpriv`, because the
+remote shell starts as root. The command registers no tenant and replaces the
+grants of each tenant the packaged manifest names. The step fails unless the
+command reports exactly one grant record, for the manifest at
+`/opt/baltor/catalogue/manifest.json`, with at least one item for every named
+tenant and no tenant registered. It then repeats the readiness check. A search
+that is in flight while the grants are replaced is refused once with
+`disclosure_grant_changed` and succeeds when it is sent again. The container
+check runs the same command against the image before it is published: it
+clears the grants, shows that nothing is offered, runs the command as root the
+way the remote shell does, and requires the packaged grants back with every
+file on the volume still owned by the service user.
+
 | Pilot environment setting | Required value or current state |
 |---|---|
 | `FLY_ORG` | `baltor`, configured |
@@ -341,9 +360,14 @@ networking. `/data/host.json`, the reviewed manifest and approved bodies must
 already exist. The service process needs write access to the database
 directory as user `65534`; it must not receive an empty replacement database
 on every restart. The host configuration must allow its exact public
-hostname and `localhost:8080`, which the health check uses. Preparation must
-also verify backup restoration. The workflow does not create accounts,
-tenants, credentials, grants or these data files during startup.
+hostname and `localhost:8080`, which the health check uses. It must also state
+where each caller's address comes from, in `http.request_limits`, because the
+image binds every address behind the Fly proxy and refuses to start without
+that statement; the [service runtime guide](../../src/loop_engine/core/service_runtime/README.md#which-address-is-counted)
+shows the mapping for the Fly proxy. Preparation must also verify backup
+restoration. The workflow does not create accounts, tenants, credentials or
+these data files. Its only change to service state is the grant application
+after the deploy, described above.
 
 `FLY_SERVICE_CONFIGURED` records completed preparation; setting the variable
 alone does not prove that preparation happened. A healthy process does not

@@ -1,4 +1,7 @@
 """Exercise the actual workflow permission gate without a provider or secret."""
+from contextlib import redirect_stdout
+import copy
+import io
 from pathlib import Path
 import json
 import os
@@ -21,6 +24,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_fly_service_container as container_check  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
+DEPLOY_STEP = "Publish and deploy the exact tested image"
+GRANT_STEP = "Apply the packaged catalogue grants on the one Machine"
+READINESS = 'jq -e "${SERVICE_READINESS_GATE}" >/dev/null'
+GRANT_GATE = re.compile(r"""jq -R -s -e --arg manifest "\$\{PACKAGED_MANIFEST\}" '(.+?)' >/dev/null""")
 
 
 def image_default_command():
@@ -39,6 +46,44 @@ def refusal_of_the_image_command(host):
     transport = ServiceHttpConfiguration(**host["http"])
     return public_binding_refusal(arguments[arguments.index("--host") + 1],
                                   "--behind-trusted-tls-proxy" in arguments, transport.request_limits)
+
+
+def grant_step_problems(workflow):
+    """Every way the release's post-deploy grant step falls short, or nothing.
+
+    A release that changes the catalogue offers nothing until the packaged
+    grants are applied on the machine, so the step must exist, follow the
+    deploy, run the exact command the container check qualified against the
+    one started Machine, gate on what that command printed, and end with the
+    shared readiness check.
+    """
+    steps = workflow["jobs"]["pilot"]["steps"]
+    names = [row.get("name") for row in steps]
+    if GRANT_STEP not in names:
+        return ["the release has no step that applies the packaged grants after the deploy"]
+    step = steps[names.index(GRANT_STEP)]
+    problems = []
+    if DEPLOY_STEP not in names or names.index(GRANT_STEP) < names.index(DEPLOY_STEP):
+        problems.append("the grant step does not run after the deploy")
+    if step.get("if") != "inputs.operation == 'deploy'":
+        problems.append("the grant step is not limited to a deployment")
+    environment = step.get("env", {})
+    if environment.get("GRANT_COMMAND") != " ".join(container_check.POST_DEPLOY_GRANT_COMMAND):
+        problems.append("the grant step does not run the command the container check qualified")
+    if environment.get("PACKAGED_MANIFEST") != container_check.IMAGE_MANIFEST_PATH:
+        problems.append("the grant step does not require the manifest packaged in the image")
+    if environment.get("FLY_API_TOKEN") != "${{ secrets.FLY_API_TOKEN }}":
+        problems.append("the grant step does not hold its own step-scoped Fly credential")
+    run = step.get("run", "")
+    required = ('set -euo pipefail', 'flyctl machine list --app "${FLY_APP}" --json',
+                'length == 1 and .[0].state == "started"', '--machine "${machine}"',
+                '--command "${GRANT_COMMAND}"', 'service_host_grant_application/v1', READINESS)
+    problems += [f"the grant step does not contain {text}" for text in required if text not in run]
+    if GRANT_GATE.search(run) is None:
+        problems.append("the grant step does not gate on what the grant command printed")
+    elif run.find('--command "${GRANT_COMMAND}"') > run.find(READINESS):
+        problems.append("the readiness check does not follow the grant command")
+    return problems
 
 
 class FlyDeploymentTests(unittest.TestCase):
@@ -99,11 +144,12 @@ class FlyDeploymentTests(unittest.TestCase):
             if "docker build" in row.get("run", ""):
                 self.assertNotIn("FLY_API_TOKEN", row.get("env", {}))
                 self.assertIn("tools/check_fly_service_container.py", row["run"])
-        deploy = next(row["run"] for row in self.steps if row["name"] == "Publish and deploy the exact tested image")
+        deploy = next(row["run"] for row in self.steps if row["name"] == DEPLOY_STEP)
         for required in ("--ha=false", "--strategy immediate", "--deploy-retries 0", "--no-public-ips", "@sha256:"):
             self.assertIn(required, deploy)
         self.assertNotIn("flyctl launch", str(self.workflow))
-        self.assertIn(".result.ready == true", deploy)
+        self.assertIn(READINESS, deploy)
+        self.assertIn(".result.ready == true", job["env"]["SERVICE_READINESS_GATE"])
 
     def test_the_deploy_health_gate_accepts_what_the_service_actually_serves(self):
         """Run the workflow's own filter over a health record the code produced.
@@ -113,14 +159,14 @@ class FlyDeploymentTests(unittest.TestCase):
         accepts anything passes a machine that can serve nobody. Both are
         caught here by running the exact filter from the workflow, first over a
         real ready record and then over the known-wrong case of one that is not
-        ready.
+        ready. The deploy step and the grant step both end with that one gate.
         """
         if shutil.which("jq") is None:
             self.skipTest("jq is required to run the workflow's own health gate")
-        deploy = next(row["run"] for row in self.steps if row["name"] == "Publish and deploy the exact tested image")
-        expression = re.search(r"jq -e '(.+?)' >/dev/null", deploy)
-        self.assertIsNotNone(expression, "the deploy step must gate the release on a readable jq expression")
-        gate = expression.group(1)
+        gate = self.workflow["jobs"]["pilot"]["env"]["SERVICE_READINESS_GATE"]
+        for name in (DEPLOY_STEP, GRANT_STEP):
+            with self.subTest(step=name):
+                self.assertIn(READINESS, next(row["run"] for row in self.steps if row["name"] == name))
 
         from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture
         from loop_engine.core.service_runtime.observability import readiness_report, ServiceObservabilityPolicy
@@ -147,6 +193,108 @@ class FlyDeploymentTests(unittest.TestCase):
         self.assertFalse(unready["ready"])
         self.assertNotEqual(run_gate(unready), 0, "the deploy gate accepted a service that is not ready")
 
+    def test_the_release_applies_the_packaged_grants_on_the_one_machine_after_the_deploy(self):
+        """Fly release 12 offered nothing until the grants were applied by hand.
+
+        The step now runs in the guarded workflow itself. Removing it, moving
+        it before the deploy, changing its command or dropping its final
+        readiness check fails here.
+        """
+        self.assertEqual(grant_step_problems(self.workflow), [])
+
+    def test_a_workflow_without_a_complete_grant_step_is_refused(self):
+        def changed(edit):
+            workflow = copy.deepcopy(self.workflow)
+            edit(workflow["jobs"]["pilot"]["steps"])
+            return grant_step_problems(workflow)
+
+        def step(steps):
+            return next(row for row in steps if row.get("name") == GRANT_STEP)
+
+        def remove(steps):
+            steps.remove(step(steps))
+
+        def before_the_deploy(steps):
+            moved = step(steps)
+            steps.remove(moved)
+            steps.insert(0, moved)
+
+        def configure_instead(steps):
+            step(steps)["env"]["GRANT_COMMAND"] = "loop-engine service configure --config /data/host.json"
+
+        def without_readiness(steps):
+            step(steps)["run"] = step(steps)["run"].replace(READINESS, ">/dev/null")
+
+        def without_the_output_gate(steps):
+            step(steps)["run"] = GRANT_GATE.sub("cat >/dev/null", step(steps)["run"])
+
+        def any_machine(steps):
+            step(steps)["run"] = step(steps)["run"].replace('--machine "${machine}" ', "")
+
+        for mutant in (remove, before_the_deploy, configure_instead, without_readiness,
+                       without_the_output_gate, any_machine):
+            with self.subTest(mutant=mutant.__name__):
+                self.assertNotEqual(changed(mutant), [])
+
+    def test_the_grant_gate_accepts_what_apply_grants_prints_and_refuses_known_wrong_output(self):
+        """Run the workflow's own gate over what the real command prints for the release manifest.
+
+        The command is the service's own apply-grants entry point, run over a
+        copy of the packaged manifest whose artifact root is the release folder
+        in this repository. Each known-wrong record differs from the real one
+        in one field, and the gate must refuse every one of them.
+        """
+        if shutil.which("jq") is None:
+            self.skipTest("jq is required to run the workflow's own grant gate")
+        from loop_engine.core.service_runtime.http_entrypoint import configure_host, main as service_main
+        run = next(row["run"] for row in self.steps if row["name"] == GRANT_STEP)
+        gate = GRANT_GATE.search(run).group(1)
+        packaged = json.loads((ROOT / container_check.CATALOGUE_MANIFEST).read_text("utf-8"))
+        tenants = sorted({grant["tenant_id"] for row in packaged["items"] for grant in row["grants"]})
+        with tempfile.TemporaryDirectory(prefix="fly-grant-gate-") as directory:
+            root = Path(directory)
+            manifest = root / "manifest.json"
+            manifest.write_text(json.dumps({**packaged, "artifact_root": str(
+                (ROOT / container_check.CATALOGUE_MANIFEST).parent)}), "utf-8")
+            host = container_check.packaged_catalogue_host_configuration(tenants)
+            host["runtime"]["database_path"] = str(root / "service.db")
+            host["manifest_path"] = str(manifest)
+            configuration = root / "host.json"
+            configuration.write_text(json.dumps(host), "utf-8")
+            configure_host(str(configuration))
+            printed = io.StringIO()
+            with redirect_stdout(printed):
+                self.assertEqual(service_main(["apply-grants", "--config", str(configuration)]), 0)
+        printed = printed.getvalue()
+        record = json.loads(printed)
+
+        def run_gate(text, manifest_path=str(manifest)):
+            return subprocess.run(["jq", "-R", "-s", "-e", "--arg", "manifest", manifest_path, gate],
+                                  input=text, capture_output=True, text=True, timeout=10).returncode
+
+        self.assertEqual(record["granted_items_by_tenant"],
+                         {name: sum(1 for row in packaged["items"]
+                                    if any(grant["tenant_id"] == name for grant in row["grants"]))
+                          for name in tenants})
+        self.assertEqual(run_gate(printed), 0, "the gate refused what the grant command prints")
+        self.assertEqual(run_gate("Connecting to the Machine\n" + printed + "\r\n"), 0,
+                         "the gate refused the record when the remote shell printed around it")
+        known_wrong = {
+            "a tenant registered": {**record, "tenants_registered": 1},
+            "no tenant granted anything": {**record, "granted_items_by_tenant": {}},
+            "a tenant granted nothing": {**record, "granted_items_by_tenant": {tenants[0]: 0}},
+            "another manifest": {**record, "manifest_path": "/data/manifest.json"},
+            "another record": {**record, "record_type": "service_host_setup/v1"},
+            "a remote account created": {**record, "remote_accounts_created": True},
+        }
+        for name, value in known_wrong.items():
+            with self.subTest(known_wrong=name):
+                self.assertNotEqual(run_gate(json.dumps(value)), 0)
+        for name, text in (("nothing printed", ""), ("the record twice", printed + printed),
+                           ("an error only", "Error: ssh shell: Process exited with status 1\n")):
+            with self.subTest(known_wrong=name):
+                self.assertNotEqual(run_gate(text), 0)
+
     def test_the_container_check_expects_the_command_the_image_declares(self):
         self.assertEqual(container_check.DEFAULT_COMMAND, image_default_command())
 
@@ -169,6 +317,17 @@ class FlyDeploymentTests(unittest.TestCase):
                 self.assertNotIn("request_limits", wrong["http"])
                 self.assertEqual({**wrong["http"], "request_limits": host["http"]["request_limits"]}, host["http"])
                 self.assertIn("request_limits", refusal_of_the_image_command(wrong))
+
+    def test_the_post_deploy_command_runs_the_grant_command_as_the_service_user(self):
+        """Exactly the service's own apply-grants command, run as the user the image runs as."""
+        command = container_check.POST_DEPLOY_GRANT_COMMAND
+        self.assertEqual(command[command.index("loop-engine"):],
+                         ("loop-engine", "service", "apply-grants", "--config", "/data/host.json"))
+        self.assertEqual(command[:command.index("loop-engine")],
+                         ("setpriv", f"--reuid={container_check.SERVICE_USER}",
+                          f"--regid={container_check.SERVICE_USER}", "--clear-groups"))
+        self.assertIn(f"USER {container_check.SERVICE_USER}:{container_check.SERVICE_USER}",
+                      (ROOT / "Dockerfile.service").read_text("utf-8"))
 
     def test_service_profile_has_persistence_tls_and_a_real_server_command(self):
         profile = tomllib.loads((ROOT / "fly.toml").read_text())

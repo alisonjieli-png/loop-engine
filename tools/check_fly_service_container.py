@@ -33,6 +33,7 @@ DEFAULT_COMMAND = ["service", "serve", "--config", "/data/host.json",
                    "--host", "0.0.0.0", "--port", "8080", "--behind-trusted-tls-proxy"]
 HOST_CONFIGURATION_RECORD_TYPE = "service_http_host_configuration/v1"
 MANIFEST_RECORD_TYPE = "host_attested_intelligence_manifest/v1"
+GRANT_APPLICATION_RECORD_TYPE = "service_host_grant_application/v1"
 #: Where the hosted service reads each caller's address. A service bound to
 #: every address behind a trusted proxy refuses to start until its host file
 #: names the header that proxy writes on every request, because the socket peer
@@ -42,6 +43,14 @@ MANIFEST_RECORD_TYPE = "host_attested_intelligence_manifest/v1"
 #: here the way it starts in production.
 FLY_REQUEST_LIMITS = {"record_type": "service_request_limits/v1",
                       "client_address_source": "header", "client_address_header": "Fly-Client-IP"}
+#: The command the deployment workflow runs on the one machine after each
+#: release. Stored grants name the items of the release that wrote them, so a
+#: release that changes the catalogue offers nothing until the packaged
+#: manifest's grants are applied again. The command registers no tenant and
+#: replaces the grants of each tenant the manifest names. The machine's remote
+#: shell starts as root, so setpriv runs it as the service user that owns /data.
+POST_DEPLOY_GRANT_COMMAND = ("setpriv", f"--reuid={SERVICE_USER}", f"--regid={SERVICE_USER}", "--clear-groups",
+                             "loop-engine", "service", "apply-grants", "--config", "/data/host.json")
 
 
 def command(arguments, timeout=60):
@@ -251,6 +260,8 @@ def check_packaged_catalogue(image, record):
     if not tenants:
         raise RuntimeError("The packaged manifest grants no tenant, so nothing could be served")
     subject = tenants[0]
+    granted = {name: sum(1 for row in packaged["items"] if any(grant["tenant_id"] == name for grant in row["grants"]))
+               for name in tenants}
 
     ownership = '''
 import json, os, stat
@@ -396,6 +407,7 @@ print(json.dumps({{
                and answered["no_rejected_item_is_offered"])
         record("an_approved_body_is_served_from_the_image_not_from_the_volume",
                answered["an_approved_body_is_served"])
+        repair = check_post_deploy_grant_command(container, tenants, granted, approved, record)
     finally:
         if container is not None:
             command(["docker", "rm", "--force", container])
@@ -407,8 +419,81 @@ print(json.dumps({{
             "withheld_for_undeclared_authority": answered["withheld_for_undeclared_authority"],
             "search_hits": answered["search_hits"],
             "capabilities_record_type": answered["capabilities_record_type"],
+            "post_deploy_grant_command": repair,
             "review_record": REVIEW_RECORD, "local_test_volume_removed": True,
             "one_time_local_key_left_the_container": False}
+
+
+#: Clear every named tenant's grants, as the service user. This is the state a
+#: release that changes the catalogue leaves behind: the stored grants name
+#: items the new manifest no longer holds, so nothing is offered.
+CLEAR_GRANTS = '''
+import json
+from loop_engine.core.service_runtime.http_entrypoint import load_host_application
+application, _configuration = load_host_application("/data/host.json")
+for tenant in {tenants!r}:
+    application.runtime.set_grants(tenant, ())
+print(json.dumps({{"cleared_tenants": {count}}}))
+'''
+
+#: Every item registered for the probe's tenant, offered or withheld.
+REGISTERED_ITEMS = '''
+import json, urllib.request
+with open("/data/state/check.key") as stream:
+    key = stream.read()
+request = urllib.request.Request("http://localhost:8080/api/v1/provisioning",
+    json.dumps({"record_type": "service_provisioning_request/v1", "operation": "list"}).encode(),
+    {"Accept": "application/json", "Content-Type": "application/json", "Authorization": "Bearer " + key})
+with urllib.request.urlopen(request, timeout=20) as response:
+    listing = json.loads(response.read(4_000_000))["result"]
+print(json.dumps({"registered": sorted(row["identity"] for row in listing["items"] + listing["withheld"])}))
+'''
+
+#: Every path on the volume that the service user does not own, and any
+#: rollback journal a write left behind. Run as root, which can read them all.
+VOLUME_OWNERS = '''
+import json
+from pathlib import Path
+root = Path("/data")
+paths = [root, *sorted(root.rglob("*"))]
+print(json.dumps({{"paths": len(paths),
+    "owned_by_another_user": len([path for path in paths
+                                  if path.lstat().st_uid != {user} or path.lstat().st_gid != {user}]),
+    "journals_left": len([path for path in paths if path.name.endswith("-journal")])}}))
+'''
+
+
+def check_post_deploy_grant_command(container, tenants, granted, approved, record):
+    """Run the workflow's post-deploy command the way the workflow runs it.
+
+    A release that changes the catalogue leaves the stored grants naming the
+    previous items, and the library then offers nothing. Fly release 12 did
+    exactly that until the command was run by hand. Clearing the grants
+    reproduces the state here. The command the deployment workflow runs is then
+    started as root, which is how the machine's remote shell starts, and it
+    must bring back exactly the packaged grants, register no tenant, and leave
+    every file on the volume owned by the service user.
+    """
+    as_service = ["docker", "exec", "--user", f"{SERVICE_USER}:{SERVICE_USER}", container, "python", "-c"]
+    as_root = ["docker", "exec", "--user", "0:0", container]
+    command([*as_service, CLEAR_GRANTS.format(tenants=list(tenants), count=len(tenants))], timeout=180)
+    stale = json.loads(command([*as_service, REGISTERED_ITEMS], timeout=60))["registered"]
+    printed = command([*as_root, *POST_DEPLOY_GRANT_COMMAND], timeout=180).strip().splitlines()
+    applied = json.loads(printed[-1]) if printed else {}
+    restored = json.loads(command([*as_service, REGISTERED_ITEMS], timeout=60))["registered"]
+    owners = json.loads(command([*as_root, "python", "-c", VOLUME_OWNERS.format(user=SERVICE_USER)], timeout=60))
+    record("cleared_grants_offer_nothing_as_after_a_catalogue_release", stale == [])
+    record("the_post_deploy_grant_command_applies_exactly_the_packaged_grants",
+           applied.get("record_type") == GRANT_APPLICATION_RECORD_TYPE
+           and applied.get("manifest_path") == IMAGE_MANIFEST_PATH
+           and applied.get("tenants_registered") == 0 and applied.get("remote_accounts_created") is False
+           and applied.get("granted_items_by_tenant") == granted and restored == approved)
+    record("the_post_deploy_grant_command_leaves_the_volume_owned_by_the_service_user",
+           owners["owned_by_another_user"] == 0 and owners["journals_left"] == 0)
+    return {"command": list(POST_DEPLOY_GRANT_COMMAND), "started_as": "root",
+            "registered_after_clearing": len(stale), "registered_after_the_command": len(restored),
+            "granted_items": sum(granted.values()), "volume_paths_checked": owners["paths"],
+            "volume_paths_owned_by_another_user": owners["owned_by_another_user"]}
 
 
 def main():
