@@ -558,6 +558,17 @@ try {
             plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."}};
   const keyState=async opened=>({offer:await opened.locator("#offer-usage-keys").evaluate(node=>node.textContent),plan:await opened.locator("#plan-keys-detail").evaluate(node=>node.textContent)});
   const sameKeys=(keys,want)=>keys.offer===want.offer&&keys.plan===want.plan;
+  /* The waiting list is an offer, and the pricing page lists unfinished work that names its form. Both follow the reported
+     capability, read only from the record version this page was written against, so the page never offers the form and calls it
+     unfinished at once, and a record version it was not written for offers nothing. */
+  const waitlistWording={pending:{offered:false,unfinished:"Public account creation, the waiting list form and complete native client onboarding are not finished."},
+                         offered:{offered:true,unfinished:"Public account creation and complete native client onboarding are not finished."}};
+  const waitlistClaims=async opened=>{await paymentState(opened);return opened.evaluate(()=>{
+    const shown=id=>{const node=document.getElementById(id);return node?!node.hidden:null;},unfinished=document.getElementById("pricing-in-progress");
+    return {link:shown("waitlist-link"),form:shown("waitlist-form"),signup_link:shown("signup-waitlist-link"),pending_note:shown("waiting-list-pending"),
+      unfinished:unfinished?unfinished.innerText.split(". ")[0]+".":null};});};
+  const sameWaitlistClaims=(claims,want)=>claims.link===want.offered&&claims.form===want.offered&&claims.signup_link===want.offered
+    &&claims.pending_note===!want.offered&&claims.unfinished===want.unfinished;
   const carefulState=async (opened,note,name)=>{
     const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened);
     note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed),{actions,payment,keys});
@@ -569,6 +580,16 @@ try {
       note("personal_key_claim_is_held_back_when_the_service_reports_no_client_access",sameKeys(keys,keyWording.closed),keys);
       const payment=await paymentState(opened);
       note("pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),payment);
+      const claims=await waitlistClaims(opened);
+      note("unfinished_work_names_the_waiting_list_form_while_the_service_offers_no_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
+    }},
+    waitlist_offered:{origin:"account_base",run:async (opened,note)=>{
+      const claims=await waitlistClaims(opened);
+      note("unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list",sameWaitlistClaims(claims,waitlistWording.offered),claims);
+    }},
+    unsupported_version_waitlist:{origin:"account_base",version:"service_capabilities/v2",run:async (opened,note)=>{
+      const claims=await waitlistClaims(opened);
+      note("unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
     }},
     open_registration:{origin:"signup_base",run:async (opened,note)=>{
       const actions=await accessActions(opened);
@@ -601,6 +622,7 @@ try {
     await scenario.run(opened,check);await opened.close();
   }
   const versionGate="if (value.record_type === CAPABILITIES_RECORD_TYPE) {";
+  const waitlistGate="const open = value?.record_type === CAPABILITIES_RECORD_TYPE && value.website?.waitlist_available === true;";
   const publicControls=[
     {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_action_offers_the_waiting_list_when_account_creation_is_closed"]},
     {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_action_offers_account_creation_when_the_service_reports_it"]},
@@ -610,7 +632,11 @@ try {
     {name:"never_claim_personal_keys",scenario:"client_access",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(false);",expected:["personal_key_claim_appears_when_the_service_reports_client_access"]},
     {name:"ignore_the_capabilities_record_version",scenario:"unsupported_version_registration",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_registration"]},
     {name:"ignore_the_record_version_over_payment",scenario:"unsupported_version_checkout",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_checkout"]},
-    {name:"ignore_the_record_version_over_personal_keys",scenario:"unsupported_version_client_access",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_client_access"]}];
+    {name:"ignore_the_record_version_over_personal_keys",scenario:"unsupported_version_client_access",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_client_access"]},
+    {name:"ignore_the_record_version_over_the_waiting_list",scenario:"unsupported_version_waitlist",find:waitlistGate,replacement:"const open = value?.website?.waitlist_available === true;",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list"]},
+    {name:"keep_calling_the_offered_waiting_list_form_unfinished",scenario:"waitlist_offered",find:'$("in-progress-waitlist").hidden = open;',replacement:'$("in-progress-waitlist").hidden = false;',expected:["unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list"]},
+    {name:"keep_saying_the_offered_waiting_list_form_is_being_built",scenario:"waitlist_offered",find:'$("waiting-list-pending").hidden = open;',replacement:'$("waiting-list-pending").hidden = false;',expected:["unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list"]},
+    {name:"stop_naming_the_waiting_list_form_as_unfinished_before_it_is_offered",scenario:"closed_service",find:'$("in-progress-waitlist").hidden = open;',replacement:'$("in-progress-waitlist").hidden = true;',expected:["unfinished_work_names_the_waiting_list_form_while_the_service_offers_no_list"]}];
   for(const control of publicControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);},scenario=scenarios[control.scenario];
     let applied=false,problem="";

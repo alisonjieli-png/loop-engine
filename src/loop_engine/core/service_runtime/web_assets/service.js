@@ -232,11 +232,15 @@
   // service answers, neither is offered: an unanswered page must not make an
   // offer that ends in a refusal.
   const waitlistOffer = value => {
-    const open = value?.website?.waitlist_available === true;
+    // Read only from the record version this page was written against, like
+    // every other public statement: another version offers nothing.
+    const open = value?.record_type === CAPABILITIES_RECORD_TYPE && value.website?.waitlist_available === true;
     for (const name of ["waitlist-link", "signup-waitlist-link", "waitlist-form"]) $(name).hidden = !open;
     $("waitlist-closed").hidden = open;
     // The sign-up page says the form is still being built only while no list is offered.
     $("waiting-list-pending").hidden = open;
+    // So does the pricing page's list of unfinished work: it names the form only while no list is offered.
+    $("in-progress-waitlist").hidden = open;
     $("waitlist-state").textContent = open ? "Open for requests" : "Not taking requests";
     $("waitlist-discount").hidden = !open || value?.billing?.discount_code !== true;
   };

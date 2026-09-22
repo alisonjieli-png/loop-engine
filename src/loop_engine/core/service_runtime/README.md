@@ -773,7 +773,11 @@ one decision at a time. A host without that block serves neither, and both
 answer `waitlist_unavailable`. The page offers the form, its links and the
 discount sentence only when the capabilities record says
 `waitlist_available`, and names the discount only when it also says
-`discount_code`.
+`discount_code`. Like every other public statement on the page, the offer is
+read only from `service_capabilities/v1`, so a record version the page was not
+written for offers nothing. The pricing page's list of unfinished work and the
+sign-up page's note that the form is still being built name the waiting list
+form only while the service offers no list.
 
 A refused request to join is a refused attempt from one client address, so
 the failed-attempt limit counts it like a refused sign-in. The list counts
