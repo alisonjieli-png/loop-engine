@@ -37,4 +37,4 @@ A developer imports the package in the development environment, sees no error an
 
 - `src/loop_engine/code_nodes/solution_export.py`: `verify_export`, `ExportVerificationPolicy` and `isolation_environment`.
 
-Licence: MIT. Compiled from revision 4249eca. The module uses the Python standard library and starts the verification in a separate interpreter process.
+Licence: MIT. Compiled from revision e2898c7. The module uses the Python standard library and starts the verification in a separate interpreter process.

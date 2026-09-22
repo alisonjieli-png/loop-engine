@@ -40,4 +40,4 @@ A reporting team builds on a column called status, reading the values active and
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 4249eca.
+Licence: MIT. Written for this catalogue at revision e2898c7.
