@@ -1,0 +1,92 @@
+{
+  "record_type": "hosted_service_transport_qualification/v1",
+  "checked_at": "2026-09-21T15:40:20.743770+00:00",
+  "origin": "https://baltor-pilot.fly.dev",
+  "accounts": [
+    "pilot-owner",
+    "pilot-boundary"
+  ],
+  "identity": "apply_hold_or_escalate_each_correction",
+  "digest": "4dd86e90109847297bd353786483e2129238fb3333fe3b5df8140e776db22389",
+  "metered_read_request_id": "hosted-check-331190939a324fe0b665d2999c539c6d",
+  "usage_records_before": 14,
+  "usage_records_after": 15,
+  "checker_sha256": "8e5b1509f86c75b479e1d2d3ac947d336f460a371eb52be356805fabbced986b",
+  "checks": [
+    {
+      "name": "public_health_responds",
+      "passed": true
+    },
+    {
+      "name": "missing_key_refuses",
+      "passed": true
+    },
+    {
+      "name": "wrong_key_refuses",
+      "passed": true
+    },
+    {
+      "name": "owner_identity_is_server_bound",
+      "passed": true
+    },
+    {
+      "name": "owner_can_list_selected_identity",
+      "passed": true
+    },
+    {
+      "name": "isolated_tenant_has_no_owner_grants",
+      "passed": true
+    },
+    {
+      "name": "search_returns_references_without_loading_bodies",
+      "passed": true
+    },
+    {
+      "name": "selected_body_has_the_expected_digest",
+      "passed": true
+    },
+    {
+      "name": "exact_retry_retains_one_durable_acknowledgment",
+      "passed": true
+    },
+    {
+      "name": "two_read_requests_add_one_usage_record",
+      "passed": true
+    },
+    {
+      "name": "another_tenant_cannot_read_the_body",
+      "passed": true
+    },
+    {
+      "name": "changed_digest_refuses",
+      "passed": true
+    },
+    {
+      "name": "refused_reads_do_not_add_usage",
+      "passed": true
+    },
+    {
+      "name": "unexpected_browser_origin_refuses",
+      "passed": true
+    },
+    {
+      "name": "official_MCP_client_initializes_over_real_HTTPS",
+      "passed": true
+    },
+    {
+      "name": "MCP_search_returns_permitted_references",
+      "passed": true
+    }
+  ],
+  "passed": 16,
+  "executed": 16,
+  "planned_checks": 16,
+  "all_passed": true,
+  "http_calls": 15,
+  "physical_model_calls": 0,
+  "hosted_harness_used": false,
+  "supabase_qualified": false,
+  "stripe_runtime_qualified": false,
+  "paid_release_qualified": false,
+  "limits": "Private host-attested diagnostic material only; not a full-system customer-task benchmark."
+}

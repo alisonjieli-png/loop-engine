@@ -1,0 +1,49 @@
+{
+  "record_type": "host_manifest_known_wrong_cases/v1",
+  "checked_at": "2026-09-21T15:38:29.954000+00:00",
+  "image_reference": "registry.fly.io/baltor-pilot@sha256:172782c0be740164b665c51502028a5c8c228d8ed1a73c8b3db89dfe6e5cd4d9",
+  "loader": "loop_engine.core.service_runtime.http_entrypoint.load_host_manifest",
+  "run_in": "the release image itself, with no network and a read only root filesystem",
+  "method_note": "Each case copies the packaged catalogue into the container tmpfs and rewrites the copy's artifact_root to that copy, so the loader measures the changed bytes rather than the pristine packaged ones. A first attempt without that rewrite reported both digest cases as not refused, because the manifest still named /opt/baltor/catalogue and the loader read the untouched packaged bodies. That attempt is recorded here as the reason the rewrite is required, not as a defect in the host.",
+  "probe_sha256": "81ea82e072a989ff091b0b27dabc995fb5389e6432c5c0932270b93d624aaa2a",
+  "artifact_root": "/opt/baltor/catalogue",
+  "results": [
+    {
+      "case": "body_changed_after_the_digest_was_computed",
+      "refused": true,
+      "code": "artifact_size_mismatch"
+    },
+    {
+      "case": "body_changed_without_changing_its_size",
+      "refused": true,
+      "code": "artifact_digest_mismatch"
+    },
+    {
+      "case": "body_path_escapes_the_artifact_root",
+      "refused": true,
+      "code": "unsafe_artifact_path"
+    },
+    {
+      "case": "body_path_is_absolute",
+      "refused": true,
+      "code": "unsafe_artifact_path"
+    },
+    {
+      "case": "licence_the_host_policy_does_not_accept",
+      "refused": true,
+      "code": "item_license_not_accepted"
+    },
+    {
+      "case": "the_unchanged_packaged_manifest_loads",
+      "refused": false,
+      "code": null,
+      "registered": 43,
+      "granted_tenants": [
+        "pilot-owner"
+      ]
+    }
+  ],
+  "external_provider_calls": 0,
+  "physical_model_calls": 0,
+  "credential_printed": false
+}

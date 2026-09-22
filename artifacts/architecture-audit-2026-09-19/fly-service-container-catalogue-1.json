@@ -1,0 +1,1270 @@
+{
+  "record_type": "fly_service_container_check/v1",
+  "checked_at": "2026-09-21T15:36:26.670242+00:00",
+  "image_id": "sha256:172782c0be740164b665c51502028a5c8c228d8ed1a73c8b3db89dfe6e5cd4d9",
+  "image_reference": "loop-engine-service:deployed-172782c0",
+  "source_files": {
+    "Dockerfile.service": "defc7bd3e8c44c67ea299f9946dad4de45ea04decfb7236b21bcdbfea6b75df7",
+    "fly.toml": "bde1e9ed9d1422b3901f3cbd91897abb78b0096d6597f725f90b021c78eb7e5a",
+    ".dockerignore": "e485d110584f78de279161a9ff682ab79d11b7b33326e9c7d023ae9b14798b68",
+    ".github/workflows/fly-pilot.yml": "e7c1f8faa636535962735770daf8c63ce723c6a9f13c87f7b83637e6b8cb7d0e",
+    "tools/test_fly_deployment.py": "70703f16e05cac7a02f420e094d9b46dd80f5b1fc78e503bfcfbb3b1fe1b3119",
+    "tools/check_fly_service_container.py": "59d4505107420bc7c8260309a7c1d868b2416eaef8a399878341bbb36242e950",
+    "tools/build_host_catalogue_manifest.py": "519e8ca92b3845d6be26a5c2ec4736834629482cbb777f627cefe5d9bcfbd31a",
+    "examples/29_intelligence_service/starter-catalogue/host-release/manifest.json": "6df734f56f5ee0e30b0e82c2804d9bfec52f5b8f836f0734fc428047ed9d866c",
+    "examples/29_intelligence_service/starter-catalogue/reviews.json": "4c3b9478d04031c7d1f54adfcec59de0effed530260ac43619bd9b335ab5fa82"
+  },
+  "checks": [
+    {
+      "name": "runtime_user_is_unprivileged",
+      "passed": true
+    },
+    {
+      "name": "default_command_starts_the_service",
+      "passed": true
+    },
+    {
+      "name": "installed_architecture_passes_without_provider_calls",
+      "passed": true
+    },
+    {
+      "name": "installed_protocol_and_service_checks_pass",
+      "passed": true
+    },
+    {
+      "name": "default_server_and_health_host_work_with_the_volume",
+      "passed": true
+    },
+    {
+      "name": "default_server_refuses_unauthenticated_session_access",
+      "passed": true
+    },
+    {
+      "name": "service_restarts_with_the_same_volume_and_configuration",
+      "passed": true
+    },
+    {
+      "name": "release_catalogue_is_packaged_read_only_for_the_service_user",
+      "passed": true
+    },
+    {
+      "name": "host_setup_reads_the_packaged_manifest_and_grants_its_items",
+      "passed": true
+    },
+    {
+      "name": "the_service_starts_against_the_packaged_manifest",
+      "passed": true
+    },
+    {
+      "name": "only_the_approved_items_are_registered_for_a_granted_tenant",
+      "passed": true
+    },
+    {
+      "name": "search_returns_the_approved_items_and_loads_no_body",
+      "passed": true
+    },
+    {
+      "name": "no_rejected_item_is_reachable_by_search_or_by_direct_address",
+      "passed": true
+    },
+    {
+      "name": "an_approved_body_is_served_from_the_image_not_from_the_volume",
+      "passed": true
+    }
+  ],
+  "passed": 14,
+  "total": 14,
+  "all_passed": true,
+  "service_smoke": {
+    "all_passed": true,
+    "passed": 232,
+    "tests": [
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "packaged_public_workspace_loads_without_exposing_private_source"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "every_internal_link_on_the_page_has_a_served_address"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "packaged_browser_library_is_served_with_its_licence_terms"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "declared_service_origin_can_use_its_own_workspace"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "real_HTTP_profiles_and_durable_identity_are_inspectable"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "missing_and_wrong_credentials_refuse_without_secret_echo"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "metadata_and_retrieval_never_disclose_another_tenant_or_candidate"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "manifest_retains_exact_body_identity_without_loading_or_metering"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "real_HTTP_exact_retries_share_one_durable_usage_acknowledgment"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "selected_digest_mismatch_refuses_before_body_read_and_metering"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "large_body_requires_separate_download_without_premature_charge"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "authorized_download_has_exact_bytes_and_digest_outside_protocol_payload"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "changed_body_refuses_before_a_new_charge_or_disclosure"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "Host_and_Origin_boundaries_refuse_cross_origin_browser_access"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unknown_authority_fields_duplicate_JSON_versions_and_oversize_requests_refuse"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "tenant_revocation_reauthorizes_even_a_previously_valid_download"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "external_resource_discovery_points_to_the_configured_identity_provider_without_issuing_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "external_token_uses_verified_subject_mapping_not_its_tenant_claim"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "external_token_scope_cannot_inherit_broader_durable_user_permissions"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "wrong_issuer_audience_subject_expiry_scope_and_algorithm_refuse"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "forged_key_identifiers_cannot_force_a_key_set_read_per_request"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "removed_key_refresh_pause_is_detected"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unknown_key_identifier_refreshes_only_the_configured_key_endpoint"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "key_rotation_inside_the_pause_is_refused_not_guessed"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "same_identifier_key_rotation_refreshes_after_signature_failure"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "external_subject_revocation_is_durable_and_checked_on_the_next_request"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "retrieval_completion_refuses_in_flight_revoke"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "fresh_retrieval_uses_current_authority_after_revoke"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "retrieval_completion_refuses_in_flight_replace"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "fresh_retrieval_uses_current_authority_after_replace"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "retrieval_completion_refuses_in_flight_entitlement"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "fresh_retrieval_uses_current_authority_after_entitlement"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "real_HTTP_attempt_over_the_failure_limit_gets_429_and_Retry_After_before_authentication"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "real_protocol_route_shares_the_failed_attempt_limit_and_public_routes_stay_open"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "real_HTTP_limit_ends_when_the_window_has_passed"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "real_HTTP_configured_proxy_header_separates_clients_and_a_repeated_header_names_nobody"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "official_client_uses_real_StreamableHTTP_with_the_exact_supported_profile"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "protocol_search_returns_typed_authorized_references_without_bodies"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_and_protocol_share_the_same_domain_and_idempotent_usage_identity"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "protocol_refusals_hide_cross_tenant_items_and_reject_authority_injection"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "protocol_search_shares_the_completion_authorization_guard"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "remote_protocol_refuses_unqualified_versions_without_silent_negotiation"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "real_protocol_cancellation_does_not_replay_or_duplicate_uncertain_metering"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_configuration_entrypoint_serves_exact_reviewed_files_through_real_HTTP"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "serving_restart_does_not_reinstall_manifest_grants_after_revocation"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_manifest_cannot_escape_its_declared_artifact_root"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_review_is_bound_to_exact_bytes_not_only_an_item_name"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "item_with_an_accepted_licence_loads_under_the_default_host_policy"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "item_without_a_licence_is_refused_and_the_refusal_names_it"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "item_with_an_unknown_licence_is_refused_and_the_refusal_names_it"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "item_whose_licence_needs_review_is_refused_and_the_refusal_names_it"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "default_host_policy_refuses_a_licence_that_it_does_not_list"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "default_host_policy_accepts_only_the_licence_of_this_repository"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "item_without_any_grant_is_still_refused_without_an_accepted_licence"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_does_not_start_when_its_starter_catalogue_holds_an_item_without_an_accepted_licence"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "refused_item_is_never_registered_and_stops_the_whole_manifest"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_with_one_unlicensed_item_neither_starts_nor_writes_tenant_state"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_that_lists_an_extra_licence_identifier_serves_that_item"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "same_manifest_is_refused_by_a_host_that_keeps_the_default_policy"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "licence_names_are_compared_exactly_and_a_host_list_replaces_the_default"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_policy_cannot_list_a_missing_unknown_or_review_state_as_an_accepted_licence"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_policy_cannot_list_a_name_with_a_hidden_or_look_alike_character"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "licence_policy_with_an_unknown_key_or_unsupported_version_is_refused_before_the_manifest_is_read"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unknown_host_configuration_key_is_still_refused_beside_the_licence_policy"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "refusal_message_stays_short_and_still_names_the_refused_item"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "refusal_message_shows_a_hidden_or_look_alike_character_by_its_code_point"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "refused_fixtures_load_once_the_licence_guard_is_patched_out"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "metadata_only_durable_key_neither_advertises_nor_performs_body_access"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "response_limit_refuses_the_whole_payload_without_partial_metadata_disclosure"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "expired_response_wait_is_not_success_and_running_work_keeps_its_capacity_slot"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "timed_out_callback_can_commit_once_without_adapter_replay"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "configured_key_endpoint_cannot_redirect_authentication_to_another_resource"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "external_key_set_respects_its_byte_allowance"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "webhook_does_not_accept_unsigned_or_wrongly_signed_subscription_authority"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unknown_billing_commit_is_a_retryable_HTTP_failure_not_a_success_acknowledgment"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "actual_HTTP_signed_webhook_reconciles_current_state_and_deduplicates_delivery"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unreconciled_signed_webhook_retains_durable_pending_identity_without_false_activation"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "request_limit_settings_are_an_immutable_versioned_record"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "request_limit_settings_refuse_unsafe_values_and_inexact_header_names"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "host_file_limits_need_the_exact_versioned_fields"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "the_documented_host_file_mapping_activates_the_limit_through_the_real_host_loader"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_inexact_host_file_mapping_stops_the_host_loader_before_it_serves"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_address_waits_until_its_oldest_counted_failure_leaves_the_window"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "removed_window_expiry_is_detected"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "memory_stays_bounded_and_the_oldest_address_leaves_first"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "removed_eviction_is_detected"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_expired_address_leaves_before_a_waiting_address_is_evicted"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_expired_address_is_forgotten_when_another_address_fails_in_a_table_with_room"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "concurrent_failures_keep_the_table_bounded_and_consistent"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_address_header_the_host_did_not_configure_is_never_read"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "removed_header_configuration_rule_is_detected"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_configured_header_counts_only_when_it_holds_exactly_one_address"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "addresses_are_counted_in_one_canonical_form"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_unstated_address_source_leaves_the_limit_inactive_and_says_so"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "removed_unstated_source_rule_is_detected"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "the_attempt_over_the_limit_is_refused_before_authentication_and_before_a_worker_slot"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_correct_key_is_refused_too_while_its_address_waits"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "public_routes_stay_open_to_a_waiting_address"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_different_address_is_unaffected"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "removed_failed_attempt_limit_is_detected"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "refusals_while_waiting_are_not_counted_and_the_window_expires"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "removed_uncounted_refusal_rule_is_detected"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_failure_from_outside_the_service_adds_no_response_header"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_success_is_never_counted_and_never_clears_the_count"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_request_without_one_credential_uses_no_worker_slot_and_is_not_counted"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_refusal_after_sign_in_is_not_counted"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_outage_answer_is_not_counted"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "attempts_already_inside_authentication_finish_and_the_worker_slots_bound_them"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "refused_account_activations_are_counted_and_an_identity_outage_is_not"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "an_unconfigured_header_is_ignored_and_a_forged_one_cannot_move_the_count"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_caller_controlled_header_is_the_known_wrong_case"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_configured_header_separates_addresses_behind_one_proxy"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "a_repeated_configured_header_is_counted_for_the_socket_peer_not_for_a_named_address"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "capabilities_name_the_address_source_but_not_the_trusted_header_or_the_table_size"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "many_addresses_cannot_grow_the_table_of_a_running_service"
+      },
+      {
+        "detail": "injected clock and the real application through ASGI; no socket, no external provider",
+        "passed": true,
+        "test": "capabilities_publish_the_limit_beside_the_unchanged_existing_limits"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "ordinary_customer_cannot_list_test_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "forged_administrator_principal_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "policy_cannot_delegate_administrator_scope"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "policy_cannot_issue_into_administrator_tenant"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "invalid_token_limit_True"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "invalid_token_limit_0"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "invalid_token_limit_-1"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "invalid_token_limit_1.2"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "scoped_token_is_a_real_usable_service_credential"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "raw_token_is_absent_from_catalogue_and_audit"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "duplicate_submission_returns_same_key_but_no_secret"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "changed_request_identity_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "wrong_target_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "privileged_scope_escalation_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "expiry_cannot_exceed_policy"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unknown_fields_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "bootstrap_credentials_are_not_managed_test_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "bootstrap_credential_revocation_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "read_only_administration_cannot_mint"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "revocation_is_durable_and_immediate"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "revocation_survives_reopening_store"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "removed_administrator_guard_is_detected"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "revoked_administrator_cannot_mint_from_stale_principal"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "concurrent_creates_cannot_exceed_active_limit"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "limit_enforced_on_subsequent_request"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unknown_commit_is_not_reported_as_success"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "unknown_commit_retry_reconciles_without_duplicate_or_raw_key"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "administrator_route_loads_with_escaped_configured_brand"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "anonymous_administrator_request_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "normal_tenant_cannot_reach_administrator_API"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "administrator_sees_only_host_selected_tenants_and_limits"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_creation_is_governed_and_uncached"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "list_never_discloses_token_or_digest"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "issued_token_authenticates_in_real_HTTP_session"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "issued_token_cannot_manage_access"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "metadata_only_token_cannot_download"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "foreign_browser_origin_cannot_create_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_revocation_refuses_next_authenticated_request"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_wire_contract_refuses_a_tenant_override"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_wire_contract_refuses_administrator_format"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_access_defaults_to_no_write_authority"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_policy_refuses_access:manage"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_policy_refuses_billing:manage"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_record_limit_refuses_True"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_record_limit_refuses_0"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_record_limit_refuses_1.5"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_record_limit_refuses_10001"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_requires_a_verified_session_context"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_session_must_belong_to_the_subject"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "expired_customer_session_cannot_mint"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "service_token_cannot_manage_customer_credentials"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_cannot_select_another_tenant"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_cannot_expand_transport_scopes"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_token_is_real_and_narrowed"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_options_are_narrowed_to_transport_and_tenant"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_list_never_contains_a_secret_or_digest"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_token_secret_is_not_stored"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "other_tenant_cannot_see_customer_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "another_member_cannot_see_personal_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "another_member_cannot_revoke_personal_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "other_tenant_cannot_revoke_customer_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_replay_returns_no_secret_and_mints_no_second_key"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_request_identity_cannot_change_effect"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_key_survives_restart_without_raw_secret_storage"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_revocation_refuses_further_use"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_new_revoke_request_cannot_grow_audit_for_revoked_key"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "revoked_customer_subject_disables_its_existing_client_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "revoked_customer_cannot_use_a_stale_principal"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "removed_customer_session_guard_is_detected"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_key_uses_the_owner_bound_record_version"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "host_issued_key_keeps_the_first_record_version"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "server_without_the_owner_rule_refuses_the_customer_key"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_profile_under_the_first_version_is_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "owner_bound_version_without_the_customer_profile_is_refused"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "restored_customer_key_authenticates_again"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "removed_key_version_change_is_detected"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_concurrent_issues_respect_tenant_quota"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_unknown_commit_is_not_success"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_unknown_commit_reconciles_without_reissuing_secret"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_history_bound_is_not_reset_by_revocation"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "customer_logout_race_prevents_token_commit"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "logged_out_session_cannot_inspect_or_mint"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "logout_race_leaves_no_customer_key"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_identity_public_configuration_exposes_only_the_publishable_key"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "valid_identity_does_not_silently_create_a_customer_during_a_read"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "activation_rejects_client_supplied_tenant_and_authority"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_activation_creates_exactly_one_server_bound_customer"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_identity_maps_to_the_durable_subject_not_editable_user_metadata"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "new_account_sees_only_host_selected_starter_metadata_without_free_body_access"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "generic_browser_audience_never_becomes_protocol_resource_authority"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_access_uses_the_verified_account_only"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_access_refuses_unknown_query_fields"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_cannot_select_a_tenant"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_token_is_committed_in_a_governed_operation"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_token_authenticates_its_own_tenant"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_token_cannot_mint_more_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_list_contains_no_credential_or_digest"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_other_customer_has_an_empty_personal_token_list"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_other_customer_cannot_revoke_a_foreign_token"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_foreign_origin_cannot_mint_customer_tokens"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_issue_retry_has_no_second_secret"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "HTTP_customer_revocation_is_immediate"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_account_refuses_audience"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_account_refuses_issuer"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_account_refuses_expired"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_account_refuses_anonymous"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_account_refuses_service_role"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "editable_email_verified_claim_cannot_replace_provider_confirmation"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "provider_user_and_signed_subject_must_match"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_logout_durably_refuses_the_same_signed_access_token"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "browser_session_revocation_survives_service_restart"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "disabled_identity_network_resolves_no_key_and_calls_no_provider"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "closed_account_creation_is_reported_as_unavailable_not_as_a_bad_request"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "server_secret_cannot_be_serialized_as_a_publishable_key"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "identity_key_outage_is_retryable_not_invalid_credentials"
+      },
+      {
+        "detail": "real loopback transport; no external provider",
+        "passed": true,
+        "test": "identity_user_outage_is_retryable_not_a_sign_out"
+      }
+    ],
+    "total": 232
+  },
+  "packaged_catalogue": {
+    "record_type": "packaged_catalogue_check/v1",
+    "artifact_root": "/opt/baltor/catalogue",
+    "manifest_path": "/opt/baltor/catalogue/manifest.json",
+    "approved_items": 43,
+    "rejected_items_present_in_the_image": 0,
+    "rejected_identities": [
+      "ask_a_model_with_a_declared_answer_shape",
+      "check_a_table_join_before_trusting_it",
+      "make_a_data_pipeline_safe_to_run_again",
+      "package_one_skill_for_two_coding_harnesses",
+      "questions_to_ask_before_starting_work",
+      "refuse_secrets_and_unsafe_paths_in_generated_files"
+    ],
+    "offered_items": 34,
+    "withheld_for_undeclared_authority": 9,
+    "search_hits": 3,
+    "capabilities_record_type": "service_capabilities/v1",
+    "review_record": "examples/29_intelligence_service/starter-catalogue/reviews.json",
+    "local_test_volume_removed": true,
+    "one_time_local_key_left_the_container": false
+  },
+  "external_provider_calls": 0,
+  "fly_deployed": false,
+  "local_test_volume_removed": true
+}
