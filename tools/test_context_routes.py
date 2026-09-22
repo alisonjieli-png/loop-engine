@@ -360,7 +360,9 @@ class ContextRouteTests(unittest.TestCase):
         self.assertEqual(authority_findings(self.authority_documents), [])
 
     def test_owner_commit_rule_is_not_treated_as_stale(self):
-        # The check this replaces refused the owner's own words of September 2.
+        # The check this replaces refused the start documents' statement of the
+        # owner's rule of September 2, 2026; the owner's own words are quoted in
+        # the authority section.
         for path in ENTRY_ROUTES:
             changed = dict(self.authority_documents)
             changed[path] += "\n\nCommit and push verified changes to main in the same turn.\n"
