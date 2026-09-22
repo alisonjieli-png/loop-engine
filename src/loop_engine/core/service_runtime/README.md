@@ -197,7 +197,9 @@ Three entitlement sources exist and they stay apart. `stripe_snapshot` is the
 only revenue-bearing source. `explicit_host_grant` and `promotion_code_grant`
 are comped. `ServiceRuntime.access_source_report` separates them and counts
 them separately; it reads the recorded source and never infers money from an
-expiry, a grant or a name. A release that predates `promotion_code_grant` reads
+expiry, a grant or a name. Every record it reads goes through the same version
+check the rest of the service uses, so a record this release cannot read stops
+the report instead of being counted. A release that predates `promotion_code_grant` reads
 an unknown source as metadata only, so an older server refuses the access
 rather than honoring a record whose rules it does not know.
 

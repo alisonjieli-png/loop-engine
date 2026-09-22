@@ -134,6 +134,14 @@ revenue count nor the revenue list. Moving `promotion_code_grant` into
 The report counts accounts, not money. The amount invoiced is held by the
 payment provider.
 
+Every record the report reads goes through the same version check the rest of
+the service uses. A tenant or entitlement record that this release does not
+support stops the report and names the fault instead of being reinterpreted.
+The check
+`a_tenant_record_this_release_cannot_read_stops_the_report_instead_of_being_counted`
+stores an unsupported tenant record and requires the report to refuse, because
+a miscounted account is the one thing this report exists to prevent.
+
 ## Refusals
 
 Redemption refuses in ten ways. Each has its own exact reason inside the
