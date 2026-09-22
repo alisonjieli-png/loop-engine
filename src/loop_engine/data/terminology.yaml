@@ -979,6 +979,72 @@ vocabulary:
     - technical_documents
     must_not_appear: []
     status: decided_by_engineering
+  pilot:
+    kind: retired_word
+    definition: >-
+      A retired word that describes the product to a customer as a trial.
+      Being invited changes only who can create an account. It does not change
+      how the product looks or how carefully it is built. Technical documents
+      and dated records keep their original wording, and the deployed
+      application is still named baltor-pilot by its host.
+    replacement: accounts open in small groups, invited member, or X is being built.
+    pattern: '\bpilots?\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
+  beta:
+    kind: retired_word
+    definition: >-
+      A retired word that describes the product to a customer as a trial. The
+      tenant identifiers alpha and beta in the check fixtures are test names,
+      not customer copy, and they live in source code.
+    replacement: accounts open in small groups, or invited member.
+    pattern: '\bbetas?\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    - source_code
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
+  private beta:
+    kind: retired_word
+    definition: >-
+      A retired phrase for closed registration. Who may create an account is a
+      matter of configuration, not of copy.
+    replacement: accounts open in small groups, or join the waiting list.
+    pattern: '\bprivate betas?\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
+  early access:
+    kind: retired_word
+    definition: >-
+      A retired phrase that offers a customer a trial rather than the product.
+      It carries neither the word pilot nor the word beta, so a rule written
+      for those two words alone lets it through.
+    replacement: join the waiting list.
+    pattern: '\bearly access\b'
+    case_sensitive: false
+    may_appear:
+    - technical_documents
+    must_not_appear:
+    - public_website_pages
+    - website_application_views
+    - website_documentation_view
+    status: retired
   chronicle:
     kind: retired_word
     definition: A retired word for a saved history of events.
