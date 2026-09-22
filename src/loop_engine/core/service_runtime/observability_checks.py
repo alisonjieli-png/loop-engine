@@ -499,6 +499,41 @@ def _credential_body_checks(check, root):
           and SIGNUP_SECRET_VALUE not in stored and code not in stored and PRIVATE_BODY_MARK in stored)
 
 
+def _host_file_checks(check, root):
+    """The observability section of a host file reaches the application `serve` builds.
+
+    The read command builds its journal from the host file and is checked
+    below. The application that serves requests is built by a different path,
+    `load_host_application`, and a host that chose body capture, a retained
+    count or no recording at all must get that choice there as well.
+    """
+    from .http_entrypoint import HOST_CONFIGURATION_VERSION, MANIFEST_VERSION, load_host_application
+    manifest = root / "manifest.json"
+    manifest.write_text(json.dumps({"record_type": MANIFEST_VERSION, "artifact_root": str(root), "items": []}),
+                        encoding="utf-8")
+
+    def load(extra):
+        path = root / "host.json"
+        path.write_text(json.dumps({"record_type": HOST_CONFIGURATION_VERSION, "manifest_path": str(manifest),
+            "runtime": {"database_path": str(root / "host.db"), "writes_authorized": True},
+            "http": {"public_base_url": "https://service.test", "allowed_hosts": ["service.test"]},
+            "authentication": {}, **extra}), encoding="utf-8")
+        application = load_host_application(str(path))[0]
+        application._workers.shutdown(wait=True)
+        return application
+
+    chosen = {"record_failures": False, "retained_failures": 7, "payload_capture": METADATA_AND_REQUEST_BODY,
+              "release_reference": "probe-release"}
+    served, default = load({"observability": chosen}), load({})
+    check("the_observability_section_of_a_host_file_reaches_the_served_application",
+          served.observability == ServiceObservabilityPolicy(**chosen)
+          and served.failure_journal.policy == served.observability
+          and default.observability == ServiceObservabilityPolicy())
+    check("an_observability_section_naming_an_unknown_field_stops_the_host_loader",
+          _refused(load, {"observability": {**chosen, "capture_everything": True}})
+          == "unsupported_observability_policy")
+
+
 def _read_command_checks(check, root):
     """The operator command reads and cannot write, even by mistake."""
     from .http_entrypoint import read_failures
@@ -578,6 +613,7 @@ def run_checks(check=None):
                            ("live_http", _live_http_checks), ("deadline", _deadline_checks),
                            ("payload_capture", _payload_capture_checks),
                            ("credential_body", _credential_body_checks),
+                           ("host_file", _host_file_checks),
                            ("read_command", _read_command_checks)):
         with tempfile.TemporaryDirectory(prefix="service-observability-" + name + "-") as directory:
             try:
