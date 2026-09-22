@@ -105,6 +105,9 @@ guides:
     Selecting a bounded portfolio of intelligence for one step.
   docs/components/intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md:
     Candidate, qualification, promotion and reuse of generated code.
+  docs/components/intelligence-layers/SEARCH-QUALITY.md:
+    How catalogue search is measured on a fixed query set, and what the
+    measurement report says.
   docs/components/intelligence-layers/RUNTIME-HISTORY-AND-SOLUTION-INTELLIGENCE.md:
     Saved run history, replay and comparison.
   docs/components/intelligence-layers/USER-FEEDBACK-INTELLIGENCE.md:
@@ -152,6 +155,20 @@ external_names:
   events.jsonl: >-
     The file name inside a saved run directory, not a Python name.
 
+  written_for_this_measurement: >-
+    A provenance label in the fixed query set
+    examples/29_intelligence_service/starter-catalogue/search-queries.json,
+    read by the search quality measurement; it is data, not a package name.
+  held_back: >-
+    A label in that same query set file marking queries kept out of tuning.
+  plan_and_split_work_with_explicit_joins: >-
+    The identity of a starter catalogue item in
+    examples/29_intelligence_service/starter-catalogue, used in the search
+    quality guide as an expected result.
+  split_a_large_request_into_assignable_parts: >-
+    The identity of another starter catalogue item used as an expected
+    search result in the same guide.
+
 # Placeholder names an example asks the reader to supply. The package defines
 # none of them, and a reader substitutes their own value.
 reader_supplied_names:
@@ -162,6 +179,10 @@ reader_supplied_names:
 # Contract names a guide invents to make an example concrete. The package
 # defines none of these, and a reader must not look for them.
 example_record_types:
+  starter_catalogue_search_queries/v1: >-
+    The record type written in the example query set file
+    examples/29_intelligence_service/starter-catalogue/search-queries.json.
+    The package defines no such record type; only the example data uses it.
   invoice_and_rate_table/v1: >-
     The input contract of the invented invoice tool in the Code Intelligence
     registration example.
