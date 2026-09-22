@@ -235,7 +235,8 @@ def call(path, body=None):
     with response:
         return response.status, json.loads(response.read(4_000_000))
 status, health = call("/api/v1/health")
-assert status == 200 and health["result"]["healthy"] is True
+assert status == 200 and health["result"]["record_type"] == "service_health/v2"
+assert health["result"]["alive"] is True and health["result"]["ready"] is True
 status, capabilities = call("/api/v1/capabilities")
 assert status == 200, capabilities
 status, listing = call("/api/v1/provisioning",
