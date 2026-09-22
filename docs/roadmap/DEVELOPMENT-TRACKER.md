@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:efcc2883c5edf5bf70211f7a7756cbbbb058f953884830ee917c9278a95c07e1`.
+Source fingerprint: `sha256:f1c10470220e8db9d13f33133fb39521d3f67373799875aa437150e222d49849`.
 
 ## Where things stand
 
@@ -11,7 +11,7 @@ Source fingerprint: `sha256:efcc2883c5edf5bf70211f7a7756cbbbb058f953884830ee917c
 |---|---:|
 | Being built now | 32 |
 | Can start next | 11 |
-| Waiting on earlier work | 39 |
+| Waiting on earlier work | 51 |
 | Blocked | 2 |
 | Done | 41 |
 
@@ -76,16 +76,28 @@ Source fingerprint: `sha256:efcc2883c5edf5bf70211f7a7756cbbbb058f953884830ee917c
 | S-6.46 | Close the dated deadlines and small gaps before inviting users | proposed | S-6.35 |
 | S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
 | S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
+| S-6.48 | Setup paths for every kind of customer, with seeded starter files | proposed | S-6.42 |
+| S-6.55 | Persona reviews after every release | proposed | S-6.33 |
 | S-6.44 | Serve the open formats in each harness's own layout | proposed | S-6.43 |
+| S-6.49 | Subscription plugins for Hermes Agent and OpenClaw | proposed | S-6.44 |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
 | S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | proposed | S-6.31 |
+| S-6.50 | Baltor forks of OpenCode and Pi | proposed | S-6.42 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
+| S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
+| S-6.54 | Data-work intelligence packs as text and as tested code | proposed | S-6.40 |
+| S-6.53 | Generate intelligence along the occupation grid | proposed | S-6.40 |
 | S-6.45 | Make served files safe to trust: a malicious-skill regression set, exact licences and a bill of materials | proposed | S-6.40 |
 | S-6.41 | Harness run records for self-improvement | proposed | S-6.31 |
+| S-6.51 | Learn from retrieval: wrong context, repeated asks and items fetched together | proposed | S-6.41 |
+| S-6.58 | Choose the model and the decision method for each step | proposed | S-6.31 |
 | S-6.37 | Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain | proposed | S-6.33 |
+| S-6.56 | Landing pages and demonstration pages by role | proposed | S-6.37 |
 | S-6.47 | Measure each item against a no-skill arm and a raw-source arm before claiming a benefit | proposed | S-6.37 |
+| S-6.59 | Go-to-market: early, useful replies under popular posts, approved by a person | proposed | S-6.36 |
+| S-6.57 | A scale plan from one machine to many services | proposed | S-6.35 |
 | S-6.8 | Connect credential leases and resource admission to harness lifetime | proposed | S-6.7 |
 | S-6.10 | Publish qualified starter packages and prove client retrieval | proposed | S-6.4, S-6.5 |
 | S-6.9 | Qualify actual instruction and capability use in native harnesses | proposed | S-6.5, S-6.7, S-6.8 |
@@ -156,6 +168,9 @@ Source fingerprint: `sha256:efcc2883c5edf5bf70211f7a7756cbbbb058f953884830ee917c
 | D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 8 |
 | D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 6 |
 | D-20 | Meet the open standards and make served files safe to trust | initial_service | 0 of 5 |
+| D-21 | Meet customers in the harness they already use | initial_service | 0 of 3 |
+| D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 5 |
+| D-23 | Show, review, reach and scale | initial_service | 0 of 4 |
 
 ## Only the owner can do these
 
@@ -179,6 +194,7 @@ Source fingerprint: `sha256:efcc2883c5edf5bf70211f7a7756cbbbb058f953884830ee917c
 | OWNER-16 | Give the legal entity name and a contact address, and approve the terms and privacy text | before_public |
 | OWNER-17 | Grant a model-call budget for measuring the launch benefits | optional |
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
+| OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
 ## Done (41 steps)
 

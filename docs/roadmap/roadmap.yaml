@@ -10,7 +10,7 @@ continuation:
   title: First release and continued system development
   started_at: "2026-09-19T14:12:54Z"
   target_at: "2026-09-20T14:12:54Z"
-  updated_at: "2026-09-22T19:30:00Z"
+  updated_at: "2026-09-22T20:00:00Z"
   baseline_revision: 48cc954322691e492aad69a465ba470a112730e7
   plan: docs/roadmap/CONTINUATION-AND-LAUNCH.md
   artifact: docs/roadmap/CONTINUATION-STATUS.md
@@ -867,6 +867,51 @@ continuation:
       - {id: D-20-T02, proof_level: local_contract, scenario: Emit one plugin item as an Agent Plugins 1.0.0 folder and lint every served skill., pass_condition: The folder validates against the pinned schema and every skill passes each harness's limits., negative_control: A skill whose name breaks a harness's limit must be withheld from that harness.}
       - {id: D-20-T03, proof_level: local_contract, scenario: Run admission over the malicious-skill regression set., pass_condition: Every malicious item is refused with a named reason and every benign item is accepted., negative_control: Replacing the scanner with one that accepts everything must fail the regression check.}
       rollback: Turn off the new protocol binding in the host configuration and keep serving 2025-11-25; withdraw a format layout without touching the items.
+    - id: D-21
+      title: Meet customers in the harness they already use
+      stage: initial_service
+      steps: [S-6.48, S-6.49, S-6.50]
+      depends_on: [D-20]
+      actions: ['Offer proven setup paths for every kind of customer, including a container with one process for each step''s harness.', 'Add a website picker for hardware, goals, resources and harness that returns one exact setup.', Seed every download with starter context and instructions that configure the customer's harness for one harness per step., Publish subscription plugins for Hermes Agent and OpenClaw after recorded load tests., Build Baltor forks of OpenCode and Pi and measure them against upstream.]
+      acceptance: A customer with any supported harness, hardware and resources follows one exact path to a working connection; the plugins and forks load selected items in recorded sessions.
+      adversarial: An unproven setup path, a plugin that writes a key to disk, a container recipe with broader authority than chosen and an unmeasured fork claim must each fail a named check.
+      authority_note: Building plugins and forks is engineering work; publishing to another project's channel follows that project's rules; no model calls without OWNER-17.
+      owning_paths: [src/loop_engine/core/plugin_bundles.py, src/loop_engine/core/service_runtime/web_assets/client-recipes.json, embodiments/opencode]
+      verification_cases:
+      - {id: D-21-T01, proof_level: end_to_end, scenario: Follow the picker's path for one hardware and harness combination on a clean container., pass_condition: 'The container connects, downloads the starter files and loads a selected item.', negative_control: A path whose recorded install is missing must not be offered.}
+      - {id: D-21-T02, proof_level: end_to_end, scenario: Install the Hermes Agent plugin with a personal key and load one item., pass_condition: 'The session records the item offered, fetched, loaded and used.', negative_control: A plugin build that writes the key to a file must fail the check.}
+      - {id: D-21-T03, proof_level: held_out_comparison, scenario: Run the OpenCode fork and upstream OpenCode on the same frozen tasks., pass_condition: 'Accepted work, tokens, time and cost are recorded for both.', negative_control: A fork claim without the matched upstream run must fail the evidence check.}
+      rollback: Withdraw a setup path, plugin listing or fork release; the service and the items are unchanged.
+    - id: D-22
+      title: Learn from every request and grow the library by occupation and data work
+      stage: continued_improvement
+      steps: [S-6.51, S-6.52, S-6.53, S-6.54, S-6.58]
+      depends_on: [D-19]
+      actions: [Record the item version with every request and detect wrong context and repeated asks., Analyse items fetched together and use the evidence for prefetch and ranking after the minimum sample., 'Add self-learning, hybrid BM25 and near-duplicate engines behind the search slot and measure each.', Generate candidate intelligence along the occupation grid with recorded licences., Build data-work packs as text and as tested code with typed inputs., Record the model and the decision method of each step and analyse them over many tasks.]
+      acceptance: Ranking and prefetch improve from measured fetched-together evidence; the library grows by occupation and data work through independent review; every step records its model and decision method.
+      adversarial: Evidence below the minimum sample, an engine that fails the relevance floor, a generated item without review, untested code and a decision beyond its step's authority must each be refused.
+      authority_note: Usage analysis uses metadata only unless a customer opted in; generation with a model needs OWNER-17.
+      owning_paths: [src/loop_engine/core/retrieval.py, src/loop_engine/core/harness_intelligence_search.py, src/loop_engine/core/seeded_generation.py]
+      verification_cases:
+      - {id: D-22-T01, proof_level: held_out_comparison, scenario: Rank held-out queries with and without the fetched-together evidence., pass_condition: The measured relevance and latency of both are recorded., negative_control: Evidence below the minimum sample must leave the ranking unchanged.}
+      - {id: D-22-T02, proof_level: local_contract, scenario: Serve one data-work item as text and as code and run the code's tests., pass_condition: The tests pass and the item carries its licence and digest., negative_control: Code without tests must be refused at admission.}
+      - {id: D-22-T03, proof_level: local_contract, scenario: Generate candidates for one occupation cell., pass_condition: 'Every candidate carries its source, licence and grid values and stays a candidate.', negative_control: A generated item marked approved without a review record must fail the check.}
+      rollback: Switch search back to the previous engine and remove a ranking signal from the host configuration; candidates are never deleted, only left unapproved.
+    - id: D-23
+      title: Show, review, reach and scale
+      stage: initial_service
+      steps: [S-6.55, S-6.56, S-6.57, S-6.59]
+      depends_on: [D-18]
+      actions: [Run persona reviews from inside the company and from customer personas after every release., Build landing pages and demonstration pages by role with recorded runs., Measure today's machine and write the scale plan with triggers and costs., Find popular posts and draft replies that a person approves and posts.]
+      acceptance: Every release has a persona review; visitors find a recorded demonstration for their role; the scale plan names the first split and its trigger; replies go out only with a person's approval.
+      adversarial: A demonstration without a recorded run, a persona review without the live site, a scale change above the allowance and an automatic post must each fail a named check.
+      authority_note: Spending above the allowance needs the owner; posting needs OWNER-19.
+      owning_paths: [src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_assets/index.html, fly.toml]
+      verification_cases:
+      - {id: D-23-T01, proof_level: end_to_end, scenario: Pick a role on the demonstration page., pass_condition: A recorded run for that role is shown with its cost and limits., negative_control: A demonstration whose recorded run is missing must fail the page check.}
+      - {id: D-23-T02, proof_level: operational_drill, scenario: Run the persona review on the live site after a release., pass_condition: Every finding is recorded as roadmap work or fixed., negative_control: A review that did not load the live site must be refused.}
+      - {id: D-23-T03, proof_level: local_contract, scenario: Draft a reply for one found post., pass_condition: The draft waits for a person's approval., negative_control: A configuration that posts without approval must fail the check.}
+      rollback: Withdraw a page or a demonstration; the scale plan changes nothing until approved.
   owner_actions:
     - id: OWNER-01
       title: "Private pilot limits are recorded"
@@ -1088,6 +1133,16 @@ continuation:
       return_fields: [approved upgrades, 'new monthly infrastructure allowance, if changed']
       completion: The identity project cannot pause during the beta, invitation email has room for the invited users, and the allowance covers both.
       safety: Spending beyond the recorded allowance needs the owner; engineering keeps the free plans until the owner decides.
+    - id: OWNER-19
+      title: Name who approves and posts replies, and from which accounts
+      phase: optional
+      depends_on: []
+      steps: [S-6.59]
+      guide: docs/guides/product-style-guide.md
+      instructions: [Say which social accounts may post Baltor replies., Say who approves each drafted reply before it is posted; engineering never posts automatically.]
+      return_fields: [accounts, approving person]
+      completion: Drafted replies reach the approving person, who posts the ones they approve.
+      safety: Posting from a person's or the company's account speaks for them; only the owner can grant that.
   recurring_reviews:
     - id: quarterly_retrieval_landscape
       title: Review agentic retrieval and improvement systems quarterly
@@ -1104,7 +1159,7 @@ continuation:
   evidence_dimensions: [implementation, public_path, offline_checks, live_checks, durability, publication]
   evidence_states: [not_assessed, missing, partial, failed, verified, not_applicable]
   eligible_dependency_states: [offline_verified, live_qualified, published]
-  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.44, S-6.30, S-6.31, S-6.42, S-6.32, S-6.40, S-6.45, S-6.41, S-6.37, S-6.47, S-6.36, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
+  launch_order: [S-6.29, S-6.35, S-6.43, S-6.33, S-6.46, S-6.34, S-6.39, S-6.38, S-6.48, S-6.55, S-6.44, S-6.49, S-6.30, S-6.31, S-6.42, S-6.50, S-6.32, S-6.52, S-6.40, S-6.54, S-6.53, S-6.45, S-6.41, S-6.51, S-6.58, S-6.37, S-6.56, S-6.47, S-6.36, S-6.59, S-6.57, S-6.17, S-6.4, S-6.13, S-6.1, S-6.2, S-6.3, S-6.26, S-6.27, S-6.28, S-6.5, S-6.6, S-6.21, S-6.7, S-6.8, S-6.10, S-6.9, S-6.20, S-6.11, S-6.23, S-6.12, S-6.24, S-6.14, S-6.15, S-6.16]
   improvement_order: [S-6.25, S-6.18, S-6.19, S-6.22]
   milestones:
     - title: Establish the plan, product contract, and durable catalogue
@@ -1206,28 +1261,28 @@ continuation:
       continuation_steps: [S-6.10, S-6.20, S-6.11]
     - title: Intelligence, storage, classification, and qualification
       legacy_steps: [S-1.1, S-1.2, S-1.3, S-1.11, S-2.5, S-2.9, S-2.10, S-2.11, S-2.27, S-2.32, S-2.33, S-2.34, S-2.35, S-2.38, S-2.39]
-      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45]
+      continuation_steps: [S-6.2, S-6.4, S-6.10, S-6.20, S-6.23, S-6.32, S-6.40, S-6.45, S-6.51, S-6.52, S-6.53, S-6.54]
     - title: Harnesses, provisioning, loaded-file evidence, and authentication
       legacy_steps: [S-2.2, S-2.28, S-2.29, S-2.30, S-2.31, S-2.36, S-2.37, S-2.40]
-      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44]
+      continuation_steps: [S-6.1, S-6.5, S-6.7, S-6.8, S-6.9, S-6.24, S-6.28, S-6.31, S-6.41, S-6.42, S-6.43, S-6.44, S-6.48, S-6.49, S-6.50]
     - title: Models, decisions, efficiency, cost, and learning
       legacy_steps: [S-1.5, S-1.6, S-1.8, S-2.1, S-2.13, S-2.20, S-2.21, S-2.41, S-4.11]
-      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47]
+      continuation_steps: [S-6.3, S-6.6, S-6.19, S-6.47, S-6.58]
     - title: Flexible composition, solutions, configuration search, and research
       legacy_steps: [S-1.4, S-1.7, S-2.3, S-2.4, S-2.6, S-2.7, S-2.15, S-3.1, S-3.2, S-3.3, S-3.4, S-3.5]
       continuation_steps: [S-6.11, S-6.19, S-6.22, S-6.23, S-6.30]
     - title: Resource management, hibernation, and cloud capacity
       legacy_steps: [S-2.22, S-2.23, S-2.24, S-2.25, S-2.26, S-4.8, S-4.9, S-4.10]
-      continuation_steps: [S-6.8, S-6.12, S-6.13]
+      continuation_steps: [S-6.8, S-6.12, S-6.13, S-6.57]
     - title: Hosted service, portability, packaging, and paid operation
       legacy_steps: [S-2.8, S-4.1, S-4.2, S-4.3, S-4.4, S-4.5, S-4.6, S-4.7, S-4.12, S-4.13, S-4.14, S-4.15, S-4.16]
       continuation_steps: [S-6.5, S-6.6, S-6.12, S-6.13, S-6.14, S-6.15, S-6.16, S-6.21, S-6.24, S-6.35, S-6.33, S-6.38, S-6.39, S-6.46]
     - title: Organization, architecture artifact, and adversarial review
       legacy_steps: [S-1.9, S-1.12, S-2.12, S-2.14, S-2.16, S-2.17, S-2.18, S-2.19, S-3.7]
-      continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34]
+      continuation_steps: [S-6.17, S-6.18, S-6.25, S-6.26, S-6.27, S-6.29, S-6.34, S-6.55]
     - title: Branding, business paths, and later career research
       legacy_steps: [S-5.1, S-5.2, S-5.3]
-      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37]
+      continuation_steps: [S-6.16, S-6.22, S-6.36, S-6.37, S-6.56, S-6.59]
   hosting_targets:
     - {id: vercel-frontend, family: static_delivery, title: Vercel website and dashboard, procedure: vercel, status: documented}
     - {id: vercel-python, family: managed_application, title: Vercel Python serving functions, procedure: vercel, status: documented}
@@ -2498,3 +2553,135 @@ steps:
     acceptance: Each approved item carries its measured effect with the exact population, model and evaluator, or an explicit unmeasured state.
     evidence: 'September 22: the owner-shared research record (314 items the owner shared between August 26 and September 22), item 3. Model calls need OWNER-17.'
     next_local_work: Write the arms into the review record; run them only under the model budget the owner grants.
+  - id: S-6.48
+    phase: 6
+    title: Setup paths for every kind of customer, with seeded starter files
+    status: proposed
+    depends_on: [S-6.42]
+    boundary: [docs/guides/client-journey-container-test.md, src/loop_engine/core/service_runtime/web_assets/client-recipes.json]
+    verify: ['setup guidance researched from OpenClaw and Hermes Agent and adapted: a plain install, a container with one process for each step''s harness inside it, and permission choices', 'a website picker for hardware, goals and resources (local models, Ollama, OpenRouter or other keys) that returns one exact setup', every download carries starter context files and instructions that configure the customer's harness to split work into small steps with one harness for each step, each setup path proven by a recorded install on a clean machine or container]
+    adversarial: A setup path that no recorded install has proven must not be offered, and a container recipe must not grant broader file, network or process authority than the customer chose.
+    acceptance: A customer picks hardware, resources and harness on the website and follows one exact path to a working connection, and the download seeds the starter files.
+    evidence: 'September 22 evening: owner direction on the handbook.'
+    next_local_work: Research the OpenClaw and Hermes Agent setup guides, then write the picker data and the first two paths.
+  - id: S-6.49
+    phase: 6
+    title: Subscription plugins for Hermes Agent and OpenClaw
+    status: proposed
+    depends_on: [S-6.44]
+    boundary: [src/loop_engine/core/plugin_bundles.py]
+    verify: [a Baltor plugin for Hermes Agent and one for OpenClaw that sign in with a personal key and search and download approved items, 'a tested answer on whether each can start a new process with separate files and context for each step, under the customer''s container and permission preferences', a listing in each project's plugin channel after a recorded load test]
+    adversarial: A plugin must never write a key into its files or logs, and must refuse to start a step process that the customer's permission settings do not allow.
+    acceptance: A Hermes Agent user and an OpenClaw user each install the plugin, connect with a personal key and load a selected item in a recorded session.
+    evidence: 'September 22 evening: owner direction on the handbook. Both are among the largest open harness projects in the research record.'
+    next_local_work: Read each project's plugin format and permission model and build the smallest plugin that searches and downloads.
+  - id: S-6.50
+    phase: 6
+    title: Baltor forks of OpenCode and Pi
+    status: proposed
+    depends_on: [S-6.42]
+    boundary: [embodiments/opencode]
+    verify: [a fork of OpenCode and a fork of Pi that start one harness instance for each step with only the selected files and context, Baltor starter context and the Baltor connection built in, efficiency measured against the unmodified harness on the same frozen tasks, 'a recorded way to take upstream changes, with each upstream licence followed']
+    adversarial: A fork change that is not measured against the upstream harness on the same tasks must not be claimed as an improvement.
+    acceptance: Each fork runs one step per harness instance from Baltor material in a recorded test, and its efficiency against upstream is measured or recorded as unmeasured.
+    evidence: 'September 22 evening: owner direction on the handbook. The owner asked to start building both forks; NVIDIA''s SoL-Pi extension of Pi is prior art.'
+    next_local_work: Clone both upstreams at recorded revisions, record their licences, and add the one-instance-per-step mode first.
+  - id: S-6.51
+    phase: 6
+    title: 'Learn from retrieval: wrong context, repeated asks and items fetched together'
+    status: proposed
+    depends_on: [S-6.41]
+    boundary: [src/loop_engine/core/harness_intelligence_search.py, src/loop_engine/core/service_runtime/observability.py]
+    verify: [the item version served recorded with each request, 'signals that the service served the wrong context: a harness asking again, backing up to ask differently, or discarding a download', 'market basket, trend and strength analysis of items fetched together, by harness, model and kind of task', prefetch and ranking that use the fetched-together evidence only after the minimum sample]
+    adversarial: The analysis runs on metadata only unless a customer opted in, and evidence below the minimum sample must not change ranking.
+    acceptance: The operator sees which items are fetched together and which requests were repeated, and a measured ranking change uses that evidence.
+    evidence: 'September 22 evening: owner direction on the handbook.'
+    next_local_work: Add the request identity and the item version to the usage record, then the fetched-together table.
+  - id: S-6.52
+    phase: 6
+    title: More retrieval engines behind the search slot
+    status: proposed
+    depends_on: [S-6.32]
+    boundary: [src/loop_engine/core/retrieval.py]
+    verify: [self-learning retrieval engines researched and the best candidate qualified as an engine, plain hybrid BM25 with blocking keys as an engine, MinHash and banded locality-sensitive hashing for near duplicates, 'every engine measured on the same held-out queries, with evidence deciding which one serves']
+    adversarial: An engine may not serve customers before it passes the relevance floor on held-out queries it was not tuned on.
+    acceptance: At least three engines are selectable behind one edge, each with measured relevance and cost, and every selection is recorded.
+    evidence: 'September 22 evening: owner direction on the handbook. The research record found that the lsh64 field is one SimHash and that MinHash is absent.'
+    next_local_work: Write the held-out query set, then add the hybrid engine with blocking keys.
+  - id: S-6.53
+    phase: 6
+    title: Generate intelligence along the occupation grid
+    status: proposed
+    depends_on: [S-6.40]
+    boundary: [src/loop_engine/core/seeded_generation.py, src/loop_engine/data/occupation_seeds.yaml]
+    verify: [the O*NET tables loaded with their attribution, 'a grid of job description, seniority, location, language, company, time period, skill level and model used', 'skills, context files, plugins, pipelines and DAG templates generated for the common tasks of each cell, all candidates until independent review', intelligence gaps that cause capability gaps tracked by model and field and generated first, general material from tutorials and textbooks with recorded licences]
+    adversarial: Generation never promotes an item, and material from a source without a known licence is refused.
+    acceptance: Search can be scoped by role, seniority, country and language, and the grid produces reviewed items for the first occupations.
+    evidence: 'September 22 evening: owner direction on the handbook. The generator exists, but only six hand-authored occupations are loaded. Generation with a model needs OWNER-17.'
+    next_local_work: Download O*NET with its attribution and stage the first cells as candidates.
+  - id: S-6.54
+    phase: 6
+    title: Data-work intelligence packs as text and as tested code
+    status: proposed
+    depends_on: [S-6.40]
+    boundary: [examples/29_intelligence_service/starter-catalogue]
+    verify: ['text cleanup, email and address patterns, USPS address standardization, title case with name exceptions such as McDermott, McCormick and La Pointe, street, saint and unit abbreviations, and name and corporate suffix standards', entity and individual resolution and change tracking over time, 'each item as text for the model and as tested code with a typed input: a list, a string, or a database location with a credential reference', 'the most used data transformation, computation, storage and transfer functions first']
+    adversarial: Code without tests, a licence and a digest is not served, and a credential is always a reference, never a value.
+    acceptance: A harness fetches the text and the code for one data-work task, and the code passes its tests in the customer's environment.
+    evidence: 'September 22 evening: owner direction on the handbook. The starter catalogue already holds several data-work items.'
+    next_local_work: List the first hundred data-work functions by expected use and build the first twenty with tests.
+  - id: S-6.55
+    phase: 6
+    title: Persona reviews after every release
+    status: proposed
+    depends_on: [S-6.33]
+    boundary: [tools/check_client_journey_in_containers.py]
+    verify: ['reviews as the chief executive, technology, finance, marketing and revenue officers', 'customer personas: hobbyist, Mac owner, large-GPU owner, low-memory GPU running overnight, Ollama-only subscriber, Codex or API user, beginner and expert', every finding recorded as roadmap work, the review repeated after every release]
+    adversarial: A persona review uses the live site and real flows; a review that reads only source files is not a persona review.
+    acceptance: Every release has a persona review record, and every finding is fixed or recorded with its reason.
+    evidence: 'September 22 evening: owner direction on the handbook. One persona review ran on September 22.'
+    next_local_work: Turn the September 22 persona review into a repeatable release step.
+  - id: S-6.56
+    phase: 6
+    title: Landing pages and demonstration pages by role
+    status: proposed
+    depends_on: [S-6.37]
+    boundary: [src/loop_engine/core/service_runtime/web_pages.py, src/loop_engine/core/service_runtime/web_assets/index.html]
+    verify: [a role and persona selector for technical and non-technical visitors, 'demonstrations: Jira tickets solved overnight on a local Mac with a small model, Kaggle and OpenML with small models, and data engineering tasks', 'each demonstration shows its recorded run, its cost and its limits', 'landing pages for developers, teams and agentic systems']
+    adversarial: A demonstration page must show a recorded run; a page that describes a run that did not happen must fail the check.
+    acceptance: A visitor picks a role and sees a recorded demonstration that fits it, on its own subdomain.
+    evidence: 'September 22 evening: owner direction on the handbook.'
+    next_local_work: Build the selector with the existing recorded runs and mark each missing demonstration as not yet recorded.
+  - id: S-6.57
+    phase: 6
+    title: A scale plan from one machine to many services
+    status: proposed
+    depends_on: [S-6.35]
+    boundary: [fly.toml, docs/guides/launch-setup-runbook.md]
+    verify: [the load limits of the current single machine measured, 'the triggers and the order for splitting search, downloads, accounts and ingestion into separate services', 'the costs at 100, 1,000 and 10,000 users and a million agents', no new spending until a trigger fires and the owner approves it]
+    adversarial: A scale change that raises the monthly cost above the allowance needs the owner first.
+    acceptance: The plan names the measured limit of today's machine and the first split, with its cost and its trigger.
+    evidence: 'September 22 evening: owner direction on the handbook.'
+    next_local_work: Measure the current machine with a load test that stays inside the allowance.
+  - id: S-6.58
+    phase: 6
+    title: Choose the model and the decision method for each step
+    status: proposed
+    depends_on: [S-6.31]
+    boundary: [src/loop_engine/code_nodes/decision_tools.py]
+    verify: [steps that decide what to do next kept separate from steps that build it, the decision engine and custom classification models as engines for decisions in unseen problems, 'each decision logged with its inputs, its choice and the later outcome', 'an analysis over many tasks that names where logic, decisions, intelligence or queries must change']
+    adversarial: A decision engine may not act beyond the authority of its step, and a classification model's choice is evidence, not approval.
+    acceptance: Each step records which model and decision method served it and why, and the analysis changes a choice only under the evidence rule.
+    evidence: 'September 22 evening: owner direction on the handbook. The Jev and System One decision engines already exist behind profiles.'
+    next_local_work: Record the decision and the build as separate facts in the step record first.
+  - id: S-6.59
+    phase: 6
+    title: 'Go-to-market: early, useful replies under popular posts, approved by a person'
+    status: proposed
+    depends_on: [S-6.36]
+    boundary: [docs/guides/product-style-guide.md]
+    verify: [a finder for new posts by popular AI accounts where a reply fits, 'drafted replies with an image, each approved and posted by a person', visits and sign-ups from each reply measured on the website, 'the other channels from the research: plugin directories, protocol registries and harness marketplaces']
+    adversarial: No reply is posted automatically, because automated posting breaks the platforms' rules and risks the accounts.
+    acceptance: Replies go out with a person's approval, and the visits and sign-ups they bring are measured.
+    evidence: 'September 22 evening: owner direction on the handbook. Engineering decided that a person approves and posts each reply.'
+    next_local_work: Write the finder and the reply template; nothing is posted without a person.
