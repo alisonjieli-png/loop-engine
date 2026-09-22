@@ -2,7 +2,7 @@
 
 Status: planned remix, not a working integrated solver.
 
-Sources: overnight + Loop Engine's host/harness bridge. Exact available source snapshots are in [mirrors](../../mirrors/README.md).
+Sources: overnight + Loop Engine's host/harness bridge. Exact available source snapshots are in the local working copies under `embodiments/mirrors/`, which the repository does not distribute.
 
 Invariant: Keep pure decisions on a direct model route; use an isolated harness only for actions requiring tool agency.
 

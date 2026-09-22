@@ -22,7 +22,9 @@ authorized output allocation because the upstream request still asks for its
 fixed 8,192-token allowance. The codec does not call a provider. Any later real
 model qualification must use the separately authorized Ollama Cloud broker.
 
-The [fixture records](../../artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/)
+The fixture records, written on the machine that ran this work to
+`artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/` and not
+distributed with the repository,
 contain exact requests, output, callback counts, and negative results. The
 startup record named `nanocode-version-01` is a terminal startup and quit
 check; nanocode has no version flag. Its identity is the source revision.

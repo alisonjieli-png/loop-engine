@@ -28,6 +28,8 @@ Codebuff API key and constructs model requests through its hosted `/api/v1`
 service. A service base URL is not a documented Ollama Cloud model adapter.
 No account, hosted-service impersonation, or alternative harness was used.
 
-The [fixture records](../../artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/)
+The fixture records, written on the machine that ran this work to
+`artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/` and not
+distributed with the repository,
 contain the version, help, startup timeout, and zero request counts. All
 execution used a clean home and an isolated network. No real model was called.

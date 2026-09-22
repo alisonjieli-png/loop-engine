@@ -67,6 +67,62 @@ def _stale_docs() -> list:
 #: The line a documentation folder's README must carry in its head: its kind.
 DOCS_CHARTER_MARKER = "Kind:"
 DOCS_CHARTER_HEAD_CHARACTERS = 600
+#: The Markdown a reader is invited to follow: the repository's own front
+#: matter, the documentation tree, the worked examples, the harness
+#: embodiments and the READMEs that sit beside the source. Every relative
+#: address in these must resolve.
+LINKED_DOCUMENT_ROOTS = ("docs", "examples", "embodiments", "src", "tools", "devtools",
+                         "integrations", "case-studies")
+LINKED_DOCUMENT_FILES = ("README.md", "CONTRIBUTING.md", "SECURITY.md", "CHANGELOG.md")
+#: Dated evidence keeps the bytes it was written with. A record of what was
+#: observed on a day is not repaired later, so its addresses are read as
+#: history, not as an invitation to follow them.
+PRESERVED_EVIDENCE_ROOTS = (os.path.join("docs", "evidence"),)
+#: An embodiment folder keeps a vendored copy of the harness it adapts,
+#: under `upstream` or `runtime`. Those files are not documents this
+#: repository writes: their addresses are read as someone else's history,
+#: not as an invitation a reader of this repository was given.
+VENDORED_EMBODIMENT_TREES = ("upstream", "runtime")
+
+
+def _documentation_links_that_do_not_resolve(repository: "str | None" = None) -> list:
+    """Relative Markdown addresses, in documents a reader follows, that lead nowhere.
+
+    An installed package carries no documentation tree and reports nothing.
+    A web address is not checked here: it needs the network, and conformance
+    must run without one.
+    """
+    import re
+    if repository is None:
+        repository, _exclusions = _nomenclature_scan_layout()
+        if repository == _HERE:
+            return []
+    link = re.compile(r"\[[^\]\n]{0,200}\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+    documents = [os.path.join(repository, name) for name in LINKED_DOCUMENT_FILES]
+    for folder in LINKED_DOCUMENT_ROOTS:
+        for directory, subdirectories, files in os.walk(os.path.join(repository, folder)):
+            subdirectories[:] = [name for name in subdirectories
+                                 if not name.startswith(".") and name != "node_modules"]
+            documents += [os.path.join(directory, name) for name in files if name.endswith(".md")]
+    broken = []
+    for path in sorted(documents):
+        relative = os.path.relpath(path, repository)
+        parts = relative.split(os.sep)
+        if (not os.path.isfile(path) or relative.startswith(PRESERVED_EVIDENCE_ROOTS)
+                or (len(parts) >= 3 and parts[0] == "embodiments" and parts[2] in VENDORED_EMBODIMENT_TREES)):
+            continue
+        with open(path, encoding="utf-8", errors="ignore") as stream:
+            text = stream.read()
+        for number, line in enumerate(text.splitlines(), 1):
+            for target in link.findall(line):
+                if target.startswith(("http://", "https://", "mailto:", "tel:", "data:", "#")):
+                    continue
+                destination = target.split("#")[0].split("?")[0]
+                if not destination:
+                    continue
+                if not os.path.exists(os.path.join(os.path.dirname(path), destination)):
+                    broken.append({"file": relative, "line": number, "target": target})
+    return broken
 
 
 def _docs_folders_without_charter(docs_dir: "str | None" = None) -> list:
@@ -285,10 +341,12 @@ def run_conformance() -> dict:
     legacy_flat_paths = _legacy_flat_paths_reachable()
     stale = _stale_docs()
     uncharted = _docs_folders_without_charter()
+    broken_links = _documentation_links_that_do_not_resolve()
     c = scan["counts_by_rule"]
     gates = {
         "unclassified_files": len(unclassified),
         "docs_folders_without_a_charter_readme": len(uncharted),
+        "documentation_links_that_do_not_resolve": len(broken_links),
         "reachable_legacy_flat_paths": len(legacy_flat_paths),
         "legacy_flat_imports_on_live_paths": c.get(
             "legacy_flat_import", 0),
@@ -354,6 +412,7 @@ def run_conformance() -> dict:
         "zero_tolerance_gates": gates,
         "gate_details": {"unclassified_files": unclassified,
                          "docs_folders_without_a_charter_readme": uncharted,
+                         "documentation_links_that_do_not_resolve": broken_links,
                          "reachable_legacy_flat_paths": legacy_flat_paths,
                          "stale_current_architecture_documents": stale,
                          "operational_boundary_ontology": boundaries,

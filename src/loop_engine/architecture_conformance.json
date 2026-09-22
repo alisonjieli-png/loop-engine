@@ -5,6 +5,7 @@
  "zero_tolerance_gates": {
   "unclassified_files": 0,
   "docs_folders_without_a_charter_readme": 0,
+  "documentation_links_that_do_not_resolve": 0,
   "reachable_legacy_flat_paths": 0,
   "legacy_flat_imports_on_live_paths": 0,
   "public_parallel_runtime_surfaces": 0,
@@ -38,6 +39,7 @@
  "gate_details": {
   "unclassified_files": [],
   "docs_folders_without_a_charter_readme": [],
+  "documentation_links_that_do_not_resolve": [],
   "reachable_legacy_flat_paths": [],
   "stale_current_architecture_documents": [],
   "operational_boundary_ontology": {

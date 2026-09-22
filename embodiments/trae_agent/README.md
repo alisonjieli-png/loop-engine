@@ -30,7 +30,9 @@ tools when the CLI supplies no explicit `tool_names`. Completion also requires
 the native `task_done` protocol. The stock CLI remains unqualified; the named
 `trae_text_submission/v1` SDK profile is qualified only by offline fixtures.
 
-The [fixture records](../../artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/)
+The fixture records, written on the machine that ran this work to
+`artifacts/harness-expansion-20260909-DNMQ3Y/lightweight-recipes/` and not
+distributed with the repository,
 preserve installation output, actual requests, refusals, and CLI output. The
 first task probe also tested a very wide terminal setting; Rich expanded its
 decorative borders to that width. That setting was removed from the proposed

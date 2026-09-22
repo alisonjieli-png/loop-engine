@@ -20,7 +20,7 @@ for new Loop Engine implementations or logs. Those older repositories stay in pl
 
 This directory preserves the earlier local experiments, manifests and results. There is no default winning design.
 
-The [source mirrors](mirrors/README.md) preserve related projects independently. The [remix plans](remixes/README.md) combine specific proven mechanisms, and [controlled mutations](mutations/README.md) define experiments that change one axis at a time. [Speculative decoding](speculative_decoding/README.md) is a separate provider-side research direction.
+The source mirrors preserve related projects independently. They are local working copies under `embodiments/mirrors/`, kept out of the repository so that another project's source is never redistributed here; read them on the machine that made them, or clone each project from its own home. The [remix plans](remixes/README.md) combine specific proven mechanisms, and [controlled mutations](mutations/README.md) define experiments that change one axis at a time. [Speculative decoding](speculative_decoding/README.md) is a separate provider-side research direction.
 
 The [related-catalog index](RELATED-CATALOGS.md) also connects Claude's 30 single-axis experiments and the newer whole-architecture catalogs, with their evidence limits and review corrections.
 

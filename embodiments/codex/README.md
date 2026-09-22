@@ -36,7 +36,9 @@ The installed npm package declares Apache-2.0. The official source tag
 [openai/codex](https://github.com/openai/codex). The local manifest records the
 actual installed binary; the qualification record binds its digest.
 
-The [saved probes](../../artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/)
+The saved probes, written on the machine that ran this work to
+`artifacts/harness-expansion-20260909-DNMQ3Y/responses-recipes/` and not
+distributed with the repository,
 include initial catalog and codec failures. These are local transport and
 tool-boundary results, not provider integration or task-quality results. Any
 future real model call requires the separately authorized Ollama Cloud broker.

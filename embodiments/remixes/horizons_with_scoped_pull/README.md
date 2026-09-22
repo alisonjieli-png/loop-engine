@@ -2,7 +2,7 @@
 
 Status: planned remix, not a working integrated solver.
 
-Sources: overnight + Loop Engine information resolver. Exact available source snapshots are in [mirrors](../../mirrors/README.md).
+Sources: overnight + Loop Engine information resolver. Exact available source snapshots are in the local working copies under `embodiments/mirrors/`, which the repository does not distribute.
 
 Invariant: Push explicit task and horizon slices; allow bounded reference resolution only for material omitted from the packet.
 
