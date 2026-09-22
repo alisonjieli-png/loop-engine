@@ -38,4 +38,4 @@ A readmission model reaches an area under the curve of 0.97. The rows were split
 - `src/loop_engine/strings/interrogation.py`: the question bank, category `data_quality`.
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the perspectives of the leakage hunter and the data quality auditor.
 
-Licence: MIT. Compiled from revision ae7362f.
+Licence: MIT. Compiled from revision 4249eca.
