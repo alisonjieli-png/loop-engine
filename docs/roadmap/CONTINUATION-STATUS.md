@@ -5,7 +5,7 @@ Kind: generated planning artifact.
 Source: `roadmap.yaml`. Regenerate with
 `python tools/build_continuation_status.py`; `--check` rejects a stale view.
 
-Plan fingerprint: `3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f9954904bfadf`.
+Plan fingerprint: `75838552bdb3225eb1438ad88db01d558fa6ae49af747088106580c04e14056d`.
 
 Started: 2026-09-19T14:12:54Z. Historical target: 2026-09-20T14:12:54Z. This is not a release forecast.
 
@@ -25,7 +25,7 @@ These steps are already being built. They are not completed dependencies or perm
 | Step | Current evidence | Next local work |
 |---|---|---|
 | S-6.29 | September 22: every ref and every dirty worktree archived in ~/loop-engine-archive-2026-09-22; the open security merge finished with its two silent losses restored and two new checks; silent losses of five earlier merges measured; consolidation running in detached worktrees. | Finish the four consolidation groups, restore the measured losses, push, and remove merged branches and worktrees. |
-| S-6.35 | September 22: release 12 needed a manual apply-grants and a key reissue; the failed-attempt limit was switched on in the host file and proven against a forged address. | Add the grant step and the drill settings, then run the automated checks after the next release. |
+| S-6.35 | September 22: release 12 needed a manual apply-grants and a key reissue; the failed-attempt limit was switched on in the host file and proven against a forged address. The guarded workflow now applies the packaged grants on the one Machine after the deploy, through the Machines API exec call as the service user, requires exit code zero and exactly one grant record, and repeats the readiness check; tools/test_fly_deployment.py fails when the step is removed, moved, pointed at any Machine or stripped of either gate. Both container drills state the client address source, and the Fly container check requires the image to refuse a host file without it. Locally, an image of this work together with the restored measured health record passed the Fly container check 18 of 18 and the client journey drill 34 of 34; without that restore each fails its health check. No release has run the grant step yet. | Release through the guarded workflow once the measured health record is restored on main, confirm the grant step on the live Machine, then add the hosted checks on every hostname and a release record to the workflow. |
 | S-6.33 | September 22: five persona testers and an interface review on the live site; no persona would sign up or pay; ten ranked fixes with exact copy and code locations. A local homepage repair removed the right-hand example workflow and put working steps first. The named old-layout check failed before repair; the local browser suite then passed 318 of 318 checks and 33 removed-guard controls. The changed page has not been deployed. | Implement the remaining fixes on the consolidated main, verify the released homepage on every hostname, and repeat the live persona review. |
 | S-6.34 | September 22: a README audit of 259 entry points (keep 173, update 72, archive 8, merge 5, remove 1) and a register of 128 owner directions, nine recorded nowhere. | Land the authority section, reconcile the entry points, then apply the README plan. |
 | S-6.36 | September 22: market analysis with dated competitor prices and a fact-checked draft in progress. | Finish the draft and the fact check; the owner adds personal background, contact details and equity facts. |

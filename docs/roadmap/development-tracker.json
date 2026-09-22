@@ -748,7 +748,7 @@
      "S-6.26"
     ],
     "id": "S-6.35",
-    "next_local_work": "Add the grant step and the drill settings, then run the automated checks after the next release.",
+    "next_local_work": "Release through the guarded workflow once the measured health record is restored on main, confirm the grant step on the live Machine, then add the hosted checks on every hostname and a release record to the workflow.",
     "phase": 6,
     "status": "building",
     "title": "Release automation and automated live checks after every release",
@@ -3042,5 +3042,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:3989c2e3834378c4676b24d70944eb9b44cc1d36a6d3066cec2f9954904bfadf"
+ "source_fingerprint": "sha256:75838552bdb3225eb1438ad88db01d558fa6ae49af747088106580c04e14056d"
 }
