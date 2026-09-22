@@ -59,9 +59,10 @@ Current initiatives, in priority order
 The authoritative task state is [roadmap.yaml](docs/roadmap/roadmap.yaml) and
 its [generated status](docs/roadmap/CONTINUATION-STATUS.md). The
 [takeover checkpoint](docs/context/TAKEOVER-CHECKPOINT-2026-09-20.md) records
-the verified live state, the open findings, the private beta definition and
-the working cycle for changes, tests, checkpoints and releases. Follow that
-cycle. In short:
+the working cycle for changes, tests, checkpoints and releases, the private
+beta definition, and the live state and open findings of September 20. The
+newest dated handoff, named in the [context route](docs/context/START-HERE.md),
+records the live state since then. Follow the working cycle. In short:
 
 - Write the check for the known-wrong case before the repair. A removed guard
   must fail a named check.
