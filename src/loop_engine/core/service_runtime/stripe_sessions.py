@@ -7,7 +7,10 @@ uncertainty; sensitive provider URLs are returned only to the caller, not stored
 An account that asks for checkout and has no provider customer yet gets exactly
 one, created here and bound before the session. The adapter searches the
 provider for the account identifier first, so a customer that an earlier
-uncertain attempt left behind is bound instead of duplicated.
+uncertain attempt left behind is bound instead of duplicated. A search answer
+the provider marks as truncated is refused rather than read as absence, and the
+runtime keeps a retired idempotency key from being replaced until that search
+can show whatever the retired key made.
 """
 from __future__ import annotations
 
@@ -26,7 +29,8 @@ from .billing_records import (
     CUSTOMER_IDENTITY_PREFIX, CUSTOMER_OBJECT, TENANT_METADATA_KEY, StripeCustomerProjection, secret_reference,
 )
 from .records import (
-    BILLING_MANAGE_SCOPE, BillingCustomerBindingRequest, BillingCustomerEffectSpec, ServiceCommitUnknown,
+    BILLING_MANAGE_SCOPE, BillingCustomerBindingRequest, BillingCustomerEffectSpec,
+    PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS, ServiceCommitUnknown,
     ServiceRuntimeError, canonical, digest, identifier, text,
 )
 from .runtime import ServiceRuntime
@@ -38,6 +42,11 @@ SESSION_RESULT_VERSION = "billing_session_result/v1"
 SESSION_OPTIONS_VERSION = "billing_session_options/v1"
 SESSION_UNCERTAINTY_VERSION = "billing_session_uncertainty/v1"
 CUSTOMER_RESULT_VERSION = "billing_customer_binding_result/v1"
+# An account that already has a customer gets its own record version, so a
+# caller cannot read a held binding as a binding this request just made. It
+# names the provider account the binding really holds, which is not always the
+# configured one.
+CUSTOMER_HELD_VERSION = "billing_customer_binding_held/v1"
 CUSTOMER_UNCERTAINTY_VERSION = "billing_customer_uncertainty/v1"
 CHECKOUT_PATH = "/v1/checkout/sessions"
 PORTAL_PATH = "/v1/billing_portal/sessions"
@@ -70,6 +79,13 @@ POST_PARAMETERS = {
 # Stripe may prune idempotency keys after at least 24 hours. This adapter's
 # explicit ceiling reserves one hour of margin; it is not a provider limit.
 MAXIMUM_RECONCILIATION_SECONDS = PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS - 3600
+# A window shorter than the declared provider search freshness allowance would
+# retire a provider idempotency key while the search that replaces it can still
+# be blind to what that key created. The runtime refuses such an allowance as
+# well, and it makes every new cycle wait for the search whatever the window
+# is. This floor keeps a host configuration from asking for that wait on every
+# attempt.
+MINIMUM_RECONCILIATION_SECONDS = PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
 
 
 class BillingSessionError(ServiceRuntimeError):
@@ -109,6 +125,18 @@ def _customer_search_query(metadata_key, tenant_id):
     identifier(metadata_key, "provider metadata key")
     identifier(tenant_id, "tenant identity")
     return "metadata['" + metadata_key + "']:'" + tenant_id + "'"
+
+
+def _search_answers_for_the_whole_account(response, found):
+    """True only when the answer can stand for everything the account owns.
+
+    A page the provider marks as truncated is never read as an answer, whatever
+    the number of rows it carried. An answer with no rows and `has_more` true
+    is the dangerous one: read as absence it would create a second customer for
+    an account that already has one, so it is refused like any other answer the
+    service cannot rely on.
+    """
+    return response["has_more"] is not True and len(found) <= 1
 
 
 def _return_url(value, permit_loopback):
@@ -186,6 +214,7 @@ class StripeSessionConfiguration:
         if (type(self.timeout_seconds) not in (int, float) or not math.isfinite(self.timeout_seconds)
                 or not 0 < self.timeout_seconds <= 60 or type(self.maximum_response_bytes) is not int
                 or self.maximum_response_bytes <= 0 or type(self.reconciliation_seconds) is not int
+                or self.reconciliation_seconds < MINIMUM_RECONCILIATION_SECONDS
                 or not self.lease_seconds < self.reconciliation_seconds <= MAXIMUM_RECONCILIATION_SECONDS):
             raise ServiceRuntimeError("invalid_session_allowance")
         object.__setattr__(self, "plans", plans)
@@ -407,7 +436,7 @@ class StripeSessionAdapter:
         found = [StripeCustomerProjection.from_provider(row, tenant_id=tenant_id,
                                                         livemode=self.configuration.livemode)
                  for row in response["data"]]
-        if len(found) > 1 or (found and response["has_more"] is True):
+        if not _search_answers_for_the_whole_account(response, found):
             raise ServiceRuntimeError("ambiguous_billing_customer_at_provider")
         return found[0] if found else None
 
@@ -431,10 +460,21 @@ class StripeSessionAdapter:
                                                               reconciliation_seconds=config.reconciliation_seconds)
         except ServiceRuntimeError as error:
             if error.code == "billing_customer_already_bound":
-                return {"record_type": CUSTOMER_RESULT_VERSION, "tenant_id": current.tenant_id,
-                        "provider_account_id": config.account_id, "status": "already_bound",
-                        "provider_customer_id": "", "transport_basis": self.transport_basis}
-            if error.code == "billing_customer_creation_in_progress":
+                # The account keeps the customer it already has. The binding is
+                # read back, because the provider account it names is not always
+                # the configured one, and its own record version says the
+                # binding was held rather than made by this request.
+                held = self.runtime.billing_customer_for(current)
+                return {"record_type": CUSTOMER_HELD_VERSION, "tenant_id": current.tenant_id,
+                        "provider_account_id": held["provider_account_id"],
+                        "provider_customer_id": held["provider_customer_id"],
+                        "matches_configured_provider_account":
+                            held["provider_account_id"] == config.account_id,
+                        "status": "already_bound", "transport_basis": self.transport_basis}
+            # Both mean the same thing to a caller: nothing reached the
+            # provider, and the same request works again shortly.
+            if error.code in ("billing_customer_creation_in_progress",
+                              "billing_customer_search_not_current_yet"):
                 raise BillingCustomerError(error.code, reason=error.code, status=503) from None
             raise
         attempted, found = False, None

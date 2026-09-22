@@ -1,7 +1,10 @@
-"""Adversarial provider-shaped responses and real HTTP session acceptance.
+"""Adversarial provider-shaped responses, removed-guard controls, and real HTTP
+session acceptance.
 
 The actual adapter serializer runs against a local injected HTTP transport.
 The public routes run over loopback sockets and real durable catalogue records.
+The removed-guard controls rerun the customer creation scenarios defined beside
+the fixture in `stripe_session_checks.py`, each with one guard patched away.
 No provider account, checkout, portal or payment is created remotely.
 """
 from __future__ import annotations
@@ -17,10 +20,19 @@ from unittest.mock import patch
 
 from . import stripe_sessions as sessions
 from .billing_effects import EFFECT_CONFIRMED, EFFECT_UNKNOWN
+from .billing_records import TENANT_METADATA_KEY
 from .http import ServiceHttpApplication, BILLING_CHECKOUT_PATH, BILLING_PLANS_PATH, BILLING_PORTAL_PATH
 from .http_test_fixtures import running_http, running_key_set
-from .records import DEFAULT_SCOPES, ServiceCommitUnknown, ServiceRuntimeError, SubjectBindingRequest, TenantKeyIssue
-from .stripe_session_checks import FIXTURE_SECRET, fixture, principal, request, refused, rows
+from .records import (
+    BillingCustomerAccountRelease, DEFAULT_SCOPES, ServiceCommitUnknown, ServiceRuntimeError,
+    SubjectBindingRequest, TenantKeyIssue,
+)
+from .records import PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+from .stripe_session_checks import (
+    FIXTURE_SECRET, advance, bound, creations, customer_rows, fixture, install_policy, principal,
+    quiet, request, refused, rows,
+)
+from .stripe_sessions import ACCOUNT_PATH, MINIMUM_RECONCILIATION_SECONDS
 
 
 def _response_checks(check):
@@ -125,6 +137,27 @@ def _wire_checks(check):
                               parameters=(), idempotency_key=""),
               lambda: replace(wire, method=sessions.GET_METHOD, path=sessions.ACCOUNT_PATH),
           )))
+    # The creation form reads no adapter state, so the unbound method returns
+    # the exact parameters the adapter would send for that account.
+    creation_form = sessions.StripeSessionAdapter._customer_creation_parameters(None, "alpha")
+    check("the_customer_wire_contract_refuses_personal_fields_and_an_unbounded_search",
+          refused(lambda: _customer_wire((("email", "person@example.test"),)),
+                  "unsupported_session_wire_parameters")
+          and refused(lambda: _customer_wire(creation_form, idempotency_key=""), "invalid_request")
+          and refused(lambda: _search_wire(()), "unsupported_customer_search_parameters")
+          and refused(lambda: _search_wire((("expand[]", "data"),)), "unsupported_customer_search_parameters")
+          and refused(lambda: sessions._customer_search_query(TENANT_METADATA_KEY,
+                                                              "alpha' or metadata['x']:'y"), "invalid_request"))
+
+
+def _customer_wire(parameters, *, idempotency_key="le-customer-fixture"):
+    return sessions.StripeSessionWireRequest(sessions.POST_METHOD, sessions.CUSTOMER_COLLECTION_PATH,
+        tuple(parameters), "fixture_version", idempotency_key, 2, 1024)
+
+
+def _search_wire(parameters):
+    return sessions.StripeSessionWireRequest(sessions.GET_METHOD, sessions.CUSTOMER_SEARCH_PATH,
+        tuple(parameters), "fixture_version", "", 2, 1024)
 
 
 def _application(held, configuration, authentication=None):
@@ -304,6 +337,162 @@ def _host_checks(check):
               and application.billing_sessions.effects.policy_available(options["policy_digest"])
               and application.runtime.billing_customer_for(current)["provider_customer_id"] == "cus_alpha")
         application._workers.shutdown(wait=False)
+
+
+def a_shorter_lease_cannot_shorten_the_wait_for_the_previous_attempt(root):
+    """A long attempt is lost, then the host lowers its own request timeout.
+
+    The wait before a new provider key cycle belongs to the attempt that ran,
+    not to whichever caller comes next. The lease follows the request timeout,
+    so a lowered timeout gives the next caller a shorter lease. If that shorter
+    lease could shorten the wait, the new cycle would run while the eventually
+    consistent provider search is still blind to the customer the lost attempt
+    created, and the account would end with two.
+    """
+    held = fixture(root, bind_customers=False)
+    window = MINIMUM_RECONCILIATION_SECONDS
+    patient = replace(held.policy, timeout_seconds=10.0, reconciliation_seconds=window)
+    slow = sessions.StripeSessionAdapter(held.runtime, patient, held.secret, transport=held.provider)
+    install_policy(held, slow)
+    held.provider.search_lag_seconds = PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+    start, late = held.clock["now"], patient.lease_seconds - 5
+    held.provider.after_read = lambda call: advance(held, late) if call.path == ACCOUNT_PATH else None
+    held.provider.lose_next_response = True
+    quiet(lambda: slow.ensure_customer(principal(held)))
+    held.provider.after_read = None
+    held.provider.effects.clear()  # the provider no longer keeps the retired key
+    hasty = replace(held.policy, timeout_seconds=1.0, reconciliation_seconds=window)
+    quick = sessions.StripeSessionAdapter(held.runtime, hasty, held.secret, transport=held.provider)
+    install_policy(held, quick)
+    # A record that carries no usable deadline is a failed assertion here, not
+    # a raised error, so a removed guard fails this check by name.
+    stored = customer_rows(held)[0]["payload"].get("dispatch_deadline")
+    if type(stored) not in (int, float):
+        return False
+    # Past the window and past a deadline rebuilt from the short lease, but
+    # still inside the allowance that belongs to the attempt that ran.
+    held.clock["now"] = start + window + hasty.lease_seconds + 1
+    early = refused(lambda: quick.ensure_customer(principal(held)),
+                    "billing_customer_search_not_current_yet")
+    made_nothing_early = len(creations(held)) == 1 and len(held.provider.customers) == 1
+    held.clock["now"] = stored + PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+    quiet(lambda: quick.ensure_customer(principal(held)))
+    settled = bound(held)
+    return (early and made_nothing_early and stored == start + patient.lease_seconds
+            and hasty.lease_seconds < patient.lease_seconds and len(creations(held)) == 1
+            and len(held.provider.customers) == 1 and settled is not None
+            and settled["provider_customer_id"] in held.provider.customers)
+
+
+def run_customer_window_checks(check):
+    """The wait before a new provider key cycle, under a changed host timeout."""
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-lease-") as root:
+        check("a_shorter_request_timeout_cannot_shorten_the_wait_for_the_previous_attempt",
+              a_shorter_lease_cannot_shorten_the_wait_for_the_previous_attempt(root))
+
+    with tempfile.TemporaryDirectory(prefix="stripe-customer-version-") as root:
+        held = fixture(root, bind_customers=False)
+        quiet(lambda: held.adapter.create(principal(held), request(held, "first-checkout")))
+        row = customer_rows(held)[0]
+        current = row["payload"]["record_type"]
+        with held.runtime._catalog.store(write=True) as store:
+            older = {**row, "record_version": "rewritten-for-this-check",
+                     "payload": {**row["payload"], "record_type": "service_billing_customer_effect/v1"}}
+            held.runtime._catalog.commit(store, (older,), (held.runtime._catalog.guard(row),))
+        check("a_creation_record_without_the_recorded_dispatch_deadline_is_refused_by_its_version",
+              current == "service_billing_customer_effect/v2"
+              and refused(lambda: held.runtime.release_billing_customer_account(
+                  BillingCustomerAccountRelease("alpha", "acct_fixture", "acct_live")),
+                  "unsupported_or_corrupt_record"))
+
+
+def run_customer_mutant_controls(check):
+    """Each control reruns a named customer scenario with one guard removed.
+
+    The scenario's own predicate must fail, so the removed behavior is the
+    reason that the named check passes. The scenarios themselves live beside
+    the fixture in `stripe_session_checks.py` and run there as named checks.
+    """
+    from . import runtime as runtime_module
+    from .billing_records import StripeCustomerProjection
+    from .stripe_session_checks import (
+        a_new_cycle_waits_until_the_search_can_show_the_last_attempt,
+        a_released_account_reaches_checkout_at_the_current_account,
+        a_truncated_search_is_not_read_as_no_customer,
+        an_unbound_account_reaches_checkout_after_the_account_changes,
+        another_accounts_customer_is_never_bound, another_provider_account_creates_no_customer,
+        first_checkout_binds_one_customer, repeat_after_the_window_finds_the_existing_customer,
+    )
+
+    def lenient(cls, value, *, tenant_id, livemode, metadata_key=TENANT_METADATA_KEY):
+        return cls(value["id"], tenant_id, livemode)
+
+    def truncation_honoured_only_when_rows_came_back(response, found):
+        """The rule before the repair: a truncated empty page read as absence."""
+        return not (len(found) > 1 or (found and response["has_more"] is True))
+
+    def deadline_taken_from_anywhere_but_the_attempts_own_record(self, state, now):
+        """The stored dispatch deadline ignored, as it was before the repair.
+
+        Any substitute that can land earlier than the moment the previous
+        attempt could last have reached the provider reopens the same hole. The
+        attempt's own start time is one such substitute, and unlike the lease
+        of whichever caller comes next it is readable from the record alone.
+        """
+        if not state.get("attempts"):
+            return True
+        started = state.get("last_attempt_at", state["retry_before"])
+        return now >= started + PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+
+    controls = (
+        ("removed_recorded_dispatch_deadline_is_detected",
+         a_shorter_lease_cannot_shorten_the_wait_for_the_previous_attempt,
+         lambda: patch.object(runtime_module.ServiceRuntime, "_search_can_show_the_previous_attempt",
+                              deadline_taken_from_anywhere_but_the_attempts_own_record)),
+        ("removed_truncated_search_refusal_is_detected",
+         a_truncated_search_is_not_read_as_no_customer,
+         lambda: patch.object(sessions, "_search_answers_for_the_whole_account",
+                              truncation_honoured_only_when_rows_came_back)),
+        ("removed_search_freshness_wait_before_a_new_key_cycle_is_detected",
+         a_new_cycle_waits_until_the_search_can_show_the_last_attempt,
+         lambda: patch.object(runtime_module.ServiceRuntime, "_search_can_show_the_previous_attempt",
+                              lambda self, state, now: True)),
+        ("removed_provider_account_change_route_is_detected",
+         an_unbound_account_reaches_checkout_after_the_account_changes,
+         lambda: patch.object(runtime_module.ServiceRuntime, "_only_the_provider_account_changed",
+                              staticmethod(lambda stored, requested: False))),
+        ("removed_provider_account_release_is_detected",
+         a_released_account_reaches_checkout_at_the_current_account,
+         lambda: patch.object(runtime_module.ServiceRuntime, "release_billing_customer_account",
+                              lambda self, request: {"committed": False})),
+        ("removed_customer_search_before_creation_is_detected",
+         repeat_after_the_window_finds_the_existing_customer,
+         lambda: patch.object(sessions.StripeSessionAdapter, "_search_customer",
+                              lambda self, tenant_id, secret: None)),
+        ("removed_account_identifier_in_customer_metadata_is_detected",
+         first_checkout_binds_one_customer,
+         lambda: patch.object(sessions.StripeSessionAdapter, "_customer_creation_parameters",
+                              lambda self, tenant_id: ())),
+        ("removed_customer_ownership_check_is_detected",
+         another_accounts_customer_is_never_bound,
+         lambda: patch.object(StripeCustomerProjection, "from_provider", classmethod(lenient))),
+        ("removed_provider_account_check_before_creation_is_detected",
+         another_provider_account_creates_no_customer,
+         lambda: patch.object(sessions.StripeSessionAdapter, "_verified_account",
+                              lambda self, secret: {})),
+    )
+    for name, scenario, mutant in controls:
+        with tempfile.TemporaryDirectory(prefix="stripe-customer-mutant-") as root:
+            with mutant():
+                # A removed guard must fail the scenario's own predicate. An
+                # error raised instead, such as a patched rule whose signature
+                # no longer matches its caller, says nothing about the guard,
+                # so it fails the control rather than passing it.
+                try:
+                    observed = bool(scenario(root))
+                except Exception:
+                    observed = None
+        check(name, observed is False)
 
 
 def run_transport_checks(check):

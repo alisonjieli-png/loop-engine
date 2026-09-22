@@ -21,11 +21,13 @@ from ..harness_intelligence import HarnessIntelligenceCatalogue, HarnessIntellig
 from ..provisioning_server import (ProvisioningError, ProvisioningGrant, ProvisioningItemBinding,
     ProvisioningQualification, ProvisioningQualificationResolver)
 from .provisioning import DurableProvisioningBinding
-from .records import (BILLING_MANAGE_SCOPE, DEFAULT_SCOPES, BillingCustomerBindingRequest,
-                       BillingCustomerEffectSpec, EFFECT_CONFIRMED, EFFECT_NOT_ATTEMPTED, EFFECT_UNKNOWN,
+from .records import (BILLING_MANAGE_SCOPE, DEFAULT_SCOPES, BillingCustomerAccountRelease,
+                       BillingCustomerBindingRequest,
+                       BillingCustomerEffectSpec, EFFECT_CONFIRMED, EFFECT_NOT_ATTEMPTED, EFFECT_PENDING,
+                       EFFECT_UNKNOWN, PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS,
                        ServiceRuntimeConfig, ServiceRuntimeError, SubjectBindingRequest,
                        TenantKeyIssue, TenantRegistration, SubjectTenantRegistration)
-from .runtime import CUSTOMER_EFFECT, ServiceRuntime
+from .runtime import CUSTOMER, CUSTOMER_EFFECT, ServiceRuntime
 from .storage import ServiceCatalogBinding
 
 BILLING_TENANT, BILLING_ACCOUNT, METADATA_KEY = "billing", "acct_fixture", "loop_engine_tenant_id"
@@ -207,6 +209,106 @@ def run_checks():
                 and refused(lambda: runtime.begin_billing_customer(principal, "not a spec", lease_seconds=10,
                             reconciliation_seconds=100), "invalid_billing_customer_effect"))
     check("customer_creation_refuses_an_allowance_beyond_the_provider_key_retention", customer_effect_allowance)
+
+    def customer_search_freshness(folder):
+        """A retired key leaves the provider search as the only protection.
+
+        The search is eventually consistent, so a new key cycle waits the
+        declared freshness allowance past the last moment the previous attempt
+        could have reached the provider, which is the earlier of its lease end
+        and its window end.
+        """
+        runtime, _key, principal, spec, clock = billing_fixture(folder)
+        window = PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+        start, lease = clock[0], 10
+        first = reserve(runtime, principal, spec, lease_seconds=lease, reconciliation_seconds=window)
+        runtime.finish_billing_customer(first, attempted=True, diagnostic_code="fixture_lost_answer")
+        clock[0] = start + window + 1
+        early = refused(lambda: reserve(runtime, principal, spec, lease_seconds=lease,
+                                        reconciliation_seconds=window),
+                        "billing_customer_search_not_current_yet")
+        floor = refused(lambda: reserve(runtime, principal, spec, lease_seconds=lease,
+                                        reconciliation_seconds=window - 1),
+                        "invalid_billing_customer_effect_allowance")
+        clock[0] = start + lease + window
+        later = reserve(runtime, principal, spec, lease_seconds=lease, reconciliation_seconds=window)
+        return (early and floor and later.idempotency_cycles == 1
+                and later.idempotency_key != first.idempotency_key)
+    check("a_new_customer_key_cycle_waits_for_the_declared_provider_search_freshness",
+          customer_search_freshness)
+
+    def customer_dispatch_deadline(folder):
+        """The wait belongs to the attempt that ran, not to the next caller.
+
+        The lease follows the host request timeout, so a host that lowers that
+        timeout gives the next caller a shorter lease. A deadline rebuilt from
+        that shorter lease would land earlier than the moment the previous
+        attempt could last have reached the provider, and the new cycle would
+        run while the provider search can still be blind to what it created.
+        """
+        runtime, _key, principal, spec, clock = billing_fixture(folder)
+        window, patient, hasty = PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS, 45, 10
+        start = clock[0]
+        first = reserve(runtime, principal, spec, lease_seconds=patient, reconciliation_seconds=window)
+        runtime.finish_billing_customer(first, attempted=True, diagnostic_code="fixture_lost_answer")
+        with runtime._catalog.store() as store:
+            state = runtime._catalog.rows(store, CUSTOMER_EFFECT, BILLING_TENANT)[0]["payload"]
+        clock[0] = start + window + hasty + 1
+        early = refused(lambda: reserve(runtime, principal, spec, lease_seconds=hasty,
+                                        reconciliation_seconds=window),
+                        "billing_customer_search_not_current_yet")
+        if state.get("dispatch_deadline") != start + patient:
+            return False
+        clock[0] = state["dispatch_deadline"] + window
+        later = reserve(runtime, principal, spec, lease_seconds=hasty, reconciliation_seconds=window)
+        return (state["record_type"] == "service_billing_customer_effect/v2" and early
+                and later.idempotency_cycles == 1 and later.idempotency_key != first.idempotency_key)
+    check("the_wait_before_a_new_customer_key_cycle_follows_the_attempt_that_ran",
+          customer_dispatch_deadline)
+
+    def customer_effect_provider_account(folder):
+        """A customer at one provider account does not exist at another."""
+        runtime, _key, principal, spec, clock = billing_fixture(folder)
+        first = reserve(runtime, principal, spec)
+        runtime.finish_billing_customer(first, attempted=True, diagnostic_code="fixture_lost_answer")
+        clock[0] += 101
+        conflict = refused(lambda: reserve(runtime, principal, replace(spec, metadata_key="other_key")),
+                           "billing_customer_request_identity_conflict")
+        moved = reserve(runtime, principal, replace(spec, provider_account_id="acct_live"))
+        with runtime._catalog.store() as store:
+            state = runtime._catalog.rows(store, CUSTOMER_EFFECT, BILLING_TENANT)[0]["payload"]
+        return (conflict and moved.spec.provider_account_id == "acct_live"
+                and moved.idempotency_key != first.idempotency_key and state["status"] == EFFECT_PENDING
+                and state["spec"]["provider_account_id"] == "acct_live"
+                and [row["provider_account_id"] for row in state["superseded_provider_accounts"]]
+                == [BILLING_ACCOUNT])
+    check("a_customer_creation_record_follows_the_provider_account_but_no_other_request_identity",
+          customer_effect_provider_account)
+
+    def customer_account_release(folder):
+        """The defined route from a customer at one provider account to another."""
+        runtime, _key, principal, spec, clock = billing_fixture(folder)
+        reservation = reserve(runtime, principal, spec)
+        runtime.bind_billing_customer(binding("cus_one"), reservation=reservation)
+        wrong = refused(lambda: runtime.release_billing_customer_account(
+            BillingCustomerAccountRelease(BILLING_TENANT, "acct_live", "acct_other")),
+            "billing_customer_release_account_mismatch")
+        same = refused(lambda: BillingCustomerAccountRelease(BILLING_TENANT, BILLING_ACCOUNT, BILLING_ACCOUNT),
+                       "billing_customer_release_needs_another_account")
+        released = runtime.release_billing_customer_account(
+            BillingCustomerAccountRelease(BILLING_TENANT, BILLING_ACCOUNT, "acct_live"))
+        unbound = refused(lambda: runtime.billing_customer_for(principal), "billing_customer_not_bound")
+        clock[0] += 10 + PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+        moved = reserve(runtime, principal, replace(spec, provider_account_id="acct_live"))
+        runtime.bind_billing_customer(binding("cus_two", account_id="acct_live"), reservation=moved)
+        with runtime._catalog.store() as store:
+            kept = runtime._catalog.read(store, CUSTOMER, (BILLING_ACCOUNT, "cus_one"))
+        current = runtime.billing_customer_for(principal)
+        return (wrong and same and unbound and kept is not None
+                and released["released_provider_customer_id"] == "cus_one"
+                and current["provider_customer_id"] == "cus_two"
+                and current["provider_account_id"] == "acct_live")
+    check("a_host_release_frees_an_account_from_the_provider_account_it_left", customer_account_release)
 
     def customer_effect_scope(folder):
         runtime, key, principal, spec, _clock = billing_fixture(folder)
