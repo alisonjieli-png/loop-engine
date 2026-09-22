@@ -26,6 +26,7 @@ import check_fly_service_container as container_check  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 DEPLOY_STEP = "Publish and deploy the exact tested image"
 GRANT_STEP = "Apply the packaged catalogue grants on the one Machine"
+READINESS_SETTING = "SERVICE_READINESS_GATE"
 READINESS = 'jq -e "${SERVICE_READINESS_GATE}" >/dev/null'
 #: The grant command reaches the one Machine through the Machines API exec
 #: call, the way it was run by hand after release 12. The JSON form carries the
@@ -84,6 +85,8 @@ def grant_step_problems(workflow):
         problems.append("the grant step does not run after the deploy")
     if step.get("if") != "inputs.operation == 'deploy'":
         problems.append("the grant step is not limited to a deployment")
+    if step.get("continue-on-error", "false") != "false":
+        problems.append("a failed grant step would not stop the release")
     environment = step.get("env", {})
     if environment.get("GRANT_COMMAND") != " ".join(container_check.POST_DEPLOY_GRANT_COMMAND):
         problems.append("the grant step does not run the command the container check qualified")
@@ -102,6 +105,33 @@ def grant_step_problems(workflow):
         problems.append("the grant step does not gate on what the grant command printed")
     elif GRANT_CALL in run and run.rfind(READINESS) < run.find(GRANT_CALL):
         problems.append("the readiness check does not follow the grant command")
+    return problems
+
+
+def readiness_gate_problems(workflow):
+    """Every way a release step could end without the one shared readiness gate deciding it, or nothing.
+
+    The deploy step and the grant step both end with the gate that the job
+    holds in SERVICE_READINESS_GATE. A step that sets that name again, in its
+    own settings or in its script, runs a gate of its own under the shared
+    name, and a step or a job that continues after an error lets a failed gate
+    pass the release.
+    """
+    job = workflow["jobs"]["pilot"]
+    problems = []
+    if not job.get("env", {}).get(READINESS_SETTING):
+        problems.append("the job holds no shared readiness gate")
+    if job.get("continue-on-error", "false") != "false":
+        problems.append("the job lets a failed step pass the release")
+    for row in job["steps"]:
+        name = row.get("name", "an unnamed step")
+        run = row.get("run", "")
+        if READINESS_SETTING in row.get("env", {}):
+            problems.append(f"{name} replaces the shared readiness gate in its own settings")
+        if READINESS_SETTING in run.replace(READINESS, ""):
+            problems.append(f"{name} names the readiness gate outside the shared check")
+        if READINESS in run and row.get("continue-on-error", "false") != "false":
+            problems.append(f"{name} lets a failed readiness gate pass the release")
     return problems
 
 
@@ -280,11 +310,70 @@ class FlyDeploymentTests(unittest.TestCase):
             step(steps)["run"] = run.replace(readiness, "true").replace(
                 "applied=", f"{readiness.strip()}\napplied=", 1)
 
+        def continue_after_a_failure(steps):
+            # A failed gate would no longer stop the release, so a release that
+            # offers nothing would still end as a success.
+            step(steps)["continue-on-error"] = "true"
+
         for mutant in (remove, before_the_deploy, configure_instead, without_readiness,
                        without_the_output_gate, any_machine, through_a_remote_shell,
-                       readiness_before_the_grant):
+                       readiness_before_the_grant, continue_after_a_failure):
             with self.subTest(mutant=mutant.__name__):
                 self.assertNotEqual(changed(mutant), [])
+
+    def test_every_release_step_ends_with_the_one_shared_readiness_gate(self):
+        """The deploy step and the grant step decide readiness with the gate the job holds."""
+        self.assertEqual(readiness_gate_problems(self.workflow), [])
+
+    def test_a_step_that_replaces_or_ignores_the_shared_readiness_gate_is_refused(self):
+        """Each known-wrong workflow ends a release step with something other than the shared gate.
+
+        The gate is one setting of the job, so a step could set the same name
+        again, in its own settings or in its script, and pass a record that the
+        shared gate refuses. A step or a job that continues after an error lets
+        a failed gate pass the release. The gate tests above run the job's
+        setting, so none of these would be noticed there.
+        """
+        def changed(edit):
+            workflow = copy.deepcopy(self.workflow)
+            edit(workflow["jobs"]["pilot"])
+            return readiness_gate_problems(workflow)
+
+        def step(job, name):
+            return next(row for row in job["steps"] if row.get("name") == name)
+
+        def own_gate_in_the_settings(name):
+            def edit(job):
+                step(job, name).setdefault("env", {})["SERVICE_READINESS_GATE"] = "true"
+            return edit
+
+        def own_gate_in_the_script(name):
+            def edit(job):
+                row = step(job, name)
+                row["run"] = row["run"].replace(
+                    "set -euo pipefail", "set -euo pipefail\nSERVICE_READINESS_GATE=true", 1)
+            return edit
+
+        def continues_after_an_error(name):
+            def edit(job):
+                step(job, name)["continue-on-error"] = "true"
+            return edit
+
+        def no_shared_gate(job):
+            del job["env"]["SERVICE_READINESS_GATE"]
+
+        def the_job_continues_after_an_error(job):
+            job["continue-on-error"] = "true"
+
+        mutants = {"no shared gate": no_shared_gate,
+                   "the job continues after an error": the_job_continues_after_an_error}
+        for name in (DEPLOY_STEP, GRANT_STEP):
+            mutants[f"{name}: its own gate in its settings"] = own_gate_in_the_settings(name)
+            mutants[f"{name}: its own gate in its script"] = own_gate_in_the_script(name)
+            mutants[f"{name}: continues after an error"] = continues_after_an_error(name)
+        for label, edit in mutants.items():
+            with self.subTest(mutant=label):
+                self.assertNotEqual(changed(edit), [])
 
     def test_the_grant_gate_accepts_what_apply_grants_prints_and_refuses_known_wrong_output(self):
         """Run the workflow's own gate over what the real command prints for the release manifest.
