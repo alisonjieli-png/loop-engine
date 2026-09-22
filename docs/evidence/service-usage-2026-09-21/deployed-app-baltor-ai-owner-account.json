@@ -1,0 +1,622 @@
+{
+ "origin": "https://app.baltor.ai",
+ "calls": [
+  {
+   "name": "capabilities",
+   "method": "GET",
+   "path": "/api/v1/capabilities",
+   "request_headers": {
+    "Accept": "application/json"
+   },
+   "request_body": null,
+   "status": 200,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "capabilities",
+    "result": {
+     "record_type": "service_capabilities/v1",
+     "api_version": "v1",
+     "website": {
+      "display_name": "Baltor",
+      "registration_available": false,
+      "browser_identity_available": true,
+      "access_profile": "operator_provisioned",
+      "access_administration_available": true,
+      "client_access_available": true
+     },
+     "protocol": {
+      "transport": "streamable_http",
+      "versions": [
+       "2025-11-25"
+      ],
+      "sdk_version": "1.29.1",
+      "session_state": "stateless",
+      "oauth_resource_metadata": false,
+      "oauth_authorization_server_installed": false,
+      "external_authorization_flow_qualified": false
+     },
+     "authentication": {
+      "record_type": "service_http_authentication/v1",
+      "modes": [
+       "host_key"
+      ],
+      "issuer": null,
+      "audience": null,
+      "algorithms": [],
+      "required_scopes": [],
+      "key_cache_seconds": 60,
+      "maximum_key_set_bytes": 262144,
+      "issues_tokens": false,
+      "external_provider_qualified": false
+     },
+     "operation_scopes": {
+      "metadata_and_search": "provisioning:metadata",
+      "body_and_download": "provisioning:read",
+      "usage": "usage:read",
+      "billing_sessions": "billing:manage"
+     },
+     "retrieval": {
+      "modes": [
+       "lexical",
+       "hybrid"
+      ],
+      "lexical_backend": "sqlite_fts5",
+      "vector_backend": "deterministic_character_hash",
+      "semantic_embedding_model_installed": false,
+      "scope": "authorized_catalogue_metadata",
+      "returns_bodies": false
+     },
+     "delivery": {
+      "inline_body_bytes": 16384,
+      "download_bytes": 1048576,
+      "download_endpoint": "/api/v1/download",
+      "requires_reauthorization": true,
+      "body_format": "utf8_text"
+     },
+     "limits": {
+      "request_bytes": 65536,
+      "response_bytes": 262144,
+      "search_results": 50,
+      "concurrent_operations": 8
+     },
+     "billing": {
+      "webhook": true,
+      "checkout": true,
+      "portal": true,
+      "plans_endpoint": "/api/v1/billing/plans"
+     },
+     "cancellation": "bounded_response_wait; running callbacks may finish; no automatic replay"
+    }
+   }
+  },
+  {
+   "name": "session",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 200,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "session",
+    "result": {
+     "record_type": "service_session/v1",
+     "principal": {
+      "record_type": "service_principal/v1",
+      "tenant_id": "pilot-owner",
+      "namespace": "pilot-owner:private",
+      "key_id": "8867ec11ec6f446fb629bbba3b212f5d",
+      "entitlement": "bodies",
+      "scopes": [
+       "provisioning:metadata",
+       "provisioning:read",
+       "usage:read"
+      ]
+     },
+     "authentication_mode": "host_key",
+     "token_expires_at": null
+    }
+   }
+  },
+  {
+   "name": "search",
+   "method": "POST",
+   "path": "/api/v1/retrieval",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_retrieval_request/v1",
+    "query": "review",
+    "mode": "lexical",
+    "top_n": 3
+   },
+   "status": 200,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "retrieval",
+    "result": {
+     "record_type": "service_retrieval_result/v1",
+     "hits": [
+      {
+       "reference": {
+        "identity": "example.review_inputs",
+        "source_layer": "context_intelligence",
+        "source_ref": "example:review-inputs@1",
+        "body_digest": "9b0922f2dc282cf0101f78f00d307567b4d098f8fd3ca99bf76559dfb6bb9bd8",
+        "descriptor_digest": "6b9fb64805be1f4167eb88d686b39c2071010a4a2f701e2b90a74fc6b27631c1",
+        "record_type": "provisioning_item_binding/v1"
+       },
+       "purpose": "Review supplied material and preserve missing evidence",
+       "kind": "instruction_file",
+       "size_bytes": 336,
+       "license": "MIT",
+       "declared_effects": [],
+       "harness_styles": [],
+       "score": 0.1,
+       "modes": [
+        "lexical"
+       ],
+       "qualification_basis": "host_attested",
+       "body_allowed": true
+      }
+     ],
+     "mode": "lexical",
+     "bodies_loaded": false,
+     "backend": {
+      "modes": [
+       "lexical",
+       "hybrid"
+      ],
+      "lexical_backend": "sqlite_fts5",
+      "vector_backend": "deterministic_character_hash",
+      "semantic_embedding_model_installed": false,
+      "scope": "authorized_catalogue_metadata",
+      "returns_bodies": false
+     },
+     "limitations": [
+      "Hash vectors measure character similarity, not learned semantic understanding.",
+      "Distribution references do not grant local code execution or independent Code admission."
+     ]
+    },
+    "execution": {
+     "runtime_type": "Loop",
+     "loop_id": "loop1",
+     "profile": "intelligence.search@1.0.0",
+     "mode": "deterministic",
+     "model_calls": 0,
+     "definition_digest": "74156e87dfc1676e5b6b97871711734c9ca1a7e6177c6ff1451bd07055c87bbf"
+    }
+   }
+  },
+  {
+   "name": "list",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "list"
+   },
+   "status": 200,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "list",
+    "result": {
+     "record_type": "provisioning_list/v2",
+     "tenant_id": "pilot-owner",
+     "entitlement": "bodies",
+     "items": [
+      {
+       "record_type": "harness_intelligence_item/v1",
+       "identity": "example.review_inputs",
+       "kind": "instruction_file",
+       "purpose": "Review supplied material and preserve missing evidence",
+       "digest": "9b0922f2dc282cf0101f78f00d307567b4d098f8fd3ca99bf76559dfb6bb9bd8",
+       "source_layer": "context_intelligence",
+       "source_ref": "example:review-inputs@1",
+       "size_bytes": 336,
+       "license": "MIT",
+       "declared_effects": [],
+       "styles": [],
+       "tags": {
+        "record_type": "intelligence_tags/v1"
+       },
+       "exposure": "metadata_only",
+       "availability": "remote",
+       "body_included": false,
+       "qualification_basis": "host_attested",
+       "metering_policy": "required",
+       "body_allowed": true
+      }
+     ],
+     "withheld": [],
+     "metered": false
+    },
+    "execution": {
+     "runtime_type": "Loop",
+     "loop_id": "loop1",
+     "profile": "practitioner.code_execution@1.0.0",
+     "mode": "deterministic",
+     "model_calls": 0,
+     "definition_digest": "c86c2f6fd572a2b5ed12086985e62d19f210fd2ae0b7112220f38d3c9e8edb56"
+    }
+   }
+  },
+  {
+   "name": "manifest",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "manifest",
+    "identity": "example.review_inputs"
+   },
+   "status": 200,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "manifest",
+    "result": {
+     "record_type": "provisioning_manifest/v2",
+     "tenant_id": "pilot-owner",
+     "identity": "example.review_inputs",
+     "kind": "instruction_file",
+     "purpose": "Review supplied material and preserve missing evidence",
+     "digest": "9b0922f2dc282cf0101f78f00d307567b4d098f8fd3ca99bf76559dfb6bb9bd8",
+     "source_layer": "context_intelligence",
+     "source_ref": "example:review-inputs@1",
+     "size_bytes": 336,
+     "license": "MIT",
+     "declared_effects": [],
+     "styles": [],
+     "tags": {
+      "record_type": "intelligence_tags/v1"
+     },
+     "exposure": "metadata_only",
+     "availability": "remote",
+     "body_included": false,
+     "qualification_basis": "host_attested",
+     "metering_policy": "required",
+     "body_allowed": true,
+     "verify_before_use": true,
+     "metered": false
+    },
+    "execution": {
+     "runtime_type": "Loop",
+     "loop_id": "loop1",
+     "profile": "practitioner.code_execution@1.0.0",
+     "mode": "deterministic",
+     "model_calls": 0,
+     "definition_digest": "e49a281b953975e716fedfd87118bb8e97d5c6646d6ff376749954f15f4fa403"
+    }
+   }
+  },
+  {
+   "name": "usage",
+   "method": "GET",
+   "path": "/api/v1/usage",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 200,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "usage",
+    "result": {
+     "record_type": "durable_tenant_usage/v1",
+     "tenant_id": "pilot-owner",
+     "records": 10,
+     "totals": {
+      "provisioned_item": 10.0
+     },
+     "durability": "durable"
+    },
+    "execution": {
+     "runtime_type": "Loop",
+     "loop_id": "loop1",
+     "profile": "practitioner.code_execution@1.0.0",
+     "mode": "deterministic",
+     "model_calls": 0,
+     "definition_digest": "34273898c34aca87f143d1f6cab7cbb362d640ee58a917b9a2fc90e45e02886b"
+    }
+   }
+  },
+  {
+   "name": "refusal_no_credential",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json"
+   },
+   "request_body": null,
+   "status": 401,
+   "response_headers": {
+    "content-type": "application/json",
+    "www-authenticate": "Bearer"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unauthorized"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_unsupported_version",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v0",
+    "operation": "list"
+   },
+   "status": 400,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unsupported_version"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_unsupported_operation",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "delete"
+   },
+   "status": 400,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unsupported_operation"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_unknown_request_field",
+   "method": "POST",
+   "path": "/api/v1/retrieval",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_retrieval_request/v1",
+    "query": "review",
+    "limit": 3
+   },
+   "status": 400,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unknown_request_field"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_unsupported_retrieval_mode",
+   "method": "POST",
+   "path": "/api/v1/retrieval",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_retrieval_request/v1",
+    "query": "review",
+    "mode": "semantic"
+   },
+   "status": 400,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unsupported_retrieval_mode"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_route_unavailable",
+   "method": "GET",
+   "path": "/api/v1/nothing-here",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 404,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "route_unavailable"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_request_identity_required",
+   "method": "POST",
+   "path": "/api/v1/download",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "read",
+    "identity": "example.review_inputs"
+   },
+   "status": 400,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "invalid_request"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_download_requires_read",
+   "method": "POST",
+   "path": "/api/v1/download",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "list"
+   },
+   "status": 400,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "download_requires_read"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "refusal_unsupported_media_type",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 415,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unsupported_media_type"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "mcp_protocol_mismatch",
+   "method": "POST",
+   "path": "/mcp",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+     "protocolVersion": "2025-06-18",
+     "capabilities": {},
+     "clientInfo": {
+      "name": "documentation-probe",
+      "version": "1.0.0"
+     }
+    }
+   },
+   "status": 400,
+   "response_headers": {
+    "content-type": "application/json"
+   },
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "unsupported_protocol_version"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  }
+ ],
+ "record_type": "service_usage_transcript/v1",
+ "recorded_on": "2026-09-21",
+ "credentials_recorded": false
+}

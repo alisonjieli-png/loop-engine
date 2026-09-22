@@ -1,0 +1,179 @@
+{
+ "origin": "https://app.baltor.ai",
+ "calls": [
+  {
+   "name": "session",
+   "method": "GET",
+   "path": "/api/v1/session",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN"
+   },
+   "request_body": null,
+   "status": 200,
+   "response_headers": {},
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "session",
+    "result": {
+     "record_type": "service_session/v1",
+     "principal": {
+      "record_type": "service_principal/v1",
+      "tenant_id": "pilot-boundary",
+      "namespace": "pilot-boundary:private",
+      "key_id": "5f0b260865744cfdac20e3ffee2128ad",
+      "entitlement": "bodies",
+      "scopes": [
+       "provisioning:metadata",
+       "provisioning:read",
+       "usage:read"
+      ]
+     },
+     "authentication_mode": "host_key",
+     "token_expires_at": null
+    }
+   }
+  },
+  {
+   "name": "list",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "list"
+   },
+   "status": 200,
+   "response_headers": {},
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "list",
+    "result": {
+     "record_type": "provisioning_list/v2",
+     "tenant_id": "pilot-boundary",
+     "entitlement": "bodies",
+     "items": [],
+     "withheld": [],
+     "metered": false
+    },
+    "execution": {
+     "runtime_type": "Loop",
+     "loop_id": "loop1",
+     "profile": "practitioner.code_execution@1.0.0",
+     "mode": "deterministic",
+     "model_calls": 0,
+     "definition_digest": "c86c2f6fd572a2b5ed12086985e62d19f210fd2ae0b7112220f38d3c9e8edb56"
+    }
+   }
+  },
+  {
+   "name": "discover",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "discover"
+   },
+   "status": 200,
+   "response_headers": {},
+   "response": {
+    "record_type": "service_http_result/v1",
+    "operation": "discover",
+    "result": {
+     "record_type": "provisioning_discover/v2",
+     "server_id": "loop-engine-provisioning",
+     "operations": [
+      "discover",
+      "list",
+      "manifest",
+      "read"
+     ],
+     "kinds": [],
+     "tenant_id": "pilot-boundary",
+     "entitlement": "bodies",
+     "items_held": 0,
+     "metered_unit": "provisioned_item",
+     "metered": false,
+     "never_metered": [
+      "listing authorized items",
+      "a manifest with digests and sizes",
+      "a refusal before metering",
+      "reading the tenant's own usage"
+     ],
+     "bodies_available": false
+    },
+    "execution": {
+     "runtime_type": "Loop",
+     "loop_id": "loop1",
+     "profile": "practitioner.code_execution@1.0.0",
+     "mode": "deterministic",
+     "model_calls": 0,
+     "definition_digest": "958ae58fa348166ccba6257315a422fd594ffaa331e4bd6afe8f602956bf8a86"
+    }
+   }
+  },
+  {
+   "name": "download_without_entitlement",
+   "method": "POST",
+   "path": "/api/v1/download",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "read",
+    "identity": "example.review_inputs",
+    "request_id": "documentation-probe-metadata-only-2026-09-21"
+   },
+   "status": 404,
+   "response_headers": {},
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "item_unavailable"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  },
+  {
+   "name": "manifest_unknown_identity",
+   "method": "POST",
+   "path": "/api/v1/provisioning",
+   "request_headers": {
+    "Accept": "application/json",
+    "Authorization": "Bearer $BALTOR_SERVICE_TOKEN",
+    "Content-Type": "application/json"
+   },
+   "request_body": {
+    "record_type": "service_provisioning_request/v1",
+    "operation": "manifest",
+    "identity": "no.such.item"
+   },
+   "status": 404,
+   "response_headers": {},
+   "response": {
+    "record_type": "service_http_error/v1",
+    "error": {
+     "code": "item_unavailable"
+    },
+    "effect_commitment": "not_asserted",
+    "automatic_retry": false
+   }
+  }
+ ],
+ "record_type": "service_usage_transcript/v1",
+ "recorded_on": "2026-09-21",
+ "credentials_recorded": false
+}
