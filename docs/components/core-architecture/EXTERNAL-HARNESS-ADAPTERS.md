@@ -87,6 +87,73 @@ PYTHONPATH=src python3 -c \
 
 Adapter completion remains separate from independent task acceptance.
 
+## Adapter contract and engine identity
+
+Every adapter is an engine of the step executor slot. Its `info()` declares
+three fields under the engine protocol version `external_harness_adapter/v2`:
+
+| Field | Meaning |
+|---|---|
+| `adapter_contract_version` | The engine protocol the adapter implements. Only `external_harness_adapter/v2` is supported. The first protocol declared nothing, and an adapter written for it is refused. |
+| `engine_kind` | One of the ten engine kinds in `STEP_EXECUTOR_ENGINE_KINDS`. A kind is a declaration. It grants no permission, and it does not prove that a step was delegated to a separate process. |
+| `supported_edge_contracts` | The edges the adapter serves, named by their request record type. `harness_request_identity/v3` asks for one model response and is served by `run()`. `step_run_request/v1` asks for one step and is served by `run_step()`; its records and envelope arrive in a later package, and no engine serves it yet. |
+
+`HarnessRegistry.register` checks the declaration before any run. A refusal
+raises `HarnessAdapterRefused`, which carries every reason as a stable code:
+
+| Code | Refused declaration |
+|---|---|
+| `adapter_contract_version_missing` | No contract version |
+| `adapter_contract_version_unsupported` | A contract version the registry does not serve |
+| `engine_kind_missing` | No engine kind |
+| `engine_kind_not_in_slot` | A kind the step executor slot does not list, such as a record store kind |
+| `no_supported_edge_contract` | None of the edges the registry serves |
+| `engine_identifier_already_registered` | A second engine under one identifier without `replace=True` |
+| `replacement_registration_digest_unchanged` | A replacement with the same declaration and the same implementation class |
+
+An adapter that declares an edge without its operation is refused with the
+code `edge_operation_missing` followed by the operation name. An adapter may
+also declare edges the registry does not know; the registry uses only the
+edges it serves, which `served_edge_contracts()` returns.
+
+`HarnessRegistry.registration_digest` returns the digest of one registration:
+the whole declaration and the implementation class. A replacement always
+changes it. No decision record carries this digest yet. The engine selection
+decision planned in the engine design is meant to bind it, so that a decision
+made before a replacement no longer matches. Until then,
+`HarnessSemanticBinding` notices a replacement when it is used, by comparing
+the registered adapter object and its declaration.
+
+One engine identifier names one implementation. The parked raw host OpenCode
+adapter therefore answers to `opencode.raw_host`, while the OpenCode recipe
+engine of `embodiments/opencode/harness.json` answers to `opencode`.
+
+| Adapter | Engine kind | Edge |
+|---|---|---|
+| The four framework kits in `builtin_harness_adapters()` | `agent_framework_kit` | `harness_request_identity/v3` |
+| `GatewayHarnessProcessAdapter`, a brokered process harness | `text_relay_harness` | `harness_request_identity/v3` |
+| `UnavailableHarnessAdapter`, standing in for a process harness that is not installed | `text_relay_harness` | `harness_request_identity/v3` |
+| `OpenCodeProcessAdapter`, parked and refusal only | `in_process_runner` | `harness_request_identity/v3` |
+
+`run_external_harness` checks the same declaration again when it is used, and
+refuses an adapter that does not declare `harness_request_identity/v3`,
+before any Loop starts.
+
+## The envelope clock
+
+The `elapsed_seconds` field of `external_harness_result/v3` is measured by the
+envelope with its own monotonic clock, from just before the Loop runs the
+adapter until the adapter's output is captured. The adapter's own figure is
+kept apart as `engine_reported_seconds` in the same ledger event, beside the
+safe summary, and nothing ranks it. The post-run time bound reads the
+measured value, so an engine cannot pass that bound by reporting less time,
+and it cannot make itself look faster or slower than it was.
+
+```bash
+PYTHONPATH=src python3 -c \
+  "from loop_engine.core.external_harness_contract import self_test; print(self_test())"
+```
+
 ## SDK references
 
 The package calls follow the current primary documentation:

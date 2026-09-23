@@ -12,7 +12,8 @@ adapter until a separately reviewed execution profile can prove configuration,
 credential, prompt, tool, context, effect, cancellation, and limit controls.
 
 Owns:
-    - OpenCodeProcessAdapter: quarantined ExternalHarnessAdapter compatibility.
+    - OpenCodeProcessAdapter: quarantined ExternalHarnessAdapter compatibility,
+      registered under its own engine identifier ``opencode.raw_host``.
     - parse_opencode_events(): the deterministic event normalization.
     - render_opencode_message(): the packet-to-message rendering.
 
@@ -35,13 +36,21 @@ from .external_harness import (
     HarnessServices,
     HarnessToolEvent,
 )
+from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from .harness_execution_contracts import (
     HarnessExecutionCapabilities,
     plain_harness_json,
     unmet_harness_requirements,
 )
 
-OPENCODE_HARNESS_ID = "opencode"
+#: One engine identifier names one implementation. The OpenCode recipe engine
+#: of ``embodiments/opencode/harness.json`` answers to ``opencode``, so this
+#: quarantined raw host path answers to its own identifier, as the
+#: architecture invariant ``opencode_raw_host_execution_is_quarantined`` names it.
+OPENCODE_HARNESS_ID = "opencode.raw_host"
+#: The key of OpenCode's instruction text among the prompt resources. It names
+#: text, not an engine, so it keeps the harness family name.
+_INSTRUCTION_RESOURCE = "opencode"
 ADAPTER_VERSION = "1.1.0"
 _UNQUALIFIED_REASON = "OpenCode host process execution profile is not qualified"
 _CAPABILITY_EVIDENCE = (
@@ -71,7 +80,7 @@ def render_opencode_message(request: HarnessRunRequest) -> str:
     """Compose the message: default instructions, goal, contract, inputs."""
     from ..strings.prompt_fragments import external_harness_instruction_bundle
     instructions = external_harness_instruction_bundle(
-        OPENCODE_HARNESS_ID).render({}, provenance={})
+        _INSTRUCTION_RESOURCE).render({}, provenance={})
     instruction_text = getattr(instructions, "text", None) or str(instructions)
     contract = request.contract
     lines = [
@@ -225,6 +234,11 @@ class OpenCodeProcessAdapter:
             execution_capabilities=HarnessExecutionCapabilities(
                 supported_features=(), enforced_limits=(),
                 isolation="cwd_only", evidence_refs=_CAPABILITY_EVIDENCE),
+            # Parked with the retired in-process capability and unconfined, so
+            # it declares that kind, which never counts as delegation.
+            adapter_contract_version=ADAPTER_CONTRACT_VERSION,
+            engine_kind="in_process_runner",
+            supported_edge_contracts=(MODEL_RESPONSE_EDGE,),
         )
 
     def run(self, request: HarnessRunRequest,

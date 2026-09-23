@@ -10,6 +10,7 @@ from pathlib import Path
 import tempfile
 
 from .external_harness import HarnessAdapterInfo, HarnessModelCall, HarnessRegistry, HarnessRunResult
+from .external_harness_contract import ADAPTER_CONTRACT_VERSION, MODEL_RESPONSE_EDGE
 from .harness_execution_contracts import HarnessExecutionCapabilities
 from .harness_semantic import HarnessSemanticBinding
 
@@ -33,7 +34,9 @@ def run_checks():
 
         def info(self):
             return HarnessAdapterInfo('semantic_fixture', '1.0.0', 'fixture', available=True,
-                execution_capabilities=HarnessExecutionCapabilities(supported_features=('model_routes',)))
+                execution_capabilities=HarnessExecutionCapabilities(supported_features=('model_routes',)),
+                adapter_contract_version=ADAPTER_CONTRACT_VERSION, engine_kind='text_relay_harness',
+                supported_edge_contracts=(MODEL_RESPONSE_EDGE,))
 
         def run(self, request, services):
             self.invocations.append(request)
@@ -140,7 +143,11 @@ def run_checks():
             exhausted = error.error_code == 'model_call_budget_exhausted'
         check('whole_run_budget_blocks_before_another_harness_dispatch', exhausted
               and len(adapter.invocations) == 2)
-        registry.register(FixtureHarness(), replace=True)
+
+        class ReplacementHarness(FixtureHarness):
+            """The same declaration from another implementation: a new registration digest."""
+
+        registry.register(ReplacementHarness(), replace=True)
         changed = False
         try:
             binding.invoke(adapter.invocations[0], gateway=authority.gateway, parent=owner,
