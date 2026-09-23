@@ -41,4 +41,4 @@ A pipeline asks the model in free prose to have a look at three options and then
 
 - `src/loop_engine/strings/question_engine.py`: `QuestionForm`, `core_forms`, `multiply`, `register_generated_form` and the fixed reframing sentences.
 
-Licence: MIT. Compiled from revision f29bddc.
+Licence: MIT. Compiled from revision d893bba.
