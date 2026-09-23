@@ -1,0 +1,101 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-phones-small-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "phones",
+ "arm": "small-agents",
+ "model": "qwen2.5-coder:7b",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "normalize_phone_numbers",
+   "body_sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+   "bytes": 2579,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_phone_numbers"
+  }
+ ],
+ "material_sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+ "prompt_sha256": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+ "started_at": "2026-09-23T03:35:36+00:00",
+ "ended_at": "2026-09-23T03:35:40+00:00",
+ "elapsed_seconds": 3.6,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 1,
+  "refused": [],
+  "outcomes": {
+   "ok": 1
+  },
+  "usage_known_requests": 1,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 2322,
+  "completion_tokens_known_sum": 20,
+  "largest_prompt_tokens": 2322,
+  "model_seconds": 1.8,
+  "requests_with_every_material_marker": 1,
+  "requests_with_any_material_marker": 1
+ },
+ "harness_report": {
+  "assistant_messages": 1,
+  "tool_calls": [],
+  "tool_errors": 0,
+  "final_text": "{\"name\": \"bash\", \"arguments\": {\"command\": \"cp input.csv output.csv\"}}",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2322,
+    "output": 20,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2342,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": false,
+ "output_sha256": null,
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 2579
+  },
+  {
+   "path": "input.csv",
+   "bytes": 666
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.0,
+  "passed": false,
+  "metrics": {
+   "rows": 38,
+   "correct": 0,
+   "record_accuracy": 0.0,
+   "value_accuracy": 0.0,
+   "change_recall": 0.0,
+   "change_precision": null,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 0.0,
+   "guess_rate_on_hold_rows": 0.0,
+   "missing_rows": 38
+  },
+  "format_problems": {
+   "missing_output_file": 1
+  },
+  "output_readable": false
+ }
+}

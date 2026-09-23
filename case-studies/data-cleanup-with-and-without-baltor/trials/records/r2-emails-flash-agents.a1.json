@@ -1,0 +1,202 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r2-emails-flash-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 2,
+ "family": "emails",
+ "arm": "flash-agents",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "normalize_and_recover_email_addresses",
+   "body_sha256": "64ce838e3053982542820402655c12728f0844e7d70641fef3caa6b7cf732809",
+   "bytes": 2691,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_and_recover_email_addresses"
+  }
+ ],
+ "material_sha256": "64ce838e3053982542820402655c12728f0844e7d70641fef3caa6b7cf732809",
+ "prompt_sha256": "5ce3a0a76345656a1546caab7c9b65dfeeb8464d9e0e9b533dfa29b7c6702968",
+ "started_at": "2026-09-23T03:58:11+00:00",
+ "ended_at": "2026-09-23T04:00:29+00:00",
+ "elapsed_seconds": 137.2,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 6,
+  "refused": [],
+  "outcomes": {
+   "ok": 6
+  },
+  "usage_known_requests": 6,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 129941,
+  "completion_tokens_known_sum": 28553,
+  "largest_prompt_tokens": 32941,
+  "model_seconds": 134.1,
+  "requests_with_every_material_marker": 6,
+  "requests_with_any_material_marker": 6
+ },
+ "harness_report": {
+  "assistant_messages": 6,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-emails-flash-agents-a1/work && ls -la && grep -n 'noor' input.csv | head -1 | hexdump -C | head -20\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"clean_emails.py\", \"content\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"Clean the `email` column of input.csv -> output.csv (id, email, review).\\n\\nMethod per AGENTS.md: normalize wrappers, repair only certain defects from\\ndeclared tables, r"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-emails-flash-agents-a1/work && python3 clean_emails.py\"}"
+   },
+   {
+    "tool": "read",
+    "args": "{\"path\": \"output.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-emails-flash-agents-a1/work && git status --porcelain -- input.csv && python3 -c \\\"\\nimport csv\\nrows = list(csv.reader(open('output.csv')))\\nassert rows[0] == ['id','email',"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "`output.csv` is complete: header + 35 rows, one per input row. Certain repairs were applied (symbol words/brackets, `,com`, `@@`, `..`, trailing dot, typed domains like `gmail.con`/`hotmial.com`/`yahoo.cmo`/`outlook.comm`/`gmail.cm`, `mailto:`/brackets/display-name removal, stray space and zero-widt",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2356,
+    "output": 21,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2377,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 2722,
+    "output": 25736,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 28458,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 28691,
+    "output": 2164,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 30855,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 8469,
+    "output": 45,
+    "cacheRead": 22400,
+    "cacheWrite": 0,
+    "totalTokens": 30914,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 9962,
+    "output": 205,
+    "cacheRead": 22400,
+    "cacheWrite": 0,
+    "totalTokens": 32567,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6061,
+    "output": 382,
+    "cacheRead": 26880,
+    "cacheWrite": 0,
+    "totalTokens": 33323,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "7e798baee990dbdee15741e730483a91072970c643290bf674c56a62c577edb4",
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 2691
+  },
+  {
+   "path": "clean_emails.py",
+   "bytes": 6595
+  },
+  {
+   "path": "input.csv",
+   "bytes": 913
+  },
+  {
+   "path": "output.csv",
+   "bytes": 968
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.942857,
+  "passed": true,
+  "metrics": {
+   "rows": 35,
+   "correct": 33,
+   "record_accuracy": 0.942857,
+   "value_accuracy": 0.942857,
+   "change_recall": 1.0,
+   "change_precision": 0.904762,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 0.75,
+   "guess_rate_on_hold_rows": 0.25,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

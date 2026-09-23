@@ -1,0 +1,108 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r2-addresses-small-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 2,
+ "family": "addresses",
+ "arm": "small-agents",
+ "model": "qwen2.5-coder:7b",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "split_address_lines_into_components",
+   "body_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+   "bytes": 3009,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#split_address_lines_into_components"
+  }
+ ],
+ "material_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+ "prompt_sha256": "caa745cce868b1c34064e5ff43c9644ea4f00fd2988341111a4016290c81de05",
+ "started_at": "2026-09-23T03:36:28+00:00",
+ "ended_at": "2026-09-23T03:36:52+00:00",
+ "elapsed_seconds": 23.6,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 1,
+  "refused": [],
+  "outcomes": {
+   "ok": 1
+  },
+  "usage_known_requests": 1,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 2430,
+  "completion_tokens_known_sum": 1079,
+  "largest_prompt_tokens": 2430,
+  "model_seconds": 21.3,
+  "requests_with_every_material_marker": 1,
+  "requests_with_any_material_marker": 1
+ },
+ "harness_report": {
+  "assistant_messages": 1,
+  "tool_calls": [],
+  "tool_errors": 0,
+  "final_text": "```json\n{\"name\": \"bash\", \"arguments\": {\"command\": \"python3 - <<'EOF'\\nimport csv\\ninput_csv = 'input.csv'\\noutput_csv = 'output.csv'\\nwith open(input_csv, mode='r') as infile:\\n    reader = csv.DictReader(infile)\\n    fieldnames = ['id', 'address']\\n    with open(output_csv, mode='w', newline='') as",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2430,
+    "output": 1079,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 3509,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": false,
+ "output_sha256": null,
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 3009
+  },
+  {
+   "path": "input.csv",
+   "bytes": 1274
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.0,
+  "passed": false,
+  "metrics": {
+   "rows": 32,
+   "correct": 0,
+   "record_accuracy": 0.0,
+   "part_accuracy": 0.0,
+   "part_accuracy_by_part": {
+    "house_number": 0.0,
+    "street": 0.0,
+    "unit": 0.0,
+    "city": 0.0,
+    "region": 0.0,
+    "postal_code": 0.0,
+    "country": 0.0
+   },
+   "rewritten_parts": 0,
+   "rewritten_part_rate": null,
+   "correct_hold_rate": 0.0,
+   "unneeded_review_rate": 0.0,
+   "missing_rows": 32
+  },
+  "format_problems": {
+   "missing_output_file": 1
+  },
+  "output_readable": false
+ }
+}

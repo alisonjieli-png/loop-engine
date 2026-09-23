@@ -1,0 +1,466 @@
+{
+ "record_type": "data_cleanup_step_score/v1",
+ "family": "phones",
+ "output_readable": true,
+ "primary_metric": "record_accuracy",
+ "primary": 0.973684,
+ "passed": true,
+ "thresholds": {
+  "record_accuracy_at_least": 0.9,
+  "wrong_changes_to_correct_values": 0
+ },
+ "metrics": {
+  "rows": 38,
+  "correct": 37,
+  "record_accuracy": 0.973684,
+  "value_accuracy": 0.973684,
+  "change_recall": 1.0,
+  "change_precision": 0.956522,
+  "wrong_changes_to_correct_values": 0,
+  "wrong_change_rate_on_correct_values": 0.0,
+  "correct_hold_rate": 0.857143,
+  "guess_rate_on_hold_rows": 0.142857,
+  "missing_rows": 0
+ },
+ "format_problems": {},
+ "by_case_type": {
+  "trunk_prefix_in_parentheses": {
+   "rows": 2,
+   "correct": 2
+  },
+  "hold_no_area_code": {
+   "rows": 2,
+   "correct": 2
+  },
+  "national_number_formatted": {
+   "rows": 7,
+   "correct": 7
+  },
+  "hold_two_numbers": {
+   "rows": 1,
+   "correct": 1
+  },
+  "null_marker": {
+   "rows": 4,
+   "correct": 4
+  },
+  "hold_invalid_area_code": {
+   "rows": 1,
+   "correct": 0
+  },
+  "international_with_plus": {
+   "rows": 3,
+   "correct": 3
+  },
+  "extension": {
+   "rows": 3,
+   "correct": 3
+  },
+  "already_e164": {
+   "rows": 4,
+   "correct": 4
+  },
+  "country_code_one_present": {
+   "rows": 5,
+   "correct": 5
+  },
+  "north_american_exit_prefix": {
+   "rows": 2,
+   "correct": 2
+  },
+  "hold_wrong_digit_count": {
+   "rows": 2,
+   "correct": 2
+  },
+  "letter_o_for_zero": {
+   "rows": 1,
+   "correct": 1
+  },
+  "hold_plus_with_impossible_length": {
+   "rows": 1,
+   "correct": 1
+  }
+ },
+ "outcomes": [
+  {
+   "id": "1",
+   "case_type": "trunk_prefix_in_parentheses",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+441174960188",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "2",
+   "case_type": "hold_no_area_code",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "555 0149",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "3",
+   "case_type": "national_number_formatted",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+14155550164",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "4",
+   "case_type": "hold_two_numbers",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "303-555-0121 / 303-555-0137",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "5",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "-",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "6",
+   "case_type": "hold_invalid_area_code",
+   "kind": "hold",
+   "outcome": "guessed_instead_of_hold",
+   "output_value": "+10155550112",
+   "output_review": "no",
+   "value_ok": false,
+   "changed": true
+  },
+  {
+   "id": "7",
+   "case_type": "international_with_plus",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+442079460176",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "8",
+   "case_type": "extension",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+13035550199 ext 7",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "9",
+   "case_type": "already_e164",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "+447700900158",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "10",
+   "case_type": "country_code_one_present",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+12125550170",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "11",
+   "case_type": "extension",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+13035550107 ext 305",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "12",
+   "case_type": "country_code_one_present",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+15145550165",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "13",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "14",
+   "case_type": "trunk_prefix_in_parentheses",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+442079460168",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "15",
+   "case_type": "north_american_exit_prefix",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+442079460195",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "16",
+   "case_type": "hold_no_area_code",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "555-0126",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "17",
+   "case_type": "national_number_formatted",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+15145550186",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "18",
+   "case_type": "country_code_one_present",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+16045550166",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "19",
+   "case_type": "country_code_one_present",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+16135550182",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "20",
+   "case_type": "north_american_exit_prefix",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+447700900169",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "21",
+   "case_type": "hold_wrong_digit_count",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "512-555-01399",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "22",
+   "case_type": "already_e164",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "+13125550104",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "23",
+   "case_type": "hold_wrong_digit_count",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "415-555-013",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "24",
+   "case_type": "international_with_plus",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+447700900127",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "25",
+   "case_type": "already_e164",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "+16135550108",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "26",
+   "case_type": "letter_o_for_zero",
+   "kind": "alternatives",
+   "outcome": "correct",
+   "output_value": "613-555-01O7",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "27",
+   "case_type": "international_with_plus",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+441614960119",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "28",
+   "case_type": "national_number_formatted",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+14155550192",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "29",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "unknown",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "30",
+   "case_type": "already_e164",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "+442079460177",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "31",
+   "case_type": "national_number_formatted",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+16045550113",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "32",
+   "case_type": "extension",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+12065550153 ext 12",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "33",
+   "case_type": "national_number_formatted",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+15145550146",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "34",
+   "case_type": "country_code_one_present",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+12125550109",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "35",
+   "case_type": "hold_plus_with_impossible_length",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "+415 555 0150",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "36",
+   "case_type": "national_number_formatted",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+14165550193",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "37",
+   "case_type": "national_number_formatted",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "+13035550100",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "38",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "n/a",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  }
+ ]
+}

@@ -1,0 +1,1627 @@
+{
+ "record_type": "data_cleanup_results/v1",
+ "physical_requests": 225,
+ "refused_requests": [
+  "step_cap_reached",
+  "step_cap_reached",
+  "step_cap_reached"
+ ],
+ "requests_by_phase": {
+  "probe": 1,
+  "pilot": 5,
+  "main": 219
+ },
+ "by_model": {
+  "glm-5.2:cloud": {
+   "requests": 65,
+   "usage_known": 65,
+   "prompt_tokens": 461174,
+   "completion_tokens": 85372,
+   "outcomes": {
+    "ok": 65
+   }
+  },
+  "glm-5.3-flash:cloud": {
+   "requests": 123,
+   "usage_known": 123,
+   "prompt_tokens": 1524315,
+   "completion_tokens": 355342,
+   "outcomes": {
+    "ok": 123
+   }
+  },
+  "qwen2.5-coder:7b": {
+   "requests": 37,
+   "usage_known": 37,
+   "prompt_tokens": 79300,
+   "completion_tokens": 6658,
+   "outcomes": {
+    "ok": 37
+   }
+  }
+ },
+ "trial_statuses": {
+  "pilot:completed": 2,
+  "main:completed": 59,
+  "optional:completed": 12,
+  "main:step_request_cap_reached": 1
+ },
+ "table": [
+  {
+   "family": "phones",
+   "arm": "small-none",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 1606.0,
+   "completion_tokens_mean": 244.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 7.8667,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.0,
+    "guess_rate_on_hold_rows": 0.0,
+    "change_recall": 0.0,
+    "missing_rows": 38.0
+   }
+  },
+  {
+   "family": "phones",
+   "arm": "small-agents",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2322.0,
+   "completion_tokens_mean": 56.6667,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 4.2333,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.0,
+    "guess_rate_on_hold_rows": 0.0,
+    "change_recall": 0.0,
+    "missing_rows": 38.0
+   }
+  },
+  {
+   "family": "phones",
+   "arm": "small-prompt",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2284.0,
+   "completion_tokens_mean": 90.6667,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 7.1,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.0,
+    "guess_rate_on_hold_rows": 0.0,
+    "change_recall": 0.0,
+    "missing_rows": 38.0
+   }
+  },
+  {
+   "family": "phones",
+   "arm": "flash-none",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    1.0,
+    0.973684,
+    1.0
+   ],
+   "primary_mean": 0.9912,
+   "primary_sd": 0.0152,
+   "primary_min": 0.973684,
+   "primary_max": 1.0,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 4.6667,
+   "prompt_tokens_mean": 38709.0,
+   "completion_tokens_mean": 10746.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 10453.3,
+   "elapsed_seconds_mean": 55.4,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.9524,
+    "guess_rate_on_hold_rows": 0.0476,
+    "change_recall": 1.0,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "phones",
+   "arm": "flash-agents",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.842105,
+    0.842105,
+    0.842105
+   ],
+   "primary_mean": 0.8421,
+   "primary_sd": 0.0,
+   "primary_min": 0.842105,
+   "primary_max": 0.842105,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 5.3333,
+   "prompt_tokens_mean": 87037.6667,
+   "completion_tokens_mean": 21197.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 40320.0,
+   "elapsed_seconds_mean": 113.3667,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.7143,
+    "guess_rate_on_hold_rows": 0.2857,
+    "change_recall": 0.8182,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "phones",
+   "arm": "large-none",
+   "model": "glm-5.2:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    1.0,
+    0.973684,
+    0.973684
+   ],
+   "primary_mean": 0.9825,
+   "primary_sd": 0.0152,
+   "primary_min": 0.973684,
+   "primary_max": 1.0,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 6.0,
+   "prompt_tokens_mean": 62611.6667,
+   "completion_tokens_mean": 12117.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 48221.0,
+   "elapsed_seconds_mean": 165.4667,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.9048,
+    "guess_rate_on_hold_rows": 0.0952,
+    "change_recall": 1.0,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "emails",
+   "arm": "small-none",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 1543.0,
+   "completion_tokens_mean": 139.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 5.4667,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.0,
+    "guess_rate_on_hold_rows": 0.0,
+    "change_recall": 0.0,
+    "missing_rows": 35.0
+   }
+  },
+  {
+   "family": "emails",
+   "arm": "small-agents",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2277.0,
+   "completion_tokens_mean": 173.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 7.1667,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.0,
+    "guess_rate_on_hold_rows": 0.0,
+    "change_recall": 0.0,
+    "missing_rows": 35.0
+   }
+  },
+  {
+   "family": "emails",
+   "arm": "small-prompt",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2239.0,
+   "completion_tokens_mean": 179.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 6.6333,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.0,
+    "guess_rate_on_hold_rows": 0.0,
+    "change_recall": 0.0,
+    "missing_rows": 35.0
+   }
+  },
+  {
+   "family": "emails",
+   "arm": "flash-none",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.914286,
+    1.0,
+    0.942857
+   ],
+   "primary_mean": 0.9524,
+   "primary_sd": 0.0436,
+   "primary_min": 0.914286,
+   "primary_max": 1.0,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 5.6667,
+   "prompt_tokens_mean": 71927.0,
+   "completion_tokens_mean": 16473.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 34346.7,
+   "elapsed_seconds_mean": 89.1667,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.9167,
+    "guess_rate_on_hold_rows": 0.0833,
+    "change_recall": 0.9474,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "emails",
+   "arm": "flash-agents",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.971429,
+    0.942857,
+    0.914286
+   ],
+   "primary_mean": 0.9429,
+   "primary_sd": 0.0286,
+   "primary_min": 0.914286,
+   "primary_max": 0.971429,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "step_request_cap_reached"
+   ],
+   "requests_mean": 6.6667,
+   "prompt_tokens_mean": 104447.6667,
+   "completion_tokens_mean": 20385.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 52266.7,
+   "elapsed_seconds_mean": 106.4333,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.75,
+    "guess_rate_on_hold_rows": 0.2083,
+    "change_recall": 1.0,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "emails",
+   "arm": "large-none",
+   "model": "glm-5.2:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.885714,
+    0.914286,
+    0.914286
+   ],
+   "primary_mean": 0.9048,
+   "primary_sd": 0.0165,
+   "primary_min": 0.885714,
+   "primary_max": 0.914286,
+   "passed": 2,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 6.6667,
+   "prompt_tokens_mean": 47974.3333,
+   "completion_tokens_mean": 7915.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 38376.7,
+   "elapsed_seconds_mean": 110.7,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "wrong_changes_to_correct_values": 0.0,
+    "correct_hold_rate": 0.8333,
+    "guess_rate_on_hold_rows": 0.125,
+    "change_recall": 0.8947,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "addresses",
+   "arm": "small-none",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 1670.0,
+   "completion_tokens_mean": 181.6667,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 6.7667,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "part_accuracy": 0.0,
+    "rewritten_parts": 0.0,
+    "correct_hold_rate": 0.0,
+    "unneeded_review_rate": 0.0,
+    "missing_rows": 32.0
+   }
+  },
+  {
+   "family": "addresses",
+   "arm": "small-agents",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2430.0,
+   "completion_tokens_mean": 643.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 15.3667,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "part_accuracy": 0.0,
+    "rewritten_parts": 0.0,
+    "correct_hold_rate": 0.0,
+    "unneeded_review_rate": 0.0,
+    "missing_rows": 32.0
+   }
+  },
+  {
+   "family": "addresses",
+   "arm": "small-prompt",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2392.0,
+   "completion_tokens_mean": 53.6667,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 4.4667,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "part_accuracy": 0.0,
+    "rewritten_parts": 0.0,
+    "correct_hold_rate": 0.0,
+    "unneeded_review_rate": 0.0,
+    "missing_rows": 32.0
+   }
+  },
+  {
+   "family": "addresses",
+   "arm": "flash-none",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.96875,
+    0.9375,
+    0.9375
+   ],
+   "primary_mean": 0.9479,
+   "primary_sd": 0.018,
+   "primary_min": 0.9375,
+   "primary_max": 0.96875,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 3.6667,
+   "prompt_tokens_mean": 17446.0,
+   "completion_tokens_mean": 5234.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 27.2333,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "part_accuracy": 1.0,
+    "rewritten_parts": 0.0,
+    "correct_hold_rate": 0.5833,
+    "unneeded_review_rate": 0.0,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "addresses",
+   "arm": "flash-agents",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.96875,
+    0.96875,
+    0.96875
+   ],
+   "primary_mean": 0.9688,
+   "primary_sd": 0.0,
+   "primary_min": 0.96875,
+   "primary_max": 0.96875,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 4.0,
+   "prompt_tokens_mean": 36041.3333,
+   "completion_tokens_mean": 12345.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 8960.0,
+   "elapsed_seconds_mean": 56.6667,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "part_accuracy": 1.0,
+    "rewritten_parts": 0.0,
+    "correct_hold_rate": 0.75,
+    "unneeded_review_rate": 0.0,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "addresses",
+   "arm": "large-none",
+   "model": "glm-5.2:cloud",
+   "steps": 3,
+   "primary_metric": "record_accuracy",
+   "primary_by_repetition": [
+    0.96875,
+    0.96875,
+    0.9375
+   ],
+   "primary_mean": 0.9583,
+   "primary_sd": 0.018,
+   "primary_min": 0.9375,
+   "primary_max": 0.96875,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 4.0,
+   "prompt_tokens_mean": 15865.6667,
+   "completion_tokens_mean": 3386.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 10520.0,
+   "elapsed_seconds_mean": 35.3333,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "part_accuracy": 1.0,
+    "rewritten_parts": 0.0,
+    "correct_hold_rate": 0.6667,
+    "unneeded_review_rate": 0.0,
+    "missing_rows": 0.0
+   }
+  },
+  {
+   "family": "duplicates",
+   "arm": "small-none",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "pair_f1",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 1542.0,
+   "completion_tokens_mean": 245.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 8.1,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "pair_precision": 0.0,
+    "pair_recall": 0.0,
+    "closure_pair_f1": 0.0,
+    "false_merges": 0.0,
+    "hard_negative_merges": 0.0,
+    "correct_hold_rate": 0.0
+   }
+  },
+  {
+   "family": "duplicates",
+   "arm": "small-agents",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "pair_f1",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2816.0,
+   "completion_tokens_mean": 156.6667,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 6.6333,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "pair_precision": 0.0,
+    "pair_recall": 0.0,
+    "closure_pair_f1": 0.0,
+    "false_merges": 0.0,
+    "hard_negative_merges": 0.0,
+    "correct_hold_rate": 0.0
+   }
+  },
+  {
+   "family": "duplicates",
+   "arm": "small-prompt",
+   "model": "qwen2.5-coder:7b",
+   "steps": 3,
+   "primary_metric": "pair_f1",
+   "primary_by_repetition": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "primary_mean": 0.0,
+   "primary_sd": 0.0,
+   "primary_min": 0.0,
+   "primary_max": 0.0,
+   "passed": 0,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 1.0,
+   "prompt_tokens_mean": 2777.0,
+   "completion_tokens_mean": 34.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 0.0,
+   "elapsed_seconds_mean": 4.1333,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "pair_precision": 0.0,
+    "pair_recall": 0.0,
+    "closure_pair_f1": 0.0,
+    "false_merges": 0.0,
+    "hard_negative_merges": 0.0,
+    "correct_hold_rate": 0.0
+   }
+  },
+  {
+   "family": "duplicates",
+   "arm": "flash-none",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "pair_f1",
+   "primary_by_repetition": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "primary_mean": 1.0,
+   "primary_sd": 0.0,
+   "primary_min": 1.0,
+   "primary_max": 1.0,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 3.6667,
+   "prompt_tokens_mean": 22134.6667,
+   "completion_tokens_mean": 7190.0,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 2986.7,
+   "elapsed_seconds_mean": 37.8667,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "pair_precision": 1.0,
+    "pair_recall": 1.0,
+    "closure_pair_f1": 1.0,
+    "false_merges": 0.0,
+    "hard_negative_merges": 0.0,
+    "correct_hold_rate": 0.5
+   }
+  },
+  {
+   "family": "duplicates",
+   "arm": "flash-agents",
+   "model": "glm-5.3-flash:cloud",
+   "steps": 3,
+   "primary_metric": "pair_f1",
+   "primary_by_repetition": [
+    0.971429,
+    1.0,
+    1.0
+   ],
+   "primary_mean": 0.9905,
+   "primary_sd": 0.0165,
+   "primary_min": 0.971429,
+   "primary_max": 1.0,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 6.0,
+   "prompt_tokens_mean": 120867.6667,
+   "completion_tokens_mean": 21641.3333,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 83626.7,
+   "elapsed_seconds_mean": 107.4,
+   "material_in_every_request": true,
+   "material_in_no_request": null,
+   "secondary_means": {
+    "pair_precision": 1.0,
+    "pair_recall": 0.9815,
+    "closure_pair_f1": 0.9905,
+    "false_merges": 0.0,
+    "hard_negative_merges": 0.0,
+    "correct_hold_rate": 0.0
+   }
+  },
+  {
+   "family": "duplicates",
+   "arm": "large-none",
+   "model": "glm-5.2:cloud",
+   "steps": 3,
+   "primary_metric": "pair_f1",
+   "primary_by_repetition": [
+    0.971429,
+    1.0,
+    1.0
+   ],
+   "primary_mean": 0.9905,
+   "primary_sd": 0.0165,
+   "primary_min": 0.971429,
+   "primary_max": 1.0,
+   "passed": 3,
+   "statuses": [
+    "completed",
+    "completed",
+    "completed"
+   ],
+   "requests_mean": 4.6667,
+   "prompt_tokens_mean": 27266.6667,
+   "completion_tokens_mean": 5013.6667,
+   "usage_unknown_requests": 0,
+   "cached_prompt_tokens_mean": 18375.0,
+   "elapsed_seconds_mean": 82.2667,
+   "material_in_every_request": null,
+   "material_in_no_request": true,
+   "secondary_means": {
+    "pair_precision": 1.0,
+    "pair_recall": 0.9815,
+    "closure_pair_f1": 0.9905,
+    "false_merges": 0.0,
+    "hard_negative_merges": 0.0,
+    "correct_hold_rate": 0.5
+   }
+  }
+ ],
+ "comparisons": [
+  {
+   "family": "phones",
+   "first": "small-agents",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "phones",
+   "first": "flash-agents",
+   "second": "flash-none",
+   "first_mean": 0.8421,
+   "second_mean": 0.9912,
+   "difference_of_means": -0.1491,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "phones",
+   "first": "small-agents",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9825,
+   "difference_of_means": -0.9825,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "phones",
+   "first": "flash-agents",
+   "second": "large-none",
+   "first_mean": 0.8421,
+   "second_mean": 0.9825,
+   "difference_of_means": -0.1404,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "phones",
+   "first": "small-none",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9825,
+   "difference_of_means": -0.9825,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "phones",
+   "first": "flash-none",
+   "second": "large-none",
+   "first_mean": 0.9912,
+   "second_mean": 0.9825,
+   "difference_of_means": 0.0087,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "phones",
+   "first": "small-prompt",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "phones",
+   "first": "small-prompt",
+   "second": "small-agents",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "emails",
+   "first": "small-agents",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "emails",
+   "first": "flash-agents",
+   "second": "flash-none",
+   "first_mean": 0.9429,
+   "second_mean": 0.9524,
+   "difference_of_means": -0.0095,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "emails",
+   "first": "small-agents",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9048,
+   "difference_of_means": -0.9048,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "emails",
+   "first": "flash-agents",
+   "second": "large-none",
+   "first_mean": 0.9429,
+   "second_mean": 0.9048,
+   "difference_of_means": 0.0381,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "emails",
+   "first": "small-none",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9048,
+   "difference_of_means": -0.9048,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "emails",
+   "first": "flash-none",
+   "second": "large-none",
+   "first_mean": 0.9524,
+   "second_mean": 0.9048,
+   "difference_of_means": 0.0476,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "emails",
+   "first": "small-prompt",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "emails",
+   "first": "small-prompt",
+   "second": "small-agents",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "addresses",
+   "first": "small-agents",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "addresses",
+   "first": "flash-agents",
+   "second": "flash-none",
+   "first_mean": 0.9688,
+   "second_mean": 0.9479,
+   "difference_of_means": 0.0209,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "addresses",
+   "first": "small-agents",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9583,
+   "difference_of_means": -0.9583,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "addresses",
+   "first": "flash-agents",
+   "second": "large-none",
+   "first_mean": 0.9688,
+   "second_mean": 0.9583,
+   "difference_of_means": 0.0105,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "addresses",
+   "first": "small-none",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9583,
+   "difference_of_means": -0.9583,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "addresses",
+   "first": "flash-none",
+   "second": "large-none",
+   "first_mean": 0.9479,
+   "second_mean": 0.9583,
+   "difference_of_means": -0.0104,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "addresses",
+   "first": "small-prompt",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "addresses",
+   "first": "small-prompt",
+   "second": "small-agents",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "duplicates",
+   "first": "small-agents",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "duplicates",
+   "first": "flash-agents",
+   "second": "flash-none",
+   "first_mean": 0.9905,
+   "second_mean": 1.0,
+   "difference_of_means": -0.0095,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "duplicates",
+   "first": "small-agents",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9905,
+   "difference_of_means": -0.9905,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "duplicates",
+   "first": "flash-agents",
+   "second": "large-none",
+   "first_mean": 0.9905,
+   "second_mean": 0.9905,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "duplicates",
+   "first": "small-none",
+   "second": "large-none",
+   "first_mean": 0.0,
+   "second_mean": 0.9905,
+   "difference_of_means": -0.9905,
+   "verdict": "second_clearly_higher"
+  },
+  {
+   "family": "duplicates",
+   "first": "flash-none",
+   "second": "large-none",
+   "first_mean": 1.0,
+   "second_mean": 0.9905,
+   "difference_of_means": 0.0095,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "duplicates",
+   "first": "small-prompt",
+   "second": "small-none",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  },
+  {
+   "family": "duplicates",
+   "first": "small-prompt",
+   "second": "small-agents",
+   "first_mean": 0.0,
+   "second_mean": 0.0,
+   "difference_of_means": 0.0,
+   "verdict": "not_separated"
+  }
+ ],
+ "case_type_correct_over_rows": {
+  "addresses|flash-agents": {
+   "canada_french_street": "6 of 6",
+   "canada_no_comma_before_province": "3 of 3",
+   "canada_postal_code_without_space": "3 of 3",
+   "hold_intersection": "3 of 3",
+   "hold_not_an_address": "3 of 3",
+   "hold_street_or_city_boundary": "3 of 3",
+   "hold_street_without_type_no_commas": "0 of 3",
+   "house_number_with_letter": "3 of 3",
+   "no_commas": "6 of 6",
+   "no_house_number": "3 of 3",
+   "null_marker": "6 of 6",
+   "post_office_box": "3 of 3",
+   "post_office_box_with_periods": "3 of 3",
+   "region_written_in_full": "3 of 3",
+   "street_and_city_only": "6 of 6",
+   "street_with_direction_suffix": "3 of 3",
+   "unit_before_number": "3 of 3",
+   "united_kingdom": "3 of 3",
+   "united_kingdom_flat_before_number": "3 of 3",
+   "united_kingdom_short_country": "3 of 3",
+   "united_kingdom_with_county": "3 of 3",
+   "united_states": "6 of 6",
+   "united_states_country_words": "3 of 3",
+   "united_states_full": "3 of 3",
+   "united_states_hash_unit": "3 of 3",
+   "united_states_suite_abbreviation": "3 of 3",
+   "united_states_zip_plus_four": "3 of 3"
+  },
+  "addresses|flash-none": {
+   "canada_french_street": "6 of 6",
+   "canada_no_comma_before_province": "3 of 3",
+   "canada_postal_code_without_space": "3 of 3",
+   "hold_intersection": "3 of 3",
+   "hold_not_an_address": "3 of 3",
+   "hold_street_or_city_boundary": "1 of 3",
+   "hold_street_without_type_no_commas": "0 of 3",
+   "house_number_with_letter": "3 of 3",
+   "no_commas": "6 of 6",
+   "no_house_number": "3 of 3",
+   "null_marker": "6 of 6",
+   "post_office_box": "3 of 3",
+   "post_office_box_with_periods": "3 of 3",
+   "region_written_in_full": "3 of 3",
+   "street_and_city_only": "6 of 6",
+   "street_with_direction_suffix": "3 of 3",
+   "unit_before_number": "3 of 3",
+   "united_kingdom": "3 of 3",
+   "united_kingdom_flat_before_number": "3 of 3",
+   "united_kingdom_short_country": "3 of 3",
+   "united_kingdom_with_county": "3 of 3",
+   "united_states": "6 of 6",
+   "united_states_country_words": "3 of 3",
+   "united_states_full": "3 of 3",
+   "united_states_hash_unit": "3 of 3",
+   "united_states_suite_abbreviation": "3 of 3",
+   "united_states_zip_plus_four": "3 of 3"
+  },
+  "addresses|large-none": {
+   "canada_french_street": "6 of 6",
+   "canada_no_comma_before_province": "3 of 3",
+   "canada_postal_code_without_space": "3 of 3",
+   "hold_intersection": "3 of 3",
+   "hold_not_an_address": "3 of 3",
+   "hold_street_or_city_boundary": "2 of 3",
+   "hold_street_without_type_no_commas": "0 of 3",
+   "house_number_with_letter": "3 of 3",
+   "no_commas": "6 of 6",
+   "no_house_number": "3 of 3",
+   "null_marker": "6 of 6",
+   "post_office_box": "3 of 3",
+   "post_office_box_with_periods": "3 of 3",
+   "region_written_in_full": "3 of 3",
+   "street_and_city_only": "6 of 6",
+   "street_with_direction_suffix": "3 of 3",
+   "unit_before_number": "3 of 3",
+   "united_kingdom": "3 of 3",
+   "united_kingdom_flat_before_number": "3 of 3",
+   "united_kingdom_short_country": "3 of 3",
+   "united_kingdom_with_county": "3 of 3",
+   "united_states": "6 of 6",
+   "united_states_country_words": "3 of 3",
+   "united_states_full": "3 of 3",
+   "united_states_hash_unit": "3 of 3",
+   "united_states_suite_abbreviation": "3 of 3",
+   "united_states_zip_plus_four": "3 of 3"
+  },
+  "addresses|small-agents": {
+   "canada_french_street": "0 of 6",
+   "canada_no_comma_before_province": "0 of 3",
+   "canada_postal_code_without_space": "0 of 3",
+   "hold_intersection": "0 of 3",
+   "hold_not_an_address": "0 of 3",
+   "hold_street_or_city_boundary": "0 of 3",
+   "hold_street_without_type_no_commas": "0 of 3",
+   "house_number_with_letter": "0 of 3",
+   "no_commas": "0 of 6",
+   "no_house_number": "0 of 3",
+   "null_marker": "0 of 6",
+   "post_office_box": "0 of 3",
+   "post_office_box_with_periods": "0 of 3",
+   "region_written_in_full": "0 of 3",
+   "street_and_city_only": "0 of 6",
+   "street_with_direction_suffix": "0 of 3",
+   "unit_before_number": "0 of 3",
+   "united_kingdom": "0 of 3",
+   "united_kingdom_flat_before_number": "0 of 3",
+   "united_kingdom_short_country": "0 of 3",
+   "united_kingdom_with_county": "0 of 3",
+   "united_states": "0 of 6",
+   "united_states_country_words": "0 of 3",
+   "united_states_full": "0 of 3",
+   "united_states_hash_unit": "0 of 3",
+   "united_states_suite_abbreviation": "0 of 3",
+   "united_states_zip_plus_four": "0 of 3"
+  },
+  "addresses|small-none": {
+   "canada_french_street": "0 of 6",
+   "canada_no_comma_before_province": "0 of 3",
+   "canada_postal_code_without_space": "0 of 3",
+   "hold_intersection": "0 of 3",
+   "hold_not_an_address": "0 of 3",
+   "hold_street_or_city_boundary": "0 of 3",
+   "hold_street_without_type_no_commas": "0 of 3",
+   "house_number_with_letter": "0 of 3",
+   "no_commas": "0 of 6",
+   "no_house_number": "0 of 3",
+   "null_marker": "0 of 6",
+   "post_office_box": "0 of 3",
+   "post_office_box_with_periods": "0 of 3",
+   "region_written_in_full": "0 of 3",
+   "street_and_city_only": "0 of 6",
+   "street_with_direction_suffix": "0 of 3",
+   "unit_before_number": "0 of 3",
+   "united_kingdom": "0 of 3",
+   "united_kingdom_flat_before_number": "0 of 3",
+   "united_kingdom_short_country": "0 of 3",
+   "united_kingdom_with_county": "0 of 3",
+   "united_states": "0 of 6",
+   "united_states_country_words": "0 of 3",
+   "united_states_full": "0 of 3",
+   "united_states_hash_unit": "0 of 3",
+   "united_states_suite_abbreviation": "0 of 3",
+   "united_states_zip_plus_four": "0 of 3"
+  },
+  "addresses|small-prompt": {
+   "canada_french_street": "0 of 6",
+   "canada_no_comma_before_province": "0 of 3",
+   "canada_postal_code_without_space": "0 of 3",
+   "hold_intersection": "0 of 3",
+   "hold_not_an_address": "0 of 3",
+   "hold_street_or_city_boundary": "0 of 3",
+   "hold_street_without_type_no_commas": "0 of 3",
+   "house_number_with_letter": "0 of 3",
+   "no_commas": "0 of 6",
+   "no_house_number": "0 of 3",
+   "null_marker": "0 of 6",
+   "post_office_box": "0 of 3",
+   "post_office_box_with_periods": "0 of 3",
+   "region_written_in_full": "0 of 3",
+   "street_and_city_only": "0 of 6",
+   "street_with_direction_suffix": "0 of 3",
+   "unit_before_number": "0 of 3",
+   "united_kingdom": "0 of 3",
+   "united_kingdom_flat_before_number": "0 of 3",
+   "united_kingdom_short_country": "0 of 3",
+   "united_kingdom_with_county": "0 of 3",
+   "united_states": "0 of 6",
+   "united_states_country_words": "0 of 3",
+   "united_states_full": "0 of 3",
+   "united_states_hash_unit": "0 of 3",
+   "united_states_suite_abbreviation": "0 of 3",
+   "united_states_zip_plus_four": "0 of 3"
+  },
+  "duplicates|flash-agents": {
+   "ambiguous_pair_marked_review": "0 of 12",
+   "duplicate_pair_found_as_same": "53 of 54",
+   "hard_negative_not_merged:one_letter_name_difference_nearby_address": "6 of 6",
+   "hard_negative_not_merged:same_name_other_location": "6 of 6",
+   "hard_negative_not_merged:shared_floor_mailbox_and_switchboard": "3 of 3"
+  },
+  "duplicates|flash-none": {
+   "ambiguous_pair_marked_review": "6 of 12",
+   "duplicate_pair_found_as_same": "54 of 54",
+   "hard_negative_not_merged:one_letter_name_difference_nearby_address": "6 of 6",
+   "hard_negative_not_merged:same_name_other_location": "6 of 6",
+   "hard_negative_not_merged:shared_floor_mailbox_and_switchboard": "3 of 3"
+  },
+  "duplicates|large-none": {
+   "ambiguous_pair_marked_review": "6 of 12",
+   "duplicate_pair_found_as_same": "53 of 54",
+   "hard_negative_not_merged:one_letter_name_difference_nearby_address": "6 of 6",
+   "hard_negative_not_merged:same_name_other_location": "6 of 6",
+   "hard_negative_not_merged:shared_floor_mailbox_and_switchboard": "3 of 3"
+  },
+  "duplicates|small-agents": {
+   "ambiguous_pair_marked_review": "0 of 12",
+   "duplicate_pair_found_as_same": "0 of 54",
+   "hard_negative_not_merged:one_letter_name_difference_nearby_address": "6 of 6",
+   "hard_negative_not_merged:same_name_other_location": "6 of 6",
+   "hard_negative_not_merged:shared_floor_mailbox_and_switchboard": "3 of 3"
+  },
+  "duplicates|small-none": {
+   "ambiguous_pair_marked_review": "0 of 12",
+   "duplicate_pair_found_as_same": "0 of 54",
+   "hard_negative_not_merged:one_letter_name_difference_nearby_address": "6 of 6",
+   "hard_negative_not_merged:same_name_other_location": "6 of 6",
+   "hard_negative_not_merged:shared_floor_mailbox_and_switchboard": "3 of 3"
+  },
+  "duplicates|small-prompt": {
+   "ambiguous_pair_marked_review": "0 of 12",
+   "duplicate_pair_found_as_same": "0 of 54",
+   "hard_negative_not_merged:one_letter_name_difference_nearby_address": "6 of 6",
+   "hard_negative_not_merged:same_name_other_location": "6 of 6",
+   "hard_negative_not_merged:shared_floor_mailbox_and_switchboard": "3 of 3"
+  },
+  "emails|flash-agents": {
+   "case_or_spaces": "12 of 12",
+   "hold_plausible_real_domain": "3 of 9",
+   "hold_two_addresses": "6 of 6",
+   "hold_unrecoverable": "9 of 9",
+   "impossible_domain_ending": "9 of 9",
+   "invisible_character": "3 of 3",
+   "null_marker": "9 of 9",
+   "punctuation_slip": "12 of 12",
+   "spelled_out_symbols": "12 of 12",
+   "valid_already_clean": "15 of 15",
+   "wrapper": "9 of 9"
+  },
+  "emails|flash-none": {
+   "case_or_spaces": "12 of 12",
+   "hold_plausible_real_domain": "7 of 9",
+   "hold_two_addresses": "6 of 6",
+   "hold_unrecoverable": "9 of 9",
+   "impossible_domain_ending": "6 of 9",
+   "invisible_character": "3 of 3",
+   "null_marker": "9 of 9",
+   "punctuation_slip": "12 of 12",
+   "spelled_out_symbols": "12 of 12",
+   "valid_already_clean": "15 of 15",
+   "wrapper": "9 of 9"
+  },
+  "emails|large-none": {
+   "case_or_spaces": "12 of 12",
+   "hold_plausible_real_domain": "5 of 9",
+   "hold_two_addresses": "6 of 6",
+   "hold_unrecoverable": "9 of 9",
+   "impossible_domain_ending": "3 of 9",
+   "invisible_character": "3 of 3",
+   "null_marker": "9 of 9",
+   "punctuation_slip": "12 of 12",
+   "spelled_out_symbols": "12 of 12",
+   "valid_already_clean": "15 of 15",
+   "wrapper": "9 of 9"
+  },
+  "emails|small-agents": {
+   "case_or_spaces": "0 of 12",
+   "hold_plausible_real_domain": "0 of 9",
+   "hold_two_addresses": "0 of 6",
+   "hold_unrecoverable": "0 of 9",
+   "impossible_domain_ending": "0 of 9",
+   "invisible_character": "0 of 3",
+   "null_marker": "0 of 9",
+   "punctuation_slip": "0 of 12",
+   "spelled_out_symbols": "0 of 12",
+   "valid_already_clean": "0 of 15",
+   "wrapper": "0 of 9"
+  },
+  "emails|small-none": {
+   "case_or_spaces": "0 of 12",
+   "hold_plausible_real_domain": "0 of 9",
+   "hold_two_addresses": "0 of 6",
+   "hold_unrecoverable": "0 of 9",
+   "impossible_domain_ending": "0 of 9",
+   "invisible_character": "0 of 3",
+   "null_marker": "0 of 9",
+   "punctuation_slip": "0 of 12",
+   "spelled_out_symbols": "0 of 12",
+   "valid_already_clean": "0 of 15",
+   "wrapper": "0 of 9"
+  },
+  "emails|small-prompt": {
+   "case_or_spaces": "0 of 12",
+   "hold_plausible_real_domain": "0 of 9",
+   "hold_two_addresses": "0 of 6",
+   "hold_unrecoverable": "0 of 9",
+   "impossible_domain_ending": "0 of 9",
+   "invisible_character": "0 of 3",
+   "null_marker": "0 of 9",
+   "punctuation_slip": "0 of 12",
+   "spelled_out_symbols": "0 of 12",
+   "valid_already_clean": "0 of 15",
+   "wrapper": "0 of 9"
+  },
+  "phones|flash-agents": {
+   "already_e164": "12 of 12",
+   "country_code_one_present": "15 of 15",
+   "extension": "9 of 9",
+   "hold_invalid_area_code": "0 of 3",
+   "hold_no_area_code": "6 of 6",
+   "hold_plus_with_impossible_length": "0 of 3",
+   "hold_two_numbers": "3 of 3",
+   "hold_wrong_digit_count": "6 of 6",
+   "international_with_plus": "9 of 9",
+   "letter_o_for_zero": "3 of 3",
+   "national_number_formatted": "21 of 21",
+   "north_american_exit_prefix": "0 of 6",
+   "null_marker": "12 of 12",
+   "trunk_prefix_in_parentheses": "0 of 6"
+  },
+  "phones|flash-none": {
+   "already_e164": "12 of 12",
+   "country_code_one_present": "15 of 15",
+   "extension": "9 of 9",
+   "hold_invalid_area_code": "3 of 3",
+   "hold_no_area_code": "6 of 6",
+   "hold_plus_with_impossible_length": "2 of 3",
+   "hold_two_numbers": "3 of 3",
+   "hold_wrong_digit_count": "6 of 6",
+   "international_with_plus": "9 of 9",
+   "letter_o_for_zero": "3 of 3",
+   "national_number_formatted": "21 of 21",
+   "north_american_exit_prefix": "6 of 6",
+   "null_marker": "12 of 12",
+   "trunk_prefix_in_parentheses": "6 of 6"
+  },
+  "phones|large-none": {
+   "already_e164": "12 of 12",
+   "country_code_one_present": "15 of 15",
+   "extension": "9 of 9",
+   "hold_invalid_area_code": "1 of 3",
+   "hold_no_area_code": "6 of 6",
+   "hold_plus_with_impossible_length": "3 of 3",
+   "hold_two_numbers": "3 of 3",
+   "hold_wrong_digit_count": "6 of 6",
+   "international_with_plus": "9 of 9",
+   "letter_o_for_zero": "3 of 3",
+   "national_number_formatted": "21 of 21",
+   "north_american_exit_prefix": "6 of 6",
+   "null_marker": "12 of 12",
+   "trunk_prefix_in_parentheses": "6 of 6"
+  },
+  "phones|small-agents": {
+   "already_e164": "0 of 12",
+   "country_code_one_present": "0 of 15",
+   "extension": "0 of 9",
+   "hold_invalid_area_code": "0 of 3",
+   "hold_no_area_code": "0 of 6",
+   "hold_plus_with_impossible_length": "0 of 3",
+   "hold_two_numbers": "0 of 3",
+   "hold_wrong_digit_count": "0 of 6",
+   "international_with_plus": "0 of 9",
+   "letter_o_for_zero": "0 of 3",
+   "national_number_formatted": "0 of 21",
+   "north_american_exit_prefix": "0 of 6",
+   "null_marker": "0 of 12",
+   "trunk_prefix_in_parentheses": "0 of 6"
+  },
+  "phones|small-none": {
+   "already_e164": "0 of 12",
+   "country_code_one_present": "0 of 15",
+   "extension": "0 of 9",
+   "hold_invalid_area_code": "0 of 3",
+   "hold_no_area_code": "0 of 6",
+   "hold_plus_with_impossible_length": "0 of 3",
+   "hold_two_numbers": "0 of 3",
+   "hold_wrong_digit_count": "0 of 6",
+   "international_with_plus": "0 of 9",
+   "letter_o_for_zero": "0 of 3",
+   "national_number_formatted": "0 of 21",
+   "north_american_exit_prefix": "0 of 6",
+   "null_marker": "0 of 12",
+   "trunk_prefix_in_parentheses": "0 of 6"
+  },
+  "phones|small-prompt": {
+   "already_e164": "0 of 12",
+   "country_code_one_present": "0 of 15",
+   "extension": "0 of 9",
+   "hold_invalid_area_code": "0 of 3",
+   "hold_no_area_code": "0 of 6",
+   "hold_plus_with_impossible_length": "0 of 3",
+   "hold_two_numbers": "0 of 3",
+   "hold_wrong_digit_count": "0 of 6",
+   "international_with_plus": "0 of 9",
+   "letter_o_for_zero": "0 of 3",
+   "national_number_formatted": "0 of 21",
+   "north_american_exit_prefix": "0 of 6",
+   "null_marker": "0 of 12",
+   "trunk_prefix_in_parentheses": "0 of 6"
+  }
+ }
+}

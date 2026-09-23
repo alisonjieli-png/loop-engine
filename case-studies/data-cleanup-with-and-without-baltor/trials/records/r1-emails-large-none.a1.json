@@ -1,0 +1,187 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-emails-large-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "emails",
+ "arm": "large-none",
+ "model": "glm-5.2:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "5ce3a0a76345656a1546caab7c9b65dfeeb8464d9e0e9b533dfa29b7c6702968",
+ "started_at": "2026-09-23T03:47:54+00:00",
+ "ended_at": "2026-09-23T03:49:03+00:00",
+ "elapsed_seconds": 69.3,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 6,
+  "refused": [],
+  "outcomes": {
+   "ok": 6
+  },
+  "usage_known_requests": 6,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 29114,
+  "completion_tokens_known_sum": 4377,
+  "largest_prompt_tokens": 6919,
+  "model_seconds": 67.0,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 6,
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-large-none-a1/work && wc -l input.csv && head -50 input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-large-none-a1/work && python3 -c \\\"\\nimport csv\\nwith open('input.csv', newline='', encoding='utf-8') as f:\\n    r=csv.reader(f)\\n    for row in r:\\n        if row and"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"/home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-large-none-a1/work/clean.py\", \"content\": \"import csv\\n\\nNULL_MARKERS = {\\\"\\\", \\\"n/a\\\", \\\"na\\\", \\\"none\\\", \\\"null\\\", \\\"nil\\\", \\\"-\\\", \\\"--\\\"}\\n\\n# Explicit per-id handling deci"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-large-none-a1/work && python3 clean.py && echo \\\"---\\\" && cat output.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-large-none-a1/work && wc -l output.csv && md5sum input.csv\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 301,
+    "output": 64,
+    "cacheRead": 1324,
+    "cacheWrite": 0,
+    "totalTokens": 1689,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 414,
+    "output": 3142,
+    "cacheRead": 1624,
+    "cacheWrite": 0,
+    "totalTokens": 5180,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 3279,
+    "output": 1044,
+    "cacheRead": 2037,
+    "cacheWrite": 0,
+    "totalTokens": 6360,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 1086,
+    "output": 51,
+    "cacheRead": 5315,
+    "cacheWrite": 0,
+    "totalTokens": 6452,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 415,
+    "output": 73,
+    "cacheRead": 6400,
+    "cacheWrite": 0,
+    "totalTokens": 6888,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 105,
+    "output": 3,
+    "cacheRead": 6814,
+    "cacheWrite": 0,
+    "totalTokens": 6922,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "cb337d7ba0c23a80f61e3eef68acb5179d0fa31968d7ad58db1d66130ed6de2c",
+ "files_in_step_folder": [
+  {
+   "path": "clean.py",
+   "bytes": 3206
+  },
+  {
+   "path": "input.csv",
+   "bytes": 913
+  },
+  {
+   "path": "output.csv",
+   "bytes": 1008
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.885714,
+  "passed": false,
+  "metrics": {
+   "rows": 35,
+   "correct": 31,
+   "record_accuracy": 0.885714,
+   "value_accuracy": 0.914286,
+   "change_recall": 0.842105,
+   "change_precision": 1.0,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 0.875,
+   "guess_rate_on_hold_rows": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

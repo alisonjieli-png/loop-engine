@@ -1,0 +1,165 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r2-emails-flash-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 2,
+ "family": "emails",
+ "arm": "flash-none",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "5ce3a0a76345656a1546caab7c9b65dfeeb8464d9e0e9b533dfa29b7c6702968",
+ "started_at": "2026-09-23T04:00:36+00:00",
+ "ended_at": "2026-09-23T04:02:27+00:00",
+ "elapsed_seconds": 110.3,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 5,
+  "refused": [],
+  "outcomes": {
+   "ok": 5
+  },
+  "usage_known_requests": 5,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 82496,
+  "completion_tokens_known_sum": 24103,
+  "largest_prompt_tokens": 26624,
+  "model_seconds": 107.5,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 5,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 - <<'EOF'\\nimport csv\\nwith open('input.csv', newline='', encoding='utf-8') as f:\\n    rows = list(csv.reader(f))\\nprint(\\\"total rows (incl header):\\\", len(rows))\\nfor r in rows:\\n    nonascii = [(i, hex(ord(c))) for i,"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"output.csv\", \"content\": \"id,email,review\\n1,maria.okafor@gmail.com,no\\n2,ines.costa@example.com,no\\n3,lee.park@example.net,no\\n4,sam.okoro@example.com,no\\n5,\\\"sales@globex.ca, support@globex.ca\\\",yes\\n6,li.wei@example.com,no\\n7,ma"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 - <<'EOF'\\nimport csv\\nwith open('output.csv', newline='', encoding='utf-8') as f:\\n    rows = list(csv.reader(f))\\nassert rows[0] == ['id', 'email', 'review'], rows[0]\\nassert len(rows) == 36, len(rows)\\nfor r in rows["
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1625,
+    "output": 29,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1654,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 1999,
+    "output": 23190,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 25189,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 25849,
+    "output": 538,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 26387,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 8479,
+    "output": 162,
+    "cacheRead": 17920,
+    "cacheWrite": 0,
+    "totalTokens": 26561,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 8704,
+    "output": 184,
+    "cacheRead": 17920,
+    "cacheWrite": 0,
+    "totalTokens": 26808,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "4261028c3718d2b2dbf00bbdf2d0779c1a37cb88e76ab23d9ff2db627782f581",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 913
+  },
+  {
+   "path": "output.csv",
+   "bytes": 968
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 1.0,
+  "passed": true,
+  "metrics": {
+   "rows": 35,
+   "correct": 35,
+   "record_accuracy": 1.0,
+   "value_accuracy": 1.0,
+   "change_recall": 1.0,
+   "change_precision": 1.0,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 1.0,
+   "guess_rate_on_hold_rows": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

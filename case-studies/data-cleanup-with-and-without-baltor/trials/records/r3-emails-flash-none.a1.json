@@ -1,0 +1,147 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r3-emails-flash-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 3,
+ "family": "emails",
+ "arm": "flash-none",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "5ce3a0a76345656a1546caab7c9b65dfeeb8464d9e0e9b533dfa29b7c6702968",
+ "started_at": "2026-09-23T04:15:17+00:00",
+ "ended_at": "2026-09-23T04:16:08+00:00",
+ "elapsed_seconds": 51.0,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 4,
+  "refused": [],
+  "outcomes": {
+   "ok": 4
+  },
+  "usage_known_requests": 4,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 24031,
+  "completion_tokens_known_sum": 8470,
+  "largest_prompt_tokens": 10900,
+  "model_seconds": 49.3,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 4,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"sed -n '27p' input.csv | hexdump -C | head -5; echo ---; awk 'NR==27' input.csv | xxd | head -5\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cat > /tmp/clean.py << 'EOF'\\nimport csv\\n\\n# id -> (email, review)\\nrows = {\\n    1:  (\\\"maria.okafor@gmail.com\\\", \\\"no\\\"),      # .con -> .com (certain typo)\\n    2:  (\\\"ines.costa@example.com\\\", \\\"no\\\"),      # comma -> dot "
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1625,
+    "output": 21,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1646,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 1991,
+    "output": 7338,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 9329,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 9515,
+    "output": 1033,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 10548,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6420,
+    "output": 78,
+    "cacheRead": 4480,
+    "cacheWrite": 0,
+    "totalTokens": 10978,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "7e798baee990dbdee15741e730483a91072970c643290bf674c56a62c577edb4",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 913
+  },
+  {
+   "path": "output.csv",
+   "bytes": 968
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.942857,
+  "passed": true,
+  "metrics": {
+   "rows": 35,
+   "correct": 33,
+   "record_accuracy": 0.942857,
+   "value_accuracy": 0.942857,
+   "change_recall": 1.0,
+   "change_precision": 0.904762,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 0.75,
+   "guess_rate_on_hold_rows": 0.25,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

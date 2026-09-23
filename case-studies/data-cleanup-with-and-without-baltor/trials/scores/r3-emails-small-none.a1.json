@@ -1,0 +1,426 @@
+{
+ "record_type": "data_cleanup_step_score/v1",
+ "family": "emails",
+ "output_readable": false,
+ "primary_metric": "record_accuracy",
+ "primary": 0.0,
+ "passed": false,
+ "thresholds": {
+  "record_accuracy_at_least": 0.9,
+  "wrong_changes_to_correct_values": 0
+ },
+ "metrics": {
+  "rows": 35,
+  "correct": 0,
+  "record_accuracy": 0.0,
+  "value_accuracy": 0.0,
+  "change_recall": 0.0,
+  "change_precision": null,
+  "wrong_changes_to_correct_values": 0,
+  "wrong_change_rate_on_correct_values": 0.0,
+  "correct_hold_rate": 0.0,
+  "guess_rate_on_hold_rows": 0.0,
+  "missing_rows": 35
+ },
+ "format_problems": {
+  "missing_output_file": 1
+ },
+ "by_case_type": {
+  "impossible_domain_ending": {
+   "rows": 3,
+   "correct": 0
+  },
+  "punctuation_slip": {
+   "rows": 4,
+   "correct": 0
+  },
+  "spelled_out_symbols": {
+   "rows": 4,
+   "correct": 0
+  },
+  "hold_two_addresses": {
+   "rows": 2,
+   "correct": 0
+  },
+  "wrapper": {
+   "rows": 3,
+   "correct": 0
+  },
+  "null_marker": {
+   "rows": 3,
+   "correct": 0
+  },
+  "valid_already_clean": {
+   "rows": 5,
+   "correct": 0
+  },
+  "hold_plausible_real_domain": {
+   "rows": 3,
+   "correct": 0
+  },
+  "hold_unrecoverable": {
+   "rows": 3,
+   "correct": 0
+  },
+  "case_or_spaces": {
+   "rows": 4,
+   "correct": 0
+  },
+  "invisible_character": {
+   "rows": 1,
+   "correct": 0
+  }
+ },
+ "outcomes": [
+  {
+   "id": "1",
+   "case_type": "impossible_domain_ending",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "2",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "3",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "4",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "5",
+   "case_type": "hold_two_addresses",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "6",
+   "case_type": "wrapper",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "7",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "8",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "9",
+   "case_type": "hold_two_addresses",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "10",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "11",
+   "case_type": "hold_plausible_real_domain",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "12",
+   "case_type": "wrapper",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "13",
+   "case_type": "impossible_domain_ending",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "14",
+   "case_type": "hold_unrecoverable",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "15",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "16",
+   "case_type": "hold_plausible_real_domain",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "17",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "18",
+   "case_type": "hold_plausible_real_domain",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "19",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "20",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "21",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "22",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "23",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "24",
+   "case_type": "hold_unrecoverable",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "25",
+   "case_type": "wrapper",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "26",
+   "case_type": "invisible_character",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "27",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "28",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "29",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "30",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "31",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "32",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "33",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "34",
+   "case_type": "hold_unrecoverable",
+   "kind": "hold",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "35",
+   "case_type": "impossible_domain_ending",
+   "kind": "change",
+   "outcome": "missing",
+   "output_value": null,
+   "output_review": null,
+   "value_ok": false,
+   "changed": false
+  }
+ ]
+}

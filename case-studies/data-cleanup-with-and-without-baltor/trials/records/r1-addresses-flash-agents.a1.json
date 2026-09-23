@@ -1,0 +1,165 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-addresses-flash-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "addresses",
+ "arm": "flash-agents",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "split_address_lines_into_components",
+   "body_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+   "bytes": 3009,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#split_address_lines_into_components"
+  }
+ ],
+ "material_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+ "prompt_sha256": "caa745cce868b1c34064e5ff43c9644ea4f00fd2988341111a4016290c81de05",
+ "started_at": "2026-09-23T03:36:30+00:00",
+ "ended_at": "2026-09-23T03:37:23+00:00",
+ "elapsed_seconds": 52.6,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 4,
+  "refused": [],
+  "outcomes": {
+   "ok": 4
+  },
+  "usage_known_requests": 4,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 34035,
+  "completion_tokens_known_sum": 11527,
+  "largest_prompt_tokens": 15115,
+  "model_seconds": 50.0,
+  "requests_with_every_material_marker": 4,
+  "requests_with_any_material_marker": 4
+ },
+ "harness_report": {
+  "assistant_messages": 4,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"ls -la && cat input.csv | head -5\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 - <<'EOF'\\nimport csv\\n\\nrows = [\\n    [\\\"1\\\",\\\"12\\\",\\\"N Main St\\\",\\\"Apt 4B\\\",\\\"Springfield\\\",\\\"IL\\\",\\\"62704\\\",\\\"USA\\\",\\\"no\\\"],\\n    [\\\"2\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"\\\",\\\"no\\\"],\\n    [\\\"3\\\",\\\"845\\\",\\\"Oak Avenue\\\","
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "`output.csv` is complete: 32 rows matching the 32 input ids, all nine required columns, every part copied exactly as written (PO Boxes in `street` with empty `house_number`, units kept verbatim like `Ste 5`/`Fl 9`/`#12`/`Flat 3`, `Illinois` and `P.O. Box 77` unaltered, no country invented where none",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2502,
+    "output": 28,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2530,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 3017,
+    "output": 10212,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 13229,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 13401,
+    "output": 1087,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 14488,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6155,
+    "output": 200,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 15315,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "a0858cc396dcc8e2411606bada9e5d6b62fde3fee45731914a3085f5c2a0e96b",
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 3009
+  },
+  {
+   "path": "input.csv",
+   "bytes": 1274
+  },
+  {
+   "path": "output.csv",
+   "bytes": 1427
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.96875,
+  "passed": true,
+  "metrics": {
+   "rows": 32,
+   "correct": 31,
+   "record_accuracy": 0.96875,
+   "part_accuracy": 1.0,
+   "part_accuracy_by_part": {
+    "house_number": 1.0,
+    "street": 1.0,
+    "unit": 1.0,
+    "city": 1.0,
+    "region": 1.0,
+    "postal_code": 1.0,
+    "country": 1.0
+   },
+   "rewritten_parts": 0,
+   "rewritten_part_rate": 0.0,
+   "correct_hold_rate": 0.75,
+   "unneeded_review_rate": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

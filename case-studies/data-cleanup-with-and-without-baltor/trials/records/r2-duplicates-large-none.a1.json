@@ -1,0 +1,187 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r2-duplicates-large-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 2,
+ "family": "duplicates",
+ "arm": "large-none",
+ "model": "glm-5.2:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "76ce0075546e06e7148b238f64b52f899f405bebf4c9d53a89ef690577d85e18",
+ "started_at": "2026-09-23T03:51:25+00:00",
+ "ended_at": "2026-09-23T03:52:58+00:00",
+ "elapsed_seconds": 93.4,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 6,
+  "refused": [],
+  "outcomes": {
+   "ok": 6
+  },
+  "usage_known_requests": 6,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 41646,
+  "completion_tokens_known_sum": 6862,
+  "largest_prompt_tokens": 11781,
+  "model_seconds": 91.1,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 6,
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-duplicates-large-none-a1/work && wc -l input.csv && head -20 input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-duplicates-large-none-a1/work && tail -20 input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-duplicates-large-none-a1/work && cat -n input.csv | sed -n '2,40p'\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"/home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-duplicates-large-none-a1/work/output.csv\", \"content\": \"id_a,id_b,decision\\n1,33,same\\n2,3,same\\n2,15,same\\n3,15,same\\n4,29,same\\n4,30,same\\n6,17,review\\n6,32,same\\n7,20,same\\n9,26,"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-duplicates-large-none-a1/work && cat output.csv && echo \\\"---\\\" && python3 -c \\\"import csv;rows=list(csv.reader(open('output.csv')));print('rows:',len(rows)-1)\\\"\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 301,
+    "output": 60,
+    "cacheRead": 1323,
+    "cacheWrite": 0,
+    "totalTokens": 1684,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 798,
+    "output": 44,
+    "cacheRead": 1623,
+    "cacheWrite": 0,
+    "totalTokens": 2465,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 816,
+    "output": 6174,
+    "cacheRead": 2420,
+    "cacheWrite": 0,
+    "totalTokens": 9410,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 7784,
+    "output": 507,
+    "cacheRead": 3235,
+    "cacheWrite": 0,
+    "totalTokens": 11526,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 547,
+    "output": 74,
+    "cacheRead": 11018,
+    "cacheWrite": 0,
+    "totalTokens": 11639,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 217,
+    "output": 3,
+    "cacheRead": 11564,
+    "cacheWrite": 0,
+    "totalTokens": 11784,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "c1ba16b44cc6bcff4fe1d66bf3181f01badb0c1a7c1eb4c1a98fe217e054b34b",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 3804
+  },
+  {
+   "path": "output.csv",
+   "bytes": 244
+  }
+ ],
+ "score": {
+  "primary_metric": "pair_f1",
+  "primary": 1.0,
+  "passed": true,
+  "metrics": {
+   "rows": 38,
+   "true_duplicate_pairs": 18,
+   "pairs_marked_same": 18,
+   "pairs_marked_review": 3,
+   "pair_precision": 1.0,
+   "pair_recall": 1.0,
+   "pair_f1": 1.0,
+   "closure_pair_precision": 1.0,
+   "closure_pair_recall": 1.0,
+   "closure_pair_f1": 1.0,
+   "false_merges": 0,
+   "hard_negative_merges": 0,
+   "ambiguous_pairs_marked_same": 0,
+   "correct_hold_rate": 0.5,
+   "true_duplicates_only_marked_review": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

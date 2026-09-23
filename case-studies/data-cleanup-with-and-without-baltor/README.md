@@ -36,6 +36,27 @@ python runner/run_trials.py capture --run-folder /path/outside/the/repository
 reports what each arm would send. The `pilot`, `main` and `optional` phases
 call models and need the model authority and budget recorded in the design.
 
+## Status and result files
+
+The pilot, the main plan and the optional arm ran on September 22 and 23,
+2026, United States Eastern time, with 225 of the 400 allowed model requests.
+
+- [results/tables.md](results/tables.md): scores for every family, arm and
+  repetition, and the comparisons under the frozen claim rules.
+- [results/summary.json](results/summary.json): the same with requests,
+  tokens, time, loading checks and row types.
+- [results/use-signals.json](results/use-signals.json): words that only the
+  items introduce, found in the model's own text.
+- [trials/requests.jsonl](trials/requests.jsonl): one line for every request
+  sent or refused. `trials/request-bodies.tar.gz` holds every request and
+  response body.
+- [amendments.json](amendments.json): the one change after the pilot, which
+  touched recording only, and the pilot findings.
+
+Rebuild the summaries with `python runner/summarize.py`, and the signs of use
+with `python runner/use_signals.py --bodies <folder>` after unpacking the
+archive into that folder.
+
 ## Evidence boundary
 
 The data is synthetic and disclosed as such. One harness and three models

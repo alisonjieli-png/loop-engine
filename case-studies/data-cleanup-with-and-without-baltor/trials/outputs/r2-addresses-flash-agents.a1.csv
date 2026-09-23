@@ -1,0 +1,33 @@
+id,house_number,street,unit,city,region,postal_code,country,review
+1,12,N Main St,Apt 4B,Springfield,IL,62704,USA,no
+2,,,,,,,,no
+3,845,Oak Avenue,,Portland,OR,97205,,no
+4,58,Bay St,,Toronto,,,,no
+5,905,Granville St,Unit 1402,Vancouver,BC,V6Z1L3,,no
+6,,P.O. Box 77,,Halifax,NS,B3J 2K9,,no
+7,3100,Lakeview Dr,Suite 200,Austin,TX,78701-2243,,no
+8,18,Harbor Rd,Ste 5,Madison,WI,53703,,no
+9,,Corner of Main St and 2nd Ave,,Springfield,IL,,,yes
+10,31,Park Row,,Leeds,,LS1 5JL,UK,no
+11,1509,Pine St,Unit 3,Seattle,WA,98101,United States,no
+12,742,Maple Terrace,,Springfield,,,,no
+13,77,Pine Road,,Toronto,ON,M5V 2T6,,no
+14,88,Elm St,,Springfield,MA,01103,,no
+15,12,Main St,,West Springfield,MA,01089,,yes
+16,400,W Madison Blvd,Fl 9,Chicago,Illinois,60606,,no
+17,,PO Box 482,,Springfield,IL,62705,,no
+18,1600,Grand Ave NW,,Washington,DC,20001,,no
+19,1200,Rue Sainte-Catherine O,,Montréal,QC,H3B 1K9,Canada,no
+20,88,Harbor Blvd,Suite 400,Long Beach,CA,90802,,no
+21,16,Rue du Port,,Québec,QC,G1K 4E3,,no
+22,77,Cedar Ln,#12,Denver,CO,80202,,no
+23,350,Fifth Ave,,New York,NY,10118,,no
+24,,,,,,,,yes
+25,,,,,,,,no
+26,22B,Elm Ave,,Boston,MA,02108,,no
+27,2211,N Clark St,Apt 3R,Chicago,IL,60614,,no
+28,22,Queen Street,Flat 3,Cardiff,,CF10 2BU,United Kingdom,no
+29,10,High Street,,Bristol,,BS1 4DJ,,no
+30,5,Mill Lane,,Ashford,Kent,TN24 8AA,,no
+31,,Main Street,,Springfield,,,,no
+32,45,Kingsway,,Burnaby,,,,no

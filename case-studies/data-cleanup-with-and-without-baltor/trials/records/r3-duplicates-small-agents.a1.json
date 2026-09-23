@@ -1,0 +1,111 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r3-duplicates-small-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 3,
+ "family": "duplicates",
+ "arm": "small-agents",
+ "model": "qwen2.5-coder:7b",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "find_duplicate_records_with_blocking_keys",
+   "body_sha256": "80645d9eba97e1d4c27d1e5eefc4c30980dcae52069223e502fc40f0945ae6fa",
+   "bytes": 2722,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#find_duplicate_records_with_blocking_keys"
+  },
+  {
+   "identity": "score_duplicate_pairs_by_weakest_signal",
+   "body_sha256": "4278146c5996b8774d2a7fceec1429818e09f81daae4d4874f3309bb015ce299",
+   "bytes": 2573,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#score_duplicate_pairs_by_weakest_signal"
+  }
+ ],
+ "material_sha256": "1b210d4b8f163c3b378985d012b93f84329288069db93459082bb21a8a30353d",
+ "prompt_sha256": "76ce0075546e06e7148b238f64b52f899f405bebf4c9d53a89ef690577d85e18",
+ "started_at": "2026-09-23T03:38:34+00:00",
+ "ended_at": "2026-09-23T03:38:39+00:00",
+ "elapsed_seconds": 4.3,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 1,
+  "refused": [],
+  "outcomes": {
+   "ok": 1
+  },
+  "usage_known_requests": 1,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 2816,
+  "completion_tokens_known_sum": 44,
+  "largest_prompt_tokens": 2816,
+  "model_seconds": 2.5,
+  "requests_with_every_material_marker": 1,
+  "requests_with_any_material_marker": 1
+ },
+ "harness_report": {
+  "assistant_messages": 1,
+  "tool_calls": [],
+  "tool_errors": 0,
+  "final_text": "{\"name\": \"read\", \"arguments\": {\"path\": \"/home/username/.le-ci-tmp/dcd-runs/run-1/steps/r3-duplicates-small-agents-a1/work/input.csv\"}}",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2816,
+    "output": 44,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2860,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": false,
+ "output_sha256": null,
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 5296
+  },
+  {
+   "path": "input.csv",
+   "bytes": 3804
+  }
+ ],
+ "score": {
+  "primary_metric": "pair_f1",
+  "primary": 0.0,
+  "passed": false,
+  "metrics": {
+   "rows": 38,
+   "true_duplicate_pairs": 18,
+   "pairs_marked_same": 0,
+   "pairs_marked_review": 0,
+   "pair_precision": 0.0,
+   "pair_recall": 0.0,
+   "pair_f1": 0.0,
+   "closure_pair_precision": 0.0,
+   "closure_pair_recall": 0.0,
+   "closure_pair_f1": 0.0,
+   "false_merges": 0,
+   "hard_negative_merges": 0,
+   "ambiguous_pairs_marked_same": 0,
+   "correct_hold_rate": 0.0,
+   "true_duplicates_only_marked_review": 0
+  },
+  "format_problems": {
+   "missing_output_file": 1
+  },
+  "output_readable": false
+ }
+}

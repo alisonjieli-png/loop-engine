@@ -1,0 +1,104 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-addresses-small-prompt",
+ "attempt": 1,
+ "phase": "optional",
+ "repetition": 1,
+ "family": "addresses",
+ "arm": "small-prompt",
+ "model": "qwen2.5-coder:7b",
+ "material_mode": "prompt",
+ "material_items": [
+  {
+   "identity": "split_address_lines_into_components",
+   "body_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+   "bytes": 3009,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#split_address_lines_into_components"
+  }
+ ],
+ "material_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+ "prompt_sha256": "ad87c96d5f9f6eaebadb7149adb2961e5002b94d6b200ece477f911feeba25c1",
+ "started_at": "2026-09-23T04:31:14+00:00",
+ "ended_at": "2026-09-23T04:31:18+00:00",
+ "elapsed_seconds": 4.2,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 1,
+  "refused": [],
+  "outcomes": {
+   "ok": 1
+  },
+  "usage_known_requests": 1,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 2392,
+  "completion_tokens_known_sum": 48,
+  "largest_prompt_tokens": 2392,
+  "model_seconds": 2.2,
+  "requests_with_every_material_marker": 1,
+  "requests_with_any_material_marker": 1
+ },
+ "harness_report": {
+  "assistant_messages": 1,
+  "tool_calls": [],
+  "tool_errors": 0,
+  "final_text": "{\"name\": \"bash\", \"arguments\": {\"command\": \"cp input.csv /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-addresses-small-prompt-a1/work/output.csv\"}}",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2392,
+    "output": 48,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2440,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": false,
+ "output_sha256": null,
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 1274
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.0,
+  "passed": false,
+  "metrics": {
+   "rows": 32,
+   "correct": 0,
+   "record_accuracy": 0.0,
+   "part_accuracy": 0.0,
+   "part_accuracy_by_part": {
+    "house_number": 0.0,
+    "street": 0.0,
+    "unit": 0.0,
+    "city": 0.0,
+    "region": 0.0,
+    "postal_code": 0.0,
+    "country": 0.0
+   },
+   "rewritten_parts": 0,
+   "rewritten_part_rate": null,
+   "correct_hold_rate": 0.0,
+   "unneeded_review_rate": 0.0,
+   "missing_rows": 32
+  },
+  "format_problems": {
+   "missing_output_file": 1
+  },
+  "output_readable": false
+ }
+}

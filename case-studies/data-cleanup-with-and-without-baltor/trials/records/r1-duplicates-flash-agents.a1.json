@@ -1,0 +1,168 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-duplicates-flash-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "duplicates",
+ "arm": "flash-agents",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "find_duplicate_records_with_blocking_keys",
+   "body_sha256": "80645d9eba97e1d4c27d1e5eefc4c30980dcae52069223e502fc40f0945ae6fa",
+   "bytes": 2722,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#find_duplicate_records_with_blocking_keys"
+  },
+  {
+   "identity": "score_duplicate_pairs_by_weakest_signal",
+   "body_sha256": "4278146c5996b8774d2a7fceec1429818e09f81daae4d4874f3309bb015ce299",
+   "bytes": 2573,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#score_duplicate_pairs_by_weakest_signal"
+  }
+ ],
+ "material_sha256": "1b210d4b8f163c3b378985d012b93f84329288069db93459082bb21a8a30353d",
+ "prompt_sha256": "76ce0075546e06e7148b238f64b52f899f405bebf4c9d53a89ef690577d85e18",
+ "started_at": "2026-09-23T03:46:32+00:00",
+ "ended_at": "2026-09-23T03:47:02+00:00",
+ "elapsed_seconds": 29.9,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 4,
+  "refused": [],
+  "outcomes": {
+   "ok": 4
+  },
+  "usage_known_requests": 4,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 30046,
+  "completion_tokens_known_sum": 6995,
+  "largest_prompt_tokens": 11462,
+  "model_seconds": 27.2,
+  "requests_with_every_material_marker": 4,
+  "requests_with_any_material_marker": 4
+ },
+ "harness_report": {
+  "assistant_messages": 4,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"output.csv\", \"content\": \"id_a,id_b,decision\\n1,33,same\\n2,3,same\\n2,15,same\\n3,15,same\\n4,29,same\\n4,30,same\\n7,20,same\\n9,26,same\\n11,16,same\\n13,28,same\\n14,24,same\\n18,31,same\\n19,21,same\\n25,35,same\\n25,38,same\\n29,30,same\\n35"
+   },
+   {
+    "tool": "read",
+    "args": "{\"path\": \"output.csv\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2883,
+    "output": 25,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2908,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 4372,
+    "output": 6946,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 11318,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6849,
+    "output": 21,
+    "cacheRead": 4480,
+    "cacheWrite": 0,
+    "totalTokens": 11350,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6982,
+    "output": 3,
+    "cacheRead": 4480,
+    "cacheWrite": 0,
+    "totalTokens": 11465,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "d0b8eec45d785617d9af18ba0f99d54a2f670792d43e4c57447f7d6875883736",
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 5296
+  },
+  {
+   "path": "input.csv",
+   "bytes": 3804
+  },
+  {
+   "path": "output.csv",
+   "bytes": 196
+  }
+ ],
+ "score": {
+  "primary_metric": "pair_f1",
+  "primary": 0.971429,
+  "passed": true,
+  "metrics": {
+   "rows": 38,
+   "true_duplicate_pairs": 18,
+   "pairs_marked_same": 17,
+   "pairs_marked_review": 0,
+   "pair_precision": 1.0,
+   "pair_recall": 0.944444,
+   "pair_f1": 0.971429,
+   "closure_pair_precision": 1.0,
+   "closure_pair_recall": 0.944444,
+   "closure_pair_f1": 0.971429,
+   "false_merges": 0,
+   "hard_negative_merges": 0,
+   "ambiguous_pairs_marked_same": 0,
+   "correct_hold_rate": 0.0,
+   "true_duplicates_only_marked_review": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

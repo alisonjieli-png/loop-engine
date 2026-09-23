@@ -1,0 +1,165 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r3-addresses-flash-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 3,
+ "family": "addresses",
+ "arm": "flash-agents",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "split_address_lines_into_components",
+   "body_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+   "bytes": 3009,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#split_address_lines_into_components"
+  }
+ ],
+ "material_sha256": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+ "prompt_sha256": "caa745cce868b1c34064e5ff43c9644ea4f00fd2988341111a4016290c81de05",
+ "started_at": "2026-09-23T04:21:18+00:00",
+ "ended_at": "2026-09-23T04:22:11+00:00",
+ "elapsed_seconds": 53.4,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 4,
+  "refused": [],
+  "outcomes": {
+   "ok": 4
+  },
+  "usage_known_requests": 4,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 33474,
+  "completion_tokens_known_sum": 11053,
+  "largest_prompt_tokens": 15171,
+  "model_seconds": 49.5,
+  "requests_with_every_material_marker": 4,
+  "requests_with_any_material_marker": 4
+ },
+ "harness_report": {
+  "assistant_messages": 4,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r3-addresses-flash-agents-a1/work && ls -la && file input.csv && python3 -c \\\"\\nimport csv\\nwith open('input.csv', newline='', encoding='utf-8') as f:\\n    for row in csv.reader"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r3-addresses-flash-agents-a1/work && python3 - <<'EOF'\\nimport csv\\n\\nrows = [\\n    # id, house_number, street, unit, city, region, postal_code, country, review\\n    [\\\"1\\\",  \\\""
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "`output.csv` is complete: header plus 32 rows, each with exactly 9 fields. Notes on the flagged rows: 9 (intersection, not a numbered postal address), 15 (`Main St West` vs `West Springfield` ambiguity) and 24 (`see notes`, not an address) got `review=yes`; row 2 was empty and row 25 (`n/a`) a null ",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2502,
+    "output": 21,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2523,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 3010,
+    "output": 9095,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 12105,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 12791,
+    "output": 1751,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 14542,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6211,
+    "output": 186,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 15357,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "a0858cc396dcc8e2411606bada9e5d6b62fde3fee45731914a3085f5c2a0e96b",
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 3009
+  },
+  {
+   "path": "input.csv",
+   "bytes": 1274
+  },
+  {
+   "path": "output.csv",
+   "bytes": 1427
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.96875,
+  "passed": true,
+  "metrics": {
+   "rows": 32,
+   "correct": 31,
+   "record_accuracy": 0.96875,
+   "part_accuracy": 1.0,
+   "part_accuracy_by_part": {
+    "house_number": 1.0,
+    "street": 1.0,
+    "unit": 1.0,
+    "city": 1.0,
+    "region": 1.0,
+    "postal_code": 1.0,
+    "country": 1.0
+   },
+   "rewritten_parts": 0,
+   "rewritten_part_rate": 0.0,
+   "correct_hold_rate": 0.75,
+   "unneeded_review_rate": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

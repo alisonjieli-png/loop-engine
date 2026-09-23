@@ -1,0 +1,198 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r2-phones-flash-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 2,
+ "family": "phones",
+ "arm": "flash-agents",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "normalize_phone_numbers",
+   "body_sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+   "bytes": 2579,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_phone_numbers"
+  }
+ ],
+ "material_sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+ "prompt_sha256": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+ "started_at": "2026-09-23T03:53:32+00:00",
+ "ended_at": "2026-09-23T03:55:10+00:00",
+ "elapsed_seconds": 98.5,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 6,
+  "refused": [],
+  "outcomes": {
+   "ok": 6
+  },
+  "usage_known_requests": 6,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 92280,
+  "completion_tokens_known_sum": 19194,
+  "largest_prompt_tokens": 23173,
+  "model_seconds": 95.8,
+  "requests_with_every_material_marker": 6,
+  "requests_with_any_material_marker": 6
+ },
+ "harness_report": {
+  "assistant_messages": 6,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"ls -la && wc -l input.csv && file input.csv && tail -c 50 input.csv | xxd | tail -3\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"clean_phones.py\", \"content\": \"#!/usr/bin/env python3\\n\\\"\\\"\\\"Clean the `phone` column of input.csv into E.164 form.\\n\\nDeclared parameters: default country code 1 (US/Canada), national length 10.\\nMethod (per AGENTS.md `phone_norma"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-phones-flash-agents-a1/work && python3 clean_phones.py\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r2-phones-flash-agents-a1/work && cat output.csv && echo \\\"---\\\" && md5sum input.csv && git status --porcelain 2>/dev/null | head && python3 -c \\\"\\nimport csv\\nrows=list(csv.rea"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "`output.csv` is complete with all 38 rows, `input.csv` untouched. Handled per the declared parameters (default country code 1, national length 10): null markers (`-`, `unknown`, `n/a`, empty) left as-is; 10/11-digit US/Canada numbers rewritten to `+1\u2026`; values already starting with `+` kept internat",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2349,
+    "output": 25,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2374,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 2816,
+    "output": 17303,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 20119,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 20362,
+    "output": 960,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 21322,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 7898,
+    "output": 46,
+    "cacheRead": 13440,
+    "cacheWrite": 0,
+    "totalTokens": 21384,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 8802,
+    "output": 455,
+    "cacheRead": 13440,
+    "cacheWrite": 0,
+    "totalTokens": 22697,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 5253,
+    "output": 405,
+    "cacheRead": 17920,
+    "cacheWrite": 0,
+    "totalTokens": 23578,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "fc8a526781cee4d4bc7945ec742b9690bb7143ffc0f52612979fee401d14cf21",
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 2579
+  },
+  {
+   "path": "clean_phones.py",
+   "bytes": 2890
+  },
+  {
+   "path": "input.csv",
+   "bytes": 666
+  },
+  {
+   "path": "output.csv",
+   "bytes": 749
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.842105,
+  "passed": false,
+  "metrics": {
+   "rows": 38,
+   "correct": 32,
+   "record_accuracy": 0.842105,
+   "value_accuracy": 0.842105,
+   "change_recall": 0.818182,
+   "change_precision": 0.818182,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 0.714286,
+   "guess_rate_on_hold_rows": 0.285714,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}
