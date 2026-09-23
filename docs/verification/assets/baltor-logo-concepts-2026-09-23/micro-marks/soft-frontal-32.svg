@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">Baltor soft husky and broad ice ridge, dedicated 32 pixel mark</title>
+  <rect width="32" height="32" rx="6" fill="#eaf2ff"/>
+  <path d="M4 14 6 5q0-2 2 0l4 4q4-2 8 0l4-4q2-2 2 0l2 9v4q0 9-12 9T4 18Z" fill="#092e5b"/>
+  <path d="M6 16q0-5 4-5l4 4 2-6 2 6 4-4q4 0 4 5v3q0 6-10 6T6 19Z" fill="#fff"/>
+  <path d="M10 15h1q1 0 1 1t-1 1h-1q-1 0-1-1t1-1Zm11 0h1q1 0 1 1t-1 1h-1q-1 0-1-1t1-1Z" fill="#092e5b"/>
+  <path d="M13 18h6q2 0 1 2l-3 2q-1 1-2 0l-3-2q-1-2 1-2Z" fill="#092e5b"/>
+  <path d="m2 30 7-5 7-1 7 1 7 5Z" fill="#2e73d2"/>
+  <path d="M8 24h3q2 0 2 2v1H6v-1q0-2 2-2Zm13 0h3q2 0 2 2v1h-7v-1q0-2 2-2Z" fill="#fff"/>
+</svg>

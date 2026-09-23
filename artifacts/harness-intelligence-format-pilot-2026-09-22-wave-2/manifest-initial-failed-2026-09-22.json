@@ -1,0 +1,187 @@
+{
+  "all_tracked_files_excluding_manifest": 19,
+  "approval_state": "candidate_only",
+  "distinct_delivery_body_digests": 7,
+  "file_inventory": [
+    {
+      "bytes": 2892,
+      "path": "README.md",
+      "role": "batch_document",
+      "sha256": "cdce5a50b4b2ad3ccc408e6254bf3d42fac799fa944e720ef43b448f349dde67"
+    },
+    {
+      "bytes": 2162,
+      "path": "candidate-items.json",
+      "role": "candidate_metadata",
+      "sha256": "7aa8cabb7a0e4c0454ea7ac538ee1eb94d4125b84e85252af44f29b3560626c2"
+    },
+    {
+      "bytes": 5675,
+      "path": "make_manifest.py",
+      "role": "local_manifest_builder",
+      "sha256": "d86c1cb91a104ab93815de292ba2aafd1fe11dd90cda9efc99931eb733eae927"
+    },
+    {
+      "bytes": 2246,
+      "path": "packages/audit-join-cardinality/SKILL.md",
+      "role": "skill_entry",
+      "sha256": "2214e9f06cc1846b11be21df694eb0109e5c3c2dde26a76453bc7f90790e3bb2"
+    },
+    {
+      "bytes": 6721,
+      "path": "packages/audit-join-cardinality/scripts/audit_join_cardinality.py",
+      "role": "implementation_script",
+      "sha256": "9e8dcf78d6f170494454a98861ce3fcfb02f868d4c1659330f6f836c321b99e9"
+    },
+    {
+      "bytes": 3633,
+      "path": "packages/audit-join-cardinality/scripts/confined_input.py",
+      "role": "reused_confinement_helper",
+      "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+    },
+    {
+      "bytes": 1664,
+      "path": "packages/audit-text-encoding/SKILL.md",
+      "role": "skill_entry",
+      "sha256": "48ec6cb9a92c0d50ecb3bd926458b8929888f3e76e988dbc65f018e20368f238"
+    },
+    {
+      "bytes": 3250,
+      "path": "packages/audit-text-encoding/scripts/audit_text_encoding.py",
+      "role": "implementation_script",
+      "sha256": "8d880888746dc0560ed9b4ae000b6eed94ddb014b2309151e7d51bb91f32e1cb"
+    },
+    {
+      "bytes": 3633,
+      "path": "packages/audit-text-encoding/scripts/confined_input.py",
+      "role": "reused_confinement_helper",
+      "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+    },
+    {
+      "bytes": 1856,
+      "path": "packages/audit-zip-package/SKILL.md",
+      "role": "skill_entry",
+      "sha256": "f3389f50d267eca5ffea02862af9fd53fd62ec4e8acbc7b1b0cfa68fe1c33d10"
+    },
+    {
+      "bytes": 5683,
+      "path": "packages/audit-zip-package/scripts/audit_zip_package.py",
+      "role": "implementation_script",
+      "sha256": "6dc58bce2200131fe5a64d57db4491755ab0e206c04e9ca65259fd380af3143e"
+    },
+    {
+      "bytes": 3633,
+      "path": "packages/audit-zip-package/scripts/confined_input.py",
+      "role": "reused_confinement_helper",
+      "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+    },
+    {
+      "bytes": 1608,
+      "path": "reviews/audit-join-cardinality.md",
+      "role": "producer_note",
+      "sha256": "280ab69c3b2b3b13ff07f0bc4f52e4ec36ab7160f275307ae4416ef34675770d"
+    },
+    {
+      "bytes": 1484,
+      "path": "reviews/audit-text-encoding.md",
+      "role": "producer_note",
+      "sha256": "51ae6a6aa7563b053c080539740e0a773d01d5713bfd4018d32d25765bee1fb4"
+    },
+    {
+      "bytes": 1621,
+      "path": "reviews/audit-zip-package.md",
+      "role": "producer_note",
+      "sha256": "b8aceda4e866598d0ac9994546c4b49700ccb0ee4d43b261061744ed1e833d7b"
+    },
+    {
+      "bytes": 3276,
+      "path": "test_make_manifest.py",
+      "role": "batch_test",
+      "sha256": "728ec4e2392ae8b14df38dab93474abbccec1c5e245616f795c90c651a4f8b69"
+    },
+    {
+      "bytes": 4865,
+      "path": "tests/test_audit_join_cardinality.py",
+      "role": "known_wrong_tests",
+      "sha256": "10668d0385a3678f8341f4fdd22a40839b2eb61cb202064204bbb64a7fa4a373"
+    },
+    {
+      "bytes": 3488,
+      "path": "tests/test_audit_text_encoding.py",
+      "role": "known_wrong_tests",
+      "sha256": "4dfc059495fab86c65e42657364fd6c8c67a7e5c53c7ebbcb2aa4f99bc85e87f"
+    },
+    {
+      "bytes": 5111,
+      "path": "tests/test_audit_zip_package.py",
+      "role": "known_wrong_tests",
+      "sha256": "bad89ab6197a92317606e905c4826102f4b84700e3089037f90785da164f5cad"
+    }
+  ],
+  "logical_packages": 3,
+  "package_trees": {
+    "audit-join-cardinality": [
+      {
+        "bytes": 2246,
+        "path": "packages/audit-join-cardinality/SKILL.md",
+        "role": "skill_entry",
+        "sha256": "2214e9f06cc1846b11be21df694eb0109e5c3c2dde26a76453bc7f90790e3bb2"
+      },
+      {
+        "bytes": 6721,
+        "path": "packages/audit-join-cardinality/scripts/audit_join_cardinality.py",
+        "role": "implementation_script",
+        "sha256": "9e8dcf78d6f170494454a98861ce3fcfb02f868d4c1659330f6f836c321b99e9"
+      },
+      {
+        "bytes": 3633,
+        "path": "packages/audit-join-cardinality/scripts/confined_input.py",
+        "role": "reused_confinement_helper",
+        "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+      }
+    ],
+    "audit-text-encoding": [
+      {
+        "bytes": 1664,
+        "path": "packages/audit-text-encoding/SKILL.md",
+        "role": "skill_entry",
+        "sha256": "48ec6cb9a92c0d50ecb3bd926458b8929888f3e76e988dbc65f018e20368f238"
+      },
+      {
+        "bytes": 3250,
+        "path": "packages/audit-text-encoding/scripts/audit_text_encoding.py",
+        "role": "implementation_script",
+        "sha256": "8d880888746dc0560ed9b4ae000b6eed94ddb014b2309151e7d51bb91f32e1cb"
+      },
+      {
+        "bytes": 3633,
+        "path": "packages/audit-text-encoding/scripts/confined_input.py",
+        "role": "reused_confinement_helper",
+        "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+      }
+    ],
+    "audit-zip-package": [
+      {
+        "bytes": 1856,
+        "path": "packages/audit-zip-package/SKILL.md",
+        "role": "skill_entry",
+        "sha256": "f3389f50d267eca5ffea02862af9fd53fd62ec4e8acbc7b1b0cfa68fe1c33d10"
+      },
+      {
+        "bytes": 5683,
+        "path": "packages/audit-zip-package/scripts/audit_zip_package.py",
+        "role": "implementation_script",
+        "sha256": "6dc58bce2200131fe5a64d57db4491755ab0e206c04e9ca65259fd380af3143e"
+      },
+      {
+        "bytes": 3633,
+        "path": "packages/audit-zip-package/scripts/confined_input.py",
+        "role": "reused_confinement_helper",
+        "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+      }
+    ]
+  },
+  "physical_delivery_paths": 9,
+  "reused_helper_sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24",
+  "schema": "first_party_multifile_manifest/v1"
+}

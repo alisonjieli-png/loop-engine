@@ -1,0 +1,152 @@
+{
+  "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops",
+  "candidate_approval": "none",
+  "evaluated_at_utc": "2026-09-23T03:41:49.200526+00:00",
+  "limitations": "English-language local lexical pilot; one expected item per query; review notes were indexed; no tenant grants, native load, task outcome, or hosted route tested.",
+  "manifest_sha256": "53df3f4cebe130bbdbef612ce9bcb35344631c7053ce68f5804b1844a28ecb1b",
+  "metrics": {
+    "correct_no_answer": 5,
+    "no_answer_queries": 5,
+    "positive_queries": 12,
+    "top_one": 10,
+    "top_three": 10
+  },
+  "no_answer_results": [
+    {
+      "no_match": true,
+      "query": "How should I prune an apple tree in winter?",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Translate a medieval Latin poem into Spanish.",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "What tide height is forecast for the eastern harbor?",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Design a watercolor poster for a children's book.",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Which telescope eyepiece should I buy for Jupiter?",
+      "returned_names": []
+    }
+  ],
+  "positive_results": [
+    {
+      "expected_name": "allocate-scarce-stock-by-promised-service",
+      "outcome": "matches",
+      "query": "We have fewer usable components than confirmed customer orders. Allocate what is on hand without promising the same unit twice.",
+      "rank": 1,
+      "returned_names": [
+        "allocate-scarce-stock-by-promised-service"
+      ]
+    },
+    {
+      "expected_name": "compare-distribution-paths-with-failure-costs",
+      "outcome": "matches",
+      "query": "Compare direct freight against a cheaper two-hop lane that misses the arrival promise.",
+      "rank": 1,
+      "returned_names": [
+        "compare-distribution-paths-with-failure-costs"
+      ]
+    },
+    {
+      "expected_name": "map-repair-support-requirements-to-assets",
+      "outcome": "matches",
+      "query": "For this approved maintenance procedure, identify missing calibrated fixtures and compatible replacement parts before scheduling the repair.",
+      "rank": 1,
+      "returned_names": [
+        "map-repair-support-requirements-to-assets"
+      ]
+    },
+    {
+      "expected_name": "reconcile-subcontractor-delivery-to-obligations",
+      "outcome": "matches",
+      "query": "Our subcontractor uploaded a report and marked the job done. Which agreement deliverables still lack signed acceptance?",
+      "rank": 1,
+      "returned_names": [
+        "reconcile-subcontractor-delivery-to-obligations"
+      ]
+    },
+    {
+      "expected_name": "trace-resource-request-to-funding-window",
+      "outcome": "matches",
+      "query": "A contractor is available next week, but approved funds may start later than the work. Can the project request be committed?",
+      "rank": 1,
+      "returned_names": [
+        "trace-resource-request-to-funding-window"
+      ]
+    },
+    {
+      "expected_name": "balance-project-duty-coverage",
+      "outcome": "matches",
+      "query": "Our project responsibility sheet lists the same employee as preparer and independent approver. Check coverage and conflicts.",
+      "rank": 1,
+      "returned_names": [
+        "balance-project-duty-coverage"
+      ]
+    },
+    {
+      "expected_name": "explain-work-package-cost-variance",
+      "outcome": "matches",
+      "query": "Separate spent money from open purchase commitments when explaining why a work package differs from its authorized baseline.",
+      "rank": 1,
+      "returned_names": [
+        "explain-work-package-cost-variance"
+      ]
+    },
+    {
+      "expected_name": "classify-ambiguous-posting-account",
+      "outcome": "matches",
+      "query": "This mixed service and equipment invoice could go to several accounts. Propose the right ledger classification from the chart rules.",
+      "rank": 1,
+      "returned_names": [
+        "classify-ambiguous-posting-account"
+      ]
+    },
+    {
+      "expected_name": "trace-statement-line-to-ledger",
+      "outcome": "matches",
+      "query": "Show every ledger account and consolidation adjustment behind the reported revenue line, including duplicate mappings.",
+      "rank": 1,
+      "returned_names": [
+        "trace-statement-line-to-ledger"
+      ]
+    },
+    {
+      "expected_name": "screen-payable-for-document-mismatch",
+      "outcome": "no_match",
+      "query": "The vendor bills for units ordered, but only part of the shipment was accepted. Prepare an invoice exception before anyone pays.",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "track-customer-promises-through-case-updates",
+      "outcome": "no_match",
+      "query": "The support issue was fixed internally, yet we cannot find the follow-up the agent promised the customer. Is the case finished?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "reconcile-return-credit-to-original-sale",
+      "outcome": "matches",
+      "query": "The requested refund includes a unit already credited last month. Check eligible returned quantities and the original sale price.",
+      "rank": 1,
+      "returned_names": [
+        "reconcile-return-credit-to-original-sale"
+      ]
+    }
+  ],
+  "probe_selection_rule": "One author-written task query per proposed method, drafted before running this local evaluator; five unrelated no-answer controls. Not independent or blind.",
+  "probe_sha256": "01aafc00c2754c3cc771f52e2d0f8f1e0c940912a8046775b8fe45704353bef4",
+  "record_type": "local_candidate_search_evaluation/v1",
+  "scope": "local_candidate_batch_only",
+  "search_tool_sha256": "9d2635803489752fe5b0590d28f2baaa994943d9302d02042680dd097482125c"
+}

@@ -115,6 +115,57 @@ class MixedFormatSearchChecks(unittest.TestCase):
             ):
                 subject.validated_catalogue()
 
+    def test_review_notes_and_test_receipts_cannot_be_delivery_files(self) -> None:
+        planted = (
+            ("baltor.context.profile-one-csv.v1", "codex",
+             "context/profile-one-csv/review-note.json"),
+            ("baltor.tool.audit-csv-structure.v1", "codex", "tools/REVIEW-NOTE.md"),
+            ("baltor.connection.json-shape-stdio.v1", "opencode",
+             "connections/json-shape-stdio/tests/test_server.py"),
+        )
+        for item_id, client, path in planted:
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as directory:
+                copied = Path(directory) / "batch"
+                shutil.copytree(ROOT, copied)
+                catalog_path = copied / "candidate-items.json"
+                data = json.loads(catalog_path.read_text(encoding="utf-8"))
+                item = next(row for row in data["items"] if row["id"] == item_id)
+                item["delivery_variants"][client].append(path)
+                catalog_path.write_text(json.dumps(data), encoding="utf-8")
+                with (
+                    patch.object(subject, "ROOT", copied),
+                    patch.object(subject, "CATALOG", catalog_path),
+                    patch.object(subject, "MANIFEST", copied / "manifest.json"),
+                    self.assertRaisesRegex(subject.FormatCandidateSearchError,
+                                           "non-payload delivery file"),
+                ):
+                    subject.validated_catalogue()
+
+    def test_one_client_cannot_receive_another_clients_layout(self) -> None:
+        planted = (
+            ("baltor.context.profile-one-csv.v1",
+             "context/profile-one-csv/claude/work/AGENTS.md"),
+            ("baltor.connection.json-shape-stdio.v1",
+             "connections/json-shape-stdio/layouts/claude/work/.mcp.json"),
+        )
+        for item_id, path in planted:
+            with self.subTest(path=path), tempfile.TemporaryDirectory() as directory:
+                copied = Path(directory) / "batch"
+                shutil.copytree(ROOT, copied)
+                catalog_path = copied / "candidate-items.json"
+                data = json.loads(catalog_path.read_text(encoding="utf-8"))
+                item = next(row for row in data["items"] if row["id"] == item_id)
+                item["delivery_variants"]["codex"].append(path)
+                catalog_path.write_text(json.dumps(data), encoding="utf-8")
+                with (
+                    patch.object(subject, "ROOT", copied),
+                    patch.object(subject, "CATALOG", catalog_path),
+                    patch.object(subject, "MANIFEST", copied / "manifest.json"),
+                    self.assertRaisesRegex(subject.FormatCandidateSearchError,
+                                           "wrong client layout"),
+                ):
+                    subject.validated_catalogue()
+
 
 if __name__ == "__main__":
     unittest.main()

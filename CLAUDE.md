@@ -14,6 +14,13 @@ working cycle for changes, tests, checkpoints and releases. The north star and
 the ordered initiatives are in
 [AGENTS.md](AGENTS.md#north-star-and-current-initiatives).
 
+For the owner-requested 100,000-package research and separate handbook
+artifacts, read the [component research index](docs/research/BALTOR-COMPONENT-RESEARCH-ARTIFACTS-2026-09-23.md)
+and [Codex side handoff](docs/context/CODEX-SIDE-RESEARCH-HANDOFF-2026-09-22.md).
+They contain exact candidate manifests, failed and repaired checks, live
+service and interface findings, and current versus proposed behavior. The
+roadmap remains the only task authority.
+
 The owner's standing rules for committing, pushing, branching and releasing,
 what still needs the owner, and the decisions that stand until the owner
 changes them are in one place, the

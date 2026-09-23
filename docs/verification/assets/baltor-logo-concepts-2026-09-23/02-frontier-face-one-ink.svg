@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Baltor frontier face one-ink concept</title>
+  <desc id="description">One-ink rendering of a forward-facing sled dog with paws above an ice ridge.</desc>
+  <rect x="4" y="4" width="120" height="120" rx="22" fill="#111827"/>
+  <path d="M12 109 39 85 54 99 77 78 116 109v7H12Z" fill="#fff"/>
+  <path d="m77 78 39 31v7H72Z" fill="#111827"/>
+  <path d="m39 85 15 14-10 17H12Z" fill="#111827"/>
+  <path d="M31 44 30 17 48 30 64 25 80 30 98 17 97 44 91 62 82 70 84 85 94 87 98 94 94 100 82 100 76 94 64 91 52 94 46 100 34 100 30 94 34 87 44 85 46 70 37 62Z" fill="#fff"/>
+  <path d="m31 19 18 22 15-9-6 29-13-10-9 5-5-12Z" fill="#111827"/>
+  <path d="m97 19-18 22-15-9 6 29 13-10 9 5 5-12Z" fill="#111827"/>
+  <path d="m59 62 5-4 5 4-5 4Z" fill="#111827"/>
+  <path d="m44 50 7-3 7 3-7 4ZM70 50l7-3 7 3-7 4Z" fill="#fff"/>
+</svg>

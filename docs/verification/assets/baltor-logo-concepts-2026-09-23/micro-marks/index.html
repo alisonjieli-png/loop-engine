@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Baltor · dedicated 16 and 32 pixel marks</title>
+<link rel="icon" type="image/svg+xml" sizes="16x16" href="husky-16.svg">
+<style>
+:root{font:16px/1.5 system-ui,sans-serif;color:#122e50;background:#f1f4f8;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;padding:32px 24px}main{max-width:1060px;margin:auto}h1{font-size:34px;letter-spacing:-.04em;line-height:1.15;margin:0 0 12px}
+.intro{max-width:760px;margin:0 0 25px;color:#526a81}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}article{background:white;border:1px solid #d7e0ec;border-radius:14px;overflow:hidden}
+.copy{padding:20px;min-height:178px}h2{font-size:18px;margin:0 0 9px}.copy p:not(.badge){font-size:13px;color:#5c7086;margin:0}.copy>.badge{margin:0 0 8px}.badge{font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:#507196;margin:0 0 7px}
+.native{border-top:1px solid #e2e8f0;padding:18px 20px;min-height:114px}.native strong{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#60758c;margin-bottom:15px}
+.row{display:flex;gap:30px;align-items:center}.sample{display:flex;align-items:center;gap:9px;color:#62758a;font-size:12px}.sample img{display:block;flex-shrink:0}
+.tab-wrap{padding:18px 20px;border-top:1px solid #e2e8f0;background:#e8edf4}.tab{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px 8px 0 0;background:white;font-size:13px;color:#172a42;height:38px}.tab img{display:block;width:16px;height:16px}.tab .close{margin-left:auto;color:#8392a4}
+.header{display:flex;align-items:center;gap:10px;padding:18px 20px;border-top:1px solid #e2e8f0;font-weight:700;font-size:20px}.header img{display:block;width:32px;height:32px}
+.open{display:block;padding:12px 20px;border-top:1px solid #e2e8f0;font-size:13px;color:#1e56b8;text-decoration:none}
+.recommended{border:2px solid #2e66c9}.dark{background:#111d30;color:white;border-color:#111d30}.subnote{font-size:13px;color:#596e85;margin-top:22px;max-width:800px}
+details{margin-top:26px;background:white;border:1px solid #d7e0ec;border-radius:12px;padding:16px 20px}summary{cursor:pointer;font-weight:650}.zoom{display:flex;gap:40px;align-items:flex-end;flex-wrap:wrap;padding-top:22px}.zoom figure{margin:0}.zoom img{width:128px;height:128px}.zoom figcaption{font-size:12px;color:#61768b}
+.notes a{color:#245ac0}a:focus-visible,summary:focus-visible{outline:3px solid #3875de;outline-offset:3px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.copy{min-height:0}h1{font-size:28px}}
+</style>
+</head>
+<body><main>
+<p class="badge">Baltor · favicon and header study</p>
+<h1>Draw for the pixels we actually have.</h1>
+<p class="intro"><strong>Latest direction:</strong> <a href="../proud-profile/index.html">Mature, lifted-chin profiles from your newer reference board</a>.</p>
+<p class="intro">At 16 pixels: ears, mask and one summit cue. At 32 pixels: a larger face and two plain paws. The new SVGs fill the square and use solid shapes. The first row shows their actual display sizes.</p>
+<section class="grid" aria-label="Previous raster and new optical-size SVG pair">
+<article>
+<div class="copy"><p class="badge">Previous raster concept</p><h2>Full composition reduced</h2><p>The small face, fur cuts and mountain detail merge as the entire drawing shrinks.</p></div>
+<div class="native"><strong>Actual size</strong><div class="row"><span class="sample"><img src="../refined-husky/04-compact-emblem.png" width="16" height="16" alt="Previous raster at 16 pixels">16 px</span><span class="sample"><img src="../refined-husky/04-compact-emblem.png" width="32" height="32" alt="Previous raster at 32 pixels">32 px</span></div></div>
+<div class="tab-wrap"><div class="tab"><img src="../refined-husky/04-compact-emblem.png" alt="">Baltor<span class="close">×</span></div></div>
+<div class="header"><img src="../refined-husky/04-compact-emblem.png" alt="">Baltor</div>
+<a class="open" href="../refined-husky/index.html">Earlier large concepts ↗</a>
+</article>
+<article class="recommended">
+<div class="copy"><p class="badge">New · optical size pair</p><h2>Husky and ridge</h2><p>One outer head, one white mask and large aligned facial shapes. The 16-pixel version drops paws; the 32-pixel version adds two plain paw shapes.</p></div>
+<div class="native"><strong>Actual size · separate SVGs</strong><div class="row"><span class="sample"><img src="husky-16.svg" width="16" height="16" alt="New husky mask tile at 16 pixels">16 px</span><span class="sample"><img src="husky-32.svg" width="32" height="32" alt="New husky mask and paws tile at 32 pixels">32 px</span></div></div>
+<div class="tab-wrap"><div class="tab"><img src="husky-16.svg" alt="">Baltor<span class="close">×</span></div></div>
+<div class="header"><img src="husky-32.svg" alt="">Baltor</div>
+<div class="header dark"><img src="husky-32.svg" alt="">Baltor</div>
+<a class="open" href="husky-16.svg" target="_blank" rel="noopener">16-pixel SVG ↗</a><a class="open" href="husky-32.svg" target="_blank" rel="noopener">32-pixel SVG ↗</a>
+</article>
+
+</section>
+<p class="subnote">The purpose of these small marks is to remain recognizable in a tab or header. The detailed dog on ice can still be used in larger artwork. The 16-pixel drawing intentionally carries fewer features than the 32-pixel drawing.</p>
+<details><summary>Enlarge the geometry for inspection</summary><div class="zoom">
+<figure><img src="husky-16.svg" alt="Enlarged 16 pixel tile"><figcaption>16-pixel tile, enlarged</figcaption></figure>
+<figure><img src="husky-32.svg" alt="Enlarged 32 pixel tile"><figcaption>32-pixel tile, enlarged</figcaption></figure>
+<figure><img src="alternate-16.svg" alt="Enlarged 16 pixel open mark"><figcaption>Rejected 16-pixel abstract trial</figcaption></figure>
+<figure><img src="alternate-32.svg" alt="Enlarged 32 pixel open mark"><figcaption>Rejected 32-pixel abstract trial</figcaption></figure>
+</div></details>
+<p class="subnote notes">Exploratory vector assets. <a href="README.md">Design notes</a> · <a href="../refined-husky/index.html">Larger raster concepts</a></p>
+</main></body></html>

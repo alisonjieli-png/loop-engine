@@ -13,7 +13,7 @@ import hashlib
 import json
 import os
 import re
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parent
 MANIFEST = ROOT / "manifest.json"
@@ -24,7 +24,38 @@ FORBIDDEN_DIRECTORIES = frozenset({
 })
 MAX_FILE_BYTES = 500_000
 MAX_FILES = 10_000
-RECORD_TYPE = "heterogeneous_harness_candidate_file_manifest/v1"
+RECORD_TYPE = "heterogeneous_harness_candidate_file_manifest/v2"
+
+
+def file_role(relative: str) -> str:
+    """Classify this pilot's exact paths before a variant can name payload.
+
+    These roles are local candidate metadata, not admission or effect rights.
+    A production package must declare and independently review explicit roles.
+    """
+    parts = PurePosixPath(relative).parts
+    name = parts[-1]
+    if "tests" in parts or name.startswith("test_"):
+        return "test_only"
+    if name in {"REVIEW.md", "REVIEW-NOTE.md", "review-note.json"}:
+        return "review_only"
+    if (parts[0] == "context" and len(parts) == 5
+            and parts[3] == "work" and name in {"AGENTS.md", "CLAUDE.md"}):
+        return "delivery_payload"
+    if (parts[0] == "tools" and len(parts) == 3 and name == "SKILL.md"):
+        return "delivery_payload"
+    if (parts[0] == "tools" and len(parts) == 4 and parts[2] == "scripts"
+            and name.endswith(".py")):
+        return "delivery_payload"
+    if (parts[0] == "connections" and len(parts) >= 6
+            and parts[2] == "layouts" and parts[4] == "work"):
+        return "delivery_payload"
+    if (parts[0] == "connections" and len(parts) == 3
+            and name in {"server.py", "requirements.txt"}):
+        return "canonical_source"
+    if name.endswith(".json"):
+        return "receipt_only"
+    return "candidate_tooling"
 
 
 def inventory(root: Path = ROOT) -> list[dict]:
@@ -50,9 +81,11 @@ def inventory(root: Path = ROOT) -> list[dict]:
                 raw = path.read_bytes()
                 if not raw or len(raw) > MAX_FILE_BYTES:
                     raise ValueError(f"empty or overlarge candidate file: {path}")
+                relative = path.relative_to(root).as_posix()
                 entries.append({
                     "group": group,
-                    "path": path.relative_to(root).as_posix(),
+                    "path": relative,
+                    "file_role": file_role(relative),
                     "sha256": hashlib.sha256(raw).hexdigest(),
                     "bytes": len(raw),
                 })
@@ -73,6 +106,8 @@ def render(base_revision: str, root: Path = ROOT) -> str:
         "effect_qualification": "none",
         "native_load": "unqualified",
         "physical_file_count": len(entries),
+        "delivery_payload_file_count": sum(
+            entry["file_role"] == "delivery_payload" for entry in entries),
         "logical_package_count": "not_inferred_from_files",
         "entries": entries,
     }, indent=2, sort_keys=True, ensure_ascii=False) + "\n"

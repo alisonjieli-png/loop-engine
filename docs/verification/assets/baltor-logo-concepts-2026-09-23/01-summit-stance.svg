@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Baltor summit stance concept</title>
+  <desc id="description">Angular sled dog standing with its front paws on a faceted ice peak.</desc>
+  <style>
+    :root { --fur: #182540; --fur-facet: #3d5e9e; --snow: #f6f9ff; --ice: #a9c6f7; --ice-face: #5781dd; --ice-shadow: #2b55d5; }
+    @media (prefers-color-scheme: dark) {
+      :root { --fur: #f2f6ff; --fur-facet: #a8c0ef; --snow: #17233b; --ice: #b9d0ff; --ice-face: #7fa6fa; --ice-shadow: #4e7af0; }
+    }
+  </style>
+  <path d="M5 116 37 81 58 97 85 72 123 116Z" fill="var(--ice)"/>
+  <path d="M5 116 37 81 58 97 48 108Z" fill="var(--ice-face)"/>
+  <path d="m85 72 38 44H70Z" fill="var(--ice-shadow)"/>
+  <path d="m58 97 27-25-15 44H48Z" fill="var(--ice-face)"/>
+  <path d="M18 54 9 45 11 37 26 48 37 51 51 47 67 49 76 40 77 20 86 32 95 23 99 37 113 43 119 50 111 56 101 57 92 52 88 63 91 80 98 80 98 87 83 87 79 68 73 68 72 87 58 87 58 80 64 79 64 69 49 73 44 87 30 87 30 80 35 78 36 68 25 66 17 60Z" fill="var(--fur)"/>
+  <path d="m36 51 15-4 16 2-13 13-18 6-11-2Z" fill="var(--fur-facet)"/>
+  <path d="m54 62 13-13 9-9-3 28-9 1Z" fill="var(--fur-facet)"/>
+  <path d="m80 41 6-9 9-9 4 14 14 6-12 11-9-2-4 11-9-9Z" fill="var(--snow)"/>
+  <path d="m98 40 5 2-4 3Z" fill="var(--fur)"/>
+  <path d="m114 45 5 5-4 3-5-2Z" fill="var(--fur)"/>
+</svg>

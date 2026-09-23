@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">Baltor white husky and paws on cobalt, 32 pixel mark</title>
+  <rect width="32" height="32" rx="6" fill="#2364d2"/>
+  <path d="M5 14Q4 9 7 3l5 5q4-2 8 0l5-5q3 6 2 11l1 4q-2 6-8 6h-8q-6 0-8-6Z" fill="#fff"/>
+  <path d="M8 11q2-3 5-1l2 6-4 2-4-3Zm16 0q-2-3-5-1l-2 6 4 2 4-3Z" fill="#092e5b"/>
+  <path d="M10 13h2v2h-2Zm10 0h2v2h-2Z" fill="#fff"/>
+  <path d="M14 19h4l-2 3Z" fill="#092e5b"/>
+  <path d="m2 30 14-5 14 5Z" fill="#b9ddff"/>
+  <path d="M8 24h4q1 0 1 1v2H7v-2q0-1 1-1Zm12 0h4q1 0 1 1v2h-6v-2q0-1 1-1Z" fill="#fff"/>
+</svg>

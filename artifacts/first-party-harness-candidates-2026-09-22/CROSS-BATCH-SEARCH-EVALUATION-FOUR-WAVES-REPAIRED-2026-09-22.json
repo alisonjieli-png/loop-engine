@@ -1,0 +1,820 @@
+{
+  "approval_state": "none",
+  "batch_manifests": [
+    {
+      "root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22",
+      "sha256": "85eb74823631bb520690e9c486e535c6f1564549761ed4723e759f93fed20bde"
+    },
+    {
+      "root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-2",
+      "sha256": "97ee4e157af9cd7d10d951df547961d9f3aac919f37054a49218b7a59f6abf6a"
+    },
+    {
+      "root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-3",
+      "sha256": "b06f1a5a15127dbed6c3e3f0d6580e1dcad31953bc430a9d9bb6db7656cc3c7f"
+    },
+    {
+      "root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "sha256": "2cb6c04918dc7aa05b331186f7120b8f020542a7afcd82843456fcdfb58c4696"
+    }
+  ],
+  "candidate_count": 80,
+  "evaluated_at_utc": "2026-09-23T03:58:29.670444+00:00",
+  "limitations": "One expected item per English query; first-batch queries were used during development, later batches were independent local probes. Review notes are indexed. No hosted grants, native loads, task outcomes, or customer relevance distribution tested.",
+  "metrics": {
+    "correct_no_answer": 20,
+    "no_answer": 20,
+    "positive": 80,
+    "top_one": 56,
+    "top_three": 60
+  },
+  "multi_batch_tool_sha256": "8501e579c51a85c71bc14bde22b993ee7952083b0bc2231d51ba20afb528fc39",
+  "populations": [
+    {
+      "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22",
+      "metrics": {
+        "correct_no_answer": 5,
+        "no_answer": 5,
+        "positive": 24,
+        "top_one": 23,
+        "top_three": 24
+      },
+      "no_answer_queries": [
+        {
+          "no_match": true,
+          "query": "How do I bake sourdough bread with rye starter",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Generate a visa invitation letter for travel",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Deploy a Kubernetes cluster to production",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Rotate a leaked API key",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Normalize telephone numbers to E.164 format",
+          "returned_names": []
+        }
+      ],
+      "positive_queries": [
+        {
+          "expected_name": "audit-as-of-data-visibility",
+          "query": "historical report changed after late correction what was known then",
+          "rank": 1,
+          "returned_names": [
+            "audit-as-of-data-visibility"
+          ]
+        },
+        {
+          "expected_name": "audit-measurement-units",
+          "query": "convert kilograms and grams before adding",
+          "rank": 1,
+          "returned_names": [
+            "audit-measurement-units"
+          ]
+        },
+        {
+          "expected_name": "check-rate-denominators",
+          "query": "conversion percentage counts events instead of users",
+          "rank": 1,
+          "returned_names": [
+            "check-rate-denominators",
+            "define-a-user-operation-performance-envelope"
+          ]
+        },
+        {
+          "expected_name": "define-time-zone-reporting-window",
+          "query": "daily metrics around daylight saving time",
+          "rank": 1,
+          "returned_names": [
+            "define-time-zone-reporting-window"
+          ]
+        },
+        {
+          "expected_name": "rebuild-state-from-ordered-events",
+          "query": "derive order status from event log",
+          "rank": 1,
+          "returned_names": [
+            "rebuild-state-from-ordered-events"
+          ]
+        },
+        {
+          "expected_name": "reconcile-snapshot-changes",
+          "query": "find differences between two exports",
+          "rank": 1,
+          "returned_names": [
+            "reconcile-snapshot-changes"
+          ]
+        },
+        {
+          "expected_name": "trace-numeric-rounding",
+          "query": "why invoice lines total differs by a cent",
+          "rank": 1,
+          "returned_names": [
+            "trace-numeric-rounding",
+            "trace-statement-line-to-ledger"
+          ]
+        },
+        {
+          "expected_name": "validate-aggregate-grain",
+          "query": "avoid double counting stock snapshots",
+          "rank": 1,
+          "returned_names": [
+            "validate-aggregate-grain"
+          ]
+        },
+        {
+          "expected_name": "build-a-project-decision-provenance-map",
+          "query": "which project decision was approved from conflicting notes",
+          "rank": 1,
+          "returned_names": [
+            "build-a-project-decision-provenance-map"
+          ]
+        },
+        {
+          "expected_name": "design-a-bounded-product-experiment",
+          "query": "plan A B experiment with rollout guardrails",
+          "rank": 1,
+          "returned_names": [
+            "design-a-bounded-product-experiment"
+          ]
+        },
+        {
+          "expected_name": "map-observed-customer-journey-friction",
+          "query": "users drop out during sign up journey",
+          "rank": 1,
+          "returned_names": [
+            "map-observed-customer-journey-friction"
+          ]
+        },
+        {
+          "expected_name": "match-a-product-claim-to-verified-capability",
+          "query": "check marketing claims against released feature",
+          "rank": 2,
+          "returned_names": [
+            "audit-a-published-guide-against-a-release",
+            "match-a-product-claim-to-verified-capability"
+          ]
+        },
+        {
+          "expected_name": "normalize-vendor-offers-for-one-decision",
+          "query": "compare vendor quotes with different pricing units",
+          "rank": 1,
+          "returned_names": [
+            "normalize-vendor-offers-for-one-decision"
+          ]
+        },
+        {
+          "expected_name": "screen-a-study-for-a-product-decision",
+          "query": "should this paper justify our product choice",
+          "rank": 1,
+          "returned_names": [
+            "screen-a-study-for-a-product-decision"
+          ]
+        },
+        {
+          "expected_name": "separate-recurring-support-causes-from-repeat-contacts",
+          "query": "support tickets repeat same customer incident",
+          "rank": 1,
+          "returned_names": [
+            "separate-recurring-support-causes-from-repeat-contacts"
+          ]
+        },
+        {
+          "expected_name": "triage-support-requests-against-approved-policy",
+          "query": "classify refund request using company policy",
+          "rank": 1,
+          "returned_names": [
+            "triage-support-requests-against-approved-policy"
+          ]
+        },
+        {
+          "expected_name": "adjudicate-model-disagreement-with-external-checks",
+          "query": "multiple agents disagree which answer is correct",
+          "rank": 1,
+          "returned_names": [
+            "adjudicate-model-disagreement-with-external-checks"
+          ]
+        },
+        {
+          "expected_name": "audit-semantic-loss-in-protocol-fallback",
+          "query": "protocol downgrade drops approval semantics",
+          "rank": 1,
+          "returned_names": [
+            "audit-semantic-loss-in-protocol-fallback"
+          ]
+        },
+        {
+          "expected_name": "challenge-retrieval-with-hard-negatives",
+          "query": "test search against near matches and no results",
+          "rank": 1,
+          "returned_names": [
+            "challenge-retrieval-with-hard-negatives"
+          ]
+        },
+        {
+          "expected_name": "compare-model-context-pairs-on-frozen-cases",
+          "query": "compare small model with short instructions and large model with longer prompt",
+          "rank": 1,
+          "returned_names": [
+            "compare-model-context-pairs-on-frozen-cases"
+          ]
+        },
+        {
+          "expected_name": "explain-engine-selection-from-eligible-evidence",
+          "query": "why was an adapter chosen over other eligible engines",
+          "rank": 1,
+          "returned_names": [
+            "explain-engine-selection-from-eligible-evidence"
+          ]
+        },
+        {
+          "expected_name": "map-independent-acceptance-evidence",
+          "query": "several passing reports share one fixture",
+          "rank": 1,
+          "returned_names": [
+            "map-independent-acceptance-evidence"
+          ]
+        },
+        {
+          "expected_name": "reconstruct-causality-across-clock-skewed-records",
+          "query": "logs from machines have clocks out of sync",
+          "rank": 1,
+          "returned_names": [
+            "reconstruct-causality-across-clock-skewed-records"
+          ]
+        },
+        {
+          "expected_name": "separate-shared-build-cache-from-task-state",
+          "query": "parallel workers share build cache but not outputs",
+          "rank": 1,
+          "returned_names": [
+            "separate-shared-build-cache-from-task-state"
+          ]
+        }
+      ],
+      "probe_path": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22/search-probes.json",
+      "probe_sha256": "77afd14ed4c9754938195f7a81082c1f27514c7d0c94011da202ffdc17bd4961",
+      "selection_rule": "One initially independent task phrasing per first-batch candidate. First 12 and two later diagnostic examples were shared for search development; this population is a regression set, not a blind benchmark."
+    },
+    {
+      "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-2",
+      "metrics": {
+        "correct_no_answer": 5,
+        "no_answer": 5,
+        "positive": 24,
+        "top_one": 14,
+        "top_three": 16
+      },
+      "no_answer_queries": [
+        {
+          "no_match": true,
+          "query": "How do I bake rye bread without a starter?",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Summarize the causes of the French Revolution.",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Generate a watercolor portrait of a tabby cat.",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Design a three day hiking route in Patagonia.",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Translate this poem into Japanese.",
+          "returned_names": []
+        }
+      ],
+      "positive_queries": [
+        {
+          "expected_name": "audit-resource-capacity-by-interval",
+          "query": "Can two technicians cover overlapping jobs on the Tuesday shift?",
+          "rank": 1,
+          "returned_names": [
+            "audit-resource-capacity-by-interval"
+          ]
+        },
+        {
+          "expected_name": "bridge-forecast-driver-changes",
+          "query": "Our revised workload estimate rose; attribute the difference to changed assumptions.",
+          "rank": 1,
+          "returned_names": [
+            "bridge-forecast-driver-changes"
+          ]
+        },
+        {
+          "expected_name": "reconcile-inventory-availability",
+          "query": "Why is warehouse stock shown as sellable despite customer holds?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "reconcile-order-fulfillment-quantities",
+          "query": "After split deliveries and a cancellation, how many units do we still owe?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "reconcile-record-flow-across-stages",
+          "query": "Rows disappear between ingest, validation, and the published dataset.",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "reconstruct-service-clock-from-status-intervals",
+          "query": "Compute the support service time excluding paused periods and closed hours.",
+          "rank": 1,
+          "returned_names": [
+            "reconstruct-service-clock-from-status-intervals"
+          ]
+        },
+        {
+          "expected_name": "trace-field-lineage-to-a-measure",
+          "query": "Which upstream column and transformation created this dashboard total?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "validate-source-to-target-field-map",
+          "query": "The vendor feed status column has the right name but means something different.",
+          "rank": 1,
+          "returned_names": [
+            "validate-source-to-target-field-map"
+          ]
+        },
+        {
+          "expected_name": "carry-a-sales-promise-into-delivery",
+          "query": "What exactly did the sales team promise that implementation has not scheduled?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "compare-acquisition-channels-for-one-segment",
+          "query": "Should we focus on developer forums or paid search to reach this buyer group?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "gate-a-product-launch-across-teams",
+          "query": "Are payments, signup, support, and docs ready before announcing the product?",
+          "rank": 1,
+          "returned_names": [
+            "gate-a-product-launch-across-teams"
+          ]
+        },
+        {
+          "expected_name": "prepare-a-support-escalation-packet",
+          "query": "Turn this customer's error report into a safe reproducible handoff for engineering.",
+          "rank": 1,
+          "returned_names": [
+            "prepare-a-support-escalation-packet"
+          ]
+        },
+        {
+          "expected_name": "qualify-a-partner-integration-proposal",
+          "query": "Can we connect our product to a partner without unclear data sharing or owner duties?",
+          "rank": 1,
+          "returned_names": [
+            "qualify-a-partner-integration-proposal"
+          ]
+        },
+        {
+          "expected_name": "qualify-an-invited-pilot-cohort",
+          "query": "We can support only a few beta accounts; which applicants fit the shipped capability?",
+          "rank": 1,
+          "returned_names": [
+            "qualify-an-invited-pilot-cohort"
+          ]
+        },
+        {
+          "expected_name": "reconstruct-a-buyer-decision-path",
+          "query": "Our internal champion likes it; who can approve spending and what review is left?",
+          "rank": 1,
+          "returned_names": [
+            "reconstruct-a-buyer-decision-path"
+          ]
+        },
+        {
+          "expected_name": "synthesize-discovery-interviews-with-counterexamples",
+          "query": "Several interviewees complained, but one person repeated it; what is the actual signal?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "adjudicate-a-protocol-tool-effect-request",
+          "query": "May the agent call this MCP tool to modify a different account than approved?",
+          "rank": 1,
+          "returned_names": [
+            "adjudicate-a-protocol-tool-effect-request"
+          ]
+        },
+        {
+          "expected_name": "audit-a-model-specific-skill-rendering",
+          "query": "Did the shorter instructions for the small model lose a mandatory safety clause?",
+          "rank": 1,
+          "returned_names": [
+            "audit-a-model-specific-skill-rendering"
+          ]
+        },
+        {
+          "expected_name": "compile-a-native-material-placement-plan",
+          "query": "Where should selected skills and references be placed for a new coding agent run?",
+          "rank": null,
+          "returned_names": [
+            "specify-an-isolated-harness-startup-probe"
+          ]
+        },
+        {
+          "expected_name": "design-catalogue-withdrawal-checks",
+          "query": "How do we prove a withdrawn library item cannot be downloaded through a stale link?",
+          "rank": 1,
+          "returned_names": [
+            "design-catalogue-withdrawal-checks"
+          ]
+        },
+        {
+          "expected_name": "reconcile-native-material-use-evidence",
+          "query": "The skill file was installed, but did the client load and use it in this run?",
+          "rank": 2,
+          "returned_names": [
+            "compile-a-native-material-placement-plan",
+            "reconcile-native-material-use-evidence"
+          ]
+        },
+        {
+          "expected_name": "revalidate-output-allocation-on-model-fallback",
+          "query": "Backup model has a different output window and earlier calls used budget; can we retry?",
+          "rank": 1,
+          "returned_names": [
+            "revalidate-output-allocation-on-model-fallback"
+          ]
+        },
+        {
+          "expected_name": "scope-a-step-credential-lease-to-physical-use",
+          "query": "Can a child agent use a broker token only for its assigned provider and two calls?",
+          "rank": 2,
+          "returned_names": [
+            "adjudicate-a-protocol-tool-effect-request",
+            "scope-a-step-credential-lease-to-physical-use"
+          ]
+        },
+        {
+          "expected_name": "specify-an-isolated-harness-startup-probe",
+          "query": "Will a newly started harness see a global instruction outside its workspace?",
+          "rank": 1,
+          "returned_names": [
+            "specify-an-isolated-harness-startup-probe"
+          ]
+        }
+      ],
+      "probe_path": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-2/search-probes.json",
+      "probe_sha256": "17a3e6008cdee1c0a9ee817b00db8813dce373bb61c338bbaaf96f39574eb3e9",
+      "selection_rule": "One independently phrased task query per wave-two candidate, written by a reviewer before running the search; five unrelated no-answer controls."
+    },
+    {
+      "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-3",
+      "metrics": {
+        "correct_no_answer": 5,
+        "no_answer": 5,
+        "positive": 20,
+        "top_one": 9,
+        "top_three": 10
+      },
+      "no_answer_queries": [
+        {
+          "no_match": true,
+          "query": "How should I prune an apple tree in winter?",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "What is the chemical formula of potassium permanganate?",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Compose a sonnet about a blue whale.",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Plan a family vacation in Lisbon.",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Who won the 1974 World Cup?",
+          "returned_names": []
+        }
+      ],
+      "positive_queries": [
+        {
+          "expected_name": "audit-sampling-frame-coverage",
+          "query": "Our web survey never reached customers who use the offline service; can results describe everyone?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "audit-service-measure-against-agreement",
+          "query": "Recompute the carrier on-time score when missing delivery proof counts as late under the contract.",
+          "rank": null,
+          "returned_names": [
+            "compare-distribution-paths-with-failure-costs"
+          ]
+        },
+        {
+          "expected_name": "bound-obsolete-stock-by-support-horizon",
+          "query": "An old spare-part revision still fits supported repairs; how much inventory is actually stranded?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "compare-satisfaction-waves-by-respondent-mix",
+          "query": "Satisfaction rose after the respondent mix shifted toward enterprise users; is the comparison valid?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "diagnose-process-constraint-from-flow",
+          "query": "Cases build up before packing although picking takes longer; which station limits flow?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "reconcile-account-difference-to-postings",
+          "query": "Two ledger entries have the same amount but only one matches a source transaction; explain the remaining balance.",
+          "rank": 1,
+          "returned_names": [
+            "reconcile-account-difference-to-postings",
+            "trace-statement-line-to-ledger"
+          ]
+        },
+        {
+          "expected_name": "test-aggregate-trend-for-subgroup-reversal",
+          "query": "Overall conversion rises while every segment's conversion falls; explain the reversal.",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "challenge-a-survey-instrument-for-contamination",
+          "query": "The questionnaire asks whether onboarding is quick and easy in one rating; can we infer both?",
+          "rank": 1,
+          "returned_names": [
+            "challenge-a-survey-instrument-for-contamination"
+          ]
+        },
+        {
+          "expected_name": "contrast-described-and-observed-workflows",
+          "query": "Our process diagram omits the manual review seen in most case traces; compare the two.",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "establish-milestone-readiness-from-evidence",
+          "query": "All milestone tickets are closed but the signed acceptance artifact is missing; is it ready?",
+          "rank": 1,
+          "returned_names": [
+            "establish-milestone-readiness-from-evidence"
+          ]
+        },
+        {
+          "expected_name": "explain-a-service-charge-from-effective-rules",
+          "query": "This quote used the new hourly tariff for work performed before the price change.",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "propagate-a-plan-change-through-commitments",
+          "query": "If testing moves next week, which resource bookings and customer handoffs are affected?",
+          "rank": 1,
+          "returned_names": [
+            "propagate-a-plan-change-through-commitments"
+          ]
+        },
+        {
+          "expected_name": "test-control-operation-on-a-bounded-sample",
+          "query": "The dual approval policy exists, but did both reviewers sign the sampled purchases?",
+          "rank": 2,
+          "returned_names": [
+            "reconstruct-a-buyer-decision-path",
+            "test-control-operation-on-a-bounded-sample"
+          ]
+        },
+        {
+          "expected_name": "verify-resolution-against-original-symptom",
+          "query": "The patch shipped, yet the same customer action still errors; should the ticket close?",
+          "rank": 1,
+          "returned_names": [
+            "verify-resolution-against-original-symptom"
+          ]
+        },
+        {
+          "expected_name": "audit-a-published-guide-against-a-release",
+          "query": "The tutorial works on main but references a command absent from the shipped version.",
+          "rank": 1,
+          "returned_names": [
+            "audit-a-published-guide-against-a-release"
+          ]
+        },
+        {
+          "expected_name": "check-prerequisite-order-in-a-task-guide",
+          "query": "The setup instructions request a token before the step that creates it.",
+          "rank": null,
+          "returned_names": [
+            "scope-a-step-credential-lease-to-physical-use"
+          ]
+        },
+        {
+          "expected_name": "define-a-user-operation-performance-envelope",
+          "query": "Set latency and failure criteria for checkout under peak load, including large carts.",
+          "rank": 1,
+          "returned_names": [
+            "define-a-user-operation-performance-envelope"
+          ]
+        },
+        {
+          "expected_name": "derive-state-transition-tests-from-a-contract",
+          "query": "Design cases for every allowed and forbidden order-status transition, including an interrupted capture.",
+          "rank": 1,
+          "returned_names": [
+            "derive-state-transition-tests-from-a-contract"
+          ]
+        },
+        {
+          "expected_name": "map-system-output-to-permitted-consumers",
+          "query": "Which fields from this new event feed may each team receive and retain?",
+          "rank": 1,
+          "returned_names": [
+            "map-system-output-to-permitted-consumers"
+          ]
+        },
+        {
+          "expected_name": "qualify-a-prebuilt-application-against-required-seams",
+          "query": "Does this existing package preserve our required refusal semantics and schema version?",
+          "rank": null,
+          "returned_names": [
+            "audit-semantic-loss-in-protocol-fallback"
+          ]
+        }
+      ],
+      "probe_path": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-3/search-probes.json",
+      "probe_sha256": "3d40049b234c24a8fca496cb1da282854508237f1ebdfc775991bb4e8f51a792",
+      "selection_rule": "One independently phrased task query per occupation-linked candidate, written by a reviewer before running wave-three search; five unrelated no-answer controls."
+    },
+    {
+      "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops",
+      "metrics": {
+        "correct_no_answer": 5,
+        "no_answer": 5,
+        "positive": 12,
+        "top_one": 10,
+        "top_three": 10
+      },
+      "no_answer_queries": [
+        {
+          "no_match": true,
+          "query": "How should I prune an apple tree in winter?",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Translate a medieval Latin poem into Spanish.",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "What tide height is forecast for the eastern harbor?",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Design a watercolor poster for a children's book.",
+          "returned_names": []
+        },
+        {
+          "no_match": true,
+          "query": "Which telescope eyepiece should I buy for Jupiter?",
+          "returned_names": []
+        }
+      ],
+      "positive_queries": [
+        {
+          "expected_name": "allocate-scarce-stock-by-promised-service",
+          "query": "We have fewer usable components than confirmed customer orders. Allocate what is on hand without promising the same unit twice.",
+          "rank": 1,
+          "returned_names": [
+            "allocate-scarce-stock-by-promised-service"
+          ]
+        },
+        {
+          "expected_name": "compare-distribution-paths-with-failure-costs",
+          "query": "Compare direct freight against a cheaper two-hop lane that misses the arrival promise.",
+          "rank": 1,
+          "returned_names": [
+            "compare-distribution-paths-with-failure-costs"
+          ]
+        },
+        {
+          "expected_name": "map-repair-support-requirements-to-assets",
+          "query": "For this approved maintenance procedure, identify missing calibrated fixtures and compatible replacement parts before scheduling the repair.",
+          "rank": 1,
+          "returned_names": [
+            "map-repair-support-requirements-to-assets"
+          ]
+        },
+        {
+          "expected_name": "reconcile-subcontractor-delivery-to-obligations",
+          "query": "Our subcontractor uploaded a report and marked the job done. Which agreement deliverables still lack signed acceptance?",
+          "rank": 1,
+          "returned_names": [
+            "reconcile-subcontractor-delivery-to-obligations"
+          ]
+        },
+        {
+          "expected_name": "trace-resource-request-to-funding-window",
+          "query": "A contractor is available next week, but approved funds may start later than the work. Can the project request be committed?",
+          "rank": 1,
+          "returned_names": [
+            "trace-resource-request-to-funding-window"
+          ]
+        },
+        {
+          "expected_name": "balance-project-duty-coverage",
+          "query": "Our project responsibility sheet lists the same employee as preparer and independent approver. Check coverage and conflicts.",
+          "rank": 1,
+          "returned_names": [
+            "balance-project-duty-coverage"
+          ]
+        },
+        {
+          "expected_name": "explain-work-package-cost-variance",
+          "query": "Separate spent money from open purchase commitments when explaining why a work package differs from its authorized baseline.",
+          "rank": 1,
+          "returned_names": [
+            "explain-work-package-cost-variance"
+          ]
+        },
+        {
+          "expected_name": "classify-ambiguous-posting-account",
+          "query": "This mixed service and equipment invoice could go to several accounts. Propose the right ledger classification from the chart rules.",
+          "rank": 1,
+          "returned_names": [
+            "classify-ambiguous-posting-account"
+          ]
+        },
+        {
+          "expected_name": "trace-statement-line-to-ledger",
+          "query": "Show every ledger account and consolidation adjustment behind the reported revenue line, including duplicate mappings.",
+          "rank": 1,
+          "returned_names": [
+            "trace-statement-line-to-ledger"
+          ]
+        },
+        {
+          "expected_name": "screen-payable-for-document-mismatch",
+          "query": "The vendor bills for units ordered, but only part of the shipment was accepted. Prepare an invoice exception before anyone pays.",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "track-customer-promises-through-case-updates",
+          "query": "The support issue was fixed internally, yet we cannot find the follow-up the agent promised the customer. Is the case finished?",
+          "rank": null,
+          "returned_names": []
+        },
+        {
+          "expected_name": "reconcile-return-credit-to-original-sale",
+          "query": "The requested refund includes a unit already credited last month. Check eligible returned quantities and the original sale price.",
+          "rank": 1,
+          "returned_names": [
+            "reconcile-return-credit-to-original-sale"
+          ]
+        }
+      ],
+      "probe_path": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-4-ops/search-probes.json",
+      "probe_sha256": "01aafc00c2754c3cc771f52e2d0f8f1e0c940912a8046775b8fe45704353bef4",
+      "selection_rule": "One author-written task query per proposed method, drafted before running this local evaluator; five unrelated no-answer controls. Not independent or blind."
+    }
+  ],
+  "record_type": "local_multi_batch_candidate_search_evaluation/v1",
+  "scope": "local_candidate_batches_only",
+  "search_tool_sha256": "9d2635803489752fe5b0590d28f2baaa994943d9302d02042680dd097482125c"
+}

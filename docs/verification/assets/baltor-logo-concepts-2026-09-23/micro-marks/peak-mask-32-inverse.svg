@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="title desc">
+  <title id="title">Baltor summit profile, 32 pixel study</title>
+  <desc id="desc">A mature right facing husky with a raised chin, upright chest and broad ice summit, built from four flat forms.</desc>
+  <path fill="#58C4E6" d="M2 31 10 25H22L30 31Z"/>
+  <path fill="#f7fbff" d="M5 26 9 16 10 5 12 2 18 9 22 8 25 11H30V15L24 19 22 26Z"/>
+  <path fill="#092e5b" d="M12 7 15 11 12 13ZM20 12H27Q29 12 29 14L23 17Q19 20 22 26H17Q18 21 16 19L13 17Z"/>
+  <path fill="#f7fbff" d="M27 11H30V13H27ZM21 11H23V13H21Z"/>
+</svg>

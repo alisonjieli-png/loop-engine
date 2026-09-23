@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" role="img" aria-labelledby="title desc">
+  <title id="title">Baltor summit profile, 16 pixel study</title>
+  <desc id="desc">A mature husky in right facing profile, chin lifted above a single broad blue ice ledge.</desc>
+  <path fill="#58C4E6" d="M1 16 5 13H11L15 16Z"/>
+  <path fill="#0B2E55" d="M3 13 5 8 5 2 6 1 9 4 11 4 12 5H15V7L12 9 11 13Z"/>
+  <path fill="#FFFFFF" d="M6 3 7 5 6 6ZM10 6H14L11 8 10 11 9 13H7L8 9 7 8Z"/>
+  <path fill="#0B2E55" d="M13 5H15V6H13ZM10 5H11V6H10Z"/>
+</svg>

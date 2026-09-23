@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title description">
+  <title id="title">Baltor floe runner concept</title>
+  <desc id="description">Low-poly racing dog leaning forward with two front paws on a rising ice floe.</desc>
+  <rect x="4" y="4" width="120" height="120" rx="22" fill="#17243d"/>
+  <path d="M11 112 42 95 65 101 95 76 117 112v5H11Z" fill="#8fb6ff"/>
+  <path d="m95 76 22 36v5H73Z" fill="#4e7ce6"/>
+  <path d="m42 95 23 6-11 16H11Z" fill="#bcd6ff"/>
+  <path d="M19 69 9 55 11 44 24 57 42 53 54 46 72 49 80 42 81 24 89 37 98 25 101 41 114 47 119 54 113 60 102 61 92 57 87 69 94 79 105 82 104 90 87 89 78 74 70 73 63 91 50 91 50 83 56 80 55 70 44 71 39 90 25 90 25 82 31 79 32 68 22 72Z" fill="#f4f8ff"/>
+  <path d="m42 53 12-7 18 3-11 15-17 7-12-3Z" fill="#8eaff2"/>
+  <path d="m81 42 8-5 9-12 3 16 13 6-12 11-10-1-5 12-8-11Z" fill="#a4c1f7"/>
+  <path d="m101 46 5 1-4 4Z" fill="#17243d"/>
+  <path d="m114 49 5 5-4 2-5-2Z" fill="#17243d"/>
+</svg>

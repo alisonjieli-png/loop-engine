@@ -4625,6 +4625,49 @@ entries:
     classification: DEPLOYMENT_CONFIGURATION
     created_on: 2026-09-22
     expires_on: 2027-09-22
+  - finding_id: hardcoding.524c5fa6dd10057a16d2eaf5
+    owner: docs.verification.assets.baltor-logo-concepts-2026-09-23.proud-profile.prompts.json:variants[0].prompt
+    rationale: >-
+      The exact image-generation prompt Codex used for one logo concept on September 23, 2026, kept beside the image it produced so the concept can be reviewed and reproduced. It is a dated design record: nothing in the product, a Loop or a harness reads it, and it is not a runtime prompt.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+  - finding_id: hardcoding.61522f4310e10614126e6e22
+    owner: docs.verification.assets.baltor-logo-concepts-2026-09-23.proud-profile.prompts.json:variants[1].prompt
+    rationale: >-
+      The exact image-generation prompt Codex used for one logo concept on September 23, 2026, kept beside the image it produced so the concept can be reviewed and reproduced. It is a dated design record: nothing in the product, a Loop or a harness reads it, and it is not a runtime prompt.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+  - finding_id: hardcoding.98749907f81d7a7e1edfb161
+    owner: docs.verification.assets.baltor-logo-concepts-2026-09-23.proud-profile.prompts.json:variants[2].prompt
+    rationale: >-
+      The exact image-generation prompt Codex used for one logo concept on September 23, 2026, kept beside the image it produced so the concept can be reviewed and reproduced. It is a dated design record: nothing in the product, a Loop or a harness reads it, and it is not a runtime prompt.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+  - finding_id: hardcoding.97ee9d1f9991d5aa4e7a996b
+    owner: docs.verification.assets.baltor-logo-concepts-2026-09-23.refined-husky.prompts.json:variants[0].prompt
+    rationale: >-
+      The exact image-generation prompt Codex used for one logo concept on September 23, 2026, kept beside the image it produced so the concept can be reviewed and reproduced. It is a dated design record: nothing in the product, a Loop or a harness reads it, and it is not a runtime prompt.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+  - finding_id: hardcoding.ec8ee371f9a3e00e94726e41
+    owner: docs.verification.assets.baltor-logo-concepts-2026-09-23.refined-husky.prompts.json:variants[1].prompt
+    rationale: >-
+      The exact image-generation prompt Codex used for one logo concept on September 23, 2026, kept beside the image it produced so the concept can be reviewed and reproduced. It is a dated design record: nothing in the product, a Loop or a harness reads it, and it is not a runtime prompt.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+  - finding_id: hardcoding.358a2a738326308a02cd49db
+    owner: docs.verification.assets.baltor-logo-concepts-2026-09-23.refined-husky.prompts.json:variants[2].prompt
+    rationale: >-
+      The exact image-generation prompt Codex used for one logo concept on September 23, 2026, kept beside the image it produced so the concept can be reviewed and reproduced. It is a dated design record: nothing in the product, a Loop or a harness reads it, and it is not a runtime prompt.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+  - finding_id: hardcoding.f0f96000f09a1e46f1a33a9c
+    owner: docs.verification.assets.baltor-logo-concepts-2026-09-23.refined-husky.prompts.json:variants[3].prompt
+    rationale: >-
+      The exact image-generation prompt Codex used for one logo concept on September 23, 2026, kept beside the image it produced so the concept can be reviewed and reproduced. It is a dated design record: nothing in the product, a Loop or a harness reads it, and it is not a runtime prompt.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust

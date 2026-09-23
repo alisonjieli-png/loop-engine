@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" role="img" aria-labelledby="title">
+  <title id="title">Baltor husky and summit, drawn for 16 pixels</title>
+  <rect width="16" height="16" rx="3" fill="#092e5b"/>
+  <path d="M3 2 6 6H3ZM13 2 10 6h3Z" fill="#fff"/>
+  <path d="m3 8 2-2 3 3 3-3 2 2-1 3-4 2-4-2Z" fill="#fff"/>
+  <path d="M6 10h4l-2 2Z" fill="#092e5b"/>
+  <path d="m2 15 6-3 6 3Z" fill="#4d9dff"/>
+</svg>

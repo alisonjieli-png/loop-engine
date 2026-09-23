@@ -1,0 +1,143 @@
+{
+  "approval_state": "none",
+  "benefit_evidence": "unmeasured",
+  "effect_qualification": "none",
+  "entries": [
+    {
+      "group": "data",
+      "name": "allocate-scarce-stock-by-promised-service",
+      "package_bytes": 4092,
+      "package_path": "packages/data/allocate-scarce-stock-by-promised-service/SKILL.md",
+      "package_sha256": "eb9930e63c950d801a8fe306edbcf8f17ebda78a4fe67fdacc1aad96cc0a70be",
+      "review_note_bytes": 2800,
+      "review_note_path": "review-notes/allocate-scarce-stock-by-promised-service.md",
+      "review_note_sha256": "e8df7eb1a4743a836ac5e9aed71c315375d6033bc538415eafded1c1ed18f452",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "balance-project-duty-coverage",
+      "package_bytes": 2058,
+      "package_path": "packages/project/balance-project-duty-coverage/SKILL.md",
+      "package_sha256": "d1248eff98fd0533d8f6397923b18047a130930f5aa62958bc8eb6eb5108cd90",
+      "review_note_bytes": 2032,
+      "review_note_path": "review-notes/balance-project-duty-coverage.md",
+      "review_note_sha256": "aff13f710ec197dcdff17184d26ef2299b47ab9c081f180cb8e8292ce36e0e90",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "classify-ambiguous-posting-account",
+      "package_bytes": 2206,
+      "package_path": "packages/data/classify-ambiguous-posting-account/SKILL.md",
+      "package_sha256": "d5f8b462c631f6c658d2fc714b2c3f8ee8690084b693d6b0d5c2c1463b022a8d",
+      "review_note_bytes": 2022,
+      "review_note_path": "review-notes/classify-ambiguous-posting-account.md",
+      "review_note_sha256": "98eb9fbe2e9765176ae2d509b3116cda13a42608c5bd332e147fa1b175bb8f6d",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "compare-distribution-paths-with-failure-costs",
+      "package_bytes": 2315,
+      "package_path": "packages/data/compare-distribution-paths-with-failure-costs/SKILL.md",
+      "package_sha256": "53480268d57e854154feacdf457b7964826fe65a50c53fcd7f114a7e4c7906d8",
+      "review_note_bytes": 2227,
+      "review_note_path": "review-notes/compare-distribution-paths-with-failure-costs.md",
+      "review_note_sha256": "19a64a95d0b6f51fb5fa0e22b969f7ee30f2c59a5a790d424970e64b2f722bff",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "explain-work-package-cost-variance",
+      "package_bytes": 3610,
+      "package_path": "packages/data/explain-work-package-cost-variance/SKILL.md",
+      "package_sha256": "732fc6dd8be0e5289b8c2d92b50be424640174cb23e87ca362803e440e26a14d",
+      "review_note_bytes": 2586,
+      "review_note_path": "review-notes/explain-work-package-cost-variance.md",
+      "review_note_sha256": "09ac5c2227e416669fade671c6cdc0fb79e74573af1a3882556574dcb056602f",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "map-repair-support-requirements-to-assets",
+      "package_bytes": 2172,
+      "package_path": "packages/data/map-repair-support-requirements-to-assets/SKILL.md",
+      "package_sha256": "67ec6d011c6e218ba970c54748f47a3591a32b704e16560f1848eae8342b3bd6",
+      "review_note_bytes": 2183,
+      "review_note_path": "review-notes/map-repair-support-requirements-to-assets.md",
+      "review_note_sha256": "b89657db48bda0d381a4486ff4c950d8301d10e2b89008fef9c74f6c7c25f196",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "reconcile-return-credit-to-original-sale",
+      "package_bytes": 3570,
+      "package_path": "packages/project/reconcile-return-credit-to-original-sale/SKILL.md",
+      "package_sha256": "fd51b0ee7bc528f061452c81885e190b1030cec578f093de727b7b6c658e30d6",
+      "review_note_bytes": 2538,
+      "review_note_path": "review-notes/reconcile-return-credit-to-original-sale.md",
+      "review_note_sha256": "16e453365314c4a694dff9c4540f43cb8dce3ce6f724978393a911ca3ffa09b0",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "reconcile-subcontractor-delivery-to-obligations",
+      "package_bytes": 2161,
+      "package_path": "packages/project/reconcile-subcontractor-delivery-to-obligations/SKILL.md",
+      "package_sha256": "0116a34e274a5f7e4dff5276e3be0f59fc1116d03608da0278db8f65320b223f",
+      "review_note_bytes": 2047,
+      "review_note_path": "review-notes/reconcile-subcontractor-delivery-to-obligations.md",
+      "review_note_sha256": "113da4ddb610b0515e4e1c216085204c02d4c6d2defd1202252bc675dbffa06e",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "screen-payable-for-document-mismatch",
+      "package_bytes": 2103,
+      "package_path": "packages/project/screen-payable-for-document-mismatch/SKILL.md",
+      "package_sha256": "fb7d317a77a18eaaccb081b82973283a209571eb3c1c35ea03f15e4789eb65a6",
+      "review_note_bytes": 1999,
+      "review_note_path": "review-notes/screen-payable-for-document-mismatch.md",
+      "review_note_sha256": "858a67329b38365a3ceb3453abee66bf8e2458ee802d6606344efa25ac56f31f",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "trace-resource-request-to-funding-window",
+      "package_bytes": 2127,
+      "package_path": "packages/project/trace-resource-request-to-funding-window/SKILL.md",
+      "package_sha256": "806025609018c8752dc667857b80a6d0aa2efd4c5a71c9ab61af60f66f1c01b3",
+      "review_note_bytes": 2016,
+      "review_note_path": "review-notes/trace-resource-request-to-funding-window.md",
+      "review_note_sha256": "2fd1682d60187d61ef5fcad35c7c0f8bfb8edfdf459756bda72248fe90b3bf2e",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "trace-statement-line-to-ledger",
+      "package_bytes": 2107,
+      "package_path": "packages/data/trace-statement-line-to-ledger/SKILL.md",
+      "package_sha256": "2621aa0d35c14315619e878716ba0e84338f8f0838c8c316e46ff64a901d2fd8",
+      "review_note_bytes": 2051,
+      "review_note_path": "review-notes/trace-statement-line-to-ledger.md",
+      "review_note_sha256": "4faf5f581d1d4b340cd6fedf59c3070d42d7cf3e457dc6daaab074d79aead28d",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "track-customer-promises-through-case-updates",
+      "package_bytes": 2162,
+      "package_path": "packages/project/track-customer-promises-through-case-updates/SKILL.md",
+      "package_sha256": "cdf057eac271944b268dd9995e4e414e6f7a2b1271662b370b4eef95db158f7e",
+      "review_note_bytes": 2061,
+      "review_note_path": "review-notes/track-customer-promises-through-case-updates.md",
+      "review_note_sha256": "18c2f96494bb70a60f2094a3b08e9b76ac96ae3aac01f140223f552959c15efb",
+      "state": "candidate_only"
+    }
+  ],
+  "package_count": 12,
+  "prepared_from_repository_revision": "38d5bcc78d8937a7599cfce90130ee3633de7e90",
+  "record_type": "first_party_harness_candidate_batch_manifest/v1",
+  "rights_state": "pending_independent_review"
+}

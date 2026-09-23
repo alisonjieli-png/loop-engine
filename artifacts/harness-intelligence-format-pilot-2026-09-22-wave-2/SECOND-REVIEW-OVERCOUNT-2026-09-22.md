@@ -1,0 +1,5 @@
+# Second review: ambiguous ZIP signature prefilter
+
+The [first successor manifest](manifest-successor-overcount-2026-09-22.json) has SHA-256 `86e6b56d2ce8fb8bafe91622583a9d16f837e31c139f508e24ae8360cdb0c8a4`. Independent replay found that its raw byte signature prefilter refused to parse a valid one-entry ZIP whose member payload contained `b'PK\x01\x02'` repeated 5,001 times. The 20,122-byte archive returned `status=fail`, `entry_signature_count_exceeds_ceiling`, and an unknown entry count. The prefilter counts matches in the entire archive, including member payload bytes, so the result did not establish that the archive had too many entries or was unsafe.
+
+A new known-wrong test first required `status=refused`, exit 2 and reason `entry_signature_prefilter_ambiguous`; the frozen successor returned exit 1 and the test failed. The next candidate revision keeps the early resource guard but reports an unknown screening result. It still cannot accept the archive. Accurate bounded central-directory parsing remains a possible later improvement. This is a candidate-only screening limitation, not a customer incident.

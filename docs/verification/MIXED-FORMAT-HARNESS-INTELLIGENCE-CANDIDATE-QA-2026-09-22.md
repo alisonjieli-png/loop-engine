@@ -7,9 +7,13 @@ contains **six logical candidates** and an
 [exact-file manifest](../../artifacts/harness-intelligence-format-pilot-2026-09-22/manifest.json)
 for **52 physical source, rendering and review files**. Its manifest
 SHA-256 is
-`25de39d4e6c372543d892d8eaf2f8e383bf3742e371edd7e431b261df0820aaf`.
+`12f41d188e0022a0ff16132f3ffce14f0378639d50e00cc53467291aef50f000`.
 Many physical files are tests, notes or alternative client renderings,
-not extra intelligence methods. The starting revision `0d1f883` does
+not extra intelligence methods. The version-two candidate manifest assigns
+file roles: 28 delivery paths, two canonical connection-source paths, four
+review notes, five tests, seven receipts and six local support files. The 28
+delivery paths include repeated client layouts; they are not 28 unique
+capabilities or 28 approved files. The starting revision `0d1f883` does
 not contain these uncommitted bytes.
 
 ## Six different logical candidates
@@ -38,7 +42,7 @@ The local search is not a customer endpoint or authorization boundary.
 | [Codex context probes](../../artifacts/harness-intelligence-format-pilot-2026-09-22/context/README.md) | Initial nested-repository attempt did not show the marker; isolated fresh-root successor did. A separate `CODEX.md` control was absent under default settings and present after an explicit fallback setting. | `CODEX.md` is not the default instruction file, and prompt-input inclusion is not task use. |
 | Python tool checks | 13 CSV, 16 JSON Lines and 11 digest-inventory tests pass, including repaired ancestor symlink, numeric precision, FIFO and entry-bound cases | Runtime authorization, bind-mount/hard-link provenance, concurrent snapshot consistency and independent customer task evaluation. |
 | Local protocol server and config checks | Three server tests, four config tests and nine rendered-layout files pass. Saved failed and successor OpenCode connection receipts remain beside each other. | Provisioned customer runtime, Codex and Claude native binding, modern protocol revision and model use. |
-| Heterogeneous manifest and search checks | Four manifest tests and seven local metadata-search tests pass; manifest validates 52 exact files and excludes generated caches | Independent approval, rights, secret review beyond the bounded pilot, hosted search relevance and grants. |
+| Heterogeneous manifest and search checks | Four manifest tests and nine local metadata-search tests pass; manifest validates 52 exact files, excludes generated caches, and refuses review notes, test receipts and files from another client's layout in a delivery variant. Both known-wrong mutants failed before repair. | Independent approval, rights, secret review beyond the bounded pilot, hosted search relevance and grants. |
 | Ruff and Markdown lint | Candidate Python checks pass; 19 selected Markdown files show zero lint issues | Semantic correctness or security approval. |
 
 The [connection review](../../artifacts/harness-intelligence-format-pilot-2026-09-22/connections/json-shape-stdio/REVIEW.md)

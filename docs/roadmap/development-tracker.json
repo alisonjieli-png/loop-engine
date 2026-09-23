@@ -3,8 +3,8 @@
   "blocked": 2,
   "done": 42,
   "next": 12,
-  "now": 33,
-  "waiting": 53
+  "now": 36,
+  "waiting": 50
  },
  "lanes": {
   "blocked": [
@@ -776,7 +776,7 @@
      "S-6.26"
     ],
     "id": "S-6.35",
-    "next_local_work": "Release through the guarded workflow once the measured health record is restored on main, confirm the grant step on the live Machine, then add the hosted checks on every hostname and a release record to the workflow.",
+    "next_local_work": "Move the live check sequence into a repository tool that runs from the released revision, reads each item digest from that revision's packaged manifest and links its own environment, and have the guarded workflow or a follow-up job run it on every configured hostname; keep a check that HEAD on the public root succeeds.",
     "phase": 6,
     "status": "building",
     "title": "Release automation and automated live checks after every release",
@@ -791,7 +791,7 @@
      "S-6.12"
     ],
     "id": "S-6.33",
-    "next_local_work": "Implement the remaining fixes on the consolidated main, verify the released homepage on every hostname, and repeat the live persona review.",
+    "next_local_work": "Use the live and draft visual reviews to repair the in-flight homepage before release. The draft makes invitation reachable in one navigation and labels recorded versus illustrated stages, but its right-hand demonstration is larger than the live panel, the fresh-harness point is buried, and the mobile action and form remain below the first viewport. Give the fresh, focused step a clear opening message, move or reduce the demo so it does not dominate, shorten the mobile header and path to the form, then repeat the browser checks on the merged site and every live hostname.",
     "phase": 6,
     "status": "building",
     "title": "Website fixes from the persona and interface reviews",
@@ -813,13 +813,58 @@
     "waiting_on": []
    },
    {
+    "acceptance": "Every functional component names its edge, engines and selection; adding an engine changes one adapter and one declaration and no call site; every selection is recorded with its reasons.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.28"
+    ],
+    "id": "S-6.30",
+    "next_local_work": "Build the framework package, then adopt it in the executor, search, email, store, model, identity and billing slots.",
+    "phase": 6,
+    "status": "building",
+    "title": "Engines behind fixed edges: the shared engine framework",
+    "waiting_on": [
+     "S-6.28"
+    ]
+   },
+   {
+    "acceptance": "One real step runs through a harness engine chosen by the slot, with its cost, time and acceptance recorded, and a second harness can replace it by configuration.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30"
+    ],
+    "id": "S-6.31",
+    "next_local_work": "Implement the records and the first adapter after the framework package.",
+    "phase": 6,
+    "status": "building",
+    "title": "The harness executor slot: delegate each step to a standard harness",
+    "waiting_on": [
+     "S-6.30"
+    ]
+   },
+   {
+    "acceptance": "The supported harnesses each start a fresh instance per step with exactly the selected material, proven by a recorded test, and the fork decision rests on measurements.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.31"
+    ],
+    "id": "S-6.42",
+    "next_local_work": "Research the forks and run the independent-instance tests without model calls where possible.",
+    "phase": 6,
+    "status": "building",
+    "title": "Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness",
+    "waiting_on": [
+     "S-6.31"
+    ]
+   },
+   {
     "acceptance": "A new batch of approved items reaches every eligible account through one release, customers see what changed, and their settings shape what they are offered.",
     "blocked_on": "",
     "depends_on": [
      "S-6.40"
     ],
     "id": "S-6.62",
-    "next_local_work": "Finish the store, release record, pointer, hot swap, attribute schema and release-following grants with their known-wrong checks; merge into release 16; publish the first release through the new command on the live Machine.",
+    "next_local_work": "Release the stop-following command, the corrected first-time runbook step that follows only granted accounts, and checks with removed-guard controls; return the five non-owner accounts to empty snapshots and confirm isolation live; only then publish a second catalogue release. Then the account library settings and pinning a release for search.",
     "phase": 6,
     "status": "building",
     "title": "Catalogue releases and library settings with good defaults",
@@ -1262,7 +1307,7 @@
      "S-6.32"
     ],
     "id": "S-6.39",
-    "next_local_work": "Research how comparable services limit free tiers and protect catalogues, then implement the policy as an engine slot setting.",
+    "next_local_work": "Reconcile the free-search decision in AGENTS.md with the older paying-user wording, then implement bounded free search, private retrieval-engine details and metered exact package downloads through the existing engine and access-policy boundaries. Test that list and protocol enumeration cannot bypass the allowance.",
     "phase": 6,
     "status": "proposed",
     "title": "Search access policy: protect the library from scraping, with a free quota to start",
@@ -1328,51 +1373,6 @@
     "title": "Subscription plugins for Hermes Agent and OpenClaw",
     "waiting_on": [
      "S-6.44"
-    ]
-   },
-   {
-    "acceptance": "Every functional component names its edge, engines and selection; adding an engine changes one adapter and one declaration and no call site; every selection is recorded with its reasons.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.28"
-    ],
-    "id": "S-6.30",
-    "next_local_work": "Build the framework package, then adopt it in the executor, search, email, store, model, identity and billing slots.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Engines behind fixed edges: the shared engine framework",
-    "waiting_on": [
-     "S-6.28"
-    ]
-   },
-   {
-    "acceptance": "One real step runs through a harness engine chosen by the slot, with its cost, time and acceptance recorded, and a second harness can replace it by configuration.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.30"
-    ],
-    "id": "S-6.31",
-    "next_local_work": "Implement the records and the first adapter after the framework package.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "The harness executor slot: delegate each step to a standard harness",
-    "waiting_on": [
-     "S-6.30"
-    ]
-   },
-   {
-    "acceptance": "The supported harnesses each start a fresh instance per step with exactly the selected material, proven by a recorded test, and the fork decision rests on measurements.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.31"
-    ],
-    "id": "S-6.42",
-    "next_local_work": "Research the forks and run the independent-instance tests without model calls where possible.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness",
-    "waiting_on": [
-     "S-6.31"
     ]
    },
    {
@@ -1451,13 +1451,13 @@
     ]
    },
    {
-    "acceptance": "The worker adds reviewed, licensed items continuously without manual work, and the library size and quality are measured and published only from evidence.",
+    "acceptance": "The worker proposes distinct, rights-supported packages continuously; an independent exact-tree review policy admits only qualified versions, with human escalation for the risk classes that require it. Library size and quality are measured and published only from active-release and task evidence.",
     "blocked_on": "",
     "depends_on": [
      "S-6.30"
     ],
     "id": "S-6.40",
-    "next_local_work": "Independently review and qualify exact bytes from the two 24-package original batches, then build the production first-party candidate lane and measure a stratified 1,000-candidate campaign. The existing preparer refuses native YAML frontmatter, so a qualified adapter must preserve SKILL.md layout and digests. Keep outside importers as a later lane. Scale serving, grants, releases and review throughput from measured yield before claiming 10,000.",
+    "next_local_work": "Use the saved candidate QA and exact final manifests to run the separate independent admission process, including rights, effects, native pickup and task-use gates; no author or QA replay can approve its own package. Build the production first-party candidate lane and measure a stratified 1,000-candidate campaign. The existing preparer refuses native YAML frontmatter, so a qualified adapter must preserve SKILL.md layout, scripts and all digests. Keep outside importers as a later lane. Scale serving, grants, releases and review throughput from measured yield before claiming 10,000 or 100,000 approved packages; publish unique eligible file counts separately.",
     "phase": 6,
     "status": "proposed",
     "title": "Grow the library: original package factory first, scheduled source ingestion later",
@@ -1592,7 +1592,7 @@
      "S-6.33"
     ],
     "id": "S-6.37",
-    "next_local_work": "Pick the first demonstration (data cleanup) and the first benchmark; the model budget for benchmark runs needs OWNER-17.",
+    "next_local_work": "Build a harder population where the no-material arm does not already score near 1.0, reuse the frozen design, proxy, scorer and isolation recipe, and run it with a model that fails without help.",
     "phase": 6,
     "status": "proposed",
     "title": "Demonstrations, case studies and benchmarks with and without Baltor, each on its own subdomain",
@@ -1622,7 +1622,7 @@
      "S-6.37"
     ],
     "id": "S-6.47",
-    "next_local_work": "Write the arms into the review record; run them only under the model budget the owner grants.",
+    "next_local_work": "Record the measured negative effect in the phone item's review record, revise the item to name its limits, send the revision through independent review, and measure it again against the no-skill arm.",
     "phase": 6,
     "status": "proposed",
     "title": "Measure each item against a no-skill arm and a raw-source arm before claiming a benefit",
@@ -2974,7 +2974,8 @@
    "id": "D-19",
    "stage": "continued_improvement",
    "status_counts": {
-    "proposed": 7
+    "building": 3,
+    "proposed": 4
    },
    "steps": [
     "S-6.30",
@@ -3135,5 +3136,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:d4a63ce60bd34af8c4cfa84e8e2c728ef502793d3c2a535a058b014bf737a42f"
+ "source_fingerprint": "sha256:e281b603e0101fb711d53035f51dfc3b965b4dda933004ac3f3051d4e62ae7fe"
 }

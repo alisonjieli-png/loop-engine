@@ -1,315 +1,368 @@
 {
   "approval_state": "none",
+  "delivery_payload_file_count": 28,
   "effect_qualification": "none",
   "entries": [
     {
       "bytes": 1192,
+      "file_role": "receipt_only",
       "group": "connections",
       "path": "connections/json-shape-stdio/OPENCODE-MCP-CONNECTION-QUALIFIED-2026-09-22.json",
       "sha256": "b58c4c89f3d13bf2b783bda86cbc826f11dbc09f82e9790e85ae433a98c59d60"
     },
     {
       "bytes": 954,
+      "file_role": "receipt_only",
       "group": "connections",
       "path": "connections/json-shape-stdio/OPENCODE-MCP-CONNECTION-UNQUALIFIED-2026-09-22.json",
       "sha256": "0d6f22ff3daaf31ecc5d4a8f5c0c8d20679a185318aed9f7efb4d90556309e43"
     },
     {
       "bytes": 556,
+      "file_role": "receipt_only",
       "group": "connections",
       "path": "connections/json-shape-stdio/OPENCODE-MCP-DEPENDENCY-FAILURE-RECEIPT-2026-09-22.json",
       "sha256": "7d74aecc11a9ebe1ddba7cec5fd9f017cff17b858172cdf430b43b51f8533bb2"
     },
     {
       "bytes": 1302,
+      "file_role": "receipt_only",
       "group": "connections",
       "path": "connections/json-shape-stdio/OPENCODE-MCP-QUALIFIED-INTERPRETER-RECEIPT-2026-09-22.json",
       "sha256": "c14fd83e9d71097f2cd6090fc5488ede080cae51de521f393ca705f9f59aa162"
     },
     {
       "bytes": 5603,
+      "file_role": "review_only",
       "group": "connections",
       "path": "connections/json-shape-stdio/REVIEW.md",
       "sha256": "2614fa7bb1ef2619ca4afdf637f1c1e3c477ad6b1efeb1dcf030fc7d749b84df"
     },
     {
       "bytes": 3601,
+      "file_role": "candidate_tooling",
       "group": "connections",
       "path": "connections/json-shape-stdio/check_configs.py",
       "sha256": "10ea8d1587b324344d4374eb480e85c797df875a7354e9c1f5a69852487ee75b"
     },
     {
       "bytes": 152,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/claude/work/.mcp.json",
       "sha256": "afcc12ae92cda52f2dcb6eb33993a390f9f37c329c29fbe5f217e5a6234786a5"
     },
     {
       "bytes": 12,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/claude/work/tools/json_shape_mcp/requirements.txt",
       "sha256": "b1a0e8947a80d3222c56a9b748ee0e4f7f19ce3273c76db72da57b0ff7b105ca"
     },
     {
       "bytes": 1995,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/claude/work/tools/json_shape_mcp/server.py",
       "sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332"
     },
     {
       "bytes": 94,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/codex/work/.codex/config.toml",
       "sha256": "75b3e9632bf3a0fcae6c988a452b550781e95c8c43525e9701eea36c7833c962"
     },
     {
       "bytes": 12,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/codex/work/tools/json_shape_mcp/requirements.txt",
       "sha256": "b1a0e8947a80d3222c56a9b748ee0e4f7f19ce3273c76db72da57b0ff7b105ca"
     },
     {
       "bytes": 1995,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/codex/work/tools/json_shape_mcp/server.py",
       "sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332"
     },
     {
       "bytes": 307,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/opencode/work/opencode.json",
       "sha256": "2cd4bc8b3d59cdfb715129d00f1d3a31cb78b70f7fd49090b6047def4777b076"
     },
     {
       "bytes": 12,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/opencode/work/tools/json_shape_mcp/requirements.txt",
       "sha256": "b1a0e8947a80d3222c56a9b748ee0e4f7f19ce3273c76db72da57b0ff7b105ca"
     },
     {
       "bytes": 1995,
+      "file_role": "delivery_payload",
       "group": "connections",
       "path": "connections/json-shape-stdio/layouts/opencode/work/tools/json_shape_mcp/server.py",
       "sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332"
     },
     {
       "bytes": 3747,
+      "file_role": "candidate_tooling",
       "group": "connections",
       "path": "connections/json-shape-stdio/render_layouts.py",
       "sha256": "b59b1525513d7758fda57a108d0d9ae9b49e6403f139f8a95660a84b180900ad"
     },
     {
       "bytes": 12,
+      "file_role": "canonical_source",
       "group": "connections",
       "path": "connections/json-shape-stdio/requirements.txt",
       "sha256": "b1a0e8947a80d3222c56a9b748ee0e4f7f19ce3273c76db72da57b0ff7b105ca"
     },
     {
       "bytes": 1995,
+      "file_role": "canonical_source",
       "group": "connections",
       "path": "connections/json-shape-stdio/server.py",
       "sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332"
     },
     {
       "bytes": 2309,
+      "file_role": "test_only",
       "group": "connections",
       "path": "connections/json-shape-stdio/tests/test_configs.py",
       "sha256": "20bef0852b40494e747a3c24d9f07215b659fcbdaf8ffda111ae9d95c87fe9e5"
     },
     {
       "bytes": 3096,
+      "file_role": "test_only",
       "group": "connections",
       "path": "connections/json-shape-stdio/tests/test_server.py",
       "sha256": "ea05027f16c6fc4a80242e67594b6287f9936000b1d5e2a0ce125c37b1fa5151"
     },
     {
       "bytes": 933,
+      "file_role": "receipt_only",
       "group": "context",
       "path": "context/CODEX-MD-CONFIGURED-FALLBACK-2026-09-22.json",
       "sha256": "b16f581c08e3b7f5b6bba02e79b2522a1ee5cb7bebec87b417e0429f1f9ba856"
     },
     {
       "bytes": 1048,
+      "file_role": "receipt_only",
       "group": "context",
       "path": "context/CODEX-NESTED-DISCOVERY-INITIAL-2026-09-22.json",
       "sha256": "473bd12295efe9e06ab8ac61ec2958e74fc24d66aa8fb844223233dfdde373bb"
     },
     {
       "bytes": 1132,
+      "file_role": "receipt_only",
       "group": "context",
       "path": "context/CODEX-NO-MODEL-DISCOVERY-2026-09-23T023342361705Z.json",
       "sha256": "607cb055024621cd6160092fa46634319f60cc32e1d6ada320d08a69d0f9f847"
     },
     {
       "bytes": 3470,
+      "file_role": "candidate_tooling",
       "group": "context",
       "path": "context/README.md",
       "sha256": "cec8ed76bd5ddeec332d477619862892f62459d6458f9d7ad9765a00e9c7f095"
     },
     {
       "bytes": 3895,
+      "file_role": "candidate_tooling",
       "group": "context",
       "path": "context/check_context_candidates.py",
       "sha256": "31629613f0b39c73afc41f6c731198af983c58bde784f07cb0f2a62b5e49569f"
     },
     {
       "bytes": 4104,
+      "file_role": "candidate_tooling",
       "group": "context",
       "path": "context/probe_codex_fallback.py",
       "sha256": "aae8f778effbcdd732c9a6206c9c324e2699f49fb8471440cd063408c72d07d6"
     },
     {
       "bytes": 3857,
+      "file_role": "candidate_tooling",
       "group": "context",
       "path": "context/probe_codex_no_model.py",
       "sha256": "d49b5557febedd28bd12ccf07db96894650911d4534ed40ac6e4650f47f6393b"
     },
     {
       "bytes": 1685,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/profile-one-csv/claude/work/AGENTS.md",
       "sha256": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044"
     },
     {
       "bytes": 38,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/profile-one-csv/claude/work/CLAUDE.md",
       "sha256": "bd6eb861a4ff761dab63671fd24d1b9177255f0aefb78636f48078e602c72dc1"
     },
     {
       "bytes": 1685,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/profile-one-csv/codex/work/AGENTS.md",
       "sha256": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044"
     },
     {
       "bytes": 1685,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/profile-one-csv/opencode/work/AGENTS.md",
       "sha256": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044"
     },
     {
       "bytes": 1685,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/profile-one-csv/pi/work/AGENTS.md",
       "sha256": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044"
     },
     {
       "bytes": 6298,
+      "file_role": "review_only",
       "group": "context",
       "path": "context/profile-one-csv/review-note.json",
       "sha256": "a0b882a515a393c79becf1016b3e9afde3c2f367df39c2c55cb3f635403af59c"
     },
     {
       "bytes": 1276,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/repair-one-failing-test/claude/work/AGENTS.md",
       "sha256": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235"
     },
     {
       "bytes": 38,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/repair-one-failing-test/claude/work/CLAUDE.md",
       "sha256": "c063bdbabe40d52a7e6ca010d06855f85d0afe50f06fde8b94ab632c3979dcfd"
     },
     {
       "bytes": 1276,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/repair-one-failing-test/codex/work/AGENTS.md",
       "sha256": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235"
     },
     {
       "bytes": 1276,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/repair-one-failing-test/opencode/work/AGENTS.md",
       "sha256": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235"
     },
     {
       "bytes": 1276,
+      "file_role": "delivery_payload",
       "group": "context",
       "path": "context/repair-one-failing-test/pi/work/AGENTS.md",
       "sha256": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235"
     },
     {
       "bytes": 6174,
+      "file_role": "review_only",
       "group": "context",
       "path": "context/repair-one-failing-test/review-note.json",
       "sha256": "2ccd103fc6461bf2d729afee54a58da704f7f4a4f0337bf8d2edf44a1dc5c403"
     },
     {
       "bytes": 8418,
+      "file_role": "review_only",
       "group": "tools",
       "path": "tools/REVIEW-NOTE.md",
       "sha256": "937024f71ba515d1f6ec114da8db64ee6df7fd276006284193da3c4674fd6c1e"
     },
     {
       "bytes": 2237,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/audit-csv-structure/SKILL.md",
       "sha256": "a42bdb00d3cb17f49d16335d941dde5cf256b7015406a8d33af80a3a20c8b7a7"
     },
     {
       "bytes": 5387,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/audit-csv-structure/scripts/audit_csv_structure.py",
       "sha256": "70970eb3609ae57d53cce17dbeee98244ba2437d1bcc9f49649e52cfb043e1b0"
     },
     {
       "bytes": 3633,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/audit-csv-structure/scripts/confined_input.py",
       "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
     },
     {
       "bytes": 6260,
+      "file_role": "test_only",
       "group": "tools",
       "path": "tools/audit-csv-structure/tests/test_audit_csv_structure.py",
       "sha256": "1575801199920ceaa734d2ca9d57812b884e216777b930e100810c75855e5d7c"
     },
     {
       "bytes": 2171,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/audit-jsonl-identities/SKILL.md",
       "sha256": "5c062ad83b0b46b9e13aa5299e54a1ce35e58566ff0245b7442c79f9453a05ad"
     },
     {
       "bytes": 7276,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/audit-jsonl-identities/scripts/audit_jsonl_identities.py",
       "sha256": "60561a7f3ec9fcb7b0cb89d2a56d00c59d46806638d8148d2b6d6af4b9e67f25"
     },
     {
       "bytes": 3633,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/audit-jsonl-identities/scripts/confined_input.py",
       "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
     },
     {
       "bytes": 8555,
+      "file_role": "test_only",
       "group": "tools",
       "path": "tools/audit-jsonl-identities/tests/test_audit_jsonl_identities.py",
       "sha256": "876dab796fb62263b7c10e4d57874df57ea2fc32436e81dd8b73d39325073f4f"
     },
     {
       "bytes": 1948,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/inventory-file-digests/SKILL.md",
       "sha256": "7f7efdf8b52dfc3875f7caed4c946b907d053c49d6518d57ffc24f0762e014cc"
     },
     {
       "bytes": 3633,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/inventory-file-digests/scripts/confined_input.py",
       "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
     },
     {
       "bytes": 6449,
+      "file_role": "delivery_payload",
       "group": "tools",
       "path": "tools/inventory-file-digests/scripts/inventory_file_digests.py",
       "sha256": "b30c4fb8bba6568331ac06f13fe95bca7691c4fbc15e698e8ae0bb89615e14cd"
     },
     {
       "bytes": 6885,
+      "file_role": "test_only",
       "group": "tools",
       "path": "tools/inventory-file-digests/tests/test_inventory_file_digests.py",
       "sha256": "8e5e577156f84e0c8d002a6bd6f15fa0b46ce5cf2301439fba11581651a3df8a"
@@ -319,6 +372,6 @@
   "native_load": "unqualified",
   "physical_file_count": 52,
   "prepared_from_repository_revision": "0d1f883bf470533543c9a4d8f52452ac84089548",
-  "record_type": "heterogeneous_harness_candidate_file_manifest/v1",
+  "record_type": "heterogeneous_harness_candidate_file_manifest/v2",
   "rights_state": "pending_independent_review"
 }
