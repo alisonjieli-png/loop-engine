@@ -240,15 +240,18 @@ PYTHONPATH=src:tools python -m unittest tools.test_ingest_outside_material tools
 The seven check modules run offline against recorded fake transports. They
 hold the known-wrong cases: a candidate without provenance, verbatim import
 without an accepted licence, a proprietary licence, a short condition added
-to a permissive licence, a nested licence file, a licence or notice file
-that cannot be read, a licence answer that is not the pinned blob, a source
-curated for outlines, tampered bytes, symbolic links and submodules, a
-truncated tree, request ceilings and allowance pauses, a licence that binds
-the reader to outside terms, reuse of cached bytes that are not the pinned
-blob, registry status changes and vanished entries, secrets and plain
-addresses in connection files, the malicious and benign regression set of
-the scanner, duplicates, bundled files and outlines that repeat source
-words.
+to a permissive licence, a notice that forbids derivative works, a text
+between two licences, a nested licence file, a licence or notice file that
+cannot be read or is not its tree blob, a licence answer that is not the
+pinned blob, a source curated for outlines, an outline that carries text,
+tampered bytes in the fetch and in quarantine, symbolic links and
+submodules, a truncated tree, request ceilings and allowance pauses, a
+licence that binds the reader to outside terms, reuse of cached bytes that
+are not the pinned blob, registry status changes and vanished entries, an
+upstream licence whose signals disagree, redirects, a scanner sandbox with
+network or an inherited environment, secrets and plain addresses in
+connection files, the malicious and benign regression set of the scanner,
+duplicates, bundled files and outlines that repeat source words.
 
 ## Limits
 

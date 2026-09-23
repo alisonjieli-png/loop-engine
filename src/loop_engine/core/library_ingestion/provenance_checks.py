@@ -5,13 +5,16 @@ reader to refuse it with a stable code: a candidate with no provenance, a
 record missing any one required field, another record version, an unknown
 field, a branch name instead of a commit, a path that escapes its
 repository, verbatim rights without a licence file digest, a registry entry
-that claims verbatim rights, and a fetch time that is not an exact UTC time.
+that claims verbatim rights, a GitHub file that claims link-only rights, an
+outline that carries text or lacks outline rights, and a fetch time that is
+not an exact UTC time.
 A positive control shows a complete record is read unchanged.
 """
 from __future__ import annotations
 
 from copy import deepcopy
 
+from .candidates import OUTLINE_RECORD_TYPE, read_outline
 from .provenance import (
     GITHUB_ORIGIN, LICENCE_EVIDENCE_RECORD_TYPE, OUTLINE_ONLY, PROVENANCE_FIELDS,
     PROVENANCE_RECORD_TYPE, REGISTRY_ORIGIN, VERBATIM, read_licence_evidence,
@@ -137,6 +140,23 @@ def self_test() -> dict:
     check("a_registry_entry_can_never_claim_verbatim_rights",
           registry_read.decision == "link_only" and claimed == "registry_entry_is_never_verbatim"
           and wrong_host == "origin_host_mismatch", (claimed, wrong_host))
+
+    link_only = {**fixture_evidence(OUTLINE_ONLY, "MIT"), "decision": "link_only"}
+    linked = _code(lambda: read_outside_provenance({**complete, "licence_evidence": link_only}))
+    check("a_github_file_can_never_claim_link_only_rights", linked == "link_only_outside_registry", linked)
+
+    outline_rights = {**fixture_evidence(OUTLINE_ONLY, "NONE"), "reason": "no_licence_file"}
+    outline = {"record_type": OUTLINE_RECORD_TYPE, "outline_key": bytes_digest(b"outline"), "kind": "skill",
+               "native_format": "agent_skill", "source_name": "example-skill", "topic_words": ["testing"],
+               "abstract_purpose": "Write an original skill about testing.",
+               "provenance": fixture_provenance(licence_evidence=outline_rights),
+               "generator": {"engine_id": "deterministic_outline", "engine_version": "1.0.0"},
+               "text_included": False, "model_calls": []}
+    outlines = [_code(lambda: read_outline(deepcopy(outline))),
+                _code(lambda: read_outline({**outline, "text_included": True})),
+                _code(lambda: read_outline({**outline, "provenance": complete}))]
+    check("an_outline_never_carries_text_and_needs_outline_rights",
+          outlines == ["", "outline_carries_text", "outline_without_outline_rights"], outlines)
 
     times = [_code(lambda value=value: read_outside_provenance({**complete, "fetched_at": value}))
              for value in ("2026-09-22", "2026-13-40T00:00:00Z", "2026-09-22T12:00:00+00:00")]

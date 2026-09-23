@@ -24,6 +24,7 @@ from .format_json_schema import ConnectionSchemaValidator
 from .format_skills_ref import AgentSkillsReferenceValidator
 from .outline_model import CallCeilingReached, ModelOutline
 from .package_resolver import PackageResolver
+from .processes import SANDBOX_ENVIRONMENT, sandbox_argv
 from .provenance import read_outside_provenance
 from .provenance_checks import fixture_provenance, fixture_registry_provenance
 from .record_rules import bytes_digest
@@ -190,6 +191,18 @@ def self_test() -> dict:
           {row["rule"] for row in mapped["bad"]} == {"skillspector_do_not_install", "skillspector_P1"}
           and mapped["good"] == [] and mapped["missing"][0]["rule"] == "skillspector_package_not_reported"
           and SkillSpectorStatic.availability({}) == (False, "not_configured"), mapped)
+
+    # The external scanner reads outside files: it runs with no network and a fixed environment
+    # that holds no credential, and it may write only the folder its report goes to.
+    wrapped = sandbox_argv(("scanner", "scan", "/work/in"), read_only_paths=("/work/in",),
+                           writable_paths=("/work/out",))
+    command = wrapped[wrapped.index("--") + 1:]
+    settings = [wrapped[index + 1] for index, part in enumerate(wrapped) if part == "--setenv"]
+    writable = [wrapped[index + 1] for index, part in enumerate(wrapped) if part == "--bind"]
+    check("the_scanner_sandbox_has_no_network_and_no_inherited_environment",
+          {"--unshare-net", "--clearenv"} <= set(wrapped[:wrapped.index("--")])
+          and settings == [name for name, _ in SANDBOX_ENVIRONMENT] and writable == ["/work/out"]
+          and command == ("scanner", "scan", "/work/in"), wrapped)
 
     passed = sum(1 for item in tests if item["passed"] is True)
     executed = [item for item in tests if item.get("not_tested") is not True]

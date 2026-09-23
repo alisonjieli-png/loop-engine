@@ -3,17 +3,19 @@
 Verbatim import needs an accepted licence proven by the licence file itself.
 These checks require: no licence file, an unrecognized text and a recognized
 licence the policy does not list all refuse verbatim import; a licence that
-forbids derivative works refuses an outline as well; a nested licence file
-overrides the repository licence; the licence interface and the text must
-agree for a repository licence; a file-level notice that disagrees blocks a
-verbatim copy; an added restriction, however short, makes a permissive
-text unrecognized and its added sentences are read;
-and a share-alike text is never taken for the plain attribution licence.
+forbids derivative works refuses an outline as well, and so does a
+file-level notice that forbids them; a nested licence file overrides the
+repository licence; the licence interface and the text must agree for a
+repository licence; a file-level notice that disagrees blocks a verbatim
+copy; an added restriction, however short, makes a permissive text
+unrecognized and its added sentences are read; a text between two licences
+is ambiguous; and a share-alike text is never taken for the plain
+attribution licence.
 """
 from __future__ import annotations
 
 from .licences import (
-    LicenceFile, LicencePolicy, decide_licence, governing_licence_path, licence_words,
+    LicenceFile, LicencePolicy, LicenceTemplate, decide_licence, governing_licence_path, licence_words,
     load_templates, match_licence, match_words, prohibits_recreation)
 from .provenance import OUTLINE_ONLY, REFUSED, VERBATIM, read_licence_evidence
 from .record_rules import LibraryRecordError, bytes_digest
@@ -115,7 +117,15 @@ def self_test() -> dict:
     share_alike_words = templates["CC-BY-4.0"].words | {"sharealike"}
     share = match_words(share_alike_words, templates)
     check("a_share_alike_text_is_never_taken_for_the_plain_attribution_licence",
-          share.spdx != "CC-BY-4.0", share)
+          share.spdx != "CC-BY-4.0" and share.reason == "carries_a_word_the_template_forbids", share)
+
+    # Two licences whose texts differ in one word cannot be told apart by the words they share.
+    shared = frozenset(f"word{index}" for index in range(99))
+    twins = {name: LicenceTemplate(name, shared | {name.lower()}, f"{name}.txt", "0" * 64)
+             for name in ("LEFT-1.0", "RIGHT-1.0")}
+    between = match_words(shared, twins)
+    check("a_text_between_two_licences_is_ambiguous_and_never_recognized",
+          between.spdx is None and between.reason == "ambiguous_between_templates", between)
 
     item = "skills/example/SKILL.md"
     no_file = _decide(item, [])
@@ -193,6 +203,11 @@ def self_test() -> dict:
     pointing = _decide(item, [_file("skills/example/LICENSE.txt", MIT_FIXTURE)],
                        frontmatter_licence="Complete terms in LICENSE.txt")
     free_text = _decide(item, root, root_path="LICENSE", frontmatter_licence="Proprietary")
+    forbidding = _decide(item, root, root_path="LICENSE",
+                         frontmatter_licence="Proprietary: you may not modify or adapt this skill")
+    check("a_file_level_notice_that_forbids_derivative_works_leaves_nothing",
+          forbidding["decision"] == REFUSED and forbidding["reason"] == "file_level_notice_prohibits_derivatives",
+          forbidding["reason"])
     check("a_file_level_notice_that_disagrees_blocks_a_verbatim_copy",
           conflicting["decision"] == OUTLINE_ONLY and conflicting["reason"] == "licence_notices_disagree"
           and matching["decision"] == VERBATIM and pointing["decision"] == VERBATIM

@@ -24,9 +24,10 @@ from pathlib import Path
 from .candidates import candidate_request, read_candidate_batch
 from .github_reader import GitHubResponse, ReadOnlyRequestRefused, allowed_request, parse_included_response
 from .github_reader import GhCliReader
-from .https_transport import HostNotDeclared, HttpsGetTransport, HttpsResponse
+from .https_transport import HostNotDeclared, HttpsGetTransport, HttpsResponse, _NoRedirect
 from .licence_checks import MIT_FIXTURE, PROPRIETARY_FIXTURE
 from .fetch_cache import PinnedBlobCache
+from .processes import passthrough_environment
 from .quarantine import Quarantine
 from .record_rules import LibraryRecordError, bytes_digest, git_blob_identity
 from .registry_sync import reconcile, snapshot_index, withdrawals
@@ -141,6 +142,14 @@ class FakeRegistry:
         return HttpsResponse(200, body)
 
 
+def _code(action) -> str:
+    try:
+        action()
+    except LibraryRecordError as error:
+        return error.code
+    return ""
+
+
 def _cache_checks(check, files) -> None:
     """A rerun takes a pinned blob from an earlier run only when the bytes are that very blob."""
     table = repository_table(files)
@@ -239,9 +248,14 @@ def self_test() -> dict:
 
         # A licence or notice file that cannot be read is still in the tree: the item beside it
         # must not fall back to the repository licence as if its folder held none.
-        unreadable = repository_table({**files, "skills/alpha/NOTICE": b"Notices for alpha.\n"})
+        unreadable = repository_table({**files, "skills/alpha/NOTICE": b"Notices for alpha.\n",
+                                       "skills/gamma/SKILL.md": skill_text("gamma").encode(),
+                                       "skills/gamma/LICENSE.txt": PROPRIETARY_FIXTURE.encode()})
         unreadable[f"repos/{REPOSITORY}/contents/skills/closed/LICENSE.txt?ref={COMMIT}"] = (500, b"{}")
         unreadable[f"repos/{REPOSITORY}/contents/skills/alpha/NOTICE?ref={COMMIT}"] = (502, b"{}")
+        # The answer for gamma's licence is a permissive text, but not the blob the tree names.
+        unreadable[f"repos/{REPOSITORY}/contents/skills/gamma/LICENSE.txt?ref={COMMIT}"] = (
+            200, _contents(MIT_FIXTURE.encode(), git_blob_identity(PROPRIETARY_FIXTURE.encode())))
         unread = GitHubPinnedRepositoriesSource(FakeGitHubReader(
             unreadable, RequestBudget(maximum_requests=50), RequestLog()), quarantine
         ).read_candidates(declaration(), _request())
@@ -249,6 +263,7 @@ def self_test() -> dict:
         check("a_licence_or_notice_file_that_cannot_be_read_blocks_a_verbatim_copy",
               unread_evidence["closed"]["decision"] == "outline_only"
               and unread_evidence["alpha"]["decision"] == "outline_only"
+              and unread_evidence["gamma"]["decision"] == "outline_only"
               and unread_evidence["beta"]["decision"] == "verbatim_permitted",
               {name: (row["decision"], row["reason"]) for name, row in unread_evidence.items()})
 
@@ -331,6 +346,24 @@ def self_test() -> dict:
             sent_without_authority = False
         check("no_request_is_sent_without_network_authority",
               not sent_without_authority and blocked.used == 0)
+
+        stored = quarantine.put(b"bytes kept under their own digest\n")
+        kept_path = quarantine.folder / stored.digest[:2] / stored.digest
+        kept_path.chmod(0o600)
+        kept_path.write_bytes(b"bytes changed on disk after the fetch\n")
+        check("a_quarantined_file_whose_bytes_changed_is_refused_when_read",
+              _code(lambda: quarantine.get(stored.digest)) == "quarantine_corrupted")
+
+        # gh finds its own login; no other variable of this process, such as a model key, reaches it.
+        check("the_github_reader_passes_only_the_declared_environment",
+              set(passthrough_environment(names=("PATH",))) <= {"PATH"})
+
+        https = HttpsGetTransport(("registry.modelcontextprotocol.io",), RequestBudget(maximum_requests=1),
+                                  RequestLog())
+        refusers = [handler for handler in https._opener.handlers if isinstance(handler, _NoRedirect)]
+        check("the_https_transport_follows_no_redirect_to_another_address",
+              len(refusers) == 1 and refusers[0].redirect_request(
+                  None, None, 302, "Found", {}, "https://elsewhere.example.invalid/") is None)
 
         pages = [[registry_entry("io.github.one/alpha"), registry_entry("io.github.two/beta", "deprecated"),
                   registry_entry("ai.smithery/copy-of-alpha")],
@@ -438,6 +471,11 @@ def self_test() -> dict:
                 approved_claims.append((error.code, sorted(claim)))
         check("an_ingested_item_stays_a_candidate_until_independent_review",
               [code for code, _ in approved_claims] == ["unknown_record_fields"] * 3, approved_claims)
+
+        twice = json.loads(json.dumps(registry_batch))
+        twice["candidates"].append(twice["candidates"][0])
+        check("a_batch_that_names_a_candidate_twice_is_refused",
+              _code(lambda: read_candidate_batch(twice)) == "duplicate_candidate_key")
 
         entry = registry_batch["candidates"][0]
         stored = json.loads(quarantine.get(entry["provenance"]["source_digest"]))

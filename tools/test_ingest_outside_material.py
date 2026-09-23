@@ -28,7 +28,7 @@ from loop_engine.core.library_ingestion.request_log import RequestBudget, Reques
 from tools.ingest_outside_material import (  # noqa: E402
     CollectOptions, StagingConflict, collect, stage_populations)
 from tools.stage_intelligence_candidates import (  # noqa: E402
-    CandidateStageRequest, compile_candidates, review_search)
+    OUTSIDE_TEXT_LIMIT, CandidateStageRequest, compile_candidates, review_search)
 
 MANIFEST = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue" / "host-release" / "manifest.json"
 
@@ -133,6 +133,25 @@ class OutsideIngestionChecks(unittest.TestCase):
         broken = deepcopy(populations[0])
         broken["specifications"][0]["text"] += "\nAn added line the package never held.\n"
         with self.assertRaisesRegex(ValueError, "package"):
+            compile_candidates(broken, self._request())
+
+    def test_a_v2_row_whose_package_file_escapes_its_folder_is_refused(self):
+        _, populations = self._rows()
+        for path in ("../outside/SKILL.md", "/etc/passwd"):
+            broken = deepcopy(populations[0])
+            broken["specifications"][0]["package_files"][0]["path"] = path
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, "package file"):
+                compile_candidates(broken, self._request())
+
+    def test_a_v2_row_longer_than_the_outside_text_bound_is_refused(self):
+        _, populations = self._rows()
+        broken = deepcopy(populations[0])
+        row = broken["specifications"][0]
+        row["text"] = "x" * (OUTSIDE_TEXT_LIMIT + 1)
+        # The oversized text is also its package file, so only the bound can refuse it.
+        row["package_files"][0].update(sha256=hashlib.sha256(row["text"].encode()).hexdigest(),
+                                       size_bytes=len(row["text"]))
+        with self.assertRaisesRegex(ValueError, "Candidate fields"):
             compile_candidates(broken, self._request())
 
     def test_a_v2_row_cannot_carry_a_lifecycle_or_an_approval(self):
