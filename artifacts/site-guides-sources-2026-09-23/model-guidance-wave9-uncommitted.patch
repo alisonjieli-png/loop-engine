@@ -1,0 +1,719 @@
+diff --git a/src/loop_engine/core/service_runtime/web_assets/index.html b/src/loop_engine/core/service_runtime/web_assets/index.html
+index 033876bf..31f0a360 100644
+--- a/src/loop_engine/core/service_runtime/web_assets/index.html
++++ b/src/loop_engine/core/service_runtime/web_assets/index.html
+@@ -32,7 +32,7 @@
+       </ol><p class="caption">These three steps work in the private pilot today. The wider workflow described below is still being built.</p></section>
+       <section class="friction-section" aria-labelledby="friction-heading"><div class="section-title"><p class="eyebrow">Make the effort count</p><h2 id="friction-heading">Is your AI spending effort in the wrong places?</h2><p>These are the questions Baltor is designed to address at each step of the work.</p></div><div class="friction-grid">
+         <article data-friction="context"><span class="friction-label">Information</span><h3>Too much context for a small task?</h3><p>Match information to the task. Bring in more when it helps, without making every step carry the whole history.</p><span class="friction-benefit">Relevant information, less repetition</span></article>
+-        <article data-friction="model"><span class="friction-label">Model selection</span><h3>An expensive model for every decision?</h3><p>Compare suitable models and reusable code for each step, against your quality and spending requirements.</p><span class="friction-benefit">An approach that fits the work</span></article>
++        <article data-friction="model"><span class="friction-label">Model selection</span><h3>An expensive model for every decision?</h3><p>Compare suitable models and reusable code for each step, against your quality and spending requirements.</p><span class="friction-benefit">An approach that fits the work</span><a class="text-link" href="/models">Which model for this step →</a></article>
+         <article data-friction="expertise"><span class="friction-label">Domain knowledge</span><h3>Missing the right domain expertise?</h3><p>Bring relevant methods, examples and checks into the work, with sources and applicability kept visible.</p><span class="friction-benefit">Specific guidance, not generic guesses</span></article>
+         <article data-friction="reuse"><span class="friction-label">Code reuse</span><h3>Paying to rewrite code that already exists?</h3><p>Find an eligible implementation first. Generate new code for the gaps instead of reproducing a known solution as more output tokens.</p><span class="friction-benefit">Reuse what is already qualified</span></article>
+         <article data-friction="learning"><span class="friction-label">Improvement</span><h3>Are the same mistakes showing up again?</h3><p>Keep useful results and corrections. Compare proposed improvements on real tasks before making them the default.</p><span class="friction-benefit">Measured improvement, not blind repetition</span></article>
+@@ -179,7 +179,7 @@ allow_network: false</pre><p>This is a configuration pattern, not an executable
+       <div class="notice"><h2>Privacy and telemetry</h2><p>Do not include keys in prompts, intelligence bodies, screenshots, logs, or feedback. Embeddings and raw context are confidential data, not anonymous telemetry. Choose retention and improvement consent separately from execution access.</p></div>
+     </section>
+   </main>
+-  <footer><div class="footer-brand"><span><strong>{{SERVICE_NAME}}</strong></span><span id="service-status">Checking service availability</span></div><nav class="footer-links" aria-label="Footer navigation"><a href="/how-it-works" data-page="about">How it works</a><a href="/pricing" data-page="pricing">Pricing</a><a href="/connect" data-page="setup">Connect</a><a href="/examples" data-page="examples">First example</a><a href="/security" data-page="security">Access and data</a><a href="/docs" data-page="docs">Documentation</a><a href="/assets/third-party-notices.txt">Open-source notices</a></nav></footer>
++  <footer><div class="footer-brand"><span><strong>{{SERVICE_NAME}}</strong></span><span id="service-status">Checking service availability</span></div><nav class="footer-links" aria-label="Footer navigation"><a href="/how-it-works" data-page="about">How it works</a><a href="/pricing" data-page="pricing">Pricing</a><a href="/connect" data-page="setup">Connect</a><a href="/examples" data-page="examples">First example</a><a href="/security" data-page="security">Access and data</a><a href="/docs" data-page="docs">Documentation</a><a href="/models">Choosing a model</a><a href="/assets/third-party-notices.txt">Open-source notices</a></nav></footer>
+   <noscript>This workspace needs JavaScript for authenticated requests. The setup guide remains available from your repository documentation.</noscript>
+   <template id="deployment-boundary-template"><figure class="boundary-figure" aria-label="What Baltor provides and what stays with you"><div class="boundary-zones"><section class="boundary-zone service-zone"><div class="zone-heading"><span class="zone-location">Baltor</span><h3>A library of useful material</h3></div><ol class="component-rows"><li><strong>Check your access</strong><span>Find material your account is allowed to use</span></li><li><strong>Find relevant help</strong><span>Search guidance, reusable code and previous findings</span></li><li><strong>Deliver selected files</strong><span>Check that each download matches the version you chose</span></li></ol><p class="zone-footer">Access to the library does not give Baltor control of your computer.</p></section><div class="boundary-exchange" aria-label="Requests and responses"><div><span class="exchange-arrow" aria-hidden="true">←</span><strong>You request</strong><span>Relevant help or a selected file</span></div><div><span class="exchange-arrow" aria-hidden="true">→</span><strong>You receive</strong><span>Matching results or the permitted download</span></div><p>Through your signed-in connection</p></div><section class="boundary-zone client-zone"><div class="zone-heading"><span class="zone-location">Your environment</span><h3>Your task and tools</h3></div><ol class="component-rows"><li><strong>Set the goal and limits</strong><span>Decide what success means and what the work may access</span></li><li><strong>Carry out each step</strong><span>Use your chosen models, development tools or existing code</span></li><li><strong>Keep the results</strong><span>Inspect files, checks and the record of what happened</span></li></ol><p class="zone-footer">Your tools work within the permissions you set.</p></section></div><div class="provider-lane"><span>Model access is separate</span><strong>Your tools connect to your chosen model</strong><p>Model keys stay in your environment or its approved credential manager. A remote model may receive the information you allow your tools to send.</p></div><figcaption>The website does not automatically upload your complete task files or conversations. The full workflow shown here is a product design; the private pilot currently supports search and selected-file delivery.</figcaption></figure></template>
+   <template id="runtime-vocabulary-template"><p>Every executable graph vertex is a Loop. A harness is an implementation adapter used by a Loop. Files, services, contracts and stores are not additional executable vertices.</p><pre>Operational runtime type
+diff --git a/src/loop_engine/core/service_runtime/web_routes.py b/src/loop_engine/core/service_runtime/web_routes.py
+index fee8a4d7..08e85f69 100644
+--- a/src/loop_engine/core/service_runtime/web_routes.py
++++ b/src/loop_engine/core/service_runtime/web_routes.py
+@@ -28,6 +28,12 @@ WEB_ASSETS = {
+     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
+     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
+     "/pricing": ("index.html", HTML_MEDIA_TYPE),
++    # The model guidance pages stand on their own rather than being views of
++    # the workspace page, so each address answers with its own file.
++    "/models": ("models.html", HTML_MEDIA_TYPE),
++    "/models/building": ("models-building.html", HTML_MEDIA_TYPE),
++    "/models/deciding": ("models-deciding.html", HTML_MEDIA_TYPE),
++    "/assets/model-guidance.css": ("model-guidance.css", "text/css"),
+     "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
+     "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
+     "/assets/service.css": ("service.css", "text/css"),
+diff --git a/src/loop_engine/core/service_runtime/model_guidance_checks.py b/src/loop_engine/core/service_runtime/model_guidance_checks.py
+new file mode 100644
+index 00000000..90267626
+--- /dev/null
++++ b/src/loop_engine/core/service_runtime/model_guidance_checks.py
+@@ -0,0 +1,248 @@
++"""Structural checks for the three pages that answer "which model for this step".
++
++The pages recommend settings and name third-party models, so a page that has
++drifted from the source is worse than no page: a reader copies a field that no
++longer exists and gets a refusal they cannot explain. These checks read the
++packaged pages and hold them against the source rather than against wording
++kept here.
++
++Four guards do the real work.
++
++    Every setting a page prints is fed through the real settings loader, so a
++    renamed or removed field fails here before a reader meets it.
++    Every source name a page prints is matched against a vocabulary built from
++    the route registry, the purposes, the wire formats, the cost record and the
++    typed decision contract.
++    Every measured figure a page quotes is matched against the dated evidence
++    record it came from.
++    Every internal address a page points at is one the service serves, and no
++    page names an internal runtime word.
++
++Each guard is followed by a control that removes the behaviour from a copy of
++the page text held in memory and requires the guard's own predicate to fail.
++No source file is edited and no provider is contacted.
++"""
++from __future__ import annotations
++
++from dataclasses import fields
++import hashlib
++import re
++
++from .web_routes import WEB_ASSETS
++
++#: The three addresses and the packaged file each one answers with.
++GUIDANCE_PAGES = ("/models", "/models/building", "/models/deciding")
++#: The two pages that carry a full recommendation. The third sends a reader to one of them.
++DEEP_PAGES = GUIDANCE_PAGES[1:]
++#: The plain-word rule the public pages follow. `tools/check_hosted_website.mjs`
++#: and `tools/check_service_workspace.mjs` carry the same expression.
++INTERNAL_TERMS = re.compile(r"\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile", re.I)
++#: Addresses a page may point at that are not packaged files.
++LIVE_PREFIXES = ("/api/", "/.well-known/")
++#: Figures the pages quote from `docs/evidence/local-model-call-2026-09-21.md`.
++#: A page may not print a measured figure that record does not contain.
++MEASURED_FIGURES = ("RTX 3060", "12288", "Q4_K_M", "6659", "32768", "4.7 GB",
++                    "87.28", "0.71", "0.78", "64 prompt tokens", "qwen2.5-coder:7b")
++#: Where that record lives, relative to the repository root. It is documentation
++#: rather than packaged source, so an installed copy may not carry it.
++EVIDENCE_RECORD = "docs/evidence/local-model-call-2026-09-21.md"
++#: The one settings key that is not also a field name on the record it builds.
++SETTINGS_KEY_ALIASES = {"id": "provider_id"}
++
++
++def page_text(path: str) -> str:
++    """The packaged bytes of one guidance page, as text."""
++    from importlib.resources import files
++    name, _media_type = WEB_ASSETS[path]
++    return files("loop_engine").joinpath("core", "service_runtime", "web_assets", name).read_text("utf-8")
++
++
++def unserved_addresses(page: str) -> list:
++    """Internal addresses on a page that the service does not serve."""
++    linked = {value for value in re.findall(r'(?:href|src)="(/[^"#?]*)"', page)}
++    return sorted(value for value in linked
++                  if value not in WEB_ASSETS and value != "/mcp"
++                  and not any(value.startswith(prefix) for prefix in LIVE_PREFIXES))
++
++
++def settings_blocks(page: str) -> list:
++    """Every settings example a page prints, as YAML text."""
++    import html
++    return [html.unescape(block) for block in re.findall(r"<pre><code>(.*?)</code></pre>", page, re.S)]
++
++
++def printed_names(page: str) -> set:
++    """The source names a page prints in code style: a field, a purpose, a route or a model."""
++    marked = set(re.findall(r"<code>([^<]+)</code>", page))
++    return {name for name in marked
++            if re.fullmatch(r"[a-z][a-z0-9_]*(?:[._/:-][a-z0-9_.+]+)*", name)
++            and ("_" in name or "." in name or "/" in name or ":" in name)}
++
++
++def source_vocabulary() -> set:
++    """Every name the pages are allowed to print, built from the source itself."""
++    from ..custom_endpoint import THINK_MODES, WIRE_FORMATS
++    from ..model_routes import PURPOSES, RouteRegistry
++    from ..operation_cost_records import COST_OUTCOMES, PHASES, OperationCostRecord
++    from ..response_contracts import TYPED_DECISION
++    from ..runtime_settings import (
++        EscalationSettings, ModelSettings, ModelTier, ProviderSettings,
++    )
++    from ..typed_decision import CONTRACT_FIELDS, ROW_FIELDS, TypedDecisionSuiteReport
++    from ...loop.recursive_loop import MODEL_THINKING_POWER_LEVELS
++    known = set(PURPOSES) | set(WIRE_FORMATS) | set(THINK_MODES) | set(PHASES) | set(COST_OUTCOMES)
++    known |= set(CONTRACT_FIELDS) | set(ROW_FIELDS) | set(MODEL_THINKING_POWER_LEVELS) | {TYPED_DECISION}
++    for record in (ProviderSettings, ModelSettings, ModelTier, EscalationSettings,
++                   OperationCostRecord, TypedDecisionSuiteReport):
++        known |= {item.name for item in fields(record)}
++    known |= {name for name, value in vars(TypedDecisionSuiteReport).items() if isinstance(value, property)}
++    known |= set(SETTINGS_KEY_ALIASES)
++    for route in RouteRegistry().all():
++        known |= {route.name, route.model, route.provider}
++    # The settings file names its own sections, and a custom provider is reached
++    # by the route name its identifier builds.
++    known |= {"models", "providers", "tiers", "escalation", "loop-engine.settings.yaml"}
++    known |= {"custom." + name for name in ("local_coder", "local_decider")}
++    return known
++
++
++def loaded_settings(block: str):
++    """One settings example parsed and accepted by the real loader, or a refusal."""
++    import yaml
++    from ..settings_loader import runtime_settings_from_mapping
++    return runtime_settings_from_mapping({"version": 1, **yaml.safe_load(block)})
++
++
++def evidence_figures(root=None) -> "str | None":
++    """The dated local model record, when this copy carries documentation."""
++    from pathlib import Path
++    base = Path(root) if root is not None else Path(__file__).resolve().parents[4]
++    record = base / EVIDENCE_RECORD
++    return record.read_text("utf-8") if record.is_file() else None
++
++
++def run_checks(check, root=None) -> None:
++    """Every guard, each followed by the control that removes its behaviour."""
++    pages = {path: page_text(path) for path in GUIDANCE_PAGES}
++
++    # 1. Each address answers with its own page, and the stylesheet they share
++    # is served too. A page that is served by accident, because another address
++    # happens to answer, would pass every wording check below while a reader
++    # saw the wrong thing.
++    digests = {path: hashlib.sha256(text.encode()).hexdigest() for path, text in pages.items()}
++    check("every_model_guidance_address_serves_its_own_page",
++          len(set(digests.values())) == len(GUIDANCE_PAGES)
++          and all(WEB_ASSETS[path][1] == "text/html" for path in GUIDANCE_PAGES)
++          and WEB_ASSETS["/assets/model-guidance.css"] == ("model-guidance.css", "text/css")
++          and all("{{SERVICE_NAME}}" in text for text in pages.values()))
++    # The known-wrong case: the table is exact, so a neighbouring address is not
++    # answered by a page that happens to sit near it.
++    check("an_address_beside_the_model_guidance_pages_is_not_served",
++          not any(candidate in WEB_ASSETS for candidate in
++                  ("/models/", "/models/nothing", "/model", "/models/building/")))
++
++    # 2. Every internal address on a guidance page is one the service serves.
++    check("every_internal_address_on_a_model_guidance_page_is_served",
++          not any(unserved_addresses(text) for text in pages.values()))
++    broken = pages[GUIDANCE_PAGES[0]].replace('href="/docs"', 'href="/setup-guide"')
++    check("the_unserved_address_scan_rejects_a_page_that_points_nowhere",
++          unserved_addresses(broken) == ["/setup-guide"])
++
++    # 3. A guidance page is a page a customer reads, so it follows the same
++    # plain-word rule as the homepage and the shared footer.
++    check("the_model_guidance_pages_name_no_internal_runtime_word",
++          not any(INTERNAL_TERMS.search(text) for text in pages.values()))
++    check("the_plain_word_scan_rejects_a_page_that_names_the_runtime",
++          all(INTERNAL_TERMS.search(pages[GUIDANCE_PAGES[0]] + claim) for claim in
++              ("<p>Built on Loop Engine.</p>", "<p>Every step is a Loop node.</p>",
++               "<p>See the role profile.</p>", "<p>Read the runtime classification.</p>")))
++
++    # 4. The two kinds of work are separated and reachable from each other. A
++    # reader who lands on either deep page must be able to find the other.
++    entry = pages[GUIDANCE_PAGES[0]]
++    kinds = set(re.findall(r'data-work-kind="([a-z]+)"', entry))
++    check("the_entry_page_separates_the_two_kinds_of_work_and_sends_a_reader_to_each",
++          kinds == {"building", "deciding"}
++          and all(('href="%s"' % path) in entry for path in DEEP_PAGES)
++          and all(('href="%s"' % GUIDANCE_PAGES[0]) in pages[path] for path in DEEP_PAGES)
++          and all(('href="%s"' % other) in pages[path]
++                  for path in DEEP_PAGES for other in DEEP_PAGES if other != path))
++    check("the_two_kinds_scan_rejects_an_entry_page_that_names_only_one",
++          set(re.findall(r'data-work-kind="([a-z]+)"',
++                         re.sub(r'data-work-kind="deciding"', 'data-x=""', entry))) != {"building", "deciding"})
++
++    # 5. Each deep page answers the five questions a reader arrived with, and
++    # ends by saying what nobody has measured. The last one is the easiest to
++    # quietly drop and the most important to keep.
++    required = ("what-it-is", "local", "hosted", "working", "settings")
++    check("each_deep_page_answers_what_it_is_what_to_run_how_to_tell_and_what_it_costs",
++          all(all(('id="%s"' % section) in pages[path] for section in required) for path in DEEP_PAGES))
++    check("each_deep_page_says_what_nobody_has_measured_and_claims_no_saving",
++          all('data-unmeasured=' in pages[path] and "No saving is claimed" in pages[path]
++              and "nobody has measured" in pages[path].lower() for path in DEEP_PAGES))
++    stripped = re.sub(r'<div class="unmeasured".*?</div>', "", pages[DEEP_PAGES[0]], flags=re.S)
++    check("the_unmeasured_scan_rejects_a_page_that_dropped_that_paragraph",
++          "data-unmeasured=" not in stripped and "No saving is claimed" not in stripped)
++
++    # 6. Every setting a page prints is accepted by the real settings loader. A
++    # renamed or removed field fails here rather than in a reader's terminal.
++    blocks = [block for path in DEEP_PAGES for block in settings_blocks(pages[path])]
++    accepted, refusals = [], []
++    for block in blocks:
++        try:
++            accepted.append(loaded_settings(block))
++        except Exception as error:
++            refusals.append("%s: %s" % (type(error).__name__, error))
++    check("every_setting_the_model_guidance_pages_print_is_accepted_by_the_settings_loader",
++          len(blocks) >= 3 and not refusals and len(accepted) == len(blocks))
++    # The control: the loader rejects an unknown field, so the guard above is
++    # proving acceptance and not merely that nothing raised.
++    from ..settings_loader import SettingsError
++    invented, unknown_field = [], blocks[0].replace("purposes:", "purpose_list:")
++    for broken_block in (unknown_field, blocks[0].replace("models:", "modles:")):
++        try:
++            loaded_settings(broken_block)
++        except SettingsError:
++            invented.append(True)
++    check("the_settings_loader_refuses_a_renamed_field_in_the_same_block",
++          invented == [True, True] and unknown_field != blocks[0])
++
++    # 7. Every source name the pages print exists. A route renamed in
++    # `model_routes.py` or a field renamed on a record breaks this.
++    vocabulary = source_vocabulary()
++    printed = {name for path in GUIDANCE_PAGES for name in printed_names(pages[path])}
++    # Model tags and file names a publisher owns are not this repository's
++    # vocabulary; they are held to the published card instead, and a route's own
++    # model name is already in the vocabulary.
++    external = {name for name in printed if ":" in name or name.endswith((".yaml", ".py", ".css", ".html"))}
++    unmatched = sorted((printed - external) - vocabulary)
++    check("every_route_purpose_and_record_name_the_pages_print_exists_in_the_source",
++          len(printed) >= 25 and not unmatched)
++    check("the_source_vocabulary_scan_rejects_an_invented_name",
++          sorted(printed_names(pages[DEEP_PAGES[0]].replace("<code>counted_generation</code>",
++                                                            "<code>counted_generaton</code>")) - vocabulary
++                 - external) == ["counted_generaton"])
++
++    # 8. Every measured figure the pages quote comes from the dated record. A
++    # figure that record does not contain is a number nobody measured.
++    quoting = [path for path in GUIDANCE_PAGES if "87.28" in pages[path]]
++    record = evidence_figures(root)
++    check("every_measured_figure_the_pages_quote_is_in_the_dated_evidence_record",
++          len(quoting) == len(DEEP_PAGES)
++          and all(figure in pages[path] for path in quoting for figure in MEASURED_FIGURES)
++          and (record is None or all(figure in record for figure in MEASURED_FIGURES)))
++    check("the_measured_figure_scan_rejects_a_figure_the_record_does_not_carry",
++          record is None or not all(figure in record for figure in (*MEASURED_FIGURES, "142 tokens each second")))
++
++
++def self_test() -> dict:
++    tests = []
++
++    def check(name, passed):
++        tests.append({"test": name, "passed": bool(passed),
++                      "detail": "packaged pages held against the source; no socket and no provider"})
++
++    run_checks(check)
++    passed = sum(row["passed"] for row in tests)
++    return {"record_type": "model_guidance_checks_self_test", "tests": tests,
++            "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}
+diff --git a/src/loop_engine/core/service_runtime/web_assets/model-guidance.css b/src/loop_engine/core/service_runtime/web_assets/model-guidance.css
+new file mode 100644
+index 00000000..7a8017e1
+--- /dev/null
++++ b/src/loop_engine/core/service_runtime/web_assets/model-guidance.css
+@@ -0,0 +1,31 @@
++/* The model guidance pages. They stand on their own, without the workspace
++   script, so everything here is layout for reading: a table of model facts, a
++   worked sum a reader can redo, and a two-way choice at the top. Colours and
++   spacing come from the variables service.css already defines. */
++.guidance{max-width:880px;margin:0 auto;padding:2.5rem 0 5rem}
++.guidance h2{font-size:clamp(1.4rem,2.6vw,2rem);line-height:1.22;margin:3rem 0 1rem}
++.guidance h3{font-size:1.05rem;margin:2rem 0 .6rem}
++.guidance p,.guidance li{max-width:66ch}
++.guidance ul,.guidance ol{padding-left:1.2rem;margin:1rem 0}
++.guidance li{margin:.5rem 0}
++.model-table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.92rem}
++.model-table caption{text-align:left;color:var(--muted);font-size:.85rem;padding-bottom:.6rem}
++.model-table th,.model-table td{border-bottom:1px solid var(--border);padding:.6rem .7rem;text-align:left;vertical-align:top}
++.model-table thead th{border-bottom:2px solid var(--border);font-size:.85rem;color:var(--muted);font-weight:600}
++.model-table code{font:.88em ui-monospace,monospace;overflow-wrap:anywhere}
++.sum{border:1px solid var(--border);background:var(--paper);border-radius:12px;padding:1.2rem 1.4rem;margin:1.4rem 0;box-shadow:var(--shadow)}
++.sum h3{margin-top:0}
++.sum ol{counter-reset:none}
++.sum .total{border-top:1px solid var(--border);margin-top:1rem;padding-top:.8rem;font-weight:600}
++.two-ways{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;margin:2rem 0}
++.two-ways article{border:1px solid var(--border);background:var(--paper);border-radius:12px;padding:1.5rem;display:flex;flex-direction:column}
++.two-ways h2{margin:.4rem 0 .6rem;font-size:1.25rem}
++.two-ways p{color:var(--muted);flex-grow:1}
++.two-ways .button{margin-top:1.2rem;align-self:flex-start}
++.source-note{color:var(--muted);font-size:.85rem;border-left:2px solid var(--border);padding-left:.9rem;margin:1.2rem 0}
++.unmeasured{border:1px solid var(--border);background:var(--soft);border-radius:12px;padding:1.4rem}
++.unmeasured h2{margin-top:0}
++.guidance pre{overflow-x:auto}
++.guidance-footer{border-top:1px solid var(--border);margin-top:3.5rem;padding-top:1.5rem;color:var(--muted);font-size:.9rem}
++@media(max-width:760px){.two-ways{grid-template-columns:minmax(0,1fr)}
++.model-table{font-size:.85rem}}
+diff --git a/src/loop_engine/core/service_runtime/web_assets/models-building.html b/src/loop_engine/core/service_runtime/web_assets/models-building.html
+new file mode 100644
+index 00000000..8cd85faa
+--- /dev/null
++++ b/src/loop_engine/core/service_runtime/web_assets/models-building.html
+@@ -0,0 +1,147 @@
++<!doctype html>
++<html lang="en" data-theme="light">
++<head>
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <meta name="description" content="Which model to run for a building step: writing code, drafting a migration, producing a document. Named models local and hosted, the memory arithmetic, and the real setting names.">
++  <title>{{SERVICE_NAME}} | Models for building</title>
++  <link rel="stylesheet" href="/assets/service.css">
++  <link rel="stylesheet" href="/assets/model-guidance.css">
++</head>
++<body>
++  <a class="skip" href="#main">Skip to content</a>
++  <header class="header"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">↗</span> {{SERVICE_NAME}}</a>
++    <nav aria-label="Main navigation"><a href="/how-it-works">How it works</a><a href="/models" aria-current="page">Models</a><a href="/pricing">Pricing</a><a href="/connect">Connect</a><a href="/docs">Documentation</a><a href="/app">Workspace</a></nav>
++    <a class="header-access" href="/login">Sign in <span aria-hidden="true">↗</span></a>
++  </header>
++  <main id="main" tabindex="-1" class="guidance" data-guidance-page="building">
++    <p class="eyebrow">Choosing a model · Kind one</p>
++    <h1>Models for building</h1>
++    <p class="lede">A building step writes the thing you keep. The output is long, a mistake shows up in the file, and the bill is mostly the tokens it generated. This page names what to run, shows the memory arithmetic so you can redo it for a model it does not list, and gives the exact settings.</p>
++    <p class="caption">Looking for the other kind of step? <a href="/models/deciding">Classifying and deciding</a> is a different page, because it is different work. <a href="/models">Start at the top</a> if you are not sure which you have.</p>
++
++    <h2 id="what-it-is">What a building step actually is</h2>
++    <p>Three from ordinary coding work:</p>
++    <ul>
++      <li><strong>Write the adapter.</strong> A new file with a declared interface, its error handling and its tests. Two hundred lines that either compile or do not.</li>
++      <li><strong>Draft the migration.</strong> Turn a schema change into forward and backward statements, with the data move in the middle. Long, exact and reviewable.</li>
++      <li><strong>Write the guide for the endpoint you just built.</strong> A page of prose with real request and response examples in it.</li>
++    </ul>
++    <p>What these share: one call, a lot of output, and a human or a test looking at the result afterwards. What they do not share with the other kind of work is repetition. You run these a handful of times an afternoon, not four hundred times.</p>
++
++    <h2 id="local">What to run locally</h2>
++    <p>The sizes and context lengths below are what the publishers print on their own pages. They were read on 21 September 2026 and the source is named for each one. Nothing here is a speed or a quality claim.</p>
++
++    <table class="model-table">
++      <caption>Local coding models. Download size and context read from the model's page on the Ollama library, 21 September 2026.</caption>
++      <thead><tr><th>Model tag</th><th>Published size</th><th>Quantisation</th><th>Context the page prints</th><th>What it is for here</th></tr></thead>
++      <tbody>
++        <tr><td><code>qwen2.5-coder:1.5b</code></td><td>986 MB</td><td>default tag</td><td>32K</td><td>Completion and very small edits. Too small to trust with a whole file.</td></tr>
++        <tr><td><code>qwen2.5-coder:7b</code></td><td>4.7 GB</td><td><code>q4_K_M</code></td><td>32K</td><td>The one that fits a 12 GiB card with room for its context. A file at a time.</td></tr>
++        <tr><td><code>qwen2.5-coder:14b</code></td><td>9.0 GB</td><td>default tag</td><td>32K</td><td>A step up if you have 16 GiB or more of video memory and nothing else resident.</td></tr>
++        <tr><td><code>qwen2.5-coder:32b</code></td><td>20 GB</td><td><code>q4_K_M</code></td><td>32K</td><td>Needs a 24 GiB card or larger. It does not fit a 12 GiB one at all.</td></tr>
++      </tbody>
++    </table>
++    <p class="source-note">Sizes, quantisation and context: the Qwen2.5-Coder pages at <code>ollama.com/library/qwen2.5-coder</code> and its tags list, read 21 September 2026. Licence and parameter count: the Hugging Face card at <code>huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct</code>, read 21 September 2026, which prints Apache 2.0, "Number of Parameters: 7.61B", "Number of Paramaters (Non-Embedding): 6.53B", "Number of Layers: 28", and "Full 131,072 tokens" while noting that its <code>config.json</code> is set for context up to 32,768 tokens. The two publishers print different context numbers for the same weights, so read the one your own server reports rather than either page.</p>
++
++    <h3>The one thing measured here</h3>
++    <p>On an NVIDIA GeForce RTX 3060 with 12288 MiB of video memory, running <code>qwen2.5-coder:7b</code> at Q4_K_M through this engine's own local endpoint adapter over a real socket, the model held 6659 MiB and the context length 32768 was read from the server's own model information. The server reported 64 prompt tokens and 18 output tokens. The first call took 87.28 seconds and the next two took 0.71 and 0.78 seconds, because the first one pays to load 4.7 GB of weights.</p>
++    <p>That last line is the one to carry into a schedule. A run that lets the server unload between steps pays the load again at every step. A run that keeps one model resident pays it once. It is a fact about moving weights into video memory, not a measurement of this model's speed or quality, and 18 output tokens is far too few to carry a rate.</p>
++
++    <h2 id="arithmetic">The arithmetic, so you can redo it</h2>
++    <div class="sum" data-arithmetic="fit">
++      <h3>Does this model fit my card?</h3>
++      <ol>
++        <li><strong>Take the published size of the exact tag.</strong> Not the family, the tag. <code>qwen2.5-coder:7b</code> is 4.7 GB; <code>qwen2.5-coder:32b</code> is 20 GB. That is the weights.</li>
++        <li><strong>Add what the server holds on top for the context you allow.</strong> On the machine measured above, the total held was 6659 MiB at context 32768. The published 4.7 GB is 4482 MiB if the publisher's GB means 1,000,000,000 bytes and 4813 MiB if it means 1,073,741,824. So the headroom over the weights was between 1846 and 2177 MiB, for that context, on that server.</li>
++        <li><strong>Compare with your card.</strong> 6659 of 12288 MiB leaves 5629 MiB. That is the slack you have for anything else.</li>
++        <li class="total"><strong>For a model not listed here:</strong> published tag size, plus headroom of that order for a 32K context, against your own video memory. <code>qwen2.5-coder:32b</code> at 20 GB is at least 19073 MiB before any context at all, which is more than the whole 12288 MiB card. It does not fit, and no setting makes it fit.</li>
++      </ol>
++    </div>
++    <p>Only the 6659 MiB figure was measured. Everything after it is arithmetic you should repeat on your own machine, because the headroom depends on your server, your context length and what else is resident.</p>
++    <p>That last point is why the two kinds of work are worth separating on one machine. A small deciding model of about 1.4 GB and this 7B building model can plausibly both stay resident inside 12288 MiB, and then neither pays the load again. A 20 GB building model cannot share the card with anything, so every switch pays the load. Check the sum for your own card before you plan around it.</p>
++
++    <h2 id="hosted">What to run hosted</h2>
++    <p>These are the routes this engine ships. A route is one entry naming a provider, a model and the purposes it may serve; adding a model is adding an entry, not editing code.</p>
++    <table class="model-table">
++      <caption>Routes that declare <code>counted_generation</code>, from <code>default_routes()</code> in <code>model_routes.py</code>.</caption>
++      <thead><tr><th>Route name</th><th>Provider</th><th>Model it names</th><th>Also serves short decisions</th></tr></thead>
++      <tbody>
++        <tr><td><code>cloud.default</code></td><td><code>ollama_cloud</code></td><td><code>deepseek-v4-flash:0731</code></td><td>Yes</td></tr>
++        <tr><td><code>cloud.hard</code></td><td><code>ollama_cloud</code></td><td><code>deepseek-v4-pro:0813</code></td><td>No</td></tr>
++        <tr><td><code>cloud.glm</code></td><td><code>ollama_cloud</code></td><td><code>glm-5.3-flash</code></td><td>No</td></tr>
++        <tr><td><code>cloud.mistral</code></td><td><code>mistral</code></td><td><code>mistral-small-latest</code></td><td>Yes</td></tr>
++        <tr><td><code>cloud.mistral.large</code></td><td><code>mistral</code></td><td><code>mistral-large-latest</code></td><td>No</td></tr>
++        <tr><td><code>cloud.openrouter</code></td><td><code>openrouter</code></td><td><code>deepseek/deepseek-chat</code></td><td>Yes</td></tr>
++        <tr><td><code>cloud.openrouter.reasoning</code></td><td><code>openrouter</code></td><td><code>deepseek/deepseek-r1</code></td><td>No</td></tr>
++      </tbody>
++    </table>
++    <p>Each provider carries a declared handshake rather than an assumed one. All three declare that their token counts are provider reported and a context of 131072. <code>mistral</code> and <code>openrouter</code> declare that they support structured output; <code>ollama_cloud</code> declares that it does not, with the provider's own documentation page and the date it was checked written beside the declaration in the source. Those are declarations in this repository's route data, not measurements taken today, so check them against your provider before you rely on one.</p>
++    <p class="source-note">A model name ending in <code>-latest</code> is an alias that moves, so what it points at is whatever the provider says today. For the open weights behind the current Mistral Small line, the Hugging Face card at <code>huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506</code>, read 21 September 2026, prints the licence as apache-2.0 and the size as 24B params. It does not print a context window; its usage examples set 131072. Do not carry that number over to the hosted alias without checking.</p>
++
++    <h2 id="working">How to tell it is working</h2>
++    <p>For building work the check is usually the thing you were building. The file compiles, the test passes, the migration runs forward and back. That is a stronger check than anything a model can say about itself, and you should prefer it.</p>
++    <p>Three things worth watching that are not the test:</p>
++    <ul>
++      <li><strong>The reason the answer ended.</strong> A truncated answer is not a smaller answer, it is a broken one. The measured call above finished for the reason <code>stop</code>; an answer that stopped because it ran out of room needs a larger allowance, not a retry.</li>
++      <li><strong>The output allowance.</strong> Every generation asks for the selected route's source-backed maximum output. A convenient smaller limit is never substituted, and a route whose maximum is unknown stays unavailable until provider discovery or an explicit setting supplies the exact value.</li>
++      <li><strong>What a failed check should do next.</strong> Moving to a larger model is one named response to one named failure, not a general reaction. It is off unless you switch it on.</li>
++    </ul>
++
++    <h2 id="settings">What the engine does for you, and how to set it</h2>
++    <p>Model routes declare what kind of model they are, how large they are and where they run. Every real call writes a cost record. An unknown cost stays unknown rather than being written as zero. Here is how you configure that for a building step, in <code>loop-engine.settings.yaml</code>.</p>
++
++    <h3>Point a building step at your own server</h3>
++<pre><code>models:
++  default_thinking_power: medium
++  allow_local_counted_generation: true
++  providers:
++    - id: local_coder
++      kind: custom
++      endpoint: http://127.0.0.1:11434
++      model: qwen2.5-coder:7b
++      wire: ollama
++      locality: local
++      credential_env: ""
++      counts_as_evidence: false
++      purposes: [counted_generation]
++  tiers:
++    small:
++      routes: [custom.local_coder, cloud.mistral, cloud.default]
++      timeout_seconds: 120
++      max_attempts: 2</code></pre>
++    <p>Field by field, and every one of these exists:</p>
++    <ul>
++      <li><code>id</code> becomes the route name. A provider with <code>id: local_coder</code> is reachable as the route <code>custom.local_coder</code>, which is the name you write in a tier.</li>
++      <li><code>wire</code> is <code>openai</code> or <code>ollama</code>. Those are the two wire formats; almost every self-hosted server speaks one of them.</li>
++      <li><code>credential_env</code> names an environment variable, never a key. Leave it empty for a keyless local server. No key is ever written into this file.</li>
++      <li><code>purposes</code> is what the route is allowed to serve. <code>counted_generation</code> is the building purpose. The full set is <code>counted_generation</code>, <code>decide_label</code>, <code>generation</code>, <code>reasoning</code>, <code>code</code>, <code>vision</code>, <code>tool_use</code>, <code>embedding</code>, <code>reranking</code>, <code>query_rewrite</code> and <code>structured_extract</code>.</li>
++      <li><code>allow_local_counted_generation</code> is the switch that lets a local route do building work at all. It is <code>false</code> by default, and with it false a local route asking for <code>counted_generation</code> is refused with a message that names this exact setting rather than quietly falling back.</li>
++      <li><code>counts_as_evidence</code> is separate and is <code>false</code> by default. A self-hosted server can report honest token counts; whether a comparison may cite them is a judgement about whether another machine would reproduce them, so it has to be declared rather than assumed.</li>
++      <li><code>tiers</code> maps a thinking level to an ordered list of routes with a timeout and an attempt limit. The levels are <code>small</code>, <code>medium</code>, <code>high</code>, <code>max</code> and <code>specialized</code>. The shipped lists are described in the source as conservative route hints and not a measured quality ranking, which is exactly what they are.</li>
++    </ul>
++
++    <h3>If you want a failed output check to try a larger model</h3>
++<pre><code>models:
++  escalation:
++    enabled: true
++    order: [small, medium, high, max]
++    on_errors: [output_validation_failed]
++    max_tier_changes: 1</code></pre>
++    <p><code>enabled</code> is <code>false</code> by default. <code>on_errors</code> names which failures may move up, so a provider outage is not treated as the model being too small. <code>max_tier_changes</code> bounds how far one step may climb. <code>specialized</code> cannot appear in <code>order</code>, because it is chosen by what the task needs and not by escalating power.</p>
++
++    <h3>Reading what it cost</h3>
++    <p>Each implementation of each step writes one cost record carrying its <code>operation_id</code>, its <code>implementation_id</code>, its <code>run_id</code>, an <code>outcome</code> of <code>verified</code>, <code>failed</code> or <code>unknown</code>, and timings for the <code>setup</code>, <code>execution</code>, <code>verification</code> and <code>recovery</code> phases, together with <code>model_calls</code>, <code>input_tokens</code>, <code>output_tokens</code> and <code>monetary_cost</code>.</p>
++    <p>A record counts as complete only when every one of those four phases has a known timing, and only complete records are averaged. A token count that is missing or malformed is kept as unknown; it never becomes zero. This matters most for exactly the comparison you would want to make here, because a local route that reports nothing would otherwise look free.</p>
++
++    <div class="unmeasured" data-unmeasured="building">
++      <h2>What nobody has measured</h2>
++      <p>No saving is claimed on this page, and none has been measured. What exists is one record of one local model answering three times on one machine, and that record deliberately carries no rate, no quality judgement and no comparison. Nobody here has run the same building task through a local model and a hosted one and compared the results, the cost or the time. Nobody has graded the output of any model named above. The tier lists this engine ships were written as sensible starting points by people reasoning about model sizes, not derived from a measurement, and the source says so. Treat every recommendation here as a starting configuration to test on your own work, and keep your own cost records, because those will be about your tasks rather than somebody else's.</p>
++    </div>
++
++    <footer class="guidance-footer">
++      <p><a href="/models">Which model for this step</a> · <a href="/models/deciding">Classifying and deciding</a> · <a href="/docs">Setup guide</a> · <a href="/">Home</a></p>
++    </footer>
++  </main>
++</body>
++</html>
+diff --git a/src/loop_engine/core/service_runtime/web_assets/models-deciding.html b/src/loop_engine/core/service_runtime/web_assets/models-deciding.html
+new file mode 100644
+index 00000000..5d92c6f6
+--- /dev/null
++++ b/src/loop_engine/core/service_runtime/web_assets/models-deciding.html
+@@ -0,0 +1,163 @@
++<!doctype html>
++<html lang="en" data-theme="light">
++<head>
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <meta name="description" content="Which model to run for a classifying or deciding step: is this file relevant, does this answer satisfy the contract, which approach fits. Named models, the answer shape, and how to measure agreement.">
++  <title>{{SERVICE_NAME}} | Models for classifying and deciding</title>
++  <link rel="stylesheet" href="/assets/service.css">
++  <link rel="stylesheet" href="/assets/model-guidance.css">
++</head>
++<body>
++  <a class="skip" href="#main">Skip to content</a>
++  <header class="header"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">↗</span> {{SERVICE_NAME}}</a>
++    <nav aria-label="Main navigation"><a href="/how-it-works">How it works</a><a href="/models" aria-current="page">Models</a><a href="/pricing">Pricing</a><a href="/connect">Connect</a><a href="/docs">Documentation</a><a href="/app">Workspace</a></nav>
++    <a class="header-access" href="/login">Sign in <span aria-hidden="true">↗</span></a>
++  </header>
++  <main id="main" tabindex="-1" class="guidance" data-guidance-page="deciding">
++    <p class="eyebrow">Choosing a model · Kind two</p>
++    <h1>Models for classifying and deciding</h1>
++    <p class="lede">A deciding step returns a label, a choice between named options, or a small record. The output is short, the step runs many times, and the bill is the number of calls and the input each one carries. This is the work that most often runs on a model far larger than it needs, because nobody ever said what else to run.</p>
++    <p class="caption">Writing code, a migration or a document instead? That is <a href="/models/building">the other page</a>. <a href="/models">Start at the top</a> if you are not sure which you have.</p>
++
++    <h2 id="what-it-is">What a deciding step actually is</h2>
++    <p>Three from ordinary coding work:</p>
++    <ul>
++      <li><strong>Is this file relevant to the change I am making?</strong> Forty candidates come back from a search. Forty calls, each one returning yes or no, each one carrying a file path and a few hundred tokens of the file.</li>
++      <li><strong>Does this answer satisfy the contract the step declared?</strong> One call per candidate answer, returning accept, repair or reject. The answer you are judging is the input; the output is one word.</li>
++      <li><strong>Is this failure the same as one we have already seen?</strong> A new stack trace against the ones already recorded. The output is a name or nothing.</li>
++    </ul>
++    <p>A fourth that is worth naming separately, because it looks like reasoning and is not: <strong>which of these five approaches fits this task?</strong> Five named options, a short reason, and a move to the next step. That is a choice between declared candidates, not an essay.</p>
++
++    <h2 id="arithmetic">Where the money goes, and how to check</h2>
++    <div class="sum" data-arithmetic="calls">
++      <h3>Put your own numbers in. These are placeholders, not a measurement.</h3>
++      <ol>
++        <li>Say a relevance step runs over 40 candidates, 10 times in an afternoon. That is 400 calls.</li>
++        <li>Say each call carries 2,000 tokens in: the question, the candidate names and the piece of file you are judging.</li>
++        <li>Input: 400 × 2,000 = 800,000 tokens.</li>
++        <li>Output: 400 × about 20 tokens for a label, a probability and a short reason = 8,000 tokens.</li>
++        <li class="total">Input is 100 times the output. Every price list charges for both, so for this work you are buying input, and the lever that matters is how much you carry into each call, not which model writes the nicest sentence.</li>
++      </ol>
++    </div>
++    <p>Two consequences follow. Send less into each call, which is what selecting material before loading it is for. And run the call somewhere cheap, which is what the rest of this page is about.</p>
++
++    <h2 id="local">What to run locally</h2>
++    <p>Sizes and context lengths below are what the publishers print on their own pages, read on 21 September 2026, with the source named. Nothing here is a speed or a quality claim.</p>
++    <table class="model-table">
++      <caption>Small local models for label and choice work. Size and context read from the Ollama library pages, 21 September 2026.</caption>
++      <thead><tr><th>Model tag</th><th>Published size</th><th>Context the page prints</th><th>What it is for here</th></tr></thead>
++      <tbody>
++        <tr><td><code>qwen3:0.6b</code></td><td>523 MB</td><td>40K</td><td>The narrowest labels, where the candidates are few and obvious. Expect it to decline more often.</td></tr>
++        <tr><td><code>qwen3:1.7b</code></td><td>1.4 GB</td><td>40K</td><td>The first one to try. Small enough to sit beside a building model on one 12 GiB card.</td></tr>
++        <tr><td><code>qwen3:8b</code></td><td>5.2 GB</td><td>40K</td><td>When the 1.7B declines too often on your own suite, and only then.</td></tr>
++        <tr><td><code>qwen2.5-coder:1.5b</code></td><td>986 MB</td><td>32K</td><td>Labels about code specifically, where the input is source rather than prose.</td></tr>
++      </tbody>
++    </table>
++    <p class="source-note">Sizes and context: the Qwen3 and Qwen2.5-Coder pages and tag lists at <code>ollama.com/library/qwen3</code> and <code>ollama.com/library/qwen2.5-coder</code>, read 21 September 2026, where the <code>qwen3:1.7b</code> tag is listed both plain and as <code>qwen3:1.7b-q4_K_M</code> at the same 1.4 GB. Licence and parameter count: the Hugging Face card at <code>huggingface.co/Qwen/Qwen3-1.7B</code>, read 21 September 2026, which prints apache-2.0, 1.7B parameters with 1.4B non-embedding, 28 layers, and a 32,768 token context. The two publishers print different context numbers for the same weights, so read the one your own server reports rather than either page.</p>
++
++    <h3>Fitting a deciding model beside a building model</h3>
++    <p>The one figure measured here: on an NVIDIA GeForce RTX 3060 with 12288 MiB of video memory, <code>qwen2.5-coder:7b</code> at Q4_K_M held 6659 MiB with context length 32768, read from the server's own model information. Its first call took 87.28 seconds against 0.71 and 0.78 seconds for the two after it, because the first one pays to load 4.7 GB of weights.</p>
++    <p>So the question for a second model is whether it fits in what is left. 12288 minus 6659 leaves 5629 MiB. A 1.4 GB model is 1335 MiB if the publisher's GB means 1,000,000,000 bytes and 1434 MiB if it means 1,073,741,824, before whatever the server holds on top for its context. That leaves real room, and two resident models never pay the load again. Only the 6659 MiB is measured. Read your own number the same way, from your server or from your card's own reporting, before you plan a night around it.</p>
++
++    <h2 id="hosted">What to run hosted</h2>
++    <p>Three of the routes this engine ships declare that they may serve short decisions as well as building work. A route is an entry naming a provider, a model and the purposes it is allowed to serve.</p>
++    <table class="model-table">
++      <caption>Routes that declare <code>decide_label</code>, from <code>default_routes()</code> in <code>model_routes.py</code>.</caption>
++      <thead><tr><th>Route name</th><th>Provider</th><th>Model it names</th><th>Provider declares structured output</th></tr></thead>
++      <tbody>
++        <tr><td><code>cloud.mistral</code></td><td><code>mistral</code></td><td><code>mistral-small-latest</code></td><td>Yes</td></tr>
++        <tr><td><code>cloud.openrouter</code></td><td><code>openrouter</code></td><td><code>deepseek/deepseek-chat</code></td><td>Yes</td></tr>
++        <tr><td><code>cloud.default</code></td><td><code>ollama_cloud</code></td><td><code>deepseek-v4-flash:0731</code></td><td>No</td></tr>
++        <tr><td><code>local.slm</code></td><td><code>ollama_local</code></td><td>a local small model, wired and permitted for decisions</td><td>Not declared</td></tr>
++      </tbody>
++    </table>
++    <p>The structured output column is a declaration carried in this repository's route data, with the provider documentation page and the date it was checked written beside it in the source. It matters here because a provider that constrains decoding to a schema returns the answer shape more reliably than one that is merely asked for JSON in a prompt. It does not replace the check below: prompted JSON is not provider-enforced JSON Schema, and the answer is admitted or refused on its own merits either way.</p>
++    <p class="source-note">For the open weights behind the current Mistral Small line, the Hugging Face card at <code>huggingface.co/mistralai/Mistral-Small-3.2-24B-Instruct-2506</code>, read 21 September 2026, prints the licence as apache-2.0 and the size as 24B params. A name ending in <code>-latest</code> is an alias that moves, so check what your provider points it at today.</p>
++
++    <h2 id="working">How to tell it is working</h2>
++    <p>This is the part that matters. A building model that is wrong leaves a bug you can read. A deciding model that is wrong returns a confident label, nothing looks broken, and the wrong file goes into the next step. <strong>A decision model that always answers confidently is worse than one that declines</strong>, because you cannot tell its good answers from its bad ones.</p>
++
++    <h3>1. A declared answer shape</h3>
++    <p>A bounded decision goes out under the response contract named <code>typed_decision.choice</code>. The request carries the question, the declared candidates and the evidence, and nothing else is weighed. At most ten candidates: a wider choice is refused with a message telling you to split it, rather than quietly weighing twenty.</p>
++    <p>The answer is one JSON object with these fields:</p>
++    <table class="model-table">
++      <caption>The typed decision response contract.</caption>
++      <thead><tr><th>Field</th><th>What it holds</th></tr></thead>
++      <tbody>
++        <tr><td><code>chosen</code></td><td>The candidate taken. Empty when the answer is a refusal to decide.</td></tr>
++        <tr><td><code>rows</code></td><td>One row for each declared candidate, each carrying <code>candidate</code> and <code>confidence</code>.</td></tr>
++        <tr><td><code>confidence</code></td><td>How confident the judge is overall, between zero and one.</td></tr>
++        <tr><td><code>abstain</code></td><td>A Boolean. True when the judge will not choose.</td></tr>
++        <tr><td><code>reason</code></td><td>Short text. Optional.</td></tr>
++      </tbody>
++    </table>
++
++    <h3>2. A refusal when the model cannot answer, and a refusal when it answers wrongly</h3>
++    <p>Admission refuses an answer by name rather than repairing it. It refuses when the answer is not a JSON object, when any of <code>chosen</code>, <code>rows</code>, <code>confidence</code> or <code>abstain</code> is missing, when <code>rows</code> is empty, when a row lacks <code>candidate</code> or <code>confidence</code>, when the same candidate appears in two rows, when the rows do not name exactly the declared candidates, when the rows sum more than 0.01 away from one, when <code>abstain</code> is not a Boolean, when <code>chosen</code> is not one of the declared candidates, and when <code>chosen</code> is not the row carrying the highest confidence. The refusal prints what was actually there, including the extra and missing candidates and the sum the rows really came to.</p>
++    <p>That last rule is the one people are surprised by. A model that writes a confident paragraph choosing option B while its own probability rows put the mass on option C is not making a decision, it is making two, and the answer is refused rather than averaged.</p>
++    <p>Declining is a first-class answer, not an error. An answer with <code>abstain</code> true and no <code>chosen</code> is admitted, recorded as an abstention, and passed back for the step to handle. The small judge that ships with this engine abstains when it recognises none of the declared candidates, instead of spreading its mass over names it has never seen.</p>
++
++    <h3>3. A way to measure agreement against known-right cases</h3>
++    <p>Write a suite. A suite has an identifier, a version and a list of cases. Each case has its own identifier, the request, and <code>expected</code>: the candidate that is right, or empty when the right answer is to decline. Run it against a route and a judge and read the report:</p>
++    <table class="model-table">
++      <caption>What one suite report carries, per judge and per route.</caption>
++      <thead><tr><th>Field</th><th>What it tells you</th></tr></thead>
++      <tbody>
++        <tr><td><code>total</code>, <code>decided</code>, <code>abstained</code>, <code>errored</code></td><td>Exact denominators. The report refuses to exist unless <code>total</code> equals the other three added together, so nothing goes missing.</td></tr>
++        <tr><td><code>correct</code>, <code>wrong</code></td><td>Of the ones it decided. <code>decided</code> must equal these two added together.</td></tr>
++        <tr><td><code>accuracy_over_decided</code></td><td><code>correct</code> divided by <code>decided</code>. Over what it decided, not over the whole suite, so declining cannot inflate it.</td></tr>
++        <tr><td><code>errors</code></td><td>The case identifier and the error type for each case that threw. An error is counted as an error and never as a pass.</td></tr>
++        <tr><td><code>mean_confidence_correct</code>, <code>mean_confidence_wrong</code></td><td>The two numbers that catch a confident guesser.</td></tr>
++      </tbody>
++    </table>
++    <p><strong>Read the last two together.</strong> If a judge is right at 0.9 and wrong at 0.5, its confidence carries information and you can set a threshold below which the case goes to a bigger model or to a person. If it is right at 0.9 and wrong at 0.9, its confidence tells you nothing, there is no threshold to set, and a higher accuracy number is worth less than it looks.</p>
++    <p><strong>Put known-wrong cases in the suite.</strong> Cases whose right answer is to decline, with <code>expected</code> left empty, are the control. A judge that never declines fails them, and the report shows it in <code>abstained</code> and <code>wrong</code> rather than in a number that still looks respectable. Cases naming a candidate the judge has never seen belong there too.</p>
++    <p>Run the same suite against every route you are considering. The report names the route, so two runs are directly comparable, and comparing a 1.7B model on your own machine against a hosted route on your own cases is the only comparison that answers your question.</p>
++
++    <h2 id="settings">What the engine does for you, and how to set it</h2>
++    <p>Model routes declare what kind of model they are, how large they are and where they run. Every real call writes a cost record. An unknown cost stays unknown rather than being written as zero. Here is how you configure a deciding route, in <code>loop-engine.settings.yaml</code>.</p>
++<pre><code>models:
++  providers:
++    - id: local_decider
++      kind: custom
++      endpoint: http://127.0.0.1:11434
++      model: qwen3:1.7b
++      wire: ollama
++      locality: local
++      credential_env: ""
++      counts_as_evidence: false
++      purposes: [decide_label]
++      think: "off"
++  tiers:
++    small:
++      routes: [custom.local_decider, cloud.mistral, cloud.default]
++      timeout_seconds: 120
++      max_attempts: 2</code></pre>
++    <p>Field by field, and every one of these exists:</p>
++    <ul>
++      <li><code>purposes: [decide_label]</code> is what makes this a deciding route. It is the narrow purpose, and it is <strong>permitted for a local route by default</strong>. Unlike building work, you do not switch anything on: a local model may decide and label, it may not be the large generation workhorse.</li>
++      <li><code>id</code> becomes the route name. <code>id: local_decider</code> is reachable as the route <code>custom.local_decider</code>, which is the name you write in a tier.</li>
++      <li><code>wire</code> is <code>openai</code> or <code>ollama</code>. Those are the two wire formats.</li>
++      <li><code>credential_env</code> names an environment variable, never a key. Leave it empty for a keyless local server.</li>
++      <li><code>think</code> matters here more than anywhere. On the Ollama wire the values are <code>default</code>, <code>off</code>, <code>on</code> and <code>model</code>. <code>off</code> sends <code>think: false</code> so the whole output allowance goes to the answer. The reason is written into the source: a reasoning model spends its output ceiling thinking before it emits anything, and the structured answer comes back truncated. For a step whose entire output is a label and a few probability rows, that is the failure you will hit first.</li>
++      <li><code>counts_as_evidence</code> is <code>false</code> by default. A self-hosted server can report honest token counts; whether a comparison may cite them is a judgement about whether another machine would reproduce them, so it is declared rather than assumed.</li>
++      <li><code>tiers</code> maps a thinking level to an ordered list of routes. Putting your local route first in <code>small</code> and leaving hosted routes behind it is what sends the many cheap calls to your own machine while keeping a way through when it is not running.</li>
++    </ul>
++    <p>Two neighbouring purposes behave differently and it is worth knowing before you hit them. <code>query_rewrite</code> and <code>structured_extract</code> are also bounded local jobs, and both are refused for a local route by default with a message saying they are disabled by policy. They are switches in the route policy rather than fields in this settings file today, so a local route declaring either of them will be refused until that changes.</p>
++
++    <h3>Reading what it cost</h3>
++    <p>Each implementation of each step writes one cost record carrying its <code>operation_id</code>, its <code>implementation_id</code>, its <code>run_id</code>, an <code>outcome</code> of <code>verified</code>, <code>failed</code> or <code>unknown</code>, timings for the <code>setup</code>, <code>execution</code>, <code>verification</code> and <code>recovery</code> phases, and <code>model_calls</code>, <code>input_tokens</code>, <code>output_tokens</code> and <code>monetary_cost</code>. A record is complete only when all four phase timings are known, and only complete records are averaged. A token count that is missing or malformed stays unknown and never becomes zero.</p>
++    <p>For this kind of work that rule is doing real protection. A local route that reports no counts would otherwise appear to cost nothing, and the step that runs four hundred times is exactly where a free-looking number would do the most damage to a comparison.</p>
++
++    <div class="unmeasured" data-unmeasured="deciding">
++      <h2>What nobody has measured</h2>
++      <p>No saving is claimed on this page, and none has been measured. Nobody here has run a suite of real deciding cases against a small local model and a hosted one and compared the agreement, the cost or the time. There is no measured accuracy figure for any model named above, on any task. The one local measurement that exists is three calls of one coding model on one machine, and it deliberately carries no rate and no quality judgement. The example call counts in the arithmetic above are placeholders for your own numbers, not observations. Even the shape of the advice, that small models are enough for narrow labelled choices, is a reasonable expectation rather than a result: it is why the suite and its two confidence numbers exist, so that you can find out on your own cases instead of taking it from a page.</p>
++    </div>
++
++    <footer class="guidance-footer">
++      <p><a href="/models">Which model for this step</a> · <a href="/models/building">Building</a> · <a href="/docs">Setup guide</a> · <a href="/">Home</a></p>
++    </footer>
++  </main>
++</body>
++</html>
+diff --git a/src/loop_engine/core/service_runtime/web_assets/models.html b/src/loop_engine/core/service_runtime/web_assets/models.html
+new file mode 100644
+index 00000000..6757c84b
+--- /dev/null
++++ b/src/loop_engine/core/service_runtime/web_assets/models.html
+@@ -0,0 +1,61 @@
++<!doctype html>
++<html lang="en" data-theme="light">
++<head>
++  <meta charset="utf-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1">
++  <meta name="description" content="Which model should you run for this step? Building work and deciding work need different models. Start here and take the page for the kind of step you have.">
++  <title>{{SERVICE_NAME}} | Which model for this step</title>
++  <link rel="stylesheet" href="/assets/service.css">
++  <link rel="stylesheet" href="/assets/model-guidance.css">
++</head>
++<body>
++  <a class="skip" href="#main">Skip to content</a>
++  <header class="header"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">↗</span> {{SERVICE_NAME}}</a>
++    <nav aria-label="Main navigation"><a href="/how-it-works">How it works</a><a href="/models" aria-current="page">Models</a><a href="/pricing">Pricing</a><a href="/connect">Connect</a><a href="/docs">Documentation</a><a href="/app">Workspace</a></nav>
++    <a class="header-access" href="/login">Sign in <span aria-hidden="true">↗</span></a>
++  </header>
++  <main id="main" tabindex="-1" class="guidance" data-guidance-page="index">
++    <p class="eyebrow">Choosing a model</p>
++    <h1>Which model should this step run?</h1>
++    <p class="lede">A task is not one job. Writing a migration and deciding whether a file is relevant are different work, they fail in different ways, and the money goes to different places. Running the same large model for both is the expensive habit this page is here to break.</p>
++
++    <p>Answer one question about the step in front of you.</p>
++
++    <p><strong>Is the model's output the thing you keep, or is it a decision about something else you keep?</strong></p>
++
++    <div class="two-ways">
++      <article data-work-kind="building">
++        <p class="eyebrow">Kind one</p>
++        <h2>Building</h2>
++        <p>You keep what the model writes. Code, a migration, a document, a test. The output is long, a mistake is visible in the file, and what you pay for is mostly the tokens it generates.</p>
++        <a class="button primary" href="/models/building">Models for building <span aria-hidden="true">→</span></a>
++      </article>
++      <article data-work-kind="deciding">
++        <p class="eyebrow">Kind two</p>
++        <h2>Classifying and deciding</h2>
++        <p>You keep something else. The model returns a label, a choice between named options, or a small record. The output is short, the step runs many times, and what you pay for is the number of calls and the input each one carries.</p>
++        <a class="button primary" href="/models/deciding">Models for deciding <span aria-hidden="true">→</span></a>
++      </article>
++    </div>
++
++    <h2>Why the split is worth making</h2>
++    <p>A building step might run four times in an afternoon and produce two hundred lines each time. A deciding step might run four hundred times in the same afternoon and produce one word each time. Those two shapes want different models, different memory, and different checks that they are working.</p>
++    <p>They also fail differently. A building model that is slightly wrong leaves a bug you can read. A deciding model that is slightly wrong returns a confident label, nothing looks broken, and the wrong file goes into the next step. That is why the deciding page spends most of its length on how to tell it is working.</p>
++
++    <h2>What holds for both</h2>
++    <ul>
++      <li><strong>A route is a setting, not a branch in the code.</strong> Each way of reaching a model is one entry with a provider, a model name, where it runs, and the purposes it is allowed to serve. Adding a model is adding an entry.</li>
++      <li><strong>Every real call writes a cost record.</strong> One record for each implementation of each step, with its phase timings, its call count, its token counts and its outcome.</li>
++      <li><strong>An unknown cost stays unknown.</strong> A missing token count is recorded as unknown, never as zero, and a record with a missing phase is never averaged as if it were complete. A comparison built on unknowns says so instead of flattering the cheap option.</li>
++    </ul>
++    <p>Both pages end with the same honest paragraph: what nobody here has measured. Neither page claims a saving.</p>
++
++    <h2>Before you change anything</h2>
++    <p>Your own tools make your model calls with your own provider account. Nothing on these pages asks for a model key, and this service never receives one. Read <a href="/security">what you share and what can run</a> if that boundary matters to you, and <a href="/connect">connect your client</a> when you are ready.</p>
++
++    <footer class="guidance-footer">
++      <p><a href="/models/building">Building</a> · <a href="/models/deciding">Classifying and deciding</a> · <a href="/docs">Setup guide</a> · <a href="/">Home</a></p>
++    </footer>
++  </main>
++</body>
++</html>

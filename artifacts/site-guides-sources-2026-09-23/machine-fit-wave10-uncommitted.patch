@@ -1,0 +1,2356 @@
+diff --git a/docs/guides/overnight-solving-on-local-models.md b/docs/guides/overnight-solving-on-local-models.md
+index b0d582a1..be22f90f 100644
+--- a/docs/guides/overnight-solving-on-local-models.md
++++ b/docs/guides/overnight-solving-on-local-models.md
+@@ -164,9 +164,8 @@ python3 examples/30_overnight_local_run/run.py --json
+ Or call the calculator directly and put your own machine in:
+ 
+ ```python
+-import sys
+-sys.path.insert(0, "examples/30_overnight_local_run")
+-from local_fit import GIB, LocalModel, MachineTier, fit, largest_context
++from loop_engine.core.local_fit import (
++    GIB, LocalModel, MachineTier, fit, largest_context)
+ 
+ machine = MachineTier(
+     name="my laptop", usable_video_bytes=11 * GIB,
+diff --git a/examples/30_overnight_local_run/run.py b/examples/30_overnight_local_run/run.py
+index 59ee8428..66d37882 100644
+--- a/examples/30_overnight_local_run/run.py
++++ b/examples/30_overnight_local_run/run.py
+@@ -48,9 +48,11 @@ from loop_engine.code_nodes.loop_report import (report_from_run,    # noqa: E402
+                                                 write_report)
+ from loop_engine.memory.working.state import WorkingMemoryState     # noqa: E402
+ 
+-import local_fit                                                    # noqa: E402
++from loop_engine.core import local_fit                              # noqa: E402
+ import overnight_plan                                               # noqa: E402
+-from local_fit import GIB, LocalModel, MachineTier, fit, largest_context
++from loop_engine.core.local_fit import (GIB, LocalModel,            # noqa: E402
++                                        MachineTier, fit,
++                                        largest_context)
+ 
+ LINE = "-" * 72
+ 
+diff --git a/src/loop_engine/__main__.py b/src/loop_engine/__main__.py
+index 33e3dcb7..b68d6d50 100644
+--- a/src/loop_engine/__main__.py
++++ b/src/loop_engine/__main__.py
+@@ -131,6 +131,9 @@ def main(argv=None) -> int:
+     if raw_argv[:1] == ["decisions"]:
+         from .decision_cli import decision_command
+         return decision_command(raw_argv[1:])
++    if raw_argv[:1] == ["machine-fit"]:
++        from .machine_fit_cli import machine_fit_command
++        return machine_fit_command(raw_argv[1:])
+     parser = argparse.ArgumentParser(
+         prog="loop-engine",
+         description=__doc__.splitlines()[0],
+diff --git a/src/loop_engine/_self_test.py b/src/loop_engine/_self_test.py
+index 73bad6f9..8752e838 100644
+--- a/src/loop_engine/_self_test.py
++++ b/src/loop_engine/_self_test.py
+@@ -111,6 +111,8 @@ def self_test() -> dict:
+         "core.opencode_step_composition", "core.opencode_step_guard",
+         "core.opencode_step_provision", "core.step_content",
+         "core.night_budget", "core.step_state", "core.overnight_outcome",
++        "core.local_fit", "core.machine_reading", "core.machine_fit_advice",
++        "machine_fit_cli", "core.service_runtime.web_routes",
+         "core.multipath_select", "core.artifact_constraints",
+         "core.differential_verification", "core.independent_evidence",
+         "core.run_checkpoint", "core.solution_ratchet",
+diff --git a/src/loop_engine/architecture_conformance.json b/src/loop_engine/architecture_conformance.json
+index 89216d63..37e3a612 100644
+--- a/src/loop_engine/architecture_conformance.json
++++ b/src/loop_engine/architecture_conformance.json
+@@ -1,15 +1,16 @@
+ {
+  "record_type": "architecture_conformance/v1",
+  "generated_by": "python3 -m loop_engine --conformance",
+- "files_scanned": 649,
++ "files_scanned": 652,
+  "zero_tolerance_gates": {
+-  "unclassified_files": 0,
++  "unclassified_files": 2,
+   "docs_folders_without_a_charter_readme": 0,
+   "reachable_legacy_flat_paths": 0,
+   "legacy_flat_imports_on_live_paths": 0,
+   "public_parallel_runtime_surfaces": 0,
+   "retired_decision_spine_terms": 0,
+-  "direct_model_or_network_calls_outside_gateway": 0,
++  "undefined_terms_retired_names_and_misplaced_words": 0,
++  "direct_model_or_network_calls_outside_gateway": 1,
+   "subprocess_outside_declared_adapters": 0,
+   "direct_writes_to_intelligence_files_outside_adapters": 0,
+   "eval_or_exec_anywhere": 0,
+@@ -35,7 +36,10 @@
+   "architecture_map_freshness": 0
+  },
+  "gate_details": {
+-  "unclassified_files": [],
++  "unclassified_files": [
++   "core/machine_reading.py",
++   "core/local_fit.py"
++  ],
+   "docs_folders_without_a_charter_readme": [],
+   "reachable_legacy_flat_paths": [],
+   "stale_current_architecture_documents": [],
+@@ -111,7 +115,56 @@
+    "passed": true
+   },
+   "retired_decision_spine_terms": [],
++  "undefined_terms_retired_names_and_misplaced_words": [],
+   "scan_violations": [
++   {
++    "rule": "retired_source_nomenclature",
++    "file": "nomenclature_conformance.py",
++    "line": 365,
++    "detail": "retired term 'chronicle'"
++   },
++   {
++    "rule": "retired_source_nomenclature",
++    "file": "nomenclature_conformance.py",
++    "line": 370,
++    "detail": "retired term 'chronicle'"
++   },
++   {
++    "rule": "retired_source_nomenclature",
++    "file": "nomenclature_conformance.py",
++    "line": 406,
++    "detail": "retired term 'chronicle'"
++   },
++   {
++    "rule": "retired_source_nomenclature",
++    "file": "nomenclature_conformance.py",
++    "line": 409,
++    "detail": "retired term 'chronicle'"
++   },
++   {
++    "rule": "retired_source_nomenclature",
++    "file": "nomenclature_conformance.py",
++    "line": 436,
++    "detail": "retired term 'chronicle'"
++   },
++   {
++    "rule": "retired_source_nomenclature",
++    "file": "nomenclature_conformance.py",
++    "line": 462,
++    "detail": "retired term 'chronicle'"
++   },
++   {
++    "rule": "retired_source_nomenclature",
++    "file": "nomenclature_conformance.py",
++    "line": 470,
++    "detail": "retired term 'chronicle'"
++   },
++   {
++    "rule": "network_outside_gateway",
++    "file": "core/service_runtime/promotion_checks.py",
++    "line": 0,
++    "detail": "imports ['httpx']"
++   },
+    {
+     "rule": "dependency_direction",
+     "file": "core/adaptive_host_runtime_checks.py",
+@@ -568,5 +621,5 @@
+   "max_power_grants_no_permissions: power scales budgets only"
+  ],
+  "suite_note": "run --self-test separately; conformance is releasable only when BOTH exit 0",
+- "all_gates_pass": true
++ "all_gates_pass": false
+ }
+\ No newline at end of file
+diff --git a/src/loop_engine/architecture_map.py b/src/loop_engine/architecture_map.py
+index ec08fe78..e65208df 100644
+--- a/src/loop_engine/architecture_map.py
++++ b/src/loop_engine/architecture_map.py
+@@ -37,7 +37,8 @@ ROOT_MODULES = ("__init__", "__main__", "_self_test", "_conformance_test",
+                 "backend_isolation", "structure_review",
+                 "runtime_ontology_check", "scheduling", "campaign",
+                 "parallel_runner", "cli_operations", "parameter_boundary",
+-                "solve_cli", "cli_help", "run_history_cli", "record_cli", "service_cli", "decision_cli", "kaggle_report",
++                "solve_cli", "cli_help", "run_history_cli", "record_cli", "service_cli", "decision_cli",
++                "machine_fit_cli", "kaggle_report",
+                 "parameter_boundary_checks", "semantic_conformance",
+                 "semantic_freedom_conformance")
+ 
+@@ -54,6 +55,7 @@ MODULE_MAP = {
+         "billing", "billing_records", "billing_checks", "stripe_provider",
+         "billing_effects", "stripe_sessions", "stripe_session_checks", "stripe_session_transport_checks",
+         "http", "http_auth", "http_entrypoint", "http_checks", "http_boundary_checks",
++        "web_routes",
+         "http_test_fixtures", "refusals", "access", "access_checks",
+         "browser_identity", "browser_identity_checks",
+         "request_limits", "request_limit_checks",
+@@ -272,6 +274,7 @@ MODULE_MAP = {
+         "opencode_step_composition", "opencode_step_composition_checks",
+         "opencode_step_guard", "opencode_step_layers", "step_content",
+         "night_budget", "step_state", "overnight_outcome",
++        "local_fit", "machine_reading", "machine_fit_advice",
+         "multipath_select", "opencode_step_provision", "facets",
+         "harness_intelligence_bridge", "intelligence_layers",
+         "intelligence_query_contracts",
+diff --git a/src/loop_engine/cli_help.py b/src/loop_engine/cli_help.py
+index 92449e8b..d3e918cc 100644
+--- a/src/loop_engine/cli_help.py
++++ b/src/loop_engine/cli_help.py
+@@ -11,6 +11,7 @@ ROOT_HELP = """usage: loop-engine COMMAND [options]
+ Start here:
+   configure       inspect provider keys without calling them
+   doctor          check installation and local requirements
++  machine-fit     read this machine and say which local models to run
+   solve           perform and verify a task
+   runs            list saved product outcomes
+   report          render one saved run
+@@ -34,6 +35,9 @@ Run the authenticated intelligence service with durable tenant, access, and usag
+     "records": """usage: loop-engine records --policy HOST_POLICY --backend sqlite|package-jsonl --artifact-root PATH [--database PATH | --shard PATH] [--approve-effect-digest DIGEST]
+ 
+ Read one JSON request from stdin: create, get, query, update, or retire. Host configuration fixes storage and scope. Mutations first return an exact effect plan and require matching explicit approval. No raw SQL, direct Markdown edits, or promotion authority.""",
++    "machine-fit": """usage: loop-engine machine-fit [--format text|json] [--runtime-reserve-gib GIB] [--local-server ADDRESS | --no-local-server] [--no-detection --system-memory-gib GIB --video-memory-gib GIB] [--model-name NAME --model-layers N --model-key-value-heads N --model-head-dimension N --model-maximum-context N (--model-weights-file-bytes N | --model-parameters N --model-quantisation NAME)]
++
++Read this machine and say what to run on it, with two answers: one for building, where the output is long and is the product, and one for classifying and deciding, where the output is short and there are many calls. Each names the model, what it will hold, the largest context that stays in video memory, and what it cannot do here. Reads only: nothing is changed, nothing is downloaded and no model is called. The only thing contacted is a local model server over loopback, which --no-local-server turns off and which refuses a non-loopback address. A recommendation is made against total memory, not free memory, and what is free right now is reported separately. The runtime reserve and the context each kind of work asks for are declared policy, not measurements, and the record says so. --no-detection describes a machine instead of reading one, which is the same path the served /machine-fit page takes.""",
+     "configure": """usage: loop-engine configure [--format text|json]
+ 
+ Inspect provider key references and print the exact next probe. No provider is called.""",
+diff --git a/examples/30_overnight_local_run/local_fit.py b/src/loop_engine/core/local_fit.py
+similarity index 90%
+rename from examples/30_overnight_local_run/local_fit.py
+rename to src/loop_engine/core/local_fit.py
+index 6d2bcf51..7c8abd45 100644
+--- a/examples/30_overnight_local_run/local_fit.py
++++ b/src/loop_engine/core/local_fit.py
+@@ -28,6 +28,7 @@ from the model's own published configuration and from the file on disk.
+ """
+ from __future__ import annotations
+ 
++import math
+ from dataclasses import dataclass
+ 
+ GIB = 1024 ** 3
+@@ -65,6 +66,20 @@ class FitError(ValueError):
+     """An input the arithmetic cannot use, refused instead of guessed."""
+ 
+ 
++def gibibytes(value: float) -> float:
++    """Bytes as gibibytes to two places, rounded half away from zero.
++
++    Written out rather than left to the language's own ``round`` because
++    the same arithmetic runs in a browser beside this, and a check compares
++    the two records field by field. Python rounds a tie to the even
++    neighbour and JavaScript rounds a tie upward, so one shared rule that
++    both can follow exactly is worth four lines.
++    """
++    if isinstance(value, bool) or not isinstance(value, (int, float)):
++        raise FitError("gibibytes needs a number of bytes")
++    return math.floor(value / GIB * 100 + 0.5) / 100
++
++
+ def bytes_per_weight(quantisation: str) -> float:
+     """Bytes one weight occupies under a uniform block layout.
+ 
+@@ -224,12 +239,12 @@ def fit(tier: MachineTier, model: LocalModel, context_tokens: int) -> dict:
+         "record_type": "local_model_fit/v1",
+         "machine": tier.name, "model": model.name,
+         "context_tokens": context_tokens,
+-        "weights_gib": round(weights / GIB, 2),
+-        "kv_cache_gib": round(cache / GIB, 2),
+-        "runtime_reserve_gib": round(tier.runtime_reserve_bytes / GIB, 2),
+-        "total_gib": round(needed / GIB, 2),
+-        "usable_video_gib": round(tier.usable_video_bytes / GIB, 2),
+-        "usable_system_gib": round(tier.usable_system_bytes / GIB, 2),
++        "weights_gib": gibibytes(weights),
++        "kv_cache_gib": gibibytes(cache),
++        "runtime_reserve_gib": gibibytes(tier.runtime_reserve_bytes),
++        "total_gib": gibibytes(needed),
++        "usable_video_gib": gibibytes(tier.usable_video_bytes),
++        "usable_system_gib": gibibytes(tier.usable_system_bytes),
+         "placement": placement, "because": because,
+     }
+ 
+@@ -282,6 +297,11 @@ def self_check() -> list[dict]:
+     check("eight_billion_q4_0_weights_are_about_four_and_a_quarter_gibibytes",
+           abs(weights_bytes(8e9, "q4_0") / GIB - 4.19) < 0.02,
+           f"{weights_bytes(8e9, 'q4_0') / GIB:.2f} GiB")
++    check("a_gibibyte_tie_rounds_upward_in_every_language",
++          gibibytes(GIB * 0.125) == 0.13 and gibibytes(GIB * 0.375) == 0.38,
++          f"{gibibytes(GIB * 0.125)} and {gibibytes(GIB * 0.375)}")
++    refuses("gibibytes_refuses_something_that_is_not_a_number",
++            lambda: gibibytes("4 GiB"), "needs a number")
+     check("the_cache_is_two_halves_and_doubles_with_the_context",
+           kv_cache_bytes(layers=32, key_value_heads=8, head_dimension=128,
+                          context_tokens=8192)
+@@ -316,3 +336,8 @@ def self_check() -> list[dict]:
+                                head_dimension=1, maximum_context_tokens=4096),
+             "declare the weights once")
+     return results
++
++
++def self_test() -> dict:
++    return {"tests": [{"test": item["check"], "passed": item["passed"],
++                       "detail": item["detail"]} for item in self_check()]}
+diff --git a/src/loop_engine/core/service_runtime/http.py b/src/loop_engine/core/service_runtime/http.py
+index 74328daf..2d167703 100644
+--- a/src/loop_engine/core/service_runtime/http.py
++++ b/src/loop_engine/core/service_runtime/http.py
+@@ -25,6 +25,7 @@ from .http_auth import (
+ )
+ from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
+ from .refusals import guidance as _refusal_guidance
++from .web_routes import HTML_MEDIA_TYPE, WEB_ASSETS, serve_web_asset
+ from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
+ 
+ RESULT_VERSION = "service_http_result/v1"
+@@ -44,28 +45,6 @@ BILLING_PORTAL_PATH = "/api/v1/billing/portal"
+ #: receives the entitlement the code declares. There is no address that reads a
+ #: code back, because the service stores a digest and never the code itself.
+ PROMOTION_REDEMPTION_PATH = "/api/v1/account/promotion"
+-HTML_MEDIA_TYPE = "text/html"
+-WEB_ASSETS = {
+-    "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
+-    "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),
+-    "/account": ("index.html", HTML_MEDIA_TYPE),
+-    "/admin": ("index.html", HTML_MEDIA_TYPE),
+-    "/connect": ("index.html", HTML_MEDIA_TYPE),
+-    "/examples": ("index.html", HTML_MEDIA_TYPE),
+-    "/security": ("index.html", HTML_MEDIA_TYPE),
+-    "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
+-    "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
+-    "/pricing": ("index.html", HTML_MEDIA_TYPE),
+-    "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
+-    "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
+-    "/assets/service.css": ("service.css", "text/css"),
+-    "/assets/architecture.css": ("architecture.css", "text/css"),
+-    "/assets/client-access.js": ("client-access.js", "text/javascript"),
+-    "/assets/service.js": ("service.js", "text/javascript"),
+-    "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
+-    # The licence terms of the packaged browser library travel with it.
+-    "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
+-}
+ # Every address the interface router answers, with the methods it answers for
+ # it. The router reads this before it asks who is calling, so that an address
+ # the service does not serve is a missing page rather than a credential
+@@ -781,12 +760,7 @@ class ServiceHttpApplication:
+     async def _web_route(self, request, Response, JSONResponse):
+         path, method, status_code = request.url.path, request.method, 200
+         if method == "GET" and path in WEB_ASSETS:
+-            from html import escape
+-            from importlib.resources import files
+-            name, media_type = WEB_ASSETS[path]
+-            body = files("loop_engine").joinpath("core", "service_runtime", "web_assets", name).read_bytes()
+-            if media_type == HTML_MEDIA_TYPE:
+-                body = body.replace(b"{{SERVICE_NAME}}", escape(self.configuration.display_name, quote=True).encode("utf-8"))
++            body, media_type = serve_web_asset(path, self.configuration.display_name)
+             return Response(body, media_type=media_type, headers=self._page_headers())
+         # Decide whether this service serves the address before asking who is
+         # calling. An unknown address that is authenticated first answers 401
+diff --git a/src/loop_engine/forbidden_paths.json b/src/loop_engine/forbidden_paths.json
+index 30683a19..46e42fa8 100644
+--- a/src/loop_engine/forbidden_paths.json
++++ b/src/loop_engine/forbidden_paths.json
+@@ -140,7 +140,7 @@
+   "loop/effect_approval.py": "the fail-closed effect approval authority owns the passive request, decision, and state records together with the one service that issues and verifies decision authority; split plan: move EffectSpec, ApprovalRequest, ApprovalDecision, and PendingApprovalState into effect_approval_records.py while keeping one EffectApprovalService",
+   "loop/kernel.py": "the nine-step executor's default implementations; split plan: move per-step defaults into loop/steps/ facades one step at a time",
+   "loop/recursive_loop.py": "the canonical Loop runtime; split plan: extract LoopSpec/pause-resume into loop/spec.py once the kernel routes through run_next_iteration",
+-  "core/service_runtime/http.py": "the one transport boundary for both the website and the protocol: bounded request and response handling, exact host and origin checks, the page address table, the account, billing, access, retrieval and provisioning routes, and the protocol adapter. It reached the cap as the pricing page, the waiting list and the campaign pages were added, each of which is one row in that table. Split plan: move WEB_ASSETS and the static branch of _web_route into service_runtime/web_routes.py behind one serve_web_asset call, keeping ServiceHttpApplication as the single transport authority and its route dispatch here.",
++  "core/service_runtime/http.py": "the one transport boundary for both the website and the protocol: bounded request and response handling, exact host and origin checks, the account, billing, access, retrieval and provisioning routes, and the protocol adapter. The page address table and the static branch of _web_route left on 2026-09-21 for service_runtime/web_routes.py behind one serve_web_asset call, which is where a new page address now goes; ServiceHttpApplication stays the single transport authority and its route dispatch stays here. What remains over the cap is the interface route dispatch itself. Split plan: move the account, billing and access branches of _web_route into service_runtime/account_routes.py behind one call, keeping dispatch and the protocol adapter here.",
+   "core/service_runtime/account_email_checks.py": "the account email checks for one public send path, in one module so that one run proves the whole path: the settings record, the address and password rules, delivery, the unknown outcomes, the two allowances, the routes over a real socket, the two real transport functions against owned loopback listeners, the host file through the real loader, and the removed-guard controls. It passed the cap when the review of 2026-09-21 required a same-answer check for every refusal body shape, the link binding rule, the stated address source rule, the boundary version refusal and the total body deadline, each with its own control. Split plan: move the loopback listener, the transport checks and the removed-guard controls into account_email_transport_checks.py behind one run_checks call, keeping this module as the single entry the service smoke command runs."
+  },
+  "module_size_hard_cap": 800,
+@@ -187,7 +187,8 @@
+   "core/service_runtime/browser_identity.py",
+   "core/service_runtime/browser_identity_checks.py",
+   "core/service_runtime/account_email.py",
+-  "core/service_runtime/account_email_checks.py"
++  "core/service_runtime/account_email_checks.py",
++  "core/machine_reading.py"
+  ],
+  "notes": [
+   "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
+@@ -505,6 +506,7 @@
+   "core/differential_verification.py",
+   "core/harness_process.py",
+   "core/harness_process_relay.py",
++  "core/machine_reading.py",
+   "core/mcp_sdk_transport.py",
+   "core/opencode_client.py",
+   "core/opencode_harness_adapter.py",
+@@ -565,6 +567,7 @@
+   "core/service_runtime/browser_identity.py": "Host-installed browser identity adapter. Network authority is checked before any key or provider read; the signed issuer, browser-only audience and current user are validated at the configured HTTPS origin. The bounded user request refuses redirects, inherited proxies, oversized or duplicate-key responses. It cannot authorize the MCP resource audience.",
+   "core/service_runtime/browser_identity_checks.py": "Real loopback-only identity acceptance with locally signed tokens, owned temporary listeners and an injected current-user transport. No remote identity account, email, credential or provider request is used.",
+   "core/service_runtime/account_email.py": "Account sign-up and password recovery adapter. Two fixed-origin requests only, each under explicit host network authority: one to the identity provider's administration interface that generates a link without sending a message, and one to the mail provider's send interface. Each request is sent once and never repeated after an uncertain answer; redirects, inherited proxy settings, oversized and non-object answers are refused. Discovery and the default configuration perform no request.",
+-  "core/service_runtime/account_email_checks.py": "Account email checks. The adapter itself runs with injected transports; the two real transport functions are exercised against owned loopback listeners that the module starts and stops, so that redirect refusal, the response ceiling and the deadline are observed rather than asserted. No identity provider, mail provider, real address or external network is used."
++  "core/service_runtime/account_email_checks.py": "Account email checks. The adapter itself runs with injected transports; the two real transport functions are exercised against owned loopback listeners that the module starts and stops, so that redirect refusal, the response ceiling and the deadline are observed rather than asserted. No identity provider, mail provider, real address or external network is used.",
++  "core/machine_reading.py": "Reads which models a local model server already holds, over loopback only. A non-loopback address is refused before a request is built and the reader carries no proxy handler, so this cannot become an outbound call. It asks a server what is on the disk; it never calls a model."
+  }
+ }
+diff --git a/src/loop_engine/core/machine_fit_advice.py b/src/loop_engine/core/machine_fit_advice.py
+new file mode 100644
+index 00000000..fd2355a2
+--- /dev/null
++++ b/src/loop_engine/core/machine_fit_advice.py
+@@ -0,0 +1,632 @@
++"""What to run on this machine, split by the kind of work.
++
++`machine_reading` reads the machine. `local_fit` does the memory
++arithmetic. This module joins them and answers the reader's actual
++question, which is not "does this model fit" but "what should I run".
++
++It gives two answers, because they are two different problems:
++
++    BUILDING. Writing code, drafting a migration, producing a document.
++    The output is long and the output is the product. A bigger model and
++    fewer calls, and the context has to hold the material the step needs.
++
++    CLASSIFYING AND DECIDING. Is this relevant, does this satisfy the
++    contract, which of these five fits. The output is short and there are
++    many calls. A small model, resident, with room left over.
++
++Three decisions in here are judgement rather than measurement, and each
++says so in the record it produces:
++
++  * A RECOMMENDATION IS MADE AGAINST TOTAL MEMORY, NOT FREE MEMORY. What
++    is in use right now includes the model the reader is asking about: the
++    machine this was written on had a 12 GiB card with 1.3 GiB free
++    precisely because the model in question was already loaded on it. A
++    machine that is busy at the moment it is asked is not a machine that
++    cannot run the model. What is free right now is reported separately,
++    as its own fact, under `right_now`.
++
++  * THE RUNTIME RESERVE IS DECLARED, NOT MEASURED. See
++    DEFAULT_RUNTIME_RESERVE_BYTES for the figure and the observation behind
++    it. Raise it when a load fails close to the line.
++
++  * THE WANTED CONTEXT PER KIND OF WORK IS A DECLARED POLICY. See
++    WORK_KINDS. Both are inputs, and both appear in the record beside the
++    word `declared`.
++
++Nothing here contacts a provider, calls a model, or writes anything.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++
++from .local_fit import (GIB, FitError, LocalModel, MachineTier, fit,
++                        gibibytes, largest_context)
++
++RECORD_TYPE = "machine_fit_advice/v1"
++
++#: The inference runtime's own working space, beside the weights and the
++#: cache. Declared, because it depends on the runtime and on how many
++#: requests it serves at once, not on arithmetic anyone can redo.
++#:
++#: The figure: on the machine this was written on, the local server
++#: reported one model occupying 5,384,466,533 bytes whose weights file is
++#: 4,683,087,561 bytes and whose cache at the loaded context of 8192 tokens
++#: is 469,762,048 bytes. The runtime's own working space was therefore
++#: 231,616,924 bytes, about 221 MiB. One gibibyte is a round figure above
++#: that with room for a display and a second sequence. A runtime serving
++#: several requests at once keeps one cache for each, so raise this.
++DEFAULT_RUNTIME_RESERVE_BYTES = 1 * GIB
++
++#: The cache element assumed when nothing on the machine states one. Two
++#: bytes for each key and value element is the common default of every
++#: local runtime this repository talks to; an eight bit cache halves it and
++#: is an explicit runtime setting.
++ASSUMED_CACHE_ELEMENT = "f16"
++
++#: The arithmetic, written out, so a reader can redo it for a model this
++#: never named. Both the command and the served page print this line.
++BUDGET_FORMULA = (
++    "weights_file_bytes + 2 x layers x key_value_heads x head_dimension x "
++    "context_tokens x cache_element_bytes + runtime_reserve_bytes "
++    "<= usable_video_bytes")
++
++
++class AdviceError(ValueError):
++    """An input this module refuses rather than answers badly."""
++
++
++@dataclass(frozen=True)
++class WorkKind:
++    """One kind of work, and the shape of model it wants.
++
++    `wanted_context_tokens` and `prefer` are declared policy. They are the
++    two levers that make the two answers different, and both are inputs.
++    """
++
++    name: str
++    what_it_is: str
++    wanted_context_tokens: int
++    prefer: str
++    allow_split: bool
++    why_this_shape: str
++
++    def __post_init__(self) -> None:
++        if self.prefer not in ("largest", "smallest"):
++            raise AdviceError("prefer must be largest or smallest")
++        if (isinstance(self.wanted_context_tokens, bool)
++                or not isinstance(self.wanted_context_tokens, int)
++                or self.wanted_context_tokens < 1):
++            raise AdviceError("wanted_context_tokens must be a positive "
++                              "whole number")
++
++
++#: A long enough context to hold the file being changed, the file it calls
++#: and the instruction, and short enough to leave a 7 billion parameter
++#: model resident on a 12 GiB card. Declared, and an input.
++BUILDING_CONTEXT_TOKENS = 16384
++
++#: A short context, because the work is one question about one piece of
++#: material. Declared, and an input.
++DECIDING_CONTEXT_TOKENS = 4096
++
++BUILDING = WorkKind(
++    name="building",
++    what_it_is=("Writing code, drafting a migration, producing a document. "
++                "The output is long and the output is the product."),
++    wanted_context_tokens=BUILDING_CONTEXT_TOKENS,
++    prefer="largest",
++    allow_split=True,
++    why_this_shape=(
++        "A bigger model and fewer calls. The context has to hold the "
++        "material the step needs, so the largest model that stays resident "
++        "at the wanted context wins. A model that cannot reach that context "
++        "is still offered, with the context it can actually reach."))
++
++DECIDING = WorkKind(
++    name="classifying_and_deciding",
++    what_it_is=("Is this relevant, does this satisfy the contract, which of "
++                "these five fits. The output is short and there are many "
++                "calls."),
++    wanted_context_tokens=DECIDING_CONTEXT_TOKENS,
++    prefer="smallest",
++    allow_split=False,
++    why_this_shape=(
++        "A small model, resident, with room left over for the work that "
++        "asked the question. Many short calls pay the cost of a split "
++        "placement on every one of them, so a split placement is not "
++        "offered for this kind of work. Whether a model declines when it is "
++        "unsure is a property of the model and the prompt, not of this "
++        "machine, and this command does not measure it."))
++
++WORK_KINDS = (BUILDING, DECIDING)
++
++
++@dataclass(frozen=True)
++class Candidate:
++    """One model that could be recommended, and where it came from."""
++
++    model: LocalModel
++    origin: str
++    purposes: tuple = ()
++
++    def __post_init__(self) -> None:
++        if not isinstance(self.model, LocalModel):
++            raise AdviceError("a candidate holds a LocalModel")
++        if not self.origin.strip():
++            raise AdviceError("a candidate names where it came from")
++
++
++def machine_tier(*, video_bytes: object, system_bytes: object,
++                 runtime_reserve_bytes: float = DEFAULT_RUNTIME_RESERVE_BYTES,
++                 name: str = "this machine") -> MachineTier:
++    """The machine as the arithmetic wants it, from total memory figures.
++
++    `video_bytes` may be None on a machine with no separate video memory.
++    That is not zero video memory pretending to be a reading: it means
++    every placement is decided against system memory, which is what a
++    machine with one shared pool actually does.
++    """
++    if system_bytes is None:
++        raise AdviceError(
++            "system memory was not read, so nothing can be recommended. Give "
++            "it by hand with --system-memory-gib")
++    return MachineTier(
++        name=name,
++        usable_video_bytes=0.0 if video_bytes is None else float(video_bytes),
++        usable_system_bytes=float(system_bytes),
++        runtime_reserve_bytes=float(runtime_reserve_bytes))
++
++
++def candidates_from_reading(reading, *, cache_element: str) -> tuple:
++    """Models the machine actually holds, and the ones set aside with why.
++
++    A model is set aside rather than quietly dropped, because "there is
++    nothing here for you" and "you have four models and none of them
++    published its key/value head count" are different situations and the
++    reader needs to know which one they are in.
++    """
++    usable, set_aside = [], []
++    for model in reading.local_models:
++        if not model.local:
++            set_aside.append({
++                "model": model.name,
++                "why": ("this server forwards it to another machine, so no "
++                        "amount of memory here decides whether it runs")})
++            continue
++        if model.purposes and "completion" not in model.purposes:
++            set_aside.append({
++                "model": model.name,
++                "why": ("the server declares this model for "
++                        + ", ".join(model.purposes)
++                        + ", not for producing text")})
++            continue
++        missing = [field for field, value in (
++            ("weights_file_bytes", model.weights_file_bytes),
++            ("layers", model.layers),
++            ("key_value_heads", model.key_value_heads),
++            ("head_dimension", model.head_dimension),
++            ("maximum_context_tokens", model.maximum_context_tokens))
++            if not value.was_read]
++        if missing:
++            set_aside.append({
++                "model": model.name,
++                "why": ("the server published no " + ", ".join(missing)
++                        + ", and this arithmetic will not substitute a "
++                          "figure for a field it did not read")})
++            continue
++        try:
++            built = LocalModel(
++                name=model.name, layers=model.layers.value,
++                key_value_heads=model.key_value_heads.value,
++                head_dimension=model.head_dimension.value,
++                weights_file_bytes=model.weights_file_bytes.value,
++                maximum_context_tokens=model.maximum_context_tokens.value,
++                cache_element=cache_element)
++        except FitError as exc:
++            set_aside.append({"model": model.name, "why": str(exc)})
++            continue
++        usable.append(Candidate(model=built,
++                                origin="held by the local model server",
++                                purposes=model.purposes))
++    return tuple(usable), tuple(set_aside)
++
++
++def _arithmetic(model: LocalModel, context_tokens: int,
++                reserve_bytes: float) -> list:
++    """The three lines a reader can check with a calculator."""
++    weights = model.resident_weights_bytes()
++    cache = model.cache_bytes_at(context_tokens)
++    element = int(cache / (2 * model.layers * model.key_value_heads
++                           * model.head_dimension * context_tokens))
++    return [
++        f"weights = {int(weights)} bytes, the size of the file on disk"
++        if model.weights_file_bytes else
++        f"weights = {int(model.parameters)} parameters x "
++        f"{weights / model.parameters} bytes each = {int(weights)} bytes",
++        f"cache = 2 x {model.layers} layers x {model.key_value_heads} "
++        f"key/value heads x {model.head_dimension} head dimension x "
++        f"{context_tokens} tokens x {element} bytes = {int(cache)} bytes",
++        f"total = weights + cache + {int(reserve_bytes)} bytes of declared "
++        f"runtime reserve = {int(weights + cache + reserve_bytes)} bytes",
++    ]
++
++
++def _placement_for(tier: MachineTier, candidate: Candidate,
++                   kind: WorkKind) -> dict:
++    """Where one candidate lands for one kind of work."""
++    model = candidate.model
++    context = min(kind.wanted_context_tokens, model.maximum_context_tokens)
++    placed = fit(tier, model, context)
++    resident = largest_context(tier, model, placement="video")
++    limits = []
++    if model.maximum_context_tokens < kind.wanted_context_tokens:
++        limits.append(
++            f"this model declares {model.maximum_context_tokens} context "
++            f"tokens, below the {kind.wanted_context_tokens} this kind of "
++            "work asks for, so it was measured at its own maximum")
++    if resident and resident < context:
++        limits.append(
++            f"at {context} tokens it does not stay in video memory; "
++            f"{resident} tokens is the most that does")
++    if not resident:
++        limits.append(
++            "the weights alone do not fit in video memory at any context "
++            "length, so every token crosses the system bus")
++    return {
++        "model": model.name,
++        "origin": candidate.origin,
++        "context_tokens": context,
++        "wanted_context_tokens": kind.wanted_context_tokens,
++        "weights_bytes": int(model.resident_weights_bytes()),
++        "kv_cache_bytes": int(model.cache_bytes_at(context)),
++        "runtime_reserve_bytes": int(tier.runtime_reserve_bytes),
++        "total_bytes": int(model.resident_weights_bytes()
++                           + model.cache_bytes_at(context)
++                           + tier.runtime_reserve_bytes),
++        "largest_resident_context_tokens": resident,
++        "fit": placed,
++        "arithmetic": _arithmetic(model, context, tier.runtime_reserve_bytes),
++        "limits": limits,
++    }
++
++
++def _choose(placements: list, kind: WorkKind) -> tuple:
++    """The recommended placement for one kind of work, or why there is none."""
++    resident = [item for item in placements if item["fit"]["placement"] == "video"]
++    pool = resident
++    note = ""
++    if not pool and kind.allow_split:
++        pool = [item for item in placements if item["fit"]["placement"] == "split"]
++        note = ("nothing stays in video memory here, so this is the best "
++                "split placement: part of every token crosses the system "
++                "bus and it is slower than a resident model")
++    if not pool:
++        return None, note
++    ordered = sorted(pool, key=lambda item: (item["weights_bytes"], item["model"]))
++    return (ordered[-1] if kind.prefer == "largest" else ordered[0]), note
++
++
++def _refusal(placements: list, kind: WorkKind, tier: MachineTier) -> str:
++    """Why there is no answer, with the number that decided it."""
++    if not placements:
++        return ("no model was offered to this arithmetic, so there is nothing "
++                "to recommend. Point it at a local model server, or give a "
++                "model's figures by hand")
++    smallest = min(placements, key=lambda item: item["total_bytes"])
++    if kind.allow_split:
++        return (
++            f"the smallest model offered needs {gibibytes(smallest['total_bytes'])} "
++            f"GiB at {smallest['context_tokens']} context tokens and this "
++            f"machine has {gibibytes(tier.usable_system_bytes)} GiB of system "
++            "memory, so nothing here loads at all. A smaller model or a "
++            "smaller quantisation is the next thing to try")
++    return (
++        f"the smallest model offered needs {gibibytes(smallest['total_bytes'])} "
++        f"GiB at {smallest['context_tokens']} context tokens and this machine "
++        f"has {gibibytes(tier.usable_video_bytes)} GiB of video memory, of "
++        f"which {gibibytes(tier.runtime_reserve_bytes)} GiB is the declared "
++        "runtime reserve. A split placement is not offered for this kind of "
++        "work, so there is no recommendation rather than a slow one")
++
++
++def advise(*, tier: MachineTier, candidates: tuple, cache_element: str,
++           cache_element_basis: str, right_now: object = None,
++           work_kinds: tuple = WORK_KINDS, set_aside: tuple = ()) -> dict:
++    """Two answers for one machine, with the arithmetic beside each.
++
++    Pure: the same inputs give the same record, which is what lets the
++    served page run the same arithmetic in a browser and lets a check
++    compare the two records field by field.
++    """
++    if not isinstance(tier, MachineTier):
++        raise AdviceError("advise needs a MachineTier")
++    if cache_element_basis not in ("read", "assumed"):
++        raise AdviceError("a cache element is read or assumed, and the record "
++                          "says which")
++    for candidate in candidates:
++        if not isinstance(candidate, Candidate):
++            raise AdviceError("every candidate must be a Candidate")
++        if candidate.model.cache_element != cache_element:
++            raise AdviceError(
++                f"{candidate.model.name} was built for a "
++                f"{candidate.model.cache_element} cache and the machine "
++                f"reports {cache_element}. Build the candidate for the cache "
++                "the machine actually uses")
++    work = []
++    for kind in work_kinds:
++        placements = [_placement_for(tier, candidate, kind)
++                      for candidate in candidates]
++        chosen, note = _choose(placements, kind)
++        work.append({
++            "kind": kind.name,
++            "what_it_is": kind.what_it_is,
++            "why_this_shape": kind.why_this_shape,
++            "wanted_context_tokens": kind.wanted_context_tokens,
++            "wanted_context_basis": "declared policy",
++            "split_placement_offered": kind.allow_split,
++            "recommended": chosen,
++            "recommendation_note": note,
++            "refused_because": "" if chosen else _refusal(placements, kind, tier),
++            "considered": sorted(
++                ({"model": item["model"],
++                  "placement": item["fit"]["placement"],
++                  "context_tokens": item["context_tokens"],
++                  "total_bytes": item["total_bytes"]}
++                 for item in placements),
++                key=lambda item: (item["total_bytes"], item["model"])),
++        })
++    return {
++        "record_type": RECORD_TYPE,
++        "machine": {
++            "name": tier.name,
++            "usable_video_bytes": int(tier.usable_video_bytes),
++            "usable_system_bytes": int(tier.usable_system_bytes),
++            "runtime_reserve_bytes": int(tier.runtime_reserve_bytes),
++            "runtime_reserve_basis": "declared",
++            "usable_video_gib": gibibytes(tier.usable_video_bytes),
++            "usable_system_gib": gibibytes(tier.usable_system_bytes),
++            "runtime_reserve_gib": gibibytes(tier.runtime_reserve_bytes),
++            "memory_basis": (
++                "total memory, not free memory. What is in use right now "
++                "includes any model already loaded, so free memory answers a "
++                "different question and is reported under right_now"),
++        },
++        "cache_element": cache_element,
++        "cache_element_basis": cache_element_basis,
++        "budget_formula": BUDGET_FORMULA,
++        "right_now": right_now,
++        "set_aside": list(set_aside),
++        "work": work,
++    }
++
++
++def advise_from_reading(reading, *,
++                        runtime_reserve_bytes: float = DEFAULT_RUNTIME_RESERVE_BYTES,
++                        video_bytes: object = None,
++                        system_bytes: object = None,
++                        work_kinds: tuple = WORK_KINDS,
++                        extra_candidates: tuple = ()) -> dict:
++    """Advice for a machine that was read, with hand figures overriding it.
++
++    A model loads onto one device unless the runtime is told to split it
++    across several, so the video figure is the largest single device rather
++    than the sum of them. The other devices are named in the machine note.
++    """
++    element = (reading.cache_element.value if reading.cache_element.was_read
++               else ASSUMED_CACHE_ELEMENT)
++    basis = "read" if reading.cache_element.was_read else "assumed"
++    sized = [device for device in reading.video_devices
++             if device.total_bytes.was_read]
++    largest = max(sized, key=lambda device: device.total_bytes.value, default=None)
++    if video_bytes is None and largest is not None:
++        video_bytes = largest.total_bytes.value
++    if system_bytes is None and reading.system_memory_total_bytes.was_read:
++        system_bytes = reading.system_memory_total_bytes.value
++    name = "this machine"
++    if largest is not None and largest.name.was_read:
++        name = largest.name.value
++    tier = machine_tier(video_bytes=video_bytes, system_bytes=system_bytes,
++                        runtime_reserve_bytes=runtime_reserve_bytes, name=name)
++    found, set_aside = candidates_from_reading(reading, cache_element=element)
++    right_now = {
++        "video_free_bytes": (int(largest.total_bytes.value - largest.used_bytes.value)
++                             if largest is not None and largest.used_bytes.was_read
++                             else None),
++        "system_available_bytes": (reading.system_memory_available_bytes.value
++                                   if reading.system_memory_available_bytes.was_read
++                                   else None),
++        "note": ("what is free this minute. A recommendation is made against "
++                 "total memory, so a busy machine still gets an answer; this "
++                 "says whether it would start right now"),
++    }
++    record = advise(tier=tier, candidates=tuple(found) + tuple(extra_candidates),
++                    cache_element=element, cache_element_basis=basis,
++                    right_now=right_now, work_kinds=work_kinds,
++                    set_aside=set_aside)
++    notes = []
++    if len(sized) > 1:
++        notes.append(
++            "this machine has " + str(len(sized)) + " video devices and the "
++            "figures are the largest single one, because a model loads onto "
++            "one device unless the runtime is told to split it")
++    if not reading.video_devices:
++        notes.append(reading.video_unread_reason)
++    if not reading.local_server_answered and reading.local_server_unread_reason:
++        notes.append(reading.local_server_unread_reason)
++    record["machine"]["notes"] = notes
++    return record
++
++
++def self_check() -> list:
++    """Every guard beside the known-wrong input it exists to refuse."""
++    results = []
++
++    def check(name, passed, detail=""):
++        results.append({"check": name, "passed": bool(passed),
++                        "detail": str(detail)[:300]})
++
++    def refuses(name, call, expect_fragment):
++        try:
++            call()
++        except (AdviceError, FitError) as exc:
++            check(name, expect_fragment in str(exc), str(exc))
++        else:
++            check(name, False, "accepted a known wrong input")
++
++    # The machine this was written on, and the model that demonstrably ran
++    # on it. If the arithmetic ever says this does not fit, the arithmetic
++    # is wrong, because the model ran.
++    qwen = LocalModel(name="qwen2.5-coder:7b", layers=28, key_value_heads=4,
++                      head_dimension=128, weights_file_bytes=4683087561,
++                      maximum_context_tokens=32768)
++    card = machine_tier(video_bytes=12884901888, system_bytes=66100064256,
++                        name="NVIDIA GeForce RTX 3060")
++    answer = advise(tier=card,
++                    candidates=(Candidate(model=qwen, origin="the test"),),
++                    cache_element="f16", cache_element_basis="assumed")
++    building = answer["work"][0]
++    deciding = answer["work"][1]
++    check("the_model_that_ran_on_this_machine_is_recommended_for_building",
++          building["recommended"] is not None
++          and building["recommended"]["model"] == "qwen2.5-coder:7b"
++          and building["recommended"]["fit"]["placement"] == "video",
++          building["refused_because"] or building["recommended"]["fit"])
++    check("the_same_model_is_the_deciding_answer_when_it_is_the_only_one",
++          deciding["recommended"] is not None
++          and deciding["recommended"]["context_tokens"] == DECIDING_CONTEXT_TOKENS)
++    check("the_largest_resident_context_is_the_models_own_maximum_here",
++          building["recommended"]["largest_resident_context_tokens"] == 32768,
++          building["recommended"]["largest_resident_context_tokens"])
++    check("the_arithmetic_is_three_lines_a_reader_can_check",
++          len(building["recommended"]["arithmetic"]) == 3
++          and "4683087561" in building["recommended"]["arithmetic"][0]
++          and "2 x 28 layers x 4 key/value heads x 128 head dimension"
++          in building["recommended"]["arithmetic"][1],
++          building["recommended"]["arithmetic"])
++
++    # A machine whose free memory is nearly gone still answers, because the
++    # model already loaded is what is using it.
++    busy = advise_from_reading(_busy_reading())
++    check("a_busy_machine_still_recommends_the_model_already_loaded_on_it",
++          busy["work"][0]["recommended"] is not None
++          and busy["right_now"]["video_free_bytes"] == 1474560000,
++          busy["work"][0]["refused_because"])
++
++    # The refusal, with the number that decided it.
++    small = machine_tier(video_bytes=2 * GIB, system_bytes=4 * GIB,
++                         name="a small machine")
++    refused = advise(tier=small,
++                     candidates=(Candidate(model=qwen, origin="the test"),),
++                     cache_element="f16", cache_element_basis="assumed")
++    check("a_machine_that_cannot_hold_it_refuses_with_the_number",
++          refused["work"][0]["recommended"] is None
++          and "GiB of system memory" in refused["work"][0]["refused_because"],
++          refused["work"][0]["refused_because"])
++    check("deciding_refuses_rather_than_offering_a_split_placement",
++          refused["work"][1]["recommended"] is None
++          and "split placement is not offered"
++          in refused["work"][1]["refused_because"],
++          refused["work"][1]["refused_because"])
++    middling = machine_tier(video_bytes=2 * GIB, system_bytes=32 * GIB,
++                            name="a machine with a small card")
++    split = advise(tier=middling,
++                   candidates=(Candidate(model=qwen, origin="the test"),),
++                   cache_element="f16", cache_element_basis="assumed")
++    check("building_offers_a_split_placement_and_says_what_it_costs",
++          split["work"][0]["recommended"]["fit"]["placement"] == "split"
++          and "system bus" in split["work"][0]["recommendation_note"],
++          split["work"][0]["recommendation_note"])
++    check("deciding_still_refuses_where_building_accepts_a_split",
++          split["work"][1]["recommended"] is None)
++
++    # Two candidates: the kinds of work must pick differently.
++    tiny = LocalModel(name="small:1b", layers=16, key_value_heads=2,
++                      head_dimension=128, weights_file_bytes=900_000_000,
++                      maximum_context_tokens=32768)
++    both = advise(tier=card,
++                  candidates=(Candidate(model=qwen, origin="the test"),
++                              Candidate(model=tiny, origin="the test")),
++                  cache_element="f16", cache_element_basis="assumed")
++    check("building_takes_the_larger_model_and_deciding_takes_the_smaller",
++          both["work"][0]["recommended"]["model"] == "qwen2.5-coder:7b"
++          and both["work"][1]["recommended"]["model"] == "small:1b",
++          [both["work"][0]["recommended"]["model"],
++           both["work"][1]["recommended"]["model"]])
++
++    # Known wrong inputs.
++    refuses("a_machine_with_no_system_memory_reading_is_refused",
++            lambda: machine_tier(video_bytes=GIB, system_bytes=None),
++            "system memory was not read")
++    refuses("a_cache_element_with_no_stated_basis_is_refused",
++            lambda: advise(tier=card, candidates=(), cache_element="f16",
++                           cache_element_basis="probably"),
++            "read or assumed")
++    refuses("a_candidate_built_for_another_cache_element_is_refused",
++            lambda: advise(
++                tier=card,
++                candidates=(Candidate(
++                    model=LocalModel(name="m", layers=1, key_value_heads=1,
++                                     head_dimension=1, weights_file_bytes=1,
++                                     maximum_context_tokens=4096,
++                                     cache_element="q8"),
++                    origin="the test"),),
++                cache_element="f16", cache_element_basis="assumed"),
++            "cache the machine actually uses")
++    refuses("a_work_kind_with_no_context_is_refused",
++            lambda: WorkKind(name="x", what_it_is="x", wanted_context_tokens=0,
++                             prefer="largest", allow_split=True,
++                             why_this_shape="x"),
++            "positive whole number")
++    refuses("a_work_kind_with_an_unknown_preference_is_refused",
++            lambda: WorkKind(name="x", what_it_is="x",
++                             wanted_context_tokens=1024, prefer="cheapest",
++                             allow_split=True, why_this_shape="x"),
++            "largest or smallest")
++    empty = advise(tier=card, candidates=(), cache_element="f16",
++                   cache_element_basis="assumed")
++    check("no_candidate_at_all_refuses_and_says_what_to_supply",
++          empty["work"][0]["recommended"] is None
++          and "nothing to recommend" in empty["work"][0]["refused_because"])
++    return results
++
++
++def _busy_reading():
++    """The machine this was written on, with its card nearly full.
++
++    Built from the figures `machine_reading` printed here on September 21,
++    2026, so the known-right case travels with the check rather than
++    needing a card to be present.
++    """
++    from .machine_reading import MachineReading, Reading, ServerModel, VideoDevice
++    source = "read on this machine, September 21 2026"
++
++    def read(name, unit, value):
++        return Reading.read(name, unit, value, source)
++
++    return MachineReading(
++        operating_system=read("operating_system", "text", "Linux 7.0.0-31-generic x86_64"),
++        processor_count=read("processor_count", "count", 16),
++        system_memory_total_bytes=read("system_memory_total_bytes", "bytes", 66100064256),
++        system_memory_available_bytes=read("system_memory_available_bytes", "bytes", 36884373504),
++        video_devices=(VideoDevice(
++            index=0, name=read("name", "text", "NVIDIA GeForce RTX 3060"),
++            total_bytes=read("total_bytes", "bytes", 12884901888),
++            used_bytes=read("used_bytes", "bytes", 11410341888)),),
++        video_unread_reason="",
++        cache_element=Reading.unread("cache_element", "text", "not set"),
++        local_server_address="http://127.0.0.1:11434",
++        local_server_answered=True, local_server_unread_reason="",
++        local_models=(ServerModel(
++            name="qwen2.5-coder:7b", local=True, purposes=("completion",),
++            weights_file_bytes=read("weights_file_bytes", "bytes", 4683087561),
++            layers=read("layers", "count", 28),
++            key_value_heads=read("key_value_heads", "count", 4),
++            head_dimension=read("head_dimension", "count", 128),
++            maximum_context_tokens=read("maximum_context_tokens", "count", 32768),
++            quantisation=read("quantisation", "text", "Q4_K_M"),
++            parameters=read("parameters", "count", 7615616512)),))
++
++
++def self_test() -> dict:
++    return {"tests": [{"test": item["check"], "passed": item["passed"],
++                       "detail": item["detail"]} for item in self_check()]}
+diff --git a/src/loop_engine/core/machine_reading.py b/src/loop_engine/core/machine_reading.py
+new file mode 100644
+index 00000000..53ce0196
+--- /dev/null
++++ b/src/loop_engine/core/machine_reading.py
+@@ -0,0 +1,834 @@
++"""What machine is this, read from the machine itself.
++
++`local_fit` does the memory arithmetic but has no idea what it is running
++on: a caller has to write a `MachineTier` by hand, which is the one step an
++ordinary reader cannot take. This module supplies the figures.
++
++It reads seven things, and every one of them is optional:
++
++  * the operating system, its release and its processor architecture
++  * how many processors the process may actually use
++  * total system memory and the memory available for a new program
++  * every video device, its name, its total memory and its memory in use
++  * whether a local model server answers, and which models it holds
++  * each held model's shape, from the server's own model information
++  * the key/value cache element the local runtime is configured for
++
++A machine with no video card, no server, or a platform this cannot read
++still gets an answer. The missing field says what was not read and why, and
++the rest still works. Two rules hold everywhere:
++
++  NEVER GUESS A NUMBER. A field that was not read carries a reason, never a
++  substitute value. `Reading` refuses to hold both, and refuses to hold
++  neither, so an unread field cannot reach a report as a zero.
++
++  PREFER THE PLATFORM'S OWN INTERFACE. Video memory is read through the
++  driver's management library with `ctypes` first, and only then from a
++  command. A command that is not installed is a missing reading, not an
++  error: a machine without `nvidia-smi` is a machine, not a fault.
++
++Nothing here changes anything, downloads anything or calls a model. The
++local server is read over loopback only: a non-loopback address is refused
++before a request is built, so this cannot become an outbound network
++effect, and the reader is built without proxy handlers so a loopback read
++cannot be redirected by an environment variable.
++"""
++from __future__ import annotations
++
++import ipaddress
++import json
++import os
++import platform
++from dataclasses import dataclass
++from urllib.parse import urlsplit
++
++RECORD_TYPE = "machine_reading/v1"
++
++#: Where a local model server usually answers. It is a default, not a
++#: discovery: the address is an input and the reader may name another.
++DEFAULT_LOCAL_SERVER = "http://127.0.0.1:11434"
++
++#: Bounds on the loopback read, so a wedged or enormous server cannot hold
++#: the command open or fill memory.
++SERVER_TIMEOUT_SECONDS = 3.0
++SERVER_MAXIMUM_BYTES = 8 * 1024 * 1024
++SERVER_MAXIMUM_MODELS = 64
++
++#: The environment variable a local runtime reads for its key/value cache
++#: element. Unset means the runtime's own default, which this module states
++#: as a declared assumption rather than a reading.
++CACHE_ELEMENT_VARIABLE = "OLLAMA_KV_CACHE_TYPE"
++
++#: Cache element names as the runtime spells them, mapped to the names the
++#: arithmetic in `local_fit` uses. A name outside this map is refused by
++#: `local_fit`, which is the wanted behaviour: an unknown cache element has
++#: no known size.
++CACHE_ELEMENT_NAMES = {"f16": "f16", "bf16": "bf16", "f32": "f32",
++                       "q8_0": "q8", "q8": "q8"}
++
++
++class ReadingError(ValueError):
++    """An input this module refuses rather than works around."""
++
++
++@dataclass(frozen=True)
++class Reading:
++    """One field that was read, or the exact reason it was not.
++
++    Exactly one of `value` and `unread_reason` is set. That is the whole
++    point of the type: a report cannot carry an unread field as a zero, an
++    empty string or a plausible default, because the constructor refuses to
++    build one.
++    """
++
++    name: str
++    unit: str
++    value: object = None
++    source: str = ""
++    unread_reason: str = ""
++
++    def __post_init__(self) -> None:
++        if not self.name.strip():
++            raise ReadingError("a reading needs a name that appears in the report")
++        if not self.unit.strip():
++            raise ReadingError("a reading needs a unit, for example bytes or count")
++        if self.value is None and not self.unread_reason.strip():
++            raise ReadingError(
++                f"{self.name} was not read, so it needs a reason. A field "
++                "without a reading is never reported as zero")
++        if self.value is not None and self.unread_reason.strip():
++            raise ReadingError(
++                f"{self.name} cannot be both read and unread")
++        if self.value is not None and not self.source.strip():
++            raise ReadingError(
++                f"{self.name} was read, so it needs the source it was read from")
++
++    @classmethod
++    def read(cls, name: str, unit: str, value: object, source: str) -> "Reading":
++        if value is None:
++            raise ReadingError(f"{name} has no value, so use Reading.unread")
++        return cls(name=name, unit=unit, value=value, source=source)
++
++    @classmethod
++    def unread(cls, name: str, unit: str, reason: str) -> "Reading":
++        return cls(name=name, unit=unit, unread_reason=reason)
++
++    @property
++    def was_read(self) -> bool:
++        return self.value is not None
++
++    def to_dict(self) -> dict:
++        if self.was_read:
++            return {"name": self.name, "unit": self.unit, "read": True,
++                    "value": self.value, "source": self.source}
++        return {"name": self.name, "unit": self.unit, "read": False,
++                "unread_reason": self.unread_reason}
++
++
++@dataclass(frozen=True)
++class VideoDevice:
++    """One video device as the driver reports it."""
++
++    index: int
++    name: Reading
++    total_bytes: Reading
++    used_bytes: Reading
++
++    def to_dict(self) -> dict:
++        return {"index": self.index, "name": self.name.to_dict(),
++                "total_bytes": self.total_bytes.to_dict(),
++                "used_bytes": self.used_bytes.to_dict()}
++
++
++@dataclass(frozen=True)
++class ServerModel:
++    """One model a local server holds, with the shape it published.
++
++    `local` is false for a model the server forwards to somebody else's
++    machine. Those are listed and never recommended as a local fit, because
++    no amount of memory here decides whether they run.
++    """
++
++    name: str
++    local: bool
++    purposes: tuple
++    weights_file_bytes: Reading
++    layers: Reading
++    key_value_heads: Reading
++    head_dimension: Reading
++    maximum_context_tokens: Reading
++    quantisation: Reading
++    parameters: Reading
++
++    def to_dict(self) -> dict:
++        return {"name": self.name, "local": self.local,
++                "purposes": list(self.purposes),
++                "weights_file_bytes": self.weights_file_bytes.to_dict(),
++                "layers": self.layers.to_dict(),
++                "key_value_heads": self.key_value_heads.to_dict(),
++                "head_dimension": self.head_dimension.to_dict(),
++                "maximum_context_tokens": self.maximum_context_tokens.to_dict(),
++                "quantisation": self.quantisation.to_dict(),
++                "parameters": self.parameters.to_dict()}
++
++
++@dataclass(frozen=True)
++class MachineReading:
++    """Everything this module could read, and everything it could not."""
++
++    operating_system: Reading
++    processor_count: Reading
++    system_memory_total_bytes: Reading
++    system_memory_available_bytes: Reading
++    video_devices: tuple
++    video_unread_reason: str
++    cache_element: Reading
++    local_server_address: str
++    local_server_answered: bool
++    local_server_unread_reason: str
++    local_models: tuple
++
++    def __post_init__(self) -> None:
++        if bool(self.video_devices) == bool(self.video_unread_reason.strip()):
++            raise ReadingError(
++                "report video devices or the reason there are none, never both "
++                "and never neither")
++        if self.local_server_answered == bool(self.local_server_unread_reason.strip()):
++            raise ReadingError(
++                "a local server either answered or has a reason it did not")
++
++    def to_dict(self) -> dict:
++        return {
++            "record_type": RECORD_TYPE,
++            "operating_system": self.operating_system.to_dict(),
++            "processor_count": self.processor_count.to_dict(),
++            "system_memory_total_bytes": self.system_memory_total_bytes.to_dict(),
++            "system_memory_available_bytes":
++                self.system_memory_available_bytes.to_dict(),
++            "video_devices": [device.to_dict() for device in self.video_devices],
++            "video_unread_reason": self.video_unread_reason,
++            "cache_element": self.cache_element.to_dict(),
++            "local_server": {
++                "address": self.local_server_address,
++                "answered": self.local_server_answered,
++                "unread_reason": self.local_server_unread_reason,
++                "models": [model.to_dict() for model in self.local_models],
++            },
++        }
++
++
++# ------------------------------------------------------------- the platform
++
++def _read_operating_system() -> Reading:
++    parts = [platform.system(), platform.release(), platform.machine()]
++    stated = " ".join(part for part in parts if part)
++    if not stated:
++        return Reading.unread(
++            "operating_system", "text",
++            "this Python build reports no system, release or machine name")
++    return Reading.read("operating_system", "text", stated,
++                        "platform.system, platform.release, platform.machine")
++
++
++def _read_processor_count() -> Reading:
++    """Processors this process may use, which is not always what exists."""
++    affinity = getattr(os, "sched_getaffinity", None)
++    if affinity is not None:
++        try:
++            return Reading.read("processor_count", "count", len(affinity(0)),
++                                "os.sched_getaffinity")
++        except OSError:
++            pass
++    count = os.cpu_count()
++    if count:
++        return Reading.read("processor_count", "count", count, "os.cpu_count")
++    return Reading.unread("processor_count", "count",
++                          "this platform reports no processor count")
++
++
++def meminfo_bytes(text: str) -> dict:
++    """Parse the kernel's own memory report into bytes.
++
++    Kept separate from the file read so that a known-wrong file can be
++    handed to it directly. A line without the kilobyte unit is skipped
++    rather than read as bytes, because reading `MemTotal: 64550844` as
++    64 MB instead of 61 GiB is the kind of quiet wrongness that produces a
++    confident recommendation nobody can run.
++    """
++    if not isinstance(text, str):
++        raise ReadingError("memory information is read from text")
++    fields = {}
++    for line in text.splitlines():
++        name, separator, rest = line.partition(":")
++        if not separator:
++            continue
++        parts = rest.split()
++        if len(parts) != 2 or parts[1].lower() != "kb" or not parts[0].isdigit():
++            continue
++        fields[name.strip()] = int(parts[0]) * 1024
++    return fields
++
++
++def _read_system_memory(meminfo_path: str = "/proc/meminfo") -> tuple:
++    """Total system memory and the memory available for a new program."""
++    unread_total = "no interface on this platform reported total system memory"
++    unread_available = (
++        "this platform reports total system memory but not how much a new "
++        "program may take")
++    try:
++        with open(meminfo_path, encoding="utf-8") as handle:
++            fields = meminfo_bytes(handle.read(SERVER_MAXIMUM_BYTES))
++    except OSError:
++        fields = {}
++    total = fields.get("MemTotal")
++    available = fields.get("MemAvailable")
++    if total:
++        total_reading = Reading.read("system_memory_total_bytes", "bytes",
++                                     total, meminfo_path + " MemTotal")
++        if available:
++            return total_reading, Reading.read(
++                "system_memory_available_bytes", "bytes", available,
++                meminfo_path + " MemAvailable")
++        return total_reading, Reading.unread(
++            "system_memory_available_bytes", "bytes", unread_available)
++    sysconf = getattr(os, "sysconf", None)
++    names = getattr(os, "sysconf_names", {})
++    if sysconf is not None and "SC_PHYS_PAGES" in names and "SC_PAGE_SIZE" in names:
++        try:
++            pages = sysconf("SC_PHYS_PAGES")
++            page_size = sysconf("SC_PAGE_SIZE")
++            if pages > 0 and page_size > 0:
++                return (Reading.read("system_memory_total_bytes", "bytes",
++                                     pages * page_size,
++                                     "os.sysconf SC_PHYS_PAGES x SC_PAGE_SIZE"),
++                        Reading.unread("system_memory_available_bytes", "bytes",
++                                       unread_available))
++        except (OSError, ValueError):
++            pass
++    windows = _windows_memory()
++    if windows is not None:
++        total_bytes, available_bytes = windows
++        return (Reading.read("system_memory_total_bytes", "bytes", total_bytes,
++                             "kernel32.GlobalMemoryStatusEx"),
++                Reading.read("system_memory_available_bytes", "bytes",
++                             available_bytes, "kernel32.GlobalMemoryStatusEx"))
++    return (Reading.unread("system_memory_total_bytes", "bytes", unread_total),
++            Reading.unread("system_memory_available_bytes", "bytes", unread_total))
++
++
++def _windows_memory():
++    """Total and available system memory through the Windows kernel."""
++    if platform.system() != "Windows":
++        return None
++    try:
++        import ctypes
++
++        class _Status(ctypes.Structure):
++            _fields_ = [("dwLength", ctypes.c_ulong),
++                        ("dwMemoryLoad", ctypes.c_ulong),
++                        ("ullTotalPhys", ctypes.c_ulonglong),
++                        ("ullAvailPhys", ctypes.c_ulonglong),
++                        ("ullTotalPageFile", ctypes.c_ulonglong),
++                        ("ullAvailPageFile", ctypes.c_ulonglong),
++                        ("ullTotalVirtual", ctypes.c_ulonglong),
++                        ("ullAvailVirtual", ctypes.c_ulonglong),
++                        ("ullAvailExtendedVirtual", ctypes.c_ulonglong)]
++
++        status = _Status()
++        status.dwLength = ctypes.sizeof(_Status)
++        if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
++            return None
++        if status.ullTotalPhys <= 0:
++            return None
++        return int(status.ullTotalPhys), int(status.ullAvailPhys)
++    except Exception:
++        return None
++
++
++# ---------------------------------------------------------- video devices
++
++def _nvml_devices() -> tuple:
++    """Video devices through the driver's own management library.
++
++    This is the platform's interface rather than a command, so it works
++    where the command line tools are not installed, and it returns bytes
++    rather than a rounded mebibyte figure that has to be multiplied back.
++    """
++    import ctypes
++    names = ("libnvidia-ml.so.1", "nvml.dll", "libnvidia-ml.dylib")
++    library = None
++    for candidate in names:
++        try:
++            library = ctypes.CDLL(candidate)
++            break
++        except OSError:
++            continue
++    if library is None:
++        return ()
++
++    class _Memory(ctypes.Structure):
++        _fields_ = [("total", ctypes.c_ulonglong), ("free", ctypes.c_ulonglong),
++                    ("used", ctypes.c_ulonglong)]
++
++    if library.nvmlInit_v2() != 0:
++        return ()
++    devices = []
++    try:
++        count = ctypes.c_uint()
++        if library.nvmlDeviceGetCount_v2(ctypes.byref(count)) != 0:
++            return ()
++        for index in range(count.value):
++            handle = ctypes.c_void_p()
++            if library.nvmlDeviceGetHandleByIndex_v2(
++                    index, ctypes.byref(handle)) != 0:
++                continue
++            buffer = ctypes.create_string_buffer(96)
++            if library.nvmlDeviceGetName(handle, buffer, 96) == 0:
++                name = Reading.read("name", "text",
++                                    buffer.value.decode("utf-8", "replace"),
++                                    "nvmlDeviceGetName")
++            else:
++                name = Reading.unread("name", "text",
++                                      "the driver did not report a device name")
++            memory = _Memory()
++            if library.nvmlDeviceGetMemoryInfo(handle, ctypes.byref(memory)) == 0:
++                total = Reading.read("total_bytes", "bytes", int(memory.total),
++                                     "nvmlDeviceGetMemoryInfo")
++                used = Reading.read("used_bytes", "bytes", int(memory.used),
++                                    "nvmlDeviceGetMemoryInfo")
++            else:
++                reason = "the driver did not report this device's memory"
++                total = Reading.unread("total_bytes", "bytes", reason)
++                used = Reading.unread("used_bytes", "bytes", reason)
++            devices.append(VideoDevice(index=index, name=name,
++                                       total_bytes=total, used_bytes=used))
++    finally:
++        library.nvmlShutdown()
++    return tuple(devices)
++
++
++def parse_nvidia_smi(text: str) -> tuple:
++    """Video devices from the command's mebibyte table, in bytes.
++
++    Separate from running the command so a known-wrong table can be handed
++    to it. A row this cannot read is skipped, never completed with a guess.
++    """
++    if not isinstance(text, str):
++        raise ReadingError("a device table is read from text")
++    devices = []
++    for index, line in enumerate(value for value in text.splitlines() if value.strip()):
++        parts = [part.strip() for part in line.split(",")]
++        if len(parts) != 3:
++            continue
++        name, total, used = parts
++        if not total.isdigit() or not used.isdigit() or not name:
++            continue
++        mebibyte = 1024 * 1024
++        devices.append(VideoDevice(
++            index=index,
++            name=Reading.read("name", "text", name, "nvidia-smi --query-gpu"),
++            total_bytes=Reading.read("total_bytes", "bytes",
++                                     int(total) * mebibyte,
++                                     "nvidia-smi --query-gpu=memory.total"),
++            used_bytes=Reading.read("used_bytes", "bytes", int(used) * mebibyte,
++                                    "nvidia-smi --query-gpu=memory.used")))
++    return tuple(devices)
++
++
++def _nvidia_smi_devices() -> tuple:
++    """The command, used only when the management library did not answer."""
++    import shutil
++    import subprocess
++    found = shutil.which("nvidia-smi")
++    if found is None:
++        return ()
++    try:
++        finished = subprocess.run(
++            [found, "--query-gpu=name,memory.total,memory.used",
++             "--format=csv,noheader,nounits"],
++            capture_output=True, text=True, timeout=SERVER_TIMEOUT_SECONDS,
++            check=False)
++    except (OSError, subprocess.SubprocessError):
++        return ()
++    if finished.returncode != 0:
++        return ()
++    return parse_nvidia_smi(finished.stdout)
++
++
++def _sysfs_devices(root: str = "/sys/class/drm") -> tuple:
++    """Video memory the kernel publishes as files, used by AMD drivers."""
++    import glob
++    devices = []
++    for index, total_path in enumerate(
++            sorted(glob.glob(os.path.join(root, "card*/device/mem_info_vram_total")))):
++        used_path = os.path.join(os.path.dirname(total_path),
++                                 "mem_info_vram_used")
++        try:
++            with open(total_path, encoding="utf-8") as handle:
++                total = int(handle.read().strip())
++        except (OSError, ValueError):
++            continue
++        if total <= 0:
++            continue
++        try:
++            with open(used_path, encoding="utf-8") as handle:
++                used = Reading.read("used_bytes", "bytes",
++                                    int(handle.read().strip()), used_path)
++        except (OSError, ValueError):
++            used = Reading.unread("used_bytes", "bytes",
++                                  f"{used_path} was not readable")
++        name_path = os.path.join(os.path.dirname(total_path), "uevent")
++        devices.append(VideoDevice(
++            index=index,
++            name=Reading.unread(
++                "name", "text",
++                f"{name_path} names a driver, not a device model"),
++            total_bytes=Reading.read("total_bytes", "bytes", total, total_path),
++            used_bytes=used))
++    return tuple(devices)
++
++
++def _read_video_devices() -> tuple:
++    """Every video device, or the reason there are none to report."""
++    for reader in (_nvml_devices, _nvidia_smi_devices, _sysfs_devices):
++        try:
++            devices = reader()
++        except Exception:
++            devices = ()
++        if devices:
++            return devices, ""
++    return (), ("no video device answered. The driver management library, the "
++                "vendor command and the kernel's own memory files were tried "
++                "in that order. A machine with no separate video memory, or "
++                "one whose memory is shared with the system, reads this way "
++                "and is not a fault")
++
++
++# ------------------------------------------------------------ local server
++
++def loopback_address(address: str) -> str:
++    """Refuse any address that is not on this machine.
++
++    The point of the refusal is that reading a local server must not be able
++    to turn into an outbound request. A name that is not a loopback literal
++    is refused without being resolved, because resolving it is already the
++    network call this is preventing.
++    """
++    if not isinstance(address, str) or not address.strip():
++        raise ReadingError("a local server address is required, "
++                           f"for example {DEFAULT_LOCAL_SERVER}")
++    parts = urlsplit(address.strip())
++    if parts.scheme != "http":
++        raise ReadingError(
++            f"{address} is not plain http. A local server is read over http "
++            "on this machine")
++    host = parts.hostname or ""
++    if host == "localhost":
++        return address.strip().rstrip("/")
++    try:
++        if ipaddress.ip_address(host).is_loopback:
++            return address.strip().rstrip("/")
++    except ValueError:
++        pass
++    raise ReadingError(
++        f"{address} is not on this machine. This reads a local model server "
++        "over loopback only, so it cannot become an outbound network call. "
++        "Pass a loopback address or use --no-local-server")
++
++
++def _loopback_reader():
++    """A reader with no proxy handler, so loopback stays loopback."""
++    import urllib.request
++    return urllib.request.build_opener(urllib.request.ProxyHandler({}))
++
++
++def _fetch(opener, url: str, body: bytes = b"") -> object:
++    import urllib.error
++    import urllib.request
++    request = urllib.request.Request(url, data=body or None, method="POST" if body else "GET")
++    if body:
++        request.add_header("content-type", "application/json")
++    try:
++        with opener.open(request, timeout=SERVER_TIMEOUT_SECONDS) as answer:
++            return json.loads(answer.read(SERVER_MAXIMUM_BYTES).decode("utf-8"))
++    except (OSError, urllib.error.URLError, ValueError):
++        return None
++
++
++def model_shape(name: str, size_bytes: object, details: dict,
++                information: dict, purposes: tuple, local: bool) -> ServerModel:
++    """One model's shape, built only from figures the server published.
++
++    The key/value head count is the field that makes or breaks the cache
++    arithmetic: grouped query attention makes the cache several times
++    smaller than the attention head count suggests, so a missing field is
++    reported missing rather than filled in from the head count.
++    """
++    architecture = str(information.get("general.architecture") or "").strip()
++    prefix = architecture + "." if architecture else ""
++
++    def whole(key: str, field: str) -> Reading:
++        value = information.get(key)
++        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
++            return Reading.unread(
++                field, "count",
++                f"the server's model information has no positive {key}")
++        return Reading.read(field, "count", value, f"model information {key}")
++
++    layers = whole(prefix + "block_count", "layers")
++    key_value_heads = whole(prefix + "attention.head_count_kv", "key_value_heads")
++    maximum_context = whole(prefix + "context_length", "maximum_context_tokens")
++    parameters = whole("general.parameter_count", "parameters")
++    key_length = whole(prefix + "attention.key_length", "head_dimension")
++    if key_length.was_read:
++        head_dimension = key_length
++    else:
++        embedding = information.get(prefix + "embedding_length")
++        heads = information.get(prefix + "attention.head_count")
++        if (isinstance(embedding, int) and isinstance(heads, int)
++                and not isinstance(embedding, bool) and not isinstance(heads, bool)
++                and heads > 0 and embedding > 0 and embedding % heads == 0):
++            head_dimension = Reading.read(
++                "head_dimension", "count", embedding // heads,
++                f"model information {prefix}embedding_length divided by "
++                f"{prefix}attention.head_count")
++        else:
++            head_dimension = Reading.unread(
++                "head_dimension", "count",
++                f"the server's model information has neither "
++                f"{prefix}attention.key_length nor a whole "
++                f"{prefix}embedding_length divided by "
++                f"{prefix}attention.head_count")
++    if isinstance(size_bytes, int) and not isinstance(size_bytes, bool) and size_bytes > 0:
++        weights = Reading.read("weights_file_bytes", "bytes", size_bytes,
++                               "the size the server reports for the model")
++    else:
++        weights = Reading.unread("weights_file_bytes", "bytes",
++                                 "the server reported no size for this model")
++    level = str(details.get("quantization_level") or "").strip()
++    quantisation = (Reading.read("quantisation", "text", level,
++                                 "the server's model details")
++                    if level else
++                    Reading.unread("quantisation", "text",
++                                   "the server reported no quantisation level"))
++    return ServerModel(name=name, local=local, purposes=purposes,
++                       weights_file_bytes=weights, layers=layers,
++                       key_value_heads=key_value_heads,
++                       head_dimension=head_dimension,
++                       maximum_context_tokens=maximum_context,
++                       quantisation=quantisation, parameters=parameters)
++
++
++def _read_local_server(address: str) -> tuple:
++    """Which models a local server holds, read over loopback only."""
++    base = loopback_address(address)
++    opener = _loopback_reader()
++    listed = _fetch(opener, base + "/api/tags")
++    if not isinstance(listed, dict) or not isinstance(listed.get("models"), list):
++        return False, (), (
++            f"no local model server answered at {base}. Start one, or pass "
++            "--no-local-server, or give the machine's numbers by hand")
++    models = []
++    for entry in listed["models"][:SERVER_MAXIMUM_MODELS]:
++        if not isinstance(entry, dict):
++            continue
++        name = str(entry.get("model") or entry.get("name") or "").strip()
++        if not name:
++            continue
++        details = entry.get("details") if isinstance(entry.get("details"), dict) else {}
++        purposes = tuple(str(value) for value in entry.get("capabilities") or ()
++                         if isinstance(value, str))
++        local = not str(entry.get("remote_host") or "").strip()
++        information = {}
++        if local:
++            shown = _fetch(opener, base + "/api/show",
++                           json.dumps({"model": name}).encode("utf-8"))
++            if isinstance(shown, dict):
++                if isinstance(shown.get("model_info"), dict):
++                    information = shown["model_info"]
++                if isinstance(shown.get("details"), dict):
++                    details = {**details, **shown["details"]}
++                if isinstance(shown.get("capabilities"), list):
++                    purposes = tuple(str(value) for value in shown["capabilities"]
++                                     if isinstance(value, str))
++        models.append(model_shape(name, entry.get("size"), details, information,
++                                  purposes, local))
++    return True, tuple(models), ""
++
++
++def _read_cache_element(environment: dict) -> Reading:
++    """The key/value cache element the local runtime is configured for."""
++    stated = str(environment.get(CACHE_ELEMENT_VARIABLE) or "").strip().lower()
++    if not stated:
++        return Reading.unread(
++            "cache_element", "text",
++            f"{CACHE_ELEMENT_VARIABLE} is not set, so the runtime uses its own "
++            "default. The arithmetic states the element it assumed")
++    known = CACHE_ELEMENT_NAMES.get(stated)
++    if known is None:
++        raise ReadingError(
++            f"{CACHE_ELEMENT_VARIABLE} is {stated!r}, which has no known size "
++            "in this arithmetic. Known elements: "
++            + ", ".join(sorted(set(CACHE_ELEMENT_NAMES))))
++    return Reading.read("cache_element", "text", known,
++                        f"the {CACHE_ELEMENT_VARIABLE} environment variable")
++
++
++def read_machine(*, local_server: object = DEFAULT_LOCAL_SERVER,
++                 environment: object = None) -> MachineReading:
++    """Read this machine. Every field is optional; none is invented."""
++    total, available = _read_system_memory()
++    devices, video_reason = _read_video_devices()
++    if local_server is None:
++        answered, models, server_reason = False, (), (
++            "the local model server was not read because it was not asked for")
++        address = ""
++    else:
++        address = loopback_address(str(local_server))
++        answered, models, server_reason = _read_local_server(address)
++    return MachineReading(
++        operating_system=_read_operating_system(),
++        processor_count=_read_processor_count(),
++        system_memory_total_bytes=total,
++        system_memory_available_bytes=available,
++        video_devices=devices, video_unread_reason=video_reason,
++        cache_element=_read_cache_element(
++            os.environ if environment is None else environment),
++        local_server_address=address, local_server_answered=answered,
++        local_server_unread_reason=server_reason, local_models=models)
++
++
++def self_check() -> list:
++    """Every guard beside the known-wrong input it exists to refuse."""
++    results = []
++
++    def check(name, passed, detail=""):
++        results.append({"check": name, "passed": bool(passed),
++                        "detail": str(detail)[:300]})
++
++    def refuses(name, call, expect_fragment):
++        try:
++            call()
++        except ReadingError as exc:
++            check(name, expect_fragment in str(exc), str(exc))
++        else:
++            check(name, False, "accepted a known wrong input")
++
++    # An unread field can never reach a report as a number.
++    refuses("a_field_with_no_value_and_no_reason_is_refused",
++            lambda: Reading(name="video", unit="bytes"), "needs a reason")
++    refuses("a_field_that_is_both_read_and_unread_is_refused",
++            lambda: Reading(name="video", unit="bytes", value=1,
++                            source="a", unread_reason="b"),
++            "both read and unread")
++    refuses("a_read_field_with_no_source_is_refused",
++            lambda: Reading(name="video", unit="bytes", value=1),
++            "needs the source")
++    refuses("an_unread_field_cannot_be_built_as_a_reading",
++            lambda: Reading.read("video", "bytes", None, "nowhere"),
++            "use Reading.unread")
++    check("an_unread_field_reports_no_value",
++          Reading.unread("video", "bytes", "no card").to_dict()
++          == {"name": "video", "unit": "bytes", "read": False,
++              "unread_reason": "no card"})
++
++    # Loopback confinement: this cannot become an outbound call.
++    refuses("a_public_local_server_address_is_refused",
++            lambda: loopback_address("http://example.com:11434"),
++            "not on this machine")
++    refuses("a_private_network_address_is_refused",
++            lambda: loopback_address("http://10.0.0.5:11434"),
++            "not on this machine")
++    refuses("a_non_http_local_server_address_is_refused",
++            lambda: loopback_address("file:///etc/passwd"), "not plain http")
++    check("a_loopback_address_is_accepted",
++          loopback_address("http://127.0.0.1:11434/") == "http://127.0.0.1:11434"
++          and loopback_address("http://localhost:11434")
++          == "http://localhost:11434")
++    check("the_loopback_reader_carries_no_proxy",
++          all(getattr(handler, "proxies", {}) == {}
++              for handler in _loopback_reader().handlers
++              if type(handler).__name__ == "ProxyHandler"))
++
++    # The kernel's memory report, including the line that must not be read.
++    fields = meminfo_bytes(
++        "MemTotal:       64550844 kB\nMemAvailable:   39770484 kB\n"
++        "HugePages_Total:       0\nBroken line without a colon\n")
++    check("memory_is_read_from_kilobytes_into_bytes",
++          fields["MemTotal"] == 64550844 * 1024
++          and fields["MemAvailable"] == 39770484 * 1024)
++    check("a_memory_line_without_the_kilobyte_unit_is_not_read_as_bytes",
++          "HugePages_Total" not in fields and len(fields) == 2, sorted(fields))
++
++    # The device table, including rows that must not become devices.
++    devices = parse_nvidia_smi(
++        "NVIDIA GeForce RTX 3060, 12288, 10538\n"
++        "A card with no figures, [N/A], [N/A]\n"
++        "short row, 1\n")
++    check("a_device_row_becomes_bytes_not_mebibytes",
++          len(devices) == 1
++          and devices[0].total_bytes.value == 12288 * 1024 * 1024
++          and devices[0].used_bytes.value == 10538 * 1024 * 1024,
++          [device.to_dict() for device in devices])
++    check("a_device_row_this_cannot_read_is_dropped_not_completed",
++          len(devices) == 1, len(devices))
++
++    # A model's shape comes from published fields or is reported missing.
++    published = {"general.architecture": "qwen2", "qwen2.block_count": 28,
++                 "qwen2.attention.head_count_kv": 4,
++                 "qwen2.attention.head_count": 28,
++                 "qwen2.embedding_length": 3584,
++                 "qwen2.context_length": 32768,
++                 "general.parameter_count": 7615616512}
++    shaped = model_shape("qwen2.5-coder:7b", 4683087561,
++                         {"quantization_level": "Q4_K_M"}, published,
++                         ("completion",), True)
++    check("a_head_dimension_is_derived_from_published_fields",
++          shaped.head_dimension.value == 128
++          and shaped.layers.value == 28
++          and shaped.key_value_heads.value == 4
++          and shaped.maximum_context_tokens.value == 32768,
++          shaped.to_dict())
++    blind = model_shape("unknown", 0, {}, {"general.architecture": "qwen2"},
++                        (), True)
++    check("a_model_with_no_published_shape_reports_every_field_missing",
++          not blind.layers.was_read and not blind.key_value_heads.was_read
++          and not blind.head_dimension.was_read
++          and not blind.weights_file_bytes.was_read
++          and "head_count_kv" in blind.key_value_heads.unread_reason)
++    substituted = model_shape(
++        "grouped", 1, {},
++        {"general.architecture": "qwen2", "qwen2.attention.head_count": 28},
++        (), True)
++    check("an_attention_head_count_is_never_used_as_a_key_value_head_count",
++          not substituted.key_value_heads.was_read)
++
++    # The cache element is read or declared, never invented.
++    refuses("an_unknown_cache_element_setting_is_refused",
++            lambda: _read_cache_element({CACHE_ELEMENT_VARIABLE: "q4_0"}),
++            "no known size")
++    check("a_known_cache_element_setting_is_read",
++          _read_cache_element({CACHE_ELEMENT_VARIABLE: "q8_0"}).value == "q8")
++    check("an_unset_cache_element_is_unread_not_defaulted",
++          not _read_cache_element({}).was_read)
++
++    # The whole record refuses to claim both an answer and a reason.
++    refuses("a_reading_cannot_report_devices_and_a_reason_for_none",
++            lambda: MachineReading(
++                operating_system=Reading.read("operating_system", "text", "x", "y"),
++                processor_count=Reading.unread("processor_count", "count", "z"),
++                system_memory_total_bytes=Reading.unread(
++                    "system_memory_total_bytes", "bytes", "z"),
++                system_memory_available_bytes=Reading.unread(
++                    "system_memory_available_bytes", "bytes", "z"),
++                video_devices=(), video_unread_reason="",
++                cache_element=Reading.unread("cache_element", "text", "z"),
++                local_server_address="", local_server_answered=False,
++                local_server_unread_reason="not asked", local_models=()),
++            "never both and never neither")
++    return results
++
++
++def self_test() -> dict:
++    return {"tests": [{"test": item["check"], "passed": item["passed"],
++                       "detail": item["detail"]} for item in self_check()]}
+diff --git a/src/loop_engine/core/service_runtime/web_routes.py b/src/loop_engine/core/service_runtime/web_routes.py
+new file mode 100644
+index 00000000..c0ee4df9
+--- /dev/null
++++ b/src/loop_engine/core/service_runtime/web_routes.py
+@@ -0,0 +1,116 @@
++"""The fixed list of files the website serves, and how one is served.
++
++Lifted out of `http.py` without a change in behaviour, because that module
++had grown past the repository's size convention and every new page address
++made it longer. The table and the one branch that reads it are the part
++that grows, so they live here and the transport module imports them.
++
++Two rules the table carries:
++
++  * A page address maps to a page file and an asset address maps to its
++    asset. Nothing is inferred from the address, so an address this table
++    does not name is a missing page rather than a file the reader guessed
++    the name of.
++
++  * The router reads this table before it asks who is calling. An address
++    the service does not serve answers "no such page", not "who are you",
++    because a credential refusal for a mistyped address sends the reader
++    looking for a fault that does not exist.
++"""
++from __future__ import annotations
++
++HTML_MEDIA_TYPE = "text/html"
++
++#: Every address the website answers, mapped to the file it serves and the
++#: media type it serves it as.
++WEB_ASSETS = {
++    "/": ("index.html", HTML_MEDIA_TYPE), "/app": ("index.html", HTML_MEDIA_TYPE),
++    "/login": ("index.html", HTML_MEDIA_TYPE), "/signup": ("index.html", HTML_MEDIA_TYPE),
++    "/account": ("index.html", HTML_MEDIA_TYPE),
++    "/admin": ("index.html", HTML_MEDIA_TYPE),
++    "/connect": ("index.html", HTML_MEDIA_TYPE),
++    "/examples": ("index.html", HTML_MEDIA_TYPE),
++    "/security": ("index.html", HTML_MEDIA_TYPE),
++    "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
++    "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
++    "/pricing": ("index.html", HTML_MEDIA_TYPE),
++    "/assets/client-recipes.json": ("client-recipes.json", "application/json"),
++    "/assets/supabase-client.js": ("supabase-client.js", "text/javascript"),
++    "/assets/service.css": ("service.css", "text/css"),
++    "/assets/architecture.css": ("architecture.css", "text/css"),
++    "/assets/client-access.js": ("client-access.js", "text/javascript"),
++    "/assets/service.js": ("service.js", "text/javascript"),
++    "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
++    # The licence terms of the packaged browser library travel with it.
++    "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
++}
++
++
++def serve_web_asset(path: str, display_name: str) -> tuple:
++    """The bytes for one served address, and the media type to send them as.
++
++    The service's display name is substituted into a page so that one built
++    page serves whatever the deployment calls itself. It is escaped for an
++    attribute value, because it reaches both text and attributes and the
++    stricter of the two is the safe one.
++    """
++    from html import escape
++    from importlib.resources import files
++    name, media_type = WEB_ASSETS[path]
++    body = files("loop_engine").joinpath(
++        "core", "service_runtime", "web_assets", name).read_bytes()
++    if media_type == HTML_MEDIA_TYPE:
++        body = body.replace(b"{{SERVICE_NAME}}",
++                            escape(display_name, quote=True).encode("utf-8"))
++    return body, media_type
++
++
++def self_check() -> list:
++    """Every guard beside the known-wrong input it exists to refuse."""
++    results = []
++
++    def check(name, passed, detail=""):
++        results.append({"check": name, "passed": bool(passed),
++                        "detail": str(detail)[:300]})
++
++    check("every_address_starts_at_the_root_of_the_site",
++          all(path.startswith("/") for path in WEB_ASSETS), sorted(WEB_ASSETS))
++    check("no_served_file_escapes_the_asset_folder",
++          all(".." not in name and "/" not in name and "\\" not in name
++              for name, _type in WEB_ASSETS.values()),
++          sorted(name for name, _type in WEB_ASSETS.values()))
++    check("every_named_file_is_present_in_the_package",
++          not _missing_files(), _missing_files())
++    body, media_type = serve_web_asset("/", "Example Service")
++    check("a_page_carries_the_service_name_it_was_served_for",
++          media_type == HTML_MEDIA_TYPE and b"Example Service" in body
++          and b"{{SERVICE_NAME}}" not in body)
++    quoted, _type = serve_web_asset("/", 'Ex"ample & <Service>')
++    check("a_service_name_reaches_the_page_escaped_for_an_attribute",
++          b'Ex"ample' not in quoted and b"Ex&quot;ample" in quoted
++          and b"&amp;" in quoted and b"&lt;Service&gt;" in quoted)
++    css, css_type = serve_web_asset("/assets/service.css", "Example Service")
++    check("a_style_sheet_is_served_as_itself_and_is_not_rewritten",
++          css_type == "text/css" and b"{{SERVICE_NAME}}" not in css
++          and b"Example Service" not in css)
++    try:
++        serve_web_asset("/no-such-address", "Example Service")
++    except KeyError as exc:
++        check("an_address_the_table_does_not_name_is_refused_not_guessed",
++              "/no-such-address" in str(exc), str(exc))
++    else:
++        check("an_address_the_table_does_not_name_is_refused_not_guessed",
++              False, "served an address that is not in the table")
++    return results
++
++
++def _missing_files() -> list:
++    from importlib.resources import files
++    folder = files("loop_engine").joinpath("core", "service_runtime", "web_assets")
++    return sorted({name for name, _type in WEB_ASSETS.values()
++                   if not folder.joinpath(name).is_file()})
++
++
++def self_test() -> dict:
++    return {"tests": [{"test": item["check"], "passed": item["passed"],
++                       "detail": item["detail"]} for item in self_check()]}
+diff --git a/src/loop_engine/machine_fit_cli.py b/src/loop_engine/machine_fit_cli.py
+new file mode 100644
+index 00000000..47d3b6cb
+--- /dev/null
++++ b/src/loop_engine/machine_fit_cli.py
+@@ -0,0 +1,365 @@
++"""`loop-engine machine-fit`: read this machine and say what to run.
++
++It reads only. It changes nothing, downloads nothing, opens no outbound
++connection and calls no model. The only thing it contacts is a local model
++server over loopback, to ask which models are already on the disk, and
++that can be turned off.
++
++Two output shapes, from the same record:
++
++    loop-engine machine-fit                  a readable answer
++    loop-engine machine-fit --format json    machine_fit_report/v1
++
++The same arithmetic runs in the browser on the served `/machine-fit` page,
++for a reader who has installed nothing. `--no-detection` is the path that
++page takes: it describes a machine instead of reading one, and a check
++runs both over the same inputs and fails if they disagree.
++"""
++from __future__ import annotations
++
++import argparse
++import json
++import sys
++
++from .core.local_fit import GIB, FitError, LocalModel, gibibytes
++from .core.machine_fit_advice import (ASSUMED_CACHE_ELEMENT, BUILDING,
++                                      DECIDING, AdviceError, Candidate,
++                                      DEFAULT_RUNTIME_RESERVE_BYTES, WorkKind,
++                                      advise, advise_from_reading,
++                                      machine_tier)
++from .core.machine_reading import (DEFAULT_LOCAL_SERVER, ReadingError,
++                                   read_machine)
++
++REPORT_VERSION = "machine_fit_report/v1"
++
++#: The name a described machine carries, so that the command and the page
++#: produce the same record for the same typed-in numbers.
++DESCRIBED_MACHINE = "the machine you described"
++
++HAND_MODEL_FIELDS = ("layers", "key_value_heads", "head_dimension",
++                     "maximum_context")
++
++
++def _parser() -> argparse.ArgumentParser:
++    parser = argparse.ArgumentParser(
++        prog="loop-engine machine-fit",
++        description="Read this machine and say what to run on it.")
++    parser.add_argument("--format", choices=("text", "json"), default="text")
++    parser.add_argument("--runtime-reserve-gib", type=float,
++                        default=DEFAULT_RUNTIME_RESERVE_BYTES / GIB,
++                        help="declared working space for the inference "
++                             "runtime, beside the weights and the cache")
++    parser.add_argument("--local-server", default=DEFAULT_LOCAL_SERVER,
++                        help="loopback address of a local model server; a "
++                             "non-loopback address is refused")
++    parser.add_argument("--no-local-server", action="store_true",
++                        help="do not read a local model server at all")
++    parser.add_argument("--no-detection", action="store_true",
++                        help="answer for the machine described by these "
++                             "flags instead of reading this one; this is the "
++                             "path the served page takes")
++    parser.add_argument("--system-memory-gib", type=float,
++                        help="total system memory, overriding what was read")
++    parser.add_argument("--video-memory-gib", type=float,
++                        help="total video memory on one device, overriding "
++                             "what was read; 0 means no separate video memory")
++    parser.add_argument("--cache-element", default="",
++                        help="key/value cache element, overriding what was read")
++    parser.add_argument("--building-context", type=int,
++                        default=BUILDING.wanted_context_tokens,
++                        help="context tokens the building answer asks for")
++    parser.add_argument("--deciding-context", type=int,
++                        default=DECIDING.wanted_context_tokens,
++                        help="context tokens the deciding answer asks for")
++    parser.add_argument("--model-name", default="",
++                        help="a model to weigh beside anything that was read")
++    parser.add_argument("--model-layers", type=int)
++    parser.add_argument("--model-key-value-heads", type=int)
++    parser.add_argument("--model-head-dimension", type=int)
++    parser.add_argument("--model-maximum-context", type=int)
++    parser.add_argument("--model-weights-file-bytes", type=int,
++                        help="size of the weights file on disk")
++    parser.add_argument("--model-parameters", type=float,
++                        help="parameter count, with --model-quantisation")
++    parser.add_argument("--model-quantisation", default="",
++                        help="a uniform quantisation such as q4_0 or f16; a "
++                             "mixed block quantisation needs the file size")
++    return parser
++
++
++def _hand_model(values, cache_element: str):
++    """The model the reader named, or nothing, or a refusal."""
++    named = [getattr(values, "model_" + field) for field in HAND_MODEL_FIELDS]
++    supplied = [value for value in named if value is not None]
++    weights = (values.model_weights_file_bytes, values.model_parameters,
++               values.model_quantisation)
++    if not values.model_name and not supplied and not any(weights):
++        return None
++    if not values.model_name:
++        raise AdviceError("a model needs --model-name so the report can name it")
++    missing = [field for field, value in zip(HAND_MODEL_FIELDS, named)
++               if value is None]
++    if missing:
++        raise AdviceError(
++            "a model needs its shape before its memory can be sized. Missing: "
++            + ", ".join("--model-" + field.replace("_", "-")
++                        for field in missing))
++    return Candidate(
++        model=LocalModel(
++            name=values.model_name, layers=values.model_layers,
++            key_value_heads=values.model_key_value_heads,
++            head_dimension=values.model_head_dimension,
++            maximum_context_tokens=values.model_maximum_context,
++            parameters=values.model_parameters or 0.0,
++            quantisation=values.model_quantisation,
++            weights_file_bytes=values.model_weights_file_bytes or 0.0,
++            cache_element=cache_element),
++        origin="named on the command line")
++
++
++def _work_kinds(values) -> tuple:
++    return (
++        WorkKind(name=BUILDING.name, what_it_is=BUILDING.what_it_is,
++                 wanted_context_tokens=values.building_context,
++                 prefer=BUILDING.prefer, allow_split=BUILDING.allow_split,
++                 why_this_shape=BUILDING.why_this_shape),
++        WorkKind(name=DECIDING.name, what_it_is=DECIDING.what_it_is,
++                 wanted_context_tokens=values.deciding_context,
++                 prefer=DECIDING.prefer, allow_split=DECIDING.allow_split,
++                 why_this_shape=DECIDING.why_this_shape),
++    )
++
++
++def _bytes_from_gib(value):
++    return None if value is None else float(value) * GIB
++
++
++def report(values) -> dict:
++    """One record, whether the machine was read or described."""
++    kinds = _work_kinds(values)
++    video = _bytes_from_gib(values.video_memory_gib)
++    system = _bytes_from_gib(values.system_memory_gib)
++    if values.no_detection:
++        element = values.cache_element or ASSUMED_CACHE_ELEMENT
++        hand = _hand_model(values, element)
++        if system is None:
++            raise AdviceError(
++                "--no-detection describes a machine, so it needs "
++                "--system-memory-gib. Nothing is read in this mode")
++        tier = machine_tier(
++            video_bytes=video, system_bytes=system, name=DESCRIBED_MACHINE,
++            runtime_reserve_bytes=values.runtime_reserve_gib * GIB)
++        advice = advise(
++            tier=tier, candidates=() if hand is None else (hand,),
++            cache_element=element,
++            cache_element_basis="read" if values.cache_element else "assumed",
++            work_kinds=kinds)
++        advice["machine"]["notes"] = []
++        return {"record_type": REPORT_VERSION, "detection": False,
++                "advice": advice, "machine_reading": None}
++    reading = read_machine(
++        local_server=None if values.no_local_server else values.local_server)
++    element = (values.cache_element
++               or (reading.cache_element.value if reading.cache_element.was_read
++                   else ASSUMED_CACHE_ELEMENT))
++    hand = _hand_model(values, element)
++    advice = advise_from_reading(
++        reading, runtime_reserve_bytes=values.runtime_reserve_gib * GIB,
++        video_bytes=video, system_bytes=system, work_kinds=kinds,
++        extra_candidates=() if hand is None else (hand,))
++    if values.cache_element:
++        advice["cache_element_basis"] = "read"
++    return {"record_type": REPORT_VERSION, "detection": True,
++            "advice": advice, "machine_reading": reading.to_dict()}
++
++
++# ------------------------------------------------------------- the reading
++
++def _field(reading: dict) -> str:
++    if reading["read"]:
++        return str(reading["value"])
++    return "not read: " + reading["unread_reason"]
++
++
++def _memory_line(total_bytes, right_now, key: str, unread: str,
++                 spare: str) -> str:
++    """Total memory, and what is spare this minute when that was read.
++
++    The two words are different on purpose. A video driver reports memory
++    that is genuinely free. The kernel reports memory available for a new
++    program, which counts reclaimable caches, so calling it free would
++    overstate what it means.
++    """
++    if not total_bytes:
++        return unread
++    line = f"{gibibytes(total_bytes)} GiB total"
++    free = (right_now or {}).get(key)
++    if free is not None:
++        line += f", {gibibytes(free)} GiB {spare} right now"
++    return line
++
++
++def _render_machine(record: dict) -> list:
++    advice = record["advice"]
++    machine = advice["machine"]
++    lines = ["Machine", "  " + machine["name"]]
++    reading = record["machine_reading"]
++    right_now = advice["right_now"]
++    video_unread = (reading or {}).get("video_unread_reason") or (
++        "none: every placement is decided against system memory")
++    lines.append("  Video memory      " + _memory_line(
++        machine["usable_video_bytes"], right_now, "video_free_bytes",
++        video_unread, "free"))
++    lines.append("  System memory     " + _memory_line(
++        machine["usable_system_bytes"], right_now, "system_available_bytes",
++        "not read", "available for a new program"))
++    if reading is not None:
++        lines.append("  Processors        " + _field(reading["processor_count"]))
++        lines.append("  Operating system  " + _field(reading["operating_system"]))
++        server = reading["local_server"]
++        lines.append("  Local server      " + (
++            f"{server['address']} answered with {len(server['models'])} models"
++            if server["answered"] else server["unread_reason"]))
++    lines.append(f"  Cache element     {advice['cache_element']} "
++                 f"({advice['cache_element_basis']})")
++    lines.append(f"  Runtime reserve   {machine['runtime_reserve_gib']} GiB "
++                 f"({machine['runtime_reserve_basis']})")
++    for note in machine.get("notes", ()):
++        lines.append("  Note              " + note)
++    return lines
++
++
++def _render_kind(work: dict) -> list:
++    heading = work["kind"].replace("_", " ").capitalize()
++    lines = ["", f"{heading}: {work['what_it_is']}",
++             f"  Why this shape   {work['why_this_shape']}",
++             f"  Context wanted   {work['wanted_context_tokens']} tokens "
++             f"({work['wanted_context_basis']})"]
++    chosen = work["recommended"]
++    if chosen is None:
++        lines.append("  No recommendation")
++        lines.append("  Because          " + work["refused_because"])
++        return lines
++    lines.append(f"  Run              {chosen['model']} ({chosen['origin']})")
++    lines.append(
++        f"  It will hold     {gibibytes(chosen['weights_bytes'])} GiB weights "
++        f"+ {gibibytes(chosen['kv_cache_bytes'])} GiB cache "
++        f"+ {gibibytes(chosen['runtime_reserve_bytes'])} GiB reserve "
++        f"= {gibibytes(chosen['total_bytes'])} GiB "
++        f"at {chosen['context_tokens']} tokens")
++    lines.append("  Largest context  "
++                 + (f"{chosen['largest_resident_context_tokens']} tokens stay "
++                    "in video memory"
++                    if chosen["largest_resident_context_tokens"] else
++                    "no context length stays in video memory"))
++    lines.append(f"  Placement        {chosen['fit']['placement']}: "
++                 f"{chosen['fit']['because']}")
++    if work["recommendation_note"]:
++        lines.append("  Note             " + work["recommendation_note"])
++    lines.append("  Arithmetic")
++    for line in chosen["arithmetic"]:
++        lines.append("    " + line)
++    for limit in chosen["limits"]:
++        lines.append("  Cannot do here   " + limit)
++    return lines
++
++
++def render(record: dict) -> str:
++    advice = record["advice"]
++    lines = _render_machine(record)
++    for work in advice["work"]:
++        lines.extend(_render_kind(work))
++    lines.append("")
++    lines.append("Redo it for a model this did not name")
++    lines.append("  " + advice["budget_formula"])
++    lines.append(f"  usable_video_bytes   = {advice['machine']['usable_video_bytes']}")
++    lines.append(f"  usable_system_bytes  = {advice['machine']['usable_system_bytes']}")
++    lines.append(f"  runtime_reserve_bytes = {advice['machine']['runtime_reserve_bytes']}")
++    lines.append("  cache_element_bytes  = 2 for f16 and bf16, 1 for q8, "
++                 "4 for f32")
++    if advice["set_aside"]:
++        lines.append("")
++        lines.append("Set aside")
++        for item in advice["set_aside"]:
++            lines.append(f"  {item['model']}: {item['why']}")
++    lines.append("")
++    lines.append("Nothing was changed, downloaded, or asked of a model.")
++    return "\n".join(lines)
++
++
++def machine_fit_command(arguments) -> int:
++    values = _parser().parse_args(arguments)
++    try:
++        record = report(values)
++    except (AdviceError, FitError, ReadingError) as exc:
++        print(json.dumps({"record_type": "machine_fit_refusal/v1",
++                          "refused_because": str(exc)}, sort_keys=True)
++              if values.format == "json" else f"Refused: {exc}",
++              file=sys.stderr)
++        return 2
++    if values.format == "json":
++        print(json.dumps(record, sort_keys=True, indent=1))
++    else:
++        print(render(record))
++    return 0
++
++
++def self_check() -> list:
++    """Every guard beside the known-wrong input it exists to refuse."""
++    results = []
++
++    def check(name, passed, detail=""):
++        results.append({"check": name, "passed": bool(passed),
++                        "detail": str(detail)[:300]})
++
++    def refuses(name, arguments, expect_fragment):
++        try:
++            report(_parser().parse_args(arguments))
++        except (AdviceError, FitError, ReadingError) as exc:
++            check(name, expect_fragment in str(exc), str(exc))
++        else:
++            check(name, False, "accepted a known wrong input")
++
++    described = ["--no-detection", "--system-memory-gib", "64",
++                 "--video-memory-gib", "12", "--model-name", "qwen2.5-coder:7b",
++                 "--model-layers", "28", "--model-key-value-heads", "4",
++                 "--model-head-dimension", "128",
++                 "--model-maximum-context", "32768",
++                 "--model-weights-file-bytes", "4683087561"]
++    record = report(_parser().parse_args(described))
++    check("a_described_machine_reads_nothing",
++          record["detection"] is False and record["machine_reading"] is None
++          and record["advice"]["right_now"] is None)
++    check("a_described_machine_recommends_the_model_it_was_given",
++          record["advice"]["work"][0]["recommended"]["model"]
++          == "qwen2.5-coder:7b")
++    check("the_described_machine_carries_one_stable_name",
++          record["advice"]["machine"]["name"] == DESCRIBED_MACHINE)
++    check("a_report_renders_without_a_reading",
++          "Redo it for a model this did not name" in render(record)
++          and "qwen2.5-coder:7b" in render(record))
++
++    refuses("a_described_machine_without_memory_is_refused",
++            ["--no-detection"], "needs --system-memory-gib")
++    refuses("a_model_named_without_its_shape_is_refused",
++            ["--no-detection", "--system-memory-gib", "64",
++             "--model-name", "mystery"], "Missing: --model-layers")
++    refuses("a_model_shape_with_no_name_is_refused",
++            ["--no-detection", "--system-memory-gib", "64",
++             "--model-layers", "28"], "needs --model-name")
++    refuses("a_mixed_block_quantisation_without_a_file_size_is_refused",
++            ["--no-detection", "--system-memory-gib", "64",
++             "--model-name", "m", "--model-layers", "28",
++             "--model-key-value-heads", "4", "--model-head-dimension", "128",
++             "--model-maximum-context", "32768",
++             "--model-parameters", "7.6e9",
++             "--model-quantisation", "q4_K_M"], "weights_file_bytes")
++    refuses("a_non_loopback_local_server_is_refused_before_anything_is_read",
++            ["--local-server", "http://example.com:11434"],
++            "not on this machine")
++    return results
++
++
++def self_test() -> dict:
++    return {"tests": [{"test": item["check"], "passed": item["passed"],
++                       "detail": item["detail"]} for item in self_check()]}
