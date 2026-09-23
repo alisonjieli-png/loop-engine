@@ -99,6 +99,14 @@ parts.
   shows files that are not Markdown, because harness material is any file a
   harness reads.
 
+The step splits the address lines of a customer file with
+`split_address_lines_into_components`. It showed `normalize_phone_numbers`
+until September 23, 2026, which the
+[data cleanup study](../../../../../case-studies/data-cleanup-with-and-without-baltor/REPORT-2026-09-22.md)
+found made a cheap model clearly worse on its population. The same test fails
+when the step chooses an item that a recorded study found harmful; it reads the
+design and results records of each study under `case-studies`.
+
 The same test holds the library count on the homepage to the number of items
 in the manifest, and the connection entry to the reviewed Claude Code recipe in
 `client-recipes.json`. The page is served with the public address in that

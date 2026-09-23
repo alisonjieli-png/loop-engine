@@ -1191,7 +1191,9 @@ try {
     await opened.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
     return {page:opened,applied:()=>changes.every(change=>found.has(change))};
   };
-  const firstShown=releasedReferences.normalize_phone_numbers?.digest.slice(0,8)||"(none)";
+  /* The first digest the demonstration shows, read from the manifest for the item the page names first, so the control follows
+     the demonstrated step when it changes. */
+  const firstShown=releasedReferences[shownFacts.items[0]?.identity]?.digest.slice(0,8)||"(none)";
   const homepageControls=[
     {name:"change_one_digest_in_the_demonstration",changes:[{path:"/",find:'data-fact="digest">'+firstShown+"<",replacement:'data-fact="digest">'+firstShown.replace(/.$/,last=>last==="0"?"1":"0")+"<"}],
      run:async (opened,note)=>note("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(await demoFacts(opened)).length===0),

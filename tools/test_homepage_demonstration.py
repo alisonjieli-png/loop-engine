@@ -13,6 +13,11 @@ Two more facts on the homepage come from the same release: the count of items in
 items in the packaged manifest, and the connection entry is the reviewed Claude Code recipe with the public
 address written in. Each rule has a known-wrong page beside it that the rule must report.
 
+The step the homepage shows chooses an item that no recorded measurement found harmful. The data cleanup study
+of September 22, 2026 found that normalize_phone_numbers made a cheap model clearly worse on its population, and
+the homepage featured that item until then. The study's own design and results records are read, so a later
+study that finds another item harmful is covered without a change here.
+
 Nothing here reaches the network. The service runs on loopback over a temporary database.
 """
 from __future__ import annotations
@@ -32,6 +37,10 @@ ASSETS = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "web_assets
 PAGE = ASSETS / "index.html"
 RECIPES = ASSETS / "client-recipes.json"
 RELEASE = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue" / "host-release"
+#: Where measurements of library items are recorded, one folder for each study.
+STUDIES = ROOT / "case-studies"
+#: The results record whose design names, for each family, the items its material arms placed.
+STUDY_RESULTS = "data_cleanup_results/v1"
 STAGES = (("search", "recorded"), ("download", "recorded"), ("folder", "illustration"))
 LABEL_WORDS = {"recorded": "Recorded from this release's library", "illustration": "Being built"}
 #: The address the served homepage writes into its connection entry. Once the page script has checked the
@@ -186,6 +195,45 @@ def folder_problems(demonstration):
     return problems
 
 
+def harmful_in(design, summary, study):
+    """The items one study found harmful, each with the comparisons that found it.
+
+    An item is harmful on a study's population when an arm that placed it scored clearly lower, under the study's frozen
+    rule, than an arm of the same model that placed nothing. A comparison of two different models proves nothing about
+    the item and is not read.
+    """
+    arms, found = {**design["arms"], **design.get("optional_arms", {})}, {}
+    for comparison in summary["comparisons"]:
+        first, second = arms.get(comparison["first"]), arms.get(comparison["second"])
+        if not first or not second or first["model"] != second["model"]:
+            continue
+        lower, higher = {"first_clearly_higher": (second, first), "second_clearly_higher": (first, second)}.get(comparison["verdict"], (None, None))
+        if lower is not None and lower["material"] != "none" and higher["material"] == "none":
+            for identity in design["material"][comparison["family"]]:
+                found.setdefault(identity, []).append(
+                    f"{study}: {comparison['family']}, {comparison['first']} against {comparison['second']}, {comparison['verdict']}")
+    return found
+
+
+def recorded_harm():
+    """Every item a recorded study found harmful, read from the design and results records under case-studies."""
+    found = {}
+    for path in sorted(STUDIES.glob("*/results/summary.json")):
+        summary = json.loads(path.read_text(encoding="utf-8"))
+        if summary.get("record_type") != STUDY_RESULTS:
+            continue
+        design = json.loads((path.parent.parent / "design.json").read_text(encoding="utf-8"))
+        for identity, where in harmful_in(design, summary, path.parent.parent.name).items():
+            found.setdefault(identity, []).extend(where)
+    return found
+
+
+def harmful_choice_problems(demonstration, harmful):
+    """The demonstration may not choose an item that a recorded measurement found harmful."""
+    return [f"the demonstration chooses {item['identity']}, which a recorded measurement found harmful: {'; '.join(harmful[item['identity']])}"
+            for item in demonstration["items"] if item["chosen"] and item["identity"] in harmful]
+
+
 def library_count_problems(page, item_count):
     shown = [" ".join(item["text"].split()) for item in read_marked(page) if "data-library-count" in item["attrs"]]
     if shown != [str(item_count)]:
@@ -285,7 +333,7 @@ class HomepageDemonstrationTest(unittest.TestCase):
         self.assertEqual(len(label_problems(relabelled)), 2)
 
     def test_the_search_shows_what_this_release_library_returns(self):
-        self.assertEqual(self.demonstration["query"], "format phone numbers with country code")
+        self.assertEqual(self.demonstration["query"], "split address lines in a customer file")
         self.assertEqual(search_problems(self.demonstration, self.hits), [])
         # KNOWN_WRONG: one digest changed by one character, one size changed, and two places swapped.
         wrong_digest = _changed(self.demonstration, lambda copy: copy["items"][1].update(
@@ -316,10 +364,33 @@ class HomepageDemonstrationTest(unittest.TestCase):
         self.assertEqual(folder_problems(self.demonstration), [])
         # KNOWN_WRONG: a folder of Markdown files only, and a folder that places a skill the step did not download.
         only_markdown = _changed(self.demonstration, lambda copy: copy.update(paths=[path for path in copy["paths"] if path.endswith(".md")]))
+        placed = self.demonstration["download"].replace("_", "-")
+        another = next(identity for identity in sorted(self.items) if identity != self.demonstration["download"]).replace("_", "-")
         other_skill = _changed(self.demonstration, lambda copy: copy.update(
-            paths=[path.replace("normalize-phone-numbers", "split-address-lines") for path in copy["paths"]]))
+            paths=[path.replace(placed, another) for path in copy["paths"]]))
         self.assertEqual(len(folder_problems(only_markdown)), 1)
         self.assertEqual(len(folder_problems(other_skill)), 1)
+
+    def test_the_step_chooses_no_item_a_recorded_measurement_found_harmful(self):
+        harmful = recorded_harm()
+        # The committed study records one clearly worse family, so a reader that finds nothing is itself broken.
+        self.assertTrue(harmful)
+        self.assertEqual(harmful_choice_problems(self.demonstration, harmful), [])
+        # KNOWN_WRONG: the step chooses an item a recorded measurement found harmful, as the homepage did until September 23.
+        chose_harm = _changed(self.demonstration, lambda copy: copy["items"][0].update(identity=sorted(harmful)[0], chosen=True))
+        self.assertEqual(len(harmful_choice_problems(chose_harm, harmful)), 1)
+        # KNOWN_WRONG: the reader is given a study whose material arm is clearly lower than the same model without it,
+        # once in each order of the comparison; and a clearly lower arm of another model, which says nothing of the item.
+        design = {"arms": {"cheap-none": {"model": "cheap", "material": "none"}, "cheap-file": {"model": "cheap", "material": "agents_file"},
+                           "large-none": {"model": "large", "material": "none"}},
+                  "material": {"family": ["planted_item"]}}
+        comparisons = [{"family": "family", "first": "cheap-file", "second": "cheap-none", "verdict": "second_clearly_higher"},
+                       {"family": "family", "first": "cheap-none", "second": "cheap-file", "verdict": "first_clearly_higher"}]
+        for comparison in comparisons:
+            self.assertEqual(list(harmful_in(design, {"comparisons": [comparison]}, "planted")), ["planted_item"])
+        self.assertEqual(harmful_in(design, {"comparisons": [{"family": "family", "first": "cheap-file", "second": "large-none",
+                                                              "verdict": "second_clearly_higher"}]}, "planted"), {})
+        self.assertEqual(harmful_in(design, {"comparisons": [{**comparisons[0], "verdict": "not_separated"}]}, "planted"), {})
 
     def test_the_library_count_is_this_release_manifest_count(self):
         self.assertEqual(library_count_problems(self.page, self.item_count), [])
