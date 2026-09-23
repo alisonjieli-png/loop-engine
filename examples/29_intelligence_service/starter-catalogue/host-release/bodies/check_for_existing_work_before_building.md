@@ -40,4 +40,4 @@ An agent writes a new script to remove duplicate rows from a delimited file. The
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work functions for retrieving prior work and for applying a reviewed procedure.
 - `src/loop_engine/strings/question_engine.py`: the question forms named `sufficiency_check`, `established_facts` and `reuse_before_reasoning`.
 
-Licence: MIT. Compiled from revision 40fce69.
+Licence: MIT. Compiled from revision 565e133.

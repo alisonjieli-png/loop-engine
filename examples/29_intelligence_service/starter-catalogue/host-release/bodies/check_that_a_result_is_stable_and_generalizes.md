@@ -37,4 +37,4 @@ A new feature raises the score from 0.842 to 0.846 on one seed, and the team shi
 - `src/loop_engine/strings/interrogation.py`: the question bank, categories `noise_and_stability` and `generalization`.
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the perspectives of the statistician and the generalization critic.
 
-Licence: MIT. Compiled from revision 40fce69.
+Licence: MIT. Compiled from revision 565e133.

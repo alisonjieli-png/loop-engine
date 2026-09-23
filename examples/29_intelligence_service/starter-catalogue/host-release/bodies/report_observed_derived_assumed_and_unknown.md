@@ -37,4 +37,4 @@ A report says that there are no other usages of a function. The search covered o
 
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the guidance records about separating facts from assumptions, evidence for every claim, things not observed, unknown states and failures that state their cause, and the perspectives of the evidence auditor and the assumption finder.
 
-Licence: MIT. Compiled from revision 40fce69.
+Licence: MIT. Compiled from revision 565e133.

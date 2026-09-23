@@ -8,7 +8,7 @@ with the guard patched away and requires the check's own predicate to fail.
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import replace
+from dataclasses import asdict, replace
 import json
 import os
 from pathlib import Path
@@ -560,6 +560,144 @@ def _gate_checks(check, root):
               refused(lambda: load_host_application(str(host)), "unsupported_host_configuration"))
 
 
+def _account(case, tenant, grants=None):
+    """One more entitled account with its own key, holding a snapshot of `grants` when they are given."""
+    case.runtime.register_tenant(TenantRegistration(tenant, "tenant:" + tenant))
+    case.runtime.set_operator_entitlement(tenant, valid_until=int(time.time()) + 3600,
+                                          evidence_ref="local-check-not-payment")
+    if grants is not None:
+        case.runtime.set_grants(tenant, tuple(grants))
+    return case.runtime.issue_key(TenantKeyIssue(tenant, "catalogue checks")).key
+
+
+def _offered(case, key):
+    return sorted(row["identity"] for row in case.binding().invoke(key, "list")["items"])
+
+
+def _grants_record(case, tenant):
+    from .runtime import GRANTS
+    with case.runtime._catalog.store() as store:
+        row = case.runtime._catalog.read(store, GRANTS, tenant)
+    return row["payload"] if row is not None else None
+
+
+def _all_tenants_case():
+    """`--all-tenants` on accounts that hold every item, one item, metadata only, nothing, or already follow."""
+    from ..provisioning_server import ProvisioningGrant
+    from .catalogue_grants import follow_accounts_already_granted
+    with fixture() as case:
+        case.publish([case.line("first", "# First\n"), case.line("second", "# Second\n")])
+        approved = case.view().approved_bindings()
+        # alpha follows already and denies an item that is not published yet.
+        follow_active_release(case.runtime, ["alpha"], denials=("third",))
+        keys = {"alpha": case.key.key, "boundary": _account(case, "boundary"),
+                "owner": _account(case, "owner", [ProvisioningGrant("owner", binding, True)
+                                                  for binding in approved.values()]),
+                "partial": _account(case, "partial", [ProvisioningGrant("partial", approved["first"], True)]),
+                "metadata": _account(case, "metadata", [ProvisioningGrant("metadata", binding)
+                                                        for binding in approved.values()])}
+        moved = follow_accounts_already_granted(case.runtime, case.view())
+        case.publish([case.line("first", "# First\n"), case.line("second", "# Second\n"),
+                      case.line("third", "# Third\n")])
+        return {"moved": moved, "offered": {tenant: _offered(case, key) for tenant, key in keys.items()},
+                "records": {tenant: (_grants_record(case, tenant) or {}).get("record_type") for tenant in keys}}
+
+
+def _stop_case(held=None):
+    """Two following accounts, one denying part and one denying everything, return to fixed lists."""
+    from .catalogue_grants import following_release, stop_following_release
+    with fixture() as case:
+        case.publish([case.line("first", "# First\n"), case.line("second", "# Second\n")])
+        follow_active_release(case.runtime, ["alpha"], denials=("second",))
+        boundary = _account(case, "boundary")
+        # The live repair of September 23, 2026: every current item denied.
+        follow_active_release(case.runtime, ["boundary"], denials=("first", "second"))
+        received = following_release(case.runtime, "alpha").materialize(case.view())
+        if held is not None:
+            held.update({tenant: _grants_record(case, tenant) for tenant in ("alpha", "boundary")})
+        stopped = [stop_following_release(case.runtime, tenant, case.view()) for tenant in ("alpha", "boundary")]
+        kept = {tenant: _grants_record(case, tenant) for tenant in ("alpha", "boundary")}
+        case.publish([case.line("first", "# First\n"), case.line("second", "# Second\n"),
+                      case.line("third", "# Third\n")])
+        again = refused(lambda: stop_following_release(case.runtime, "alpha", case.view()),
+                        "account_not_following_release")
+        return {"received": received, "stopped": stopped, "kept": kept, "again": again,
+                "unchanged": _grants_record(case, "alpha") == kept["alpha"],
+                "offered": {"alpha": _offered(case, case.key.key), "boundary": _offered(case, boundary)}}
+
+
+def _stale_view_case():
+    """A snapshot or a bulk move decided on a view that the host no longer serves."""
+    from .catalogue_grants import follow_accounts_already_granted, stop_following_release
+    with fixture() as case:
+        case.publish([case.line("first", "# First\n"), case.line("second", "# Second\n")])
+        old = case.view()
+        case.publish([case.line("first", "# First\n"), case.line("second", "# Second\nchanged\n")])
+        stale = (refused(lambda: stop_following_release(case.runtime, "alpha", old), "catalogue_state_changed")
+                 and refused(lambda: follow_accounts_already_granted(case.runtime, old), "catalogue_state_changed"))
+        following = (_grants_record(case, "alpha") or {}).get("record_type")
+        # The operator runs the command again, on the view served now.
+        retried = not refused(lambda: stop_following_release(case.runtime, "alpha", case.view()))
+        return {"stale_refused": stale, "following_until_retried": following, "retried": retried,
+                "offered": _offered(case, case.key.key)}
+
+
+def _grant_engine_checks(check):
+    """No bulk move widens what an account receives, and an account can return to a fixed list."""
+    from . import catalogue_grants
+    from .catalogue_grants import ALREADY_FOLLOWING, FOLLOW_RELEASE_GRANTS_VERSION, NOT_GRANTED_EVERY_ITEM
+
+    def only_granted(outcome):
+        reasons = {row["tenant_id"]: row["reason"] for row in outcome["moved"]["left_out"]}
+        return (outcome["moved"]["tenants"] == ["owner"] and outcome["offered"]["boundary"] == []
+                and outcome["offered"]["partial"] == ["first"]
+                and outcome["offered"]["owner"] == ["first", "second", "third"]
+                and outcome["records"]["boundary"] is None
+                and outcome["records"]["partial"] == outcome["records"]["metadata"] == "service_grants/v1"
+                and reasons == {"alpha": ALREADY_FOLLOWING, "boundary": NOT_GRANTED_EVERY_ITEM,
+                                "partial": NOT_GRANTED_EVERY_ITEM, "metadata": NOT_GRANTED_EVERY_ITEM})
+    check("all_tenants_moves_only_accounts_that_already_receive_every_item", only_granted(_all_tenants_case()))
+    with patch.object(catalogue_grants, "left_out_reason", lambda *arguments: ""):
+        check("removed_all_tenants_restriction_is_detected", not only_granted(_all_tenants_case()))
+
+    def keeps_denials(outcome):
+        return outcome["offered"]["alpha"] == ["first", "second"] and outcome["records"]["alpha"] == "service_grants/v2"
+    check("all_tenants_keeps_the_denials_of_an_account_that_already_follows", keeps_denials(_all_tenants_case()))
+    original = catalogue_grants.left_out_reason
+
+    def ignoring_following(row, tenant_id, following, view):
+        if row is not None and row["payload"].get("record_type") == FOLLOW_RELEASE_GRANTS_VERSION:
+            return ""
+        return original(row, tenant_id, following, view)
+    with patch.object(catalogue_grants, "left_out_reason", ignoring_following):
+        check("removed_already_following_rule_is_detected", not keeps_denials(_all_tenants_case()))
+    stopped = _stop_case()
+    kept = stopped["kept"]
+    check("an_account_that_stops_following_keeps_exactly_what_it_received",
+          kept["alpha"]["record_type"] == "service_grants/v1" and kept["boundary"]["record_type"] == "service_grants/v1"
+          and sorted(json.dumps(row, sort_keys=True) for row in kept["alpha"]["grants"])
+          == sorted(json.dumps(asdict(grant), sort_keys=True) for grant in stopped["received"])
+          and len(stopped["received"]) == 1 and kept["boundary"]["grants"] == []
+          and [row["grants"] for row in stopped["stopped"]] == [1, 0])
+
+    def later_item_withheld(outcome):
+        return outcome["offered"] == {"alpha": ["first"], "boundary": []}
+    check("a_later_item_never_reaches_an_account_that_stopped_following", later_item_withheld(stopped))
+    held = {}
+    # Without the fixed list the account keeps following with the denials it
+    # held, which is the state the live accounts were left in.
+    with patch.object(catalogue_grants, "snapshot_payload", lambda tenant_id, grants: held[tenant_id]):
+        check("removed_snapshot_rule_is_detected", not later_item_withheld(_stop_case(held)))
+    check("stopping_is_refused_for_an_account_that_does_not_follow", stopped["again"] and stopped["unchanged"])
+
+    def served_view_only(outcome):
+        return (outcome["stale_refused"] and outcome["following_until_retried"] == "service_grants/v2"
+                and outcome["retried"] and outcome["offered"] == ["first", "second"])
+    check("a_grant_decision_on_a_view_the_host_no_longer_serves_is_refused", served_view_only(_stale_view_case()))
+    with patch.object(catalogue_grants, "require_served_state", lambda state, view: None):
+        check("removed_served_view_rule_is_detected", not served_view_only(_stale_view_case()))
+
+
 def run_checks(check=None):
     tests = []
     if check is None:
@@ -573,6 +711,10 @@ def run_checks(check=None):
         _bundle_checks(check, directory)
     _release_checks(check)
     _refresh_and_grant_checks(check)
+    try:
+        _grant_engine_checks(check)
+    except Exception:  # noqa: BLE001 - a group that stops part way is a failure with a name
+        check("the_grant_engine_checks_ran_to_completion", False)
     _new_account_checks(check)
     _schema_as_data_checks(check)
     with tempfile.TemporaryDirectory(prefix="catalogue-gates-") as directory:

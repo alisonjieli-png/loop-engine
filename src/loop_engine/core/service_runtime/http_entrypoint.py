@@ -39,7 +39,7 @@ HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
 SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures",
                     "apply-billing-policy", "remove-expired",
                     "publish-catalogue", "rollback-catalogue", "withdraw-catalogue-item", "catalogue-status",
-                    "follow-catalogue-release")
+                    "follow-catalogue-release", "stop-following-catalogue-release")
 LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
@@ -616,7 +616,8 @@ def main(argv=None):
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--behind-trusted-tls-proxy", action="store_true")
-    parser.add_argument("--tenant")
+    parser.add_argument("--tenant", help="issue-key, failures, follow-catalogue-release and "
+                                         "stop-following-catalogue-release: one account.")
     parser.add_argument("--label", default="host-issued client key")
     parser.add_argument("--expires-at", type=int)
     parser.add_argument("--limit", type=int, default=20,
@@ -638,7 +639,8 @@ def main(argv=None):
                         help="withdraw-catalogue-item: every stored version of the identity.")
     parser.add_argument("--note", help="withdraw-catalogue-item: the reason, kept with the record.")
     parser.add_argument("--all-tenants", action="store_true",
-                        help="follow-catalogue-release: every registered account.")
+                        help="follow-catalogue-release: only the accounts already granted every item the host "
+                             "serves; every other account is named with --tenant.")
     parser.add_argument("--deny", action="append",
                         help="follow-catalogue-release: an item identity the account never receives.")
     from .records import SCOPES

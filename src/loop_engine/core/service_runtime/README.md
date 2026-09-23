@@ -1365,7 +1365,18 @@ records one measured unit.
 **Grants.** The grants record of an account is version 1, the exact snapshot
 that `apply-grants` writes, or version 2, which follows the active release:
 every approved item of the served view minus the account's denials.
-`follow-catalogue-release` moves accounts to version 2. `apply-grants` reports a
+`follow-catalogue-release --tenant ACCOUNT` moves one named account to version
+2. With `--all-tenants` it moves only the accounts already granted every item
+the served view offers, on the terms following gives, leaves an account that
+follows already with its denials, and lists every account it left alone under
+`left_out` with the reason `already_following` or `not_granted_every_item`.
+`stop-following-catalogue-release --tenant ACCOUNT` returns one following
+account to version 1: a snapshot of exactly what it receives from the served
+view now, so an account that denies every current item keeps an empty list and
+an item published later does not reach it. Both commands that read the served
+view refuse with `catalogue_state_changed` when the catalogue changed after
+that view was built, and the stop command refuses an account that does not
+follow with `account_not_following_release`. `apply-grants` reports a
 following account's count and never writes over it. An item that declares
 effects is withheld until the client declares them, for both versions.
 

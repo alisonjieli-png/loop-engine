@@ -308,11 +308,13 @@ only after a release that includes it.
 
 ```text
 Catalogue release operations, in `loop-engine service`
-├── publish-catalogue         check a bundle, store its bodies by digest, move the pointer
-├── rollback-catalogue        move the pointer to an earlier release after verifying it
-├── withdraw-catalogue-item   record a withdrawal every release, rollback and image honours
-├── catalogue-status          read the state version, the active release and every release
-└── follow-catalogue-release  move accounts to grants that follow the active release
+├── publish-catalogue                 check a bundle, store its bodies by digest, move the pointer
+├── rollback-catalogue                move the pointer to an earlier release after verifying it
+├── withdraw-catalogue-item           record a withdrawal every release, rollback and image honours
+├── catalogue-status                  read the state version, the active release and every release
+├── follow-catalogue-release          move a named account to grants that follow the active release;
+│                                     --all-tenants moves only accounts already granted every item
+└── stop-following-catalogue-release  return a named account to a fixed list of what it receives now
 ```
 
 The host file's `catalogue` section, `service_catalogue_source/v1`, chooses

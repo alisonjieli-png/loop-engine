@@ -9,12 +9,18 @@ atomic batch contract of the service store and print one result record.
 
 ```text
 loop-engine service
-├── publish-catalogue         validate a bundle, write bodies and records, move the pointer
-├── rollback-catalogue        move the pointer to an earlier, fully verified release
-├── withdraw-catalogue-item   record a durable withdrawal that every release and rollback honours
-├── catalogue-status          report the state version, the active release and every release
-└── follow-catalogue-release  move accounts to the grants engine that follows the active release
+├── publish-catalogue                  validate a bundle, write bodies and records, move the pointer
+├── rollback-catalogue                 move the pointer to an earlier, fully verified release
+├── withdraw-catalogue-item            record a durable withdrawal that every release and rollback honours
+├── catalogue-status                   report the state version, the active release and every release
+├── follow-catalogue-release           move named accounts, or with --all-tenants only the accounts
+│                                      already granted every served item, to grants that follow the release
+└── stop-following-catalogue-release   return one account to a fixed list of what it receives now
 ```
+
+The two grant commands read the catalogue the host serves now, built the way
+the service builds it at start, so a decision is taken on what accounts are
+actually offered.
 """
 from __future__ import annotations
 
@@ -24,18 +30,17 @@ from .records import ServiceRuntimeConfig, ServiceRuntimeError
 from .storage import ServiceCatalogBinding
 
 CATALOGUE_COMMANDS = ("publish-catalogue", "rollback-catalogue", "withdraw-catalogue-item",
-                      "catalogue-status", "follow-catalogue-release")
+                      "catalogue-status", "follow-catalogue-release", "stop-following-catalogue-release")
 
 
 def _refuse(code, message):
     raise ServiceRuntimeError(code, message)
 
 
-def operator_context(path, *, needs_bodies=False):
+def _host(path, *, needs_bodies=False):
     """Read the host file for one catalogue command, refusing a host without its catalogue section."""
-    from .catalogue_releases import CatalogueOperatorContext
     from .catalogue_serving import catalogue_settings, catalogue_state_gate
-    from .http_entrypoint import HOST_CONFIGURATION_VERSION, _host_json, host_family_policy, host_license_policy
+    from .http_entrypoint import HOST_CONFIGURATION_VERSION, _host_json
     configuration = _host_json(path)
     if configuration.get("record_type") != HOST_CONFIGURATION_VERSION or "runtime" not in configuration:
         _refuse("unsupported_host_configuration", "a host configuration names its record version and runtime")
@@ -48,8 +53,27 @@ def operator_context(path, *, needs_bodies=False):
         _refuse("catalogue_section_required", "the catalogue section names its body store root")
     config = ServiceRuntimeConfig(**configuration["runtime"])
     catalogue_state_gate(config, settings)
+    return configuration, settings, config
+
+
+def operator_context(path, *, needs_bodies=False):
+    """The operator context, runtime settings and host policies of one catalogue command."""
+    from .catalogue_releases import CatalogueOperatorContext
+    from .http_entrypoint import host_family_policy, host_license_policy
+    configuration, settings, config = _host(path, needs_bodies=needs_bodies)
     context = CatalogueOperatorContext(ServiceCatalogBinding(config), settings.body_store_root)
     return context, config, host_license_policy(configuration), host_family_policy(configuration)
+
+
+def served_view(path):
+    """The runtime of the host file and the catalogue view it serves now, built as the service builds it at start."""
+    from .catalogue_serving import load_catalogue_view
+    from .http_entrypoint import host_family_policy, host_license_policy
+    from .runtime import ServiceRuntime
+    configuration, _settings, config = _host(path)
+    view, _source = load_catalogue_view(configuration, config, license_policy=host_license_policy(configuration),
+                                        family_policy=host_family_policy(configuration))
+    return ServiceRuntime(config), view
 
 
 def publish_catalogue(path, bundle_folder, *, expected_bundle_digest, expected_release=None):
@@ -61,6 +85,26 @@ def publish_catalogue(path, bundle_folder, *, expected_bundle_digest, expected_r
     if bundle.digest != expected_bundle_digest:
         _refuse("bundle_digest_mismatch", "the bundle header differs from the digest its builder printed")
     return publish(context, bundle, expected_release=expected_release)
+
+
+def _grant_command(command, arguments):
+    """Follow or stop following, for the accounts one command names."""
+    from .catalogue_grants import follow_accounts_already_granted, follow_active_release, stop_following_release
+    denials = tuple(arguments.deny or ())
+    if command == "stop-following-catalogue-release":
+        if not arguments.tenant or arguments.all_tenants or denials:
+            _refuse("invalid_request", "stop-following-catalogue-release names one --tenant, with no --all-tenants "
+                                       "and no --deny")
+        runtime, view = served_view(arguments.config)
+        return stop_following_release(runtime, arguments.tenant, view)
+    if bool(arguments.tenant) == bool(arguments.all_tenants):
+        _refuse("invalid_request", "name one --tenant or --all-tenants")
+    if arguments.all_tenants:
+        runtime, view = served_view(arguments.config)
+        return follow_accounts_already_granted(runtime, view, denials=denials)
+    from .runtime import ServiceRuntime
+    _context, config, *_rest = operator_context(arguments.config)
+    return follow_active_release(ServiceRuntime(config), [arguments.tenant], denials=denials)
 
 
 def run_catalogue_command(arguments):
@@ -86,13 +130,6 @@ def run_catalogue_command(arguments):
     if command == "catalogue-status":
         context, *_rest = operator_context(path)
         return status(context)
-    if command == "follow-catalogue-release":
-        from .catalogue_grants import all_tenants, follow_active_release
-        from .runtime import ServiceRuntime
-        _context, config, *_rest = operator_context(path)
-        if bool(arguments.tenant) == bool(arguments.all_tenants):
-            _refuse("invalid_request", "name one --tenant or --all-tenants")
-        runtime = ServiceRuntime(config)
-        tenants = all_tenants(runtime) if arguments.all_tenants else [arguments.tenant]
-        return follow_active_release(runtime, tenants, denials=tuple(arguments.deny or ()))
+    if command in ("follow-catalogue-release", "stop-following-catalogue-release"):
+        return _grant_command(command, arguments)
     _refuse("invalid_request", "not a catalogue command")
