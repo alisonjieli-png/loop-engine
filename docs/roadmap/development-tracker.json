@@ -761,7 +761,7 @@
      "S-6.28"
     ],
     "id": "S-6.29",
-    "next_local_work": "Finish the four consolidation groups, restore the measured losses, push, and remove merged branches and worktrees.",
+    "next_local_work": "Follow the triage report's merge plan in order, each step in a detached worktree with a line survival check and the full checks, starting with the read-only billing record count.",
     "phase": 6,
     "status": "building",
     "title": "Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch",
@@ -791,7 +791,7 @@
      "S-6.12"
     ],
     "id": "S-6.33",
-    "next_local_work": "Use the live and draft visual reviews to repair the in-flight homepage before release. The draft makes invitation reachable in one navigation and labels recorded versus illustrated stages, but its right-hand demonstration is larger than the live panel, the fresh-harness point is buried, and the mobile action and form remain below the first viewport. Give the fresh, focused step a clear opening message, move or reduce the demo so it does not dominate, shorten the mobile header and path to the form, then repeat the browser checks on the merged site and every live hostname.",
+    "next_local_work": "The owner picks the final logo (the navy summit tile is the placeholder); then the campaign pages from the consolidation line with the access-state labels, HEAD on the public root, and a first-time visitor and native-client test on the live site.",
     "phase": 6,
     "status": "building",
     "title": "Website fixes from the persona and interface reviews",
@@ -3136,5 +3136,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:6f6138ec11bbbbe453389b3325ca51e5c7f5e864c88fafd822964c4ff06e4789"
+ "source_fingerprint": "sha256:e2d2a214010906550ec511d752673daebfbf05f1711055ea3521bb6c641c6137"
 }

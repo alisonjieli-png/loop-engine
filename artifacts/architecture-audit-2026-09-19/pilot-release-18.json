@@ -1,0 +1,38 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T10:55:00+00:00",
+ "release": 18,
+ "fly_release_version": 20,
+ "source_revision": "f7c89465da6fec28c69afde3ddb2f6423068632a",
+ "image": "registry.fly.io/baltor-pilot@sha256:6eb2aa26dfca3e08ff09013d0c1bda4414115e7b4e65c0ed991e6423edfd4cc4",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35850578119, dispatched on main with operation deploy, after the continuous integration run 35848892844 passed on this exact revision. The Machine took the new image at 2026-09-23T10:47:00Z. Every workflow step passed.",
+ "deployment_switch": {
+  "set_true_at": "2026-09-23T10:45:04Z",
+  "set_false_at": "2026-09-23T10:47:19Z"
+ },
+ "before_release": {
+  "host_file": "No change.",
+  "local_checks": "All 12 stages of the continuous integration command set passed on an export of this exact revision: self-test 3,225 of 3,225, tools 848 tests, browser 495 of 495 with 76 of 76 planted faults caught, conformance, component guides, hardcoding audit with no new high finding, examples 24 of 24, markdown lint 669 files, embodiment 106, qualification 3, publish guard and retired words."
+ },
+ "what_this_release_changes": "Once signed in, the header shows Account and Sign out and hides Sign in and the invitation action, in the header and the phone menu. The homepage demonstration now splits address lines with split_address_lines_into_components instead of the phone item the data cleanup study found harmful, with a check that refuses any item a recorded measurement found harmful. The signed-in usage panel shows a table of items, downloads and last use, with an empty state and the raw record behind a disclosure; durable_tenant_usage/v1 gains an additive items list built from rows the service already stores.",
+ "post_deploy_steps": [],
+ "after_release": {
+  "health": "service_health/v2, alive and ready; the catalogue is served from the store, release c824a1d2e222",
+  "hostnames": "All eight hostnames answered 200 for the home page and for /privacy and returned the same public capabilities record",
+  "website": "81 of 81 browser checks on baltor.ai, www.baltor.ai and app.baltor.ai; 80 of 81 on baltor-pilot.fly.dev, the known host-name check",
+  "catalogue": "6 of 6; 34 offered and 9 withheld until effects are declared",
+  "hosted_service": "19 of 19, including the isolation checks and one metered read"
+ },
+ "known_gaps": [
+  "HEAD on the root answers 404."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:23b004901a63e2d302f002acd0e5b5bbf07576215bcc9cc0c3077c8522c1a4f5",
+  "fly_release_version": 19,
+  "host_file": "No host file change is needed.",
+  "effect": "Release 19 serves the previous header, demonstration and raw usage record."
+ }
+}
