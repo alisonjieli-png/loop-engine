@@ -695,7 +695,7 @@ def page_checks(check, _root):
     """The public words: no release stage, and no promise of a date."""
     page = read_packaged_asset("index.html").decode("utf-8")
     section = _invitation_section(page)
-    setup = page.split('<section data-view="setup"', 1)[-1].split('<div class="setup-grid">', 1)[0] if '<section data-view="setup"' in page else ""
+    setup = page.split('<section data-view="setup"', 1)[-1].split('data-get-started-step="connect"', 1)[0] if '<section data-view="setup"' in page else ""
     check("the_invitation_form_leads_the_get_started_page",
           bool(section) and '<section class="start-invite"' in setup and 'data-start-access="operator"' in setup)
     check("KNOWN_WRONG_the_invitation_panel_reader_finds_nothing_on_a_page_without_the_panel",

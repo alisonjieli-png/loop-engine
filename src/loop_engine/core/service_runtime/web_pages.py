@@ -47,7 +47,11 @@ WEB_ASSETS = {
     "/assets/catalogue-browser.js": ("catalogue-browser.js", "text/javascript"),
     "/assets/service.js": ("service.js", "text/javascript"),
     "/assets/architecture-story.js": ("architecture-story.js", "text/javascript"),
-    # The licence terms of the packaged browser library travel with it.
+    # The typefaces of the website, Geist and Geist Mono, served from this origin so that no
+    # visitor's address reaches a font provider. Their licence travels in the notices below.
+    "/assets/geist.woff2": ("geist.woff2", "font/woff2"),
+    "/assets/geist-mono.woff2": ("geist-mono.woff2", "font/woff2"),
+    # The licence terms of the packaged browser library and the typefaces travel with them.
     "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
 }
 MISSING_ADDRESS_PAGE = """<!doctype html>

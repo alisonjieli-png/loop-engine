@@ -30,21 +30,57 @@ in `tools/check_service_workspace.mjs` read every public page on three real
 services and report a second label for the same journey, an invitation
 request outside that panel, and account creation while registration is closed.
 
+## The design
+
+The public pages follow the design of September 23, 2026: a white header with
+the wordmark, five links and the one primary action, and a homepage made of
+bands. Each band is set off from the next by a change of ground and a one
+pixel rule, and a dark band carries how it works and the closing action.
+Every colour, typeface, radius and shadow is a custom property in the token
+block at the top of `service.css`, so a change of design edits that block.
+Below 860 pixels the header links fold into a menu that a checkbox opens, so
+the menu works without the page script and nothing moves when the script runs.
+
+The typefaces are Geist and Geist Mono from version 1.7.2 of the `geist`
+package, under the SIL Open Font License 1.1, whose text is in
+`THIRD-PARTY-NOTICES.md`. The service serves them itself as `geist.woff2` and
+`geist-mono.woff2`. The page policy allows fonts from its own origin only, and
+a font host would receive the address of every visitor. A system typeface is
+the fallback.
+
+The workspace, account and administration views use the visual language of
+the dashboard design: a title card, white cards on the ground, muted card
+labels, fact rows divided by rules and pills for states. They show the same
+data as before. The sidebar and the example figures of the dashboard design
+wait for the account data they would need.
+
 ## The homepage demonstration
 
-The homepage shows one step of a task in five stages. Five radio buttons in
-one group choose the stage, so the page script plays no part and every stage
-reads without it.
+The homepage shows one step of a task in three parts, in one panel beside the
+headline.
 
-- Recorded stages: the search and the download. Their item names, kinds,
-  licences, sizes and digests must be what a real search of this release's
-  packaged catalogue returns, in
+- Recorded parts: the search and the download, under the label "Recorded from
+  this release's library". Their item names, kinds, licences, sizes and
+  digests must be what a real search of this release's packaged catalogue
+  returns, in
   `examples/29_intelligence_service/starter-catalogue/host-release/manifest.json`.
   Moving the catalogue anchor rewrites every body and so every digest. After
   such a release `tools/test_homepage_demonstration.py` fails and names each
-  value to change in `index.html`.
-- Illustrated stages: splitting the task, the step's folder and its check.
-  They show the per-step design that is being built. The digests the step
-  folder lists are the SHA-256 digests of the file bytes the page shows, and
-  the check table is what the script it shows returns for the checks written
-  in the downloaded skill. The same test checks both.
+  value to change in `index.html`. The browser checks compare the same values
+  with the manifest.
+- The folder of the step, under its own label "Being built": a fresh harness
+  that holds only the files of the step. It places the downloaded skill and
+  shows files that are not Markdown, because harness material is any file a
+  harness reads.
+
+The same test holds the library count on the homepage to the number of items
+in the manifest, and the connection entry to the reviewed Claude Code recipe in
+`client-recipes.json`. The page is served with the public address in that
+entry. Once the page script has checked the recipe record, it writes the entry
+again with the address of the service that serves the page, as the Get started
+page shows it.
+
+The six problems, the five steps of how it works and the six kinds of file
+each carry a status tag. Only the parts that work on the live service today
+say Available now or Live: a narrow context and reviewed expertise, search and
+download, and skills. The browser checks fail when any other card says so.

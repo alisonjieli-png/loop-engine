@@ -99,6 +99,7 @@ loop_engine = [
     "**/*.html",          # Studio and report assets
     "**/*.css",           # Packaged service workspace styling
     "**/*.js",            # Packaged service workspace behavior
+    "**/*.woff2",         # Packaged website typefaces, served from the same origin
     "**/*.json",          # manifests, evidence, and published measurements
     "**/*.jsonl",         # intelligence, governance, and run evidence
     "**/*.yaml",          # installed architecture and semantic projections

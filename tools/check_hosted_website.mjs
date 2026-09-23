@@ -33,25 +33,24 @@ try{
   const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
   check("live_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(livePositioning));
   check("category_line_explanation_check_rejects_a_bare_phrase",!explainsTheCategoryLine("Harness and agent optimized operation.")&&explainsTheCategoryLine(livePositioning));
-  check("live_homepage_states_the_free_and_paid_split",(await page.locator('[data-view="home"] .hero-split').innerText()).startsWith("Free to install. Paid access to the library."));
-  check("live_homepage_shows_the_three_step_strip",JSON.stringify(await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()))===JSON.stringify(["ask","connect","keep"]));
-  check("live_homepage_says_what_an_account_gives_you",JSON.stringify(await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()))===JSON.stringify(["downloads","recipes","search","usage"]));
+  const liveSplit=await page.locator('[data-view="home"] .hero-split').innerText();
+  check("live_homepage_states_the_free_and_paid_split",liveSplit.startsWith("Free to install. Paid access to the library")&&liveSplit.includes("29 United States dollars each month"));
+  /* The bands of the design, in order, each set off from the next by a change of ground and a rule. */
+  const liveBands=await page.locator('[data-view="home"]').evaluate(home=>{const bands=[...home.children],ground=node=>getComputedStyle(node).backgroundColor;
+    return {names:bands.map(node=>node.dataset.band||""),apart:bands.slice(1).every((node,index)=>ground(node)!==ground(bands[index])&&parseFloat(getComputedStyle(node).borderTopWidth)>0)};});
+  check("live_homepage_bands_follow_the_design_and_are_set_apart",JSON.stringify(liveBands.names)===JSON.stringify(["hero","harnesses","problems","how","library","trust","pricing","faq","closing"])&&liveBands.apart);
+  check("live_homepage_says_what_an_account_gives_you",JSON.stringify(await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()))===JSON.stringify(["downloads","keys","recipes","search","usage"]));
+  /* Only the parts that work on the live service say so: two of the six problems, two of the five steps and one kind of file. */
+  const liveStates=(selector,key)=>page.locator(selector).evaluateAll((items,key)=>items.filter(item=>["available","live"].includes(item.querySelector(".status-tag")?.dataset.status)).map(item=>item.dataset[key]),key);
+  const available={problems:await liveStates("[data-problem]","problem"),steps:await liveStates("[data-how-step]","howStep"),kinds:await liveStates("[data-kind]","kind")};
+  check("live_homepage_calls_only_the_working_parts_available",JSON.stringify(available)===JSON.stringify({problems:["context","expertise"],steps:["search","download"],kinds:["skills"]}));
   check("live_homepage_offers_one_primary_action",await page.locator('[data-view="home"] .hero .button.primary').count()===1&&await page.locator('[data-view="home"] .hero .button.primary').getAttribute("href")==="/connect"&&["waiting","open"].includes(await page.locator("#hero-primary").getAttribute("data-access-state")));
-  /* The six benefits. Every detail is in the page source, and pointing at a title, moving keyboard focus to it and
-     pressing it each open that one and close the others. */
-  const liveBenefits=["material","reuse","model","export","review","resume"];
-  const liveShown=target=>target.locator("[data-benefit]").evaluateAll(items=>items.filter(item=>getComputedStyle(item.querySelector("[data-benefit-detail]")).display!=="none").map(item=>item.dataset.benefit));
-  check("live_homepage_lists_six_benefits",JSON.stringify(await page.locator("[data-benefit]").evaluateAll(items=>items.map(item=>item.dataset.benefit)))===JSON.stringify(liveBenefits));
-  const livePressed=[],liveFocused=[],liveHovered=[];
-  for(const name of [...liveBenefits].reverse()){await page.locator('[data-benefit-title="'+name+'"]').dispatchEvent("click");livePressed.push(JSON.stringify(await liveShown(page))===JSON.stringify([name]));}
-  await page.locator('[data-benefit-title="'+liveBenefits[liveBenefits.length-1]+'"]').dispatchEvent("click");
-  await page.locator('[data-benefit-title="'+liveBenefits[0]+'"]').focus();
-  for(const name of liveBenefits){liveFocused.push(await page.evaluate(()=>document.activeElement?.dataset.benefitTitle||"")===name&&JSON.stringify(await liveShown(page))===JSON.stringify([name]));await page.keyboard.press("Tab");}
-  for(const name of liveBenefits){await page.locator('[data-benefit="'+name+'"]').hover();liveHovered.push(JSON.stringify(await liveShown(page))===JSON.stringify([name]));}
-  check("live_press_shows_only_that_benefit",livePressed.length===6&&livePressed.every(Boolean));
-  check("live_keyboard_focus_alone_opens_each_benefit",liveFocused.length===6&&liveFocused.every(Boolean));
-  check("live_pointing_at_a_benefit_opens_it",liveHovered.length===6&&liveHovered.every(Boolean));
-  check("live_get_started_is_the_first_navigation_item",JSON.stringify(await page.locator("header nav a").evaluateAll(items=>items.slice(0,2).map(item=>item.textContent.trim())))===JSON.stringify(["Get started","How it works"]));
+  /* One primary action on the whole homepage and in the header, "Get started", opening the Get started page. */
+  const livePrimaries=await page.locator('header .button.primary, [data-view="home"] .button.primary, footer .button.primary').evaluateAll(items=>items.map(item=>[item.textContent.trim(),item.getAttribute("href"),Boolean(item.closest("header"))]));
+  check("live_every_primary_action_says_get_started",livePrimaries.length>=4&&livePrimaries.filter(([,,header])=>header).length===1&&livePrimaries.every(([label,href])=>label==="Get started"&&href==="/connect"));
+  check("live_navigation_starts_with_how_it_works",(await page.locator("header nav a").first().innerText()).trim()==="How it works");
+  /* The connection entry on the homepage is written by the page script with the deployed address. */
+  check("live_homepage_entry_uses_the_deployed_origin",(await page.locator("[data-home-recipe]").innerText()).includes('"url": "'+origin+'/mcp"'));
   await page.locator('header a[data-page="pricing"]').click();
   const livePricing=await page.locator('[data-view="pricing"]').innerText();
   const pricingFacts=["Baltor Pro","29 United States dollars","each month","Search is free.","one downloaded item","Invited accounts are free."];
@@ -80,11 +79,11 @@ try{
   check("live_personal_key_wording_follows_the_reported_capability",
     liveKeys!==""&&claimsKeys===(liveVersion&&liveCapabilities.website?.client_access_available===true));
   await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
-  for(const asset of ["service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js"]){
+  for(const asset of ["service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js","geist.woff2","geist-mono.woff2"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
     check("deployed_bytes_match_tested_source_"+asset,response.status()===200&&hash(await response.body())===hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",asset))));
   }
-  await page.locator("#hero-how-it-works").click();
+  await page.locator("#how-explore").click();
   check("how_it_works_separates_client_and_server",await page.locator('[data-view="about"] .service-zone').isVisible()&&await page.locator('[data-view="about"] .client-zone').isVisible());
   const providerCopy=await page.locator('[data-view="about"] .provider-lane').innerText();
   const explainsProviderBoundary=text=>text.includes("Model keys stay in your environment")&&text.includes("A remote model may receive the information you allow");
@@ -95,10 +94,10 @@ try{
   check("live_task_explorer_changes_selected_context",(await page.locator("#assignment-materials").innerText()).includes("selected-normalizer.py"));
   await page.locator("#assignment-build").focus();await page.keyboard.press("End");
   check("live_task_explorer_supports_keyboard_selection",await page.locator("#assignment-verify").getAttribute("aria-selected")==="true");
-  await page.goto(origin+"/connect");await page.waitForFunction(()=>!document.querySelector("#client-choice").disabled);
+  await page.goto(origin+"/connect");await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0);
   check("guided_setup_uses_deployed_origin",(await page.locator("#client-configuration").innerText()).includes(origin+"/mcp"));
   check("anonymous_connection_check_is_not_faked",await page.locator("#test-protocol").isDisabled()&&(await page.locator("#protocol-result").innerText()).includes("Not tested"));
-  await page.selectOption("#client-choice","opencode");
+  await page.locator("#client-tab-opencode").click();
   check("deployed_recipe_keeps_service_secret_as_reference",JSON.parse(await page.locator("#client-configuration").innerText()).mcp.baltor.headers.Authorization==="Bearer {env:BALTOR_SERVICE_TOKEN}");
   await page.goto(origin+"/examples");await page.click("#try-example");
   check("deployed_example_prepares_an_explicit_search",new URL(page.url()).pathname==="/app"&&await page.inputValue("#query")==="review inputs"&&await page.locator("#query").isDisabled());

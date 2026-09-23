@@ -1,13 +1,17 @@
-"""The one-step demonstration on the homepage shows this release's library, and every file it shows is what it says.
+"""The one-step demonstration on the homepage shows this release's library, and every fact it shows is what it says.
 
-The homepage walks through one step of a task in five stages. Two stages are recorded: the search and
-the download. Their item names, kinds, licences, sizes and digests must be what a real search of this
-release's packaged library returns, run here through the same host loader and the same retrieval route
-the service uses. A catalogue release rewrites each body and so each digest, and the page then fails
-here until it shows the new values; the failure names them. The other three stages illustrate the
-per-step design that is being built. The digests the illustrated step folder lists must be the digests
-of the files it shows, and its check table must be what the script it shows returns for the checks
-written in the downloaded skill. Each rule has a known-wrong page beside it that the rule must report.
+The homepage shows one step of a task in three parts. Two parts are recorded: the search and the download.
+Their item names, kinds, licences, sizes and digests must be what a real search of this release's packaged
+library returns, run here through the same host loader and the same retrieval route the service uses. A
+catalogue release rewrites each body and so each digest, and the page then fails here until it shows the new
+values; the failure names them. The download names the reference the search marked as chosen, and the packaged
+bytes of that reference have the digest it names. The third part, a fresh harness that holds only the files of
+the step, is being built and says so under a label of its own. Its folder places the downloaded skill and holds
+files that are not Markdown, because harness material is any file a harness reads.
+
+Two more facts on the homepage come from the same release: the count of items in the library is the number of
+items in the packaged manifest, and the connection entry is the reviewed Claude Code recipe with the public
+address written in. Each rule has a known-wrong page beside it that the rule must report.
 
 Nothing here reaches the network. The service runs on loopback over a temporary database.
 """
@@ -24,22 +28,30 @@ import time
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-PAGE = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "web_assets" / "index.html"
+ASSETS = ROOT / "src" / "loop_engine" / "core" / "service_runtime" / "web_assets"
+PAGE = ASSETS / "index.html"
+RECIPES = ASSETS / "client-recipes.json"
 RELEASE = ROOT / "examples" / "29_intelligence_service" / "starter-catalogue" / "host-release"
-STAGES = (("split", "illustration"), ("search", "recorded"), ("download", "recorded"),
-          ("folder", "illustration"), ("check", "illustration"))
-LABEL_WORDS = {"recorded": "Recorded from this release's library", "illustration": "Illustration"}
+STAGES = (("search", "recorded"), ("download", "recorded"), ("folder", "illustration"))
+LABEL_WORDS = {"recorded": "Recorded from this release's library", "illustration": "Being built"}
+#: The address the served homepage writes into its connection entry. Once the page script has checked the
+#: reviewed recipe record, it writes the entry again with the address of the service that serves the page.
+PUBLIC_ENDPOINT = "https://baltor.ai/mcp"
+ENDPOINT_PLACEHOLDER = "{{ENDPOINT}}"
 #: The fewest hexadecimal characters a shown digest may have. Eight is what the search list shows.
 SHORTEST_DIGEST = 8
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
 
 
-class _DemonstrationReader(HTMLParser):
-    """Collect every element of the demonstration that carries a data attribute, with its text and its ancestors."""
+class _MarkedReader(HTMLParser):
+    """Collect every element that carries a data attribute, with its text and its ancestors.
 
-    def __init__(self):
+    With a scope, only elements inside an element that carries the scope attribute are collected.
+    """
+
+    def __init__(self, scope=None):
         super().__init__(convert_charrefs=True)
-        self.open, self.found = [], []
+        self.scope, self.open, self.found = scope, [], []
 
     def handle_starttag(self, tag, attrs):
         if tag in VOID:
@@ -51,7 +63,7 @@ class _DemonstrationReader(HTMLParser):
             if self.open[index]["tag"] == tag:
                 closed, ancestors = self.open[index], self.open[:index]
                 del self.open[index:]
-                inside = any("data-step-demo" in item["attrs"] for item in ancestors + [closed])
+                inside = self.scope is None or any(self.scope in item["attrs"] for item in ancestors + [closed])
                 if inside and any(name.startswith("data-") for name in closed["attrs"]):
                     self.found.append({"tag": tag, "attrs": closed["attrs"], "text": "".join(closed["text"]),
                                        "ancestors": [item["attrs"] for item in ancestors]})
@@ -62,14 +74,18 @@ class _DemonstrationReader(HTMLParser):
             item["text"].append(data)
 
 
+def read_marked(page, scope=None):
+    reader = _MarkedReader(scope)
+    reader.feed(page)
+    return reader.found
+
+
 def read_demonstration(page):
     """The parts of the demonstration as plain values, read from the served page source."""
-    reader = _DemonstrationReader()
-    reader.feed(page)
     # The reader records an element when it closes, after its children. Sorting by the place where each
     # element opened restores page order. The place is found through the element's own marker, which is
     # unique on the page.
-    found = reader.found
+    found = read_marked(page, "data-step-demo")
 
     def nearest(element, name):
         """The value of the closest ancestor that carries the attribute, or None when none does."""
@@ -84,34 +100,22 @@ def read_demonstration(page):
         return sorted(marked, key=lambda item: page.find(name + '="' + str(item["attrs"][name]) + '"'))
 
     stages = [(item["attrs"]["data-demo-stage"], item["attrs"].get("data-demo-evidence", "")) for item in in_order("data-demo-stage")]
+    # A label outside every part is the label of the panel's head, which covers the parts without a label of their own.
     labels = {nearest(item, "data-demo-stage") or "": (item["attrs"]["data-demo-label"], " ".join(item["text"].split()))
               for item in found if "data-demo-label" in item["attrs"]}
-    items = [{"identity": item["attrs"]["data-demo-item"], **facts("data-demo-item", item["attrs"]["data-demo-item"])}
-             for item in in_order("data-demo-item")]
+    items = [{"identity": item["attrs"]["data-demo-item"], "chosen": "is-chosen" in item["attrs"].get("class", "").split(),
+              **facts("data-demo-item", item["attrs"]["data-demo-item"])} for item in in_order("data-demo-item")]
     download = next((item["attrs"]["data-demo-download"] for item in found if "data-demo-download" in item["attrs"]), "")
-    downloaded = {item["attrs"]["data-fact"]: " ".join(item["text"].split()) for item in found
-                  if "data-fact" in item["attrs"] and nearest(item, "data-demo-stage") == "download"
-                  and nearest(item, "data-demo-item") is None}
     query = next((item["text"].strip() for item in found if "data-demo-query" in item["attrs"]), "")
-    excerpt = next((item["text"] for item in found if "data-demo-excerpt" in item["attrs"]), "")
-    bodies = {item["attrs"]["data-demo-body"]: item["text"] for item in found if "data-demo-body" in item["attrs"]}
-    paths = {item["attrs"]["data-demo-path"]: facts("data-demo-path", item["attrs"]["data-demo-path"]).get("digest", "")
-             for item in in_order("data-demo-path")}
-    lock_text = next((item["text"] for item in found if "data-demo-lock" in item["attrs"]), "")
-    try:
-        lock = json.loads(lock_text)
-    except ValueError:
-        lock = None
-    checks = [{cell["attrs"]["data-cell"]: cell["text"].strip() for cell in found
-               if "data-cell" in cell["attrs"] and nearest(cell, "data-demo-check") == row["attrs"]["data-demo-check"]}
-              for row in in_order("data-demo-check")]
-    return {"stages": stages, "labels": labels, "items": items, "download": download, "downloaded": downloaded,
-            "query": query, "excerpt": excerpt, "bodies": bodies, "paths": paths, "lock": lock, "checks": checks}
+    paths = [item["attrs"]["data-demo-path"] for item in in_order("data-demo-path")]
+    return {"stages": stages, "labels": labels, "items": items, "download": download, "query": query, "paths": paths}
 
 
 def released_items():
+    """This release's items by identity, and the number of items its manifest holds."""
     manifest = json.loads((RELEASE / "manifest.json").read_text(encoding="utf-8"))
-    return {row["reference"]["identity"]: {**row["reference"], "body_path": row["body_path"]} for row in manifest["items"]}
+    return ({row["reference"]["identity"]: {**row["reference"], "body_path": row["body_path"]} for row in manifest["items"]},
+            len(manifest["items"]))
 
 
 def shown_size(size_bytes):
@@ -126,10 +130,22 @@ def digest_problem(place, shown, expected):
     return ""
 
 
+def label_problems(demonstration):
+    problems = []
+    if [tuple(pair) for pair in demonstration["stages"]] != list(STAGES):
+        problems.append(f"the parts are {demonstration['stages']}, and the page must show {list(STAGES)}")
+    head = demonstration["labels"].get("", ("", ""))
+    for stage, evidence in STAGES:
+        label, text = demonstration["labels"].get(stage, head)
+        if label != evidence or LABEL_WORDS[evidence] not in text:
+            problems.append(f"the {stage} part must say {LABEL_WORDS[evidence]!r}; it says {text or '(nothing)'!r}")
+    return problems
+
+
 def search_problems(demonstration, hits):
     """Each shown reference must be the reply of a real search of this release's library, in order."""
     shown = demonstration["items"]
-    problems = [] if shown else ["the search stage shows no reference"]
+    problems = [] if shown else ["the search part shows no reference"]
     if len(hits) < len(shown):
         problems.append(f"the search returned {len(hits)} references and the page shows {len(shown)}")
     for place, (item, hit) in enumerate(zip(shown, hits), start=1):
@@ -145,91 +161,60 @@ def search_problems(demonstration, hits):
 
 
 def download_problems(demonstration, items):
-    identity, shown = demonstration["download"], demonstration["downloaded"]
-    first = demonstration["items"][0]["identity"] if demonstration["items"] else ""
+    """The download names the one reference the search marked as chosen, and its packaged bytes match its digest."""
+    identity, shown = demonstration["download"], demonstration["items"]
     if identity not in items:
-        return [f"the download stage names {identity or '(nothing)'}, which this release's library does not hold"]
-    item, problems = items[identity], []
-    if identity != first:
-        problems.append(f"the download stage names {identity}, and the search chose {first or '(nothing)'} first")
-    if shown.get("size") != shown_size(item["size_bytes"]):
-        problems.append(f"download: the page shows {shown.get('size')!r}, and this release has {shown_size(item['size_bytes'])!r}")
-    problems.append(digest_problem("download", shown.get("digest", ""), item["digest"]))
-    body = (RELEASE / item["body_path"]).read_bytes()
-    if hashlib.sha256(body).hexdigest() != item["digest"]:
+        return [f"the download part names {identity or '(nothing)'}, which this release's library does not hold"]
+    problems = []
+    chosen = [item["identity"] for item in shown if item["chosen"]]
+    if chosen != [identity]:
+        problems.append(f"the download part names {identity}, and the search marks {chosen or 'nothing'} as chosen")
+    body = (RELEASE / items[identity]["body_path"]).read_bytes()
+    if hashlib.sha256(body).hexdigest() != items[identity]["digest"]:
         problems.append(f"download: the packaged body of {identity} does not have the digest its reference names")
-    text = body.decode("utf-8")
-    lines = [line for line in demonstration["excerpt"].splitlines() if line.strip()]
-    if not lines or not all(line in text.splitlines() for line in lines):
-        problems.append(f"download: the lines the page quotes are not lines of the packaged body of {identity}")
-    return [problem for problem in problems if problem]
-
-
-def lock_problems(demonstration, items):
-    """Every placed file is listed, with the digest of the bytes the page shows or of the library item it came from."""
-    lock, bodies, paths = demonstration["lock"], demonstration["bodies"], demonstration["paths"]
-    if not isinstance(lock, dict) or not isinstance(lock.get("files"), list) or not lock["files"]:
-        return ["the step folder shows no readable lock file"]
-    problems, listed = [], {}
-    for entry in lock["files"]:
-        path = entry.get("path", "")
-        listed[path] = entry
-        if "item" in entry:
-            item = items.get(entry["item"])
-            if item is None:
-                problems.append(f"lock: {path} names {entry['item']}, which this release's library does not hold")
-            elif entry.get("body_sha256") != item["digest"]:
-                problems.append(f"lock: {path} lists body_sha256 {entry.get('body_sha256')}, and this release has {item['digest']}")
-        elif path not in bodies:
-            problems.append(f"lock: {path} is listed, and the page does not show its bytes")
-        elif entry.get("sha256") != hashlib.sha256(bodies[path].encode("utf-8")).hexdigest():
-            problems.append(f"lock: {path} lists sha256 {entry.get('sha256')}, and the bytes shown have "
-                            f"{hashlib.sha256(bodies[path].encode('utf-8')).hexdigest()}")
-    placed = {path for path, digest in paths.items() if digest}
-    for path in sorted(placed ^ set(listed)):
-        problems.append(f"lock: {path} is " + ("in the folder with a digest and not in the lock" if path in placed else "in the lock and not in the folder"))
-    for path in sorted(placed & set(listed)):
-        entry = listed[path]
-        full = entry.get("sha256") or entry.get("body_sha256") or ""
-        problems.append(digest_problem("folder row " + path, paths[path], full))
-    return [problem for problem in problems if problem]
+    return problems
 
 
 def folder_problems(demonstration):
-    paths = [path for path in demonstration["paths"] if not path.endswith("/")]
-    other = [path for path in paths if Path(path).suffix.lower() != ".md"]
-    return [] if other else ["the step folder shows only Markdown files; harness material is any file a harness reads"]
-
-
-def check_table_problems(demonstration, items):
-    """The check table is what the shown script returns for the checks written in the downloaded skill."""
-    rows, script = demonstration["checks"], demonstration["bodies"].get(".agents/skills/normalize-phone-numbers/scripts/normalize_phones.py", "")
-    if not rows or not script:
-        return ["the check stage shows no check rows, or the folder shows no script"]
-    namespace = {"__name__": "shown_script"}
-    exec(compile(script, "normalize_phones.py", "exec"), namespace)  # the page's own script, read from this repository
-    skill = (RELEASE / items[demonstration["download"]]["body_path"]).read_text(encoding="utf-8") if demonstration["download"] in items else ""
-    written = skill.split("## Checks", 1)[1].split("\n## ", 1)[0] if "## Checks" in skill else ""
-    problems = []
-    for row in rows:
-        output, why = namespace["normalize"](row.get("input", ""))
-        if (output, why) != (row.get("output"), row.get("why")):
-            problems.append(f"check {row.get('input')!r}: the page shows {row.get('output')!r} ({row.get('why')}), "
-                            f"and the shown script returns {output!r} ({why})")
-        if "`" + row.get("input", "") + "`" not in written or "`" + row.get("output", "") + "`" not in written:
-            problems.append(f"check {row.get('input')!r}: this case is not one of the checks written in the downloaded skill")
+    """The step folder places the downloaded skill, and holds a file that is not Markdown."""
+    paths, problems = demonstration["paths"], []
+    if not any(Path(path).suffix.lower() != ".md" for path in paths):
+        problems.append("the step folder shows only Markdown files; harness material is any file a harness reads")
+    placed = [Path(path).parent.name for path in paths if Path(path).name == "SKILL.md"]
+    if placed != [demonstration["download"].replace("_", "-")]:
+        problems.append(f"the step folder places the skills {placed}, and the step downloaded {demonstration['download'] or '(nothing)'}")
     return problems
 
 
-def label_problems(demonstration):
-    problems = []
-    if [tuple(pair) for pair in demonstration["stages"]] != list(STAGES):
-        problems.append(f"the stages are {demonstration['stages']}, and the page must show {list(STAGES)}")
-    for stage, evidence in STAGES:
-        label, text = demonstration["labels"].get(stage, ("", ""))
-        if label != evidence or LABEL_WORDS[evidence] not in text:
-            problems.append(f"the {stage} stage must say {LABEL_WORDS[evidence]!r}; it says {text or '(nothing)'!r}")
-    return problems
+def library_count_problems(page, item_count):
+    shown = [" ".join(item["text"].split()) for item in read_marked(page) if "data-library-count" in item["attrs"]]
+    if shown != [str(item_count)]:
+        return [f"the homepage counts {shown or 'no'} items, and this release's manifest holds {item_count}"]
+    return []
+
+
+def with_endpoint(value, endpoint):
+    if value == ENDPOINT_PLACEHOLDER:
+        return endpoint
+    if isinstance(value, dict):
+        return {key: with_endpoint(item, endpoint) for key, item in value.items()}
+    if isinstance(value, list):
+        return [with_endpoint(item, endpoint) for item in value]
+    return value
+
+
+def entry_problems(page, record):
+    """The homepage shows one connection entry: a reviewed recipe, as the page script writes it, with the public address."""
+    entries = [(item["attrs"]["data-home-recipe"], item["text"]) for item in read_marked(page) if "data-home-recipe" in item["attrs"]]
+    if len(entries) != 1:
+        return [f"the homepage shows {len(entries)} connection entries, and it shows one"]
+    identity, text = entries[0]
+    recipe = next((recipe for recipe in record["recipes"] if recipe["id"] == identity), None)
+    if recipe is None or recipe["format"] != "json":
+        return [f"the homepage entry names {identity!r}, which is not a reviewed recipe written as JSON"]
+    # The page script writes the entry with JSON.stringify(value, null, 2); this is the same text.
+    expected = json.dumps(with_endpoint(recipe["configuration"], PUBLIC_ENDPOINT), indent=2, ensure_ascii=False)
+    return [] if text == expected else [f"the homepage entry is not the reviewed {identity} recipe with the address {PUBLIC_ENDPOINT}"]
 
 
 def release_search(query, top_n=10):
@@ -274,20 +259,30 @@ def _changed(demonstration, change):
     return copy
 
 
+def _planted(page, old, new):
+    """The page source with one text replaced, the way a stale or edited page would serve it."""
+    changed = page.replace(old, new, 1)
+    assert changed != page, f"the planted text {old!r} is not on the page"
+    return changed
+
+
 class HomepageDemonstrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.page = PAGE.read_text(encoding="utf-8")
         cls.demonstration = read_demonstration(cls.page)
-        cls.items = released_items()
+        cls.items, cls.item_count = released_items()
+        cls.recipes = json.loads(RECIPES.read_text(encoding="utf-8"))
         cls.hits = release_search(cls.demonstration["query"]) if cls.demonstration["query"] else []
 
-    def test_each_stage_says_whether_it_is_recorded_or_an_illustration(self):
+    def test_each_part_says_whether_it_is_recorded_or_being_built(self):
         self.assertEqual(label_problems(self.demonstration), [])
+        # KNOWN_WRONG: the folder without a label of its own falls under the recorded label of the head.
         unlabelled = _changed(self.demonstration, lambda copy: copy["labels"].pop("folder"))
-        relabelled = _changed(self.demonstration, lambda copy: copy["labels"].update(split=["recorded", LABEL_WORDS["recorded"]]))
-        self.assertEqual(len(label_problems(unlabelled)), 1, "KNOWN_WRONG: a stage without its label is reported")
-        self.assertEqual(len(label_problems(relabelled)), 1, "KNOWN_WRONG: an illustration called recorded is reported")
+        self.assertEqual(len(label_problems(unlabelled)), 1)
+        # KNOWN_WRONG: a head that calls the recorded search and download "being built".
+        relabelled = _changed(self.demonstration, lambda copy: copy["labels"].update({"": ["illustration", LABEL_WORDS["illustration"]]}))
+        self.assertEqual(len(label_problems(relabelled)), 2)
 
     def test_the_search_shows_what_this_release_library_returns(self):
         self.assertEqual(self.demonstration["query"], "format phone numbers with country code")
@@ -302,43 +297,44 @@ class HomepageDemonstrationTest(unittest.TestCase):
         self.assertGreaterEqual(len(search_problems(swapped, self.hits)), 2)
         # PLANTED: one digest changed in the page source itself, the way a stale page would serve it.
         first = self.demonstration["items"][0]["digest"]
-        planted = self.page.replace('data-fact="digest">' + first + "<",
-                                    'data-fact="digest">' + first[:-1] + ("0" if first[-1] != "0" else "1") + "<", 1)
-        self.assertNotEqual(planted, self.page)
+        planted = _planted(self.page, 'data-fact="digest">' + first + "<",
+                           'data-fact="digest">' + first[:-1] + ("0" if first[-1] != "0" else "1") + "<")
         self.assertEqual(len(search_problems(read_demonstration(planted), self.hits)), 1)
 
-    def test_the_download_is_this_release_file_with_its_digest(self):
+    def test_the_download_is_the_chosen_reference_with_its_digest(self):
         self.assertEqual(download_problems(self.demonstration, self.items), [])
-        wrong = _changed(self.demonstration, lambda copy: copy["downloaded"].update(digest="0" * 16))
-        invented = _changed(self.demonstration, lambda copy: copy.update(excerpt="# A heading the skill never had\n"))
-        self.assertEqual(len(download_problems(wrong, self.items)), 1, "KNOWN_WRONG: a digest this release does not serve")
-        self.assertEqual(len(download_problems(invented, self.items)), 1, "KNOWN_WRONG: a quoted line the file does not hold")
+        second = self.demonstration["items"][1]["identity"]
+        # KNOWN_WRONG: a download of another reference, of an item this release does not hold, and a moved choice.
+        other = _changed(self.demonstration, lambda copy: copy.update(download=second))
+        invented = _changed(self.demonstration, lambda copy: copy.update(download="invented_item_nobody_approved"))
+        moved = _changed(self.demonstration, lambda copy: [item.update(chosen=item["identity"] == second) for item in copy["items"]])
+        self.assertEqual(len(download_problems(other, self.items)), 1)
+        self.assertEqual(len(download_problems(invented, self.items)), 1)
+        self.assertEqual(len(download_problems(moved, self.items)), 1)
 
-    def test_every_placed_file_is_listed_with_the_digest_of_its_bytes(self):
-        self.assertEqual(lock_problems(self.demonstration, self.items), [])
-        changed_body = _changed(self.demonstration, lambda copy: copy["bodies"].update(
-            {"AGENTS.md": copy["bodies"]["AGENTS.md"] + "Also rewrite the address column.\n"}))
-        stale_skill = _changed(self.demonstration, lambda copy: [entry.update(body_sha256="0" * 64)
-                                                                  for entry in copy["lock"]["files"] if "item" in entry])
-        dropped = _changed(self.demonstration, lambda copy: copy["lock"]["files"].pop())
-        self.assertEqual(len(lock_problems(changed_body, self.items)), 1, "KNOWN_WRONG: a file edited after its digest")
-        # A skill digest from another release disagrees with this release and with the digest its folder row shows.
-        self.assertEqual(len(lock_problems(stale_skill, self.items)), 2, "KNOWN_WRONG: a skill digest from another release")
-        self.assertGreaterEqual(len(lock_problems(dropped, self.items)), 1, "KNOWN_WRONG: a placed file left out of the lock")
-
-    def test_the_folder_holds_files_that_are_not_markdown(self):
+    def test_the_folder_places_the_download_and_holds_files_that_are_not_markdown(self):
         self.assertEqual(folder_problems(self.demonstration), [])
-        only_markdown = _changed(self.demonstration, lambda copy: copy.update(
-            paths={path: digest for path, digest in copy["paths"].items() if path.endswith(".md")}))
-        self.assertEqual(len(folder_problems(only_markdown)), 1, "KNOWN_WRONG: a folder of Markdown files only")
+        # KNOWN_WRONG: a folder of Markdown files only, and a folder that places a skill the step did not download.
+        only_markdown = _changed(self.demonstration, lambda copy: copy.update(paths=[path for path in copy["paths"] if path.endswith(".md")]))
+        other_skill = _changed(self.demonstration, lambda copy: copy.update(
+            paths=[path.replace("normalize-phone-numbers", "split-address-lines") for path in copy["paths"]]))
+        self.assertEqual(len(folder_problems(only_markdown)), 1)
+        self.assertEqual(len(folder_problems(other_skill)), 1)
 
-    def test_the_check_table_is_what_the_shown_script_returns_for_the_skill_checks(self):
-        self.assertEqual(check_table_problems(self.demonstration, self.items), [])
-        wrong_output = _changed(self.demonstration, lambda copy: copy["checks"][3].update(output="+15550100"))
-        invented_case = _changed(self.demonstration, lambda copy: copy["checks"].append(
-            {"input": "+1 800 555 0199", "output": "+18005550199", "why": "international prefix kept"}))
-        self.assertGreaterEqual(len(check_table_problems(wrong_output, self.items)), 1, "KNOWN_WRONG: a result the script does not return")
-        self.assertEqual(len(check_table_problems(invented_case, self.items)), 1, "KNOWN_WRONG: a case the skill never wrote")
+    def test_the_library_count_is_this_release_manifest_count(self):
+        self.assertEqual(library_count_problems(self.page, self.item_count), [])
+        # PLANTED: a count this release does not hold, written into the page source.
+        planted = _planted(self.page, "data-library-count>" + str(self.item_count) + "<", "data-library-count>" + str(self.item_count + 1) + "<")
+        self.assertEqual(len(library_count_problems(planted, self.item_count)), 1)
+
+    def test_the_connection_entry_is_the_reviewed_recipe_with_the_public_address(self):
+        self.assertEqual(entry_problems(self.page, self.recipes), [])
+        variable = self.recipes["credential_variable"]
+        # PLANTED: another variable name, another address and another recipe, each written into the page source.
+        for old, new in ((variable, "BALTOR_KEY"), (PUBLIC_ENDPOINT, "https://example.com/mcp"),
+                         ('data-home-recipe="claude-code"', 'data-home-recipe="codex"')):
+            with self.subTest(planted=new):
+                self.assertEqual(len(entry_problems(_planted(self.page, old, new), self.recipes)), 1)
 
 
 if __name__ == "__main__":
