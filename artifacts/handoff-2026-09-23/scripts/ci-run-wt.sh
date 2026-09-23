@@ -3,9 +3,10 @@
 set -u
 REV=${1:?revision}
 REPO=/home/username/loop-engine
-PY=${PY_OVERRIDE:-$REPO/.venv/bin/python}
+# The shared checkout's .venv lacks mcp 2.2.0, which the service needs; this environment has it.
+PY=${PY_OVERRIDE:-/home/username/.le-wave2/mcp-revision/.venv-mcp2/bin/python}
 OUT=/home/username/.le-ci-export/$REV
-LOGS=/tmp/claude-1000/-home-username-loop-engine/81df4e9e-adbc-4fcf-9636-2fadc680611e/scratchpad/ci-$REV
+LOGS=${CI_LOGS:-/home/username/.le-ci-tmp/ci-logs/$REV}   # durable; the first copy wrote to a session folder that is gone
 git -C $REPO worktree remove --force "$OUT" 2>/dev/null; rm -rf "$OUT" "$LOGS"; mkdir -p "$LOGS"
 git -C $REPO worktree add --detach "$OUT" "$REV" >/dev/null 2>&1 || exit 3
 cd "$OUT"

@@ -8,6 +8,26 @@ task authority, and the
 [commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
 section of AGENTS.md remains the one statement of what engineering may do.
 
+## Where everything is
+
+The [handoff folder index](../../artifacts/handoff-2026-09-23/README.md) lists
+every file this session left, in the repository, on this machine and on
+claude.ai, with a local copy of each claude.ai artifact. In short:
+
+- In the repository: `artifacts/handoff-2026-09-23/`: the line register
+  (`LINES.md`), the patches of the four unfinished lines and their notes, the
+  target site map, the live measurements, the audit canvas boards and the
+  scripts.
+- A clean checkout of `main` for reading: `/home/username/loop-engine-main`.
+  The shared checkout `/home/username/loop-engine` holds another session's
+  uncommitted work; leave it as it is.
+- The worktree of each line: `/home/username/.le-integration/<line>`.
+- Screenshots and test tools: `/home/username/.le-ci-tmp/site-audit/`.
+- Private material (handbook, topic pages, design canvas, logo work):
+  `/home/username/baltor-private/handoff-2026-09-23/`.
+- The whole session working folder, archived:
+  `/home/username/.le-safety/session-2026-09-23-scratchpad.tar.zst`.
+
 ## What is live
 
 - The Fly app `baltor-pilot` runs release 20, built from `main` at `f7c89465`.

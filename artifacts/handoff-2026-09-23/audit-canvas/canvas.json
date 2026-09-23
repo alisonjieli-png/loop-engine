@@ -1,0 +1,74 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-09-23T13:30:00Z"
+  },
+  "title": "Baltor website audit",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 4200,
+      "title": "Cut inventory"
+    },
+    "Header.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "Restored header"
+    },
+    "Footer.dc.html": {
+      "x": 1520,
+      "y": 1620,
+      "w": 1440,
+      "h": 1720,
+      "title": "Restored footer"
+    },
+    "Funnel.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 3000,
+      "title": "Get started funnel"
+    },
+    "Scroll.dc.html": {
+      "x": 1520,
+      "y": 3460,
+      "w": 1440,
+      "h": 2150,
+      "title": "Less scrolling"
+    },
+    "Devices.dc.html": {
+      "x": 3040,
+      "y": 3120,
+      "w": 1440,
+      "h": 3000,
+      "title": "Screen sizes"
+    },
+    "Handoff.dc.html": {
+      "x": -1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "Handoff"
+    }
+  },
+  "order": [
+    "Handoff.dc.html",
+    "Main.dc.html",
+    "Header.dc.html",
+    "Footer.dc.html",
+    "Funnel.dc.html",
+    "Scroll.dc.html",
+    "Devices.dc.html"
+  ],
+  "notes": {},
+  "designSystems": []
+}
