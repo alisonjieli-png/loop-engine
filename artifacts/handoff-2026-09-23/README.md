@@ -35,11 +35,11 @@ gone; use the copies here.
 | Path | What it is |
 |---|---|
 | `/home/username/loop-engine-main` | A clean detached checkout of `main` for reading and for starting new worktrees. The shared checkout `/home/username/loop-engine` holds another session's uncommitted work at `385c647`: never reset, stash or overwrite it |
-| `/home/username/.le-integration/<line>` | The detached worktree of each line (`r21`, `r22-ui`, `signup`, `round-two`, `library`, `overnight`, `site-inventory`, `site-review`, `site-standards`, `site-docs`, `site-usecases`, `site-guides`, `site-devices`, `site-uat`) and `handoff`, the tree that was pushed |
+| `/home/username/.le-integration/<line>` | The detached worktree of each September 23 line (`r21`, `r22-ui`, `signup`, `round-two`, `library`, `overnight`, `site-inventory`, `site-review`, `site-standards`, `site-docs`, `site-usecases`, `site-guides`, `site-devices`, `site-uat`) and `handoff`, the tree that was pushed. Older worktrees were archived and removed; see the work archive register |
 | `/home/username/.le-ci-tmp/site-audit/` | Screenshots (`shots/`: 457 from the design review; `devices/`: the responsive lab and its contact sheets), the acceptance-test tools (`uat/`: axe-core, Lighthouse, pixelmatch installed), `depth/` and the target site map |
 | `/home/username/baltor-bundles/round-two-4be111f` | The catalogue round two bundle (114 items, digest `7f82235475f4e19b3288f0949bda7b87b11fe1273d235b08e54b50143c7383ea`) |
 | `/home/username/.le-library/ls1-runs/run-2026-09-23-b/candidates.db` | The 3,251 staged library candidates |
-| `/home/username/.le-safety/` | Safety bundles and backups, including `session-2026-09-23-scratchpad.tar.zst`, the whole working folder of the September 23 session |
+| `/home/username/.le-safety/` | Safety bundles and backups: `archive-all-refs-20260923-after-cleanup.bundle` (every reference, including the archived worktree heads and branches), `worktree-dirty-20260923/` (the uncommitted changes of 40 worktrees) and `session-2026-09-23-scratchpad.tar.zst` (the session's working folder). The [work archive register](../../docs/verification/WORK-ARCHIVE-2026-09-23.md) lists each item and how to restore it |
 | `/home/username/baltor-private/handoff-2026-09-23/` | Private material that stays out of this public repository: the handbook (`handbook/baltor-handbook-v7.html`), the seven topic pages, the tracker page, the design canvas files, the logo work with the owner's sheet and the traced marks, and research notes |
 
 ## On claude.ai (the owner's login)

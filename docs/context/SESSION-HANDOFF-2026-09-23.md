@@ -27,6 +27,12 @@ claude.ai, with a local copy of each claude.ai artifact. In short:
   `/home/username/baltor-private/handoff-2026-09-23/`.
 - The whole session working folder, archived:
   `/home/username/.le-safety/session-2026-09-23-scratchpad.tar.zst`.
+- Everything that is not on `main`: the
+  [work archive register](../verification/WORK-ARCHIVE-2026-09-23.md). After
+  the owner's "get all work committed and into main, or archived", 115 stale
+  worktrees and 47 local branches were removed once their commits and
+  uncommitted changes were saved in two verified bundles and 40 snapshots;
+  the register says how to restore any of them.
 
 ## What is live
 
