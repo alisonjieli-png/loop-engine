@@ -158,9 +158,17 @@ no network, the real home folder replaced by decoys, and decoy instruction
 files in the folder above the step. A loopback endpoint records the harness's
 first requests and answers no model, so no model is called. Loading counts
 only when a step marker is inside a request the harness sent; an exit, a
-session identifier or a listed tool never counts. Two known-wrong controls
-must fail: the home folder kept, and the step's `AGENTS.md` missing. Each run
-writes a new folder and keeps the earlier ones.
+session identifier or a listed tool never counts. Two controls run beside
+each recipe. With the step's `AGENTS.md` missing, the launch must fail
+whenever the recipe claims the instruction file; if it passes, the whole
+check fails, because a check that cannot fail proves nothing. With the home
+folder kept, the result is recorded, not required to fail: it shows whether
+the empty home rule matters for that harness. In the third recorded run of
+September 22 (`harness-fresh-instance-isolation-3.json`), Codex and OpenCode
+read the decoy skills of a kept home folder, while Pi and both Claude Code
+recipes, which take the step's files through explicit flags or read user
+files only from their own configuration folder, did not. Each run writes a
+new folder and keeps the earlier ones.
 
 What the recorded runs of September 22 found, at Codex 0.155.1, OpenCode
 1.18.32, Claude Code 2.1.280 and Pi 0.73.1:

@@ -15,8 +15,11 @@ instance recipe of the release catalogue it:
    and a loopback endpoint that records each request and answers no model;
 4. assesses the requests with ``assess_observation``: every step marker the
    recipe claims must arrive and no decoy marker may;
-5. runs two known-wrong controls that must fail: the user's home folder kept
-   (decoys in HOME) and the step's instruction file missing.
+5. runs two controls beside the recipe. With the step's instruction file
+   missing, the launch must fail whenever the recipe claims that file;
+   otherwise the whole check fails, because it could not have failed. With
+   the user's home folder kept (decoys in HOME), the result is recorded to
+   show whether the empty home rule matters for that harness at that version.
 
 No model is called and no request leaves the machine. The result is the
 record ``harness_fresh_instance_run/v1`` in ``result.json`` of the run folder.
@@ -228,7 +231,9 @@ def launch(recipe, variant: str, folder: Path, executable: Path, software, *, ti
                    env={**GIT_VARIABLES, "HOME": str(folder / CONFIGURATION_FOLDER)})
     arguments, environment = render_launch(recipe, layout)
     # The endpoint learns only whether a request carried the probe credential:
-    # the job holds digests of the two header forms, never the credential.
+    # it compares digests of the two header forms and records whether one
+    # matched. The job's variables do carry the fixed probe credential, which
+    # is fake; a real credential must never be written to a job file.
     job = {"credential_sha256": [_sha256(("Bearer " + PROBE_CREDENTIAL).encode()),
                                  _sha256(PROBE_CREDENTIAL.encode())],
            "command": [str(executable), *arguments],
@@ -283,11 +288,23 @@ def check_recipe(recipe, run_folder: Path, *, executable=None, timeout=60) -> di
                                 timeout=timeout, home=home, version=version["version"])
                 for variant in LAUNCH_VARIANTS}
     controls = {variant: not launches[variant]["passed"] for variant in LAUNCH_VARIANTS[1:]}
-    return {**base, "status": "passed" if launches["recipe"]["passed"] else "failed",
-            "executable": str(program), "installed_version": version["version"],
-            "version_matches_pin": version["version"] == recipe.pinned_version,
-            "rung": launches["recipe"]["rung"], "launches": launches,
-            "controls_failed_as_expected": controls}
+    # A check that cannot fail proves nothing: when the recipe claims the step's
+    # instruction file, the launch without that file must fail. The kept home
+    # folder is recorded, not required to fail: a recipe that takes the step's
+    # files through explicit flags, or reads user files only from its own
+    # configuration folder, adds nothing from a kept home folder (Pi and Claude
+    # Code at their pinned versions), while Codex and OpenCode read its skills.
+    claims_instructions = dict(recipe.material)["instruction_file"] == "loaded"
+    unfailing = claims_instructions and not controls["instruction_file_missing"]
+    result = {**base, "status": "passed" if launches["recipe"]["passed"] and not unfailing else "failed",
+              "executable": str(program), "installed_version": version["version"],
+              "version_matches_pin": version["version"] == recipe.pinned_version,
+              "rung": launches["recipe"]["rung"], "launches": launches,
+              "controls_failed_as_expected": controls}
+    if unfailing:
+        result["reason"] = ("the launch without the step's instruction file passed, "
+                            "so this check could not fail")
+    return result
 
 
 def run(recipe_ids=(), *, output_root: Path, catalog=None, executables=None, timeout=60) -> dict:

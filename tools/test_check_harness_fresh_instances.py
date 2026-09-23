@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_harness_fresh_instances as tool  # noqa: E402
@@ -126,6 +127,39 @@ class FreshInstanceCheckTest(unittest.TestCase):
         result = tool.check_recipe(recipe, self.folder / "missing", timeout=5)
         self.assertEqual(result["status"], "not_tested")
         self.assertEqual(result["missing_optional_dependencies"], ["no-such-harness-program"])
+
+    def _decided(self, outcomes):
+        """check_recipe with each launch's outcome supplied, so the decision
+        rule runs without starting a harness or Bubblewrap."""
+        from loop_engine.core.harness_fresh_instances import FreshInstanceRecipe
+        recipe = FreshInstanceRecipe.from_dict(RECIPE)
+
+        def launch(recipe, variant, folder, executable, software, *, timeout, home, version):
+            return {"variant": variant, "passed": outcomes[variant],
+                    "rung": "material_loaded" if outcomes[variant] else "material_listed"}
+
+        with patch.object(tool, "installed_version",
+                          lambda *arguments: {"version": "1.0.0", "exit_code": 0}), \
+                patch.object(tool, "launch", launch):
+            return tool.check_recipe(recipe, self.folder / "decided", executable=str(self.harness))
+
+    def test_a_check_whose_instruction_control_passes_is_not_a_pass(self):
+        """The known-wrong case: without the step's instruction file the launch
+        still passed, so the check could not fail and proves nothing."""
+        result = self._decided({"recipe": True, "home_folder_kept": False,
+                                "instruction_file_missing": True})
+        self.assertEqual(result["status"], "failed")
+        self.assertFalse(result["controls_failed_as_expected"]["instruction_file_missing"])
+
+    def test_a_kept_home_folder_that_adds_nothing_is_recorded_not_failed(self):
+        """Pi and Claude Code take the step's files through explicit flags or
+        read user files only from their configuration folder, so a kept home
+        folder adds nothing to their request. That is recorded, not failed."""
+        result = self._decided({"recipe": True, "home_folder_kept": True,
+                                "instruction_file_missing": False})
+        self.assertEqual(result["status"], "passed")
+        self.assertEqual(result["controls_failed_as_expected"],
+                         {"home_folder_kept": False, "instruction_file_missing": True})
 
     @unittest.skipUnless(_sandbox_available(), "Bubblewrap with a network namespace is required")
     def test_a_recipe_with_an_empty_home_loads_only_the_step_material(self):
