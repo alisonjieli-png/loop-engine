@@ -68,6 +68,46 @@ typed_decision_execution:
   live_provider_qualified: false
   import_check: tools/test_decision_engine_boundary.py
 
+outside_library_ingestion:
+  component_path: src/loop_engine/core/library_ingestion
+  architecture_contract: src/loop_engine/core/library_ingestion/README.md
+  command: tools/ingest_outside_material.py
+  source_declaration: library_outside_sources/v1
+  request_contract: library_candidate_request/v1
+  response_contract: library_candidate_batch/v1
+  provenance_contract: outside_source_provenance/v1
+  licence_evidence_contract: outside_licence_evidence/v1
+  outline_contract: library_candidate_outline/v1
+  staging_contract: candidate_intelligence_specifications/v2
+  selection_record: library_engine_selection/v1
+  engine_slots:
+    - library_ingestion_source
+    - library_format_validation
+    - library_safety_scan
+    - library_near_duplicate
+    - library_outline
+  runtime_type: Loop
+  adds_runtime_or_intelligence_layer: false
+  approves_serves_or_publishes: false
+  invariants:
+    - outside_material_is_never_a_candidate_without_versioned_provenance
+    - a_verbatim_copy_needs_an_accepted_licence_proven_by_the_governing_licence_file
+    - a_source_curated_for_outlines_never_yields_a_verbatim_copy
+    - a_copy_of_a_restricted_source_is_refused_even_inside_a_permissive_collection
+    - a_registry_entry_is_link_only_and_its_connection_files_are_written_from_facts
+    - an_outline_keeps_the_abstract_purpose_and_the_source_identity_never_the_text
+    - a_licence_that_forbids_derivative_works_leaves_no_outline
+    - every_network_request_is_read_only_bounded_and_recorded
+    - every_model_call_is_recorded_and_unknown_usage_stays_unknown
+    - scanner_findings_are_triage_for_reviewers_never_approval
+    - staging_writes_candidates_in_atomic_populations_of_at_most_fifty
+  unproven:
+    - multi_file_skill_packages
+    - native_loading_of_rendered_files_in_a_harness
+    - usefulness_of_any_candidate
+    - legal_sufficiency_of_the_licence_rules
+  import_check: tools/test_library_ingestion_boundary.py
+
 host_task_execution:
   operational_runtime_type: Loop
   public_port: CustomPluginsPort
