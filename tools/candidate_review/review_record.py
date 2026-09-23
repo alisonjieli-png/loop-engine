@@ -392,8 +392,17 @@ def _read_row(row, reviewers, family_of, calls, policy, prefix, producer_family)
     applied = row["criteria_applied"]
     if type(applied) is not list or any(type(item) is not str for item in applied):
         refuse("row_inconsistent", f"{identity} names the criteria it was judged by as a list")
+    decided, answered = set(), set()
     for raw in row["decisions"]:
         decision = read_part(raw, "decision", DECISION_FIELDS)
+        # One reviewer gives one decision on one row, from one call: a repeated reviewer or call would
+        # count one approval twice toward a quorum that needs more approvals than families.
+        if type(decision["reviewer_id"]) is not str or type(decision["call_ref"]) is not str:
+            refuse("row_inconsistent", f"a decision on {identity} names its reviewer and call as text")
+        if decision["reviewer_id"] in decided or decision["call_ref"] in answered:
+            refuse("reviewer_decided_twice", f"a reviewer or a call decides {identity} twice")
+        decided.add(decision["reviewer_id"])
+        answered.add(decision["call_ref"])
         if any(type(finding) is not dict or finding.get("criterion_id") not in applied
                for finding in decision["findings"]):
             refuse("finding_outside_the_criteria_applied",

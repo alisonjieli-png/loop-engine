@@ -12,6 +12,7 @@ Known-wrong records, each refused by the reader
 ├── an approved row beside a rejection
 ├── a rejection with no written reason
 ├── a decision by a reviewer the record does not name
+├── one reviewer, or one call, deciding a row twice
 ├── a decision bound to other bytes than the row names
 ├── an approved row with no digest, or an approval reference for another row
 ├── a row with no standing verdict that carries an approval reference
@@ -313,6 +314,14 @@ class ReviewerIdentityTest(unittest.TestCase):
         record = copy.deepcopy(APPROVED_RECORD)
         record["calls"].append(dict(record["calls"][0], installation_id="unnamed", run_id="run-9"))
         _refused(self, record, "call_without_reviewer")
+
+    def test_one_reviewer_counted_twice_toward_a_quorum_is_refused(self):
+        """Known-wrong case: under a policy of four approvals from three families, three reviewers with one
+        of them listed twice would read as four approvals."""
+        record = copy.deepcopy(APPROVED_RECORD)
+        record["policy"].update(minimum_approvals=4, reviewers_per_item=4)
+        _row(record)["decisions"].append(copy.deepcopy(_row(record)["decisions"][0]))
+        _refused(self, record, "reviewer_decided_twice")
 
     def test_the_identity_comparison_is_what_refuses_calls_of_one_family(self):
         """Mutant control: with the comparison removed, three families are counted from one family's calls."""
