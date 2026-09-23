@@ -1,0 +1,54 @@
+..........................FFFFF...
+======================================================================
+FAIL: test_a_reviewer_version_that_its_calls_do_not_name_is_refused (tools.test_candidate_review_record.RecordPathsAndVersionsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 233, in test_a_reviewer_version_that_its_calls_do_not_name_is_refused
+    _refused(self, record, "reviewer_version_disagrees_with_calls")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 83, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_a_reviewer_whose_calls_name_two_versions_is_not_one_reviewer (tools.test_candidate_review_record.RecordPathsAndVersionsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 244, in test_a_reviewer_whose_calls_name_two_versions_is_not_one_reviewer
+    with self.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_an_absolute_path_in_the_record_is_refused (tools.test_candidate_review_record.RecordPathsAndVersionsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 228, in test_an_absolute_path_in_the_record_is_refused
+    _refused(self, record, "record_path_not_relative")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 83, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_every_path_in_the_record_is_relative_to_the_repository (tools.test_candidate_review_record.RecordPathsAndVersionsTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 217, in test_every_path_in_the_record_is_relative_to_the_repository
+    self.assertEqual(record["instructions"]["path"], "tools/candidate_review/resources/REVIEWER-INSTRUCTIONS.md")
+AssertionError: '/home/username/.le-library/ls2/tools/cand[43 chars]S.md' != 'tools/candidate_review/resources/REVIEWER-INSTRUCTIONS.md'
+- /home/username/.le-library/ls2/tools/candidate_review/resources/REVIEWER-INSTRUCTIONS.md
+? -------------------------------
++ tools/candidate_review/resources/REVIEWER-INSTRUCTIONS.md
+
+
+======================================================================
+FAIL: test_review_time_counts_only_the_runs_that_made_calls (tools.test_candidate_review_record.RecordPathsAndVersionsTest)
+A later command that only reuses stored verdicts adds no review time to the throughput.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 263, in test_review_time_counts_only_the_runs_that_made_calls
+    self.assertEqual(totals["run_seconds"], 360.0)
+AssertionError: 450.0 != 360.0
+
+----------------------------------------------------------------------
+Ran 34 tests in 0.909s
+
+FAILED (failures=5)

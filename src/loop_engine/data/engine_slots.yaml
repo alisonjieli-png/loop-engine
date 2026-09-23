@@ -932,7 +932,6 @@ slots:
     descriptor_projection: core.library_ingestion.engines.describe_source
     factory_table: core.library_ingestion.engines
     planned_symbols: [core.library_ingestion.protocol.LibrarySourceReader,
-                      core.library_ingestion.engines,
                       core.library_ingestion.protocol.LibrarySourceDeclaration,
                       core.library_ingestion.engines.describe_source]
     selection_mode: set_of

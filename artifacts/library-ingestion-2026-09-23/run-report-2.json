@@ -1,0 +1,882 @@
+{
+  "record_type": "library_ingestion_run_report/v1",
+  "started_at": "2026-09-23T04:39:42Z",
+  "finished_at": "2026-09-23T05:08:32Z",
+  "code": {
+    "revision": "0f7ae1f0c2a4ada3222619b9f719d3346cac617a",
+    "component_digest": "00120c71ce78d1881484293327f75c02f4f4daf313791503e94345356c629dcc",
+    "component_files": 48,
+    "uncommitted_changes": false
+  },
+  "sources_record_digest": "2718fab7781194871d546ce371dfe21b1a8d0ee35e2f06ad80580f10e7977ce0",
+  "sources": [
+    {
+      "source_id": "github.anthropics.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "anthropics/skills",
+      "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 19,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.openai.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 44,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.huggingface.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "huggingface/skills",
+      "commit": "abc20ae526d8b4c0e4dff89f904adce28a4a0eb6",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 26,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.obra.superpowers",
+      "engine": "github_pinned_repositories",
+      "repository": "obra/superpowers",
+      "commit": "5bf4e78011075bcfc0dc295f0724994cd123ee71",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 15,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.mattpocock.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "mattpocock/skills",
+      "commit": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 29,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.addyosmani.web-quality-skills",
+      "engine": "github_pinned_repositories",
+      "repository": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 6,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.blader.humanizer",
+      "engine": "github_pinned_repositories",
+      "repository": "blader/humanizer",
+      "commit": "9862685f575c65a8247f90369951df1b3416e3d6",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 1,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.vercel-labs.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "vercel-labs/skills",
+      "commit": "7407f3893ad4dceab546ac002c3ef806e4000c73",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 1,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.fission-ai.openspec",
+      "engine": "github_pinned_repositories",
+      "repository": "Fission-AI/OpenSpec",
+      "commit": "f179ed4e40567cdb56501ee3f4d09efbcb1557b8",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 12,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.github.spec-kit",
+      "engine": "github_pinned_repositories",
+      "repository": "github/spec-kit",
+      "commit": "3a96599d778f7cb138c78f33cbb221cca9a0690a",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 2,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.nextlevelbuilder.ui-ux-pro-max-skill",
+      "engine": "github_pinned_repositories",
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "dcc40ff5133ef78276117db0cc34e7b83cc8aeba",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 7,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.k-dense-ai.claude-scientific-skills",
+      "engine": "github_pinned_repositories",
+      "repository": "K-Dense-AI/claude-scientific-skills",
+      "commit": "49c6e97775eaa18ba791bebe23162a70ae601c18",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 166,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.wshobson.agents",
+      "engine": "github_pinned_repositories",
+      "repository": "wshobson/agents",
+      "commit": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 183,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.affaan-m.everything-claude-code",
+      "engine": "github_pinned_repositories",
+      "repository": "affaan-m/everything-claude-code",
+      "commit": "bf70150eb2df8070024e5bdf08e4aa08959e2735",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 292,
+      "refusals": 0,
+      "requests_made": 3
+    },
+    {
+      "source_id": "github.github.awesome-copilot",
+      "engine": "github_pinned_repositories",
+      "repository": "github/awesome-copilot",
+      "commit": "a89cd67e19bbd856c11c27da07cb30bbd8f8c2c1",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 616,
+      "refusals": 1,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.patrickjs.awesome-cursorrules",
+      "engine": "github_pinned_repositories",
+      "repository": "PatrickJS/awesome-cursorrules",
+      "commit": "b044f956f021b6e8877f16781bcfc466a6a120e9",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 257,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.juliusbrussee.caveman",
+      "engine": "github_pinned_repositories",
+      "repository": "JuliusBrussee/caveman",
+      "commit": "2fd153c67988e980fb0b2455c90832159a6a5a25",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 20,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.coleam00.excalidraw-diagram-skill",
+      "engine": "github_pinned_repositories",
+      "repository": "coleam00/excalidraw-diagram-skill",
+      "commit": "8646fcc9f74f38539c6cdb4c969723336a96ddcd",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 1,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.vercel-labs.agent-skills",
+      "engine": "github_pinned_repositories",
+      "repository": "vercel-labs/agent-skills",
+      "commit": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 9,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "github.trailofbits.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "trailofbits/skills",
+      "commit": "32e34f8173796e3566a51aee877dc96bc5191f64",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 83,
+      "refusals": 0,
+      "requests_made": 2
+    },
+    {
+      "source_id": "registry.mcp.official",
+      "engine": "mcp_official_registry",
+      "repository": "registry.modelcontextprotocol.io",
+      "commit": null,
+      "use": "link",
+      "complete": false,
+      "stopped_reason": "candidate_ceiling",
+      "next_cursor": "com.appstorecopilot/appstorecopilot:1.0.0",
+      "candidates": 2260,
+      "refusals": 740,
+      "requests_made": 31
+    }
+  ],
+  "counts": {
+    "candidates": 4049,
+    "batch_refusals": 741,
+    "discovered": 4790,
+    "by_licence_decision": {
+      "link_only": 2260,
+      "outline_only": 187,
+      "refused": 16,
+      "verbatim_permitted": 1586
+    },
+    "licence_refused": 16,
+    "outline_only": 187,
+    "restricted_copies": 0,
+    "outlines_written": 187,
+    "refused_after_licence": 589,
+    "exact_duplicates": 1,
+    "near_duplicates": 5,
+    "staged_rows": 3251,
+    "staged_by_kind": {
+      "skill": 596,
+      "instruction_file": 445,
+      "tool": 2210
+    },
+    "refused_by_reason": {
+      "fetch/source_file_too_large": 1,
+      "format/body_too_short": 3,
+      "format/bundled_files_not_supported_yet": 511,
+      "licence/licence_outline_only": 187,
+      "licence/licence_refused": 16,
+      "registry/credential_shaped_value_in_entry": 2,
+      "registry/excluded_by_declaration": 213,
+      "registry/no_transport_rendered": 10,
+      "registry/package_does_not_resolve": 10,
+      "registry/package_type_not_rendered": 6,
+      "registry/registry_status_not_active": 25,
+      "registry/required_arguments_not_rendered": 7,
+      "registry/upstream_repository_unreadable": 502,
+      "registry/url_template_not_rendered": 11,
+      "safety/safety_scan_blocked": 29
+    },
+    "outline_notes": {
+      "model_outline:outline_would_copy_source_text": 38
+    }
+  },
+  "requests": {
+    "requests": 1903,
+    "by_outcome": {
+      "gh_api:ok": 747,
+      "https_get:ok": 308,
+      "gh_api:not_found": 838,
+      "https_get:not_found": 10
+    },
+    "bytes": 15654873,
+    "github": {
+      "ceiling": 4800,
+      "used": 1585,
+      "pauses": []
+    },
+    "https": {
+      "ceiling": 3000,
+      "used": 318,
+      "pauses": []
+    }
+  },
+  "engines": {
+    "decisions": [
+      {
+        "slot_id": "library_ingestion_source",
+        "chosen": [
+          "github_pinned_repositories",
+          "mcp_official_registry"
+        ],
+        "eligibility": [
+          {
+            "engine_id": "github_pinned_repositories",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "available"
+          },
+          {
+            "engine_id": "mcp_official_registry",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "available"
+          }
+        ],
+        "decision_digest": "22ff80758ab3c874ff206ab37f1bb291e4f28d8fc53105a82186817989791d4c"
+      },
+      {
+        "slot_id": "library_format_validation",
+        "chosen": [
+          "agent_skills_builtin_rules",
+          "agent_skills_reference_validator",
+          "connection_builtin_rules",
+          "connection_schema_validator"
+        ],
+        "eligibility": [
+          {
+            "engine_id": "agent_skills_builtin_rules",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "always_available"
+          },
+          {
+            "engine_id": "agent_skills_reference_validator",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "available"
+          },
+          {
+            "engine_id": "connection_builtin_rules",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "always_available"
+          },
+          {
+            "engine_id": "connection_schema_validator",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "available"
+          }
+        ],
+        "decision_digest": "2521a963be663893d329eb0cb7edf3517ba09878d754540f7d75e211a6faad1f"
+      },
+      {
+        "slot_id": "library_safety_scan",
+        "chosen": [
+          "builtin_static_rules",
+          "skillspector_static"
+        ],
+        "eligibility": [
+          {
+            "engine_id": "builtin_static_rules",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "always_available"
+          },
+          {
+            "engine_id": "skillspector_static",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "available"
+          }
+        ],
+        "decision_digest": "65136c6b5b7b189e439bad581b1d1afe8ce3e5bea7fc725b22ecb6e0713d9806"
+      },
+      {
+        "slot_id": "library_near_duplicate",
+        "chosen": [
+          "datasketch_minhash_lsh"
+        ],
+        "eligibility": [
+          {
+            "engine_id": "datasketch_minhash_lsh",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "available"
+          },
+          {
+            "engine_id": "builtin_minhash_lsh",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "always_available"
+          }
+        ],
+        "decision_digest": "4b8bf0cf9e00541ae90880e6422b2f3326ebcbad5c5c291abd09038743943006"
+      },
+      {
+        "slot_id": "library_outline",
+        "chosen": [
+          "model_outline"
+        ],
+        "eligibility": [
+          {
+            "engine_id": "model_outline",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "available"
+          },
+          {
+            "engine_id": "deterministic_outline",
+            "engine_version": "1.0.0",
+            "eligible": true,
+            "reason": "always_available"
+          }
+        ],
+        "decision_digest": "84f8469af7318dfe0dfffa501a00a2d780d7c449f03090ff12fe09e3c9477d83"
+      }
+    ],
+    "described": {
+      "library_ingestion_source": [
+        {
+          "engine_id": "github_pinned_repositories",
+          "engine_version": "1.0.0",
+          "engine_kind": "pinned_repository_reader",
+          "effects": [
+            "network"
+          ],
+          "maximum_file_bytes": 262144,
+          "third_party": "gh command line, the owner's existing login, GitHub REST contents, git trees and licence interfaces"
+        },
+        {
+          "engine_id": "mcp_official_registry",
+          "engine_version": "1.0.0",
+          "engine_kind": "registry_link_reader",
+          "effects": [
+            "network"
+          ],
+          "page_size": 100,
+          "maximum_upstream_lookups": 3000,
+          "third_party": "official Model Context Protocol registry, list interface v0.1"
+        }
+      ],
+      "library_format_validation": [
+        {
+          "engine_id": "agent_skills_builtin_rules",
+          "engine_version": "1.0.0",
+          "engine_kind": "format_rules",
+          "applies_to": [
+            "skill"
+          ]
+        },
+        {
+          "engine_id": "agent_skills_reference_validator",
+          "engine_version": "1.0.0",
+          "third_party": "skills-ref 0.1.0 (Apache-2.0), agentskills/agentskills at 69ef37e",
+          "applies_to": [
+            "skill"
+          ]
+        },
+        {
+          "engine_id": "connection_builtin_rules",
+          "engine_version": "1.0.0",
+          "engine_kind": "format_rules",
+          "applies_to": [
+            "tool"
+          ]
+        },
+        {
+          "engine_id": "connection_schema_validator",
+          "engine_version": "1.0.0",
+          "harnesses": [
+            "codex",
+            "opencode"
+          ]
+        }
+      ],
+      "library_safety_scan": [
+        {
+          "engine_id": "builtin_static_rules",
+          "engine_version": "1.0.0",
+          "engine_kind": "static_scanner",
+          "rules": [
+            "concealment",
+            "destructive_command",
+            "encoded_payload_executed",
+            "environment_exfiltration",
+            "instruction_override",
+            "long_encoded_blob",
+            "remote_script_to_shell",
+            "system_prompt_disclosure"
+          ]
+        },
+        {
+          "engine_id": "skillspector_static",
+          "engine_version": "1.0.0",
+          "third_party": "NVIDIA SkillSpector 2.11.2 (Apache-2.0) at 844ac30, --no-llm, sandboxed without network",
+          "runs": 13
+        }
+      ],
+      "library_near_duplicate": [
+        {
+          "engine_id": "datasketch_minhash_lsh",
+          "engine_version": "1.0.0",
+          "library_version": "1.6.5",
+          "permutations": 128,
+          "seed": 1
+        }
+      ],
+      "library_outline": [
+        {
+          "engine_id": "model_outline",
+          "engine_version": "1.0.0",
+          "model": "deepseek-v4-flash:0731",
+          "route": "ollama_cloud:/api/chat",
+          "call_ceiling": 200,
+          "calls": 187
+        }
+      ]
+    }
+  },
+  "schemas": {
+    "codex_config": {
+      "expected": "17fbda7e71603aa6a83e986608f2e13c27ea46ce1a4b889196ba81a07c39d907",
+      "observed": "17fbda7e71603aa6a83e986608f2e13c27ea46ce1a4b889196ba81a07c39d907",
+      "licence": "Apache-2.0"
+    },
+    "opencode_config": {
+      "expected": "e8cb6e287a3852ee3403f4803be5ad6b19db94948037eaa9672125c333427922",
+      "observed": "e8cb6e287a3852ee3403f4803be5ad6b19db94948037eaa9672125c333427922",
+      "licence": "MIT"
+    }
+  },
+  "reused_fetches": {
+    "folders": [
+      "/home/username/.le-library/ls1-runs/run-2026-09-23-a"
+    ],
+    "blobs": 4119,
+    "items": 1788,
+    "hits": 1868,
+    "refused": 0,
+    "skipped": 0
+  },
+  "model_calls": {
+    "calls": 187,
+    "ceiling": 200,
+    "model": "deepseek-v4-flash:0731",
+    "outcomes": {
+      "ok": 187
+    },
+    "calls_with_reported_usage": 187,
+    "calls_without_reported_usage": 0,
+    "usage_complete": true,
+    "prompt_tokens_of_reported_calls": 260739,
+    "completion_tokens_of_reported_calls": 4914
+  },
+  "populations": [
+    {
+      "file": "populations/specifications-001.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-002.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-003.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-004.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-005.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-006.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-007.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-008.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-009.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-010.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-011.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-012.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-013.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-014.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-015.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-016.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-017.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-018.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-019.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-020.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-021.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-022.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-023.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-024.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-025.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-026.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-027.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-028.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-029.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-030.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-031.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-032.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-033.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-034.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-035.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-036.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-037.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-038.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-039.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-040.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-041.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-042.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-043.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-044.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-045.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-046.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-047.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-048.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-049.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-050.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-051.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-052.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-053.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-054.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-055.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-056.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-057.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-058.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-059.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-060.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-061.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-062.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-063.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-064.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-065.json",
+      "rows": 50
+    },
+    {
+      "file": "populations/specifications-066.json",
+      "rows": 1
+    }
+  ],
+  "approved": false,
+  "hosted_publication": false,
+  "limits": "Candidates only. Nothing here is approved, served or published; every staged row needs an independent review of its exact bytes. Licence decisions are engineering rules, not legal advice. A registry entry is link-only and its upstream code was not read. Scanner findings are triage for reviewers, not safety proof."
+}

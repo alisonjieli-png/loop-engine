@@ -1,0 +1,118 @@
+......E..
+======================================================================
+ERROR: test_a_finding_that_names_its_criterion_as_a_list_or_object_is_recorded_not_raised (tools.test_candidate_review_panel.AnswerValidationTest) (criterion=['read_as_a_customer'])
+Known-wrong case: an answer is untrusted text of any shape. A criterion written as a list or an
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 324, in test_a_finding_that_names_its_criterion_as_a_list_or_object_is_recorded_not_raised
+    item, call, harness = self._replaced_first(lambda prompt, n, criterion=criterion: attempt(answer(
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 295, in _replaced_first
+    result = harness.run([_request()])
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 161, in run
+    return panel.run(panel_module.PanelRunRequest(
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 307, in run
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 307, in <listcomp>
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 304, in one
+    return self._item(request, run_request, eligible, availability, budget, state)
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 378, in _item
+    verdict = self._ask(installation, request, prompts[installation.installation_id], availability, budget,
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 456, in _ask
+    content, error_code = parse_verdict(attempt.text, body_sha256=request.body_sha256,
+  File "/home/username/.le-library/ls2/tools/candidate_review/verdicts.py", line 111, in parse_verdict
+    if row["criterion_id"] not in criteria_ids:
+TypeError: unhashable type: 'list'
+
+======================================================================
+ERROR: test_a_finding_that_names_its_criterion_as_a_list_or_object_is_recorded_not_raised (tools.test_candidate_review_panel.AnswerValidationTest) (criterion={'criterion_id': 'read_as_a_customer'})
+Known-wrong case: an answer is untrusted text of any shape. A criterion written as a list or an
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 324, in test_a_finding_that_names_its_criterion_as_a_list_or_object_is_recorded_not_raised
+    item, call, harness = self._replaced_first(lambda prompt, n, criterion=criterion: attempt(answer(
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 295, in _replaced_first
+    result = harness.run([_request()])
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 161, in run
+    return panel.run(panel_module.PanelRunRequest(
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 307, in run
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 307, in <listcomp>
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 304, in one
+    return self._item(request, run_request, eligible, availability, budget, state)
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 378, in _item
+    verdict = self._ask(installation, request, prompts[installation.installation_id], availability, budget,
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 456, in _ask
+    content, error_code = parse_verdict(attempt.text, body_sha256=request.body_sha256,
+  File "/home/username/.le-library/ls2/tools/candidate_review/verdicts.py", line 111, in parse_verdict
+    if row["criterion_id"] not in criteria_ids:
+TypeError: unhashable type: 'dict'
+
+======================================================================
+ERROR: test_deeply_nested_answer_text_is_recorded_not_raised (tools.test_candidate_review_panel.AnswerValidationTest) (answer_format='json_only')
+Known-wrong case: text nested deeper than the JSON reader's recursion limit is not one answer.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 338, in test_deeply_nested_answer_text_is_recorded_not_raised
+    self.assertEqual(verdicts.parse_verdict(text, body_sha256="a" * 64, criteria_ids=frozenset(),
+  File "/home/username/.le-library/ls2/tools/candidate_review/verdicts.py", line 87, in parse_verdict
+    value = json.loads(stripped)
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string
+
+======================================================================
+ERROR: test_deeply_nested_answer_text_is_recorded_not_raised (tools.test_candidate_review_panel.AnswerValidationTest) (answer_format='json_after_reasoning')
+Known-wrong case: text nested deeper than the JSON reader's recursion limit is not one answer.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 338, in test_deeply_nested_answer_text_is_recorded_not_raised
+    self.assertEqual(verdicts.parse_verdict(text, body_sha256="a" * 64, criteria_ids=frozenset(),
+  File "/home/username/.le-library/ls2/tools/candidate_review/verdicts.py", line 81, in parse_verdict
+    value = _final_object(stripped)
+  File "/home/username/.le-library/ls2/tools/candidate_review/verdicts.py", line 67, in _final_object
+    value, end = decoder.raw_decode(stripped, index)
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+RecursionError: maximum recursion depth exceeded while decoding a JSON object from a unicode string
+
+======================================================================
+ERROR: test_deeply_nested_answer_text_is_recorded_not_raised (tools.test_candidate_review_panel.AnswerValidationTest)
+Known-wrong case: text nested deeper than the JSON reader's recursion limit is not one answer.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 340, in test_deeply_nested_answer_text_is_recorded_not_raised
+    _item, call, _harness = self._replaced_first(lambda prompt, n: attempt("[" * 5000))
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 295, in _replaced_first
+    result = harness.run([_request()])
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 161, in run
+    return panel.run(panel_module.PanelRunRequest(
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 307, in run
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 307, in <listcomp>
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 304, in one
+    return self._item(request, run_request, eligible, availability, budget, state)
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 378, in _item
+    verdict = self._ask(installation, request, prompts[installation.installation_id], availability, budget,
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 456, in _ask
+    content, error_code = parse_verdict(attempt.text, body_sha256=request.body_sha256,
+  File "/home/username/.le-library/ls2/tools/candidate_review/verdicts.py", line 87, in parse_verdict
+    value = json.loads(stripped)
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/json/decoder.py", line 353, in raw_decode
+    obj, end = self.scan_once(s, idx)
+RecursionError: maximum recursion depth exceeded while decoding a JSON array from a unicode string
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.711s
+
+FAILED (errors=5)

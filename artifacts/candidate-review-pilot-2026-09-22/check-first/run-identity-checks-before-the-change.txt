@@ -1,0 +1,45 @@
+..FFF...E
+======================================================================
+ERROR: test_the_run_identity_check_is_what_keeps_the_dispatch_interrupted (tools.test_candidate_review_panel.CursorTest)
+Mutant control: with the run identity check removed, the reused identity hides the dispatch and
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 561, in test_the_run_identity_check_is_what_keeps_the_dispatch_interrupted
+    with mock.patch.object(ReviewLedger, "_run_identity_is_new", lambda self, row: None):
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <class 'candidate_review.ledger.ReviewLedger'> does not have the attribute '_run_identity_is_new'
+
+======================================================================
+FAIL: test_a_ledger_file_that_holds_one_run_identity_twice_is_refused (tools.test_candidate_review_panel.CursorTest)
+Such a ledger cannot tell two calls of the same name apart, so it is never read as a cursor.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 518, in test_a_ledger_file_that_holds_one_run_identity_twice_is_refused
+    with self.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_a_reused_run_identity_never_turns_an_interrupted_dispatch_into_a_completed_call (tools.test_candidate_review_panel.CursorTest)
+Known-wrong case: a stopped run left a dispatch with no call row. A second run under the same
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 551, in test_a_reused_run_identity_never_turns_an_interrupted_dispatch_into_a_completed_call
+    self.assertTrue(ReviewLedger(harness.ledger_path).interrupted(key))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_a_run_identity_the_ledger_already_holds_is_refused (tools.test_candidate_review_panel.CursorTest)
+The cursor names a call by its run identity and sequence number, so a second run under one
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 504, in test_a_run_identity_the_ledger_already_holds_is_refused
+    with self.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.936s
+
+FAILED (failures=3, errors=1)

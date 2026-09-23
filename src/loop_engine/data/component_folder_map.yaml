@@ -1,5 +1,5 @@
 record_type: component_folder_map/v1
-version: 1.5.0
+version: 1.6.0
 folders:
   - path: src/loop_engine/core/decisions
     semantic_owner: typed_decision_contracts_and_provider_adapters
@@ -37,6 +37,12 @@ folders:
     forbidden_component_kinds: [new_runtime, provider]
     public_boundary: owning_typed_capability_observation_and_provisioning_modules
     dependency_direction: helpers_depend_on_passive_records_and_validation_never_the_run_services_facade
+  - path: src/loop_engine/core/library_ingestion
+    semantic_owner: outside_harness_material_with_provenance_as_review_only_candidates
+    allowed_component_kinds: [adapter, provider, policy, result, artifact]
+    forbidden_component_kinds: [new_runtime, intelligence_layer]
+    public_boundary: library_candidate_batch_records_and_candidate_intelligence_specifications_v2
+    dependency_direction: source_engines_and_pipeline_depend_on_passive_records_never_on_serving_or_approval
   - path: src/loop_engine/loop
     semantic_owner: canonical_loop_runtime_and_runtime_contracts
     allowed_component_kinds: [runtime_definition, profile, procedure, policy]

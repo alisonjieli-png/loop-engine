@@ -1,0 +1,283 @@
+FEEEEEEFE.........................................................s........................................F.E..............E....FE.FEEE..........F...EEEE.................
+======================================================================
+ERROR: test_a_kind_declared_twice_is_refused (tools.test_candidate_review_configuration.CriteriaByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 347, in test_a_kind_declared_twice_is_refused
+    value["groundings"].append(copy.deepcopy(value["groundings"][0]))
+KeyError: 'groundings'
+
+======================================================================
+ERROR: test_a_kind_description_that_is_not_a_quote_is_refused (tools.test_candidate_review_configuration.CriteriaByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 332, in test_a_kind_description_that_is_not_a_quote_is_refused
+    value["groundings"][0]["meaning"] = "Approve it when it reads well."
+KeyError: 'groundings'
+
+======================================================================
+ERROR: test_an_undeclared_kind_receives_only_the_criteria_for_every_kind (tools.test_candidate_review_configuration.CriteriaByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 318, in test_an_undeclared_kind_receives_only_the_criteria_for_every_kind
+    unknown = {item.criterion_id for item in criteria.applicable("a_kind_nobody_declared")}
+AttributeError: 'CompiledCriteria' object has no attribute 'applicable'
+
+======================================================================
+ERROR: test_each_kind_is_described_by_a_quote_of_the_sheet (tools.test_candidate_review_configuration.CriteriaByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 299, in test_each_kind_is_described_by_a_quote_of_the_sheet
+    self.assertEqual(set(criteria.groundings), {RESTATES, GENERAL_PRACTICE})
+AttributeError: 'CompiledCriteria' object has no attribute 'groundings'
+
+======================================================================
+ERROR: test_each_kind_receives_only_its_own_grounding_criterion (tools.test_candidate_review_configuration.CriteriaByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 305, in test_each_kind_receives_only_its_own_grounding_criterion
+    practice = {item.criterion_id for item in criteria.applicable(GENERAL_PRACTICE)}
+AttributeError: 'CompiledCriteria' object has no attribute 'applicable'
+
+======================================================================
+ERROR: test_the_applicability_is_what_withholds_the_other_kind_criterion (tools.test_candidate_review_configuration.CriteriaByKindTest)
+Mutant control: with applicability ignored, a body of general practice is judged as a restatement.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 362, in test_the_applicability_is_what_withholds_the_other_kind_criterion
+    with mock.patch.object(config, "criterion_applies", lambda criterion, grounding: True):
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <module 'candidate_review.configuration' from '/home/username/.le-library/ls2/tools/candidate_review/configuration.py'> does not have the attribute 'criterion_applies'
+
+======================================================================
+ERROR: test_the_kinds_are_the_format_engine_groundings (tools.test_candidate_review_configuration.CriteriaByKindTest)
+One vocabulary of kinds: the criteria and the format pre-check cannot drift apart.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 356, in test_the_kinds_are_the_format_engine_groundings
+    self.assertEqual(set(criteria.groundings),
+AttributeError: 'CompiledCriteria' object has no attribute 'groundings'
+
+======================================================================
+ERROR: test_the_decision_rule_is_what_discounts_the_producer_family (tools.test_candidate_review_panel.ApprovalRuleTest)
+Mutant control: with the selection and the decision guards both removed, the producer approves.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 257, in test_the_decision_rule_is_what_discounts_the_producer_family
+    with mock.patch.object(panel_module, "producer_family_excluded", lambda installation, producer: False), \
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <module 'candidate_review.panel' from '/home/username/.le-library/ls2/tools/candidate_review/panel.py'> does not have the attribute 'counts_toward_approval'
+
+======================================================================
+ERROR: test_a_dispatched_call_that_never_completed_is_not_repeated (tools.test_candidate_review_panel.CursorTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 460, in test_a_dispatched_call_that_never_completed_is_not_repeated
+    key = panel_module.review_key(installation, request, build_prompt(request, installation, INSTRUCTIONS))
+TypeError: review_key() takes 2 positional arguments but 3 were given
+
+======================================================================
+ERROR: test_the_prompt_digest_is_what_makes_a_changed_prompt_a_new_subject (tools.test_candidate_review_panel.PromptBindingTest)
+Mutant control: with the prompt left out of the review key, the stale verdicts are reused.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 575, in test_the_prompt_digest_is_what_makes_a_changed_prompt_a_new_subject
+    harness.run([_request()])
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 159, in run
+    return panel.run(panel_module.PanelRunRequest(
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 285, in run
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 285, in <listcomp>
+    items = [one(request) for request in run_request.requests]
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 282, in one
+    return self._item(request, run_request, eligible, availability, budget, state)
+  File "/home/username/.le-library/ls2/tools/candidate_review/panel.py", line 324, in _item
+    key = review_key(installation, request)
+TypeError: _key_without_prompt() missing 1 required positional argument: 'prompt'
+
+======================================================================
+ERROR: test_a_general_practice_prompt_names_its_kind_and_only_its_criteria (tools.test_candidate_review_panel.RequestByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 504, in test_a_general_practice_prompt_names_its_kind_and_only_its_criteria
+    self.assertEqual(request.grounding, GENERAL_PRACTICE)
+AttributeError: 'CandidateReviewRequest' object has no attribute 'grounding'
+
+======================================================================
+ERROR: test_a_restated_source_prompt_names_its_kind_and_only_its_criteria (tools.test_candidate_review_panel.RequestByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 514, in test_a_restated_source_prompt_names_its_kind_and_only_its_criteria
+    self.assertEqual(request.grounding, RESTATES)
+AttributeError: 'CandidateReviewRequest' object has no attribute 'grounding'
+
+======================================================================
+ERROR: test_the_request_is_what_withholds_the_other_kind_criterion (tools.test_candidate_review_panel.RequestByKindTest)
+Mutant control: with every criterion applicable, the misapplied rejection counts.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 539, in test_the_request_is_what_withholds_the_other_kind_criterion
+    with mock.patch.object(config, "criterion_applies", lambda criterion, grounding: True):
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <module 'candidate_review.configuration' from '/home/username/.le-library/ls2/tools/candidate_review/configuration.py'> does not have the attribute 'criterion_applies'
+
+======================================================================
+ERROR: test_each_item_names_a_criterion_that_applies_to_its_kind (tools.test_candidate_review_calibration.CommittedSetTest) (item='calibration_false_claim_about_the_cited_file')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_calibration.py", line 96, in test_each_item_names_a_criterion_that_applies_to_its_kind
+    self.assertIn(item.criterion_id, request.applicable_criteria_ids)
+AttributeError: 'CandidateReviewRequest' object has no attribute 'applicable_criteria_ids'
+
+======================================================================
+ERROR: test_each_item_names_a_criterion_that_applies_to_its_kind (tools.test_candidate_review_calibration.CommittedSetTest) (item='calibration_step_that_defeats_the_purpose')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_calibration.py", line 96, in test_each_item_names_a_criterion_that_applies_to_its_kind
+    self.assertIn(item.criterion_id, request.applicable_criteria_ids)
+AttributeError: 'CandidateReviewRequest' object has no attribute 'applicable_criteria_ids'
+
+======================================================================
+ERROR: test_each_item_names_a_criterion_that_applies_to_its_kind (tools.test_candidate_review_calibration.CommittedSetTest) (item='calibration_effects_left_undeclared')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_calibration.py", line 96, in test_each_item_names_a_criterion_that_applies_to_its_kind
+    self.assertIn(item.criterion_id, request.applicable_criteria_ids)
+AttributeError: 'CandidateReviewRequest' object has no attribute 'applicable_criteria_ids'
+
+======================================================================
+ERROR: test_each_item_names_a_criterion_that_applies_to_its_kind (tools.test_candidate_review_calibration.CommittedSetTest) (item='calibration_known_good_test_driven_change')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_calibration.py", line 96, in test_each_item_names_a_criterion_that_applies_to_its_kind
+    self.assertIn(item.criterion_id, request.applicable_criteria_ids)
+AttributeError: 'CandidateReviewRequest' object has no attribute 'applicable_criteria_ids'
+
+======================================================================
+ERROR: setUpClass (tools.test_candidate_review_record.CommittedPilotRecordTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 264, in setUpClass
+    cls.record = review_record.read_panel_review_record(json.loads(PILOT_RECORD.read_text(encoding="utf-8")))
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/pathlib.py", line 1134, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/home/username/.le-library/ls2/examples/29_intelligence_service/starter-catalogue/reviews-panel-2026-09-22.json'
+
+======================================================================
+ERROR: test_a_dispatch_that_has_a_call_is_not_an_interruption (tools.test_candidate_review_record.InterruptedDispatchTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 211, in test_a_dispatch_that_has_a_call_is_not_an_interruption
+    record = copy.deepcopy(_record_with_an_interrupted_dispatch())
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 184, in _record_with_an_interrupted_dispatch
+    "review_key": panel_module.review_key(installation, request, prompt), "installation_id": "a",
+TypeError: review_key() takes 2 positional arguments but 3 were given
+
+======================================================================
+ERROR: test_an_interrupted_dispatch_is_recorded_and_counted (tools.test_candidate_review_record.InterruptedDispatchTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 203, in test_an_interrupted_dispatch_is_recorded_and_counted
+    record = _read(_record_with_an_interrupted_dispatch())
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 184, in _record_with_an_interrupted_dispatch
+    "review_key": panel_module.review_key(installation, request, prompt), "installation_id": "a",
+TypeError: review_key() takes 2 positional arguments but 3 were given
+
+======================================================================
+ERROR: test_an_interruption_the_totals_do_not_count_is_refused (tools.test_candidate_review_record.InterruptedDispatchTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 222, in test_an_interruption_the_totals_do_not_count_is_refused
+    record = copy.deepcopy(_record_with_an_interrupted_dispatch())
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 184, in _record_with_an_interrupted_dispatch
+    "review_key": panel_module.review_key(installation, request, prompt), "installation_id": "a",
+TypeError: review_key() takes 2 positional arguments but 3 were given
+
+======================================================================
+FAIL: test_a_criterion_for_an_undeclared_kind_is_refused (tools.test_candidate_review_configuration.CriteriaByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 328, in test_a_criterion_for_an_undeclared_kind_is_refused
+    self.assertEqual(caught.exception.code, "criteria_grounding_unknown")
+AssertionError: 'unknown_record_fields' != 'criteria_grounding_unknown'
+- unknown_record_fields
++ criteria_grounding_unknown
+
+
+======================================================================
+FAIL: test_the_first_criteria_version_is_refused (tools.test_candidate_review_configuration.CriteriaByKindTest)
+Version one sent every criterion for every kind; its shape is not read as the current one.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_configuration.py", line 341, in test_the_first_criteria_version_is_refused
+    with self.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_every_known_wrong_body_is_refused_by_its_kind (tools.test_candidate_review_prechecks.KnownWrongCandidateTest) (case='secret shape in a cited source')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_prechecks.py", line 218, in test_every_known_wrong_body_is_refused_by_its_kind
+    self.assertTrue(outcome.refused, name)
+AssertionError: False is not true : secret shape in a cited source
+
+======================================================================
+FAIL: test_every_known_wrong_body_is_refused_by_its_kind (tools.test_candidate_review_prechecks.KnownWrongCandidateTest) (case='secret shape in the item record')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_prechecks.py", line 218, in test_every_known_wrong_body_is_refused_by_its_kind
+    self.assertTrue(outcome.refused, name)
+AssertionError: False is not true : secret shape in the item record
+
+======================================================================
+FAIL: test_an_approval_from_the_producer_family_never_counts_toward_the_quorum (tools.test_candidate_review_panel.ApprovalRuleTest)
+The decision rule discounts the producer's family even when the selection let it in.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 249, in test_an_approval_from_the_producer_family_never_counts_toward_the_quorum
+    self.assertEqual(item.outcome, panel_module.PANEL_INCOMPLETE)
+AssertionError: 'approved' != 'panel_incomplete'
+- approved
++ panel_incomplete
+
+
+======================================================================
+FAIL: test_a_changed_prompt_is_a_new_review_subject (tools.test_candidate_review_panel.PromptBindingTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 564, in test_a_changed_prompt_is_a_new_review_subject
+    self.assertEqual(len(second.calls), 3)
+AssertionError: 0 != 3
+
+======================================================================
+FAIL: test_a_finding_that_cites_the_other_kind_criterion_is_not_counted (tools.test_candidate_review_panel.RequestByKindTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_panel.py", line 528, in test_a_finding_that_cites_the_other_kind_criterion_is_not_counted
+    self.assertEqual(call["error_code"], "finding_cites_unknown_criterion")
+AssertionError: '' != 'finding_cites_unknown_criterion'
++ finding_cites_unknown_criterion
+
+======================================================================
+FAIL: test_a_criterion_of_the_other_kind_of_body_is_refused (tools.test_candidate_review_calibration.MalformedSetTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_calibration.py", line 127, in test_a_criterion_of_the_other_kind_of_body_is_refused
+    with self.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+----------------------------------------------------------------------
+Ran 172 tests in 10.111s
+
+FAILED (failures=8, errors=21, skipped=1)

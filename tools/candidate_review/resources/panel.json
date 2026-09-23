@@ -1,0 +1,239 @@
+{
+  "record_type": "candidate_review_panel/v1",
+  "policy": {
+    "record_type": "candidate_review_panel_policy/v1",
+    "minimum_approvals": 3,
+    "minimum_distinct_families": 3,
+    "exclude_producer_family": true,
+    "any_rejection_withholds_approval": true,
+    "reviewers_per_item": 3,
+    "stop_asking_after_first_rejection": false,
+    "prechecks": {
+      "licence": ["builtin_licence_rules"],
+      "format": ["builtin_format_rules", "agent_skills_reference"],
+      "safety": ["builtin_static_rules", "skillspector_static"],
+      "effects": ["builtin_effect_rules"],
+      "secrets": ["builtin_secret_patterns"],
+      "duplicates": ["exact_shingle_jaccard", "datasketch_minhash_lsh"]
+    },
+    "accepted_licences": ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "CC0-1.0", "CC-BY-4.0"],
+    "output_allocation_tokens": 8192,
+    "temperature": 0.0,
+    "rate_limit": {
+      "initial_seconds": 15.0,
+      "maximum_seconds": 120.0,
+      "maximum_total_seconds": 900.0,
+      "maximum_retries_per_call": 3
+    }
+  },
+  "families": ["anthropic", "openai", "zhipu", "deepseek", "alibaba", "minimax", "moonshot", "mistral", "nvidia", "google"],
+  "precheck_engines": {
+    "builtin_licence_rules": {
+      "licence_states_accepted": ["declared"],
+      "licence_sentence": "Licence: {licence}."
+    },
+    "builtin_format_rules": {
+      "minimum_words": 150,
+      "maximum_words": 600,
+      "required_parts": ["## When to use it", "## Steps", "## Checks", "## Known-wrong example", "## What to record", "## Source"],
+      "grounding_sentences": {
+        "restates_cited_source": "Compiled from revision {revision}.",
+        "general_practice_beside_cited_source": "Written for this catalogue at revision {revision}."
+      },
+      "general_practice_grounding": "general_practice_beside_cited_source",
+      "general_practice_sentence": "The steps above are ordinary engineering practice, written for this catalogue in its own words.",
+      "maximum_description_characters": 1024,
+      "forbidden_patterns": [
+        "(?<![a-z0-9])loops?(?![a-z0-9])",
+        "(?<![a-z0-9])practitioners?(?![a-z0-9])",
+        "role[\\s_-]+profiles?",
+        "runtime[\\s_-]+classification",
+        "solution[\\s_-]+canvas",
+        "code[\\s_-]+nodes?",
+        "(?<![a-z0-9])spawn(?:s|ed|ing)?(?![a-z0-9])",
+        "starting[\\s_-]+(?:solution|intelligence)(?![a-z0-9])",
+        "run[\\s_-]+history",
+        "runtime[\\s_-]+(?:memory|history)",
+        "(?:context|code|solution|feedback)[\\s_-]+intelligence",
+        "intelligence[\\s_-]+(?:items?|quer(?:y|ies)|layers?)",
+        "(?<![a-z0-9])(?:grand)?child(?:ren)?(?![a-z0-9])",
+        "[\u2014\u2013\u2015\u2212]",
+        "stop[\\s_-]+conditions?",
+        "(?<![a-z0-9])receipts?(?![a-z0-9])",
+        "(?<![a-z0-9])chronicles?(?![a-z0-9])",
+        "what[\\s_-]*is[\\s_-]*next|what[\\s_-]+next|whats[\\s_-]*next"
+      ]
+    },
+    "agent_skills_reference": {
+      "program": "agentskills",
+      "arguments": ["validate", "{skill_folder}"],
+      "version_arguments": ["--version"],
+      "timeout_seconds": 60
+    },
+    "builtin_static_rules": {},
+    "skillspector_static": {
+      "program": "skillspector",
+      "arguments": ["scan", "{skill_folder}", "--no-llm", "--format", "json", "--output", "{report_path}"],
+      "version_arguments": ["--version"],
+      "timeout_seconds": 180,
+      "tolerated_partial_reasons": ["reference_missing"],
+      "refuse_at_or_above": "HIGH"
+    },
+    "builtin_effect_rules": {},
+    "builtin_secret_patterns": {
+      "extra_patterns": [
+        "sk_(?:live|test)_[A-Za-z0-9]{16,}",
+        "github_pat_[A-Za-z0-9_]{20,}",
+        "AIza[0-9A-Za-z_\\-]{35}",
+        "eyJ[A-Za-z0-9_\\-]{10,}\\.eyJ[A-Za-z0-9_\\-]{10,}\\.[A-Za-z0-9_\\-]{10,}",
+        "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+      ]
+    },
+    "exact_shingle_jaccard": {
+      "shingle_words": 5,
+      "near_duplicate_threshold": 0.8,
+      "maximum_population": 5000
+    },
+    "datasketch_minhash_lsh": {
+      "shingle_words": 5,
+      "near_duplicate_threshold": 0.8,
+      "permutations": 128
+    }
+  },
+  "installations": [
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.deepseek-v4-pro",
+      "engine_kind": "model_gateway",
+      "family": "deepseek",
+      "model": "deepseek-v4-pro:0813",
+      "quota_group": "ollama_cloud",
+      "lens": "provenance_licence_and_safety",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.deepseek-v4-pro", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.qwen3.5-397b",
+      "engine_kind": "model_gateway",
+      "family": "alibaba",
+      "model": "qwen3.5:397b",
+      "quota_group": "ollama_cloud",
+      "lens": "correctness_and_usefulness",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.qwen3.5-397b", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "codex.gpt-6-sol",
+      "engine_kind": "command_line",
+      "family": "openai",
+      "model": "gpt-6-sol",
+      "quota_group": "codex_subscription",
+      "lens": "adversarial",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {
+        "program": "codex",
+        "arguments": ["exec", "--json", "--sandbox", "read-only", "--skip-git-repo-check", "--ephemeral", "--ignore-user-config", "--ignore-rules", "--disable", "shell_tool", "--disable", "unified_exec", "--disable", "apps", "--disable", "plugins", "--disable", "browser_use", "--disable", "computer_use", "--disable", "multi_agent", "--disable", "image_generation", "--disable", "view_image", "-m", "{model}", "-c", "model_reasoning_effort=\"medium\"", "-C", "{workdir}", "-"],
+        "version_arguments": ["--version"],
+        "output_protocol": "codex_exec_jsonl",
+        "timeout_seconds": 900.0,
+        "reserved_overhead_tokens": 16384
+      }
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.minimax-m3",
+      "engine_kind": "model_gateway",
+      "family": "minimax",
+      "model": "minimax-m3",
+      "quota_group": "ollama_cloud",
+      "lens": "provenance_licence_and_safety",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.minimax-m3", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.kimi-k2.6",
+      "engine_kind": "model_gateway",
+      "family": "moonshot",
+      "model": "kimi-k2.6",
+      "quota_group": "ollama_cloud",
+      "lens": "adversarial",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.kimi-k2.6", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.glm-5.3",
+      "engine_kind": "model_gateway",
+      "family": "zhipu",
+      "model": "glm-5.3",
+      "quota_group": "ollama_cloud",
+      "lens": "correctness_and_usefulness",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.glm-5.3", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072, "output_allocation_tokens": 32768, "answer_format": "json_after_reasoning"}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.mistral-large-3",
+      "engine_kind": "model_gateway",
+      "family": "mistral",
+      "model": "mistral-large-3:675b",
+      "quota_group": "ollama_cloud",
+      "lens": "adversarial",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.mistral-large-3", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.gpt-oss-120b",
+      "engine_kind": "model_gateway",
+      "family": "openai",
+      "model": "gpt-oss:120b",
+      "quota_group": "ollama_cloud",
+      "lens": "correctness_and_usefulness",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.gpt-oss-120b", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "ollama.kimi-k3",
+      "engine_kind": "model_gateway",
+      "family": "moonshot",
+      "model": "kimi-k3",
+      "quota_group": "ollama_cloud",
+      "lens": "adversarial",
+      "enabled": false,
+      "disabled_reason": "The owner named Kimi 3 on 22 September 2026, and the repository route policy refuses this model on every route and for every purpose (core/model_routes.py, and the conformance rule forbidden_model_mention). Lifting that refusal is a change to the model policy itself, outside this review panel. The same family is reviewed through kimi-k2.6.",
+      "settings": {"provider_id": "ollama_cloud", "route_name": "review.ollama.kimi-k3", "purpose": "decide_label", "timeout_seconds": 600.0, "maximum_context_tokens": 131072}
+    },
+    {
+      "record_type": "candidate_reviewer_installation/v1",
+      "installation_id": "claude_code.bare",
+      "engine_kind": "command_line",
+      "family": "anthropic",
+      "model": "claude-opus-5-5",
+      "quota_group": "anthropic_api",
+      "lens": "adversarial",
+      "enabled": true,
+      "disabled_reason": "",
+      "settings": {
+        "program": "claude",
+        "arguments": ["-p", "--bare", "--tools", "", "--output-format", "json", "--no-session-persistence", "--model", "{model}"],
+        "version_arguments": ["--version"],
+        "output_protocol": "claude_print_json",
+        "timeout_seconds": 900.0,
+        "reserved_overhead_tokens": 16384
+      }
+    }
+  ]
+}

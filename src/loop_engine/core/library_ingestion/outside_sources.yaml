@@ -1,0 +1,269 @@
+# The curated outside sources an ingestion run may read. Record: library_outside_sources/v1.
+# Every commit was resolved and every repository licence verified on 2026-09-22 through GitHub's
+# licence interface and the licence text (tools/ingest_outside_material.py curate). The licence
+# gate still decides each file at run time; a repository whose licence changed stops the run.
+# Repositories curated and dropped, with the reason:
+#   dallay/agents-skills: MIT at the root, but it holds copies of other authors' skills (Anthropic's Apache-2.0 skills and web quality skills), so its root licence cannot stand in for theirs.
+#   sickn33/antigravity-awesome-skills: An aggregation of thousands of third-party skills under one root licence.
+#   jeremylongshore/claude-code-plugins-plus-skills: An aggregation of third-party and generated skills under one root licence.
+#   davila7/claude-code-templates: An aggregation of third-party components under one root licence.
+#   alirezarezvani/claude-skills: Half of its skill files are symbolic links and its layout mixes copies; left for a later curation.
+#   ComposioHQ/awesome-claude-skills: No repository licence; not read in this increment.
+# The order is the duplicate order: when two sources hold the same text, the one listed first is
+# kept and the other is merged into it. The original authors come first, collections of several
+# authors' work after them, so a copy never displaces its original or takes on another licence.
+record_type: library_outside_sources/v1
+curated_on: '2026-09-22'
+curated_by: Claude Code (LS1), from the curation evidence of 2026-09-22
+sources:
+- source_id: github.anthropics.skills
+  engine: github_pinned_repositories
+  repository: anthropics/skills
+  commit: 34040c9c568585f6929bedeaad110ad08f079624
+  use: verbatim
+  content_origin: per_file_licences
+  expected_licence: null
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: No repository licence; each skill folder carries its own LICENSE.txt, Apache-2.0 for most and a source-available licence
+    that forbids derivative works for the document skills. Decided file by file.
+- source_id: github.openai.skills
+  engine: github_pinned_repositories
+  repository: openai/skills
+  commit: 49f948faa9258a0c61caceaf225e179651397431
+  use: verbatim
+  content_origin: per_file_licences
+  expected_licence: null
+  include:
+  - skills/.curated/*/SKILL.md
+  - skills/.system/*/SKILL.md
+  exclude: []
+  note: No repository licence; each skill folder carries its own LICENSE.txt. Decided file by file.
+- source_id: github.huggingface.skills
+  engine: github_pinned_repositories
+  repository: huggingface/skills
+  commit: abc20ae526d8b4c0e4dff89f904adce28a4a0eb6
+  use: verbatim
+  content_origin: first_party
+  expected_licence: Apache-2.0
+  include:
+  - skills/*/SKILL.md
+  - hf-mcp/skills/*/SKILL.md
+  exclude: []
+  note: Apache-2.0, both signals agree. Apache requires the licence copy and a change notice; both travel with each rendered
+    skill.
+- source_id: github.obra.superpowers
+  engine: github_pinned_repositories
+  repository: obra/superpowers
+  commit: 5bf4e78011075bcfc0dc295f0724994cd123ee71
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: MIT at the pinned commit (licence interface and text agree). Skills written by the repository author.
+- source_id: github.mattpocock.skills
+  engine: github_pinned_repositories
+  repository: mattpocock/skills
+  commit: c55ee46073ed923f86ce59a5eb3b6d895095d1b7
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - skills/*/*/SKILL.md
+  exclude:
+  - skills/in-progress/**
+  note: MIT, both signals agree. Drafts under skills/in-progress are left out.
+- source_id: github.addyosmani.web-quality-skills
+  engine: github_pinned_repositories
+  repository: addyosmani/web-quality-skills
+  commit: afa8da942115f2961fdbfa80807ea0b232ff6c00
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree.
+- source_id: github.blader.humanizer
+  engine: github_pinned_repositories
+  repository: blader/humanizer
+  commit: 9862685f575c65a8247f90369951df1b3416e3d6
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - SKILL.md
+  exclude: []
+  note: MIT, both signals agree. One skill at the repository root.
+- source_id: github.vercel-labs.skills
+  engine: github_pinned_repositories
+  repository: vercel-labs/skills
+  commit: 7407f3893ad4dceab546ac002c3ef806e4000c73
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree.
+- source_id: github.fission-ai.openspec
+  engine: github_pinned_repositories
+  repository: Fission-AI/OpenSpec
+  commit: f179ed4e40567cdb56501ee3f4d09efbcb1557b8
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree.
+- source_id: github.github.spec-kit
+  engine: github_pinned_repositories
+  repository: github/spec-kit
+  commit: 3a96599d778f7cb138c78f33cbb221cca9a0690a
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - .github/skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree.
+- source_id: github.nextlevelbuilder.ui-ux-pro-max-skill
+  engine: github_pinned_repositories
+  repository: nextlevelbuilder/ui-ux-pro-max-skill
+  commit: dcc40ff5133ef78276117db0cc34e7b83cc8aeba
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - .claude/skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree. Most skills bundle scripts, which this increment refuses by name.
+- source_id: github.k-dense-ai.claude-scientific-skills
+  engine: github_pinned_repositories
+  repository: K-Dense-AI/claude-scientific-skills
+  commit: 49c6e97775eaa18ba791bebe23162a70ae601c18
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree. Five nested licence files are decided file by file.
+- source_id: github.wshobson.agents
+  engine: github_pinned_repositories
+  repository: wshobson/agents
+  commit: 4236bb91f8395b0435f1d8b8baf9e8e4c69a8620
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - plugins/*/skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree.
+- source_id: github.affaan-m.everything-claude-code
+  engine: github_pinned_repositories
+  repository: affaan-m/everything-claude-code
+  commit: bf70150eb2df8070024e5bdf08e4aa08959e2735
+  use: verbatim
+  content_origin: first_party
+  expected_licence: MIT
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: MIT, both signals agree. Only the skills folder; translated and per-harness copies under docs, .agents, .kiro and
+    .cursor are left out.
+- source_id: github.github.awesome-copilot
+  engine: github_pinned_repositories
+  repository: github/awesome-copilot
+  commit: a89cd67e19bbd856c11c27da07cb30bbd8f8c2c1
+  use: verbatim
+  content_origin: contributed_under_repository_licence
+  expected_licence: MIT
+  include:
+  - skills/*/SKILL.md
+  - instructions/*.instructions.md
+  exclude: []
+  note: MIT, both signals agree. Its contributing guide states that contributions are licensed under MIT.
+- source_id: github.patrickjs.awesome-cursorrules
+  engine: github_pinned_repositories
+  repository: PatrickJS/awesome-cursorrules
+  commit: b044f956f021b6e8877f16781bcfc466a6a120e9
+  use: verbatim
+  content_origin: contributed_under_repository_licence
+  expected_licence: CC0-1.0
+  include:
+  - rules/*.mdc
+  exclude: []
+  note: CC0-1.0, both signals agree. Cursor rule files.
+- source_id: github.juliusbrussee.caveman
+  engine: github_pinned_repositories
+  repository: JuliusBrussee/caveman
+  commit: 2fd153c67988e980fb0b2455c90832159a6a5a25
+  use: outline
+  content_origin: first_party
+  expected_licence: null
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: The licence interface reports NOASSERTION and the text matches no template (0.83), so it is read for outlines only.
+- source_id: github.coleam00.excalidraw-diagram-skill
+  engine: github_pinned_repositories
+  repository: coleam00/excalidraw-diagram-skill
+  commit: 8646fcc9f74f38539c6cdb4c969723336a96ddcd
+  use: outline
+  content_origin: first_party
+  expected_licence: null
+  include:
+  - SKILL.md
+  exclude: []
+  note: 'No licence file: default copyright. Read for an outline only.'
+- source_id: github.vercel-labs.agent-skills
+  engine: github_pinned_repositories
+  repository: vercel-labs/agent-skills
+  commit: 063bee94c3f4df8453406c830b0a7df0f2860278
+  use: outline
+  content_origin: first_party
+  expected_licence: null
+  include:
+  - skills/*/SKILL.md
+  exclude: []
+  note: No licence file at the pinned commit. Read for outlines only.
+- source_id: github.trailofbits.skills
+  engine: github_pinned_repositories
+  repository: trailofbits/skills
+  commit: 32e34f8173796e3566a51aee877dc96bc5191f64
+  use: outline
+  content_origin: first_party
+  expected_licence: null
+  include:
+  - plugins/*/skills/*/SKILL.md
+  exclude: []
+  note: CC-BY-SA-4.0 is a share-alike licence, not on the accepted list. Read for outlines only.
+- source_id: registry.mcp.official
+  engine: mcp_official_registry
+  host: registry.modelcontextprotocol.io
+  use: link
+  maximum_entries: 3000
+  exclude_name_prefixes:
+  - ai.smithery/
+  note: Official Model Context Protocol registry, latest versions, link mode. Smithery's hosted copies are left out as copies
+    of other entries.
+schemas:
+- schema_id: codex_config
+  host: github.com
+  repository: openai/codex
+  commit: 4b664e0ef0397f82e68c60088a90fcd035deb796
+  path: codex-rs/core/config.schema.json
+  sha256: 17fbda7e71603aa6a83e986608f2e13c27ea46ce1a4b889196ba81a07c39d907
+  licence: Apache-2.0
+- schema_id: opencode_config
+  host: opencode.ai
+  repository: null
+  commit: null
+  path: config.json
+  sha256: e8cb6e287a3852ee3403f4803be5ad6b19db94948037eaa9672125c333427922
+  licence: MIT

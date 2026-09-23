@@ -198,7 +198,8 @@
     "core/service_runtime/account_email_checks.py",
     "core/service_runtime/observability_checks.py",
     "core/local_model_readiness.py",
-    "core/service_runtime/catalogue_serving_checks.py"
+    "core/service_runtime/catalogue_serving_checks.py",
+    "core/library_ingestion/https_transport.py"
   ],
   "notes": [
     "Project-owned uv-cache and npm-cache directories contain downloaded dependency archives, not first-party source terminology. They are excluded from the prose nomenclature scan; import/runtime source and adapter controls remain scanned. workspace_docker_cleanup_checks declares subprocess solely for its explicit opt-in container lifetime qualification; its folded self-test uses injected local fixtures.",
@@ -430,6 +431,9 @@
         ".children",
         "last-child",
         "appendChild"
+      ],
+      "core/library_ingestion/licence_templates.json": [
+        "receipt"
       ]
     },
     "excluded_directories": [
@@ -530,7 +534,8 @@
     "core/workspace_docker_cleanup_checks.py",
     "core/workspace_local.py",
     "core/workspace_optional.py",
-    "loop/loop_handoff.py"
+    "loop/loop_handoff.py",
+    "core/library_ingestion/processes.py"
   ],
   "suite_collection_exceptions": {
     "code_nodes/complex_task_published_evidence.py": "the public complex_task_benchmark facade calls this helper self_test and adds validation of the current reviewed catalog; folding both modules would count the same contract checks twice.",
@@ -852,6 +857,7 @@
     "core/service_runtime/account_email_checks.py": "Account email checks. The adapter itself runs with injected transports; the two real transport functions are exercised against owned loopback listeners that the module starts and stops, so that redirect refusal, the response ceiling and the deadline are observed rather than asserted. No identity provider, mail provider, real address or external network is used.",
     "core/service_runtime/observability_checks.py": "Real loopback-only acceptance for the request reference, the failure journal and the measured readiness answer. It drives the owned temporary fixture server over loopback so that the privacy guard can read every byte of the durable store afterwards. No external provider, remote account or hosted credential is used.",
     "core/local_model_readiness.py": "Reads the operator-declared local inference server's own model listing and model information before an unattended run starts. Bounded GET and POST to the declared address only, no credential read or sent, no generation, and an injectable opener so every check runs offline.",
-    "core/service_runtime/catalogue_serving_checks.py": "Loopback-only catalogue release acceptance: owned temporary listeners from http_test_fixtures, a temporary service store and body folder, and the official HTTP client. No identity, payment or model provider is contacted and no body leaves the machine."
+    "core/service_runtime/catalogue_serving_checks.py": "Loopback-only catalogue release acceptance: owned temporary listeners from http_test_fixtures, a temporary service store and body folder, and the official HTTP client. No identity, payment or model provider is contacted and no body leaves the machine.",
+    "core/library_ingestion/https_transport.py": "The library ingestion component's one network module: bounded read-only HTTPS GET requests to hosts a run declares (the official Model Context Protocol registry, the npm and PyPI registries for exact-version package checks, the OpenCode schema host), no redirects, no credential sent, every request admitted by a declared ceiling and recorded; it also owns the component's address parsing helpers."
   }
 }

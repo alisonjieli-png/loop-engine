@@ -1,0 +1,678 @@
+{
+  "record_type": "candidate_review_source_mutants/v1",
+  "checks": [
+    "test_candidate_review_configuration",
+    "test_candidate_review_prechecks",
+    "test_candidate_review_engines",
+    "test_candidate_review_panel",
+    "test_candidate_review_calibration",
+    "test_candidate_review_record"
+  ],
+  "linked_folders": [
+    "examples",
+    "integrations",
+    "src"
+  ],
+  "baseline": {
+    "exit_code": 0,
+    "summary": "OK (skipped=1)",
+    "seconds": 10.6,
+    "failed_checks": []
+  },
+  "baseline_passed": true,
+  "mutants": [
+    {
+      "mutant": "ledger_truncation_unchecked",
+      "file": "tools/candidate_review/ledger.py",
+      "guard": "a truncated ledger line is refused",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 10.1,
+      "failed_checks": []
+    },
+    {
+      "mutant": "run_identity_unchecked",
+      "file": "tools/candidate_review/ledger.py",
+      "guard": "a repeated run identity is refused",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=3, skipped=1)",
+      "seconds": 9.9,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.CursorTest.test_a_ledger_file_that_holds_one_run_identity_twice_is_refused",
+        "tools.test_candidate_review_panel.CursorTest.test_a_reused_run_identity_never_turns_an_interrupted_dispatch_into_a_completed_call",
+        "tools.test_candidate_review_panel.CursorTest.test_a_run_identity_the_ledger_already_holds_is_refused"
+      ]
+    },
+    {
+      "mutant": "record_reviewer_identity_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "a reviewer's family and installation are its calls'",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=5, skipped=1)",
+      "seconds": 10.6,
+      "failed_checks": [
+        "tools.test_candidate_review_record.ReviewerIdentityTest.test_a_call_of_the_producer_family_under_a_reviewer_of_another_family_is_refused",
+        "tools.test_candidate_review_record.ReviewerIdentityTest.test_calls_of_one_family_under_reviewers_of_three_families_are_refused",
+        "tools.test_candidate_review_record.ReviewerIdentityTest.test_calls_under_another_model_or_installation_are_refused"
+      ]
+    },
+    {
+      "mutant": "record_reviewer_decided_twice_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "one reviewer decides a row once",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 11.8,
+      "failed_checks": [
+        "tools.test_candidate_review_record.ReviewerIdentityTest.test_one_reviewer_counted_twice_toward_a_quorum_is_refused"
+      ]
+    },
+    {
+      "mutant": "builder_installation_change_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "the builder refuses calls under another installation",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 11.7,
+      "failed_checks": [
+        "tools.test_candidate_review_record.ReviewerIdentityTest.test_calls_made_under_another_installation_are_not_written_under_the_one_declared_now"
+      ]
+    },
+    {
+      "mutant": "record_call_without_reviewer_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "a call names a reviewer of the record",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (errors=1, skipped=1)",
+      "seconds": 11.5,
+      "failed_checks": [
+        "tools.test_candidate_review_record.ReviewerIdentityTest.test_a_call_by_an_installation_the_record_does_not_name_is_refused"
+      ]
+    },
+    {
+      "mutant": "criterion_type_unchecked",
+      "file": "tools/candidate_review/verdicts.py",
+      "guard": "a criterion that is not text is invalid, not raised",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (errors=2, skipped=1)",
+      "seconds": 12.0,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.AnswerValidationTest.test_a_finding_that_names_its_criterion_as_a_list_or_object_is_recorded_not_raised"
+      ]
+    },
+    {
+      "mutant": "recursion_error_raised",
+      "file": "tools/candidate_review/verdicts.py",
+      "guard": "deep nesting is not one answer",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (errors=3, skipped=1)",
+      "seconds": 10.8,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.AnswerValidationTest.test_deeply_nested_answer_text_is_recorded_not_raised"
+      ]
+    },
+    {
+      "mutant": "record_fixture_run_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "a fixture run record is refused",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 17.4,
+      "failed_checks": []
+    },
+    {
+      "mutant": "record_fixture_reviewer_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "a fixture reviewer is refused",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 29.9,
+      "failed_checks": []
+    },
+    {
+      "mutant": "fixture_outside_fixture_run_asked",
+      "file": "tools/candidate_review/panel.py",
+      "guard": "a fixture is never asked in a real run",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 18.9,
+      "failed_checks": []
+    },
+    {
+      "mutant": "token_ceiling_ignored",
+      "file": "tools/candidate_review/panel.py",
+      "guard": "the token ceiling stops the run",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 16.0,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.BudgetTest.test_the_token_ceiling_stops_the_run_before_the_next_call"
+      ]
+    },
+    {
+      "mutant": "spent_allowance_ignored",
+      "file": "tools/candidate_review/panel.py",
+      "guard": "a spent allowance stops its group",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 16.8,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.BudgetTest.test_a_spent_allowance_stops_every_reviewer_that_shares_it"
+      ]
+    },
+    {
+      "mutant": "new_family_not_first",
+      "file": "tools/candidate_review/panel.py",
+      "guard": "a new family is asked first",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 27.3,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.ApprovalRuleTest.test_a_same_family_reviewer_fills_in_only_when_a_new_family_remains"
+      ]
+    },
+    {
+      "mutant": "same_family_before_quorum",
+      "file": "tools/candidate_review/panel.py",
+      "guard": "a heard family fills in only after the quorum's families",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 41.5,
+      "failed_checks": []
+    },
+    {
+      "mutant": "rejection_without_reason_counted",
+      "file": "tools/candidate_review/verdicts.py",
+      "guard": "a rejection has a reason",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 37.4,
+      "failed_checks": []
+    },
+    {
+      "mutant": "rows_population_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "rows cover the selected items",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 34.1,
+      "failed_checks": []
+    },
+    {
+      "mutant": "record_totals_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "totals agree with rows and calls",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=2, skipped=1)",
+      "seconds": 21.7,
+      "failed_checks": [
+        "tools.test_candidate_review_record.InterruptedDispatchTest.test_an_interruption_the_totals_do_not_count_is_refused",
+        "tools.test_candidate_review_record.ReaderTest.test_totals_that_disagree_with_the_rows_are_refused"
+      ]
+    },
+    {
+      "mutant": "record_prefix_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "the approval reference prefix names this record",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 19.7,
+      "failed_checks": []
+    },
+    {
+      "mutant": "source_digest_unchecked",
+      "file": "tools/candidate_review/catalogue.py",
+      "guard": "a cited source is the pinned bytes",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 16.8,
+      "failed_checks": []
+    },
+    {
+      "mutant": "source_revision_unchecked",
+      "file": "tools/candidate_review/catalogue.py",
+      "guard": "a cited source is at the anchor revision",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 15.2,
+      "failed_checks": []
+    },
+    {
+      "mutant": "path_traversal_unchecked",
+      "file": "tools/candidate_review/catalogue.py",
+      "guard": "a body path stays in its folder",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 14.1,
+      "failed_checks": []
+    },
+    {
+      "mutant": "licence_state_unchecked",
+      "file": "tools/candidate_review/prechecks/licence.py",
+      "guard": "an unsettled licence state is refused",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 13.5,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "licence_sentence_unchecked",
+      "file": "tools/candidate_review/prechecks/licence.py",
+      "guard": "the text states its licence",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 12.7,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "licence_disagreement_unchecked",
+      "file": "tools/candidate_review/prechecks/licence.py",
+      "guard": "the text states no other licence",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 12.2,
+      "failed_checks": []
+    },
+    {
+      "mutant": "shell_block_effect_unchecked",
+      "file": "tools/candidate_review/prechecks/effects.py",
+      "guard": "a shell block declares spawns_process",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 11.7,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "word_count_unchecked",
+      "file": "tools/candidate_review/prechecks/format_rules.py",
+      "guard": "the word count is in range",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 11.9,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "required_parts_unchecked",
+      "file": "tools/candidate_review/prechecks/format_rules.py",
+      "guard": "every required part is present",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 12.2,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "practice_sentence_unchecked",
+      "file": "tools/candidate_review/prechecks/format_rules.py",
+      "guard": "the practice sentence matches the kind",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 12.4,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "description_truncation_unchecked",
+      "file": "tools/candidate_review/prechecks/format_rules.py",
+      "guard": "a description is never truncated",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 12.6,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "skillspector_threshold_raised",
+      "file": "tools/candidate_review/prechecks/skillspector.py",
+      "guard": "an issue at the threshold refuses",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=3, skipped=1)",
+      "seconds": 12.7,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.CommandEngineTest.test_a_finding_of_unknown_severity_refuses",
+        "tools.test_candidate_review_prechecks.CommandEngineTest.test_a_scanner_finding_refuses",
+        "tools.test_candidate_review_prechecks.CommandEngineTest.test_the_severity_threshold_is_what_lets_a_note_pass"
+      ]
+    },
+    {
+      "mutant": "secrets_item_record_unchecked",
+      "file": "tools/candidate_review/prechecks/secrets.py",
+      "guard": "the item record is scanned for secrets",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 12.4,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "producer_evidence_unchecked",
+      "file": "tools/candidate_review/configuration.py",
+      "guard": "a producer claim quotes its evidence",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 16.6,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.ProducerDeclarationTest.test_evidence_that_is_not_in_the_sheet_is_refused"
+      ]
+    },
+    {
+      "mutant": "exclude_producer_policy_unchecked",
+      "file": "tools/candidate_review/configuration.py",
+      "guard": "a policy cannot admit the producer family",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 14.6,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.PanelPolicyTest.test_the_producer_family_may_never_approve"
+      ]
+    },
+    {
+      "mutant": "rejection_policy_unchecked",
+      "file": "tools/candidate_review/configuration.py",
+      "guard": "a policy cannot ignore a rejection",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 13.6,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.PanelPolicyTest.test_a_rejection_must_withhold_approval"
+      ]
+    },
+    {
+      "mutant": "reviewers_below_quorum_unchecked",
+      "file": "tools/candidate_review/configuration.py",
+      "guard": "an item is put to at least the quorum",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 12.1,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.PanelPolicyTest.test_asking_fewer_reviewers_than_the_quorum_is_refused"
+      ]
+    },
+    {
+      "mutant": "disabled_without_reason_unchecked",
+      "file": "tools/candidate_review/configuration.py",
+      "guard": "a disabled reviewer says why",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 11.4,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.InstallationTest.test_a_disabled_installation_needs_a_written_reason"
+      ]
+    },
+    {
+      "mutant": "calibration_incomplete_trusted",
+      "file": "tools/candidate_review/calibration.py",
+      "guard": "a reviewer the calibration did not measure is not trusted",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=2, skipped=1)",
+      "seconds": 11.4,
+      "failed_checks": [
+        "tools.test_candidate_review_calibration.EvaluationTest.test_an_eligible_reviewer_the_calibration_never_reached_is_excluded",
+        "tools.test_candidate_review_calibration.EvaluationTest.test_no_verdict_on_a_known_wrong_item_excludes_the_reviewer"
+      ]
+    },
+    {
+      "mutant": "model_calls_unauthorized",
+      "file": "tools/candidate_review/panel.py",
+      "guard": "no call without explicit authority",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 11.0,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.BeforeAnyCallTest.test_no_model_call_without_explicit_authority"
+      ]
+    },
+    {
+      "mutant": "decision_without_call_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "a decision names its call",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 10.8,
+      "failed_checks": []
+    },
+    {
+      "mutant": "record_version_accepted",
+      "file": "tools/candidate_review/records.py",
+      "guard": "another record version is refused",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=3, skipped=1)",
+      "seconds": 10.7,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.CriteriaByKindTest.test_the_first_criteria_version_is_refused",
+        "tools.test_candidate_review_configuration.RecordVersionTest.test_another_version_is_refused",
+        "tools.test_candidate_review_record.ReaderTest.test_another_version_or_an_unknown_or_missing_field_is_refused"
+      ]
+    },
+    {
+      "mutant": "unknown_field_accepted",
+      "file": "tools/candidate_review/records.py",
+      "guard": "an unknown field is refused",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=2, skipped=1)",
+      "seconds": 10.6,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.RecordVersionTest.test_an_unknown_field_is_refused",
+        "tools.test_candidate_review_record.ReaderTest.test_another_version_or_an_unknown_or_missing_field_is_refused"
+      ]
+    },
+    {
+      "mutant": "missing_field_accepted",
+      "file": "tools/candidate_review/records.py",
+      "guard": "a missing field is refused",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (errors=3, skipped=1)",
+      "seconds": 10.5,
+      "failed_checks": [
+        "tools.test_candidate_review_configuration.InstallationTest.test_an_installation_without_a_family_is_refused",
+        "tools.test_candidate_review_configuration.RecordVersionTest.test_a_missing_field_is_refused",
+        "tools.test_candidate_review_record.ReaderTest.test_another_version_or_an_unknown_or_missing_field_is_refused"
+      ]
+    },
+    {
+      "mutant": "answer_unknown_keys_accepted",
+      "file": "tools/candidate_review/verdicts.py",
+      "guard": "an answer with unknown keys is invalid",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 10.6,
+      "failed_checks": [
+        "tools.test_candidate_review_panel.AnswerValidationTest.test_an_answer_with_unknown_keys_is_not_counted"
+      ]
+    },
+    {
+      "mutant": "rejection_row_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "a rejected row records its rejection",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 10.6,
+      "failed_checks": []
+    },
+    {
+      "mutant": "row_without_verdict_ref_unchecked",
+      "file": "tools/candidate_review/review_record.py",
+      "guard": "a row without approval carries no reference",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 9.8,
+      "failed_checks": [
+        "tools.test_candidate_review_record.ReaderTest.test_a_row_without_a_verdict_cannot_carry_an_approval_reference"
+      ]
+    },
+    {
+      "mutant": "hidden_character_unchecked",
+      "file": "tools/candidate_review/prechecks/safety_rules.py",
+      "guard": "invisible characters are refused",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 11.3,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "control_character_unchecked",
+      "file": "tools/candidate_review/prechecks/safety_rules.py",
+      "guard": "control characters are refused",
+      "applied": true,
+      "killed": false,
+      "exit_code": 0,
+      "summary": "OK (skipped=1)",
+      "seconds": 12.1,
+      "failed_checks": []
+    },
+    {
+      "mutant": "exact_duplicate_unchecked",
+      "file": "tools/candidate_review/prechecks/duplicates.py",
+      "guard": "an exact copy is named an exact duplicate",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (failures=1, skipped=1)",
+      "seconds": 12.2,
+      "failed_checks": [
+        "tools.test_candidate_review_prechecks.KnownWrongCandidateTest.test_every_known_wrong_body_is_refused_by_its_kind"
+      ]
+    },
+    {
+      "mutant": "calibration_never_reached_trusted",
+      "file": "tools/candidate_review/calibration.py",
+      "guard": "a reviewer the calibration never reached is not trusted",
+      "applied": true,
+      "killed": true,
+      "exit_code": 1,
+      "summary": "FAILED (errors=1, skipped=1)",
+      "seconds": 11.8,
+      "failed_checks": [
+        "tools.test_candidate_review_calibration.EvaluationTest.test_an_eligible_reviewer_the_calibration_never_reached_is_excluded"
+      ]
+    }
+  ],
+  "applied": 50,
+  "killed": 35,
+  "survivors": [
+    "ledger_truncation_unchecked",
+    "record_fixture_run_unchecked",
+    "record_fixture_reviewer_unchecked",
+    "fixture_outside_fixture_run_asked",
+    "same_family_before_quorum",
+    "rejection_without_reason_counted",
+    "rows_population_unchecked",
+    "record_prefix_unchecked",
+    "source_digest_unchecked",
+    "source_revision_unchecked",
+    "path_traversal_unchecked",
+    "licence_disagreement_unchecked",
+    "decision_without_call_unchecked",
+    "rejection_row_unchecked",
+    "control_character_unchecked"
+  ],
+  "not_applied": []
+}

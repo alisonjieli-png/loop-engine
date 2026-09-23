@@ -276,6 +276,15 @@ terms:
   CatalogRecord:
     kind: canonical
     definition: Passive persistent record at rest. Not a Node.
+  ReviewPanel:
+    kind: internal_only
+    definition: Operator envelope that runs deterministic pre-checks and asks independent reviewers from model families other than the producer's about the exact bytes of one candidate; it approves only by the declared family quorum and grants no authority.
+  ReviewerInstallation:
+    kind: internal_only
+    definition: One declared reviewer engine with its exact model, declared model family, allowance group, lens, typed settings and switch; a family is declared, never inferred from a model name.
+  VerdictContent:
+    kind: canonical
+    definition: One reviewer's typed approve or reject decision on one candidate, read only from an answer bound to the digest of the exact body it judged and citing only the written criteria for that kind of body; the panel records it as candidate_review_verdict/v1.
 legacy_serialized_terms:
   loop_node:
     maps_to: LoopDefinitionRecord

@@ -1,0 +1,13 @@
+{
+  "record_type": "candidate_producer_declaration/v1",
+  "catalogue_folder": "examples/29_intelligence_service/starter-catalogue",
+  "default_producer": {
+    "producer_identity": "Claude Code",
+    "family": "anthropic"
+  },
+  "item_producers": [],
+  "evidence": {
+    "path": "examples/29_intelligence_service/starter-catalogue/REVIEW.md",
+    "quote": "An assistant (Claude Code) wrote every body."
+  }
+}
