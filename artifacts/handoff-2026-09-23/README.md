@@ -4,6 +4,13 @@ Everything the September 23 session left for the next one, in one place. Start
 with the [session handoff](../../docs/context/SESSION-HANDOFF-2026-09-23.md);
 this folder holds what it links.
 
+A session that starts outside this checkout finds the same map at
+`/home/username/START-HERE-BALTOR.md`, and Codex's global instructions
+(`/home/username/.codex/AGENTS.md`) point Baltor work there. The uncommitted
+work in the shared checkout was copied on September 23 at 14:34 UTC to
+`/home/username/.le-safety/codex-uncommitted-20260923T1434/`, with the list of
+the 15 files that also changed on `main`.
+
 ## In this folder (part of the repository)
 
 | Path | What it is |
