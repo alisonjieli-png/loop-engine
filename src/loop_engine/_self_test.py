@@ -84,6 +84,7 @@ def self_test() -> dict:
         "code_nodes.overnight_authority", "code_nodes.overnight_journal",
         "code_nodes.overnight_night_checks", "overnight_cli",
         "core.saas_routes", "core.store_serve", "core.model_gateway", "core.settings_loader", "core.parameter_resolution", "core.configuration_setters", "core.configuration_preferences",
+        "core.service_runtime.catalogue_release_checks",
     ]
     import importlib as _importlib
     import importlib.util as _importlib_util

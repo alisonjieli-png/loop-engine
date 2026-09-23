@@ -114,13 +114,16 @@ class BrowserIdentityAdapter:
     protocol_version = "browser_identity/v1"
 
     def __init__(self, runtime, configuration: BrowserIdentityConfiguration, secret_resolver, *,
-                 starter_bindings=(), transport=None):
+                 starter_bindings=(), transport=None, follows_active_release=False):
         if not isinstance(configuration, BrowserIdentityConfiguration) or not callable(secret_resolver):
             raise TypeError("typed browser identity configuration and a host secret resolver are required")
         self.runtime, self.configuration = runtime, configuration
         self._secrets = secret_resolver
         self._transport = transport or read_identity_user
         self._starter_bindings = tuple(starter_bindings)
+        # A host that serves a store catalogue can let each new account follow
+        # the active release instead of copying the starter bindings once.
+        self._follows_active_release = follows_active_release
         self._verifier = ServiceHttpAuthenticator(runtime, ServiceHttpAuthentication(
             modes=(EXTERNAL_JWT_AUTHENTICATION,), issuer=configuration.project_url + "/auth/v1",
             jwks_url=configuration.project_url + "/auth/v1/.well-known/jwks.json", audience="authenticated",
@@ -178,7 +181,8 @@ class BrowserIdentityAdapter:
         claims = self._identity(credential)
         return self.runtime.ensure_subject_tenant(SubjectTenantRegistration(
             self._verifier.configuration.issuer, claims["sub"], self.configuration.namespace_prefix,
-            self.configuration.allowed_scopes, self._starter_bindings))
+            self.configuration.allowed_scopes, self._starter_bindings,
+            follows_active_release=self._follows_active_release))
 
     def authenticate(self, credential):
         claims = self._identity(credential)

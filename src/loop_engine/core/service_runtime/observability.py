@@ -423,6 +423,24 @@ def catalogue_readiness(provisioning):
                           "" if count > 0 else "catalogue_empty")
 
 
+def catalogue_view_readiness(provisioning):
+    """Report the catalogue view being served and its last refresh. Not required; it only reads.
+
+    A failed refresh keeps the previous view serving, so it is reported and it
+    does not take the machine out of service. The summary names the source,
+    the release identity, the item count and the catalogue state revision.
+    """
+    try:
+        view = provisioning.current_view()
+        summary = view.summary()
+    except Exception:
+        return ReadinessCheck("catalogue_view_current", False, False, "catalogue_view_unavailable"), None
+    refresher = getattr(provisioning, "catalogue_refresher", None)
+    status = refresher.status() if refresher is not None else None
+    failure = (status or {}).get("last_failure_code") or ""
+    return ReadinessCheck("catalogue_view_current", False, not failure, failure), {**summary, "refresher": status}
+
+
 def web_asset_readiness():
     """Report whether the packaged interface page can be read. Not required.
 
@@ -470,10 +488,12 @@ def readiness_report(*, config, provisioning, authentication_modes, policy,
               ReadinessCheck("browser_identity_installed", False, bool(browser_identity_installed)),
               ReadinessCheck("billing_sessions_installed", False, bool(billing_sessions_installed)),
               ReadinessCheck("billing_webhook_installed", False, bool(billing_webhook_installed))]
-    return health_record(checks, policy)
+    view_check, catalogue_release = catalogue_view_readiness(provisioning)
+    checks.append(view_check)
+    return health_record(checks, policy, catalogue_release=catalogue_release)
 
 
-def health_record(checks, policy):
+def health_record(checks, policy, *, catalogue_release=None):
     """Build the one health answer from a list of checks.
 
     Ready is true only when every required check passed. The measured answer
@@ -487,7 +507,10 @@ def health_record(checks, policy):
             "release_reference": policy.release_reference,
             "failure_records_enabled": policy.record_failures,
             "payload_capture": policy.payload_capture,
-            "deployed_provider_qualification": False}
+            "deployed_provider_qualification": False,
+            # The served catalogue view, or None when it was not measured. The
+            # key is always present, so every health answer has one shape.
+            "catalogue_release": catalogue_release}
 
 
 def readiness_deadline_report(policy):

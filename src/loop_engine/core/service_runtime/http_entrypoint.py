@@ -36,7 +36,9 @@ HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
 #: `loop-engine service` names the same set, and a check compares the two,
 #: because a command the help names and the parser refuses fails only on the
 #: day an operator needs it.
-SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures")
+SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures",
+                    "publish-catalogue", "rollback-catalogue", "withdraw-catalogue-item", "catalogue-status",
+                    "follow-catalogue-release")
 LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
@@ -347,25 +349,34 @@ def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
                "browser_identity", "client_access", "promotions", "account_email", "observability", "waitlist",
-               LICENSE_POLICY_KEY, FAMILY_POLICY_KEY}
+               LICENSE_POLICY_KEY, FAMILY_POLICY_KEY, "catalogue"}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
     license_policy = host_license_policy(configuration)
     family_policy = host_family_policy(configuration)
     runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
-    catalogue, resolver, body_reader, _grants = load_host_manifest(configuration["manifest_path"], license_policy=license_policy, family_policy=family_policy)
-    binding = DurableProvisioningBinding(runtime, catalogue, resolver, body_reader)
+    # The catalogue section chooses the packaged manifest or the active store
+    # release. Either way one view is built now, with its index, after the
+    # catalogue state gate refused any state this release does not understand.
+    from .catalogue_serving import load_catalogue_view
+    view, catalogue_source = load_catalogue_view(configuration, runtime.config, license_policy=license_policy,
+                                                 family_policy=family_policy)
+    catalogue = view.catalogue
+    binding = DurableProvisioningBinding(runtime, catalogue, view.qualification_resolver, view.body_reader, view=view)
+    follows_release = catalogue_source is not None and catalogue_source.new_accounts_follow_release
     browser_identity = None
     if configuration.get("browser_identity"):
         from .browser_identity import BrowserIdentityAdapter, BrowserIdentityConfiguration
         settings = dict(configuration["browser_identity"])
         identities = settings.pop("starter_identities", [])
         if (not isinstance(identities, list) or len(identities) != len(set(identities))
-                or any(identity not in catalogue.items for identity in identities)):
+                or any(identity not in catalogue.items for identity in identities)
+                or (follows_release and identities)):
             raise ServiceRuntimeError("invalid_starter_identities")
         browser_identity = BrowserIdentityAdapter(runtime, BrowserIdentityConfiguration(**settings),
-            environment_secret, starter_bindings=tuple(ProvisioningItemBinding.from_item(catalogue.items[identity]) for identity in identities))
+            environment_secret, starter_bindings=tuple(ProvisioningItemBinding.from_item(catalogue.items[identity]) for identity in identities),
+            follows_active_release=follows_release)
     client_access = None
     if configuration.get("client_access"):
         from .access import ServiceAccessAdministration, ServiceClientAccessPolicy
@@ -413,6 +424,10 @@ def load_host_application(path):
         ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
         client_access=client_access, promotions=promotions, account_email=account_email, waitlist=waitlist,
         observability=observability_policy(configuration))
+    if catalogue_source is not None:
+        from .catalogue_serving import refresher_for
+        application.catalogue_refresher = refresher_for(application, catalogue_source, license_policy=license_policy,
+                                                        family_policy=family_policy)
     if configuration.get("administration"):
         from .access import ServiceAccessAdministration, ServiceAccessPolicy
         application.access_administration = ServiceAccessAdministration(runtime, ServiceAccessPolicy(**configuration["administration"]))
@@ -481,15 +496,26 @@ def apply_host_grants(path):
     already exist, the grant set for that tenant is replaced by exactly what the
     manifest declares, and no tenant the manifest does not name is touched.
     """
-    _application, configuration = load_host_application(path)
+    application, configuration = load_host_application(path)
     runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
     _catalogue, _resolver, _reader, grants = load_host_manifest(
         configuration["manifest_path"], license_policy=host_license_policy(configuration),
         family_policy=host_family_policy(configuration))
-    applied = {tenant: runtime.set_grants(tenant, tuple(selected))["grants"]
-               for tenant, selected in sorted(grants.items())}
+    # An account that follows the active release keeps doing so: writing the
+    # manifest's snapshot over it would turn it back into a fixed list. Its
+    # count is what it receives from the view this host serves now.
+    from .catalogue_grants import following_release
+    view, applied, following = application.provisioning.current_view(), {}, []
+    for tenant, selected in sorted(grants.items()):
+        held = following_release(runtime, tenant)
+        if held is not None:
+            applied[tenant] = held.count(view)
+            following.append(tenant)
+        else:
+            applied[tenant] = runtime.set_grants(tenant, tuple(selected))["grants"]
     return {"record_type": "service_host_grant_application/v1", "manifest_path": configuration["manifest_path"],
-            "granted_items_by_tenant": applied, "tenants_registered": 0, "remote_accounts_created": False}
+            "granted_items_by_tenant": applied, "following_release_tenants": following,
+            "tenants_registered": 0, "remote_accounts_created": False}
 
 
 def public_binding_refusal(host, behind_trusted_tls_proxy, request_limits):
@@ -559,6 +585,21 @@ def main(argv=None):
                         help="failures: how many of the newest records to show.")
     parser.add_argument("--reference",
                         help="failures: the request reference a customer read out of a refusal.")
+    parser.add_argument("--bundle", help="publish-catalogue: the absolute folder of one release bundle.")
+    parser.add_argument("--expected-bundle-digest",
+                        help="publish-catalogue: the bundle digest its builder printed.")
+    parser.add_argument("--expected-release",
+                        help="publish-catalogue and rollback-catalogue: the release the pointer must name now.")
+    parser.add_argument("--to-release", help="rollback-catalogue: the earlier release to serve.")
+    parser.add_argument("--identity", help="withdraw-catalogue-item: the item identity to withdraw.")
+    parser.add_argument("--item-version", help="withdraw-catalogue-item: one exact item version digest.")
+    parser.add_argument("--all-versions", action="store_true",
+                        help="withdraw-catalogue-item: every stored version of the identity.")
+    parser.add_argument("--note", help="withdraw-catalogue-item: the reason, kept with the record.")
+    parser.add_argument("--all-tenants", action="store_true",
+                        help="follow-catalogue-release: every registered account.")
+    parser.add_argument("--deny", action="append",
+                        help="follow-catalogue-release: an item identity the account never receives.")
     from .records import SCOPES
     parser.add_argument("--scope", action="append", choices=SCOPES,
                         help="Repeat to narrow issued-key scopes; billing requires an explicit billing:manage grant.")
@@ -575,6 +616,11 @@ def main(argv=None):
         return 0
     if arguments.command == "apply-grants":
         print(json.dumps(apply_host_grants(arguments.config), sort_keys=True))
+        return 0
+    from .catalogue_commands import CATALOGUE_COMMANDS
+    if arguments.command in CATALOGUE_COMMANDS:
+        from .catalogue_commands import run_catalogue_command
+        print(json.dumps(run_catalogue_command(arguments), sort_keys=True))
         return 0
     if arguments.command == "failures":
         # A read-only operator view. It loads no manifest, starts no server and

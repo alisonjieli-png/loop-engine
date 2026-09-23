@@ -32,6 +32,7 @@ from .records import (
     canonical, digest, identifier, scopes,
 )
 from .storage import ServiceCatalogBinding
+from .catalogue_grants import release_following_payload as _follows
 
 (TENANT, KEY, SUBJECT, ENTITLEMENT, GRANTS, USAGE, CUSTOMER, CUSTOMER_EFFECT, TENANT_NAMESPACE, BILLING_POLICY,
  SESSION_REVOCATION, PROMOTION_CODE, PROMOTION_REDEMPTION, PROMOTION_ACCOUNT) = (
@@ -108,7 +109,8 @@ class ServiceRuntime:
             raise ServiceRuntimeError("not_found")
         payload = row.get("payload")
         supported = (KEY_SCHEMAS if kind == KEY else
-                     CUSTOMER_EFFECT_SCHEMAS if kind == CUSTOMER_EFFECT else (SCHEMAS[kind],))
+                     CUSTOMER_EFFECT_SCHEMAS if kind == CUSTOMER_EFFECT else
+                     (SCHEMAS[kind], "service_grants/v2") if kind == GRANTS else (SCHEMAS[kind],))
         if not isinstance(payload, dict) or payload.get("record_type") not in supported:
             raise ServiceRuntimeError("unsupported_or_corrupt_record")
         return payload
@@ -204,7 +206,8 @@ class ServiceRuntime:
                 self._catalog.record(SUBJECT, (request.issuer, request.subject), {"record_type": SCHEMAS[SUBJECT],
                     "tenant_id": tenant_id, "issuer": request.issuer, "subject": request.subject,
                     "enabled": True}, tenant_id=tenant_id),
-                self._catalog.record(GRANTS, tenant_id, {"record_type": SCHEMAS[GRANTS], "tenant_id": tenant_id,
+                self._catalog.record(GRANTS, tenant_id, _follows(tenant_id) if request.follows_active_release else {
+                    "record_type": SCHEMAS[GRANTS], "tenant_id": tenant_id,
                     "grants": [asdict(ProvisioningGrant(tenant_id, binding, True))
                                for binding in request.starter_bindings]}, tenant_id=tenant_id),
             )
@@ -387,6 +390,9 @@ class ServiceRuntime:
             if row is None:
                 return (), self._catalog.guard(None, self._catalog.identity(GRANTS, current.tenant_id))
             data = self._payload(row, GRANTS)
+            if data["record_type"] != SCHEMAS[GRANTS]:
+                from .catalogue_grants import release_following_grants
+                return release_following_grants(data, current.tenant_id), self._catalog.guard(row)
             grants = tuple(ProvisioningGrant(**{**value, "binding": ProvisioningItemBinding(**value["binding"])})
                            for value in data["grants"])
             if data.get("tenant_id") != current.tenant_id or any(g.tenant_id != current.tenant_id for g in grants):

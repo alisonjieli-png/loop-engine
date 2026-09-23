@@ -202,6 +202,19 @@ CODE_GUIDANCE = {
                                         "this service."),
     "unsupported_waitlist_request": ("The request to join the list did not carry the documented fields.",
                                      "Send the record version, the email address and an optional note, and nothing else."),
+    # Catalogue releases. A customer meets these when an item leaves the
+    # library, when a search names a detail it may not filter on, and when a
+    # download names a file its package does not hold.
+    "item_withdrawn": ("This version of the item was taken out of the library, so it is no longer delivered.",
+                       "Search again and choose a current item, or ask the person who runs this service why."),
+    "search_filter_not_allowed": ("The search named a detail that this catalogue does not offer for filtering.",
+                                  "Filter only on the details the search results show, or search without a filter."),
+    "search_filter_invalid": ("The search filter was not written in a form this service reads.",
+                              "Use equals, any_of, or at_least and at_most with values of the detail's own type."),
+    "package_file_not_found": ("The item's package holds no file at the path this download named.",
+                               "Read the item's package list first, then download one of the paths it names."),
+    "package_file_requires_download": ("A single file of a package is delivered through the download address.",
+                                       "Send the same request to the download address instead of this one."),
 }
 
 
