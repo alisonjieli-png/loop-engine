@@ -87,9 +87,11 @@ class ModelOutline:
 
     def _record(self, prompt: str, source_digest: str, started: str, elapsed: float, result,
                 outcome: str) -> dict:
+        # Only a response names the model that answered; a refused or failed call names none.
+        answered = getattr(result, "model", None) if getattr(result, "response_received", False) else None
         row = {"record_type": MODEL_CALL_RECORD_TYPE, "sequence": len(self.calls) + 1,
                "engine_id": self.engine_id, "model_requested": self.model,
-               "model_reported": getattr(result, "model", None) or None, "route": ROUTE,
+               "model_reported": answered or None, "route": ROUTE,
                "prompt_digest": bytes_digest(prompt.encode("utf-8")), "source_digest": source_digest,
                "started_at": started, "elapsed_ms": round(elapsed, 1),
                "usage": {"prompt_tokens": getattr(result, "prompt_tokens", None),

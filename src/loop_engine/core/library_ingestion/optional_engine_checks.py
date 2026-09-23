@@ -55,6 +55,7 @@ class _Reply:
     usage_reported: bool = False
     error: str = ""
     retry_after_seconds: "float | None" = None
+    response_received: bool = True
 
 
 class _Transport:
@@ -156,15 +157,19 @@ def self_test() -> dict:
           copied and stopped and len(copying.calls) == 1 and not asked)
 
     slept = []
-    limited = [_Reply(ok=False, error="HTTP 429 (retry after 2s): slow down", retry_after_seconds=2.0),
+    limited = [_Reply(ok=False, error="HTTP 429 (retry after 2s): slow down", retry_after_seconds=2.0,
+                      response_received=False),
                _Reply("Helps an assistant review a code change for correctness.", prompt_tokens=10,
                       eval_tokens=12, usage_reported=True)]
     patient = ModelOutline("fixture-model", 5, maximum_pause_seconds=5.0,
                            chat=lambda *args, **kwargs: limited.pop(0), sleep=slept.append)
     patient.outline(candidate, source)
+    # A refused call has no answering model: the record must not name the requested one as if it had.
     check("a_rate_limited_call_pauses_within_its_bound_and_both_calls_are_recorded",
           slept == [2.0] and [row["outcome"] for row in patient.calls] == ["rate_limited", "ok"]
-          and patient.calls[1]["usage"] == {"prompt_tokens": 10, "completion_tokens": 12})
+          and patient.calls[1]["usage"] == {"prompt_tokens": 10, "completion_tokens": 12}
+          and [row["model_reported"] for row in patient.calls] == [None, "fixture-model"],
+          [(row["outcome"], row["model_reported"]) for row in patient.calls])
 
     resolver = PackageResolver(_Transport([200, 404, 503]))
     verdicts = [resolver.resolves({"registry": "npm", "identifier": "@scope/a", "version": "1.0.0"}),
