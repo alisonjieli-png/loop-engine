@@ -94,12 +94,37 @@ AUTHORITY_RULES = (
     ("legal_commitments_need_the_owner",
      ("a legal commitment, such as publishing terms of service or a privacy notice",
       "wait for the owner (September 20, 2026)")),
+    ("terms_of_service_approved_and_published",
+     ('On September 23, 2026 the owner approved the terms of service, in their words '
+      '"I have approved the terms"',
+      "the terms are published at `/terms`")),
     ("identity_or_bank_verification_needs_the_owner",
      ("identity or bank verification with a provider, which only the owner can complete "
       "(September 20, 2026)",)),
     ("model_calls_live_charges_and_registration_stay_outside_it",
      ("The authority recorded on September 20, 2026 does not cover model calls, live "
       "charges or opening public registration",)),
+    # The owner's model direction of September 23, 2026: customers bring their
+    # own model access, and engineering proves overnight work on Ollama Cloud.
+    ("customers_bring_their_own_model_access",
+     ("On September 23, 2026 the owner said that Ollama Cloud is enough",
+      "\"we'd be better off just using Ollama Cloud, we don't actually need the model "
+      'running locally on our system"',
+      '"Remember, Baltor is not a tool to run models, people are expected to bring their '
+      "own API key",
+      "We can still prove out overnight solving using cheap/local models using Ollama "
+      'Cloud and something like Gemma 4"',
+      "Customers therefore bring their own model access",
+      "Engineering's overnight proof runs use Ollama Cloud with a cheap model such as "
+      "Gemma 4")),
+    # The owner approved opening registration on September 23, 2026. A live probe
+    # that day showed why it opens only after sign-up is email-first.
+    ("public_registration_opens_after_email_first_sign_up",
+     ('On September 23, 2026 the owner approved opening public registration: '
+      '"you can open it"',
+      "Engineering opens it once sign-up is email-first",
+      "the identity provider's own public sign-up is closed",
+      "Until both changes are live, registration stays closed")),
     ("independent_review_before_intelligence_is_published",
      ("Intelligence is published only after the independent review process in the "
       "decision table approves it, and a producer never approves its own work",)),

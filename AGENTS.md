@@ -267,7 +267,9 @@ connection would allow it:
   notice. The [drafts](docs/legal/README.md) wait for the owner
   (September 20, 2026). On September 22, 2026 the owner approved the privacy
   notice, with Baltor.AI as the operator and the postal contact address
-  1428 Bryn Mawr St, Saxton, PA 16678; the terms of service still wait;
+  1428 Bryn Mawr St, Saxton, PA 16678. On September 23, 2026 the owner
+  approved the terms of service, in their words "I have approved the terms",
+  and the terms are published at `/terms`;
 - identity or bank verification with a provider, which only the owner can
   complete (September 20, 2026).
 
@@ -280,9 +282,29 @@ Model calls may therefore run through Ollama Cloud with the key already in the
 environment, within the owner's existing subscription and with no extra
 purchase, and through the Codex and Claude Code command lines, for review,
 generation and measurement. Every call is recorded with its model, usage and
-outcome, and a run stops before a declared ceiling. Live charges and opening
-public registration still stay outside it. A customer paying through the live
-checkout is the product working, not a charge that engineering makes.
+outcome, and a run stops before a declared ceiling. On September 23, 2026 the
+owner said that Ollama Cloud is enough and that nothing needs to run locally:
+"we'd be better off just using Ollama Cloud, we don't actually need the model
+running locally on our system", and more fully: "Remember, Baltor is not a
+tool to run models, people are expected to bring their own API key, or auth,
+or API + auth to be able to access whatever system they have Ollama + local
+model at 127.0.0.1, Ollama cloud, another system in their house on a local IP
+running local AI endpoint, etc. We can still prove out overnight solving using
+cheap/local models using Ollama Cloud and something like Gemma 4". Customers
+therefore bring their own model access: a key, a sign-in or both, for
+whatever model system they run. Engineering's overnight proof runs use Ollama
+Cloud with a cheap model such as Gemma 4, not a local download of the
+model. Live charges still stay outside the authority. A customer paying
+through the live checkout is the product working, not a charge that
+engineering makes. On September 23, 2026 the owner approved opening public
+registration: "you can open it". Engineering opens it once sign-up is
+email-first, with the address first, then the emailed link, then the choice
+of a password, and once the identity provider's own public sign-up is
+closed. A live probe of the identity provider that day found that a second
+sign-up request for an unconfirmed address keeps the first password and
+cancels the first link, so whoever registers an address first would set its
+password and the real owner of the address would activate that account by
+confirming it. Until both changes are live, registration stays closed.
 Intelligence is published only after
 the independent review process in the decision table approves it, and a
 producer never approves its own work. Everything else that engineering can
