@@ -407,6 +407,18 @@ def self_test() -> dict:
           and moved.content_digest != catalog.content_digest,
           catalog.content_digest)
 
+    # 21. A validated record cannot be changed afterwards.
+    groups_locked = False
+    try:
+        delivery.engine_kind_groups["weaker_isolation"] = ()
+    except TypeError:
+        groups_locked = True
+    check("a_slot_record_is_immutable_after_validation",
+          groups_locked and _refused(lambda: replace(step, failure_kinds=list(step.failure_kinds)))
+          and _refused(lambda: replace(step, engine_kind_groups=[("delegation", ())]))
+          and "weaker_isolation" in delivery.engine_kind_groups,
+          "a kind group edited after validation, or a list field, is refused")
+
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "engine_slot_checks/v1", "tests": tests, "passed": passed,
             "total": len(tests), "all_passed": passed == len(tests)}

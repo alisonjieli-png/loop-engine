@@ -22,7 +22,9 @@ docs/architecture/ENGINES-BEHIND-FIXED-EDGES.md sections 4, 5 and 7.
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, fields
+from types import MappingProxyType
 
 from ..component_contracts import load_component_resource
 from ..configuration_capabilities import digest
@@ -273,7 +275,7 @@ class EngineSlot:
     engine_protocol: str
     engine_protocol_version: str
     engine_kinds: tuple[str, ...]
-    engine_kind_groups: dict
+    engine_kind_groups: Mapping
     native_registry: str
     native_declaration: str
     requirement_comparison: str
@@ -297,6 +299,16 @@ class EngineSlot:
     record_type: str = SLOT_RECORD_TYPE
 
     def __post_init__(self):
+        # The record stays immutable after validation: every list field must
+        # be a tuple, and the kind groups become a read-only mapping.
+        if not isinstance(self.engine_kind_groups, Mapping):
+            _refuse("text_list_refused", "engine_kind_groups")
+        object.__setattr__(self, "engine_kind_groups", MappingProxyType(
+            {key: tuple(kinds) for key, kinds in self.engine_kind_groups.items()}))
+        mutable = [item.name for item in fields(self) if str(item.type).startswith("tuple")
+                   and not isinstance(getattr(self, item.name), tuple)]
+        if mutable:
+            _refuse("record_field_is_not_a_tuple", str(mutable))
         _validate_slot(self)
 
     @property
