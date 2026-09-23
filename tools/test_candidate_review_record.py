@@ -10,6 +10,9 @@ Known-wrong records, each refused by the reader
 ├── an approved row with fewer than three approvals or three families
 ├── an approved row that one of the producer's family approved
 ├── an approved row beside a rejection
+├── a row put to reviewers whose pre-checks refused or skipped a kind, a row
+│   refused before review with no refusing pre-check, and an approved row
+│   whose licence the policy does not accept
 ├── a rejection with no written reason
 ├── a decision by a reviewer the record does not name
 ├── one reviewer, or one call, deciding a row twice
@@ -352,6 +355,71 @@ class ReviewerIdentityTest(unittest.TestCase):
                         recorded_at="2026-09-22", record_path="examples/fixture/reviews-panel-fixture.json",
                         fixture_run=True)
         self.assertEqual(caught.exception.code, "reviewer_installation_changed_during_review")
+
+
+def _with_a_refused_licence_precheck(record):
+    prechecks = _row(record)["prechecks"]
+    prechecks["refused"], prechecks["reasons"] = True, ["licence:licence_not_accepted"]
+    licence = next(result for result in prechecks["results"] if result["kind"] == "licence")
+    licence["status"], licence["findings"] = "refused", [{"code": "licence_not_accepted", "detail": "GPL-3.0-only"}]
+    return record
+
+
+class PrecheckAndLicenceTest(unittest.TestCase):
+    """A row put to reviewers passed every pre-check kind, and an approved row carries an accepted licence.
+
+    The decision rule says the deterministic pre-checks refuse before any reviewer
+    is asked, so a row with decisions whose pre-checks refused, or skipped a kind,
+    is not a row the panel wrote, and an approval of a licence the policy does not
+    accept would let material without a permissive licence into the merge."""
+
+    def test_an_approval_whose_licence_pre_check_refused_is_refused(self):
+        _refused(self, _with_a_refused_licence_precheck(copy.deepcopy(APPROVED_RECORD)), "precheck_inconsistent")
+
+    def test_an_approval_without_one_pre_check_kind_is_refused(self):
+        for results in ("without the secrets kind", "with no result"):
+            with self.subTest(results=results):
+                record = copy.deepcopy(APPROVED_RECORD)
+                prechecks = _row(record)["prechecks"]
+                prechecks["results"] = ([result for result in prechecks["results"] if result["kind"] != "secrets"]
+                                        if results == "without the secrets kind" else [])
+                _refused(self, record, "precheck_inconsistent")
+
+    def test_pre_check_results_of_another_shape_are_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        _row(record)["prechecks"] = {"anything": 1}
+        _refused(self, record, "unknown_record_fields")
+        record = copy.deepcopy(APPROVED_RECORD)
+        _row(record)["prechecks"]["results"][0]["record_type"] = "candidate_precheck_result/v2"
+        _refused(self, record, "unsupported_record_version")
+
+    def test_a_refused_flag_that_disagrees_with_the_results_is_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        _row(record)["prechecks"]["refused"] = True
+        _refused(self, record, "precheck_inconsistent")
+
+    def test_an_approval_of_a_licence_the_policy_does_not_accept_is_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        _row(record)["declared_license"] = "GPL-3.0-only"
+        _refused(self, record, "approval_licence_not_accepted")
+
+    def test_a_row_refused_before_review_names_a_refusing_pre_check(self):
+        refused = _fixture_record({"a": panel_check.approving, "b": panel_check.approving,
+                                   "c": panel_check.approving}, ("zhipu", "deepseek", "openai"),
+                                  identities=(panel_check.LICENCE_UNKNOWN,))
+        self.assertEqual(_row(_read(refused))["outcome"], panel_module.REFUSED_BEFORE_REVIEW)
+        record = copy.deepcopy(refused)
+        prechecks = _row(record)["prechecks"]
+        prechecks["refused"], prechecks["reasons"] = False, []
+        for result in prechecks["results"]:
+            result["status"], result["findings"] = "passed", []
+        _refused(self, record, "precheck_inconsistent")
+
+    def test_the_pre_check_reading_is_what_refuses_a_refused_approval(self):
+        """Mutant control: with the pre-check reading removed, the approval beside a refusal reads."""
+        record = _with_a_refused_licence_precheck(copy.deepcopy(APPROVED_RECORD))
+        with mock.patch.object(review_record, "_read_prechecks", lambda *arguments: None):
+            self.assertEqual(_row(_read(record))["outcome"], panel_module.APPROVED)
 
 
 class InterruptedDispatchTest(unittest.TestCase):

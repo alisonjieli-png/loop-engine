@@ -26,15 +26,16 @@ import re
 import loop_engine
 
 from .catalogue import select_population
-from .configuration import FIXTURE_ENGINE_KIND, PanelPolicy
+from .configuration import FIXTURE_ENGINE_KIND, PRECHECK_KINDS, PanelPolicy
 from .ledger import read_row
+from .prechecks import PASSED, REFUSED, UNAVAILABLE
 from .panel import (
     APPROVED, FAMILY_QUORUM_RULE, ITEM_OUTCOMES, NOT_STARTED, PANEL_INCOMPLETE, REFUSED_BEFORE_REVIEW, REJECTED,
     REJECTION_RULE, VERDICT_OUTCOME, distinct_families,
 )
 from .records import (
-    CALL_RECORD, DISPATCH_RECORD, PANEL_REVIEW_RECORD, RUN_END_RECORD, RUN_RECORD, SHA256, read_part, read_record,
-    refuse,
+    CALL_RECORD, DISPATCH_RECORD, PANEL_REVIEW_RECORD, PRECHECK_RECORD, RUN_END_RECORD, RUN_RECORD, SHA256, read_part,
+    read_record, refuse,
 )
 from .verdicts import APPROVE, DECISIONS, REJECT
 
@@ -58,6 +59,8 @@ DECISION_FIELDS = ("reviewer_id", "decision", "reason", "findings", "body_sha256
 REVIEWER_FIELDS = ("reviewer_id", "label", "engine_kind", "family", "model", "model_version", "route_or_command",
                    "engine_version", "installation_sha256", "lens", "produced_any_item_under_review")
 POPULATION_FIELDS = ("rule", "seed", "eligible_count", "eligible", "selected")
+PRECHECK_OUTCOME_FIELDS = ("refused", "reasons", "results")
+PRECHECK_RESULT_FIELDS = ("kind", "engine_id", "engine_version", "status", "findings")
 DECISION_RULE = ("An item is approved only when at least three reviewers approve it, from at least three "
                  "different model families, none of them the family that produced the item, and no reviewer "
                  "rejects it. One written rejection keeps the item a candidate with its reasons. Deterministic "
@@ -328,8 +331,12 @@ def read_panel_review_record(value, *, allow_fixture: bool = False) -> dict:
     if prefix != record["record_path"] + "#":
         refuse("approval_ref_inconsistent", "the approval reference prefix names another record")
     for raw in record["rows"]:
-        _read_row(read_part(raw, "row", ROW_FIELDS), reviewers, family_of, calls, policy, prefix,
-                  _producer_family(record, raw["identity"]))
+        row = read_part(raw, "row", ROW_FIELDS)
+        _read_prechecks(row["prechecks"], row["identity"], row["outcome"])
+        if row["outcome"] == APPROVED and row["declared_license"] not in policy.accepted_licences:
+            refuse("approval_licence_not_accepted",
+                   f"approved {row['identity']} declares a licence the panel policy does not accept")
+        _read_row(row, reviewers, family_of, calls, policy, prefix, _producer_family(record, raw["identity"]))
     runs = [read_row(raw) for raw in record["runs"]]
     if record["totals"] != _totals(record["rows"], ordered, runs, interrupted):
         refuse("totals_inconsistent", "the totals disagree with the rows and the calls")
@@ -345,6 +352,35 @@ def _read_paths(record) -> None:
         pure = PurePosixPath(path) if type(path) is str else None
         if pure is None or not path or pure.is_absolute() or ".." in pure.parts or "\\" in path:
             refuse("record_path_not_relative", f"the record names the path {str(path)[:80]!r}")
+
+
+def _read_prechecks(value, identity, outcome) -> None:
+    """A row's pre-check results are strict records that agree with its outcome.
+
+    A row refused before review names at least one refusing result. Every other
+    row was put to reviewers, or would have been, so every pre-check kind passed:
+    each kind has a passing result and no result refused. A mutant control
+    replaces this reading."""
+    part = read_part(value, "prechecks", PRECHECK_OUTCOME_FIELDS)
+    if type(part["results"]) is not list or type(part["reasons"]) is not list:
+        refuse("precheck_inconsistent", f"the pre-checks of {identity} list their results and reasons")
+    statuses = {}
+    for raw in part["results"]:
+        result = read_record(raw, PRECHECK_RECORD, PRECHECK_RESULT_FIELDS)
+        if result["kind"] not in PRECHECK_KINDS or result["status"] not in (PASSED, REFUSED, UNAVAILABLE):
+            refuse("precheck_inconsistent", f"a pre-check result of {identity} names an unknown kind or status")
+        statuses.setdefault(result["kind"], set()).add(result["status"])
+    refused = any(REFUSED in found for found in statuses.values())
+    if part["refused"] is not refused:
+        refuse("precheck_inconsistent", f"the refused flag of {identity} disagrees with its pre-check results")
+    if outcome == REFUSED_BEFORE_REVIEW:
+        if not refused:
+            refuse("precheck_inconsistent", f"{identity} is refused before review by no pre-check")
+        return
+    undecided = [kind for kind in PRECHECK_KINDS if PASSED not in statuses.get(kind, set())]
+    if refused or undecided:
+        refuse("precheck_inconsistent", f"{identity} records the outcome {outcome} without passing every pre-check "
+                                        f"kind (not passed: {undecided or 'a refusal'})")
 
 
 def _read_interrupted(values, calls) -> list:

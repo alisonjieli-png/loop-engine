@@ -1,0 +1,88 @@
+..........FFFFFE...............................
+======================================================================
+ERROR: test_the_pre_check_reading_is_what_refuses_a_refused_approval (tools.test_candidate_review_record.PrecheckAndLicenceTest)
+Mutant control: with the pre-check reading removed, the approval beside a refusal reads.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 418, in test_the_pre_check_reading_is_what_refuses_a_refused_approval
+    with mock.patch.object(review_record, "_read_prechecks", lambda *arguments: None):
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <module 'candidate_review.review_record' from '/home/username/.le-library/ls2/tools/candidate_review/review_record.py'> does not have the attribute '_read_prechecks'
+
+======================================================================
+FAIL: test_a_refused_flag_that_disagrees_with_the_results_is_refused (tools.test_candidate_review_record.PrecheckAndLicenceTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 396, in test_a_refused_flag_that_disagrees_with_the_results_is_refused
+    _refused(self, record, "precheck_inconsistent")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 91, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_a_row_refused_before_review_names_a_refusing_pre_check (tools.test_candidate_review_record.PrecheckAndLicenceTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 413, in test_a_row_refused_before_review_names_a_refusing_pre_check
+    _refused(self, record, "precheck_inconsistent")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 91, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_an_approval_of_a_licence_the_policy_does_not_accept_is_refused (tools.test_candidate_review_record.PrecheckAndLicenceTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 401, in test_an_approval_of_a_licence_the_policy_does_not_accept_is_refused
+    _refused(self, record, "approval_licence_not_accepted")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 91, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_an_approval_whose_licence_pre_check_refused_is_refused (tools.test_candidate_review_record.PrecheckAndLicenceTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 374, in test_an_approval_whose_licence_pre_check_refused_is_refused
+    _refused(self, _with_a_refused_licence_precheck(copy.deepcopy(APPROVED_RECORD)), "precheck_inconsistent")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 91, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_an_approval_without_one_pre_check_kind_is_refused (tools.test_candidate_review_record.PrecheckAndLicenceTest) (results='without the secrets kind')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 383, in test_an_approval_without_one_pre_check_kind_is_refused
+    _refused(self, record, "precheck_inconsistent")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 91, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_an_approval_without_one_pre_check_kind_is_refused (tools.test_candidate_review_record.PrecheckAndLicenceTest) (results='with no result')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 383, in test_an_approval_without_one_pre_check_kind_is_refused
+    _refused(self, record, "precheck_inconsistent")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 91, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_pre_check_results_of_another_shape_are_refused (tools.test_candidate_review_record.PrecheckAndLicenceTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 388, in test_pre_check_results_of_another_shape_are_refused
+    _refused(self, record, "unknown_record_fields")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 91, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+----------------------------------------------------------------------
+Ran 48 tests in 0.565s
+
+FAILED (failures=7, errors=1)
