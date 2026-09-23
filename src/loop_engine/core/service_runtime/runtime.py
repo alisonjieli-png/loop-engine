@@ -275,18 +275,23 @@ class ServiceRuntime:
             return True
 
     def revoke_browser_session(self, principal, credential_digest, expires_at):
-        if self.browser_session_revoked(credential_digest):
-            return {'committed': True, 'revoked': True}
-        if type(expires_at) is not int or expires_at <= self._now():
-            raise ServiceRuntimeError('invalid_expiry')
-        with self._catalog.store(write=True) as store:
-            current, guards = self._revalidate(store, principal)
-            if current.authentication_kind != SUBJECT:
-                raise ServiceRuntimeError('browser_identity_required')
-            row = self._catalog.record(SESSION_REVOCATION, credential_digest,
-                {'record_type': SCHEMAS[SESSION_REVOCATION], 'tenant_id': current.tenant_id,
-                 'credential_digest': credential_digest, 'expires_at': expires_at}, tenant_id=current.tenant_id)
-            self._catalog.commit(store, (row,), (*guards, self._catalog.guard(None, row['record_id'])))
+        """Refuse one browser session until it expires; then remove every revocation already expired.
+
+        The removal runs after the sign-out commits and never changes its answer.
+        """
+        if not self.browser_session_revoked(credential_digest):
+            if type(expires_at) is not int or expires_at <= self._now():
+                raise ServiceRuntimeError('invalid_expiry')
+            with self._catalog.store(write=True) as store:
+                current, guards = self._revalidate(store, principal)
+                if current.authentication_kind != SUBJECT:
+                    raise ServiceRuntimeError('browser_identity_required')
+                row = self._catalog.record(SESSION_REVOCATION, credential_digest,
+                    {'record_type': SCHEMAS[SESSION_REVOCATION], 'tenant_id': current.tenant_id,
+                     'credential_digest': credential_digest, 'expires_at': expires_at}, tenant_id=current.tenant_id)
+                self._catalog.commit(store, (row,), (*guards, self._catalog.guard(None, row['record_id'])))
+        from .retention import sweep_after_sign_out
+        sweep_after_sign_out(self)
         return {'committed': True, 'revoked': True}
 
     def _principal(self, store, authentication, kind):

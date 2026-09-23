@@ -51,6 +51,7 @@ Existing service boundary
 ├── stripe_provider.py: explicitly authorized read-only Stripe adapter
 ├── request_limits.py: failed-attempt settings record and its table in process memory
 ├── waitlist.py: the public waiting list, its operator decisions and removal on request
+├── retention.py: removal of the records the privacy notice keeps for a bounded time
 ├── web_pages.py: the served page address table and the packaged files behind it
 └── http*.py: separately owned remote transport and host configuration
 ```
@@ -234,9 +235,12 @@ are restricted to the issuing subject, including when several subjects share
 a tenant. History exhaustion refuses further issue rather than deleting
 records silently.
 
-Signing out of the website clears private controls immediately. Client tokens
-remain separate credentials until revoked, expired or disabled through their
-local subject or tenant binding. Synchronizing a provider-side account deletion
+Signing out of the website clears private controls immediately. The service
+keeps a digest of the signed-out session, `service_browser_session_revocation/v1`,
+until that session would have expired, and then removes it; the section on
+retention below says when and how. Client tokens remain separate credentials
+until revoked, expired or disabled through their local subject or tenant
+binding. Synchronizing a provider-side account deletion
 with that local binding is still integration work. A provider outage returns
 service unavailability instead of pretending that the user's password failed.
 
@@ -907,12 +911,13 @@ through `environment_secret`, the resolver every other host secret uses. The
 record `service_waitlist_source/v2` is named by that digest and holds only the
 times of accepted entries inside the window, which is at most one hour, the
 period the published privacy notice promises. Every request to join removes
-the times that have left the window from every source record. A record with
-no time left keeps its version and an empty list, because the catalogue store
-has no removal operation, and its name cannot be linked to an address without
-the host secret. The reader refuses `service_waitlist_source/v1`, which was
-named by the address itself, and any record that carries a field beyond its
-times.
+the times that have left the window from every source record, and removes a
+record with no time left through the catalogue removal batch. A record that
+an earlier release left with an empty list is removed the same way. The
+retention task below does the same on its own schedule, so a list that nobody
+writes to keeps nothing past the window either. The reader refuses
+`service_waitlist_source/v1`, which was named by the address itself, and any
+record that carries a field beyond its times.
 
 With a declared source and no named secret, every accepted entry records
 `no_source_secret` and nothing about the address is stored; the guard never
@@ -920,11 +925,83 @@ falls back to an unkeyed digest. A named secret that the service cannot read
 refuses the request with `waitlist_source_secret_unavailable`, and one
 shorter than 32 characters with `waitlist_source_secret_unusable`, both status
 503 and both before any write. `source_privacy_checks` in `waitlist_checks.py`
-holds each rule, with a known-wrong case beside it.
+holds each rule, with a known-wrong case beside it, and
+`source_removal_checks` in `waitlist_source_checks.py` holds the removal.
 
 The entries, the decisions, removal on request and the invitation command are
 described in
 [the waiting list guide](../../../../docs/guides/waiting-list-and-invitations.md).
+
+## Retention of expired records
+
+This section describes current behavior. `retention.py` owns it. The published
+privacy notice keeps two kinds of record for a bounded time, and the service
+removes each one when its time has passed and never before:
+
+```text
+Records with a time limit
+├── service_browser_session_revocation/v1
+│   ├── kept until the signed-out session would have expired
+│   ├── removed when expires_at is at or before the runtime clock
+│   └── a record of any other version is left in place and counted
+└── service_waitlist_source/v2
+    ├── keeps only the times of accepted requests inside the window
+    └── a record with no time left inside the window is removed
+```
+
+The removal runs in three places:
+
+1. Right after every sign-out commits. `revoke_browser_session` calls
+   `sweep_after_sign_out`, which removes every revocation that has already
+   expired. A failure there changes nothing about the sign-out or its answer,
+   and the answer never shows what was removed.
+2. From one periodic task. The HTTP application starts it in its Starlette
+   lifespan and cancels it when the service stops. It runs once soon after
+   start, then every `sweep_interval_seconds` of the host's
+   `service_retention_policy/v1` block, named `retention` in the host
+   configuration. The default is 600 seconds, and the setting accepts 1 to
+   3600. There is no setting that switches the removal off. A service without
+   host write authority starts no task. A run that fails is recorded as the
+   last outcome and the task keeps its schedule.
+3. By hand, with `loop-engine service remove-expired --config <host file>`. It
+   reads only the runtime and waiting list blocks, starts no server and prints
+   one `service_retention_report/v1` record of outcomes and counts. It never
+   prints a digest, a record identity or a tenant. It exits with status 1 when
+   any part did not complete.
+
+Each removal is a removal batch with an exact version precondition for each
+removed record, so a record that another writer changed or removed first is
+never removed from a stale read. A run that loses such a race reads again, for
+three rounds at most, and then leaves the record for the next run. A run with
+nothing to remove reads without write authority and writes nothing.
+
+Removing a revocation early would let a signed-out session back in, so two
+rules make the removal safe while a request of that session is being checked:
+
+- The revocation keeps the token expiry rounded up to a whole second, so it
+  outlives every moment the token can still be accepted.
+- The expiry is read again after the revocation. `expired_by_now` in
+  `browser_identity.py` refuses a token whose expiry has passed by the time
+  its revocation was read, and `_customer_authorize` in `access.py` reads the
+  session expiry after the revocation. A session whose revocation was removed
+  between two reads is past its expiry by the second one.
+
+The health answer carries `retention_sweep_current`, a reported check that is
+never required. It passes when the last run completed. Otherwise its code
+names why: `retention_sweep_not_run_yet` just after start,
+`retention_sweep_not_running` when no task runs, or the code of the last
+failure. Asking for health reads that outcome from memory and never runs a
+removal.
+
+`retention_checks.py` holds each rule over real records, with a known-wrong
+case beside it: an expired revocation left after a run, a revocation removed
+before its session expired, a sign-out without its removal, a lost race, a
+removal handed to a store that does not declare it, an acknowledgment for a
+batch that removes something else, a removal that was acknowledged and not
+made, the expiry read before the revocation, a task that ends on its first
+failure, a health answer that removes, and a report that names what it
+removed. The two races of a request that is being checked are held in
+`browser_identity_checks.py`.
 
 ## Persistence and concurrency contract
 
@@ -1008,7 +1085,8 @@ Operator observability
 └── Readiness: service_health/v2
     ├── Alive and ready are separate fields with separate meanings
     ├── A required dependency that fails answers 503
-    └── Reported dependencies are named and do not remove the machine
+    ├── Reported dependencies are named and do not remove the machine
+    └── The retention task's last outcome is reported and never required
 ```
 
 Recording is governed by `service_observability_policy/v1`. The default records

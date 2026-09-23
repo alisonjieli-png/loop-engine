@@ -442,7 +442,8 @@ def web_asset_readiness():
 
 
 def readiness_report(*, config, provisioning, authentication_modes, policy,
-                     browser_identity_installed, billing_sessions_installed, billing_webhook_installed):
+                     browser_identity_installed, billing_sessions_installed, billing_webhook_installed,
+                     retention=None):
     """Measure every dependency now and separate alive from ready.
 
     Alive is what the process can say about itself: this code is running and
@@ -456,9 +457,11 @@ def readiness_report(*, config, provisioning, authentication_modes, policy,
     room to write, and some way to authenticate a customer must be installed.
 
     Everything else is reported and not required. The catalogue, the interface
-    page and the identity, payment and browser adapters each change what the
-    service can offer, but a machine missing one of them still answers its
-    other routes correctly. Reporting not ready for those would take a working
+    page, the identity, payment and browser adapters and the retention task
+    each change what the service can offer, but a machine missing one of them
+    still answers its other routes correctly. `retention` is the retention
+    task's own reported check, read from memory; measuring health never runs
+    a removal. Reporting not ready for those would take a working
     service down and could not repair any of them, so an operator reads them in
     the health record and decides. That difference is the whole point of
     separating alive from ready.
@@ -470,6 +473,10 @@ def readiness_report(*, config, provisioning, authentication_modes, policy,
               ReadinessCheck("browser_identity_installed", False, bool(browser_identity_installed)),
               ReadinessCheck("billing_sessions_installed", False, bool(billing_sessions_installed)),
               ReadinessCheck("billing_webhook_installed", False, bool(billing_webhook_installed))]
+    if retention is not None:
+        if not isinstance(retention, ReadinessCheck) or retention.required:
+            raise ServiceRuntimeError("invalid_readiness_check")
+        checks.append(retention)
     return health_record(checks, policy)
 
 

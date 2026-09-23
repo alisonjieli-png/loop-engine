@@ -8,8 +8,48 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
+import math
 from pathlib import Path
 import time
+from unittest.mock import patch
+
+from . import browser_identity
+
+
+def _raced_sign_out(fixture, policy, adapter, user, token):
+    """Sign one session out, then check it while the retention removal runs at a chosen moment.
+
+    Returns a function of one rounding rule. It signs a fresh session out, sets
+    the runtime clock to that rule applied to the token expiry, runs the
+    removal inside the provider call of a new request, and answers whether the
+    request was accepted.
+    """
+    from types import SimpleNamespace
+    import uuid
+    import jwt
+    from .browser_identity import BrowserIdentityAdapter
+    from .http_auth import HttpAuthenticationError
+    from .retention import remove_expired_session_revocations
+
+    def sweeping(request):
+        remove_expired_session_revocations(fixture.runtime)
+        return user(request)
+    checked = BrowserIdentityAdapter(fixture.runtime, policy, lambda _: "sb_publishable_local_fixture",
+                                     transport=sweeping)
+
+    def accepted(rounding):
+        # A whole second plus one half, so rounding down and rounding up differ,
+        # and a token identity of its own, so each call signs out a new session.
+        credential = token(exp=int(time.time()) + 60.5, jti=uuid.uuid4().hex)
+        adapter.logout(SimpleNamespace(credential=credential))
+        moment = rounding(jwt.decode(credential, options={"verify_signature": False})["exp"])
+        with patch.object(fixture.runtime, "_clock", lambda: moment):
+            try:
+                checked.authenticate(credential)
+            except HttpAuthenticationError:
+                return False
+        return True
+    return accepted
 
 
 def run_checks(check, root: Path):
@@ -133,6 +173,23 @@ def run_checks(check, root: Path):
                 except HttpAuthenticationError:
                     survives = True
                 check("browser_session_revocation_survives_service_restart", survives)
+                # A revocation is removed once its session has expired and never
+                # before, even while a request of that session is being checked.
+                # The removal runs inside the provider call of one request, at
+                # the start of the second the token expires in, and then at the
+                # rounded-up expiry the revocation keeps. Each has a known-wrong
+                # case with its own guard patched away.
+                raced = _raced_sign_out(fixture, policy, adapter, user, token)
+                check("a_revocation_outlives_every_moment_its_token_can_still_be_accepted",
+                      raced(math.floor) is False)
+                check("a_session_whose_revocation_is_removed_while_it_is_checked_is_still_refused",
+                      raced(math.ceil) is False)
+                with patch.object(browser_identity, "revocation_expiry", int):
+                    check("KNOWN_WRONG_a_revocation_rounded_down_is_removed_while_its_token_is_accepted",
+                          raced(math.floor) is True)
+                with patch.object(browser_identity, "expired_by_now", lambda claims, now: False):
+                    check("KNOWN_WRONG_without_the_second_expiry_read_a_removed_revocation_lets_the_session_in",
+                          raced(math.ceil) is True)
                 before = state["provider_calls"]
                 disabled = BrowserIdentityAdapter(fixture.runtime, replace(policy, allow_network=False),
                     lambda _: (_ for _ in ()).throw(AssertionError("secret read without authority")), transport=user)

@@ -36,7 +36,7 @@ HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
 #: `loop-engine service` names the same set, and a check compares the two,
 #: because a command the help names and the parser refuses fails only on the
 #: day an operator needs it.
-SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures")
+SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures", "remove-expired")
 LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
@@ -228,6 +228,22 @@ def observability_policy(configuration):
     return ServiceObservabilityPolicy(**settings)
 
 
+def retention_policy(configuration):
+    """Return the retention schedule a host declares, or the ten-minute default.
+
+    There is no way to switch the removal off: the published privacy notice
+    promises it. A host names only how often the periodic task runs.
+    """
+    from .retention import ServiceRetentionPolicy
+    if "retention" not in configuration:
+        return ServiceRetentionPolicy()
+    settings = configuration["retention"]
+    if not isinstance(settings, dict) or set(settings) - {field.name for field in dataclass_fields(ServiceRetentionPolicy)}:
+        raise ServiceRuntimeError("unsupported_retention_policy",
+            "a host retention policy names only the fields of the declared policy record")
+    return ServiceRetentionPolicy(**settings)
+
+
 def _host_json(path, *, maximum_bytes=2_000_000):
     selected = Path(path)
     if not selected.is_absolute() or selected.resolve() != selected or not selected.is_file():
@@ -347,7 +363,7 @@ def load_host_application(path):
     configuration = _host_json(path)
     allowed = {"record_type", "runtime", "http", "authentication", "manifest_path", "tenants", "billing", "administration",
                "browser_identity", "client_access", "promotions", "account_email", "observability", "waitlist",
-               LICENSE_POLICY_KEY, FAMILY_POLICY_KEY}
+               "retention", LICENSE_POLICY_KEY, FAMILY_POLICY_KEY}
     if (configuration.get("record_type") != HOST_CONFIGURATION_VERSION or set(configuration) - allowed
             or not {"runtime", "http", "authentication", "manifest_path"} <= set(configuration)):
         raise ServiceRuntimeError("unsupported_host_configuration")
@@ -412,7 +428,7 @@ def load_host_application(path):
     application = ServiceHttpApplication(runtime, binding, transport,
         ServiceHttpAuthentication(**configuration["authentication"]), browser_identity=browser_identity,
         client_access=client_access, promotions=promotions, account_email=account_email, waitlist=waitlist,
-        observability=observability_policy(configuration))
+        observability=observability_policy(configuration), retention=retention_policy(configuration))
     if configuration.get("administration"):
         from .access import ServiceAccessAdministration, ServiceAccessPolicy
         application.access_administration = ServiceAccessAdministration(runtime, ServiceAccessPolicy(**configuration["administration"]))
@@ -545,6 +561,27 @@ def read_failures(path, *, limit=20, tenant=None, reference=None):
     return journal.recent(limit=limit, tenant_id=tenant)
 
 
+def remove_expired_records(path):
+    """Run every retention removal once, by hand, and return outcomes and counts only.
+
+    Like `failures`, it reads only the runtime and waiting list blocks of the
+    host configuration and starts no server, so it works while the service is
+    down. It needs the host write authority the runtime block grants. It
+    prints no digest, no record identity and no tenant.
+    """
+    from .retention import sweep_retention
+    configuration = _host_json(path)
+    if configuration.get("record_type") != HOST_CONFIGURATION_VERSION or "runtime" not in configuration:
+        raise ServiceRuntimeError("unsupported_host_configuration")
+    runtime = ServiceRuntime(ServiceRuntimeConfig(**configuration["runtime"]))
+    waitlist = None
+    if configuration.get("waitlist"):
+        from .waitlist import ServiceWaitlist, WaitlistPolicy
+        waitlist = ServiceWaitlist(runtime, WaitlistPolicy(**configuration["waitlist"]),
+                                   secret_resolver=environment_secret)
+    return sweep_retention(runtime, waitlist=waitlist)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Serve the versioned Loop Engine intelligence service.")
     parser.add_argument("command", choices=SERVICE_COMMANDS)
@@ -576,6 +613,11 @@ def main(argv=None):
     if arguments.command == "apply-grants":
         print(json.dumps(apply_host_grants(arguments.config), sort_keys=True))
         return 0
+    if arguments.command == "remove-expired":
+        from .retention import COMPLETED
+        report = remove_expired_records(arguments.config)
+        print(json.dumps(report, sort_keys=True))
+        return 0 if report["outcome"] == COMPLETED else 1
     if arguments.command == "failures":
         # A read-only operator view. It loads no manifest, starts no server and
         # opens no provider connection, so it answers while the service is down.

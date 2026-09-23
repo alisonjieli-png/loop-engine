@@ -217,6 +217,26 @@ reads those records by newest, by `--tenant` or by the `--reference` a customer
 read out of a refusal, and it writes nothing. The operator procedure is in
 [the service failure diagnosis guide](../../guides/service-failure-diagnosis.md).
 
+## Records kept for a bounded time
+
+The published privacy notice keeps two kinds of record for a bounded time: the
+digest of a browser session that was signed out, until that session would have
+expired, and the times of recent waiting list requests for one source, until
+the counting window has passed. The service removes each one when its time has
+passed and never before. The removal runs right after every sign-out, from a
+periodic task that starts and stops with the service, and by hand through the
+`remove-expired` service command, which prints only outcomes and counts. The
+host sets how often the periodic task runs with `sweep_interval_seconds` in its
+`service_retention_policy/v1` block, from one second to one hour, ten minutes
+by default. The health answer reports the last run as
+`retention_sweep_current`, a check that is never required.
+
+Each removal is one `catalog_atomic_write_batch/v2` batch with an exact version
+precondition for each removed record, applied only by a store that declares
+the optional operation `atomic_record_removal`. The
+[service runtime guide](../../../src/loop_engine/core/service_runtime/README.md#retention-of-expired-records)
+has the rules, the checks that hold them and the design comparison.
+
 ## Current behaviour, observed today
 
 These facts were read from the deployed service on September 21, 2026. They

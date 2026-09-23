@@ -2,7 +2,8 @@
 
 Kind: operating guide for engineering. Written on September 21, 2026, against
 the source in this revision. Updated on September 22, 2026, when the flood
-guard stopped storing network addresses.
+guard stopped storing network addresses, and again the same day, when a source
+record with no time left began to be removed instead of emptied.
 
 Anyone can leave an email address and a short note. An operator reads the
 list and decides. An approved person receives one invitation that carries a
@@ -100,9 +101,12 @@ service_waitlist_source/v2
 │            address, and never a digest anyone could recompute from a guess
 ├── fields   record_type, accepted (times inside the window), window_seconds
 │            and nothing else; a record with any other field is refused
-└── removal  every request to join removes the times that have left the
-             window from every source record, counted or not; a record with
-             no time left keeps its version and an empty list
+├── removal  every request to join removes the times that have left the
+│            window from every source record, counted or not, and removes a
+│            record with no time left
+└── schedule the service's retention task does the same on its own schedule,
+             every ten minutes unless the host sets another interval, so a
+             list that nobody writes to keeps nothing past the window
 ```
 
 An unkeyed digest of a network address protects nothing, because every IPv4
@@ -112,12 +116,17 @@ a plain digest beside it, is refused by the reader: this release never counts
 or rewrites it. No deployment ever held one, because the waiting list was
 never switched on.
 
-The emptied record stays because the catalogue store has no removal
-operation. Its name is the keyed digest, so without the host secret it cannot
-be linked to any address, and it holds no time. The window is at most one
-hour: a host file that sets `source_window_seconds` above 3600 is refused,
-because a longer window would keep the times of an address past the period
-the notice promises.
+A record with no time left is removed through the catalogue removal batch,
+with its exact version as the precondition, so a record that another request
+changed first is left for the next sweep rather than removed from a stale
+read. A record that an earlier release left with an empty list is removed the
+same way. When no waiting list is installed, the retention task still removes
+every source time older than one hour, the longest window the notice allows.
+The window is at most one hour: a host file that sets `source_window_seconds`
+above 3600 is refused, because a longer window would keep the times of an
+address past the period the notice promises. The operator can run the same
+removal once by hand with `loop-engine service remove-expired --config
+<host file>`, which prints only counts.
 
 The secret is named in the host's `waitlist` block as an environment
 reference, the same form as every other host secret:
@@ -155,11 +164,12 @@ and name it in the host's `waitlist` block as
 secret later starts every count afresh and makes every earlier record name
 unlinkable, which is safe: the counts only ever cover one hour.
 
-`source_privacy_checks` in
-`src/loop_engine/core/service_runtime/waitlist_checks.py` holds each rule over
-real records, with a known-wrong case beside it: a record named by the address
-or holding an unkeyed digest is found, a count kept after its window is
-found, and a host with no secret is shown to store nothing.
+`source_privacy_checks` and `source_removal_checks` in
+`src/loop_engine/core/service_runtime/waitlist_source_checks.py` hold each rule
+over real records, with a known-wrong case beside it: a record named by the
+address or holding an unkeyed digest is found, a count kept after its window
+is found, a sweep that empties a record instead of removing it is found, and a
+host with no secret is shown to store nothing.
 
 ## What the host has to declare before the flood guard counts
 
