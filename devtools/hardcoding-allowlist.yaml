@@ -3974,6 +3974,186 @@ entries:
     classification: CLOSED_CONTROLLED_VOCABULARY
     created_on: 2026-09-22
 
+  - finding_id: hardcoding.bad8c44a00095499b838aec2
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[0].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.dbfc5cfc16a974030ac14e66
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[1].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.ac4d289af9a599c1acf6abc6
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[2].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.8c414ab32897b59b76ccc1b1
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[3].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.74f1b5362ecc8d524ddb31b4
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[4].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.4858de3316fda7558937f09d
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[5].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.1f504340dfddf7bd5e6236c2
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[6].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.f9cecdc4991e865bfac8ff85
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[7].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.17be46dc48628b822404a525
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[8].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.ac6d9ef712f0f3c6b38f8ec8
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[9].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.48ca5b7a1791cdcfe8f2c103
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[10].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.918f1fbb939885565fdadf1f
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[11].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.5518e9d106bb26c11d76f62a
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[12].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.903ca2f64ff32264e0289375
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[13].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.9bd10cf9b077ce10659c1ea4
+    owner: docs.research.LINKEDIN-EXECUTION-SOURCE-WATCH-2026-09-22.json:sources[14].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.7f4bd8764dfae06e21ad615f
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[0].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.083c03e0fdcf9713d5cf1de7
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[1].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.29b9823fba1d36ba559d253d
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[2].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.a05a2cafb32e809374394183
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[3].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.574fdddd4f0e7839b86a7ac6
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[4].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.d7d6a02a20ea4f26e0b5d863
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[5].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.2ba385e335a685d576f40c6b
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[6].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.df3585aa1ab06b02e1891de6
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[7].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.66ed5b7cc35a2cb4f6bb8667
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[8].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.52bf568bb3aeffe47d4ea36e
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[9].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.98bc6147be016d3c4707991e
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[10].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.d506951d1340de77a8eaa3c1
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[11].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.97e448680e624330d0eddec8
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[12].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.d079f1e48a86c61c3225f6f3
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[13].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+  - finding_id: hardcoding.416b05fcce0769f47d5b2433
+    owner: docs.research.LINKEDIN-INTELLIGENCE-SOURCE-WATCH-2026-09-22.json:sources[14].url
+    rationale: >-
+      A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
