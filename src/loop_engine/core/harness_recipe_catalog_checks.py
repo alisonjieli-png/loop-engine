@@ -2,9 +2,10 @@
 
 Owns: the known-wrong cases of plan package X1 (roadmap S-6.31): a recipe
 style spelled as a literal in the process runner or its relay, a recipe module
-edited without its catalogue digest, the unsupported ``freebuff`` host file,
-the modules one run mounts and digests, the Pi and Aider special cases read
-from the record, and the relay's wire choice read from the record.
+edited without its catalogue digest or reached through a link, a catalogue
+file that repeats a key, the unsupported ``freebuff`` host file, the modules
+one run mounts and digests, the Pi and Aider special cases read from the
+record, and the relay's wire choice and framing names read from the record.
 Does not own: the real Bubblewrap run of a fixture recipe, which lives in
 ``harness_process_checks.qualification_checks`` because it starts processes.
 These checks start no process, open no socket and call no provider.
@@ -119,6 +120,19 @@ def _refuses(operation, error) -> bool:
     return False
 
 
+def _repeated_key_refused(release) -> bool:
+    """A catalogue file that writes one key twice is refused, never read as
+    whichever of the two values the YAML reader happens to keep."""
+    from .harness_recipes import HarnessRecipeError, load_recipe_catalog
+    with tempfile.TemporaryDirectory(prefix="le-recipe-reader-") as temporary:
+        path = Path(temporary) / "harness_recipes.yaml"
+        path.write_text("record_type: harness_recipe_catalog/v1\nversion: 1.0.0\nversion: 2.0.0\n"
+                        "wire_codecs: []\nrecipes: []\nfresh_instance_recipes: []\n",
+                        encoding="utf-8")
+        return _refuses(lambda: load_recipe_catalog(path, module_directory=release.module_directory),
+                        HarnessRecipeError)
+
+
 def _reader_checks(check):
     from .harness_recipes import (HarnessRecipe, HarnessRecipeCatalog, HarnessRecipeError,
                                   HarnessWireCodec, release_recipe_catalog)
@@ -140,6 +154,7 @@ def _reader_checks(check):
             {**value, "host_recipes": []}, module_directory=release.module_directory),
     }
     refused = {name: _refuses(case, HarnessRecipeError) for name, case in wrong_cases.items()}
+    refused["catalogue_file_with_a_repeated_key"] = _repeated_key_refused(release)
     round_trip = HarnessRecipeCatalog.from_dict(
         json.loads(json.dumps(value)), module_directory=release.module_directory)
     check("every_recipe_record_refuses_unknown_keys_and_unsupported_versions",
@@ -188,6 +203,21 @@ def _digest_checks(check):
     check("every_recipe_names_resolvable_functions_and_its_module_digest",
           not problems and edited_refused and missing_function,
           str(problems[:4]) + f" edited_refused={edited_refused} missing_function={missing_function}")
+
+
+def _link_checks(check):
+    """A recipe module reached through a link is refused: the digest binds the
+    file the module folder holds, never whatever a link points at."""
+    from .harness_recipes import HarnessRecipeCatalog, HarnessRecipeError, release_recipe_catalog
+    release = release_recipe_catalog()
+    module = release.recipe("goose").module + ".py"
+    with tempfile.TemporaryDirectory(prefix="le-recipe-link-") as temporary:
+        folder = Path(temporary)
+        (folder / module).symlink_to(Path(release.module_directory) / module)
+        linked = HarnessRecipeCatalog.from_dict(release.to_dict(), module_directory=str(folder))
+        refused = _refuses(lambda: linked.mounted_modules(linked.recipe("goose")),
+                           HarnessRecipeError)
+    check("a_recipe_module_reached_through_a_link_is_refused", refused)
 
 
 def _literal_checks(check):
@@ -389,6 +419,13 @@ def _wire_checks(check):
     }
     check("the_relay_chooses_the_wire_from_the_record", observed == wanted,
           str({key: value for key, value in observed.items() if wanted[key] != value}))
+    # The relay runs standalone in the sandbox and cannot import the catalogue
+    # reader, so it keeps its own copy of the framing names; the two must agree.
+    from .harness_process_relay import _FRAMINGS
+    from .harness_recipes import STREAM_FRAMINGS
+    check("the_relay_frames_exactly_the_catalogue_stream_framings",
+          tuple(_FRAMINGS) == tuple(STREAM_FRAMINGS),
+          str(sorted(set(_FRAMINGS) ^ set(STREAM_FRAMINGS))))
 
 
 def _declaration_checks(check):
@@ -480,6 +517,7 @@ def self_test() -> dict:
 
     guarded("recipe_reader_checks_ran", _reader_checks)
     guarded("recipe_digest_checks_ran", _digest_checks)
+    guarded("recipe_link_checks_ran", _link_checks)
     guarded("style_literal_checks_ran", _literal_checks)
     guarded("wire_choice_checks_ran", _wire_checks)
     guarded("recipe_declaration_checks_ran", _declaration_checks)

@@ -3,8 +3,9 @@
 Owns: the known-wrong cases of roadmap S-6.42 as pure checks: a recipe that
 sets only the harness's configuration variable and keeps the user's home
 folder, a candidate that claims support, a claim without evidence, loading
-inferred from an exit or a listing, a decoy that reaches the request, and a
-changed installed version. Does not own: launching a harness; the offline
+inferred from an exit or a listing, a decoy that reaches the request, a
+changed installed version, and a step model endpoint that is not a loopback
+origin. Does not own: launching a harness; the offline
 launch with its network sandbox lives in
 ``tools/check_harness_fresh_instances.py`` and its own tests.
 These checks start no process, open no socket and call no provider.
@@ -72,6 +73,8 @@ def _reader_checks(check, recipes):
         "an_unknown_writer": lambda: _variant(codex, configuration_writer="shell_script"),
         "a_global_location_without_a_decoy_kind": lambda: _variant(
             codex, global_locations=[".codex/auth.json"]),
+        "an_upstream_outside_a_public_repository": lambda: _variant(
+            codex, source={**value["source"], "upstream": "file:///opt/codex"}),
     }
     refused = {name: _refuses(case) for name, case in cases.items()}
     same = FreshInstanceRecipe.from_dict(json.loads(json.dumps(value))).digest == codex.digest
@@ -236,6 +239,17 @@ def _layout_checks(check, recipes):
           all(set(dict(item.material)) == set(MATERIAL_KINDS) for item in recipes.values()))
 
 
+def _endpoint_checks(check, recipes):
+    """A step's model endpoint is a loopback origin: the customer's own local
+    model or the offline check's recording endpoint, never a remote address."""
+    layout = _layout()
+    wrong = ("http://203.0.113.7:18080", "https://127.0.0.1:18080", "http://localhost:18080",
+             "http://127.0.0.1:18080/v1", "http://127.0.0.1:")
+    accepted = [origin for origin in wrong
+                if not _refuses(lambda origin=origin: replace(layout, model_origin=origin))]
+    check("a_step_model_endpoint_is_a_loopback_origin", not accepted, str(accepted))
+
+
 def self_test() -> dict:
     tests = []
 
@@ -244,7 +258,7 @@ def self_test() -> dict:
 
     recipes = _release()
     for run in (_reader_checks, _home_checks, _preference_checks, _claim_checks,
-                _assessment_checks, _credential_checks, _layout_checks):
+                _assessment_checks, _credential_checks, _layout_checks, _endpoint_checks):
         try:
             run(check, recipes)
         except Exception as exc:  # one broken group fails its checks, never the suite
