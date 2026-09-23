@@ -17,8 +17,9 @@ load, so live code rested on code whose own checks no longer ran.
 
 What it measures. Source files are parsed, never imported. From every
 collected suite it follows the import statements that run when a module loads:
-the module body, class bodies, every part of a ``try`` and both branches of an
-``if``, except the body of an ``if TYPE_CHECKING:`` block, which never runs.
+the module body, class bodies, every part of a ``try``, both branches of an
+``if`` and every case of a ``match``, except the body of an
+``if TYPE_CHECKING:`` block, which never runs; its ``else`` branch does.
 Imports inside a function run only when the function is called, so they are
 not followed. The package initializers on the way to a module are followed
 too, because they load first. A call to ``importlib`` is not an import
@@ -43,7 +44,10 @@ that list.
 
 How the baseline shrinks. When the check reports an entry as stale, add it to
 ``_LEFT_THE_BASELINE`` in the same change. Never add an entry to
-``_BASELINE_AT_START``: a new live dependency needs its suite collected.
+``_BASELINE_AT_START``: a new live dependency needs its suite collected. Never
+remove an entry from ``_LEFT_THE_BASELINE`` either: that puts the entry back
+into the baseline, and the check cannot see the edit, because only the
+starting list has a recorded digest.
 """
 from __future__ import annotations
 
@@ -438,24 +442,51 @@ def _fixture_files() -> dict:
         "__init__.py": '"""Fixture package."""\n',
         "planted/__init__.py": '"""Fixture folder."""\n',
         "planted/live.py": (
+            "import typing\n"
             "from typing import TYPE_CHECKING\n"
             "from . import parked\n"
+            "from . import relay\n"
             "from .helper import VALUE\n"
             "from .record import RECORD\n"
             "from ..planted_package.leaf import LEAF\n"
             f"import {PACKAGE}.planted.absolute\n"
             "if TYPE_CHECKING:\n"
             "    from . import typed_only\n"
+            "else:\n"
+            "    from . import typed_else\n"
+            "if typing.TYPE_CHECKING:\n"
+            "    from . import typed_attribute_only\n"
+            "if VALUE:\n"
+            "    pass\n"
+            "else:\n"
+            "    from . import in_else\n"
             "try:\n"
             "    from . import in_try\n"
             "except ImportError:\n"
-            "    in_try = None\n"
+            "    from . import in_handler\n"
+            "else:\n"
+            "    from . import in_try_else\n"
+            "finally:\n"
+            "    from . import in_finally\n"
+            "match VALUE:\n"
+            "    case _:\n"
+            "        from . import in_case\n"
             "class Holder:\n"
             "    from . import in_class\n"
             "def later():\n"
             "    from . import lazy\n"
             "    return lazy\n" + _FIXTURE_SUITE),
         "planted/parked.py": _FIXTURE_SUITE,
+        "planted/relay.py": ("def self_test():\n"
+                             "    from .live import self_test as run\n"
+                             "    return run()\n"),
+        "planted/typed_else.py": _FIXTURE_SUITE,
+        "planted/typed_attribute_only.py": _FIXTURE_SUITE,
+        "planted/in_else.py": _FIXTURE_SUITE,
+        "planted/in_handler.py": _FIXTURE_SUITE,
+        "planted/in_try_else.py": _FIXTURE_SUITE,
+        "planted/in_finally.py": _FIXTURE_SUITE,
+        "planted/in_case.py": _FIXTURE_SUITE,
         "planted/helper.py": "from .deep import DEPTH\nVALUE = DEPTH\n",
         "planted/deep.py": "DEPTH = 1\n" + _FIXTURE_SUITE,
         "planted/record.py": "RECORD = 1\n",
@@ -480,7 +511,15 @@ def _fixture_files() -> dict:
 _FIXTURE_GAPS = frozenset({
     "planted/parked.py", "planted/deep.py", "planted/record_checks.py",
     "planted/absolute.py", "planted/in_try.py", "planted/in_class.py",
-    "planted/delegated.py", "planted_package/initializer_import.py"})
+    "planted/delegated.py", "planted_package/initializer_import.py",
+    "planted/typed_else.py", "planted/in_else.py", "planted/in_handler.py",
+    "planted/in_try_else.py", "planted/in_finally.py", "planted/in_case.py"})
+
+#: The imports in each part of a ``try``, in an ``else`` branch and in a
+#: ``match`` case of the fixture, all of which run at load.
+_FIXTURE_BRANCH_GAPS = frozenset({
+    "planted/in_try.py", "planted/in_handler.py", "planted/in_try_else.py",
+    "planted/in_finally.py", "planted/in_else.py", "planted/in_case.py"})
 
 
 def _write_fixture(root: str, files: dict) -> None:
@@ -534,7 +573,8 @@ def self_test() -> dict:
     exemptions = tuple(sorted(_FIXTURE_GAPS | {"planted/lazy.py", "planted/live.py"}))
     exempted = judge_live_dependencies(
         fixture, exemptions,
-        {suite: "fixture reason" for suite in exemptions if suite != "planted/deep.py"})
+        {**{suite: "fixture reason" for suite in exemptions if suite != "planted/deep.py"},
+         "planted/parked.py": "  "})
     known_wrong_refused = {gap.suite for gap in planted.new_gaps} == set(_FIXTURE_GAPS)
 
     live_error = ""
@@ -561,37 +601,54 @@ def self_test() -> dict:
           live_error or f"fixture stale: {list(exempted.stale_exemptions)}; "
                         f"live stale: {list(verdict.stale_exemptions)}")
     check("every_recorded_exemption_names_its_reason_in_the_rules_store",
-          exempted.unexplained_exemptions == ("planted/deep.py",)
+          exempted.unexplained_exemptions == ("planted/deep.py", "planted/parked.py")
           and verdict is not None and not verdict.unexplained_exemptions,
           live_error or f"fixture: {list(exempted.unexplained_exemptions)}; "
                         f"live: {list(verdict.unexplained_exemptions)}")
     grown = _BASELINE_AT_START + ("core/an_entry_added_later.py",)
+    doubled = _BASELINE_AT_START + _BASELINE_AT_START[:1]
     check("the_baseline_only_shrinks_from_the_list_measured_at_the_start",
           not baseline_problems(_BASELINE_AT_START, _LEFT_THE_BASELINE, _BASELINE_AT_START_DIGEST)
           and bool(baseline_problems(grown, _LEFT_THE_BASELINE, _BASELINE_AT_START_DIGEST))
           and bool(baseline_problems(_BASELINE_AT_START, ("core/never_on_the_baseline.py",),
-                                     _BASELINE_AT_START_DIGEST)),
+                                     _BASELINE_AT_START_DIGEST))
+          and bool(baseline_problems(doubled, (), _list_digest(doubled))),
           f"{len(active_baseline())} exemptions in force of {len(_BASELINE_AT_START)} "
           "measured at the start")
     check("an_import_inside_a_function_is_not_a_load_time_import",
           "planted/deep.py" in found and "planted/lazy.py" not in found, str(sorted(found)))
     check("an_import_under_type_checking_is_not_a_load_time_import",
-          "planted/deep.py" in found and "planted/typed_only.py" not in found, str(sorted(found)))
-    check("transitive_class_body_try_absolute_and_package_initializer_imports_are_load_time_imports",
-          {"planted/deep.py", "planted/in_class.py", "planted/in_try.py", "planted/absolute.py",
-           "planted_package/initializer_import.py"} <= found, str(sorted(found)))
+          "planted/deep.py" in found and "planted/typed_only.py" not in found
+          and "planted/typed_attribute_only.py" not in found
+          and "planted/typed_else.py" in found, str(sorted(found)))
+    check("transitive_class_body_every_try_if_and_match_branch_absolute_and_package_initializer_imports_are_load_time_imports",
+          {"planted/deep.py", "planted/in_class.py", "planted/absolute.py",
+           "planted_package/initializer_import.py"} | _FIXTURE_BRANCH_GAPS <= found,
+          str(sorted(found)))
     check("an_uncollected_companion_checks_module_is_the_suite_of_its_module",
           "planted/record_checks.py" in found, str(sorted(found)))
     check("a_facade_counts_its_delegate_as_collected_and_the_delegate_imports_as_loaded",
           "planted/delegated.py" in found and "planted/facade_checks.py" not in found
+          and "planted/relay.py" not in found
           and "planted.facade_checks" in fixture.collected_suites, str(sorted(found)))
     check("measuring_imports_no_module_it_measures",
           bool(found) and not attempts.seen, str(sorted(set(attempts.seen))[:5]))
     record = live.to_dict() if live is not None else {}
+    planted_record = fixture.to_dict()
+    first_gap = (planted_record["gaps"] or [{}])[0]
     refusals = []
-    missing_field = {key: value for key, value in record.items() if key != "gaps"}
-    for mutated in ({**record, "record_type": "live_dependency_measurement/v2"},
-                    {**record, "unexpected_field": True}, missing_field):
+    for mutated in (
+            {**planted_record, "record_type": "live_dependency_measurement/v2"},
+            {**planted_record, "unexpected_field": True},
+            {key: value for key, value in planted_record.items() if key != "gaps"},
+            {**planted_record, "gaps": [{**first_gap, "unexpected_field": True}]},
+            {**planted_record, "gaps": [{key: value for key, value in first_gap.items()
+                                         if key != "loaded_by"}]},
+            {**planted_record, "gaps": {}},
+            {**planted_record, "collected_suites": "planted.live"},
+            {**planted_record, "loaded_modules": [1]},
+            {**planted_record, "loaded_modules": [""]},
+            [planted_record]):
         try:
             LiveDependencyMeasurement.from_dict(mutated)
             refusals.append("accepted")
@@ -599,9 +656,10 @@ def self_test() -> dict:
             refusals.append("refused")
         except Exception as exc:  # any other error is not the declared refusal
             refusals.append(f"raised {type(exc).__name__}")
-    check("the_measurement_record_round_trips_and_refuses_another_version_or_a_changed_field_set",
+    check("the_measurement_record_round_trips_and_refuses_another_version_a_changed_field_set_or_a_wrong_value",
           live is not None and LiveDependencyMeasurement.from_dict(record) == live
-          and refusals == ["refused"] * 3, live_error or str(refusals))
+          and LiveDependencyMeasurement.from_dict(planted_record) == fixture
+          and refusals == ["refused"] * 10, live_error or str(refusals))
     passed = sum(1 for item in tests if item["passed"])
     return {"module": "core.live_dependency_checks", "tests": tests,
             "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}
