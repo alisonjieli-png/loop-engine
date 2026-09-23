@@ -158,6 +158,18 @@ where its patch is kept when it did not.
    `/models` page in the place left for it.
 7. Merge the consolidation line (triage plan steps 2 to 9) and serve an answer
    for `HEAD /`, which returns 404 today.
+8. Fix what the responsive lab found on the live site
+   ([its report](../verification/WEBSITE-RESPONSIVE-LAB-2026-09-23.md)). First,
+   four page loads at once got 503 answers for style sheets and scripts, and
+   one page showed without styling. Every file is sent with `no-store` against
+   a limit of 32 requests at a time, so cache `/assets/` with a validator and
+   raise the limit or add a machine. Then:
+   - the pricing button under the price;
+   - headings that break inside words at 200% text;
+   - `:root{font-size:100%}`, so the reader's text size counts;
+   - the layout shift on `/connect` and `/waitlist`;
+   - 44 px tap targets;
+   - `max-width: 68ch` on running text.
 
 ## How to continue
 
