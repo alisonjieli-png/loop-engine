@@ -3,9 +3,9 @@
 Owns engine_descriptor/v1 (the digested projection of an engine's native
 declaration), engine_qualification/v1 and engine_retirement/v1 (architecture
 6.2, 6.5 and 11.5), and the one strict reader and field rules that the host
-records (core.engine_host_records), the policy and override
-(core.engine_selection_records) and the decision
-(core.engine_decision_records) also use: every record is name/vN and is
+records (core.engines.host_records), the policy and override
+(core.engines.selection_records) and the decision
+(core.engines.decision_records) also use: every record is name/vN and is
 refused, before any effect, for another version, an unknown or a missing
 field. Belongs to the shared engine framework (roadmap S-6.30). Never a
 registry, a store, a selection procedure or a grant: nothing here imports,
@@ -20,13 +20,13 @@ from functools import lru_cache
 import re
 from types import MappingProxyType
 
-from .configuration_capabilities import (
+from ..configuration_capabilities import (
     AVAILABILITY_STATES, QUALIFICATION_STATES, ConfigurationCapabilityError,
     ConfigurationFact, digest, exact_digest, exact_text)
-from .facets import COST_CLASSES, EFFECTS, LOCALITY
-from .harness_execution_contracts import (
+from ..facets import COST_CLASSES, EFFECTS, LOCALITY
+from ..harness_execution_contracts import (
     ISOLATIONS, LIMITS, frozen_harness_mapping, plain_harness_json, valid_harness_id)
-from .harness_selection_records import APPROVED, REVIEW_DECISIONS
+from ..harness_selection_records import APPROVED, REVIEW_DECISIONS
 
 DESCRIPTOR_RECORD_TYPE = "engine_descriptor/v1"
 QUALIFICATION_RECORD_TYPE = "engine_qualification/v1"
@@ -278,7 +278,7 @@ def declaration_source(value, name):
 
 @lru_cache(maxsize=1)
 def _component_vocabularies():
-    from .component_contracts import load_component_ontology
+    from ..component_contracts import load_component_ontology
     ontology = load_component_ontology()
     return tuple(ontology["modes"]), tuple(ontology["lifecycles"])
 
@@ -294,7 +294,7 @@ def lifecycles():
 @lru_cache(maxsize=1)
 def locality_vocabularies():
     """The repository's two locality vocabularies, each named by its source."""
-    from .model_routes import LOCALITIES
+    from ..model_routes import LOCALITIES
     return MappingProxyType({"core.facets.LOCALITY": LOCALITY,
                              "core.model_routes.LOCALITIES": LOCALITIES,
                              UNKNOWN: (UNKNOWN,)})
@@ -722,5 +722,5 @@ class EngineRetirement:
 
 def self_test():
     """Run the engine record checks."""
-    from .engine_records_checks import self_test as run_engine_record_checks
+    from .records_checks import self_test as run_engine_record_checks
     return run_engine_record_checks()

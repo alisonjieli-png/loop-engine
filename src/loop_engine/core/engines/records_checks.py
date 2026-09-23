@@ -13,17 +13,17 @@ from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
 
-from . import engine_host_records as host_records
-from . import engine_records as records
-from .configuration_capabilities import ConfigurationFact, digest
-from .configuration_preferences import MetaPreferencePolicy
-from .engine_host_records import (
+from . import host_records
+from . import records
+from ..configuration_capabilities import ConfigurationFact, digest
+from ..configuration_preferences import MetaPreferencePolicy
+from .host_records import (
     BoundEngine, EngineBindingsReport, EngineInstallation, EngineSlotConfiguration, FamilyPolicyInForce,
     FileReference, QualificationSource, ServiceHostEngines, admit_engine_qualification)
-from .engine_records import (
+from .records import (
     DESCRIPTOR_OBSERVATION_FIELDS, EngineCostBasis, EngineDescriptor, EngineLocality, EngineQualification,
     EngineRecordError, EngineRetirement, EvidenceReference, QualificationScope)
-from .engine_selection_records import DECLARED_ORDER_ENGINE_REF, EngineSelectionPolicy
+from .selection_records import DECLARED_ORDER_ENGINE_REF, EngineSelectionPolicy
 
 NOW = datetime(2026, 9, 22, 12, tzinfo=timezone.utc)
 ISSUED, EXPIRES = "2026-09-22T00:00:00Z", "2026-10-22T00:00:00Z"

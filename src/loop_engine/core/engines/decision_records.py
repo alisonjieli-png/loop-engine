@@ -16,14 +16,14 @@ from dataclasses import dataclass, fields as dataclass_fields
 import re
 from types import MappingProxyType
 
-from .configuration_capabilities import digest
-from .engine_records import (
+from ..configuration_capabilities import digest
+from .records import (
     EngineRecordError, contract, declaration_source, exact_engine_ref, flag, identifier, identifiers, instant,
     json_object, member, optional, pattern, plain, read_part, read_record, require_derived, sequence, sha256, text)
-from .engine_selection_records import (
+from .selection_records import (
     EXCLUDE, FALLBACK_ELIGIBLE_FAILURE_KINDS, PIN, PREFER, TERMINAL_FAILURE_KINDS, EngineSelectionOverride,
     embedded_record)
-from .parameter_resolution import SOURCE_PRECEDENCE, ParameterResolutionTrace, ParameterSourceKind
+from ..parameter_resolution import SOURCE_PRECEDENCE, ParameterResolutionTrace, ParameterSourceKind
 
 DECISION_RECORD_TYPE = "engine_selection_decision/v1"
 DECISION_PHASES = ("initial", "fallback", "reuse")
@@ -664,5 +664,5 @@ def _require_parent_link(decision, nested):
 
 def self_test():
     """Run the engine selection record checks."""
-    from .engine_selection_records_checks import self_test as run_engine_selection_record_checks
+    from .selection_records_checks import self_test as run_engine_selection_record_checks
     return run_engine_selection_record_checks()

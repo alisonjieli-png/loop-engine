@@ -4,7 +4,7 @@ Owns engine_installation/v1, engine_slot_configuration/v1,
 service_host_engines/v1 and engine_bindings_report/v1 (architecture 6.3 and
 6.6), and the rule that one installation has one qualification source.
 Belongs to the shared engine framework (roadmap S-6.30), beside
-core.engine_records, whose strict reader and field rules it uses. Never a
+core.engines.records, whose strict reader and field rules it uses. Never a
 loader, a registry or a grant: an installation or a policy declares what a
 host installed and switched on; it never enables an engine the registry does
 not hold and never widens any permission.
@@ -16,13 +16,13 @@ import os
 import re
 from types import MappingProxyType
 
-from .configuration_capabilities import digest
-from .engine_records import (
+from ..configuration_capabilities import digest
+from .records import (
     ARCHIVED_STAGE, DECLARED_SOURCE, HARNESS_PROJECT_QUALIFICATION_RECORD_TYPE, QUALIFICATION_SOURCE_RECORD_TYPES,
     EngineQualification, EngineRecordError, contract, declaration_source, exact_engine_ref, flag, identifier,
     json_object, member, plain, read_part, read_record, require_derived, sha256, slot_major, slot_version, text)
-from .engine_selection_records import EngineSelectionPolicy
-from .harness_execution_contracts import credential_metadata_present
+from .selection_records import EngineSelectionPolicy
+from ..harness_execution_contracts import credential_metadata_present
 
 INSTALLATION_RECORD_TYPE = "engine_installation/v1"
 SLOT_CONFIGURATION_RECORD_TYPE = "engine_slot_configuration/v1"
@@ -463,5 +463,5 @@ class EngineBindingsReport:
 
 def self_test():
     """Run the engine record checks."""
-    from .engine_records_checks import self_test as run_engine_record_checks
+    from .records_checks import self_test as run_engine_record_checks
     return run_engine_record_checks()

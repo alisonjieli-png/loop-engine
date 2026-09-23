@@ -15,24 +15,24 @@ from dataclasses import replace
 import json
 from unittest.mock import patch
 
-from . import engine_decision_records as decision_records
-from . import engine_host_records as host_records
-from . import engine_records as records
-from . import engine_selection_records as selection_records
-from .configuration_capabilities import digest
-from .configuration_preferences import (
+from . import decision_records
+from . import host_records
+from . import records
+from . import selection_records
+from ..configuration_capabilities import digest
+from ..configuration_preferences import (
     ExistingOrderPreference, MetaPreferencePolicy, PreferenceCandidate, PreferenceEngineBinding,
     PreferenceSelectionRequest, PreferenceSnapshot, resolve_preference)
-from .engine_decision_records import (
+from .decision_records import (
     ConsumedAuthority, EligibilityEntry, EligibilityRefusal, EngineSelectionDecision, EvidenceUse,
     FallbackTransition, PolicySource, Propensity, SelectedEngine, SelectionScope, UniverseEntry,
     require_parent_when_nested)
-from .engine_host_records import EngineBindingsReport, EngineInstallation, EngineSlotConfiguration, ServiceHostEngines
-from .engine_records import EngineDescriptor, EngineQualification, EngineRetirement
-from .engine_records_checks import (
+from .host_records import EngineBindingsReport, EngineInstallation, EngineSlotConfiguration, ServiceHostEngines
+from .records import EngineDescriptor, EngineQualification, EngineRetirement
+from .records_checks import (
     NOW, accepted, bindings_report, descriptor, fact, goose_installation, installation, policy, qualification,
     refused, retirement, service_host_engines, slot_configuration)
-from .engine_selection_records import (
+from .selection_records import (
     DECLARED_ORDER_ENGINE_REF, EngineEvidenceBinding, EngineSelectionOverride, OverrideSender, EngineSelectionPolicy)
 
 LOOP = OverrideSender("loop", "fixture.loop1", None, None)
@@ -106,10 +106,10 @@ def every_record() -> tuple:
 
 def rich_records() -> tuple:
     """Each record again with every optional part filled, so a reader that drops one is caught."""
-    from .configuration_capabilities import ConfigurationFact
-    from .engine_host_records import (
+    from ..configuration_capabilities import ConfigurationFact
+    from .host_records import (
         BoundEngine, FamilyPolicyInForce, FileReference, QualificationSource)
-    from .engine_records import EngineCostBasis, EngineLocality, EvidenceReference, QualificationScope
+    from .records import EngineCostBasis, EngineLocality, EvidenceReference, QualificationScope
     engine = descriptor(
         cost_basis=EngineCostBasis("price_record", "pricing/fixture-prices.json", digest("prices"), "2026-09-20"),
         data_recipients=("https://models.example.test",), effects=("pure",), supported_modes=(),

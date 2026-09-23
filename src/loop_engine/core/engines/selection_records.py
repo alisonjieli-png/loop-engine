@@ -6,7 +6,7 @@ retirements, architecture 6.3) and engine_selection_override/v1 (a narrowing
 preference from a Loop or a harness, with its existing ParameterSourceKind
 and its sender, architecture 8.4), and the failure-kind vocabulary of
 architecture 8.9. The decision these inputs lead to is
-core.engine_decision_records. Belongs to the shared engine framework
+core.engines.decision_records. Belongs to the shared engine framework
 (roadmap S-6.30). Never the selection procedure itself, a ranking, an
 evaluator or a grant: a policy cannot enable an engine the registry does not
 hold, and an override can only narrow or reorder eligible installations.
@@ -16,12 +16,12 @@ from __future__ import annotations
 from dataclasses import dataclass, fields as dataclass_fields
 from types import MappingProxyType
 
-from .configuration_capabilities import ConfigurationCapabilityError, digest
-from .configuration_preferences import MetaPreferencePolicy
-from .engine_records import (
+from ..configuration_capabilities import ConfigurationCapabilityError, digest
+from ..configuration_preferences import MetaPreferencePolicy
+from .records import (
     EngineRecordError, EngineRetirement, exact_engine_ref, flag, identifier, identifiers, json_object, member,
     optional, plain, read_part, read_record, sequence, sha256, slot_version, text)
-from .parameter_resolution import ParameterSourceKind
+from ..parameter_resolution import ParameterSourceKind
 
 POLICY_RECORD_TYPE = "engine_selection_policy/v1"
 OVERRIDE_RECORD_TYPE = "engine_selection_override/v1"
@@ -332,5 +332,5 @@ def _bound_sender_precedence(override):
 
 def self_test():
     """Run the engine selection record checks."""
-    from .engine_selection_records_checks import self_test as run_engine_selection_record_checks
+    from .selection_records_checks import self_test as run_engine_selection_record_checks
     return run_engine_selection_record_checks()
