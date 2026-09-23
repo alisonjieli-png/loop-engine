@@ -17,7 +17,7 @@
   // "/get-started" and "/connect" open the same Get started page. The serving route table does not list
   // "/get-started" yet, so that address works through the navigation and a direct visit is not served.
   // "/waitlist" is served and opens the same page too, because the invitation request form leads it.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/waitlist":"setup", "/auth/callback":"login"};
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/terms":"terms", "/waitlist":"setup", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
@@ -25,7 +25,7 @@
   }
   const serviceName = document.title.split(" | ")[0];
   // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", terms:"Terms of service"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();

@@ -101,6 +101,41 @@ try{
   const claimsKeys=liveKeys.startsWith("Create and revoke a key");
   check("live_personal_key_wording_follows_the_reported_capability",
     liveKeys!==""&&claimsKeys===(liveVersion&&liveCapabilities.website?.client_access_available===true));
+  /* The terms of service the owner approved on September 23, 2026: served at their own address with the same words as
+     docs/legal/TERMS-OF-SERVICE.md, the operator line and the date of the last change; linked from the shared footer and from
+     the sentence above the button that creates an account; and no deployed page says any longer that they are not published. */
+  const termsWords=readFileSync(resolve(root,"docs/legal/TERMS-OF-SERVICE.md"),"utf8").replace(/\[([^\]]*)\]\([^)]*\)/g,"$1").replace(/`/g,"").replace(/\*\*/g,"").replace(/^#+\s/gm," ").split(/\s+/).filter(Boolean);
+  const sameWords=(shown,approved)=>shown.length>0&&JSON.stringify(shown)===JSON.stringify(approved);
+  const termsOperator="Operator: Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States.",termsDate="Last changed: September 23, 2026";
+  const unpublishedTerms=/terms of service:?\s+not yet published|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)/i;
+  const deepTerms=await page.request.get(origin+"/terms",{maxRedirects:0});
+  check("live_terms_address_is_served_directly",deepTerms.status()===200&&(deepTerms.headers()["content-type"]||"").startsWith("text/html"));
+  await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
+  const liveFooterTerms=await page.locator('footer a[href="/terms"]').evaluateAll(items=>items.map(item=>({text:item.textContent.trim(),page:item.dataset.page||""})));
+  check("live_footer_links_the_terms_of_service",liveFooterTerms.length===1&&liveFooterTerms[0].text==="Terms of service"&&liveFooterTerms[0].page==="terms");
+  if(liveFooterTerms.length===1)await page.locator('footer a[href="/terms"]').click();
+  const liveTerms=await page.evaluate(()=>{const terms=document.querySelector("[data-terms-of-service]");return {path:location.pathname,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.dataset.view),
+    title:document.title,text:terms?terms.innerText:"",privacy:terms?terms.querySelectorAll('a[href="/privacy"]').length:0};});
+  check("live_terms_open_from_the_footer_with_the_operator_and_the_date",liveTerms.path==="/terms"&&JSON.stringify(liveTerms.views)===JSON.stringify(["terms"])&&liveTerms.title.endsWith("| Terms of service")
+    &&liveTerms.text.includes(termsOperator)&&liveTerms.text.includes(termsDate)&&liveTerms.privacy===1);
+  check("live_terms_say_the_same_words_as_the_approved_text",sameWords(liveTerms.text.split(/\s+/).filter(Boolean),termsWords));
+  check("terms_word_check_rejects_a_changed_word_and_a_missing_date",!sameWords(termsWords.map(word=>word==="three"?"twelve":word),termsWords)&&!sameWords(termsWords.filter(word=>word!=="Last"),termsWords)&&termsWords.join(" ").includes(termsDate));
+  /* The sentence above the account creation button is part of the served form in both states. It is shown only while the
+     deployed service reports that account creation is open, and then it must be visible. */
+  const consentWords="By creating an account you agree to the terms of service and the privacy notice.";
+  await page.goto(origin+"/signup");await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
+  if(liveOpen)await page.waitForFunction(()=>document.getElementById("email-signup")?.hidden===false,null,{timeout:10000}).catch(()=>{});
+  const liveConsent=await page.evaluate(()=>{const form=document.getElementById("email-signup-form"),sentence=document.getElementById("signup-consent"),button=document.getElementById("email-signup-button");
+    return {text:sentence?sentence.textContent.replace(/\s+/g," ").trim():"",inForm:Boolean(form&&sentence&&form.contains(sentence)),above:Boolean(sentence&&button&&(sentence.compareDocumentPosition(button)&Node.DOCUMENT_POSITION_FOLLOWING)),
+      links:sentence?[...sentence.querySelectorAll("a")].map(link=>link.getAttribute("href")):[],shown:Boolean(sentence&&sentence.getClientRects().length>0)};});
+  const consentHolds=(state,open)=>state.text===consentWords&&state.inForm&&state.above&&JSON.stringify(state.links)===JSON.stringify(["/terms","/privacy"])&&(!open||state.shown);
+  check("live_account_form_names_and_links_the_terms_and_the_privacy_notice",consentHolds(liveConsent,liveOpen));
+  check("consent_check_rejects_a_missing_link_a_sentence_below_the_button_and_a_hidden_sentence_while_open",!consentHolds({...liveConsent,links:["/privacy"]},false)
+    &&!consentHolds({...liveConsent,above:false},false)&&!consentHolds({...liveConsent,shown:false},true));
+  /* The deployed markup is read whole, hidden views included. */
+  const liveMarkup=await (await page.request.get(origin+"/",{maxRedirects:0})).text();
+  check("no_live_page_says_the_terms_are_unpublished",liveMarkup.includes("data-terms-of-service")&&!unpublishedTerms.test(liveMarkup));
+  check("unpublished_terms_check_rejects_the_old_footer_note",unpublishedTerms.test("Terms of service: not yet published")&&unpublishedTerms.test("The terms are still a draft.")&&!unpublishedTerms.test("Terms of service"));
   await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone"));
   for(const asset of ["service.js","client-access.js","catalogue-browser.js","architecture-story.js","service.css","architecture.css","client-recipes.json","supabase-client.js","geist.woff2","geist-mono.woff2","baltor-mark.svg","favicon-32.png","favicon-192.png","apple-touch-icon.png"]){
     const response=await page.request.get(origin+"/assets/"+asset,{maxRedirects:0});
@@ -130,7 +165,7 @@ try{
   }
   for(const width of [1440,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/how-it-works","/pricing","/login","/admin","/connect","/examples","/security"]){
+    for(const path of ["/","/how-it-works","/pricing","/login","/admin","/connect","/examples","/security","/terms"]){
       await page.goto(origin+path);
       check(`live_layout_${width}_${path}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     }
@@ -139,11 +174,28 @@ try{
      byte with the tested source above, so this pass covers the markup and anything the deployed service substitutes. */
   const liveRetired=/\bpilots?\b|\bbetas?\b|early access/i;
   const liveRetiredProblems=[];
-  for(const path of ["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/app","/account","/docs"]){
+  /* The approved terms say beta, in sections 2 and 6, and a published legal text keeps the words the owner approved. This pass
+     leaves out that one text, and only while it is shown with exactly the approved words; docs/legal/README.md says why. A page
+     without the shared header or footer, such as the page for an address the service does not serve, is read as far as it
+     goes, so a missing page fails its own checks instead of ending the journey. */
+  const readRetired=target=>target.evaluate(approved=>{
+    const words=text=>text.split(/\s+/).filter(Boolean),exempt=[...document.querySelectorAll("[data-terms-of-service]")]
+      .filter(node=>node.getClientRects().length>0&&JSON.stringify(words(node.innerText))===JSON.stringify(approved));
+    exempt.forEach(node=>{node.hidden=true;});
+    try{return [document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n");}
+    finally{exempt.forEach(node=>{node.hidden=false;});}
+  },termsWords);
+  for(const path of ["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs"]){
     await page.goto(origin+path);
-    const shown=await page.evaluate(()=>[document.querySelector("header").innerText,[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer").innerText].join("\n"));
+    const shown=await readRetired(page);
     if(liveRetired.test(shown))liveRetiredProblems.push(path+": "+shown.match(liveRetired)[0]);
   }
+  /* The known-wrong page for that exemption: the deployed terms with a retired sentence written beside them, in this browser only. */
+  await page.goto(origin+"/terms");
+  await page.evaluate(()=>{const planted=document.createElement("p");planted.id="known-wrong-retired";planted.textContent="Join the private beta.";document.querySelector('[data-view="terms"]')?.prepend(planted);});
+  const plantedRetired=await readRetired(page);
+  await page.evaluate(()=>document.getElementById("known-wrong-retired")?.remove());
+  check("live_retired_word_exemption_still_reads_a_word_beside_the_terms",liveRetired.test(plantedRetired)&&plantedRetired.match(liveRetired)[0].toLowerCase()==="beta"&&!liveRetired.test(await readRetired(page)));
   check("no_live_customer_page_describes_the_product_as_a_trial",liveRetiredProblems.length===0);
   check("live_retired_word_check_rejects_a_known_wrong_page",["Join the private pilot.","Beta users get early access.","A pilot user can search."].every(claim=>liveRetired.test(claim))&&!liveRetired.test("Accounts open in small groups. Join the waiting list."));
   const anonymous=await page.request.get(origin+"/api/v1/admin/access",{maxRedirects:0});

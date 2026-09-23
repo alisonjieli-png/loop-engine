@@ -52,6 +52,10 @@ The privacy notice at `/privacy` says what the service stores about you, why,
 where and for how long, and how to have it deleted. The footer of every page
 links to it.
 
+The terms of service at `/terms` say what you agree to when you use the
+service, including the price and how to cancel. The footer of every page links
+to them too.
+
 ## 2. Create one client token for each client
 
 Open `/account` and find the section named Your client tokens. Create one

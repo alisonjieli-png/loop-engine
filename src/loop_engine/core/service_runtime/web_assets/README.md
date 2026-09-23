@@ -56,10 +56,13 @@ opens the sign-in page, and no longer sees Sign in or the invitation action.
 The phone menu folds the same entries. The served page is the signed-out state,
 because the sign-in lives only in the memory of the page.
 
-The mark is a placeholder that the owner will replace. It is one file,
-`baltor-mark.svg`, used in the header and the footer and as the page icon,
-with `favicon-32.png`, `favicon-192.png` and `apple-touch-icon.png` drawn from
-it. Replacing those four files changes the mark everywhere.
+The mark is traced from the owner's logo sheet of September 23, 2026:
+variation 52, a white husky head in profile on a navy rounded tile. It is one
+file, `baltor-mark.svg`, used in the header and the footer and as the page
+icon, with `favicon-32.png`, `favicon-192.png` and `apple-touch-icon.png`
+drawn from it. Replacing those four files changes the mark everywhere. The
+standalone summit mark, variation 23, is kept with the
+[brand marks](../../../../../docs/brand/README.md) and is not served.
 
 Every page other than the homepage opens with an introduction band like the
 one on the Get started page: white, the full width of the window, with a rule

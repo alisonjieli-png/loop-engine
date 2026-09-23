@@ -35,6 +35,9 @@ WEB_ASSETS = {
     # The privacy notice the owner approved on September 22, 2026. Its words are
     # docs/legal/PRIVACY-NOTICE.md, and a browser check compares the two.
     "/privacy": ("index.html", HTML_MEDIA_TYPE),
+    # The terms of service the owner approved on September 23, 2026. Their words
+    # are docs/legal/TERMS-OF-SERVICE.md, and a browser check compares the two.
+    "/terms": ("index.html", HTML_MEDIA_TYPE),
     "/auth/callback": ("index.html", HTML_MEDIA_TYPE), "/auth/confirm": ("index.html", HTML_MEDIA_TYPE),
     "/docs": ("index.html", HTML_MEDIA_TYPE), "/how-it-works": ("index.html", HTML_MEDIA_TYPE),
     "/pricing": ("index.html", HTML_MEDIA_TYPE),
@@ -51,8 +54,9 @@ WEB_ASSETS = {
     # visitor's address reaches a font provider. Their licence travels in the notices below.
     "/assets/geist.woff2": ("geist.woff2", "font/woff2"),
     "/assets/geist-mono.woff2": ("geist-mono.woff2", "font/woff2"),
-    # The placeholder mark of the website and its page icons. The owner will choose the final mark; replacing
-    # these four files changes it everywhere, because the header, the footer and the icons all read them.
+    # The mark of the website and its page icons, traced from variation 52 of the owner's logo sheet
+    # of September 23, 2026. Replacing these four files changes it everywhere, because the header,
+    # the footer and the icons all read them.
     "/assets/baltor-mark.svg": ("baltor-mark.svg", "image/svg+xml"),
     "/assets/favicon-32.png": ("favicon-32.png", "image/png"),
     "/assets/favicon-192.png": ("favicon-192.png", "image/png"),

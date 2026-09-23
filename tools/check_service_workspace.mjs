@@ -9,7 +9,7 @@ import {resolve} from "node:path";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-browse-desktop.png","-browse-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
@@ -133,6 +133,22 @@ const publicVocabulary=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|r
    offers "early access" is reported. The hosted check reads the deployed pages with the same rule, and a copy that
    drifts between the two is a named failure below rather than a silent disagreement. */
 const retiredAccessWords=/\bpilots?\b|\bbetas?\b|early access/i;
+/* The Markdown of a published notice is read as a reader sees it rendered: a code span, strong text or a link is the same
+   words without its marks. */
+const markdownWords=text=>text.replace(/\[([^\]]*)\]\([^)]*\)/g,"$1").replace(/`/g,"").replace(/\*\*/g,"").replace(/^#+\s/gm," ").replace(/^\|[-| :]+\|\s*$/gm," ").replace(/\|/g," ").replace(/^\s*- /gm," ").split(/\s+/).filter(Boolean);
+const sameWords=(shown,approved)=>shown.length>0&&JSON.stringify(shown)===JSON.stringify(approved);
+/* The terms of service the owner approved on September 23, 2026, read from the source tree, so the served page is compared
+   with the approved text and never with itself. */
+const approvedTermsWords=markdownWords(readFileSync(resolve(root,"docs/legal/TERMS-OF-SERVICE.md"),"utf8"));
+/* The approved terms say beta, in sections 2 and 6, and a published legal text keeps the words the owner approved. The
+   retired-word rule therefore leaves out that one text, and only while it is exactly the approved text: every other word of a
+   page or a served file is read, and terms with one changed word are read whole. docs/legal/README.md records the reason. */
+const termsBlock=/<article id="terms-of-service" data-terms-of-service>[\s\S]*?<\/article>/;
+const markupWords=markup=>markup.replace(/<[^>]*>/g," ").replace(/&#39;|&apos;/g,"'").replace(/&amp;/g,"&").split(/\s+/).filter(Boolean);
+const withoutApprovedTerms=markup=>{const found=markup.match(termsBlock);return found&&sameWords(markupWords(found[0]),approvedTermsWords)?markup.replace(found[0],""):markup;};
+/* A statement that the terms of service are not published. The owner approved and published them on September 23, 2026.
+   The hosted check reads the deployed pages with the same rule, and a named check below compares the two copies. */
+const unpublishedTerms=/terms of service:?\s+not yet published|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)/i;
 /* One call to action. The owner, September 22, 2026: "get started and join the waiting list are redundant". Every link or
    button that starts the access journey carries one label and opens the one Get started page. While account creation is
    closed the label is "Request an invitation" and the address /waitlist, as the live review of September 22 asked, and the
@@ -148,7 +164,7 @@ const stateLabel=registrationOpen=>registrationOpen?accessLabels.open:accessLabe
 const opensTheJourney=href=>{const [path,part=""]=href.split("#");return accessAddresses.includes(path)&&(part===""||part==="start-access");};
 const redundantAccessLabel=/join the waiting list|request access|early access/i,invitationAccessLabel=/ask for an invitation|request an invitation/i,creationAccessLabel=/create (?:your )?account|\bsign up\b/i;
 /* The public pages a visitor can open without signing in. Each is scanned on three real services below. */
-const accessJourneyPaths=["/","/pricing","/how-it-works","/connect","/signup","/examples","/security","/docs","/privacy","/login"];
+const accessJourneyPaths=["/","/pricing","/how-it-works","/connect","/signup","/examples","/security","/docs","/privacy","/terms","/login"];
 const waitingNote="Invitation only while we open in small groups";
 const openNote="Account creation is open";
 const publicActions=target=>target.evaluate(()=>{
@@ -514,20 +530,57 @@ try {
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
-  /* The placeholder mark: the header shows it as an image with an empty text alternative, because the name follows it, and the
-     page names it as its icon. Each file is served with its exact media type. */
+  /* The brand mark, traced from variation 52 of the owner's logo sheet of September 23, 2026: the header shows it as an image
+     with an empty text alternative, because the name follows it, and the page names it as its icon. Each file is served with
+     its exact media type. */
   const markState=await page.evaluate(()=>{const mark=document.querySelector("header .brand img.brand-mark");
     return {src:mark?.getAttribute("src")||"",alt:mark?.getAttribute("alt"),loaded:Boolean(mark&&mark.complete&&mark.naturalWidth>0),named:document.querySelector("header .brand")?.getAttribute("aria-label")||"",
       icons:[...document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]')].map(link=>[link.getAttribute("rel"),link.getAttribute("type")||"",link.getAttribute("href")])};});
   const iconTypes={"/assets/baltor-mark.svg":"image/svg+xml","/assets/favicon-32.png":"image/png","/assets/favicon-192.png":"image/png","/assets/apple-touch-icon.png":"image/png"};
   const servedTypes={};
   for(const path of Object.keys(iconTypes)){const response=await page.request.get(fixture.base+path);servedTypes[path]=response.status()===200?(response.headers()["content-type"]||""):"status "+response.status();}
-  const markProblems=(state,types)=>[...(state.src==="/assets/baltor-mark.svg"&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the placeholder image with an empty alternative"]),
+  const markProblems=(state,types)=>[...(state.src==="/assets/baltor-mark.svg"&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the brand mark image with an empty alternative"]),
     ...(state.icons.some(([rel,type,href])=>rel==="icon"&&type==="image/svg+xml"&&href==="/assets/baltor-mark.svg")&&state.icons.some(([rel,,href])=>rel==="apple-touch-icon"&&href==="/assets/apple-touch-icon.png")?[]:["the page does not name its icons"]),
     ...Object.entries(iconTypes).filter(([path,type])=>!(types[path]||"").startsWith(type)).map(([path])=>path+" is served as "+types[path])];
-  check("placeholder_mark_is_shown_named_and_served",markProblems(markState,servedTypes).length===0,{mark:markState,served:servedTypes,problems:markProblems(markState,servedTypes)});
+  check("brand_mark_is_shown_named_and_served",markProblems(markState,servedTypes).length===0,{mark:markState,served:servedTypes,problems:markProblems(markState,servedTypes)});
   check("mark_check_rejects_a_missing_icon_a_wrong_media_type_and_a_repeated_name",markProblems({...markState,icons:[]},servedTypes).length===1
     &&markProblems(markState,{...servedTypes,"/assets/favicon-32.png":"text/plain"}).length===1&&markProblems({...markState,alt:"Baltor logo"},servedTypes).length===1);
+  /* The tile shows nothing outside its rounded corners. The first tracing carried white fragments of the sheet's paper there,
+     which showed as white corners on a dark ground and in a dark browser tab. The bytes each address serves are drawn on a
+     canvas at the file's own size in a blank page, because the service's page policy admits images from its own origin only,
+     and every light pixel outside the rounded tile is counted. The known-wrong mark is the served mark with one white corner
+     added, drawn the same way. */
+  const lightOutsideTheTile=async sources=>{
+    const drawn=[];
+    for(const [name,address,size,planted] of sources){
+      const response=await page.request.get(fixture.base+address),bytes=await response.body();
+      const body=address.endsWith(".svg")?Buffer.from(bytes.toString("utf8").replace("<svg ",'<svg width="'+size+'" height="'+size+'" ').replace("</svg>",planted+"</svg>")):bytes;
+      drawn.push([name,"data:"+(address.endsWith(".svg")?"image/svg+xml":"image/png")+";base64,"+body.toString("base64"),size,response.status()]);
+    }
+    const blank=await context.newPage();
+    try{return await blank.evaluate(async drawn=>{
+      const counts={};
+      for(const [name,source,size,status] of drawn){
+        if(status!==200){counts[name]="status "+status;continue;}
+        const image=new Image();image.src=source;await image.decode();
+        const canvas=document.createElement("canvas");canvas.width=size;canvas.height=size;
+        const drawing=canvas.getContext("2d");drawing.drawImage(image,0,0,size,size);
+        const pixels=drawing.getImageData(0,0,size,size).data,radius=0.22*size;let light=0;
+        for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+          const cx=x+.5,cy=y+.5,ax=cx<radius?radius:cx>size-radius?size-radius:null,ay=cy<radius?radius:cy>size-radius?size-radius:null;
+          if(ax===null||ay===null||Math.hypot(cx-ax,cy-ay)<=radius-1)continue;
+          const at=(y*size+x)*4;if(pixels[at+3]>64&&Math.min(pixels[at],pixels[at+1],pixels[at+2])>180)light++;
+        }
+        counts[name]=light;
+      }
+      return counts;
+    },drawn);}finally{await blank.close();}
+  };
+  const tileCorners=await lightOutsideTheTile([["baltor-mark.svg","/assets/baltor-mark.svg",200,""],["favicon-32.png","/assets/favicon-32.png",32,""],
+    ["favicon-192.png","/assets/favicon-192.png",192,""],["apple-touch-icon.png","/assets/apple-touch-icon.png",180,""]]);
+  const plantedCorner=await lightOutsideTheTile([["baltor-mark.svg with a white corner","/assets/baltor-mark.svg",200,'<path d="M0 0H110V110H0Z" fill="#FFFFFF"/>']]);
+  check("brand_mark_and_icons_show_nothing_outside_the_rounded_tile",Object.keys(tileCorners).length===4&&Object.values(tileCorners).every(count=>count===0),{light_pixels_outside_the_tile:tileCorners});
+  check("tile_corner_check_rejects_a_mark_with_a_white_corner",Object.values(plantedCorner)[0]>0,{light_pixels_outside_the_tile:plantedCorner});
   /* The typefaces come from this service, not from a font host: the page policy allows fonts from its own origin only, and every
      request to another origin is refused and reported by this suite. Both faces the design names are in use on the homepage. */
   const typefaces=await page.evaluate(async()=>{await document.fonts.ready;return [...new Set([...document.fonts].filter(face=>face.status==="loaded").map(face=>face.family.replace(/["']/g,"")))];});
@@ -764,23 +817,33 @@ try {
   await plain.close();await withoutScript.close();
   /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
      The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
-  const servedRoutes=["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/privacy","/app","/account","/docs"];
+  const servedRoutes=["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/privacy","/terms","/app","/account","/docs"];
   /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
      the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
   const vocabularyProblems=[];
   /* A page without the shared header or footer, such as the page for an address the service does not serve, is read
      as far as it goes, so an unserved address fails its own named checks instead of stopping the whole journey. */
   const readShownText=target=>target.evaluate(()=>[document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n"));
-  const scanShownText=(path,shownText)=>{
-    if(retiredAccessWords.test(shownText))vocabularyProblems.push({path,rule:"retired access word",found:shownText.match(retiredAccessWords)[0]});
+  /* The same text for the retired-word rule, without the approved terms while they are shown with exactly the approved words.
+     The terms are hidden only while this one reading is taken, and shown again at once. */
+  const readRetiredText=target=>target.evaluate(approved=>{
+    const words=text=>text.split(/\s+/).filter(Boolean),exempt=[...document.querySelectorAll("[data-terms-of-service]")]
+      .filter(node=>node.getClientRects().length>0&&JSON.stringify(words(node.innerText))===JSON.stringify(approved));
+    exempt.forEach(node=>{node.hidden=true;});
+    try{return [document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n");}
+    finally{exempt.forEach(node=>{node.hidden=false;});}
+  },approvedTermsWords);
+  const scanShownText=(path,shownText,retiredText=shownText)=>{
+    if(retiredAccessWords.test(retiredText))vocabularyProblems.push({path,rule:"retired access word",found:retiredText.match(retiredAccessWords)[0]});
     if(path!=="/docs"&&publicVocabulary.test(shownText))vocabularyProblems.push({path,rule:"runtime word",found:shownText.match(publicVocabulary)[0]});
+    if(unpublishedTerms.test(shownText))vocabularyProblems.push({path,rule:"terms called unpublished",found:shownText.match(unpublishedTerms)[0]});
   };
-  for(const path of servedRoutes){await page.goto(fixture.base+path);scanShownText(path,await readShownText(page));}
+  for(const path of servedRoutes){await page.goto(fixture.base+path);scanShownText(path,await readShownText(page),await readRetiredText(page));}
   /* The Get started page also answers at "/get-started", which the serving route table does not list yet, so that
      address is reached through the navigation. Every link on the website points at "/waitlist" or "/connect", both served. */
   await page.goto(fixture.base+"/");
   await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
-  scanShownText("/get-started",await readShownText(page));
+  scanShownText("/get-started",await readShownText(page),await readRetiredText(page));
   /* Rendered text is not the whole surface. A message can sit in a script the browser fetches and appear only in a
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
      the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
@@ -797,10 +860,25 @@ try {
   check("served_asset_coverage_check_rejects_a_route_left_out_of_the_scan",assetRoutes.length>0&&assetRoutes.every(path=>JSON.stringify(unscannedFor(servedFiles.filter(kept=>kept!==path)))===JSON.stringify([path])),{routes:assetRoutes.length});
   const servedTexts=[];
   for(const path of servedFiles)servedTexts.push([path,await (await page.request.get(fixture.base+path)).text()]);
-  const retiredIn=(path,text)=>retiredAccessWords.test(text)?[{path:"the served file "+path,rule:"retired access word",found:text.match(retiredAccessWords)[0]}]:[];
+  const retiredIn=(path,text)=>{const read=withoutApprovedTerms(text);return retiredAccessWords.test(read)?[{path:"the served file "+path,rule:"retired access word",found:read.match(retiredAccessWords)[0]}]:[];};
   const servedFileProblems=servedTexts.flatMap(([path,text])=>retiredIn(path,text));
   check("no_customer_page_describes_the_product_as_a_trial",vocabularyProblems.filter(item=>item.rule==="retired access word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="retired access word")});
   check("no_customer_page_uses_the_runtime_vocabulary",vocabularyProblems.filter(item=>item.rule==="runtime word").length===0,{problems:vocabularyProblems.filter(item=>item.rule==="runtime word")});
+  /* The terms of service are published, so no page and no served file may still say that they are not. The served files are
+     read whole, hidden views included. */
+  const unpublishedClaims=[...vocabularyProblems.filter(item=>item.rule==="terms called unpublished"),
+    ...servedTexts.filter(([,text])=>unpublishedTerms.test(text)).map(([path,text])=>({path:"the served file "+path,found:text.match(unpublishedTerms)[0]}))];
+  check("no_public_page_says_the_terms_are_unpublished",servedTexts.length===servedFiles.length&&unpublishedClaims.length===0,{problems:unpublishedClaims});
+  check("unpublished_terms_check_rejects_a_known_wrong_page",["Terms of service: not yet published","The terms of service are not published yet.","Our terms are still a draft."].every(claim=>unpublishedTerms.test(claim))
+    &&!unpublishedTerms.test("Read the terms of service and the privacy notice. By creating an account you agree to the terms of service."));
+  /* The exemption for the approved terms is narrow. It leaves out the one terms block of the served page only while its words
+     are the approved words, so a retired word written beside the terms, or inside terms that changed, is still reported. */
+  const servedMarkup=servedTexts.find(([path])=>path==="/")?.[1]||"";
+  const plantedBeside=servedMarkup.replace('<p class="eyebrow">Terms</p>','<p class="eyebrow">Terms</p><p>Join the private beta.</p>');
+  const plantedInside=servedMarkup.replace("Search is free. Invited beta users","Search is free for our private beta. Invited beta users");
+  check("retired_word_exemption_leaves_out_only_the_unchanged_approved_terms",termsBlock.test(servedMarkup)&&retiredIn("/",servedMarkup).length===0
+    &&plantedBeside!==servedMarkup&&retiredIn("/",plantedBeside).length===1&&plantedInside!==servedMarkup&&retiredIn("/",plantedInside).length===1
+    &&retiredAccessWords.test(servedMarkup.match(termsBlock)?.[0]||""),{terms_block_found:termsBlock.test(servedMarkup)});
   /* One known-wrong page for each retired phrase, including a page that never writes pilot or beta and still offers
      early access. An earlier rule read only pilot and beta and let that last page through. */
   const retiredKnownWrong=["Join the private pilot.","Beta users get early access.","A pilot user can search.","Our private beta is invitation only.","Request early access from your account page."];
@@ -910,10 +988,7 @@ try {
      notice with one fact changed. Each must fail its own named check. */
   const privacyOperator="Baltor.AI",privacyAddress="1428 Bryn Mawr St, Saxton, PA 16678, United States";
   const privacyLink='<a href="/privacy" data-page="privacy">Privacy notice</a>';
-  /* The Markdown is read as a reader sees it rendered: a code span or strong text is the same word without its marks. */
-  const markdownWords=text=>text.replace(/`/g,"").replace(/\*\*/g,"").replace(/^#+\s/gm," ").replace(/^\|[-| :]+\|\s*$/gm," ").replace(/\|/g," ").replace(/^\s*- /gm," ").split(/\s+/).filter(Boolean);
   const approvedWords=markdownWords(readFileSync(resolve(root,"docs/legal/PRIVACY-NOTICE.md"),"utf8"));
-  const sameWords=(shown,approved)=>shown.length>0&&JSON.stringify(shown)===JSON.stringify(approved);
   const namesTheOperator=text=>text.includes("Operator: "+privacyOperator+", "+privacyAddress+".")&&text.split(privacyAddress).length-1===2;
   const privacyState=async opened=>opened.evaluate(()=>{
     const notice=document.querySelector("[data-privacy-notice]"),shown=[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden);
@@ -957,6 +1032,110 @@ try {
     try{const {page:changed,state}=await openAt(control.path,{path:control.path,find:control.find,replacement:control.replacement});applied=state.applied;await control.run(changed,note);await changed.close();}catch(error){problem=safeError(error);}
     const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
+  /* The terms of service the owner approved on September 23, 2026, served like the privacy notice: at their own address on a
+     direct visit, with the operator line and the date of the last change that section 9 promises, a link to the privacy
+     notice, the same words as docs/legal/TERMS-OF-SERVICE.md, and a link in the shared footer. The approved words say beta
+     twice, so the page is also read for a retired word outside the approved text. Removed-guard controls serve changed
+     bytes in memory, never a source file, and each must fail its own named check. */
+  const termsOperatorLine="Operator: "+privacyOperator+", "+privacyAddress+".",termsDate="Last changed: September 23, 2026";
+  const termsLink='<a href="/terms" data-page="terms">Terms of service</a>';
+  const termsState=async opened=>opened.evaluate(()=>{
+    const terms=document.querySelector("[data-terms-of-service]"),shown=[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden);
+    return {path:location.pathname,views:shown.map(item=>item.dataset.view),title:document.title,text:terms?terms.innerText:"",
+      privacy:terms?[...terms.querySelectorAll('a[href="/privacy"]')].map(link=>link.dataset.page||""):[]};});
+  const namesTheTermsOperator=text=>text.includes(termsOperatorLine)&&text.split(privacyAddress).length-1===1;
+  const checkTerms=async (opened,note)=>{
+    const state=await termsState(opened);
+    note("terms_of_service_open_at_their_own_address",state.path==="/terms"&&JSON.stringify(state.views)===JSON.stringify(["terms"])&&state.title.endsWith("| Terms of service"),{path:state.path,views:state.views,title:state.title});
+    note("terms_of_service_name_the_operator_and_the_date_of_the_last_change",namesTheTermsOperator(state.text)&&state.text.includes(termsDate),{operator:state.text.includes(termsOperatorLine),date:state.text.includes(termsDate)});
+    const shownWords=state.text.split(/\s+/).filter(Boolean),differs=shownWords.findIndex((word,index)=>word!==approvedTermsWords[index]);
+    note("terms_of_service_says_the_same_words_as_the_approved_text",sameWords(shownWords,approvedTermsWords),{shown:shownWords.length,approved:approvedTermsWords.length,first_difference:differs<0?null:{index:differs,shown:shownWords[differs],approved:approvedTermsWords[differs]}});
+    note("terms_of_service_link_the_privacy_notice",JSON.stringify(state.privacy)===JSON.stringify(["privacy"]),{links:state.privacy});
+    const retired=await readRetiredText(opened);
+    note("terms_page_carries_no_retired_word_outside_the_approved_text",state.text!==""&&!retiredAccessWords.test(retired),{found:retiredAccessWords.test(retired)?retired.match(retiredAccessWords)[0]:null});
+  };
+  const checkTermsFooterLink=async (opened,note)=>{
+    const links=await opened.locator('footer a[href="/terms"]').evaluateAll(items=>items.map(item=>({text:item.textContent.trim(),page:item.dataset.page,shown:item.offsetParent!==null})));
+    const shownText=await readShownText(opened);
+    note("homepage_does_not_say_the_terms_are_unpublished",!unpublishedTerms.test(shownText),{found:unpublishedTerms.test(shownText)?shownText.match(unpublishedTerms)[0]:null});
+    if(links.length===1&&links[0].shown)await opened.locator('footer a[href="/terms"]').click();
+    const state=await termsState(opened);
+    note("the_footer_links_to_the_terms_of_service_from_the_homepage",links.length===1&&links[0].shown&&links[0].page==="terms"&&links[0].text==="Terms of service"&&state.path==="/terms"&&JSON.stringify(state.views)===JSON.stringify(["terms"])&&namesTheTermsOperator(state.text),{links,path:state.path,views:state.views});
+  };
+  const directTerms=await page.request.get(fixture.base+"/terms",{maxRedirects:0});
+  check("terms_of_service_are_served_on_a_direct_visit",directTerms.status()===200&&(directTerms.headers()["content-type"]||"").startsWith("text/html"),{status:directTerms.status(),content_type:directTerms.headers()["content-type"]||""});
+  {const {page:opened}=await openAt("/terms");await checkTerms(opened,check);
+    await opened.screenshot({path:output.replace(/\.json$/,"-terms-desktop.png"),fullPage:true});
+    await opened.setViewportSize({width:360,height:1000});await opened.screenshot({path:output.replace(/\.json$/,"-terms-mobile.png"),fullPage:true});await opened.close();}
+  {const {page:opened}=await openAt("/");await checkTermsFooterLink(opened,check);await opened.close();}
+  check("terms_checks_reject_a_page_without_the_operator_or_the_date_or_with_a_changed_word",!namesTheTermsOperator(termsOperatorLine.split(privacyOperator).join("Another operator"))
+    &&!namesTheTermsOperator(termsOperatorLine+" "+privacyAddress)&&!sameWords(approvedTermsWords.map(word=>word==="three"?"twelve":word),approvedTermsWords)
+    &&!sameWords(approvedTermsWords.filter(word=>word!=="Last"),approvedTermsWords)&&approvedTermsWords.join(" ").includes(termsDate)&&approvedTermsWords.join(" ").includes(termsOperatorLine));
+  const termsControls=[
+    {name:"remove_the_terms_link_from_the_footer",path:"/",find:termsLink,replacement:"",run:checkTermsFooterLink,expected:["the_footer_links_to_the_terms_of_service_from_the_homepage"]},
+    {name:"say_again_in_the_footer_that_the_terms_are_not_published",path:"/",find:termsLink,replacement:"<span>Terms of service: not yet published</span>",run:checkTermsFooterLink,expected:["homepage_does_not_say_the_terms_are_unpublished","the_footer_links_to_the_terms_of_service_from_the_homepage"]},
+    {name:"change_one_word_in_the_served_terms",path:"/terms",find:"three months",replacement:"twelve months",run:checkTerms,expected:["terms_of_service_says_the_same_words_as_the_approved_text"]},
+    {name:"drop_the_date_of_the_last_change_from_the_served_terms",path:"/terms",find:'Last changed: <time datetime="2026-09-23">September 23, 2026</time>',replacement:"",run:checkTerms,expected:["terms_of_service_name_the_operator_and_the_date_of_the_last_change","terms_of_service_says_the_same_words_as_the_approved_text"]},
+    {name:"drop_the_operator_from_the_served_terms",path:"/terms",find:'<strong>Operator:</strong> '+privacyOperator+", "+privacyAddress+".",replacement:"",run:checkTerms,expected:["terms_of_service_name_the_operator_and_the_date_of_the_last_change","terms_of_service_says_the_same_words_as_the_approved_text"]},
+    {name:"drop_the_privacy_link_from_the_served_terms",path:"/terms",find:'The <a href="/privacy" data-page="privacy">privacy notice</a> says',replacement:"The privacy notice says",run:checkTerms,expected:["terms_of_service_link_the_privacy_notice"]},
+    {name:"write_a_retired_word_beside_the_approved_terms",path:"/terms",find:'<p class="eyebrow">Terms</p>',replacement:'<p class="eyebrow">Terms</p><p>Join the private beta.</p>',run:checkTerms,expected:["terms_page_carries_no_retired_word_outside_the_approved_text"]},
+    {name:"write_a_retired_word_inside_the_approved_terms",path:"/terms",find:"Search is free. Invited beta users",replacement:"Search is free for our private beta. Invited beta users",run:checkTerms,expected:["terms_of_service_says_the_same_words_as_the_approved_text","terms_page_carries_no_retired_word_outside_the_approved_text"]}];
+  for(const control of termsControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openAt(control.path,{path:control.path,find:control.find,replacement:control.replacement});applied=state.applied;await control.run(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
+  /* The sentence above the button that creates an account names the terms of service and the privacy notice and links each
+     one. The form shows only where the service reports that account creation is open, so the sentence is read on the real
+     service whose own configuration opens email sign-up, and a press on its terms link opens the terms. Where account creation
+     is closed the form and its sentence stay hidden. Removed-guard controls serve changed bytes in memory. */
+  const consentMarkup='<p class="signup-consent" id="signup-consent">By creating an account you agree to the <a href="/terms" data-page="terms">terms of service</a> and the <a href="/privacy" data-page="privacy">privacy notice</a>.</p>';
+  const consentWords="By creating an account you agree to the terms of service and the privacy notice.";
+  const createButton='<button id="email-signup-button" type="submit" class="primary">Create account and send confirmation</button>';
+  const openSignup=async mutation=>{
+    const opened=await context.newPage(),state={applied:false,errors:[]};
+    opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
+    if(mutation)await opened.route(url=>url.origin===new URL(fixture.signup_base).origin&&url.pathname==="/signup",async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
+    await opened.goto(fixture.signup_base+"/signup");
+    await opened.waitForFunction(()=>document.getElementById("email-signup")?.hidden===false,null,{timeout:10000}).catch(()=>{});
+    return {page:opened,state};
+  };
+  const consentState=opened=>opened.evaluate(()=>{
+    const form=document.getElementById("email-signup-form"),button=document.getElementById("email-signup-button");
+    const sentence=document.getElementById("signup-consent")||[...(form?.querySelectorAll("p")||[])].find(node=>/by creating an account/i.test(node.textContent))||null;
+    return {shown:Boolean(form&&form.getClientRects().length>0&&sentence&&sentence.getClientRects().length>0),text:sentence?sentence.textContent.replace(/\s+/g," ").trim():"",
+      inForm:Boolean(form&&sentence&&form.contains(sentence)),above:Boolean(sentence&&button&&(sentence.compareDocumentPosition(button)&Node.DOCUMENT_POSITION_FOLLOWING)),
+      links:sentence?[...sentence.querySelectorAll("a")].map(link=>[link.getAttribute("href"),link.dataset.page||"",link.textContent.trim()]):[]};});
+  const consentProblems=state=>[...(state.shown?[]:["the sentence is not shown with the account form"]),...(state.text===consentWords?[]:["the sentence reads "+JSON.stringify(state.text)]),
+    ...(state.inForm&&state.above?[]:["the sentence is not inside the form, above the button that creates the account"]),
+    ...(JSON.stringify(state.links)===JSON.stringify([["/terms","terms","terms of service"],["/privacy","privacy","privacy notice"]])?[]:["the links are "+JSON.stringify(state.links)])];
+  const checkConsent=async (opened,note)=>{const state=await consentState(opened);note("account_form_names_and_links_the_terms_and_the_privacy_notice",consentProblems(state).length===0,{problems:consentProblems(state),text:state.text});return state;};
+  {const {page:opened}=await openSignup();const shown=await checkConsent(opened,check);
+    if(shown.shown)await opened.locator("#email-signup").screenshot({path:output.replace(/\.json$/,"-consent-desktop.png")});
+    check("consent_check_rejects_a_missing_link_a_changed_sentence_and_a_sentence_below_the_button",consentProblems(shown).length===0
+      &&consentProblems({...shown,links:shown.links.slice(1)}).length===1&&consentProblems({...shown,text:"By creating an account you agree to our terms."}).length===1
+      &&consentProblems({...shown,above:false}).length===1&&consentProblems({...shown,shown:false}).length===1);
+    if(shown.shown)await opened.locator('#signup-consent a[href="/terms"]').click();
+    const state=await termsState(opened);
+    check("consent_link_opens_the_terms_of_service",state.path==="/terms"&&JSON.stringify(state.views)===JSON.stringify(["terms"])&&namesTheTermsOperator(state.text),{path:state.path,views:state.views});
+    await opened.close();}
+  {const {page:opened}=await openAt("/signup");const state=await consentState(opened);
+    check("consent_sentence_is_not_shown_while_account_creation_is_closed",!state.shown&&state.inForm&&state.text===consentWords,{shown:state.shown,in_form:state.inForm});await opened.close();}
+  const consentControls=[
+    {name:"remove_the_consent_sentence_from_the_account_form",find:consentMarkup,replacement:""},
+    {name:"drop_the_terms_link_from_the_consent_sentence",find:'<a href="/terms" data-page="terms">terms of service</a> and the',replacement:"terms of service and the"},
+    {name:"move_the_consent_sentence_below_the_create_button",find:consentMarkup+createButton,replacement:createButton+consentMarkup}];
+  for(const control of consentControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);},expected=["account_form_names_and_links_the_terms_and_the_privacy_notice"];
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openSignup({find:control.find,replacement:control.replacement});applied=state.applied;await checkConsent(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
   }
   const homeFits=[];
@@ -1324,6 +1503,11 @@ try {
   check("both_public_page_checks_use_one_retired_word_rule",workspaceRetired!==""&&workspaceRetired===hostedRetired&&workspaceRetired===String(retiredAccessWords),{workspace:workspaceRetired,hosted:hostedRetired});
   const droppedBranch=workspaceRetired.replace("|early access","");
   check("retired_word_rule_comparison_rejects_a_drifted_copy",droppedBranch!==workspaceRetired&&!new RegExp(droppedBranch.slice(1,-2),"i").test("Request early access from your account page.")&&retiredAccessWords.test("Request early access from your account page."),{dropped:droppedBranch});
+  /* The rule that finds a statement that the terms are not published is read twice too: here and on the deployed pages. */
+  const workspaceUnpublished=namedRule("tools/check_service_workspace.mjs","unpublishedTerms"),hostedUnpublished=namedRule("tools/check_hosted_website.mjs","unpublishedTerms");
+  check("both_public_page_checks_use_one_unpublished_terms_rule",workspaceUnpublished!==""&&workspaceUnpublished===hostedUnpublished&&workspaceUnpublished===String(unpublishedTerms),{workspace:workspaceUnpublished,hosted:hostedUnpublished});
+  const droppedDraft=workspaceUnpublished.replace("|terms(?: of service)? (?:are|is) (?:still )?(?:a draft|not (?:yet )?published)","");
+  check("unpublished_terms_rule_comparison_rejects_a_drifted_copy",droppedDraft!==workspaceUnpublished&&!new RegExp(droppedDraft.slice(1,-2),"i").test("The terms are still a draft.")&&unpublishedTerms.test("The terms are still a draft."),{dropped:droppedDraft});
   await page.goto(fixture.base+"/");
   await page.locator("#how-explore").click();
   /* The four persistent layers and the five customer problems moved off the homepage, which sells, on to How it works,
@@ -1627,7 +1811,7 @@ try {
   check("changed_download_is_refused_by_the_browser",(await page.locator(".result").first().innerText()).includes("do not match")); await page.unroute("**/api/v1/download");
   for(const width of [1440,820,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/privacy","/waitlist"]){
+    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/privacy","/terms","/waitlist"]){
       await page.goto(fixture.base+path);
       const measurement=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(x=>!x.hidden).length}));
       check(`responsive_${width}_${path}`,!measurement.overflow&&measurement.views===1,measurement);
@@ -1635,7 +1819,7 @@ try {
   }
   for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/how-it-works","/pricing","/connect","/examples","/security","/privacy"]){
+    for(const path of ["/","/how-it-works","/pricing","/connect","/examples","/security","/privacy","/terms"]){
       await page.goto(fixture.base+path); await page.evaluate(()=>document.documentElement.style.fontSize="200%");
       const enlarged=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length,items:[...document.querySelectorAll("body *")].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;}).slice(0,12).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}));
       check(`enlarged_text_${width}_${path}`,!enlarged.overflow&&enlarged.views===1,enlarged);

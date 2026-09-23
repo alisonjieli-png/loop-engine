@@ -133,6 +133,17 @@ class ServiceDocumentationCheck(unittest.TestCase):
             self.assertIn("address", self.kinds(report))
             self.assertIn("/privacy", self.values(report))
 
+    def test_the_terms_of_service_address_is_held_to_the_page_table(self):
+        """The setup guide names the terms of service address, so the page table must keep serving it."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            self.assertEqual(check(root)["findings"], [])
+            edit(root, "src/loop_engine/core/service_runtime/web_pages.py",
+                 '"/terms"', '"/terms-of-service"', every=True)
+            report = check(root)
+            self.assertIn("address", self.kinds(report))
+            self.assertIn("/terms", self.values(report))
+
     def test_a_record_version_the_source_does_not_declare_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))
@@ -198,7 +209,7 @@ class ServiceDocumentationCheck(unittest.TestCase):
         for code in ("unauthorized", "insufficient_scope", "item_unavailable",
                      "failed_attempt_limit_reached", "item_license_not_accepted"):
             self.assertIn(code, facts["refusal_codes"], code)
-        for address in ("/mcp", "/api/v1/session", "/api/v1/download", "/connect", "/privacy"):
+        for address in ("/mcp", "/api/v1/session", "/api/v1/download", "/connect", "/privacy", "/terms"):
             self.assertIn(address, facts["addresses"], address)
         self.assertEqual(facts["credential_variable"], "BALTOR_SERVICE_TOKEN")
         self.assertIn("service", facts["root_commands"])
