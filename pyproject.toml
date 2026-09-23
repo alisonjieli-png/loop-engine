@@ -60,6 +60,9 @@ serving = [
     "PyJWT[crypto]==2.13.0",
     "anyio==4.14.2",
 ]
+review = [
+    "datasketch==2.0.0",
+]
 all = [
     "optuna==5.0.0", "cmaes==0.12.0",
     "numpy", "pandas", "scikit-learn", "lightgbm", "xgboost", "kaggle",
@@ -68,6 +71,7 @@ all = [
     "PyJWT[crypto]==2.13.0", "anyio==4.14.2",
     "opentelemetry-api>=1.41", "opentelemetry-sdk>=1.41",
     "tomli>=2; python_version < '3.11'",
+    "datasketch==2.0.0",
 ]
 
 [project.urls]
