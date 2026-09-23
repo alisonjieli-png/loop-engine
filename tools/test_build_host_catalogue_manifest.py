@@ -367,3 +367,30 @@ class KnownWrongCaseTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SameBasenameTest(unittest.TestCase):
+    """Two bodies with one file name in different folders never share one release path.
+
+    The release folder names a body by its file name alone. Before September 22,
+    2026 the second of two such bodies replaced the first in the release folder
+    without a refusal, so one approved item was written beside the bytes of
+    another. The generator now refuses before it writes anything.
+    """
+
+    def test_two_bodies_with_the_same_file_name_are_refused_before_writing(self):
+        first, second = _approved()[:2]
+        with tempfile.TemporaryDirectory(prefix="loop-engine-same-name-") as directory:
+            folder = Path(directory).resolve() / "catalogue"
+            shutil.copytree(CATALOGUE, folder, ignore=shutil.ignore_patterns("host-release"))
+            (folder / "bodies" / "moved").mkdir()
+            (folder / "bodies" / f"{second}.md").rename(folder / "bodies" / "moved" / f"{first}.md")
+            items = json.loads((folder / "items.json").read_text("utf-8"))
+            for row in items["items"]:
+                if row["reference"]["identity"] == second:
+                    row["body_path"] = f"bodies/moved/{first}.md"
+            (folder / "items.json").write_text(json.dumps(items, indent=2) + "\n", encoding="utf-8")
+            with self.assertRaises(tool.ManifestBuildError) as held:
+                tool.build(folder, artifact_root=IMAGE_ARTIFACT_ROOT, accepted_licenses=("MIT",), grants=[],
+                           include=(first, second))
+            self.assertEqual(held.exception.code, "duplicate_release_path")
