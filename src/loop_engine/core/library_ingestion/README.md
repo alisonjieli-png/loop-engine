@@ -83,8 +83,9 @@ unknown field and a missing field before anything is built from the record.
 
 `require_provenance` refuses a candidate without provenance, and the
 staging tool refuses a version two row without provenance, a row whose
-authoring disagrees with the licence evidence of any of its sources, and a
-row whose text is not one of its package files.
+authoring disagrees with the licence evidence of any of its sources, a row
+whose text is not one of its package files, and a verbatim row that does
+not carry its licence file and every notice file its evidence names.
 
 ## Engine slots
 

@@ -67,6 +67,7 @@ class OutsideIngestionChecks(unittest.TestCase):
                 f"---\nname: {name}\ndescription: Use when you need step {index} done.\n---\n# {name}\n\n"
                 + "".join(f"Instruction {index}-{step}: measure {name} input {step} and compare it with "
                           f"the stored value {step * index}.\n" for step in range(12))).encode()
+        self.files = files
         self.table = repository_table(files)
         self.pages = [[_entry_with_package("io.github.one/alpha-server", "alpha-server"),
                        _entry_with_package("io.github.two/beta-server", "beta-server")]]
@@ -127,6 +128,21 @@ class OutsideIngestionChecks(unittest.TestCase):
             path="skills/other/SKILL.md", licence_evidence=fixture_evidence(OUTLINE_ONLY, "NONE")))
         with self.assertRaisesRegex(ValueError, "authoring"):
             compile_candidates(broken, self._request())
+
+    def test_a_verbatim_v2_row_without_its_licence_or_notice_file_is_refused(self):
+        # MIT, BSD and Apache copies must travel with the licence text, and Apache copies
+        # with the NOTICE file beside them, so staging refuses a verbatim row that dropped one.
+        self.table = repository_table({**self.files, "skills/alpha-check/NOTICE": b"Notices for alpha-check.\n"})
+        _, populations = self._rows()
+        row = next(item for item in populations[0]["specifications"] if item["id"].startswith("skill_alpha_check"))
+        self.assertEqual(sorted(entry["role"] for entry in row["package_files"]), ["licence", "native_file", "notice"])
+        compile_candidates(populations[0], self._request())
+        for role in ("licence", "notice"):
+            broken = deepcopy(populations[0])
+            target = next(item for item in broken["specifications"] if item["id"] == row["id"])
+            target["package_files"] = [entry for entry in target["package_files"] if entry["role"] != role]
+            with self.subTest(role=role), self.assertRaisesRegex(ValueError, "licence file and every notice file"):
+                compile_candidates(broken, self._request())
 
     def test_a_v2_row_whose_text_is_not_one_of_its_package_files_is_refused(self):
         _, populations = self._rows()

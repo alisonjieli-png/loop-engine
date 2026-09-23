@@ -127,6 +127,48 @@ def _restricted_copy_checks(check, quarantine) -> None:
           (sorted(refused.values()), [row["title"] for row in result["rows"]]))
 
 
+def _attachment_checks(check, quarantine) -> None:
+    """A verbatim copy travels with its licence file and every notice file beside it.
+
+    MIT, BSD and Apache copies must carry the licence text, and an Apache copy
+    must carry the NOTICE file of its source. A skill and a Copilot instruction
+    file, each with a notice file in its evidence, are staged with both.
+    """
+    notice = b"Example notices: this folder includes work by Example Author.\n"
+    licence = MIT_FIXTURE.encode()
+    quarantine.put(notice)
+    quarantine.put(licence)
+    files = {"LICENSE": LicenceFile("LICENSE", bytes_digest(licence), MIT_FIXTURE, "MIT")}
+    candidates = []
+    for kind, native, path, name, text in (
+            ("skill", "agent_skill", "skills/cite-sources/SKILL.md", "cite-sources",
+             skill("cite-sources", "Cite every source",
+                   body=_steps("Record source {n} with its address and the date it was read"))),
+            ("instruction_file", "copilot_instructions", ".github/instructions/tidy-tests.instructions.md",
+             "tidy-tests", "---\napplyTo: '**/*.py'\n---\n# Tidy tests\n\n"
+             + _steps("Name test {n} after the behaviour it checks and keep one idea in each test"))):
+        data = text.encode()
+        quarantine.put(data)
+        folder = path.rsplit("/", 1)[0]
+        evidence = decide_licence(path, files, root_path="LICENSE",
+                                  notice_files=[(f"{folder}/NOTICE", bytes_digest(notice))])
+        provenance = read_outside_provenance(fixture_provenance(
+            repository="example-owner/attached", path=path, source_digest=bytes_digest(data),
+            source_size_bytes=len(data), git_blob_sha=git_blob_identity(data), licence_evidence=evidence))
+        candidates.append(source_candidate(kind, native, name, provenance, folder if kind == "skill" else ""))
+    engines = PipelineEngines(validators=(AgentSkillsBuiltinRules(),), scanners=(BuiltinStaticRules(),),
+                              near_duplicate=BuiltinMinHashLsh(), outline=DeterministicOutline(),
+                              fallback_outline=DeterministicOutline())
+    result = run_pipeline([_batch("github.attached", candidates)], quarantine, engines,
+                          PipelineSettings(source_order=("github.attached",)))
+    carried = {row["kind"]: {(entry["role"], entry["sha256"]) for entry in row["package_files"]}
+               for row in result["rows"]}
+    wanted = {("licence", bytes_digest(licence)), ("notice", bytes_digest(notice))}
+    check("a_verbatim_copy_carries_its_licence_file_and_every_notice_file",
+          set(carried) == {"skill", "instruction_file"} and all(wanted <= value for value in carried.values()),
+          carried)
+
+
 def _bundled_and_endpoint_checks(check, quarantine) -> None:
     """A second, separate population: bundled folders and modules, and one endpoint under two names.
 
@@ -327,6 +369,7 @@ def self_test() -> dict:
 
         _bundled_and_endpoint_checks(check, quarantine)
         _restricted_copy_checks(check, quarantine)
+        _attachment_checks(check, quarantine)
 
     passed = sum(1 for item in tests if item["passed"] is True)
     executed = [item for item in tests if item.get("not_tested") is not True]

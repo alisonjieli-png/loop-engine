@@ -98,6 +98,15 @@ def _outside_payload(row) -> dict:
     text_digest = hashlib.sha256(row["text"].encode("utf-8")).hexdigest()
     if not files or text_digest not in {value["sha256"] for value in files}:
         raise ValueError("The text of an outside row must be one of its package files")
+    if required == "verbatim_permitted":
+        # A copy under MIT, BSD or Apache travels with the licence text, and an Apache copy with
+        # the NOTICE file beside it: the kept bytes' own licence file and notices must be here.
+        evidence = records[0].licence_evidence
+        carried = {(value["role"], value["sha256"]) for value in files}
+        wanted = [("licence", evidence["governing_file"]["sha256"])] + [
+            ("notice", notice["sha256"]) for notice in evidence["file_level_notices"] if notice["kind"] == "notice_file"]
+        if any(item not in carried for item in wanted):
+            raise ValueError("A verbatim copy must carry its licence file and every notice file of its evidence")
     return {"record_type": "candidate_intelligence_specification/v2", "title": row["title"], "text": row["text"],
             "family": row["family"], "kind": row["kind"], "outside_provenance": provenance,
             "authoring": row["authoring"], "license_expression": row["license_expression"],
