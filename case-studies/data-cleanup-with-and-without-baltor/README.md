@@ -40,6 +40,10 @@ call models and need the model authority and budget recorded in the design.
 
 The pilot, the main plan and the optional arm ran on September 22 and 23,
 2026, United States Eastern time, with 225 of the 400 allowed model requests.
+The result is negative: the approved phone item made the cheap model clearly
+worse on phone numbers, no family improved, and the local 7B model could not
+operate the harness. The [dated report](REPORT-2026-09-22.md) gives every
+number, failure and limitation.
 
 - [results/tables.md](results/tables.md): scores for every family, arm and
   repetition, and the comparisons under the frozen claim rules.
