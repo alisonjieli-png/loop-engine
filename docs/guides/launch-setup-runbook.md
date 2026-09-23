@@ -414,7 +414,7 @@ volume or public deployment was created during the GitHub connection setup.
 
 This procedure is written and tested locally. It has not been run against
 the live Machine. It needs a deployed release that includes catalogue
-releases; release 15 does not. The design is in
+releases; release 16 and every earlier release do not. The design is in
 [the catalogue release design record](../architecture/CATALOGUE-RELEASES-AND-HOT-SWAP-2026-09-22.md).
 Library bodies are private: a bundle is built outside this public repository,
 travels only over `fly ssh sftp` from this workstation, and is removed from the
@@ -427,7 +427,7 @@ that owns `/data`.
 **Rollback rule.** An image rollback target must understand the current
 catalogue state version. `loop-engine service catalogue-status` prints
 `catalogue_state_version` and the versions the running image supports. Release
-15 and every older release predate catalogue state: they refuse a host file
+16 and every older release predate catalogue state: they refuse a host file
 that has the `catalogue` section and fail the health check, which leaves the
 service down until a compatible image is deployed again. They are not rollback
 targets once the section exists. Do not remove the section to start an older
@@ -442,8 +442,8 @@ Once, before the first release:
 2. Fetch `/data/host.json` with `python3 tools/fly_operator.py --account ACCOUNT -- ssh sftp get /data/host.json host.json --app baltor-pilot`,
    add the `catalogue` section with `"source": "image"` and
    `"body_store_root": "/data/catalogue-bodies"`, put it back with
-   `ssh sftp put`, and restart the Machine. From this moment release 15 refuses
-   the host file. Check that `/api/v1/health` answers ready.
+   `ssh sftp put`, and restart the Machine. From this moment release 16 and
+   every older release refuse the host file. Check that `/api/v1/health` answers ready.
 
 For each release:
 

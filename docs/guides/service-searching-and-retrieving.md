@@ -122,8 +122,8 @@ The answer, exactly as returned:
 Any other field is refused, so a typing mistake fails loudly instead of being
 ignored. A filter may name only a detail the catalogue declares as filterable
 and public; any other is refused with `search_filter_not_allowed`, and a
-condition of the wrong shape with `search_filter_invalid`. The release 15
-service does not read `filters` and refuses a request that sends it.
+condition of the wrong shape with `search_filter_invalid`. Release 16 and
+every earlier release do not read `filters` and refuse a request that sends it.
 
 ### How to read a hit
 
@@ -270,7 +270,7 @@ the file's `digest` in the package document. Use the same `request_id` for
 every file of one package: the package is one measured unit, recorded once. A
 path the package does not hold is refused with `package_file_not_found`. This
 request shape is read by a release that includes catalogue releases, not by
-release 15.
+release 16 or any earlier release.
 
 ### The same read inside JSON
 
