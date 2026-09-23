@@ -41,4 +41,4 @@ An agent writes the implementation first and then writes a test that passes. The
 
 - `src/loop_engine/skills/software-tdd-red-green-refactor/SKILL.md`: the packaged skill with the eight steps and the closing restrictions.
 
-Licence: MIT. Compiled from revision d893bba.
+Licence: MIT. Compiled from revision 9cec9d7.

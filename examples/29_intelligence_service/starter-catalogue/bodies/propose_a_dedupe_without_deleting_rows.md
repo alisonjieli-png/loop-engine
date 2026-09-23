@@ -35,4 +35,4 @@ A job chains possible pairs into clusters. Row A is possibly B, and B is possibl
 
 - `src/loop_engine/code_nodes/duplicate_detection.py`: `dedupe`, `DedupeProposal`, `escalation_request` and `decide_possible_pairs`.
 
-Licence: MIT. Compiled from revision d893bba. The module imports the typed decision module of the same package for the decision requests. The proposal itself is plain data.
+Licence: MIT. Compiled from revision 9cec9d7. The module imports the typed decision module of the same package for the decision requests. The proposal itself is plain data.

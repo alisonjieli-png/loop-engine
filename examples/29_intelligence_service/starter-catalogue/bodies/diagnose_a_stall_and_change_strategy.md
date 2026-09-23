@@ -40,4 +40,4 @@ A test fails three times with the same import error. After each failure the agen
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work function for diagnosing and changing strategy.
 - `src/loop_engine/strings/question_engine.py`: the question form named `repetition_circuit_breaker`.
 
-Licence: MIT. Compiled from revision d893bba.
+Licence: MIT. Compiled from revision 9cec9d7.

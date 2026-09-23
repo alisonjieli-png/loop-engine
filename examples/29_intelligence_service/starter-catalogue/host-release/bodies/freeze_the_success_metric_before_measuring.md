@@ -37,4 +37,4 @@ A team tries forty configurations, reports the best cross-validated score and co
 - `src/loop_engine/code_nodes/measurement.py`: the task success and generalization gap statements in `measurement_pack`.
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the guidance records about stating the baseline first and about a metric computed on the data that shaped the method.
 
-Licence: MIT. Compiled from revision d893bba.
+Licence: MIT. Compiled from revision 9cec9d7.
