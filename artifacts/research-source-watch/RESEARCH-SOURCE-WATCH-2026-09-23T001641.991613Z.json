@@ -1,0 +1,315 @@
+{
+  "created_at": "2026-09-23T00:16:48Z",
+  "interpretation": "Changes are review prompts, not source claims, candidate approval, or runtime authority.",
+  "limits": {
+    "max_bytes": 512000,
+    "max_online_sources": 15,
+    "timeout_seconds": 5.0
+  },
+  "manifest_sha256": "616d4c4f0f3ed82e9614dd4aabac7decfe5d4a53b8df8b6eba8d5c8a641db0ea",
+  "mode": "online",
+  "record_type": "research_source_watch_report/v1",
+  "sources": [
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:41Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "codebase_memory_mcp",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Codebase Memory Model Context Protocol graph",
+      "observed": {
+        "etag": "W/\"676b3871f9aabd3a192d97ebcecdf4690fa0712e9e2b703b8804c6bcc22933cb\"",
+        "fingerprint": "e783f73d752f83b689451e3a7e48061cda1202f7",
+        "last_modified": "Tue, 22 Sep 2026 01:04:08 GMT",
+        "request_url": "https://api.github.com/repos/DeusData/codebase-memory-mcp/commits?per_page=1",
+        "revision": "e783f73d752f83b689451e3a7e48061cda1202f7"
+      },
+      "retrieved_at": "2026-09-23T00:16:42Z",
+      "roadmap_step": "S-6.52",
+      "url": "https://github.com/DeusData/codebase-memory-mcp"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:42Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "iwe",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "IWE managed Markdown graph",
+      "observed": {
+        "etag": "W/\"1fda1e53de1983368c67ae49ecff69e9de633b842de458c545ada3366e5057a4\"",
+        "fingerprint": "58616fbc943f7802021f949701c3ebeaff57e1ff",
+        "last_modified": "Sun, 20 Sep 2026 19:15:23 GMT",
+        "request_url": "https://api.github.com/repos/iwe-org/iwe/commits?per_page=1",
+        "revision": "58616fbc943f7802021f949701c3ebeaff57e1ff"
+      },
+      "retrieved_at": "2026-09-23T00:16:42Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/iwe-org/iwe"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:42Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "memos",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "MemOS agent memory",
+      "observed": {
+        "etag": "W/\"c5dad9ce558decb203b061f60be567bf9b5d0dbd1e6139de6cdaa660bec11d1e\"",
+        "fingerprint": "a7367d07e55db61099f7b4e2c1108bc5831a24f3",
+        "last_modified": "Tue, 22 Sep 2026 01:51:03 GMT",
+        "request_url": "https://api.github.com/repos/MemTensor/MemOS/commits?per_page=1",
+        "revision": "a7367d07e55db61099f7b4e2c1108bc5831a24f3"
+      },
+      "retrieved_at": "2026-09-23T00:16:43Z",
+      "roadmap_step": "S-6.41",
+      "url": "https://github.com/MemTensor/MemOS"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:43Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "caura",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Caura multi-agent memory",
+      "observed": {
+        "etag": "W/\"4e94001f7c78eb27f35a5750203f8914cf0ff709c0a1425a585886f46621a258\"",
+        "fingerprint": "ccbf60b936148b44d29be6ad83084e9007192076",
+        "last_modified": "Tue, 22 Sep 2026 21:41:21 GMT",
+        "request_url": "https://api.github.com/repos/caura-ai/caura/commits?per_page=1",
+        "revision": "ccbf60b936148b44d29be6ad83084e9007192076"
+      },
+      "retrieved_at": "2026-09-23T00:16:43Z",
+      "roadmap_step": "S-6.41",
+      "url": "https://github.com/caura-ai/caura"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:43Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "tgrep",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Microsoft tgrep exact code search",
+      "observed": {
+        "etag": "W/\"eb2d182cf9fe3dac4ed1aa38f01065d391d541154c2e0319a00220c4a5478b36\"",
+        "fingerprint": "56f8c62a2255d794bcaafca5f6a05dcc2d793ad0",
+        "last_modified": "Mon, 21 Sep 2026 18:59:23 GMT",
+        "request_url": "https://api.github.com/repos/microsoft/tgrep/commits?per_page=1",
+        "revision": "56f8c62a2255d794bcaafca5f6a05dcc2d793ad0"
+      },
+      "retrieved_at": "2026-09-23T00:16:44Z",
+      "roadmap_step": "S-6.52",
+      "url": "https://github.com/microsoft/tgrep"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:44Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "ontokg_eq",
+      "kind": "web_page",
+      "license_state": "paper_and_reproducibility_rights_review_required",
+      "name": "OntoKG-EQ question-governed graph paper",
+      "observed": {
+        "content_sha256": "752e89cf7a8cd5874e967dd5a35520d2b76d780c2bf0399f32a9d383b06928ef",
+        "etag": null,
+        "fingerprint": "752e89cf7a8cd5874e967dd5a35520d2b76d780c2bf0399f32a9d383b06928ef",
+        "last_modified": "Wed, 09 Sep 2026 02:48:48 GMT",
+        "request_url": "https://arxiv.org/abs/2609.08869"
+      },
+      "retrieved_at": "2026-09-23T00:16:44Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://arxiv.org/abs/2609.08869"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:44Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "helixdb",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "HelixDB graph and vector store",
+      "observed": {
+        "etag": "W/\"a1f3ef0a014437e3e5c0784e2e661793da904e55097e8b1c965918254346e08c\"",
+        "fingerprint": "64eaaca3026446fb08d1a5331215decc9fe0725b",
+        "last_modified": "Tue, 22 Sep 2026 15:18:45 GMT",
+        "request_url": "https://api.github.com/repos/HelixDB/helix-db/commits?per_page=1",
+        "revision": "64eaaca3026446fb08d1a5331215decc9fe0725b"
+      },
+      "retrieved_at": "2026-09-23T00:16:44Z",
+      "roadmap_step": "S-6.52",
+      "url": "https://github.com/HelixDB/helix-db"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:44Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "evoontology",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "EvoOntology candidate semantic evolution",
+      "observed": {
+        "etag": "W/\"e6a39001123c2c65cd668a38833729a7be73d2c1ffa7e831906fc6e39401da04\"",
+        "fingerprint": "6201f3d49d508874755bccfa5664363c943d9d88",
+        "last_modified": "Tue, 22 Sep 2026 16:33:26 GMT",
+        "request_url": "https://api.github.com/repos/ruc-datalab/EvoOntology/commits?per_page=1",
+        "revision": "6201f3d49d508874755bccfa5664363c943d9d88"
+      },
+      "retrieved_at": "2026-09-23T00:16:45Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/ruc-datalab/EvoOntology"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:45Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "slayer",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "SLayer embedded semantic metrics",
+      "observed": {
+        "etag": "W/\"f0adc2374cfc729a07883153a1cae6818e445092f4fca9e45d60678113d310ab\"",
+        "fingerprint": "938b208f2b28a2f20bb20a1d7c995319ee8213c8",
+        "last_modified": "Tue, 22 Sep 2026 09:42:43 GMT",
+        "request_url": "https://api.github.com/repos/MotleyAI/slayer/commits?per_page=1",
+        "revision": "938b208f2b28a2f20bb20a1d7c995319ee8213c8"
+      },
+      "retrieved_at": "2026-09-23T00:16:45Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/MotleyAI/slayer"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:45Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "symbolic_separation",
+      "kind": "web_page",
+      "license_state": "paper_rights_review_required",
+      "name": "Symbolic Separation graph-grounding paper",
+      "observed": {
+        "content_sha256": "321e30be8460184e02823cf94995c97cbbead9bc72a8a11f567f404227c66c49",
+        "etag": null,
+        "fingerprint": "321e30be8460184e02823cf94995c97cbbead9bc72a8a11f567f404227c66c49",
+        "last_modified": "Wed, 16 Sep 2026 00:59:23 GMT",
+        "request_url": "https://arxiv.org/abs/2609.17107"
+      },
+      "retrieved_at": "2026-09-23T00:16:45Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://arxiv.org/abs/2609.17107"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:45Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "oxigraph",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Oxigraph RDF library",
+      "observed": {
+        "etag": "W/\"da7a91f2fab0f45bc09825a4058cc52a5899d22420a0d5d2e2e75d3a9598b066\"",
+        "fingerprint": "450d2fe0ea8b9aa457ad41dbf542582d1d443150",
+        "last_modified": "Tue, 22 Sep 2026 19:29:50 GMT",
+        "request_url": "https://api.github.com/repos/oxigraph/oxigraph/commits?per_page=1",
+        "revision": "450d2fe0ea8b9aa457ad41dbf542582d1d443150"
+      },
+      "retrieved_at": "2026-09-23T00:16:46Z",
+      "roadmap_step": "S-6.52",
+      "url": "https://github.com/oxigraph/oxigraph"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:46Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "cartography",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Cartography cloud identity inventory",
+      "observed": {
+        "etag": "W/\"5de06c0f7c43d20860c28b188e9a3753c0b204a23cb989385d6c2a2b7a9c1e72\"",
+        "fingerprint": "ed02321a420c69fa6c17e832d6775a1f896cdded",
+        "last_modified": "Tue, 22 Sep 2026 22:00:56 GMT",
+        "request_url": "https://api.github.com/repos/cartography-cncf/cartography/commits?per_page=1",
+        "revision": "ed02321a420c69fa6c17e832d6775a1f896cdded"
+      },
+      "retrieved_at": "2026-09-23T00:16:46Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/cartography-cncf/cartography"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:46Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "sstorytime",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "SSTorytime temporal graph",
+      "observed": {
+        "etag": "W/\"25ce420ed71d1f5477e29ff8ee06a1c28ee92b03c51addea22dcd34af04a58db\"",
+        "fingerprint": "4efcd13f078c3868857953db1930d0e8a96b9c3c",
+        "last_modified": "Tue, 22 Sep 2026 09:33:09 GMT",
+        "request_url": "https://api.github.com/repos/markburgess/SSTorytime/commits?per_page=1",
+        "revision": "4efcd13f078c3868857953db1930d0e8a96b9c3c"
+      },
+      "retrieved_at": "2026-09-23T00:16:47Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/markburgess/SSTorytime"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:47Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "lpg_modeler",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "LPG Modeler graph constraint generator",
+      "observed": {
+        "etag": "W/\"858d759f55ead6dbff164ca06df9aa86b163535229a47faa3b80329cabf3bf6e\"",
+        "fingerprint": "272688fdf071f015bc6b1f83ba121719e6d4da42",
+        "last_modified": "Mon, 21 Sep 2026 15:37:44 GMT",
+        "request_url": "https://api.github.com/repos/Volland/lpg-modeler/commits?per_page=1",
+        "revision": "272688fdf071f015bc6b1f83ba121719e6d4da42"
+      },
+      "retrieved_at": "2026-09-23T00:16:47Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/Volland/lpg-modeler"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:47Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "ontology_atlas",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Ontology Atlas architecture projection",
+      "observed": {
+        "etag": "W/\"62db095161d0f73ba86be2128ddac3020e085779761f14a7210863236550ba6a\"",
+        "fingerprint": "044393c91915719b6af9162c05188f683ba69534",
+        "last_modified": "Tue, 22 Sep 2026 22:39:50 GMT",
+        "request_url": "https://api.github.com/repos/wlsdks/ontology-atlas/commits?per_page=1",
+        "revision": "044393c91915719b6af9162c05188f683ba69534"
+      },
+      "retrieved_at": "2026-09-23T00:16:48Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/wlsdks/ontology-atlas"
+    }
+  ],
+  "tool_sha256": "170ace8e6f41cad340209ddbd23e728083279341a0ff2a187569890bbcb4ec13"
+}

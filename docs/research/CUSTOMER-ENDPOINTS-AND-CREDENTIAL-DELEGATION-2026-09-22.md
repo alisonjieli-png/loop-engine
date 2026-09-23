@@ -2,7 +2,9 @@
 
 Kind: dated source and repository research with a proposed integration design.
 Reviewed September 22, 2026. This is input for S-6.8, S-6.31, S-6.42,
-S-6.43 and S-6.60 in the [roadmap](../roadmap/roadmap.yaml). It grants no
+S-6.43, S-6.60 and the proposed customer-side credential and outbound tool
+broker S-6.61 in the
+[roadmap](../roadmap/roadmap.yaml). It grants no
 provider, network, secret, spending or tool authority. No real credential,
 provider call or external tool call was used for this review.
 
@@ -141,6 +143,18 @@ model and a key can be present but revoked.
 
 ## Proposed customer-side bridge
 
+The pattern has direct prior art. [Tessl's workspace gateway](https://docs.tessl.io/reference/mcp-gateway)
+registers an upstream Model Context Protocol server once, keeps its OAuth
+credentials in Tessl and presents a stdio proxy to coding agents.
+[OpenConnector](https://github.com/oomol-lab/open-connector) and
+[IBM ContextForge](https://github.com/IBM/mcp-context-forge) are further
+credential and tool-gateway references; [Google SAM](https://github.com/google/sam)
+adds distributed node identity and direct or relayed links. These external
+systems do not establish Baltor's exact per-step effect grants or customer-
+side data custody by themselves. The [current S-6.61 roadmap entry](../roadmap/roadmap.yaml)
+should compare their security, licence, version and operational costs with
+the existing local model relay before creating another broker.
+
 ```text
 Customer-side Loop Engine host
 ├── Exact user, task, Loop, endpoint, tool and effect authority
@@ -253,6 +267,17 @@ prompt, downloaded skill, event, report or exported trace.
 
 ## Discriminating checks for Claude Code
 
+The roadmap holds task state. Its proposed work now has a bounded order:
+
+| Owning step | First reviewable result and limit |
+|---|---|
+| S-6.8 | Bind two fresh confined fixture harnesses to separate leases and resource reservations at the existing parent model relay. A copied, expired or revoked lease fails before the fake provider is called. This proves local contract behavior only. |
+| S-6.31 | Run one pinned native harness process per step with the selected material and the parent model relay. Record connected, listed, loaded, finished and independently accepted as different observations. A text-only step can be reviewed while native tools remain unavailable. |
+| S-6.61 | Add the customer-side credential broker and outbound Model Context Protocol tool facade through the existing registry and approval boundary. Start with a pure fixture server, two processes, exact tool filtering, scoped virtual keys and caller authentication. Then qualify effectful calls, upstream authorization, both protocol generations and each native connector separately. |
+| S-6.42 and S-6.9 | Name which harnesses can actually register and load the facade; prove one checked native use before listing tool support. A harness that needs direct credentials has a distinct, weaker profile. |
+| S-6.24 | Show the customer's endpoint and tool setup choices, run reachability from the actual parent namespace, and keep library, model and tool credentials visibly separate. |
+| S-6.43 and S-6.60 | S-6.43 negotiates the hosted Baltor service's incoming protocol revisions and does not qualify the outbound tool bridge. S-6.60 changes model-call strategy behind the same authority and credential boundary after its pass-through engine is checked. |
+
 1. Two fresh confined harnesses use one host-side `127.0.0.1` model route;
    neither sees the real endpoint credential, host environment or provider
    socket. One credential acquisition or consent and two separately accounted calls are
@@ -290,5 +315,5 @@ prompt, downloaded skill, event, report or exported trace.
 The first qualification can use local fake providers, tool servers and
 deliberately invalid credentials. Real provider integration and native
 harness claims need separately authorized calls and saved evidence. This
-report proposes the connection design; it does not mark S-6.8 or S-6.31
+report proposes the connection design; it does not mark S-6.8, S-6.31 or S-6.61
 complete.

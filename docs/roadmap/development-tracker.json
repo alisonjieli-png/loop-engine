@@ -1,10 +1,10 @@
 {
  "counts": {
   "blocked": 2,
-  "done": 41,
-  "next": 11,
-  "now": 32,
-  "waiting": 56
+  "done": 42,
+  "next": 12,
+  "now": 33,
+  "waiting": 53
  },
  "lanes": {
   "blocked": [
@@ -38,6 +38,21 @@
    }
   ],
   "done": [
+   {
+    "acceptance": "A client built on either revision connects, lists the tools and downloads an approved item, and the refusal for an unknown revision names the supported ones.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.29"
+    ],
+    "id": "S-6.43",
+    "next_local_work": "Record which native clients connect at each revision as they adopt 2026-07-28; the hosted service check covers both revisions.",
+    "phase": 6,
+    "status": "live_qualified",
+    "title": "Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25",
+    "waiting_on": [
+     "S-6.29"
+    ]
+   },
    {
     "acceptance": "Every existing initiative is retained; the next eligible task and unmet launch gates are computed from the same plan; the artifact is regenerated after every completed batch.",
     "blocked_on": "",
@@ -583,6 +598,19 @@
   ],
   "next": [
    {
+    "acceptance": "Each listed harness starts an isolated instance, discovers and loads only the selected approved files at its own native paths in a recorded test, with no unselected inherited material.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.43"
+    ],
+    "id": "S-6.44",
+    "next_local_work": "Extend the existing selected-material installer with versioned client-native layout profiles, clean home and ancestor isolation, and a no-model native discovery probe before adding other file kinds.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Serve the open formats in each harness's own layout",
+    "waiting_on": []
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -783,6 +811,21 @@
     "status": "building",
     "title": "One home for rules and authority, and a documentation cleanup",
     "waiting_on": []
+   },
+   {
+    "acceptance": "A new batch of approved items reaches every eligible account through one release, customers see what changed, and their settings shape what they are offered.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40"
+    ],
+    "id": "S-6.62",
+    "next_local_work": "Finish the store, release record, pointer, hot swap, attribute schema and release-following grants with their known-wrong checks; merge into release 16; publish the first release through the new command on the live Machine.",
+    "phase": 6,
+    "status": "building",
+    "title": "Catalogue releases and library settings with good defaults",
+    "waiting_on": [
+     "S-6.40"
+    ]
    },
    {
     "acceptance": "The application is ready for the owner to add the founder-only facts and submit before November 2, 2026, 8 p.m. Pacific.",
@@ -1198,21 +1241,6 @@
   ],
   "waiting": [
    {
-    "acceptance": "A client built on either revision connects, lists the tools and downloads an approved item, and the refusal for an unknown revision names the supported ones.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.29"
-    ],
-    "id": "S-6.43",
-    "next_local_work": "Read the 2026-07-28 specification, write the check for the known-wrong case, then add the binding.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25",
-    "waiting_on": [
-     "S-6.29"
-    ]
-   },
-   {
     "acceptance": "Every listed gap is closed or recorded with its reason, each with a named check.",
     "blocked_on": "",
     "depends_on": [
@@ -1285,21 +1313,6 @@
     "title": "Persona reviews after every release",
     "waiting_on": [
      "S-6.33"
-    ]
-   },
-   {
-    "acceptance": "Each listed harness loads a selected item from its own layout in a recorded test.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.43"
-    ],
-    "id": "S-6.44",
-    "next_local_work": "Pin the Agent Plugins 1.0.0 schema, write the emitter and the per-harness lint, then the Pi package.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Serve the open formats in each harness's own layout",
-    "waiting_on": [
-     "S-6.43"
     ]
    },
    {
@@ -1399,7 +1412,7 @@
      "S-6.30"
     ],
     "id": "S-6.32",
-    "next_local_work": "Wire the policy through the slot and add the floor with its known-wrong checks.",
+    "next_local_work": "Wire the measured policy through the hosted slot and test its relevance floor, then compare lexical and eligible hybrid engines on a new frozen task-query population; do not tune on the same queries used to claim the result.",
     "phase": 6,
     "status": "proposed",
     "title": "Hosted search as an engine slot with the measured policy and a relevance floor",
@@ -1444,22 +1457,22 @@
      "S-6.30"
     ],
     "id": "S-6.40",
-    "next_local_work": "Library wave 1 is building the per-source provenance record, the permissive and registry importers with duplicate removal and pre-checks, and the multi-model review panel with a measured pilot; then scale to 1,000 served items and measure review throughput before the next 9,000.",
+    "next_local_work": "Independently review and qualify exact bytes from the two 24-package original batches, then build the production first-party candidate lane and measure a stratified 1,000-candidate campaign. The existing preparer refuses native YAML frontmatter, so a qualified adapter must preserve SKILL.md layout and digests. Keep outside importers as a later lane. Scale serving, grants, releases and review throughput from measured yield before claiming 10,000.",
     "phase": 6,
     "status": "proposed",
-    "title": "Grow the library: a scheduled ingestion worker for skills, plugins and context",
+    "title": "Grow the library: original package factory first, scheduled source ingestion later",
     "waiting_on": [
      "S-6.30"
     ]
    },
    {
-    "acceptance": "Reviews of thousands of items run unattended within the owner's subscription, and every approval names independent reviewers.",
+    "acceptance": "The panel reviews thousands of candidates only after its risk-specific error gate and throughput are measured; every approval names independent reviewers, and a sampled audit never grants approval to unsampled bytes.",
     "blocked_on": "",
     "depends_on": [
      "S-6.45"
     ],
     "id": "S-6.63",
-    "next_local_work": "Library wave 1 builds the panel and runs a measured pilot on 30 of the 74 unreviewed starter items.",
+    "next_local_work": "Library wave 1 builds the panel and runs a measured plumbing pilot on 30 of the 74 unreviewed starter items, then calibrates on frozen malicious and benign items and a real-batch human sample before scaling.",
     "phase": 6,
     "status": "proposed",
     "title": "An independent review panel of several model families",
@@ -1468,31 +1481,16 @@
     ]
    },
    {
-    "acceptance": "A new batch of approved items reaches every eligible account through one release, customers see what changed, and their settings shape what they are offered.",
-    "blocked_on": "",
-    "depends_on": [
-     "S-6.40"
-    ],
-    "id": "S-6.62",
-    "next_local_work": "Design the catalogue release record and the grants-follow-the-manifest setting first.",
-    "phase": 6,
-    "status": "proposed",
-    "title": "Catalogue releases and library settings with good defaults",
-    "waiting_on": [
-     "S-6.40"
-    ]
-   },
-   {
-    "acceptance": "Material the library may not copy still reaches customers as original, reviewed items with recorded inspiration and no copied text.",
+    "acceptance": "An independently authored method may be admitted only after its own rights, originality, safety and usefulness gates pass; restricted material remains excluded.",
     "blocked_on": "",
     "depends_on": [
      "S-6.63"
     ],
     "id": "S-6.64",
-    "next_local_work": "Start after the review panel qualifies; generate from the outlines library wave 1 records.",
+    "next_local_work": "Defer this lane until after the original first-party campaign and review panel qualification; then study one abstract need under the exact rights gate.",
     "phase": 6,
     "status": "proposed",
-    "title": "Original rewrites for material without a permissive licence",
+    "title": "Independently authored alternatives to restricted-source ideas",
     "waiting_on": [
      "S-6.63"
     ]
@@ -1519,7 +1517,7 @@
      "S-6.40"
     ],
     "id": "S-6.53",
-    "next_local_work": "Download O*NET with its attribution and stage the first cells as candidates.",
+    "next_local_work": "Use the pinned O*NET 31.0 Database inventory to cluster shared activities and prioritize independently testable digital methods; convert selected briefs into original native candidates with exact source and rights records, then measure review yield.",
     "phase": 6,
     "status": "proposed",
     "title": "Generate intelligence along the occupation grid",
@@ -2335,7 +2333,7 @@
    "title": "Activate the live Stripe account and say go"
   },
   {
-   "completion": "The footer names the operator, the contact address receives mail, and /terms and /privacy are live. September 22: the owner approved the privacy notice with Baltor.AI as the operator and the postal contact address 1428 Bryn Mawr St, Saxton, PA 16678; the terms of service are still a draft.",
+   "completion": "The footer names the operator, the contact address receives mail, and /terms and /privacy are live. September 22: the owner approved the privacy notice with Baltor.AI as the operator and the postal contact address 1428 Bryn Mawr St, Saxton, PA 16678; the terms of service are still a draft. September 23 at 01:41 UTC: the approved privacy notice is published at /privacy on every hostname in Fly release 15; the terms of service and a public contact email are still missing.",
    "id": "OWNER-16",
    "instructions": [
     "Tell engineering the legal name and country of the company that operates Baltor.",
@@ -3002,11 +3000,12 @@
    "depends_on": [
     "D-17"
    ],
-   "done_steps": 0,
+   "done_steps": 1,
    "id": "D-20",
    "stage": "initial_service",
    "status_counts": {
-    "proposed": 5
+    "live_qualified": 1,
+    "proposed": 4
    },
    "steps": [
     "S-6.43",
@@ -3062,7 +3061,8 @@
    "id": "D-22",
    "stage": "continued_improvement",
    "status_counts": {
-    "proposed": 8
+    "building": 1,
+    "proposed": 7
    },
    "steps": [
     "S-6.51",
@@ -3135,5 +3135,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c87e561aa2cd61"
+ "source_fingerprint": "sha256:d4a63ce60bd34af8c4cfa84e8e2c728ef502793d3c2a535a058b014bf737a42f"
 }

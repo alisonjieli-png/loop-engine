@@ -1,0 +1,117 @@
+{
+  "record_type": "native_context_candidate_review_note/v1",
+  "candidate_id": "baltor.context.repair-one-failing-test.v1",
+  "state": "candidate_only",
+  "logical_item_count": 1,
+  "purpose": "Render a concise native instruction file for one bounded software test repair step.",
+  "original_authoring_basis": "Original composition for this pilot. Official client documentation informed filenames and Claude's local import syntax. No third-party procedure text was copied.",
+  "rights_state": "originality_and_license_review_pending",
+  "applicability_facets": {
+    "occupations": [
+      "software developer",
+      "test engineer"
+    ],
+    "task": "repair one observed failing test",
+    "company": "none assumed",
+    "project": "one repository and one bounded failing check",
+    "model": "no model-specific optimization claimed"
+  },
+  "typed_input_concept": {
+    "failure_evidence": "workspace-relative path to an immutable observed failure record",
+    "test_identifier": "one exact test identity",
+    "change_scope": "workspace-relative source allowlist",
+    "acceptance_rule": "trusted task acceptance text",
+    "approved_test_command": "display text for an exact runtime-authorized command"
+  },
+  "typed_output_concept": "patch or reason for no patch, cause, changed paths, exact check result, and unresolved findings",
+  "effect_class": "may propose source edits and one test run; actual write and command authority must be supplied separately by the runtime",
+  "render_contract": {
+    "required_placeholders": [
+      "FAILURE_EVIDENCE_PATH",
+      "TEST_IDENTIFIER",
+      "CHANGE_SCOPE",
+      "ACCEPTANCE_RULE",
+      "APPROVED_TEST_COMMAND"
+    ],
+    "requirements": [
+      "Render all placeholders before installation; reject any remaining double-brace marker.",
+      "Resolve every path under the authorized workspace without traversal or symlink escape.",
+      "Bind the change scope, acceptance rule and test command to typed run authority; never treat this document as permission.",
+      "Encode inserted values as one-line Markdown text with no control characters or import syntax; the authorized command is separately executed from its typed argument vector, not interpolated into a shell.",
+      "Review or mechanically qualify the rendered bytes and bind their digest to the selected source candidate before a native run."
+    ]
+  },
+  "positive_example": "A saved failure identifies one parser test; the agent finds the parser defect, edits only the allowed file, runs the authorized test, and reports its actual exit status.",
+  "known_wrong_example": "An assertion is weakened until it passes, or an unrun test is reported as passing. The method requires a cause and exact check evidence.",
+  "closest_existing_material": [
+    {
+      "path": "examples/29_intelligence_service/starter-catalogue/bodies/test_driven_change_red_green_refactor.md",
+      "difference": "That item guides new requirement implementation; this candidate is an input-rendered native step brief for diagnosing one already observed failure."
+    },
+    {
+      "path": "examples/29_intelligence_service/starter-catalogue/bodies/isolate_a_flaky_test_before_trusting_it.md",
+      "difference": "That item measures an intermittent failure; this candidate covers one observed failure without assuming flakiness."
+    }
+  ],
+  "native_layouts": [
+    {
+      "client": "codex",
+      "observed_version": "0.155.1",
+      "work_files": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "client": "claude",
+      "observed_version": "2.1.280",
+      "work_files": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "import": "CLAUDE.md imports @AGENTS.md"
+    },
+    {
+      "client": "opencode",
+      "observed_version": "1.17.9 locally; earlier no-model experiment used 1.18.32",
+      "work_files": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "client": "pi",
+      "observed_version": "0.73.1",
+      "work_files": [
+        "AGENTS.md"
+      ]
+    }
+  ],
+  "discovery_phrasings_for_developer_search_only": [
+    "This one unit test failed; trace the cause and make a bounded repair.",
+    "Can you fix the regression shown in this test log without weakening the check?"
+  ],
+  "independent_review": "pending",
+  "native_discovery_on_these_exact_bytes": "Codex observed on unchanged copy in isolated no-model prompt input; other clients pending",
+  "model_loaded": null,
+  "model_used": null,
+  "verified_customer_outcome": null,
+  "limitations": [
+    "This is a template, not a runnable finished assignment.",
+    "The package is not approved, indexed by the hosted service, or released.",
+    "CODEX.md is absent. Codex does not auto-discover it by default; an explicit reference or configured fallback would need separate qualification.",
+    "A direct Codex probe inside this shared repository did not show the nested candidate marker. An isolated git root did; the shared parent context is not the intended step layout."
+  ],
+  "files_sha256": {
+    "claude/work/AGENTS.md": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235",
+    "claude/work/CLAUDE.md": "c063bdbabe40d52a7e6ca010d06855f85d0afe50f06fde8b94ab632c3979dcfd",
+    "codex/work/AGENTS.md": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235",
+    "opencode/work/AGENTS.md": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235",
+    "pi/work/AGENTS.md": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235"
+  },
+  "local_check_observations": {
+    "static_layout_and_digest": "passed for 10 native files across the two logical candidates; checker also rejects an edited-byte mutant",
+    "codex_0_155_1": "no-model debug prompt-input included this template after an unchanged copy into a fresh isolated git root with empty HOME and CODEX_HOME",
+    "claude_2_1_280": "official local @AGENTS.md import syntax and static target check only; exact-byte native request not probed",
+    "opencode_1_17_9": "official root AGENTS.md path and static layout check only; exact-byte native request not probed",
+    "pi_0_73_1": "official root AGENTS.md path and static layout check only; exact-byte native request not probed"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "record_type": "local_candidate_search_probe/v1",
+  "selection_rule": "One initially independent task phrasing per first-batch candidate. First 12 and two later diagnostic examples were shared for search development; this population is a regression set, not a blind benchmark.",
+  "source_batch": "first-party-harness-candidates-2026-09-22",
+  "queries": [
+    {
+      "query": "historical report changed after late correction what was known then",
+      "expected_name": "audit-as-of-data-visibility"
+    },
+    {
+      "query": "convert kilograms and grams before adding",
+      "expected_name": "audit-measurement-units"
+    },
+    {
+      "query": "conversion percentage counts events instead of users",
+      "expected_name": "check-rate-denominators"
+    },
+    {
+      "query": "daily metrics around daylight saving time",
+      "expected_name": "define-time-zone-reporting-window"
+    },
+    {
+      "query": "derive order status from event log",
+      "expected_name": "rebuild-state-from-ordered-events"
+    },
+    {
+      "query": "find differences between two exports",
+      "expected_name": "reconcile-snapshot-changes"
+    },
+    {
+      "query": "why invoice lines total differs by a cent",
+      "expected_name": "trace-numeric-rounding"
+    },
+    {
+      "query": "avoid double counting stock snapshots",
+      "expected_name": "validate-aggregate-grain"
+    },
+    {
+      "query": "which project decision was approved from conflicting notes",
+      "expected_name": "build-a-project-decision-provenance-map"
+    },
+    {
+      "query": "plan A B experiment with rollout guardrails",
+      "expected_name": "design-a-bounded-product-experiment"
+    },
+    {
+      "query": "users drop out during sign up journey",
+      "expected_name": "map-observed-customer-journey-friction"
+    },
+    {
+      "query": "check marketing claims against released feature",
+      "expected_name": "match-a-product-claim-to-verified-capability"
+    },
+    {
+      "query": "compare vendor quotes with different pricing units",
+      "expected_name": "normalize-vendor-offers-for-one-decision"
+    },
+    {
+      "query": "should this paper justify our product choice",
+      "expected_name": "screen-a-study-for-a-product-decision"
+    },
+    {
+      "query": "support tickets repeat same customer incident",
+      "expected_name": "separate-recurring-support-causes-from-repeat-contacts"
+    },
+    {
+      "query": "classify refund request using company policy",
+      "expected_name": "triage-support-requests-against-approved-policy"
+    },
+    {
+      "query": "multiple agents disagree which answer is correct",
+      "expected_name": "adjudicate-model-disagreement-with-external-checks"
+    },
+    {
+      "query": "protocol downgrade drops approval semantics",
+      "expected_name": "audit-semantic-loss-in-protocol-fallback"
+    },
+    {
+      "query": "test search against near matches and no results",
+      "expected_name": "challenge-retrieval-with-hard-negatives"
+    },
+    {
+      "query": "compare small model with short instructions and large model with longer prompt",
+      "expected_name": "compare-model-context-pairs-on-frozen-cases"
+    },
+    {
+      "query": "why was an adapter chosen over other eligible engines",
+      "expected_name": "explain-engine-selection-from-eligible-evidence"
+    },
+    {
+      "query": "several passing reports share one fixture",
+      "expected_name": "map-independent-acceptance-evidence"
+    },
+    {
+      "query": "logs from machines have clocks out of sync",
+      "expected_name": "reconstruct-causality-across-clock-skewed-records"
+    },
+    {
+      "query": "parallel workers share build cache but not outputs",
+      "expected_name": "separate-shared-build-cache-from-task-state"
+    }
+  ],
+  "no_answer_queries": [
+    "How do I bake sourdough bread with rye starter",
+    "Generate a visa invitation letter for travel",
+    "Deploy a Kubernetes cluster to production",
+    "Rotate a leaked API key",
+    "Normalize telephone numbers to E.164 format"
+  ]
+}

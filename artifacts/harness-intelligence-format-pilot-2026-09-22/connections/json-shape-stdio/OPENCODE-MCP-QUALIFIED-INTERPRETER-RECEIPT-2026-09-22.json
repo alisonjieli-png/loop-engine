@@ -1,0 +1,30 @@
+{
+  "connection_state": "connected",
+  "environment": "isolated HOME and XDG; closed outbound proxy; no model call",
+  "interpreter_version": "Python 3.13.13",
+  "limitation": "The temporary interpreter was removed; production requires a qualified and scoped runtime provisioner.",
+  "mcp_dependency_version": "1.29.0",
+  "opencode_process_exit": 0,
+  "output": "\u250c  MCP Servers\n\u2502\n\u25cf  \u2713 baltor_json_shape connected\n\u2502      <isolated-root>/venv/bin/python tools/json_shape_mcp/server.py\n\u2502\n\u2514  1 server(s)\n\n",
+  "record_type": "candidate_qualified_interpreter_receipt/v1",
+  "rendered_config_sha256": "9907d8fd4bb99b732f67dcd3589939b3b366fab3ad0eca37e8de2620bd53c6f4",
+  "rendered_config_with_interpreter_path_redacted": {
+    "$schema": "https://opencode.ai/config.json",
+    "mcp": {
+      "baltor_json_shape": {
+        "command": [
+          "<qualified-interpreter>",
+          "tools/json_shape_mcp/server.py"
+        ],
+        "cwd": ".",
+        "enabled": true,
+        "type": "local"
+      }
+    },
+    "permission": {
+      "baltor_json_shape_*": "ask"
+    }
+  },
+  "source_config_sha256": "2cd4bc8b3d59cdfb715129d00f1d3a31cb78b70f7fd49090b6047def4777b076",
+  "source_server_sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332"
+}

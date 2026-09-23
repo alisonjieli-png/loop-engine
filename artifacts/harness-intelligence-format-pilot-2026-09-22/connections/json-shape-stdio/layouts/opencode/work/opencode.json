@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "baltor_json_shape": {
+      "command": [
+        "python3",
+        "tools/json_shape_mcp/server.py"
+      ],
+      "cwd": ".",
+      "enabled": true,
+      "type": "local"
+    }
+  },
+  "permission": {
+    "baltor_json_shape_*": "ask"
+  }
+}

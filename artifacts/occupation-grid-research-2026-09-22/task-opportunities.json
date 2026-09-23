@@ -1,0 +1,1761 @@
+{
+  "counts": {
+    "activities_shared_across_selected_occupations": 36,
+    "selected_occupations": 10,
+    "source_occupation_rows": 1016,
+    "source_task_rows": 18838,
+    "source_task_to_activity_rows": 24087,
+    "task_rows": 179,
+    "unique_detailed_work_activity_ids": 136,
+    "unique_task_ids": 179
+  },
+  "occupations": [
+    {
+      "core_task_rows": 22,
+      "occupation_code": "13-1081.00",
+      "occupation_title": "Logisticians",
+      "task_rating_rows": 198,
+      "task_rows": 22,
+      "task_to_activity_rows": 24
+    },
+    {
+      "core_task_rows": 20,
+      "occupation_code": "13-1082.00",
+      "occupation_title": "Project Management Specialists",
+      "task_rating_rows": 180,
+      "task_rows": 20,
+      "task_to_activity_rows": 22
+    },
+    {
+      "core_task_rows": 10,
+      "occupation_code": "13-1111.00",
+      "occupation_title": "Management Analysts",
+      "task_rating_rows": 99,
+      "task_rows": 11,
+      "task_to_activity_rows": 15
+    },
+    {
+      "core_task_rows": 11,
+      "occupation_code": "13-1161.00",
+      "occupation_title": "Market Research Analysts and Marketing Specialists",
+      "task_rating_rows": 117,
+      "task_rows": 13,
+      "task_to_activity_rows": 15
+    },
+    {
+      "core_task_rows": 30,
+      "occupation_code": "13-2011.00",
+      "occupation_title": "Accountants and Auditors",
+      "task_rating_rows": 270,
+      "task_rows": 30,
+      "task_to_activity_rows": 43
+    },
+    {
+      "core_task_rows": 18,
+      "occupation_code": "15-1211.00",
+      "occupation_title": "Computer Systems Analysts",
+      "task_rating_rows": 198,
+      "task_rows": 22,
+      "task_to_activity_rows": 29
+    },
+    {
+      "core_task_rows": 11,
+      "occupation_code": "15-1252.00",
+      "occupation_title": "Software Developers",
+      "task_rating_rows": 153,
+      "task_rows": 17,
+      "task_to_activity_rows": 22
+    },
+    {
+      "core_task_rows": 15,
+      "occupation_code": "15-2051.00",
+      "occupation_title": "Data Scientists",
+      "task_rating_rows": 144,
+      "task_rows": 16,
+      "task_to_activity_rows": 17
+    },
+    {
+      "core_task_rows": 8,
+      "occupation_code": "27-3042.00",
+      "occupation_title": "Technical Writers",
+      "task_rating_rows": 135,
+      "task_rows": 15,
+      "task_to_activity_rows": 17
+    },
+    {
+      "core_task_rows": 7,
+      "occupation_code": "43-4051.00",
+      "occupation_title": "Customer Service Representatives",
+      "task_rating_rows": 117,
+      "task_rows": 13,
+      "task_to_activity_rows": 16
+    }
+  ],
+  "record_type": "occupation_task_opportunity_inventory/v1",
+  "selection_rule": "Ten explicitly listed occupations chosen to span digital, analysis, project, customer and operational work; not a representative or demand-weighted sample.",
+  "source": {
+    "attribution": "O*NET 31.0 Database by the U.S. Department of Labor, Employment and Training Administration",
+    "changes": "Selected ten occupations; joined task IDs to detailed work activity identifiers; calculated counts. Source task text is otherwise unchanged.",
+    "endorsement": "The U.S. Department of Labor has not approved, endorsed, or tested this selection or any generated package.",
+    "license": "CC BY 4.0",
+    "license_url": "https://www.onetcenter.org/license_db.html",
+    "sha256": "55033fc68b4c13ec23e7f74dc6378660f6e854e75d55d6e333ae0a761d3987cd",
+    "title": "O*NET 31.0 Database",
+    "url": "https://www.onetcenter.org/dl_files/database/db_31_0_csv.zip"
+  },
+  "state": "research_opportunities_only",
+  "task_references": [
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.4.a.2"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Maintain and develop positive business relationships with a customer's key personnel involved in, or directly relevant to, a logistics activity.",
+      "task_id": "8932",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.n.2",
+        "4.A.1.a.1.n.5"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Develop an understanding of customers' needs and take actions to ensure that such needs are met.",
+      "task_id": "8933",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.c.3.c.2"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Direct availability and allocation of materials, supplies, and finished products.",
+      "task_id": "8934",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.e.3"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Collaborate with other departments as necessary to meet customer requirements, to take advantage of sales opportunities or, in the case of shortages, to minimize negative impacts on a business.",
+      "task_id": "8935",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.c.3.c.2"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Protect and control proprietary materials.",
+      "task_id": "8936",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.g.7"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Review logistics performance with customers against targets, benchmarks, and service agreements.",
+      "task_id": "8937",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.2.f.4"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Develop and implement technical project management tools, such as plans, schedules, and responsibility and compliance matrices.",
+      "task_id": "8938",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.a.13"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Direct team activities, establishing task priorities, scheduling and tracking work assignments, providing guidance, and ensuring the availability of resources.",
+      "task_id": "8939",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.c.10"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Report project plans, progress, and results.",
+      "task_id": "8940",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.1.g.1"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Direct and support the compilation and analysis of technical source data necessary for product development.",
+      "task_id": "8941",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.g.3",
+        "4.A.4.a.3.c.2"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Explain proposed solutions to customers, management, or other interested parties through written proposals and oral presentations.",
+      "task_id": "8942",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.g.3"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Develop proposals that include documentation for estimates.",
+      "task_id": "8943",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.j.9"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Plan, organize, and execute logistics support activities, such as maintenance planning, repair analysis, and test equipment recommendations.",
+      "task_id": "8944",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.e.5"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Provide project management services, including the provision and analysis of technical data.",
+      "task_id": "8945",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.1.b.3"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Participate in the assessment and review of design alternatives and design change proposal impacts.",
+      "task_id": "8946",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.l.10"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Support the development of training materials and technical manuals.",
+      "task_id": "8947",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.3.a.21"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Stay informed of logistics technology advances and apply appropriate technology to improve logistics processes.",
+      "task_id": "8948",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.j.9"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Redesign the movement of goods to maximize value and minimize costs.",
+      "task_id": "8949",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.a.13"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Manage subcontractor activities, reviewing proposals, developing performance specifications, and serving as liaisons between subcontractors and organizations.",
+      "task_id": "8950",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.h.2"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Manage the logistical aspects of product life cycles, including coordination or provisioning of samples, and the minimization of obsolescence.",
+      "task_id": "8951",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.k.4"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Perform system lifecycle cost analysis and develop component studies.",
+      "task_id": "8952",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.j.12"
+      ],
+      "occupation_code": "13-1081.00",
+      "source_task_text": "Perform managerial duties such as hiring and training employees and overseeing facility needs or requirements.",
+      "task_id": "20847",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.1.f.6"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Assign duties or responsibilities to project personnel.",
+      "task_id": "21462",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.e.5"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Communicate with key stakeholders to determine project requirements and objectives.",
+      "task_id": "21463",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.1.a.3"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Confer with project personnel to identify and resolve problems.",
+      "task_id": "21464",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.c.4"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Create project status presentations for delivery to customers or project personnel.",
+      "task_id": "21465",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.6.b.8"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Develop or update project plans including information such as objectives, technologies, schedules, funding, and staffing.",
+      "task_id": "21466",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.j.11"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Identify project needs such as resources, staff, or finances by reviewing project objectives and schedules.",
+      "task_id": "21467",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.c.2.a.4"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Identify, review, or select vendors or consultants to meet project needs.",
+      "task_id": "21468",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.2.c.4"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Monitor costs incurred by project staff to identify budget issues.",
+      "task_id": "21469",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.e.7",
+        "4.A.4.b.4.j.12"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Monitor project milestones and deliverables.",
+      "task_id": "21470",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.a.7"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Monitor the performance of project team members to provide performance feedback.",
+      "task_id": "21471",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.j.36"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Negotiate with project stakeholders or suppliers to obtain resources or materials.",
+      "task_id": "21472",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.4.a.2",
+        "4.A.4.b.4.i.7"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Plan, schedule, or coordinate project activities to meet deadlines.",
+      "task_id": "21473",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.a.2"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Prepare and submit budget estimates, progress reports, or cost tracking reports.",
+      "task_id": "21474",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.o.1"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Produce and distribute project documents.",
+      "task_id": "21475",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.6.b.8"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Propose, review, or approve modifications to project plans.",
+      "task_id": "21476",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.c.2.a.4"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Recruit or hire project personnel.",
+      "task_id": "21477",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.c.10"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Report project status, such as budget, resources, technical issues, or customer satisfaction, to managers.",
+      "task_id": "21478",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.f.1"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Request and review project updates to ensure deadlines are met.",
+      "task_id": "21479",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.e.7"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Schedule or facilitate project meetings.",
+      "task_id": "21480",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.1.a.1"
+      ],
+      "occupation_code": "13-1082.00",
+      "source_task_text": "Submit project deliverables to clients, ensuring adherence to quality standards.",
+      "task_id": "21481",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.f.1"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Gather and organize information on problems or procedures.",
+      "task_id": "7276",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.k.4"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Analyze data gathered and develop solutions or alternative methods of proceeding.",
+      "task_id": "7277",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.e.3"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Confer with personnel concerned to ensure successful functioning of newly implemented systems or procedures.",
+      "task_id": "7278",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.2.f.4"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Develop and implement records management program for filing, protection, and retrieval of records, and assure compliance with program.",
+      "task_id": "7279",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.e.5"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Review forms and reports and confer with management and users about format, distribution, and purpose, identifying problems and improvements.",
+      "task_id": "7280",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.g.10"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Interview personnel and conduct on-site observation to ascertain unit functions, work performed, and methods, equipment, and personnel used.",
+      "task_id": "7281",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.c.3",
+        "4.A.4.b.6.e.10"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Document findings of study and prepare recommendations for implementation of new systems, procedures, or organizational changes.",
+      "task_id": "7282",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.l.10",
+        "4.A.4.b.3.d.12"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Prepare manuals and train workers in use of new forms, reports, procedures or equipment, according to organizational policy.",
+      "task_id": "7283",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.g.1",
+        "4.A.2.b.1.g.2"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Design, evaluate, recommend, and approve changes of forms and reports.",
+      "task_id": "7284",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.i.3",
+        "4.A.3.b.2.f.13"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Plan study of work problems and procedures, such as organizational change, communications, information flow, integrated production methods, inventory control, or cost analysis.",
+      "task_id": "7285",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.e.10"
+      ],
+      "occupation_code": "13-1111.00",
+      "source_task_text": "Recommend purchase of storage equipment and design area layout to locate equipment in space available.",
+      "task_id": "7286",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.b.7"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Collect and analyze data on customer demographics, preferences, needs, and buying habits to identify potential markets and factors affecting product demand.",
+      "task_id": "5433",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.c.3"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Prepare reports of findings, illustrating data graphically and translating complex findings into written text.",
+      "task_id": "5434",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.i.1"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Measure and assess customer and employee satisfaction.",
+      "task_id": "5435",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.b.4"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Forecast and track marketing and sales trends, analyzing collected data.",
+      "task_id": "5436",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.f.1"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Seek and provide information to help companies determine their position in the marketplace.",
+      "task_id": "5437",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.1.b.3"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Measure the effectiveness of marketing, advertising, and communications programs and strategies.",
+      "task_id": "5438",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.b.7"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Conduct research on consumer opinions and marketing strategies, collaborating with marketing professionals, statisticians, pollsters, and other professionals.",
+      "task_id": "5439",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.e.5"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Attend staff conferences to provide management with information and proposals concerning the promotion, distribution, design, and pricing of company products or services.",
+      "task_id": "5440",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.f.1",
+        "4.A.2.a.4.b.4"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Gather data on competitors and analyze their prices, sales, and method of marketing and distribution.",
+      "task_id": "5441",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.2.c.6",
+        "4.A.2.a.4.b.2"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Monitor industry statistics and follow trends in trade literature.",
+      "task_id": "5442",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.4.a.5"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Devise and evaluate methods and procedures for collecting data, such as surveys, opinion polls, or questionnaires, or arrange to obtain existing data.",
+      "task_id": "5443",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.c.1"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Develop and implement procedures for identifying advertising needs.",
+      "task_id": "5444",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.a.13"
+      ],
+      "occupation_code": "13-1161.00",
+      "source_task_text": "Direct trained survey interviewers.",
+      "task_id": "5445",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.a.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Prepare detailed reports on audit findings.",
+      "task_id": "21505",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.c.10",
+        "4.A.4.b.6.e.10",
+        "4.A.4.b.6.k.3"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Report to management about asset utilization and audit results, and recommend changes in operations and financial activities.",
+      "task_id": "21506",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.c.1",
+        "4.A.1.a.1.c.4"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Collect and analyze data to detect deficient controls, duplicated effort, extravagance, fraud, or non-compliance with laws, regulations, and management policies.",
+      "task_id": "21507",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Inspect account books and accounting systems for efficiency, effectiveness, and use of accepted accounting procedures to record transactions.",
+      "task_id": "21508",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.j.8"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Supervise auditing of establishments, and determine scope of investigation required.",
+      "task_id": "21509",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.e.5"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Confer with company officials about financial and regulatory matters.",
+      "task_id": "21510",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.3",
+        "4.A.4.b.6.k.3"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Examine and evaluate financial and information systems, recommending controls to ensure system reliability and data integrity.",
+      "task_id": "21511",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.2.a.1"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Inspect cash on hand, notes receivable and payable, negotiable securities, and canceled checks to confirm records are accurate.",
+      "task_id": "21512",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.3"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Examine records and interview workers to ensure recording of transactions and compliance with laws and regulations.",
+      "task_id": "21513",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.2",
+        "4.A.2.a.3.c.3",
+        "4.A.2.a.4.k.4"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Prepare, examine, or analyze accounting records, financial statements, or other financial reports to assess accuracy, completeness, and conformance to reporting and procedural standards.",
+      "task_id": "21514",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.k.2",
+        "4.A.3.b.6.a.1"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Prepare adjusting journal entries.",
+      "task_id": "21515",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.1",
+        "4.A.2.a.3.c.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Review accounts for discrepancies and reconcile differences.",
+      "task_id": "21516",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.a.1"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Establish tables of accounts and assign entries to proper accounts.",
+      "task_id": "21517",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.2.a.1"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Examine inventory to verify journal and ledger entries.",
+      "task_id": "21518",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.k.4"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Analyze business operations, trends, costs, revenues, financial commitments, and obligations to project future revenues and expenses or to provide advice.",
+      "task_id": "21519",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.c.10"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Report to management regarding the finances of establishment.",
+      "task_id": "21520",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.2.f.4"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Develop, implement, modify, and document recordkeeping and accounting systems, making use of current computer technology.",
+      "task_id": "21521",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.1.i.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Evaluate taxpayer finances to determine tax liability, using knowledge of interest and discount rates, annuities, valuation of stocks and bonds, and amortization valuation of depletable assets.",
+      "task_id": "21522",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.1.b.4"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Examine whether the organization's objectives are reflected in its management activities, and whether employees understand the objectives.",
+      "task_id": "21523",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Audit payroll and personnel records to determine unemployment insurance premiums, workers' compensation coverage, liabilities, and compliance with tax laws.",
+      "task_id": "21524",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.2.a.5"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Review taxpayer accounts, and conduct audits on-site, by correspondence, or by summoning taxpayer to office.",
+      "task_id": "21525",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.b.3.c.3",
+        "4.A.3.b.6.a.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Compute taxes owed and prepare tax returns, ensuring compliance with payment, reporting, or other tax requirements.",
+      "task_id": "21526",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.e.8"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Advise clients in areas such as compensation, employee health care benefits, the design of accounting or data processing systems, or long-range tax or estate plans.",
+      "task_id": "21527",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.3.a.2",
+        "4.A.4.a.7.b.6",
+        "4.A.4.b.6.h.1"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Represent clients before taxing authorities and provide support during litigation involving financial issues.",
+      "task_id": "21528",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.1.g.1"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Direct activities of personnel engaged in filing, recording, compiling, and transmitting financial records.",
+      "task_id": "21529",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.3"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Conduct pre-implementation audits to determine if systems and programs under development will work as planned.",
+      "task_id": "21530",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.k.1",
+        "4.A.4.b.4.h.4"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Develop, maintain, or analyze budgets, preparing periodic reports that compare budgeted costs to actual costs.",
+      "task_id": "21531",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.2.a.5",
+        "4.A.3.b.6.a.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Prepare, analyze, or verify annual reports, financial statements, and other records, using accepted accounting and statistical procedures to assess financial condition and facilitate financial planning.",
+      "task_id": "21532",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.c.1.c.7"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Process invoices for payment.",
+      "task_id": "21533",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.2"
+      ],
+      "occupation_code": "13-2011.00",
+      "source_task_text": "Review data about material assets, net worth, liabilities, capital stock, surplus, income, or expenditures.",
+      "task_id": "21534",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.d.2"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Provide staff and users with assistance solving computer-related problems, such as malfunctions and program problems.",
+      "task_id": "3464",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.2.j.3",
+        "4.A.1.b.2.h.3",
+        "4.A.4.b.4.e.4"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Test, maintain, and monitor computer programs and systems, including coordinating the installation of computer programs and systems.",
+      "task_id": "3465",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.1.a.3"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Use object-oriented programming languages, as well as client and server applications development processes and multimedia and Internet technology.",
+      "task_id": "3466",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.h.7"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Confer with clients regarding the nature of the information processing or computation needs a computer program is to address.",
+      "task_id": "3467",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.1.c.4"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Coordinate and link the computer systems within an organization to increase compatibility so that information can be shared.",
+      "task_id": "3468",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.h.7"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Consult with management to ensure agreement on system principles.",
+      "task_id": "3469",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.b.7"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Expand or modify system to serve new purposes or improve work flow.",
+      "task_id": "3470",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.n.5"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Interview or survey workers, observe job performance, or perform the job to determine what information is processed and how it is processed.",
+      "task_id": "3471",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.h.2"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Determine computer software or hardware needed to set up or alter systems.",
+      "task_id": "3472",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.3.e.4"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Train staff and users to work with computer systems and programs.",
+      "task_id": "3473",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.e.5",
+        "4.A.2.b.2.b.5"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Analyze information processing or computation needs and plan and design computer systems, using techniques such as structured analysis, data modeling, and information engineering.",
+      "task_id": "3474",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.1.g.8",
+        "4.A.2.b.2.b.7"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Assess the usefulness of pre-developed application packages and adapt them to a user environment.",
+      "task_id": "3475",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.o.13"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Define the goals of the system and devise flow charts and diagrams describing logical operational steps of programs.",
+      "task_id": "3476",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.2.f.15",
+        "4.A.3.b.6.i.5"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Develop, document, and revise system design procedures, test procedures, and quality standards.",
+      "task_id": "3477",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.g.14"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Review and analyze computer printouts and performance indicators to locate code problems, and correct errors by correcting codes.",
+      "task_id": "3478",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.d.3"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Recommend new equipment or software packages.",
+      "task_id": "3479",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.b.7"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Read manuals, periodicals, and technical reports to learn how to develop programs that meet staff and user requirements.",
+      "task_id": "3480",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.a.7",
+        "4.A.4.b.4.e.7"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Supervise computer programmers or other systems analysts or serve as project leaders for particular systems projects.",
+      "task_id": "3481",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.b.12"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Use the computer in the analysis and solution of business problems, such as development of integrated production and inventory control and cost analysis systems.",
+      "task_id": "3482",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.b.3.b.1"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Prepare cost-benefit and return-on-investment analyses to aid in decisions on system implementation.",
+      "task_id": "3483",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.j.5",
+        "4.A.2.b.2.b.12"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Specify inputs accessed by the system and plan the distribution and use of the results.",
+      "task_id": "3484",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.1.d.2"
+      ],
+      "occupation_code": "15-1211.00",
+      "source_task_text": "Troubleshoot program and system malfunctions to restore normal functioning.",
+      "task_id": "20950",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.e.5"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Analyze information to determine, recommend, and plan installation of a new system or modification of an existing system.",
+      "task_id": "21661",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.e.5"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Analyze user needs and software requirements to determine feasibility of design within time and cost constraints.",
+      "task_id": "21662",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.1.a.3"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Confer with data processing or project managers to obtain information on limitations or capabilities for data processing projects.",
+      "task_id": "21663",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.h.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Confer with systems analysts, engineers, programmers and others to design systems and to obtain information on project limitations and capabilities, performance requirements and interfaces.",
+      "task_id": "21664",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.d.2"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Consult with customers or other departments on project status, proposals, or technical issues, such as software system design or maintenance.",
+      "task_id": "21665",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.e.4"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Coordinate installation of software system.",
+      "task_id": "21666",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.d.1",
+        "4.A.2.b.2.b.10",
+        "4.A.2.b.2.b.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Design, develop and modify software systems, using scientific analysis and mathematical models to predict and measure outcomes and consequences of design.",
+      "task_id": "21667",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.2.a.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Determine system performance standards.",
+      "task_id": "21668",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.2.f.15",
+        "4.A.4.b.4.e.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Develop or direct software system testing or validation procedures, programming, or documentation.",
+      "task_id": "21669",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.b.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Modify existing software to correct errors, adapt it to new hardware, or upgrade interfaces and improve performance.",
+      "task_id": "21670",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.2.j.3"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Monitor functioning of equipment to ensure system operates in conformance with specifications.",
+      "task_id": "21671",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.e.5"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Obtain and evaluate information on factors such as reporting formats required, costs, or security needs to determine hardware configuration.",
+      "task_id": "21672",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.h.9"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Prepare reports or correspondence concerning project specifications, activities, or status.",
+      "task_id": "21673",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.1.g.6",
+        "4.A.3.b.1.f.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Store, retrieve, and manipulate data for analysis of system capabilities and requirements.",
+      "task_id": "21676",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.1.f.6",
+        "4.A.4.b.4.a.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Supervise and assign work to programmers, designers, technologists, technicians, or other engineering or scientific personnel.",
+      "task_id": "21677",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.a.7"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Supervise the work of programmers, technologists and technicians and other engineering and scientific personnel.",
+      "task_id": "21678",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.3.e.3"
+      ],
+      "occupation_code": "15-1252.00",
+      "source_task_text": "Train users to use new or modified equipment.",
+      "task_id": "21679",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.g.12"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Analyze, manipulate, or process large sets of data using statistical software.",
+      "task_id": "21823",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.k.4"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Apply feature selection algorithms to models predicting outcomes of interest, such as sales, attrition, and healthcare use.",
+      "task_id": "21824",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.d.10"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Apply sampling techniques to determine groups to be surveyed or use complete enumeration methods.",
+      "task_id": "21825",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.1.f.7"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Clean and manipulate raw data using statistical software.",
+      "task_id": "21826",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.d.1"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Compare models using statistical performance metrics, such as loss functions or proportion of explained variance.",
+      "task_id": "21827",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.o.14",
+        "4.A.3.b.6.c.5"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Create graphs, charts, or other visualizations to convey the results of data analysis using specialized software.",
+      "task_id": "21828",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.c.1"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Deliver oral or written presentations of the results of mathematical modeling and data analysis to management or other end users.",
+      "task_id": "21829",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.2.f.13"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Design surveys, opinion polls, or other instruments to collect data.",
+      "task_id": "21830",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.j.11"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Identify business problems or management objectives that can be addressed through data analysis.",
+      "task_id": "21831",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.d.2"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Identify relationships and trends or any factors that could affect the results of research.",
+      "task_id": "21832",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.g.14"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Identify solutions to business problems, such as budgeting, staffing, and marketing decisions, using the results of data analysis.",
+      "task_id": "21833",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.4.d.1"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Propose solutions in engineering, the sciences, and other fields using mathematical theories and techniques.",
+      "task_id": "21834",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.3.a.20"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Read scientific articles, conference papers, or other sources of research to identify emerging analytic trends and technologies.",
+      "task_id": "21835",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.e.5"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Recommend data-driven solutions to key stakeholders.",
+      "task_id": "21836",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.u.3"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Test, validate, and reformulate models to ensure accurate prediction of outcomes of interest.",
+      "task_id": "21837",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.1.a.3"
+      ],
+      "occupation_code": "15-2051.00",
+      "source_task_text": "Write new functions or applications in programming languages to conduct analyses.",
+      "task_id": "21838",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.2.c.2",
+        "4.A.2.b.1.g.1"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Organize material and complete writing assignment according to set standards regarding order, clarity, conciseness, style, and terminology.",
+      "task_id": "3966",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.h.9"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Maintain records and files of work and revisions.",
+      "task_id": "3967",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.g.1"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Edit, standardize, or make changes to material prepared by other writers or establishment personnel.",
+      "task_id": "3968",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.2.j.3"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Confer with customer representatives, vendors, plant executives, or publisher to establish technical specifications and to determine subject material to be developed for publication.",
+      "task_id": "3969",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.g.1"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Review published materials and recommend revisions or changes in scope, format, content, and methods of reproduction and binding.",
+      "task_id": "3970",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.r.2"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Select photographs, drawings, sketches, diagrams, and charts to illustrate material.",
+      "task_id": "3971",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.b.15"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Study drawings, specifications, mockups, and product samples to integrate and delineate technology, operating procedure, and production sequence and detail.",
+      "task_id": "3972",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.t.8"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Interview production and engineering personnel and read journals and other material to become familiar with product technologies and production methods.",
+      "task_id": "3973",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.4.a.2",
+        "4.A.2.b.6.b.8"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Observe production, developmental, and experimental activities to determine operating procedure and detail.",
+      "task_id": "3974",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.4.j.20"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Arrange for typing, duplication, and distribution of material.",
+      "task_id": "3975",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.o.12"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Assist in laying out material for publication.",
+      "task_id": "3976",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.2.h.2"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Analyze developments in specific field to determine need for revisions in previously published materials and development of new material.",
+      "task_id": "3977",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.1.a.1.b.15"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Review manufacturer's and trade catalogs, drawings and other data relative to operation, maintenance, and service of equipment.",
+      "task_id": "3978",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.2.o.15"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Draw sketches to illustrate specified materials or assembly sequence.",
+      "task_id": "3979",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.l.5"
+      ],
+      "occupation_code": "27-3042.00",
+      "source_task_text": "Develop or maintain online help documentation.",
+      "task_id": "20243",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.j.3"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Keep records of customer interactions or transactions, recording details of inquiries, complaints, or comments, as well as actions taken.",
+      "task_id": "2578",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.8.c.1",
+        "4.A.4.c.1.c.4"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Resolve customers' service or billing complaints by performing activities such as exchanging merchandise, refunding money, or adjusting bills.",
+      "task_id": "2579",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.8.c.1"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Check to ensure that appropriate changes were made to resolve customers' problems.",
+      "task_id": "2580",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.3.c.7"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Contact customers to respond to inquiries or to notify them of claim investigation results or any planned adjustments.",
+      "task_id": "2581",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.5.a.1"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Refer unresolved customer grievances to designated departments for further investigation.",
+      "task_id": "2582",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.b.1.a.7",
+        "4.A.4.c.3.d.1"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Determine charges for services requested, collect deposits or payments, or arrange for billing.",
+      "task_id": "2583",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.3.b.6.m.5"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Complete contract forms, prepare change of address records, or issue service discontinuance orders, using computers.",
+      "task_id": "2584",
+      "task_type": "Core"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.8.c.1"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Obtain and examine all relevant information to assess validity of complaints and to determine possible causes, such as extreme weather conditions that could increase utility bills.",
+      "task_id": "2585",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.6.c.12"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Solicit sales of new or additional services or products.",
+      "task_id": "2586",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.3.c.4"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Review insurance policy terms to determine whether a particular loss is covered by insurance.",
+      "task_id": "2587",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.2.a.2.a.9",
+        "4.A.4.c.1.c.6"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Compare disputed merchandise with original requisitions and information from invoices and prepare invoices for returned goods.",
+      "task_id": "2589",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.b.6.e.4"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Recommend improvements in products, packaging, shipping, service, or billing methods and procedures to prevent future problems.",
+      "task_id": "2591",
+      "task_type": "Supplemental"
+    },
+    {
+      "detailed_work_activity_ids": [
+        "4.A.4.a.1.a.3"
+      ],
+      "occupation_code": "43-4051.00",
+      "source_task_text": "Confer with customers by telephone or in person to provide information about products or services, take or enter orders, cancel accounts, or obtain details of complaints.",
+      "task_id": "18565",
+      "task_type": "Core"
+    }
+  ]
+}

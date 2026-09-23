@@ -1,0 +1,252 @@
+{
+  "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-2",
+  "candidate_approval": "none",
+  "evaluated_at_utc": "2026-09-23T02:07:47.879689+00:00",
+  "limitations": "English-language local lexical pilot; one expected item per query; review notes were indexed; no tenant grants, native load, task outcome, or hosted route tested.",
+  "manifest_sha256": "97ee4e157af9cd7d10d951df547961d9f3aac919f37054a49218b7a59f6abf6a",
+  "metrics": {
+    "correct_no_answer": 5,
+    "no_answer_queries": 5,
+    "positive_queries": 24,
+    "top_one": 14,
+    "top_three": 16
+  },
+  "no_answer_results": [
+    {
+      "no_match": true,
+      "query": "How do I bake rye bread without a starter?",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Summarize the causes of the French Revolution.",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Generate a watercolor portrait of a tabby cat.",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Design a three day hiking route in Patagonia.",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Translate this poem into Japanese.",
+      "returned_names": []
+    }
+  ],
+  "positive_results": [
+    {
+      "expected_name": "audit-resource-capacity-by-interval",
+      "outcome": "matches",
+      "query": "Can two technicians cover overlapping jobs on the Tuesday shift?",
+      "rank": 1,
+      "returned_names": [
+        "audit-resource-capacity-by-interval"
+      ]
+    },
+    {
+      "expected_name": "bridge-forecast-driver-changes",
+      "outcome": "matches",
+      "query": "Our revised workload estimate rose; attribute the difference to changed assumptions.",
+      "rank": 1,
+      "returned_names": [
+        "bridge-forecast-driver-changes"
+      ]
+    },
+    {
+      "expected_name": "reconcile-inventory-availability",
+      "outcome": "no_match",
+      "query": "Why is warehouse stock shown as sellable despite customer holds?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "reconcile-order-fulfillment-quantities",
+      "outcome": "no_match",
+      "query": "After split deliveries and a cancellation, how many units do we still owe?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "reconcile-record-flow-across-stages",
+      "outcome": "no_match",
+      "query": "Rows disappear between ingest, validation, and the published dataset.",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "reconstruct-service-clock-from-status-intervals",
+      "outcome": "matches",
+      "query": "Compute the support service time excluding paused periods and closed hours.",
+      "rank": 1,
+      "returned_names": [
+        "reconstruct-service-clock-from-status-intervals"
+      ]
+    },
+    {
+      "expected_name": "trace-field-lineage-to-a-measure",
+      "outcome": "no_match",
+      "query": "Which upstream column and transformation created this dashboard total?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "validate-source-to-target-field-map",
+      "outcome": "matches",
+      "query": "The vendor feed status column has the right name but means something different.",
+      "rank": 1,
+      "returned_names": [
+        "validate-source-to-target-field-map"
+      ]
+    },
+    {
+      "expected_name": "carry-a-sales-promise-into-delivery",
+      "outcome": "no_match",
+      "query": "What exactly did the sales team promise that implementation has not scheduled?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "compare-acquisition-channels-for-one-segment",
+      "outcome": "no_match",
+      "query": "Should we focus on developer forums or paid search to reach this buyer group?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "gate-a-product-launch-across-teams",
+      "outcome": "matches",
+      "query": "Are payments, signup, support, and docs ready before announcing the product?",
+      "rank": 1,
+      "returned_names": [
+        "gate-a-product-launch-across-teams"
+      ]
+    },
+    {
+      "expected_name": "prepare-a-support-escalation-packet",
+      "outcome": "matches",
+      "query": "Turn this customer's error report into a safe reproducible handoff for engineering.",
+      "rank": 1,
+      "returned_names": [
+        "prepare-a-support-escalation-packet"
+      ]
+    },
+    {
+      "expected_name": "qualify-a-partner-integration-proposal",
+      "outcome": "matches",
+      "query": "Can we connect our product to a partner without unclear data sharing or owner duties?",
+      "rank": 1,
+      "returned_names": [
+        "qualify-a-partner-integration-proposal"
+      ]
+    },
+    {
+      "expected_name": "qualify-an-invited-pilot-cohort",
+      "outcome": "matches",
+      "query": "We can support only a few beta accounts; which applicants fit the shipped capability?",
+      "rank": 1,
+      "returned_names": [
+        "qualify-an-invited-pilot-cohort"
+      ]
+    },
+    {
+      "expected_name": "reconstruct-a-buyer-decision-path",
+      "outcome": "matches",
+      "query": "Our internal champion likes it; who can approve spending and what review is left?",
+      "rank": 1,
+      "returned_names": [
+        "reconstruct-a-buyer-decision-path"
+      ]
+    },
+    {
+      "expected_name": "synthesize-discovery-interviews-with-counterexamples",
+      "outcome": "no_match",
+      "query": "Several interviewees complained, but one person repeated it; what is the actual signal?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "adjudicate-a-protocol-tool-effect-request",
+      "outcome": "matches",
+      "query": "May the agent call this MCP tool to modify a different account than approved?",
+      "rank": 1,
+      "returned_names": [
+        "adjudicate-a-protocol-tool-effect-request"
+      ]
+    },
+    {
+      "expected_name": "audit-a-model-specific-skill-rendering",
+      "outcome": "matches",
+      "query": "Did the shorter instructions for the small model lose a mandatory safety clause?",
+      "rank": 1,
+      "returned_names": [
+        "audit-a-model-specific-skill-rendering"
+      ]
+    },
+    {
+      "expected_name": "compile-a-native-material-placement-plan",
+      "outcome": "matches",
+      "query": "Where should selected skills and references be placed for a new coding agent run?",
+      "rank": null,
+      "returned_names": [
+        "specify-an-isolated-harness-startup-probe"
+      ]
+    },
+    {
+      "expected_name": "design-catalogue-withdrawal-checks",
+      "outcome": "matches",
+      "query": "How do we prove a withdrawn library item cannot be downloaded through a stale link?",
+      "rank": 1,
+      "returned_names": [
+        "design-catalogue-withdrawal-checks"
+      ]
+    },
+    {
+      "expected_name": "reconcile-native-material-use-evidence",
+      "outcome": "matches",
+      "query": "The skill file was installed, but did the client load and use it in this run?",
+      "rank": 2,
+      "returned_names": [
+        "compile-a-native-material-placement-plan",
+        "reconcile-native-material-use-evidence"
+      ]
+    },
+    {
+      "expected_name": "revalidate-output-allocation-on-model-fallback",
+      "outcome": "matches",
+      "query": "Backup model has a different output window and earlier calls used budget; can we retry?",
+      "rank": 1,
+      "returned_names": [
+        "revalidate-output-allocation-on-model-fallback"
+      ]
+    },
+    {
+      "expected_name": "scope-a-step-credential-lease-to-physical-use",
+      "outcome": "matches",
+      "query": "Can a child agent use a broker token only for its assigned provider and two calls?",
+      "rank": 2,
+      "returned_names": [
+        "adjudicate-a-protocol-tool-effect-request",
+        "scope-a-step-credential-lease-to-physical-use"
+      ]
+    },
+    {
+      "expected_name": "specify-an-isolated-harness-startup-probe",
+      "outcome": "matches",
+      "query": "Will a newly started harness see a global instruction outside its workspace?",
+      "rank": 1,
+      "returned_names": [
+        "specify-an-isolated-harness-startup-probe"
+      ]
+    }
+  ],
+  "probe_selection_rule": "One independently phrased task query per wave-two candidate, written by a reviewer before running the search; five unrelated no-answer controls.",
+  "probe_sha256": "17a3e6008cdee1c0a9ee817b00db8813dce373bb61c338bbaaf96f39574eb3e9",
+  "record_type": "local_candidate_search_evaluation/v1",
+  "scope": "local_candidate_batch_only",
+  "search_tool_sha256": "9d2635803489752fe5b0590d28f2baaa994943d9302d02042680dd097482125c"
+}

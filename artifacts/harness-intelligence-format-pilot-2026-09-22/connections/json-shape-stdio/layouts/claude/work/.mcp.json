@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "baltor_json_shape": {
+      "args": [
+        "tools/json_shape_mcp/server.py"
+      ],
+      "command": "python3"
+    }
+  }
+}

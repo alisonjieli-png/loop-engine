@@ -1,0 +1,18 @@
+{
+  "case": "clean_home_with_ephemeral_pinned_interpreter",
+  "environment": "fresh isolated HOME and XDG, closed outbound proxy, pinned mcp==1.29.0 installed in an ephemeral virtual environment, no model call",
+  "limitations": "This establishes local OpenCode 1.x connection only. The virtual environment was removed after the trial; customer provisioning, 2026-07-28 protocol, tool use by a model, and task benefit are unqualified.",
+  "record_type": "candidate_native_mcp_probe/v1",
+  "rendered_config_sha256": "e5dc2caef148ebb1f04910a9be02a91f78f501b9d255b4c4a23bb3852c44ba85",
+  "result": {
+    "connection_state": "connected",
+    "output": "\u250c  MCP Servers\n\u2502\n\u25cf  \u2713 baltor_json_shape connected\n\u2502      <isolated-root>/venv/bin/python tools/json_shape_mcp/server.py\n\u2502\n\u2514  1 server(s)\n\n",
+    "process_exit": 0
+  },
+  "source": {
+    "opencode_version": "1.17.9",
+    "requirements_sha256": "b1a0e8947a80d3222c56a9b748ee0e4f7f19ce3273c76db72da57b0ff7b105ca",
+    "server_sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332",
+    "source_config_sha256": "2cd4bc8b3d59cdfb715129d00f1d3a31cb78b70f7fd49090b6047def4777b076"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "record_type": "native_context_codex_nested_discovery_attempt/v1",
+  "status": "observed_negative_then_superseded",
+  "client": "codex-cli 0.155.1",
+  "model_calls": 0,
+  "candidate": "repair-one-failing-test",
+  "source_sha256_at_attempt": "6bfd9875cc34da319a2d2c86ce47bf901aca251abfda37145ef8b971d93ad3d2",
+  "method": "codex debug prompt-input from the candidate work folder nested under the full Loop Engine repository with an empty HOME and CODEX_HOME",
+  "exit_code": 0,
+  "candidate_marker_visible": false,
+  "stdout_bytes_on_recheck": 43886,
+  "interpretation": "This nested checkout is not the intended fresh step root. A separate isolated git-root probe saw the unchanged candidate bytes and rejected the removed-file control. The full repository AGENTS.md was 45893 bytes when inspected later, but the cause of omission in this initial attempt was not isolated.",
+  "later_state": "The original template bytes were revised to remove a literal generic brace marker. The newer exact bytes were probed in the dated successor report."
+}

@@ -3,17 +3,17 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c87e561aa2cd61`.
+Source fingerprint: `sha256:d4a63ce60bd34af8c4cfa84e8e2c728ef502793d3c2a535a058b014bf737a42f`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 32 |
-| Can start next | 11 |
-| Waiting on earlier work | 56 |
+| Being built now | 33 |
+| Can start next | 12 |
+| Waiting on earlier work | 53 |
 | Blocked | 2 |
-| Done | 41 |
+| Done | 42 |
 
 ## Being built now
 
@@ -23,6 +23,7 @@ Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c8
 | S-6.35 | Release automation and automated live checks after every release | building | S-6.26 |
 | S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | Land the authority section, reconcile the entry points, then apply the README plan. |
+| S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification. |
 | S-6.13 | Prepare portable deployment definitions and procedures for every hosting family | building |  |
@@ -56,6 +57,7 @@ Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c8
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
+| S-6.44 | Serve the open formats in each harness's own layout | proposed | Extend the existing selected-material installer with versioned client-native layout profiles, clean home and ancestor isolation, and a no-model native discovery probe before adding other file kinds. |
 | S-2.10 | Intelligence access contract and no-direct-edit conformance rule | proposed |  |
 | S-2.18 | Relayer each declared boundary package from core one boundary at a time | proposed |  |
 | S-2.19 | Move the specifications at the docs root into their kind folders with redirect stubs | proposed |  |
@@ -72,13 +74,11 @@ Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c8
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
-| S-6.43 | Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 | proposed | S-6.29 |
 | S-6.46 | Close the dated deadlines and small gaps before inviting users | proposed | S-6.35 |
 | S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
 | S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
 | S-6.48 | Setup paths for every kind of customer, with seeded starter files | proposed | S-6.42 |
 | S-6.55 | Persona reviews after every release | proposed | S-6.33 |
-| S-6.44 | Serve the open formats in each harness's own layout | proposed | S-6.43 |
 | S-6.49 | Subscription plugins for Hermes Agent and OpenClaw | proposed | S-6.44 |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
@@ -88,10 +88,9 @@ Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c8
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
-| S-6.40 | Grow the library: a scheduled ingestion worker for skills, plugins and context | proposed | S-6.30 |
+| S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
 | S-6.63 | An independent review panel of several model families | proposed | S-6.45 |
-| S-6.62 | Catalogue releases and library settings with good defaults | proposed | S-6.40 |
-| S-6.64 | Original rewrites for material without a permissive licence | proposed | S-6.63 |
+| S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |
 | S-6.54 | Data-work intelligence packs as text and as tested code | proposed | S-6.40 |
 | S-6.53 | Generate intelligence along the occupation grid | proposed | S-6.40 |
 | S-6.45 | Make served files safe to trust: a malicious-skill regression set, exact licences and a bill of materials | proposed | S-6.40 |
@@ -172,7 +171,7 @@ Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c8
 | D-17 | Open a private beta for invited users | initial_service | 0 of 6 |
 | D-18 | Ship the September 22 review: one main line, live checks and launch readiness | initial_service | 0 of 8 |
 | D-19 | Engines behind fixed edges for every functional component | continued_improvement | 0 of 7 |
-| D-20 | Meet the open standards and make served files safe to trust | initial_service | 0 of 5 |
+| D-20 | Meet the open standards and make served files safe to trust | initial_service | 1 of 5 |
 | D-21 | Meet customers in the harness they already use | initial_service | 0 of 4 |
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 4 |
@@ -202,8 +201,9 @@ Source fingerprint: `sha256:91232334e4609fb9e094f6087863c0e8d9171b900a9259deb2c8
 | OWNER-18 | Choose the paid identity and email plans, which take hosting above the recorded allowance | before_public |
 | OWNER-19 | Name who approves and posts replies, and from which accounts | optional |
 
-## Done (41 steps)
+## Done (42 steps)
 
+- S-6.43: Speak the current protocol revision: negotiate the 2026-07-28 Model Context Protocol beside 2025-11-25 (live_qualified)
 - S-6.17: Maintain one continuation plan and regenerate its status artifact (offline_verified)
 - S-0.5: Text conformance, standalone export, example 26, export command (published)
 - S-1.1: Temporal fact graph in Context Intelligence (published)

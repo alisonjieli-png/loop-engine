@@ -1,0 +1,28 @@
+{
+  "record_type": "native_context_codex_no_model_discovery_probe/v1",
+  "created_utc": "2026-09-23T02:33:42.361678+00:00",
+  "client": "codex-cli 0.155.1",
+  "model_calls": 0,
+  "method": "codex debug prompt-input on unchanged copy inside an isolated temporary git root, with empty HOME and CODEX_HOME and closed external proxy",
+  "scope": "template discovery only; no input rendering, model use, task completion or other-client qualification",
+  "observations": [
+    {
+      "candidate_id": "repair-one-failing-test",
+      "source_sha256": "8f2c5ae30d5202820f52ced692599ada48d8c0ae1ca4e78d97f4de01bf8b3235",
+      "unchanged_template_visible_without_model": true,
+      "removed_file_marker_absent": true,
+      "positive_exit": 0,
+      "negative_exit": 0,
+      "stderr_nonempty": false
+    },
+    {
+      "candidate_id": "profile-one-csv",
+      "source_sha256": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044",
+      "unchanged_template_visible_without_model": true,
+      "removed_file_marker_absent": true,
+      "positive_exit": 0,
+      "negative_exit": 0,
+      "stderr_nonempty": false
+    }
+  ]
+}

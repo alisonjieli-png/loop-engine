@@ -1,0 +1,315 @@
+{
+  "created_at": "2026-09-23T00:16:37Z",
+  "interpretation": "Changes are review prompts, not source claims, candidate approval, or runtime authority.",
+  "limits": {
+    "max_bytes": 512000,
+    "max_online_sources": 15,
+    "timeout_seconds": 5.0
+  },
+  "manifest_sha256": "6e87f8716b426f6c3306aec3ddfb46072197ec31c2ad17396ff1edfa8d62d821",
+  "mode": "online",
+  "record_type": "research_source_watch_report/v1",
+  "sources": [
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:30Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "foremerge",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Foremerge concurrent intent",
+      "observed": {
+        "etag": "W/\"93f48da581eb0090a0a414cd68e5cfe2e02dc1b3344c33a7e55b41428cb0c401\"",
+        "fingerprint": "ec74d7c8230469bc6a3d2b3db41319e1e4bcede0",
+        "last_modified": "Sun, 20 Sep 2026 18:26:32 GMT",
+        "request_url": "https://api.github.com/repos/naw103/foremerge/commits?per_page=1",
+        "revision": "ec74d7c8230469bc6a3d2b3db41319e1e4bcede0"
+      },
+      "retrieved_at": "2026-09-23T00:16:31Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/naw103/foremerge"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:31Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "whip_harness",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Whip coding harness",
+      "observed": {
+        "etag": "W/\"7472e5dd16752c02a300fc63fdd934a08177ed5e666ed3f7a71fce693f808ca3\"",
+        "fingerprint": "3c7ff8f76a37fe2c014477c0a0e23d0aa09b80d2",
+        "last_modified": "Fri, 18 Sep 2026 21:49:29 GMT",
+        "request_url": "https://api.github.com/repos/context-labs/whip/commits?per_page=1",
+        "revision": "3c7ff8f76a37fe2c014477c0a0e23d0aa09b80d2"
+      },
+      "retrieved_at": "2026-09-23T00:16:31Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/context-labs/whip"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:31Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "operational_ontology",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Operational Ontology action reference",
+      "observed": {
+        "etag": "W/\"46e70e207c968a092d3731124cb4b6c728786d6bd4ed314251411e35259ebaf0\"",
+        "fingerprint": "3fc3c263e32e1b6851da43cf30b768f012c888bc",
+        "last_modified": "Tue, 22 Sep 2026 09:49:37 GMT",
+        "request_url": "https://api.github.com/repos/gura105/operational-ontology/commits?per_page=1",
+        "revision": "3fc3c263e32e1b6851da43cf30b768f012c888bc"
+      },
+      "retrieved_at": "2026-09-23T00:16:31Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/gura105/operational-ontology"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:31Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "jev_ultrafast",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "TypeSafe Jev browser action candidate",
+      "observed": {
+        "etag": "W/\"50c834b87b74545ce7cffaa91ad09ceccc0c8277474ac392a707789e693d6cd9\"",
+        "fingerprint": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46",
+        "last_modified": "Fri, 18 Sep 2026 16:28:35 GMT",
+        "request_url": "https://api.github.com/repos/browser-use/jev-ultrafast/commits?per_page=1",
+        "revision": "1231850a0bf1a0c0341fe408ef1668dbbfdfac46"
+      },
+      "retrieved_at": "2026-09-23T00:16:32Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/browser-use/jev-ultrafast"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:32Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "pipelock",
+      "kind": "github_repository",
+      "license_state": "mixed_core_and_enterprise_review_required",
+      "name": "Pipelock mediated tool and network boundary",
+      "observed": {
+        "etag": "W/\"639cb78c1865e3344a16c71c41fb385094e977c94a64a873df9f60ca8f780745\"",
+        "fingerprint": "5651d6757313c7852417e8bc23bc28d3ded4969b",
+        "last_modified": "Tue, 22 Sep 2026 23:38:15 GMT",
+        "request_url": "https://api.github.com/repos/luckyPipewrench/pipelock/commits?per_page=1",
+        "revision": "5651d6757313c7852417e8bc23bc28d3ded4969b"
+      },
+      "retrieved_at": "2026-09-23T00:16:32Z",
+      "roadmap_step": "S-6.61",
+      "url": "https://github.com/luckyPipewrench/pipelock"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:32Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "kubernetes_agent_sandbox",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Kubernetes Agent Sandbox",
+      "observed": {
+        "etag": "W/\"66f8172ca1c139d4f54337809c90e89eadccd171ff035ac9736ce983a5ee252c\"",
+        "fingerprint": "ce66bdc1484d85d3c4d0a217208e5a7d8684d802",
+        "last_modified": "Tue, 22 Sep 2026 22:26:11 GMT",
+        "request_url": "https://api.github.com/repos/kubernetes-sigs/agent-sandbox/commits?per_page=1",
+        "revision": "ce66bdc1484d85d3c4d0a217208e5a7d8684d802"
+      },
+      "retrieved_at": "2026-09-23T00:16:33Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/kubernetes-sigs/agent-sandbox"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:33Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "prime_agent",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Prime Agent coordination",
+      "observed": {
+        "etag": "W/\"e0dd33fcc65eb1499528dea82e3b8808fa8568d97511ced6aa9c60153b1acd30\"",
+        "fingerprint": "26ec38fa2ccabcf50bad1704fbfdc42f2e2fee13",
+        "last_modified": "Wed, 23 Sep 2026 00:01:22 GMT",
+        "request_url": "https://api.github.com/repos/PrimeIntellect-ai/prime-agent/commits?per_page=1",
+        "revision": "26ec38fa2ccabcf50bad1704fbfdc42f2e2fee13"
+      },
+      "retrieved_at": "2026-09-23T00:16:33Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/PrimeIntellect-ai/prime-agent"
+    },
+    {
+      "change": "unchanged",
+      "checked_at": "2026-09-23T00:16:33Z",
+      "comparison_basis": "RESEARCH-SOURCE-WATCH-2026-09-22T215538.253225Z.json",
+      "failure": null,
+      "id": "sol_pi",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "SoL-Pi efficiency extension",
+      "observed": {
+        "etag": "W/\"f26b7464da2e6199a13cdfb4974e74fc7d812769146a86074508897a64a621ec\"",
+        "fingerprint": "1559b5cb12c72da4a485bc50fe326586b216fb19",
+        "last_modified": "Tue, 22 Sep 2026 06:52:09 GMT",
+        "request_url": "https://api.github.com/repos/NVlabs/SoL-Pi/commits?per_page=1",
+        "revision": "1559b5cb12c72da4a485bc50fe326586b216fb19"
+      },
+      "retrieved_at": "2026-09-23T00:16:33Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/NVlabs/SoL-Pi"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:33Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "worktrunk",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Worktrunk development worktrees",
+      "observed": {
+        "etag": "W/\"37c0027ca66a3be96b96c72e05c696224fae6ff1435ad71a0b5105ebd93a979d\"",
+        "fingerprint": "8ea0288f653719b3a55680c19d65062f745b8637",
+        "last_modified": "Tue, 22 Sep 2026 19:37:53 GMT",
+        "request_url": "https://api.github.com/repos/max-sixty/worktrunk/commits?per_page=1",
+        "revision": "8ea0288f653719b3a55680c19d65062f745b8637"
+      },
+      "retrieved_at": "2026-09-23T00:16:34Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/max-sixty/worktrunk"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:34Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "kimi_k3_in_c",
+      "kind": "github_repository",
+      "license_state": "engine_and_weights_have_separate_rights",
+      "name": "Kimi K3 disk-streamed inference",
+      "observed": {
+        "etag": "W/\"a32ab250dfa746fdb9ba5b9f354cff5f84def7d6adbb88778fed81a3704b7f65\"",
+        "fingerprint": "a2ad8e5982daef0237e037e16f29401a63cee57d",
+        "last_modified": "Tue, 22 Sep 2026 14:29:36 GMT",
+        "request_url": "https://api.github.com/repos/FareedKhan-dev/kimi-k3-in-c/commits?per_page=1",
+        "revision": "a2ad8e5982daef0237e037e16f29401a63cee57d"
+      },
+      "retrieved_at": "2026-09-23T00:16:34Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/FareedKhan-dev/kimi-k3-in-c"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:34Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "bend2",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Bend 2 proof language",
+      "observed": {
+        "etag": "W/\"f92e6d0c6db8cf1270595e29fde3df9d961d109131569ab435906ed91e60a408\"",
+        "fingerprint": "ff7a40cc9070a34c78399ecd2bbe46a044ad9b4b",
+        "last_modified": "Tue, 22 Sep 2026 17:36:55 GMT",
+        "request_url": "https://api.github.com/repos/bendlang/bend/commits?per_page=1",
+        "revision": "ff7a40cc9070a34c78399ecd2bbe46a044ad9b4b"
+      },
+      "retrieved_at": "2026-09-23T00:16:35Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/bendlang/bend"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:35Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "forkd",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "forkd Firecracker state branching",
+      "observed": {
+        "etag": "W/\"0ade05bf6ec53e1e5e02024509c4dd76110036e18c6ffb855867d866ff5fac2a\"",
+        "fingerprint": "bbf23a93b72a0ae0565f834a3b326d58e83a88f3",
+        "last_modified": "Mon, 14 Sep 2026 05:07:26 GMT",
+        "request_url": "https://api.github.com/repos/deeplethe/forkd/commits?per_page=1",
+        "revision": "bbf23a93b72a0ae0565f834a3b326d58e83a88f3"
+      },
+      "retrieved_at": "2026-09-23T00:16:35Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/deeplethe/forkd"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:35Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "ephemora_cell",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "Ephemora Cell bounded WebAssembly",
+      "observed": {
+        "etag": "W/\"064d0a4cbea6773f96be1d63716c7a1becf792850a1517bc74930eb4559edfa0\"",
+        "fingerprint": "8a156c0b08154071d6c6718321c239286d95ce62",
+        "last_modified": "Tue, 22 Sep 2026 22:25:55 GMT",
+        "request_url": "https://api.github.com/repos/MichaelS1011/ephemora-cell/commits?per_page=1",
+        "revision": "8a156c0b08154071d6c6718321c239286d95ce62"
+      },
+      "retrieved_at": "2026-09-23T00:16:36Z",
+      "roadmap_step": "S-6.22",
+      "url": "https://github.com/MichaelS1011/ephemora-cell"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:36Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "harnessrouter",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "HarnessRouter Community Edition",
+      "observed": {
+        "etag": "W/\"1a8982db71d7b33e09914b2186209f8a4c4bba8ae09d4d9693d25d6796623632\"",
+        "fingerprint": "809392d602e34e36f0468943035c54d3350af885",
+        "last_modified": "Tue, 22 Sep 2026 17:57:18 GMT",
+        "request_url": "https://api.github.com/repos/HarnessRouter/harnessrouter/commits?per_page=1",
+        "revision": "809392d602e34e36f0468943035c54d3350af885"
+      },
+      "retrieved_at": "2026-09-23T00:16:36Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/HarnessRouter/harnessrouter"
+    },
+    {
+      "change": "unknown",
+      "checked_at": "2026-09-23T00:16:36Z",
+      "comparison_basis": null,
+      "failure": null,
+      "id": "deepseek_harness",
+      "kind": "github_repository",
+      "license_state": "source_review_required",
+      "name": "DeepSeek Harness",
+      "observed": {
+        "etag": "W/\"c243a8af51187d0f77071b452a7f70dbe90cc3778f4e6cf5f9be1a78759c67d9\"",
+        "fingerprint": "00102833dfaee1da9f48a3a8eae9d34005a75218",
+        "last_modified": "Tue, 22 Sep 2026 15:25:38 GMT",
+        "request_url": "https://api.github.com/repos/deepseek-ai/deepseek-harness/commits?per_page=1",
+        "revision": "00102833dfaee1da9f48a3a8eae9d34005a75218"
+      },
+      "retrieved_at": "2026-09-23T00:16:37Z",
+      "roadmap_step": "S-6.42",
+      "url": "https://github.com/deepseek-ai/deepseek-harness"
+    }
+  ],
+  "tool_sha256": "170ace8e6f41cad340209ddbd23e728083279341a0ff2a187569890bbcb4ec13"
+}

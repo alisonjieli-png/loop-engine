@@ -1,0 +1,17 @@
+{
+  "case": "clean_home_unqualified_python",
+  "environment": "fresh isolated HOME and XDG, closed outbound proxy, no model call",
+  "limitations": "Process exit zero reports the listing command, not a connected server; current candidate config invokes unqualified python3.",
+  "record_type": "candidate_native_mcp_probe/v1",
+  "result": {
+    "connection_state": "failed",
+    "output": "\u250c  MCP Servers\n\u2502\n\u25cf  \u2717 baltor_json_shape failed\n\u2502      MCP error -32000: Connection closed\n\u2502      python3 tools/json_shape_mcp/server.py\n\u2502\n\u2514  1 server(s)\n\n",
+    "process_exit": 0
+  },
+  "source": {
+    "opencode_version": "1.17.9",
+    "requirements_sha256": "b1a0e8947a80d3222c56a9b748ee0e4f7f19ce3273c76db72da57b0ff7b105ca",
+    "server_sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332",
+    "source_config_sha256": "2cd4bc8b3d59cdfb715129d00f1d3a31cb78b70f7fd49090b6047def4777b076"
+  }
+}

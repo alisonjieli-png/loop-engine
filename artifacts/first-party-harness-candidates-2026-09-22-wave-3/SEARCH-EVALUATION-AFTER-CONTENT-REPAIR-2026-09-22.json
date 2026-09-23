@@ -1,0 +1,214 @@
+{
+  "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22-wave-3",
+  "candidate_approval": "none",
+  "evaluated_at_utc": "2026-09-23T02:20:51.925217+00:00",
+  "limitations": "English-language local lexical pilot; one expected item per query; review notes were indexed; no tenant grants, native load, task outcome, or hosted route tested.",
+  "manifest_sha256": "b06f1a5a15127dbed6c3e3f0d6580e1dcad31953bc430a9d9bb6db7656cc3c7f",
+  "metrics": {
+    "correct_no_answer": 5,
+    "no_answer_queries": 5,
+    "positive_queries": 20,
+    "top_one": 13,
+    "top_three": 13
+  },
+  "no_answer_results": [
+    {
+      "no_match": true,
+      "query": "How should I prune an apple tree in winter?",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "What is the chemical formula of potassium permanganate?",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Compose a sonnet about a blue whale.",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Plan a family vacation in Lisbon.",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Who won the 1974 World Cup?",
+      "returned_names": []
+    }
+  ],
+  "positive_results": [
+    {
+      "expected_name": "audit-sampling-frame-coverage",
+      "outcome": "no_match",
+      "query": "Our web survey never reached customers who use the offline service; can results describe everyone?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "audit-service-measure-against-agreement",
+      "outcome": "matches",
+      "query": "Recompute the carrier on-time score when missing delivery proof counts as late under the contract.",
+      "rank": 1,
+      "returned_names": [
+        "audit-service-measure-against-agreement"
+      ]
+    },
+    {
+      "expected_name": "bound-obsolete-stock-by-support-horizon",
+      "outcome": "no_match",
+      "query": "An old spare-part revision still fits supported repairs; how much inventory is actually stranded?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "compare-satisfaction-waves-by-respondent-mix",
+      "outcome": "no_match",
+      "query": "Satisfaction rose after the respondent mix shifted toward enterprise users; is the comparison valid?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "diagnose-process-constraint-from-flow",
+      "outcome": "no_match",
+      "query": "Cases build up before packing although picking takes longer; which station limits flow?",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "reconcile-account-difference-to-postings",
+      "outcome": "matches",
+      "query": "Two ledger entries have the same amount but only one matches a source transaction; explain the remaining balance.",
+      "rank": 1,
+      "returned_names": [
+        "reconcile-account-difference-to-postings"
+      ]
+    },
+    {
+      "expected_name": "test-aggregate-trend-for-subgroup-reversal",
+      "outcome": "no_match",
+      "query": "Overall conversion rises while every segment's conversion falls; explain the reversal.",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "challenge-a-survey-instrument-for-contamination",
+      "outcome": "matches",
+      "query": "The questionnaire asks whether onboarding is quick and easy in one rating; can we infer both?",
+      "rank": 1,
+      "returned_names": [
+        "challenge-a-survey-instrument-for-contamination"
+      ]
+    },
+    {
+      "expected_name": "contrast-described-and-observed-workflows",
+      "outcome": "no_match",
+      "query": "Our process diagram omits the manual review seen in most case traces; compare the two.",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "establish-milestone-readiness-from-evidence",
+      "outcome": "matches",
+      "query": "All milestone tickets are closed but the signed acceptance artifact is missing; is it ready?",
+      "rank": 1,
+      "returned_names": [
+        "establish-milestone-readiness-from-evidence"
+      ]
+    },
+    {
+      "expected_name": "explain-a-service-charge-from-effective-rules",
+      "outcome": "no_match",
+      "query": "This quote used the new hourly tariff for work performed before the price change.",
+      "rank": null,
+      "returned_names": []
+    },
+    {
+      "expected_name": "propagate-a-plan-change-through-commitments",
+      "outcome": "matches",
+      "query": "If testing moves next week, which resource bookings and customer handoffs are affected?",
+      "rank": 1,
+      "returned_names": [
+        "propagate-a-plan-change-through-commitments"
+      ]
+    },
+    {
+      "expected_name": "test-control-operation-on-a-bounded-sample",
+      "outcome": "matches",
+      "query": "The dual approval policy exists, but did both reviewers sign the sampled purchases?",
+      "rank": 1,
+      "returned_names": [
+        "test-control-operation-on-a-bounded-sample"
+      ]
+    },
+    {
+      "expected_name": "verify-resolution-against-original-symptom",
+      "outcome": "matches",
+      "query": "The patch shipped, yet the same customer action still errors; should the ticket close?",
+      "rank": 1,
+      "returned_names": [
+        "verify-resolution-against-original-symptom"
+      ]
+    },
+    {
+      "expected_name": "audit-a-published-guide-against-a-release",
+      "outcome": "matches",
+      "query": "The tutorial works on main but references a command absent from the shipped version.",
+      "rank": 1,
+      "returned_names": [
+        "audit-a-published-guide-against-a-release"
+      ]
+    },
+    {
+      "expected_name": "check-prerequisite-order-in-a-task-guide",
+      "outcome": "matches",
+      "query": "The setup instructions request a token before the step that creates it.",
+      "rank": 1,
+      "returned_names": [
+        "check-prerequisite-order-in-a-task-guide"
+      ]
+    },
+    {
+      "expected_name": "define-a-user-operation-performance-envelope",
+      "outcome": "matches",
+      "query": "Set latency and failure criteria for checkout under peak load, including large carts.",
+      "rank": 1,
+      "returned_names": [
+        "define-a-user-operation-performance-envelope"
+      ]
+    },
+    {
+      "expected_name": "derive-state-transition-tests-from-a-contract",
+      "outcome": "matches",
+      "query": "Design cases for every allowed and forbidden order-status transition, including an interrupted capture.",
+      "rank": 1,
+      "returned_names": [
+        "derive-state-transition-tests-from-a-contract"
+      ]
+    },
+    {
+      "expected_name": "map-system-output-to-permitted-consumers",
+      "outcome": "matches",
+      "query": "Which fields from this new event feed may each team receive and retain?",
+      "rank": 1,
+      "returned_names": [
+        "map-system-output-to-permitted-consumers"
+      ]
+    },
+    {
+      "expected_name": "qualify-a-prebuilt-application-against-required-seams",
+      "outcome": "matches",
+      "query": "Does this existing package preserve our required refusal semantics and schema version?",
+      "rank": 1,
+      "returned_names": [
+        "qualify-a-prebuilt-application-against-required-seams"
+      ]
+    }
+  ],
+  "probe_selection_rule": "One independently phrased task query per occupation-linked candidate, written by a reviewer before running wave-three search; five unrelated no-answer controls.",
+  "probe_sha256": "3d40049b234c24a8fca496cb1da282854508237f1ebdfc775991bb4e8f51a792",
+  "record_type": "local_candidate_search_evaluation/v1",
+  "scope": "local_candidate_batch_only",
+  "search_tool_sha256": "9d2635803489752fe5b0590d28f2baaa994943d9302d02042680dd097482125c"
+}

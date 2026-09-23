@@ -1,0 +1,13 @@
+# Candidate review: rebuild-state-from-ordered-events
+
+Status: candidate only. The exact `packages/data/rebuild-state-from-ordered-events/SKILL.md` bytes need independent review before admission.
+
+- Original authoring and source basis: Written for this batch by a Codex research subagent from general event replay reasoning. The [Agent Skills specification](https://agentskills.io/specification) informed the file structure. No outside procedure or product-specific state machine was copied. License and originality remain review decisions.
+- Applicability facets: workflow status, order state, incident lifecycle, ticket history, audit trails; requires owner-supplied transition semantics.
+- Search phrasings (author-supplied discovery aids, not evaluation queries): "Our ticket status table says open but the event log says closed; can you replay it?"; "Which status should this order have after these delayed events?"
+- Typed input and output concept: Inputs are `InitialState`, `Event[]`, `TransitionRules`, authoritative `OrderingRule`, `CutoffRule`, and `DuplicateIdentityRule`. Output is `StateReplay` with each transition, final state, ordering and duplicate dispositions, and anomalies.
+- Declared effects: read-only analysis. No event replay is committed to a live system; no current-state row is overwritten.
+- Known-good example: A system declares commit sequence authoritative and treats an identical repeated event identity as idempotent. Starting from `inactive`, sequence 1 sets `active` at effective time 12 and sequence 2 sets `inactive` at effective time 10. Both state-setting transitions are valid from either state. Replay through sequence 2 yields `inactive`, regardless of effective-time order. An identical repeat of sequence 2 has no additional effect under the supplied rule.
+- Known-wrong example: Sort those events by effective time and report `active`, violating the supplied commit-sequence replay rule. Also wrong: silently collapse two records with the same event identity but different payloads.
+- Overlap search: `build_an_incident_timeline_from_evidence.md` orders evidence for a narrative. It does not apply owner-provided transition rules to reconstruct an entity's state or stop on a tied event without a tie breaker.
+- Limitations to check: Some systems replay by effective time and others by committed sequence; the supplied rule controls. Identical repeats are idempotent only when the source says so. Late events, conflicting duplicates, missing initial state, ties, and cutoff semantics need explicit checks. The skill must not invent business transitions.

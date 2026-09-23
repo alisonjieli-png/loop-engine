@@ -1,0 +1,264 @@
+{
+  "batch_root": "/home/username/loop-engine/artifacts/first-party-harness-candidates-2026-09-22",
+  "candidate_approval": "none",
+  "evaluated_at_utc": "2026-09-23T02:08:35.782458+00:00",
+  "limitations": "English-language local lexical pilot; one expected item per query; review notes were indexed; no tenant grants, native load, task outcome, or hosted route tested.",
+  "manifest_sha256": "85eb74823631bb520690e9c486e535c6f1564549761ed4723e759f93fed20bde",
+  "metrics": {
+    "correct_no_answer": 5,
+    "no_answer_queries": 5,
+    "positive_queries": 24,
+    "top_one": 24,
+    "top_three": 24
+  },
+  "no_answer_results": [
+    {
+      "no_match": true,
+      "query": "How do I bake sourdough bread with rye starter",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Generate a visa invitation letter for travel",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Deploy a Kubernetes cluster to production",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Rotate a leaked API key",
+      "returned_names": []
+    },
+    {
+      "no_match": true,
+      "query": "Normalize telephone numbers to E.164 format",
+      "returned_names": []
+    }
+  ],
+  "positive_results": [
+    {
+      "expected_name": "audit-as-of-data-visibility",
+      "outcome": "matches",
+      "query": "historical report changed after late correction what was known then",
+      "rank": 1,
+      "returned_names": [
+        "audit-as-of-data-visibility"
+      ]
+    },
+    {
+      "expected_name": "audit-measurement-units",
+      "outcome": "matches",
+      "query": "convert kilograms and grams before adding",
+      "rank": 1,
+      "returned_names": [
+        "audit-measurement-units"
+      ]
+    },
+    {
+      "expected_name": "check-rate-denominators",
+      "outcome": "matches",
+      "query": "conversion percentage counts events instead of users",
+      "rank": 1,
+      "returned_names": [
+        "check-rate-denominators"
+      ]
+    },
+    {
+      "expected_name": "define-time-zone-reporting-window",
+      "outcome": "matches",
+      "query": "daily metrics around daylight saving time",
+      "rank": 1,
+      "returned_names": [
+        "define-time-zone-reporting-window"
+      ]
+    },
+    {
+      "expected_name": "rebuild-state-from-ordered-events",
+      "outcome": "matches",
+      "query": "derive order status from event log",
+      "rank": 1,
+      "returned_names": [
+        "rebuild-state-from-ordered-events"
+      ]
+    },
+    {
+      "expected_name": "reconcile-snapshot-changes",
+      "outcome": "matches",
+      "query": "find differences between two exports",
+      "rank": 1,
+      "returned_names": [
+        "reconcile-snapshot-changes"
+      ]
+    },
+    {
+      "expected_name": "trace-numeric-rounding",
+      "outcome": "matches",
+      "query": "why invoice lines total differs by a cent",
+      "rank": 1,
+      "returned_names": [
+        "trace-numeric-rounding"
+      ]
+    },
+    {
+      "expected_name": "validate-aggregate-grain",
+      "outcome": "matches",
+      "query": "avoid double counting stock snapshots",
+      "rank": 1,
+      "returned_names": [
+        "validate-aggregate-grain"
+      ]
+    },
+    {
+      "expected_name": "build-a-project-decision-provenance-map",
+      "outcome": "matches",
+      "query": "which project decision was approved from conflicting notes",
+      "rank": 1,
+      "returned_names": [
+        "build-a-project-decision-provenance-map"
+      ]
+    },
+    {
+      "expected_name": "design-a-bounded-product-experiment",
+      "outcome": "matches",
+      "query": "plan A B experiment with rollout guardrails",
+      "rank": 1,
+      "returned_names": [
+        "design-a-bounded-product-experiment"
+      ]
+    },
+    {
+      "expected_name": "map-observed-customer-journey-friction",
+      "outcome": "matches",
+      "query": "users drop out during sign up journey",
+      "rank": 1,
+      "returned_names": [
+        "map-observed-customer-journey-friction"
+      ]
+    },
+    {
+      "expected_name": "match-a-product-claim-to-verified-capability",
+      "outcome": "matches",
+      "query": "check marketing claims against released feature",
+      "rank": 1,
+      "returned_names": [
+        "match-a-product-claim-to-verified-capability"
+      ]
+    },
+    {
+      "expected_name": "normalize-vendor-offers-for-one-decision",
+      "outcome": "matches",
+      "query": "compare vendor quotes with different pricing units",
+      "rank": 1,
+      "returned_names": [
+        "normalize-vendor-offers-for-one-decision"
+      ]
+    },
+    {
+      "expected_name": "screen-a-study-for-a-product-decision",
+      "outcome": "matches",
+      "query": "should this paper justify our product choice",
+      "rank": 1,
+      "returned_names": [
+        "screen-a-study-for-a-product-decision"
+      ]
+    },
+    {
+      "expected_name": "separate-recurring-support-causes-from-repeat-contacts",
+      "outcome": "matches",
+      "query": "support tickets repeat same customer incident",
+      "rank": 1,
+      "returned_names": [
+        "separate-recurring-support-causes-from-repeat-contacts"
+      ]
+    },
+    {
+      "expected_name": "triage-support-requests-against-approved-policy",
+      "outcome": "matches",
+      "query": "classify refund request using company policy",
+      "rank": 1,
+      "returned_names": [
+        "triage-support-requests-against-approved-policy"
+      ]
+    },
+    {
+      "expected_name": "adjudicate-model-disagreement-with-external-checks",
+      "outcome": "matches",
+      "query": "multiple agents disagree which answer is correct",
+      "rank": 1,
+      "returned_names": [
+        "adjudicate-model-disagreement-with-external-checks"
+      ]
+    },
+    {
+      "expected_name": "audit-semantic-loss-in-protocol-fallback",
+      "outcome": "matches",
+      "query": "protocol downgrade drops approval semantics",
+      "rank": 1,
+      "returned_names": [
+        "audit-semantic-loss-in-protocol-fallback"
+      ]
+    },
+    {
+      "expected_name": "challenge-retrieval-with-hard-negatives",
+      "outcome": "matches",
+      "query": "test search against near matches and no results",
+      "rank": 1,
+      "returned_names": [
+        "challenge-retrieval-with-hard-negatives"
+      ]
+    },
+    {
+      "expected_name": "compare-model-context-pairs-on-frozen-cases",
+      "outcome": "matches",
+      "query": "compare small model with short instructions and large model with longer prompt",
+      "rank": 1,
+      "returned_names": [
+        "compare-model-context-pairs-on-frozen-cases"
+      ]
+    },
+    {
+      "expected_name": "explain-engine-selection-from-eligible-evidence",
+      "outcome": "matches",
+      "query": "why was an adapter chosen over other eligible engines",
+      "rank": 1,
+      "returned_names": [
+        "explain-engine-selection-from-eligible-evidence"
+      ]
+    },
+    {
+      "expected_name": "map-independent-acceptance-evidence",
+      "outcome": "matches",
+      "query": "several passing reports share one fixture",
+      "rank": 1,
+      "returned_names": [
+        "map-independent-acceptance-evidence"
+      ]
+    },
+    {
+      "expected_name": "reconstruct-causality-across-clock-skewed-records",
+      "outcome": "matches",
+      "query": "logs from machines have clocks out of sync",
+      "rank": 1,
+      "returned_names": [
+        "reconstruct-causality-across-clock-skewed-records"
+      ]
+    },
+    {
+      "expected_name": "separate-shared-build-cache-from-task-state",
+      "outcome": "matches",
+      "query": "parallel workers share build cache but not outputs",
+      "rank": 1,
+      "returned_names": [
+        "separate-shared-build-cache-from-task-state"
+      ]
+    }
+  ],
+  "probe_selection_rule": "One initially independent task phrasing per first-batch candidate. First 12 and two later diagnostic examples were shared for search development; this population is a regression set, not a blind benchmark.",
+  "probe_sha256": "77afd14ed4c9754938195f7a81082c1f27514c7d0c94011da202ffdc17bd4961",
+  "record_type": "local_candidate_search_evaluation/v1",
+  "scope": "local_candidate_batch_only",
+  "search_tool_sha256": "9d2635803489752fe5b0590d28f2baaa994943d9302d02042680dd097482125c"
+}

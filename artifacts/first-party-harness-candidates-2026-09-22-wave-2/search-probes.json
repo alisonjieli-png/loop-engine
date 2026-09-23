@@ -1,0 +1,110 @@
+{
+  "record_type": "local_candidate_search_probe/v1",
+  "selection_rule": "One independently phrased task query per wave-two candidate, written by a reviewer before running the search; five unrelated no-answer controls.",
+  "source_batch": "first-party-harness-candidates-2026-09-22-wave-2",
+  "queries": [
+    {
+      "query": "Can two technicians cover overlapping jobs on the Tuesday shift?",
+      "expected_name": "audit-resource-capacity-by-interval"
+    },
+    {
+      "query": "Our revised workload estimate rose; attribute the difference to changed assumptions.",
+      "expected_name": "bridge-forecast-driver-changes"
+    },
+    {
+      "query": "Why is warehouse stock shown as sellable despite customer holds?",
+      "expected_name": "reconcile-inventory-availability"
+    },
+    {
+      "query": "After split deliveries and a cancellation, how many units do we still owe?",
+      "expected_name": "reconcile-order-fulfillment-quantities"
+    },
+    {
+      "query": "Rows disappear between ingest, validation, and the published dataset.",
+      "expected_name": "reconcile-record-flow-across-stages"
+    },
+    {
+      "query": "Compute the support service time excluding paused periods and closed hours.",
+      "expected_name": "reconstruct-service-clock-from-status-intervals"
+    },
+    {
+      "query": "Which upstream column and transformation created this dashboard total?",
+      "expected_name": "trace-field-lineage-to-a-measure"
+    },
+    {
+      "query": "The vendor feed status column has the right name but means something different.",
+      "expected_name": "validate-source-to-target-field-map"
+    },
+    {
+      "query": "What exactly did the sales team promise that implementation has not scheduled?",
+      "expected_name": "carry-a-sales-promise-into-delivery"
+    },
+    {
+      "query": "Should we focus on developer forums or paid search to reach this buyer group?",
+      "expected_name": "compare-acquisition-channels-for-one-segment"
+    },
+    {
+      "query": "Are payments, signup, support, and docs ready before announcing the product?",
+      "expected_name": "gate-a-product-launch-across-teams"
+    },
+    {
+      "query": "Turn this customer's error report into a safe reproducible handoff for engineering.",
+      "expected_name": "prepare-a-support-escalation-packet"
+    },
+    {
+      "query": "Can we connect our product to a partner without unclear data sharing or owner duties?",
+      "expected_name": "qualify-a-partner-integration-proposal"
+    },
+    {
+      "query": "We can support only a few beta accounts; which applicants fit the shipped capability?",
+      "expected_name": "qualify-an-invited-pilot-cohort"
+    },
+    {
+      "query": "Our internal champion likes it; who can approve spending and what review is left?",
+      "expected_name": "reconstruct-a-buyer-decision-path"
+    },
+    {
+      "query": "Several interviewees complained, but one person repeated it; what is the actual signal?",
+      "expected_name": "synthesize-discovery-interviews-with-counterexamples"
+    },
+    {
+      "query": "May the agent call this MCP tool to modify a different account than approved?",
+      "expected_name": "adjudicate-a-protocol-tool-effect-request"
+    },
+    {
+      "query": "Did the shorter instructions for the small model lose a mandatory safety clause?",
+      "expected_name": "audit-a-model-specific-skill-rendering"
+    },
+    {
+      "query": "Where should selected skills and references be placed for a new coding agent run?",
+      "expected_name": "compile-a-native-material-placement-plan"
+    },
+    {
+      "query": "How do we prove a withdrawn library item cannot be downloaded through a stale link?",
+      "expected_name": "design-catalogue-withdrawal-checks"
+    },
+    {
+      "query": "The skill file was installed, but did the client load and use it in this run?",
+      "expected_name": "reconcile-native-material-use-evidence"
+    },
+    {
+      "query": "Backup model has a different output window and earlier calls used budget; can we retry?",
+      "expected_name": "revalidate-output-allocation-on-model-fallback"
+    },
+    {
+      "query": "Can a child agent use a broker token only for its assigned provider and two calls?",
+      "expected_name": "scope-a-step-credential-lease-to-physical-use"
+    },
+    {
+      "query": "Will a newly started harness see a global instruction outside its workspace?",
+      "expected_name": "specify-an-isolated-harness-startup-probe"
+    }
+  ],
+  "no_answer_queries": [
+    "How do I bake rye bread without a starter?",
+    "Summarize the causes of the French Revolution.",
+    "Generate a watercolor portrait of a tabby cat.",
+    "Design a three day hiking route in Patagonia.",
+    "Translate this poem into Japanese."
+  ]
+}

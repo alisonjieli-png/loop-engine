@@ -1,0 +1,219 @@
+{
+  "record_type": "heterogeneous_harness_candidate_catalog/v1",
+  "state": "candidate_only",
+  "approval_state": "none",
+  "customer_distribution_license": "pending",
+  "items": [
+    {
+      "id": "baltor.context.profile-one-csv.v1",
+      "kind": "native_step_instructions",
+      "title": "Profile one CSV step brief",
+      "description": "Render a bounded CSV quality-assessment assignment into one client's root instruction file.",
+      "target_clients": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "activation": "native root instruction after typed placeholder rendering; Claude uses CLAUDE.md importing AGENTS.md",
+      "effect_requirement": "authorized CSV read and optional exact report write",
+      "review_note": "context/profile-one-csv/review-note.json",
+      "source_files": [],
+      "delivery_variants": {
+        "codex": [
+          "context/profile-one-csv/codex/work/AGENTS.md"
+        ],
+        "claude": [
+          "context/profile-one-csv/claude/work/AGENTS.md",
+          "context/profile-one-csv/claude/work/CLAUDE.md"
+        ],
+        "opencode": [
+          "context/profile-one-csv/opencode/work/AGENTS.md"
+        ],
+        "pi": [
+          "context/profile-one-csv/pi/work/AGENTS.md"
+        ]
+      }
+    },
+    {
+      "id": "baltor.context.repair-one-failing-test.v1",
+      "kind": "native_step_instructions",
+      "title": "Repair one failing test step brief",
+      "description": "Render a focused repair assignment for one failing test with exact authority and acceptance inputs.",
+      "target_clients": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "activation": "native root instruction after typed placeholder rendering; Claude uses CLAUDE.md importing AGENTS.md",
+      "effect_requirement": "declared source/test read and exact authorized code write or test command",
+      "review_note": "context/repair-one-failing-test/review-note.json",
+      "source_files": [],
+      "delivery_variants": {
+        "codex": [
+          "context/repair-one-failing-test/codex/work/AGENTS.md"
+        ],
+        "claude": [
+          "context/repair-one-failing-test/claude/work/AGENTS.md",
+          "context/repair-one-failing-test/claude/work/CLAUDE.md"
+        ],
+        "opencode": [
+          "context/repair-one-failing-test/opencode/work/AGENTS.md"
+        ],
+        "pi": [
+          "context/repair-one-failing-test/pi/work/AGENTS.md"
+        ]
+      }
+    },
+    {
+      "id": "baltor.tool.audit-csv-structure.v1",
+      "kind": "skill_with_python_tool",
+      "title": "Audit CSV structure",
+      "description": "Inspect a bounded comma or tab delimited file for header and row-shape defects with a deterministic Python script.",
+      "target_clients": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "activation": "candidate Agent Skills layout for listed clients; native load untested; invoke bundled script only under typed read and process authority",
+      "effect_requirement": "scoped file read and local process",
+      "review_note": "tools/REVIEW-NOTE.md",
+      "source_files": [],
+      "delivery_variants": {
+        "codex": [
+          "tools/audit-csv-structure/SKILL.md",
+          "tools/audit-csv-structure/scripts/audit_csv_structure.py",
+          "tools/audit-csv-structure/scripts/confined_input.py"
+        ],
+        "claude": [
+          "tools/audit-csv-structure/SKILL.md",
+          "tools/audit-csv-structure/scripts/audit_csv_structure.py",
+          "tools/audit-csv-structure/scripts/confined_input.py"
+        ],
+        "opencode": [
+          "tools/audit-csv-structure/SKILL.md",
+          "tools/audit-csv-structure/scripts/audit_csv_structure.py",
+          "tools/audit-csv-structure/scripts/confined_input.py"
+        ],
+        "pi": [
+          "tools/audit-csv-structure/SKILL.md",
+          "tools/audit-csv-structure/scripts/audit_csv_structure.py",
+          "tools/audit-csv-structure/scripts/confined_input.py"
+        ]
+      }
+    },
+    {
+      "id": "baltor.tool.audit-jsonl-identities.v1",
+      "kind": "skill_with_python_tool",
+      "title": "Audit JSON Lines event identities",
+      "description": "Inspect a bounded JSON Lines file for duplicate event IDs and conflicting payloads with deterministic code.",
+      "target_clients": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "activation": "candidate Agent Skills layout for listed clients; native load untested; invoke bundled script only under typed read and process authority",
+      "effect_requirement": "scoped file read and local process",
+      "review_note": "tools/REVIEW-NOTE.md",
+      "source_files": [],
+      "delivery_variants": {
+        "codex": [
+          "tools/audit-jsonl-identities/SKILL.md",
+          "tools/audit-jsonl-identities/scripts/audit_jsonl_identities.py",
+          "tools/audit-jsonl-identities/scripts/confined_input.py"
+        ],
+        "claude": [
+          "tools/audit-jsonl-identities/SKILL.md",
+          "tools/audit-jsonl-identities/scripts/audit_jsonl_identities.py",
+          "tools/audit-jsonl-identities/scripts/confined_input.py"
+        ],
+        "opencode": [
+          "tools/audit-jsonl-identities/SKILL.md",
+          "tools/audit-jsonl-identities/scripts/audit_jsonl_identities.py",
+          "tools/audit-jsonl-identities/scripts/confined_input.py"
+        ],
+        "pi": [
+          "tools/audit-jsonl-identities/SKILL.md",
+          "tools/audit-jsonl-identities/scripts/audit_jsonl_identities.py",
+          "tools/audit-jsonl-identities/scripts/confined_input.py"
+        ]
+      }
+    },
+    {
+      "id": "baltor.tool.inventory-file-digests.v1",
+      "kind": "skill_with_python_tool",
+      "title": "Inventory file digests",
+      "description": "Compute bounded SHA-256 identities for files beneath one authorized directory using a Python utility.",
+      "target_clients": [
+        "codex",
+        "claude",
+        "opencode",
+        "pi"
+      ],
+      "activation": "candidate Agent Skills layout for listed clients; native load untested; invoke bundled script only under typed read and process authority",
+      "effect_requirement": "scoped tree read and local process",
+      "review_note": "tools/REVIEW-NOTE.md",
+      "source_files": [],
+      "delivery_variants": {
+        "codex": [
+          "tools/inventory-file-digests/SKILL.md",
+          "tools/inventory-file-digests/scripts/inventory_file_digests.py",
+          "tools/inventory-file-digests/scripts/confined_input.py"
+        ],
+        "claude": [
+          "tools/inventory-file-digests/SKILL.md",
+          "tools/inventory-file-digests/scripts/inventory_file_digests.py",
+          "tools/inventory-file-digests/scripts/confined_input.py"
+        ],
+        "opencode": [
+          "tools/inventory-file-digests/SKILL.md",
+          "tools/inventory-file-digests/scripts/inventory_file_digests.py",
+          "tools/inventory-file-digests/scripts/confined_input.py"
+        ],
+        "pi": [
+          "tools/inventory-file-digests/SKILL.md",
+          "tools/inventory-file-digests/scripts/inventory_file_digests.py",
+          "tools/inventory-file-digests/scripts/confined_input.py"
+        ]
+      }
+    },
+    {
+      "id": "baltor.connection.json-shape-stdio.v1",
+      "kind": "local_protocol_server_connection",
+      "title": "Local JSON shape protocol tool",
+      "description": "Expose a bounded read-only JSON shape tool through one local stdio protocol server with client-specific configuration variants.",
+      "target_clients": [
+        "codex",
+        "claude",
+        "opencode"
+      ],
+      "activation": "client-specific config plus separately qualified interpreter; Codex 0.155.1 and Claude Code 2.1.280 syntax only, OpenCode 1.17.9 native connection observed with modified interpreter; MCP 2025-11-25 only",
+      "effect_requirement": "local process start and bounded computation; no network or credential",
+      "review_note": "connections/json-shape-stdio/REVIEW.md",
+      "source_files": [
+        "connections/json-shape-stdio/server.py",
+        "connections/json-shape-stdio/requirements.txt"
+      ],
+      "delivery_variants": {
+        "codex": [
+          "connections/json-shape-stdio/layouts/codex/work/tools/json_shape_mcp/server.py",
+          "connections/json-shape-stdio/layouts/codex/work/tools/json_shape_mcp/requirements.txt",
+          "connections/json-shape-stdio/layouts/codex/work/.codex/config.toml"
+        ],
+        "claude": [
+          "connections/json-shape-stdio/layouts/claude/work/tools/json_shape_mcp/server.py",
+          "connections/json-shape-stdio/layouts/claude/work/tools/json_shape_mcp/requirements.txt",
+          "connections/json-shape-stdio/layouts/claude/work/.mcp.json"
+        ],
+        "opencode": [
+          "connections/json-shape-stdio/layouts/opencode/work/tools/json_shape_mcp/server.py",
+          "connections/json-shape-stdio/layouts/opencode/work/tools/json_shape_mcp/requirements.txt",
+          "connections/json-shape-stdio/layouts/opencode/work/opencode.json"
+        ]
+      }
+    }
+  ]
+}

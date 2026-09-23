@@ -1,0 +1,20 @@
+{
+  "record_type": "research_source_watch_manifest/v1",
+  "sources": [
+    {"id": "codebase_memory_mcp", "name": "Codebase Memory Model Context Protocol graph", "kind": "github_repository", "url": "https://github.com/DeusData/codebase-memory-mcp", "roadmap_step": "S-6.52", "license_state": "source_review_required"},
+    {"id": "iwe", "name": "IWE managed Markdown graph", "kind": "github_repository", "url": "https://github.com/iwe-org/iwe", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "memos", "name": "MemOS agent memory", "kind": "github_repository", "url": "https://github.com/MemTensor/MemOS", "roadmap_step": "S-6.41", "license_state": "source_review_required"},
+    {"id": "caura", "name": "Caura multi-agent memory", "kind": "github_repository", "url": "https://github.com/caura-ai/caura", "roadmap_step": "S-6.41", "license_state": "source_review_required"},
+    {"id": "tgrep", "name": "Microsoft tgrep exact code search", "kind": "github_repository", "url": "https://github.com/microsoft/tgrep", "roadmap_step": "S-6.52", "license_state": "source_review_required"},
+    {"id": "ontokg_eq", "name": "OntoKG-EQ question-governed graph paper", "kind": "web_page", "url": "https://arxiv.org/abs/2609.08869", "roadmap_step": "S-6.22", "license_state": "paper_and_reproducibility_rights_review_required"},
+    {"id": "helixdb", "name": "HelixDB graph and vector store", "kind": "github_repository", "url": "https://github.com/HelixDB/helix-db", "roadmap_step": "S-6.52", "license_state": "source_review_required"},
+    {"id": "evoontology", "name": "EvoOntology candidate semantic evolution", "kind": "github_repository", "url": "https://github.com/ruc-datalab/EvoOntology", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "slayer", "name": "SLayer embedded semantic metrics", "kind": "github_repository", "url": "https://github.com/MotleyAI/slayer", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "symbolic_separation", "name": "Symbolic Separation graph-grounding paper", "kind": "web_page", "url": "https://arxiv.org/abs/2609.17107", "roadmap_step": "S-6.22", "license_state": "paper_rights_review_required"},
+    {"id": "oxigraph", "name": "Oxigraph RDF library", "kind": "github_repository", "url": "https://github.com/oxigraph/oxigraph", "roadmap_step": "S-6.52", "license_state": "source_review_required"},
+    {"id": "cartography", "name": "Cartography cloud identity inventory", "kind": "github_repository", "url": "https://github.com/cartography-cncf/cartography", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "sstorytime", "name": "SSTorytime temporal graph", "kind": "github_repository", "url": "https://github.com/markburgess/SSTorytime", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "lpg_modeler", "name": "LPG Modeler graph constraint generator", "kind": "github_repository", "url": "https://github.com/Volland/lpg-modeler", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "ontology_atlas", "name": "Ontology Atlas architecture projection", "kind": "github_repository", "url": "https://github.com/wlsdks/ontology-atlas", "roadmap_step": "S-6.22", "license_state": "source_review_required"}
+  ]
+}

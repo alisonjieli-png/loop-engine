@@ -1,0 +1,20 @@
+{
+  "record_type": "research_source_watch_manifest/v1",
+  "sources": [
+    {"id": "foremerge", "name": "Foremerge concurrent intent", "kind": "github_repository", "url": "https://github.com/naw103/foremerge", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "whip_harness", "name": "Whip coding harness", "kind": "github_repository", "url": "https://github.com/context-labs/whip", "roadmap_step": "S-6.42", "license_state": "source_review_required"},
+    {"id": "operational_ontology", "name": "Operational Ontology action reference", "kind": "github_repository", "url": "https://github.com/gura105/operational-ontology", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "jev_ultrafast", "name": "TypeSafe Jev browser action candidate", "kind": "github_repository", "url": "https://github.com/browser-use/jev-ultrafast", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "pipelock", "name": "Pipelock mediated tool and network boundary", "kind": "github_repository", "url": "https://github.com/luckyPipewrench/pipelock", "roadmap_step": "S-6.61", "license_state": "mixed_core_and_enterprise_review_required"},
+    {"id": "kubernetes_agent_sandbox", "name": "Kubernetes Agent Sandbox", "kind": "github_repository", "url": "https://github.com/kubernetes-sigs/agent-sandbox", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "prime_agent", "name": "Prime Agent coordination", "kind": "github_repository", "url": "https://github.com/PrimeIntellect-ai/prime-agent", "roadmap_step": "S-6.42", "license_state": "source_review_required"},
+    {"id": "sol_pi", "name": "SoL-Pi efficiency extension", "kind": "github_repository", "url": "https://github.com/NVlabs/SoL-Pi", "roadmap_step": "S-6.42", "license_state": "source_review_required"},
+    {"id": "worktrunk", "name": "Worktrunk development worktrees", "kind": "github_repository", "url": "https://github.com/max-sixty/worktrunk", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "kimi_k3_in_c", "name": "Kimi K3 disk-streamed inference", "kind": "github_repository", "url": "https://github.com/FareedKhan-dev/kimi-k3-in-c", "roadmap_step": "S-6.22", "license_state": "engine_and_weights_have_separate_rights"},
+    {"id": "bend2", "name": "Bend 2 proof language", "kind": "github_repository", "url": "https://github.com/bendlang/bend", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "forkd", "name": "forkd Firecracker state branching", "kind": "github_repository", "url": "https://github.com/deeplethe/forkd", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "ephemora_cell", "name": "Ephemora Cell bounded WebAssembly", "kind": "github_repository", "url": "https://github.com/MichaelS1011/ephemora-cell", "roadmap_step": "S-6.22", "license_state": "source_review_required"},
+    {"id": "harnessrouter", "name": "HarnessRouter Community Edition", "kind": "github_repository", "url": "https://github.com/HarnessRouter/harnessrouter", "roadmap_step": "S-6.42", "license_state": "source_review_required"},
+    {"id": "deepseek_harness", "name": "DeepSeek Harness", "kind": "github_repository", "url": "https://github.com/deepseek-ai/deepseek-harness", "roadmap_step": "S-6.42", "license_state": "source_review_required"}
+  ]
+}

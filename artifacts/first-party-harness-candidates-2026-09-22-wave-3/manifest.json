@@ -1,0 +1,231 @@
+{
+  "approval_state": "none",
+  "benefit_evidence": "unmeasured",
+  "effect_qualification": "none",
+  "entries": [
+    {
+      "group": "software",
+      "name": "audit-a-published-guide-against-a-release",
+      "package_bytes": 2178,
+      "package_path": "packages/software/audit-a-published-guide-against-a-release/SKILL.md",
+      "package_sha256": "9818fc3e9976eb8556c78c11fd34e58fbb566aac7a9906a2ea502a36549247a1",
+      "review_note_bytes": 2079,
+      "review_note_path": "review-notes/audit-a-published-guide-against-a-release.md",
+      "review_note_sha256": "67ca9776d5c4ddbc3901ddb83c4833f6a309620c162d48c3741e4e894edc2bdf",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "audit-sampling-frame-coverage",
+      "package_bytes": 2128,
+      "package_path": "packages/data/audit-sampling-frame-coverage/SKILL.md",
+      "package_sha256": "a72a3304330b5077b757453beccbeb4b5140ad8bfda56642d8745f92d3162a3c",
+      "review_note_bytes": 2872,
+      "review_note_path": "review-notes/audit-sampling-frame-coverage.md",
+      "review_note_sha256": "fd38493f67740953e8cf5f3f2f3e02b258ca9b0a2db622125557b9fa68881f5d",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "audit-service-measure-against-agreement",
+      "package_bytes": 2111,
+      "package_path": "packages/data/audit-service-measure-against-agreement/SKILL.md",
+      "package_sha256": "ff2243fb17593a69c6a542f29bc496054fe691a0c720a81334097d0d8abe5b73",
+      "review_note_bytes": 2953,
+      "review_note_path": "review-notes/audit-service-measure-against-agreement.md",
+      "review_note_sha256": "e00c2b80f923c623bd1552552121a74634b815f468ce92a11f92740fdeb1da0b",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "bound-obsolete-stock-by-support-horizon",
+      "package_bytes": 2593,
+      "package_path": "packages/data/bound-obsolete-stock-by-support-horizon/SKILL.md",
+      "package_sha256": "80da8362295f87508e544b4580df665b68e3da239be8f5413de1a369cd82a390",
+      "review_note_bytes": 3261,
+      "review_note_path": "review-notes/bound-obsolete-stock-by-support-horizon.md",
+      "review_note_sha256": "a09dfa7e98e51b5b2f5455073f7c92bf8f1d12aa3b776142f6df1511f8faf7fc",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "challenge-a-survey-instrument-for-contamination",
+      "package_bytes": 1958,
+      "package_path": "packages/project/challenge-a-survey-instrument-for-contamination/SKILL.md",
+      "package_sha256": "9e9f49c1dd19bb6c96386dbea0ab3fabd28c0b2781f8959e71544943cb7d563d",
+      "review_note_bytes": 2456,
+      "review_note_path": "review-notes/challenge-a-survey-instrument-for-contamination.md",
+      "review_note_sha256": "f68b8aba4f973081bbfa628d8c4f01ae425291dada22117b43a61bd394c64088",
+      "state": "candidate_only"
+    },
+    {
+      "group": "software",
+      "name": "check-prerequisite-order-in-a-task-guide",
+      "package_bytes": 2119,
+      "package_path": "packages/software/check-prerequisite-order-in-a-task-guide/SKILL.md",
+      "package_sha256": "977e58d67f89e5429b4a4e3a3bcf0af64c477b30df376009868f717412e4c2e6",
+      "review_note_bytes": 2150,
+      "review_note_path": "review-notes/check-prerequisite-order-in-a-task-guide.md",
+      "review_note_sha256": "e02cd25ce7222fbcf7157fcaf11187d16f8ca0fa016ea3edf7ffda2533030e2a",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "compare-satisfaction-waves-by-respondent-mix",
+      "package_bytes": 2288,
+      "package_path": "packages/data/compare-satisfaction-waves-by-respondent-mix/SKILL.md",
+      "package_sha256": "d260054247e0fe39196e46923deb659173ea02f7611a02a5303411ef9c317b1e",
+      "review_note_bytes": 2989,
+      "review_note_path": "review-notes/compare-satisfaction-waves-by-respondent-mix.md",
+      "review_note_sha256": "a64945314a952d9886692c9d0eb2d466494116bd9a7dc3399dfe4f96dc768f8a",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "contrast-described-and-observed-workflows",
+      "package_bytes": 1946,
+      "package_path": "packages/project/contrast-described-and-observed-workflows/SKILL.md",
+      "package_sha256": "32167e5c3ce694ed940a73caf1b17003c785fcc2fc1cb984329fefcdbe37f4fa",
+      "review_note_bytes": 2431,
+      "review_note_path": "review-notes/contrast-described-and-observed-workflows.md",
+      "review_note_sha256": "5caf6ba8c461a8707d11433b78d1a7c9477ec6c6b2f61516d08e7131932a4b84",
+      "state": "candidate_only"
+    },
+    {
+      "group": "software",
+      "name": "define-a-user-operation-performance-envelope",
+      "package_bytes": 2115,
+      "package_path": "packages/software/define-a-user-operation-performance-envelope/SKILL.md",
+      "package_sha256": "82477e540673acf9cdd787bc89fc0435f93d065d8f5bad129cad904e0bb78eff",
+      "review_note_bytes": 2116,
+      "review_note_path": "review-notes/define-a-user-operation-performance-envelope.md",
+      "review_note_sha256": "db8bff1db9d67ff89b110d70bf1194c6d4e4442c4b78868ef4c20df93132edef",
+      "state": "candidate_only"
+    },
+    {
+      "group": "software",
+      "name": "derive-state-transition-tests-from-a-contract",
+      "package_bytes": 2147,
+      "package_path": "packages/software/derive-state-transition-tests-from-a-contract/SKILL.md",
+      "package_sha256": "be9ce08a58bb8ad2fa0af1ba30858f86e8dc6d74495aa74396b1d5e44e437acc",
+      "review_note_bytes": 2183,
+      "review_note_path": "review-notes/derive-state-transition-tests-from-a-contract.md",
+      "review_note_sha256": "8068234e1640c9ec802cc921caf964327bb8e90a678e4039419264c690d0a7be",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "diagnose-process-constraint-from-flow",
+      "package_bytes": 2194,
+      "package_path": "packages/data/diagnose-process-constraint-from-flow/SKILL.md",
+      "package_sha256": "15bce27846d2bfe6d3944b9c910ce53d42d5b49a3d80a8ebd3c3bd4ea7c80887",
+      "review_note_bytes": 2880,
+      "review_note_path": "review-notes/diagnose-process-constraint-from-flow.md",
+      "review_note_sha256": "1bfa414bca44d09789a3d9c89aae6d77db3faf7f0e1550edc2a3fd1f6b27fa54",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "establish-milestone-readiness-from-evidence",
+      "package_bytes": 1964,
+      "package_path": "packages/project/establish-milestone-readiness-from-evidence/SKILL.md",
+      "package_sha256": "2c6a368c40babd76054a62d32a1c1dcf789e110a9b131b19043f0f559ec8f0e2",
+      "review_note_bytes": 2410,
+      "review_note_path": "review-notes/establish-milestone-readiness-from-evidence.md",
+      "review_note_sha256": "9fdad7f1ce684a88d3473b1a8265ca10cc330b03506839976c18f04f5aad34fc",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "explain-a-service-charge-from-effective-rules",
+      "package_bytes": 1912,
+      "package_path": "packages/project/explain-a-service-charge-from-effective-rules/SKILL.md",
+      "package_sha256": "1d4168f33b1970c3c158ba151a55969fe794517ea24e36f069a80ecfcbaf29b3",
+      "review_note_bytes": 2550,
+      "review_note_path": "review-notes/explain-a-service-charge-from-effective-rules.md",
+      "review_note_sha256": "8854f4900f8d9c11f89a287449380bd2edfdd4cb751fecafa3a6934bd33f4d9c",
+      "state": "candidate_only"
+    },
+    {
+      "group": "software",
+      "name": "map-system-output-to-permitted-consumers",
+      "package_bytes": 2159,
+      "package_path": "packages/software/map-system-output-to-permitted-consumers/SKILL.md",
+      "package_sha256": "61109865330e7a1ef68226593dce2cb9e77be8d5d37ef357e43d14bf4799c485",
+      "review_note_bytes": 2208,
+      "review_note_path": "review-notes/map-system-output-to-permitted-consumers.md",
+      "review_note_sha256": "a97d6580c901be310b2950a4ebb0aa58db727a8f60259d52adfdc0ad5222728d",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "propagate-a-plan-change-through-commitments",
+      "package_bytes": 2059,
+      "package_path": "packages/project/propagate-a-plan-change-through-commitments/SKILL.md",
+      "package_sha256": "114fd90e6d56f3a454f1fc55eb9249a6361c38b2df6c15c26e4f1925df018049",
+      "review_note_bytes": 2386,
+      "review_note_path": "review-notes/propagate-a-plan-change-through-commitments.md",
+      "review_note_sha256": "e2d50b2a739a979db7420a4cc2a337abb47aca79c2004e86cf9fce835fff56b8",
+      "state": "candidate_only"
+    },
+    {
+      "group": "software",
+      "name": "qualify-a-prebuilt-application-against-required-seams",
+      "package_bytes": 2710,
+      "package_path": "packages/software/qualify-a-prebuilt-application-against-required-seams/SKILL.md",
+      "package_sha256": "33481d9d7ff01cc6bc9d6cab873e4a9cde12002653c09beb369db2562da4a38f",
+      "review_note_bytes": 2564,
+      "review_note_path": "review-notes/qualify-a-prebuilt-application-against-required-seams.md",
+      "review_note_sha256": "99386ed7106885824c2862a7425c80ecdddb5b2fa61b3ddb8de2785b766d56de",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "reconcile-account-difference-to-postings",
+      "package_bytes": 2111,
+      "package_path": "packages/data/reconcile-account-difference-to-postings/SKILL.md",
+      "package_sha256": "db5f43eb2a8035df795cd9867030d299b0e719363890d7eed1104a1dd4049442",
+      "review_note_bytes": 2935,
+      "review_note_path": "review-notes/reconcile-account-difference-to-postings.md",
+      "review_note_sha256": "5fa27517d632c3d09c95a4312752470401f115de1e75a08741b1a1379a904025",
+      "state": "candidate_only"
+    },
+    {
+      "group": "data",
+      "name": "test-aggregate-trend-for-subgroup-reversal",
+      "package_bytes": 2159,
+      "package_path": "packages/data/test-aggregate-trend-for-subgroup-reversal/SKILL.md",
+      "package_sha256": "c1462f1a68b14abfe99740411e24e86a0e635ea225d1adcc51deefcd1af5a6b8",
+      "review_note_bytes": 3080,
+      "review_note_path": "review-notes/test-aggregate-trend-for-subgroup-reversal.md",
+      "review_note_sha256": "519c738abaa4afac16ecee5a2a78f8c51b1f623d9f0de420d479e14cba462bb5",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "test-control-operation-on-a-bounded-sample",
+      "package_bytes": 1907,
+      "package_path": "packages/project/test-control-operation-on-a-bounded-sample/SKILL.md",
+      "package_sha256": "d397998c48237b34d22454567a4ca9ab4839d5cb0e25c97a25771c72e8441609",
+      "review_note_bytes": 2517,
+      "review_note_path": "review-notes/test-control-operation-on-a-bounded-sample.md",
+      "review_note_sha256": "2cff1ac5960e40b8f70fc24009656dd90bb444e7b2f1569e1a180c3a4636d731",
+      "state": "candidate_only"
+    },
+    {
+      "group": "project",
+      "name": "verify-resolution-against-original-symptom",
+      "package_bytes": 1974,
+      "package_path": "packages/project/verify-resolution-against-original-symptom/SKILL.md",
+      "package_sha256": "026c309c3445b9b31cf6bfdd5610c8b471c833ba747c02c323169d317859a302",
+      "review_note_bytes": 2408,
+      "review_note_path": "review-notes/verify-resolution-against-original-symptom.md",
+      "review_note_sha256": "29982d18ae315fd7936539be22002d3da335eed5eb221b028ea90062f37074e0",
+      "state": "candidate_only"
+    }
+  ],
+  "package_count": 20,
+  "prepared_from_repository_revision": "0d1f883bf470533543c9a4d8f52452ac84089548",
+  "record_type": "first_party_harness_candidate_batch_manifest/v1",
+  "rights_state": "pending_independent_review"
+}

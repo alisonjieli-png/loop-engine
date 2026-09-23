@@ -1,0 +1,119 @@
+{
+  "record_type": "native_context_candidate_review_note/v1",
+  "candidate_id": "baltor.context.profile-one-csv.v1",
+  "state": "candidate_only",
+  "logical_item_count": 1,
+  "purpose": "Render a concise native instruction file for one bounded CSV quality profile step.",
+  "original_authoring_basis": "Original composition for this pilot. Official client documentation informed filenames and Claude's local import syntax. No third-party procedure text was copied.",
+  "rights_state": "originality_and_license_review_pending",
+  "applicability_facets": {
+    "occupations": [
+      "data analyst",
+      "data engineer"
+    ],
+    "task": "profile one supplied CSV without modifying it",
+    "company": "none assumed",
+    "project": "one authorized input and one authorized output report",
+    "model": "no model-specific optimization claimed"
+  },
+  "typed_input_concept": {
+    "input_csv_path": "workspace-relative CSV file",
+    "output_report_path": "workspace-relative Markdown report path",
+    "scan_row_cap": "positive integer, bound to the run's resource budget",
+    "schema_reference_path_or_none": "workspace-relative reference or literal none",
+    "key_columns_or_none": "validated columns or literal none",
+    "disclosure_level": "aggregates_only or column_names_allowed"
+  },
+  "typed_output_concept": "quality report with input identity, scan denominator, field counts, parse findings, exclusions and unknowns",
+  "effect_class": "read supplied CSV and optionally write one authorized report; no source mutation, network or external service",
+  "render_contract": {
+    "required_placeholders": [
+      "INPUT_CSV_PATH",
+      "OUTPUT_REPORT_PATH",
+      "SCAN_ROW_CAP",
+      "SCHEMA_REFERENCE_PATH_OR_NONE",
+      "KEY_COLUMNS_OR_NONE",
+      "DISCLOSURE_LEVEL"
+    ],
+    "requirements": [
+      "Render all placeholders before installation; reject any remaining double-brace marker.",
+      "Resolve input, optional schema and output paths under the authorized workspace without traversal or symlink escape; output must differ from input.",
+      "Bind read, optional output write, row cap and disclosure level to typed run authority; this document grants none.",
+      "Encode inserted values as one-line Markdown text without control characters or import syntax; validate key columns against the actual header.",
+      "Review or mechanically qualify the rendered bytes and bind their digest to the selected source candidate before a native run."
+    ]
+  },
+  "positive_example": "A four-row file has one blank field and a repeated declared key. A full scan reports four as denominator, one blank, and one repeated key without disclosing row values.",
+  "known_wrong_example": "Only the first three rows of a much larger file are scanned, but the report claims a whole-file missing rate or includes raw email values. The method requires a capped-scan label and disclosure control.",
+  "closest_existing_material": [
+    {
+      "path": "examples/29_intelligence_service/starter-catalogue/bodies/profile_text_column_before_cleaning.md",
+      "difference": "That item examines one text column for cleaning rules; this candidate profiles one CSV's shape and basic quality with a scan cap and disclosure rule."
+    },
+    {
+      "path": "examples/29_intelligence_service/starter-catalogue/bodies/write_a_data_contract_for_a_table_or_feed.md",
+      "difference": "That item defines future producer promises; this candidate reports observations from one supplied file."
+    }
+  ],
+  "native_layouts": [
+    {
+      "client": "codex",
+      "observed_version": "0.155.1",
+      "work_files": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "client": "claude",
+      "observed_version": "2.1.280",
+      "work_files": [
+        "AGENTS.md",
+        "CLAUDE.md"
+      ],
+      "import": "CLAUDE.md imports @AGENTS.md"
+    },
+    {
+      "client": "opencode",
+      "observed_version": "1.17.9 locally; earlier no-model experiment used 1.18.32",
+      "work_files": [
+        "AGENTS.md"
+      ]
+    },
+    {
+      "client": "pi",
+      "observed_version": "0.73.1",
+      "work_files": [
+        "AGENTS.md"
+      ]
+    }
+  ],
+  "discovery_phrasings_for_developer_search_only": [
+    "Check this CSV for blank cells and duplicate keys without changing it.",
+    "Can you write a bounded quality report for this export and avoid exposing row values?"
+  ],
+  "independent_review": "pending",
+  "native_discovery_on_these_exact_bytes": "Codex observed on unchanged copy in isolated no-model prompt input; other clients pending",
+  "model_loaded": null,
+  "model_used": null,
+  "verified_customer_outcome": null,
+  "limitations": [
+    "This is a template, not a runnable finished assignment.",
+    "A client may read the instruction, but this template contains no CSV parser or executable tool.",
+    "The package is not approved, indexed by the hosted service, or released.",
+    "A direct Codex probe inside this shared repository did not show the nested candidate marker. An isolated git root did; the shared parent context is not the intended step layout."
+  ],
+  "files_sha256": {
+    "claude/work/AGENTS.md": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044",
+    "claude/work/CLAUDE.md": "bd6eb861a4ff761dab63671fd24d1b9177255f0aefb78636f48078e602c72dc1",
+    "codex/work/AGENTS.md": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044",
+    "opencode/work/AGENTS.md": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044",
+    "pi/work/AGENTS.md": "1908f69cf5319e4999b55f6397d637ba5d19084f3ea51cbc2e9405bc04f4e044"
+  },
+  "local_check_observations": {
+    "static_layout_and_digest": "passed for 10 native files across the two logical candidates; checker also rejects an edited-byte mutant",
+    "codex_0_155_1": "no-model debug prompt-input included this template after an unchanged copy into a fresh isolated git root with empty HOME and CODEX_HOME",
+    "claude_2_1_280": "official local @AGENTS.md import syntax and static target check only; exact-byte native request not probed",
+    "opencode_1_17_9": "official root AGENTS.md path and static layout check only; exact-byte native request not probed",
+    "pi_0_73_1": "official root AGENTS.md path and static layout check only; exact-byte native request not probed"
+  }
+}

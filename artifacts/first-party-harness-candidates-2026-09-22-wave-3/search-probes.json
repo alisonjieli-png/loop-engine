@@ -1,0 +1,94 @@
+{
+  "record_type": "local_candidate_search_probe/v1",
+  "selection_rule": "One independently phrased task query per occupation-linked candidate, written by a reviewer before running wave-three search; five unrelated no-answer controls.",
+  "source_batch": "first-party-harness-candidates-2026-09-22-wave-3",
+  "queries": [
+    {
+      "query": "Our web survey never reached customers who use the offline service; can results describe everyone?",
+      "expected_name": "audit-sampling-frame-coverage"
+    },
+    {
+      "query": "Recompute the carrier on-time score when missing delivery proof counts as late under the contract.",
+      "expected_name": "audit-service-measure-against-agreement"
+    },
+    {
+      "query": "An old spare-part revision still fits supported repairs; how much inventory is actually stranded?",
+      "expected_name": "bound-obsolete-stock-by-support-horizon"
+    },
+    {
+      "query": "Satisfaction rose after the respondent mix shifted toward enterprise users; is the comparison valid?",
+      "expected_name": "compare-satisfaction-waves-by-respondent-mix"
+    },
+    {
+      "query": "Cases build up before packing although picking takes longer; which station limits flow?",
+      "expected_name": "diagnose-process-constraint-from-flow"
+    },
+    {
+      "query": "Two ledger entries have the same amount but only one matches a source transaction; explain the remaining balance.",
+      "expected_name": "reconcile-account-difference-to-postings"
+    },
+    {
+      "query": "Overall conversion rises while every segment's conversion falls; explain the reversal.",
+      "expected_name": "test-aggregate-trend-for-subgroup-reversal"
+    },
+    {
+      "query": "The questionnaire asks whether onboarding is quick and easy in one rating; can we infer both?",
+      "expected_name": "challenge-a-survey-instrument-for-contamination"
+    },
+    {
+      "query": "Our process diagram omits the manual review seen in most case traces; compare the two.",
+      "expected_name": "contrast-described-and-observed-workflows"
+    },
+    {
+      "query": "All milestone tickets are closed but the signed acceptance artifact is missing; is it ready?",
+      "expected_name": "establish-milestone-readiness-from-evidence"
+    },
+    {
+      "query": "This quote used the new hourly tariff for work performed before the price change.",
+      "expected_name": "explain-a-service-charge-from-effective-rules"
+    },
+    {
+      "query": "If testing moves next week, which resource bookings and customer handoffs are affected?",
+      "expected_name": "propagate-a-plan-change-through-commitments"
+    },
+    {
+      "query": "The dual approval policy exists, but did both reviewers sign the sampled purchases?",
+      "expected_name": "test-control-operation-on-a-bounded-sample"
+    },
+    {
+      "query": "The patch shipped, yet the same customer action still errors; should the ticket close?",
+      "expected_name": "verify-resolution-against-original-symptom"
+    },
+    {
+      "query": "The tutorial works on main but references a command absent from the shipped version.",
+      "expected_name": "audit-a-published-guide-against-a-release"
+    },
+    {
+      "query": "The setup instructions request a token before the step that creates it.",
+      "expected_name": "check-prerequisite-order-in-a-task-guide"
+    },
+    {
+      "query": "Set latency and failure criteria for checkout under peak load, including large carts.",
+      "expected_name": "define-a-user-operation-performance-envelope"
+    },
+    {
+      "query": "Design cases for every allowed and forbidden order-status transition, including an interrupted capture.",
+      "expected_name": "derive-state-transition-tests-from-a-contract"
+    },
+    {
+      "query": "Which fields from this new event feed may each team receive and retain?",
+      "expected_name": "map-system-output-to-permitted-consumers"
+    },
+    {
+      "query": "Does this existing package preserve our required refusal semantics and schema version?",
+      "expected_name": "qualify-a-prebuilt-application-against-required-seams"
+    }
+  ],
+  "no_answer_queries": [
+    "How should I prune an apple tree in winter?",
+    "What is the chemical formula of potassium permanganate?",
+    "Compose a sonnet about a blue whale.",
+    "Plan a family vacation in Lisbon.",
+    "Who won the 1974 World Cup?"
+  ]
+}

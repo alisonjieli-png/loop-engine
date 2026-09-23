@@ -1,0 +1,11 @@
+{
+  "command": [
+    "python3",
+    "tools/json_shape_mcp/server.py"
+  ],
+  "environment": "isolated HOME and XDG; closed outbound proxy; no model call",
+  "process_exit": 1,
+  "record_type": "candidate_dependency_failure_receipt/v1",
+  "source_server_sha256": "38129d0840d56679a4046cfac943418e2b6e71560873cd3cb3c72296d0c27332",
+  "stderr": "Traceback (most recent call last):\n  File \"<isolated-root>/work/tools/json_shape_mcp/server.py\", line 12, in <module>\n    from mcp.server.fastmcp import FastMCP\nModuleNotFoundError: No module named 'mcp'\n"
+}
