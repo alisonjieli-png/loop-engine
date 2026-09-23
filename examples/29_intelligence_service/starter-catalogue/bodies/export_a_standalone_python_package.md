@@ -37,4 +37,4 @@ A session copies its working folder into a zip file and calls it the deliverable
 
 - `src/loop_engine/code_nodes/solution_export.py`: `SolutionExportSpec`, `ExportedFile`, `ContainerSpec`, `export_solution` and the render functions.
 
-Licence: MIT. Compiled from revision 9cec9d7. The module uses the Python standard library and one template module of the same package.
+Licence: MIT. Compiled from revision 9a483df. The module uses the Python standard library and one template module of the same package.

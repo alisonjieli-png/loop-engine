@@ -40,4 +40,4 @@ An engineer tries a cheaper model on twenty cases picked while developing, sees 
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 9cec9d7.
+Licence: MIT. Written for this catalogue at revision 9a483df.

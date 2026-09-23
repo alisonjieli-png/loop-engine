@@ -39,4 +39,4 @@ A generated job uses the latest tag of the base image, runs as the administrator
 
 - `src/loop_engine/code_nodes/solution_export.py`: `ContainerSpec`, `render_dockerfile` and `render_kubernetes_job`.
 
-Licence: MIT. Compiled from revision 9cec9d7. The render functions use only the Python standard library.
+Licence: MIT. Compiled from revision 9a483df. The render functions use only the Python standard library.

@@ -40,4 +40,4 @@ A release renames a column and deploys the new code at the same time. During the
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 9cec9d7.
+Licence: MIT. Written for this catalogue at revision 9a483df.
