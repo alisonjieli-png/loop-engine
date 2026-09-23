@@ -801,6 +801,28 @@ declared source, `FailedAttemptLimiter.address_key` names no address, and every
 accepted entry records `no_declared_source` instead of one count shared by
 every caller behind a proxy.
 
+The count never stores the address. It is kept under a keyed one-way digest:
+HMAC-SHA256 of the source key with the host secret that
+`waitlist.source_secret_ref` names as an environment reference, read at use
+through `environment_secret`, the resolver every other host secret uses. The
+record `service_waitlist_source/v2` is named by that digest and holds only the
+times of accepted entries inside the window, which is at most one hour, the
+period the published privacy notice promises. Every request to join removes
+the times that have left the window from every source record. A record with
+no time left keeps its version and an empty list, because the catalogue store
+has no removal operation, and its name cannot be linked to an address without
+the host secret. The reader refuses `service_waitlist_source/v1`, which was
+named by the address itself, and any record that carries a field beyond its
+times.
+
+With a declared source and no named secret, every accepted entry records
+`no_source_secret` and nothing about the address is stored; the guard never
+falls back to an unkeyed digest. A named secret that the service cannot read
+refuses the request with `waitlist_source_secret_unavailable`, and one
+shorter than 32 characters with `waitlist_source_secret_unusable`, both status
+503 and both before any write. `source_privacy_checks` in `waitlist_checks.py`
+holds each rule, with a known-wrong case beside it.
+
 The entries, the decisions, removal on request and the invitation command are
 described in
 [the waiting list guide](../../../../docs/guides/waiting-list-and-invitations.md).

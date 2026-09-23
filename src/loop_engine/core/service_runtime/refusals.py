@@ -190,6 +190,16 @@ CODE_GUIDANCE = {
                                 "Wait a while, then send the request again. Requests already accepted are kept."),
     "waitlist_unavailable": ("This service does not keep a waiting list, so nothing was recorded.",
                              "Ask the person who runs this service for an invitation instead."),
+    # The flood guard could not key its count, so the request was refused
+    # rather than counted in a weaker way. Nothing about the caller caused it.
+    "waitlist_source_secret_unavailable": ("This service cannot take requests to join the list right now, "
+                                           "so nothing was recorded.",
+                                           "Try again later. If it keeps happening, tell the person who runs "
+                                           "this service."),
+    "waitlist_source_secret_unusable": ("This service cannot take requests to join the list right now, "
+                                        "so nothing was recorded.",
+                                        "Try again later. If it keeps happening, tell the person who runs "
+                                        "this service."),
     "unsupported_waitlist_request": ("The request to join the list did not carry the documented fields.",
                                      "Send the record version, the email address and an optional note, and nothing else."),
 }

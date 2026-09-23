@@ -7,19 +7,25 @@ The served page is read from the packaged file, not from a deployment.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import os
 from pathlib import Path
+import secrets
 from unittest.mock import patch
 
 from .http import ServiceHttpApplication, ServiceHttpConfiguration
 from .http_test_fixtures import HttpDomainFixture, running_http
-from .records import ACCESS_MANAGE_SCOPE, ServiceRuntimeError, TenantKeyIssue, TenantRegistration
+from .records import ACCESS_MANAGE_SCOPE, ServiceRuntimeError, TenantKeyIssue, TenantRegistration, digest
 from .request_limits import UNKNOWN_PEER_KEY, FailedAttemptLimiter, ServiceRequestLimits
 from .storage import ServiceCatalogBinding
 from .waitlist import (
     ADDRESS_HAS_ACCOUNT, ADDRESS_INVALID, ADDRESS_LISTED, DECISION_VERSION, ENTRY, ERASED_BY_FORGET, FORGET,
-    INVITE, INVITED, JOINED, OPERATIONS, RECORD_DELIVERY, RECORD_JOIN, REMOVED, REQUEST_VERSION, SOURCE_FLOODED,
-    UNCOUNTED_SOURCE, WAITING,
+    INVITE, INVITED, JOINED, OPERATIONS, RECORD_DELIVERY, RECORD_JOIN, REMOVED, REQUEST_VERSION, SOURCE,
+    SOURCE_FLOODED, SOURCE_SCHEMA, SOURCE_SECRET_UNAVAILABLE, SOURCE_SECRET_UNUSABLE, UNCOUNTED_SOURCE,
+    UNKEYED_SOURCE, WAITING,
     ServiceWaitlist, WaitlistAccountDirectory, WaitlistDecision, WaitlistPolicy, WaitlistRequest,
+    keyed_source_digest,
 )
 from .web_pages import WEB_ASSETS, read_packaged_asset
 
@@ -34,6 +40,9 @@ PROXY_ADDRESS_HEADER = "Fly-Client-IP"
 # to someone whose request has not been read yet.
 FORBIDDEN_PAGE_WORDS = ("beta", "pilot", "soon", "shortly", "within", "next week", "next month",
                         "days", "weeks", "guarantee", "immediately", "instantly")
+#: The reference a fixture host names for the secret that keys its source
+#: digest. The value behind it is made for each run, so this file holds none.
+FIXTURE_SECRET_REFERENCE = "env:WAITLIST_FIXTURE_SOURCE_SECRET"
 
 
 def refused(function, *codes):
@@ -44,14 +53,59 @@ def refused(function, *codes):
     return False
 
 
-def prepared(root, *, directory=None, **policy):
+def answering(secret):
+    """A secret resolver that answers the fixture reference alone, the way the host's resolver answers env:NAME."""
+    def resolve(reference):
+        if reference != FIXTURE_SECRET_REFERENCE:
+            raise ServiceRuntimeError("configured_secret_unavailable")
+        if isinstance(secret, Exception):
+            raise secret
+        return secret
+    return resolve
+
+
+def prepared(root, *, directory=None, keyed=True, secret=None, **policy):
+    """A waiting list over real records. A keyed fixture names a source secret, as a host that counts must."""
     root.mkdir(parents=True, exist_ok=True)
     fixture = HttpDomainFixture(root)
     fixture.runtime.register_tenant(TenantRegistration("operator", "operator:private", (ACCESS_MANAGE_SCOPE,)))
     fixture.operator_key = fixture.runtime.issue_key(TenantKeyIssue("operator", "local waiting list operator"))
-    fixture.waitlist = ServiceWaitlist(fixture.runtime, WaitlistPolicy(writes_authorized=True, **policy),
-                                       account_directory=directory)
+    fixture.source_secret = (secret if secret is not None else secrets.token_hex(32)) if keyed else None
+    named = {"source_secret_ref": FIXTURE_SECRET_REFERENCE} if keyed else {}
+    fixture.waitlist = ServiceWaitlist(fixture.runtime, WaitlistPolicy(writes_authorized=True, **named, **policy),
+                                       account_directory=directory,
+                                       secret_resolver=answering(fixture.source_secret) if keyed else None)
     return fixture
+
+
+def source_rows(runtime):
+    """Every stored source record of one service, as the store holds it."""
+    catalog = runtime._catalog
+    with catalog.store() as store:
+        return catalog.rows_all(store, SOURCE)
+
+
+def source_record_findings(row, address, catalog):
+    """Name each way one stored source record gives away the network address it counts.
+
+    The address may not appear anywhere in the record. The record may not be
+    named by the address, or by an unkeyed digest of it, and it may not hold
+    such a digest. An unkeyed digest of a network address protects nothing:
+    every IPv4 address can be hashed in minutes, so a guess confirms itself.
+    Only a digest keyed with a secret the store does not hold is allowed.
+    """
+    text = json.dumps(row, sort_keys=True)
+    unkeyed = {"the address itself": address, "the unkeyed record digest": digest([address]),
+               "an unkeyed SHA-256 digest": hashlib.sha256(address.encode("utf-8")).hexdigest()}
+    return ([name + " in a stored field" for name, value in unkeyed.items() if value in text]
+            + ["an identity named by " + name for name, value in unkeyed.items()
+               if row.get("record_id") == catalog.identity(SOURCE, value)])
+
+
+def counts_outside_window(rows, now, window_seconds):
+    """Every stored count that is older than the window at `now`."""
+    return [value for row in rows for value in row["payload"].get("accepted", [])
+            if value <= now - window_seconds]
 
 
 def request(address, note="", source="203.0.113.7"):
@@ -287,6 +341,131 @@ def removal_checks(check, root):
           and "jean" not in json.dumps(_stored_row(declined, "jean@example.com"), sort_keys=True))
 
 
+def source_privacy_checks(check, root):
+    """What the flood guard keeps about a network address, and for how long.
+
+    The published privacy notice says the guard keeps the times of recent
+    requests under a keyed one-way digest of the sending address, never the
+    address itself, and removes them once the counting window has passed.
+    Each clause has a check over real records, and a known-wrong case beside
+    it shows that the check finds the defect it names.
+    """
+    address = "198.51.100.23"
+    keyed = prepared(root / "keyed", accepted_for_each_source=3)
+    keyed.waitlist.join(request("kay@example.com", source=address))
+    catalog, rows = keyed.runtime._catalog, source_rows(keyed.runtime)
+    check("no_stored_source_record_holds_the_address_or_an_unkeyed_digest_of_it",
+          len(rows) == 1 and not source_record_findings(rows[0], address, catalog)
+          and rows[0]["record_id"] == catalog.identity(SOURCE, keyed_source_digest(keyed.source_secret, address))
+          and set(rows[0]["payload"]) == {"record_type", "accepted", "window_seconds"})
+    # Known-wrong cases: a record named by the address itself, as the first
+    # version of this record was, and records that carry the address or an
+    # unkeyed digest of it in a field. The named check finds every one.
+    named = prepared(root / "named", accepted_for_each_source=3)
+    with patch("loop_engine.core.service_runtime.waitlist.keyed_source_digest", lambda _secret, key: key):
+        named.waitlist.join(request("una@example.com", source=address))
+    planted = [(row, named.runtime._catalog) for row in source_rows(named.runtime)] + [
+        ({**rows[0], "payload": {**rows[0]["payload"], **field}}, catalog) for field in (
+            {"note": "from " + address}, {"source_digest": digest([address])},
+            {"source_digest": hashlib.sha256(address.encode("utf-8")).hexdigest()})]
+    check("KNOWN_WRONG_a_source_record_that_gives_away_the_address_is_found_in_every_form",
+          len(planted) == 4 and all(source_record_findings(row, address, owner) for row, owner in planted))
+
+    # Nothing about an address outlives the window. Every request removes the
+    # counts that have left the window, from every source record, and a record
+    # with no count left keeps its version and an empty list and nothing else.
+    windowed = prepared(root / "window", accepted_for_each_source=3, source_window_seconds=60)
+    joins = ((1000.0, "early0@example.com", "198.51.100.40"), (1000.0, "early1@example.com", "198.51.100.41"),
+             (1030.0, "middle@example.com", "198.51.100.41"), (1061.0, "later@example.com", "198.51.100.42"))
+    for moment, email, source in joins:
+        with patch.object(windowed.runtime, "_clock", lambda moment=moment: moment):
+            windowed.waitlist.join(request(email, source=source))
+    kept = source_rows(windowed.runtime)
+    check("no_source_record_keeps_a_count_after_its_window",
+          len(kept) == 3 and counts_outside_window(kept, 1061.0, 60) == []
+          and sorted(tuple(row["payload"]["accepted"]) for row in kept) == [(), (1030.0,), (1061.0,)]
+          and all(set(row["payload"]) == {"record_type", "accepted", "window_seconds"} for row in kept))
+    # Known-wrong case: without the sweep, the first source's count stays in
+    # the store after its window, and the second source keeps its old count.
+    unswept = prepared(root / "unswept", accepted_for_each_source=3, source_window_seconds=60)
+    with patch.object(ServiceWaitlist, "_forget_expired_sources", lambda self, store, catalog, now: 0):
+        for moment, email, source in joins:
+            with patch.object(unswept.runtime, "_clock", lambda moment=moment: moment):
+                unswept.waitlist.join(request(email, source=source))
+    check("KNOWN_WRONG_without_the_sweep_a_count_outlives_its_window",
+          counts_outside_window(source_rows(unswept.runtime), 1061.0, 60) != [])
+
+    # A host that names no secret takes no count, exactly as a host that
+    # declares no address source does. It never falls back to a plain digest.
+    secretless = prepared(root / "secretless", keyed=False, accepted_for_each_source=2)
+    answers = [_attempt(lambda index=index: secretless.waitlist.join(
+        request(f"open{index}@example.com", source=address)))[0] for index in range(3)]
+    check("a_host_that_names_no_secret_takes_no_count_and_keeps_nothing_about_the_address",
+          [answer and answer["source_counted"] for answer in answers] == [UNKEYED_SOURCE] * 3
+          and source_rows(secretless.runtime) == [])
+    fallback = prepared(root / "fallback", keyed=False, accepted_for_each_source=2)
+    with patch.object(ServiceWaitlist, "_keyed_source", lambda self, key: digest([key])):
+        fell = [fallback.waitlist.join(request(f"fell{index}@example.com", source=address)) for index in range(2)]
+    fallen = source_rows(fallback.runtime)
+    check("KNOWN_WRONG_a_plain_digest_fallback_counts_and_keeps_a_digest_anyone_can_recompute",
+          [answer["source_counted"] for answer in fell] == ["counted", "counted"] and len(fallen) == 1
+          and bool(source_record_findings(fallen[0], address, fallback.runtime._catalog)))
+
+    # A secret the host names but the service cannot read, or one too short to
+    # key a digest, refuses the request before anything is written. Counting
+    # under a weaker digest instead would break the promise without a sign.
+    unreadable = prepared(root / "unreadable", secret=ServiceRuntimeError("configured_secret_unavailable"))
+    check("a_named_secret_that_cannot_be_read_refuses_the_request_before_any_write",
+          refused(lambda: unreadable.waitlist.join(request("rose@example.com", source=address)),
+                  SOURCE_SECRET_UNAVAILABLE)
+          and _stored_row(unreadable, "rose@example.com") is None and source_rows(unreadable.runtime) == [])
+    short = prepared(root / "short", secret="a-secret-too-short-to-key")
+    check("a_secret_too_short_to_key_a_digest_is_refused_instead_of_used",
+          refused(lambda: short.waitlist.join(request("sam@example.com", source=address)), SOURCE_SECRET_UNUSABLE)
+          and _stored_row(short, "sam@example.com") is None and source_rows(short.runtime) == [])
+
+    # The reader requires the current record version. A first version record
+    # anywhere in the collection refuses the request before any write, because
+    # this release will not rewrite or count a record it was not written for.
+    first_version = {"record_type": "service_waitlist_source/v1", "source_digest": digest(["198.51.100.60"]),
+                     "accepted": [], "window_seconds": 3600, "updated_at": 0}
+    versioned = prepared(root / "version")
+    _plant(versioned, SOURCE, "198.51.100.60", first_version)
+    check("a_first_version_source_record_is_refused_before_any_write",
+          refused(lambda: versioned.waitlist.join(request("vera@example.com", source="198.51.100.61")),
+                  "unsupported_or_corrupt_record")
+          and _stored_row(versioned, "vera@example.com") is None)
+    lenient = prepared(root / "lenient")
+    _plant(lenient, SOURCE, "198.51.100.60", first_version)
+    with patch.object(ServiceWaitlist, "_source_payload", staticmethod(lambda row: row["payload"])):
+        check("KNOWN_WRONG_a_reader_that_takes_any_version_admits_the_first_version",
+              lenient.waitlist.join(request("vera@example.com", source="198.51.100.61"))["state"] == WAITING)
+    # The current version holds its times and nothing else. A record of that
+    # version that carries one more field is refused rather than read around,
+    # so no writer can add something about the address unnoticed.
+    widened = prepared(root / "widened")
+    _plant(widened, SOURCE, keyed_source_digest(widened.source_secret, "198.51.100.62"),
+           {"record_type": SOURCE_SCHEMA, "accepted": [], "window_seconds": 3600, "source_address": "198.51.100.62"})
+    check("a_source_record_that_carries_any_other_field_is_refused_before_any_write",
+          refused(lambda: widened.waitlist.join(request("xena@example.com", source="198.51.100.63")),
+                  "unsupported_or_corrupt_record")
+          and _stored_row(widened, "xena@example.com") is None)
+
+    # The published notice promises one hour. A longer window would keep the
+    # times of an address past that promise, so the policy refuses it.
+    check("a_window_longer_than_the_published_hour_is_refused",
+          refused(lambda: WaitlistPolicy(source_window_seconds=3601), "invalid_waitlist_policy")
+          and WaitlistPolicy(source_window_seconds=3600).source_window_seconds == 3600)
+
+
+def _plant(fixture, kind, logical_identity, payload):
+    """Write one record the way an earlier release would have, for a refusal check."""
+    catalog = fixture.runtime._catalog
+    row = catalog.record(kind, logical_identity, payload)
+    with catalog.store(write=True) as store:
+        catalog.commit(store, (row,), (catalog.guard(None, row["record_id"]),))
+
+
 def http_checks(check, root):
     import httpx
     fixture = prepared(root, accepted_for_each_source=3)
@@ -313,6 +492,14 @@ def http_checks(check, root):
         check("an_obvious_flood_from_one_source_is_refused_with_its_own_answer",
               flooding == [200, 200, 429, 429]
               and join("flood9@example.com").json()["error"]["code"] == SOURCE_FLOODED)
+        # The transport counted the loopback peer. The record it left behind
+        # is named by the keyed digest of that address and holds nothing else
+        # about it.
+        counted = source_rows(fixture.runtime)
+        check("the_address_the_transport_counted_is_stored_only_as_a_keyed_digest",
+              len(counted) == 1 and not source_record_findings(counted[0], "127.0.0.1", fixture.runtime._catalog)
+              and counted[0]["record_id"] == fixture.runtime._catalog.identity(
+                  SOURCE, keyed_source_digest(fixture.source_secret, "127.0.0.1")))
         unsupported = httpx.post(base + WAITLIST_PATH, trust_env=False, timeout=5,
                                  json={"record_type": "service_waitlist_request/v99", "email": "x@example.com"})
         extra = httpx.post(base + WAITLIST_PATH, trust_env=False, timeout=5,
@@ -358,6 +545,17 @@ def http_checks(check, root):
               answer.status_code == 503 and answer.json()["error"]["code"] == "waitlist_unavailable"
               and httpx.get(base + "/api/v1/capabilities", trust_env=False, timeout=5)
               .json()["result"]["website"]["waitlist_available"] is False)
+    # A secret the host names and the service cannot read is a state of the
+    # service, not a bad request, so the caller is told to try again later.
+    unreadable = prepared(root / "unreadable", secret=ServiceRuntimeError("configured_secret_unavailable"))
+    with running_http(unreadable, application_factory=lambda configuration: ServiceHttpApplication(
+            unreadable.runtime, unreadable.provisioning, configuration, waitlist=unreadable.waitlist),
+            request_limits=ServiceRequestLimits(client_address_source="socket_peer")) as (base, _service):
+        answer = httpx.post(base + WAITLIST_PATH, trust_env=False, timeout=5,
+                            json={"record_type": REQUEST_VERSION, "email": "rose@example.com"})
+        check("an_unreadable_source_secret_answers_as_a_service_state_and_records_nothing",
+              answer.status_code == 503 and answer.json()["error"]["code"] == SOURCE_SECRET_UNAVAILABLE
+              and _stored_row(unreadable, "rose@example.com") is None)
     undeclared_source_checks(check, root / "undeclared")
 
 
@@ -454,6 +652,37 @@ def host_checks(check, root):
     check("a_waiting_list_block_the_policy_does_not_support_refuses_the_whole_host",
           refused(lambda: application(waitlist={"accepted_for_each_source": 0}), "invalid_waitlist_policy")
           and stops({"source_window_seconds": 1}) and stops({"unknown_setting": True}))
+    # The host names the secret that keys the source digest the way it names
+    # every other secret: an environment reference that the host's own
+    # resolver reads at use. The value never appears in the host file.
+    variable, unset = "WAITLIST_HOST_CHECK_SOURCE_SECRET", "WAITLIST_HOST_CHECK_UNSET_SECRET"
+    with patch.dict(os.environ, {variable: secrets.token_hex(32)}):
+        os.environ.pop(unset, None)
+        named, _problem = _attempt(lambda: application(waitlist={
+            "writes_authorized": True, "source_secret_ref": "env:" + variable}))
+        answer, _problem = _attempt(lambda: named.waitlist.join(WaitlistRequest("host@example.com", "", "198.51.100.70")))
+        stored = source_rows(named.runtime) if named is not None else []
+        check("a_host_names_its_source_secret_by_an_environment_reference_and_counts_under_it",
+              answer is not None and answer["source_counted"] == "counted" and len(stored) == 1
+              and stored[0]["record_id"] == named.runtime._catalog.identity(
+                  SOURCE, keyed_source_digest(os.environ[variable], "198.51.100.70")))
+        missing, _problem = _attempt(lambda: application(waitlist={
+            "writes_authorized": True, "source_secret_ref": "env:" + unset}))
+        check("a_host_whose_named_secret_is_not_set_refuses_requests_instead_of_counting_without_it",
+              missing is not None and refused(lambda: missing.waitlist.join(
+                  WaitlistRequest("unset@example.com", "", "198.51.100.71")), SOURCE_SECRET_UNAVAILABLE))
+    check("a_source_secret_named_any_other_way_than_an_environment_reference_refuses_the_host",
+          refused(lambda: application(waitlist={"source_secret_ref": variable}), "invalid_waitlist_policy")
+          and refused(lambda: application(waitlist={"source_secret_ref": "secret:" + variable}),
+                      "invalid_waitlist_policy"))
+
+
+def _attempt(function):
+    """Return `(value, None)`, or `(None, the refusal)` so that one check can report it by name."""
+    try:
+        return function(), None
+    except Exception as error:
+        return None, error
 
 
 def page_checks(check, _root):
@@ -550,8 +779,8 @@ def run_all_checks(root):
         tests.append({"test": name, "passed": bool(passed),
                       "detail": "real SQLite records and a real loopback transport; no external provider"})
     for name, function in (("domain", run_checks), ("decisions", decision_checks),
-                           ("removal", removal_checks), ("page", page_checks),
-                           ("host", host_checks), ("HTTP", http_checks)):
+                           ("removal", removal_checks), ("sources", source_privacy_checks),
+                           ("page", page_checks), ("host", host_checks), ("HTTP", http_checks)):
         directory = root / name
         directory.mkdir(parents=True, exist_ok=True)
         function(check, directory)

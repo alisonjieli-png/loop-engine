@@ -1,7 +1,8 @@
 # Waiting list and invitations
 
 Kind: operating guide for engineering. Written on September 21, 2026, against
-the source in this revision.
+the source in this revision. Updated on September 22, 2026, when the flood
+guard stopped storing network addresses.
 
 Anyone can leave an email address and a short note. An operator reads the
 list and decides. An approved person receives one invitation that carries a
@@ -44,8 +45,9 @@ identity with different content is refused rather than replayed.
 
 `forget` is how the service takes an address off the list. It erases the
 address and the note from the entry, leaving the one-way digest of the
-address, the decision history and the count of accepted entries for the
-source. Nothing recovers the erased values, and no row is rewritten by hand:
+address and the decision history. It does not change the flood guard's count
+for the source, which ends with its window. Nothing recovers the erased
+values, and no row is rewritten by hand:
 the erasure is an ordinary versioned decision through the same contract as
 every other one. An entry in the joined state is not removed this way,
 because that address belongs to an account. The same person may ask again
@@ -65,6 +67,13 @@ Each refusal has a check and a known-wrong case in
 case removes that one guard and shows the behaviour the guard exists to
 prevent.
 
+Two more codes are states of the service rather than refusals of the person:
+`waitlist_source_secret_unavailable` and `waitlist_source_secret_unusable`,
+both 503. They answer when the host names a source secret that the service
+cannot read, or one too short to use, and nothing is written. The section on
+what the flood guard keeps says why the service refuses instead of counting
+in a weaker way.
+
 The service holds no account addresses, so a host that can ask its identity
 provider installs a `WaitlistAccountDirectory`. An answer that is not a plain
 yes or no refuses the request instead of admitting an address the directory
@@ -75,7 +84,82 @@ The flood guard counts accepted entries for one source inside a window. It
 does not count refused attempts: the transport's failed-attempt limit for
 each client address already counts those. It counts only when the host has
 declared where the client address comes from, because behind a proxy every
-caller would otherwise look like one source.
+caller would otherwise look like one source, and only when the host names the
+secret that keys the source digest.
+
+## What the flood guard keeps about an address
+
+The published privacy notice says the service keeps the times of recent
+waiting list requests under a keyed one-way digest of the sending network
+address, never the address itself, and removes them once the one-hour
+counting window has passed. The source record is built to that sentence:
+
+```text
+service_waitlist_source/v2
+├── name     HMAC-SHA256 of the source key under the host secret; never the
+│            address, and never a digest anyone could recompute from a guess
+├── fields   record_type, accepted (times inside the window), window_seconds
+│            and nothing else; a record with any other field is refused
+└── removal  every request to join removes the times that have left the
+             window from every source record, counted or not; a record with
+             no time left keeps its version and an empty list
+```
+
+An unkeyed digest of a network address protects nothing, because every IPv4
+address can be hashed in minutes and a guess confirms itself. That is why the
+first version of this record, which was named by the address itself and kept
+a plain digest beside it, is refused by the reader: this release never counts
+or rewrites it. No deployment ever held one, because the waiting list was
+never switched on.
+
+The emptied record stays because the catalogue store has no removal
+operation. Its name is the keyed digest, so without the host secret it cannot
+be linked to any address, and it holds no time. The window is at most one
+hour: a host file that sets `source_window_seconds` above 3600 is refused,
+because a longer window would keep the times of an address past the period
+the notice promises.
+
+The secret is named in the host's `waitlist` block as an environment
+reference, the same form as every other host secret:
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `source_secret_ref` | empty | `env:NAME` of the secret that keys the source digest. Empty means no count is taken and nothing about the address is stored. |
+| `source_window_seconds` | 3600 | The counting window, from 60 to 3600 seconds. |
+| `accepted_for_each_source` | 5 | Accepted entries one source may leave inside the window. |
+
+What each state of the secret does:
+
+| The host | Each accepted entry records | What is stored about the address |
+|---|---|---|
+| declares no address source | `no_declared_source` | nothing |
+| declares a source and names no secret | `no_source_secret` | nothing |
+| declares a source and names a readable secret of 32 or more characters | `counted` | the times inside the window, under the keyed digest |
+| names a secret the service cannot read | nothing; the request is refused with `waitlist_source_secret_unavailable` | nothing |
+| names a secret shorter than 32 characters | nothing; the request is refused with `waitlist_source_secret_unusable` | nothing |
+
+A named secret that cannot be read refuses the request rather than letting it
+through uncounted, because the host asked for a count and a silent gap would
+switch the guard off without anyone seeing it.
+
+Create the secret on the deployment without printing it. The value travels
+on standard input and never reaches the terminal or a command line:
+
+```text
+python3 -c 'import secrets; print("BALTOR_WAITLIST_SOURCE_SECRET=" + secrets.token_hex(32))' \
+  | fly secrets import --app <application> --stage
+```
+
+and name it in the host's `waitlist` block as
+`"source_secret_ref": "env:BALTOR_WAITLIST_SOURCE_SECRET"`. Replacing the
+secret later starts every count afresh and makes every earlier record name
+unlinkable, which is safe: the counts only ever cover one hour.
+
+`source_privacy_checks` in
+`src/loop_engine/core/service_runtime/waitlist_checks.py` holds each rule over
+real records, with a known-wrong case beside it: a record named by the address
+or holding an unkeyed digest is found, a count kept after its window is
+found, and a host with no secret is shown to store nothing.
 
 ## What the host has to declare before the flood guard counts
 
@@ -83,7 +167,9 @@ A host that declares no client address source gets no flood guard on the
 public form. The transport supplies no source key, every answer says
 `source_counted: no_declared_source`, and the only limit left for a stranger
 is one entry for each address. That is the state of any host configuration
-with no `request_limits` block inside its `http` block.
+with no `request_limits` block inside its `http` block. A host that declares
+a source but names no source secret is in the same position, and every
+answer says `source_counted: no_source_secret`.
 
 Read on September 21, 2026, from the public profile of the deployed service:
 
@@ -122,7 +208,8 @@ host that declares it gets both.
 cases over a real loopback transport: no declared source accepts every
 caller and says it counted nobody; the known-wrong case that names the socket
 peer anyway closes the form after five requests from one machine; and the
-declared header counts each forwarded address on its own.
+declared header counts each forwarded address on its own. Those fixtures name
+a source secret, as a host that wants the count must.
 
 ## Before an invitation can promise a discount
 
@@ -222,8 +309,9 @@ stay separate facts.
 ## What is proved and what is not
 
 The checks cover the record, its five states, the four refusals, the erasure,
-the served form, the two routes, the order of the invitation and the refusals
-of the operator command, all against local fixtures. The browser checks in
+what the flood guard stores about an address and for how long, the served
+form, the two routes, the order of the invitation and the refusals of the
+operator command, all against local fixtures. The browser checks in
 `tools/check_service_workspace.mjs` run the visitor's journey against a real
 browser and a real loopback service: a service without a waiting list makes
 no offer, and a service with one takes an address that then appears in the
