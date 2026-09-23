@@ -1,0 +1,151 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r2-duplicates-flash-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 2,
+ "family": "duplicates",
+ "arm": "flash-none",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "76ce0075546e06e7148b238f64b52f899f405bebf4c9d53a89ef690577d85e18",
+ "started_at": "2026-09-23T04:10:25+00:00",
+ "ended_at": "2026-09-23T04:11:01+00:00",
+ "elapsed_seconds": 35.4,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 4,
+  "refused": [],
+  "outcomes": {
+   "ok": 4
+  },
+  "usage_known_requests": 4,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 25911,
+  "completion_tokens_known_sum": 7464,
+  "largest_prompt_tokens": 10660,
+  "model_seconds": 32.5,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 4,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"content\": \"id_a,id_b,decision\\n1,33,same\\n2,3,same\\n2,15,same\\n3,15,same\\n4,29,same\\n4,30,same\\n6,17,review\\n6,32,same\\n7,20,same\\n9,26,same\\n11,16,same\\n13,28,same\\n14,24,same\\n17,32,review\\n18,31,same\\n19,21,same\\n25,35,same\\n25,38,same"
+   },
+   {
+    "tool": "read",
+    "args": "{\"path\": \"output.csv\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1624,
+    "output": 21,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1645,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 3109,
+    "output": 7397,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 10506,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 10518,
+    "output": 12,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 10530,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6180,
+    "output": 34,
+    "cacheRead": 4480,
+    "cacheWrite": 0,
+    "totalTokens": 10694,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "589557b69e1d89f008e29b3b0d460a364df4b03320d952d0bc004496a90c2fec",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 3804
+  },
+  {
+   "path": "output.csv",
+   "bytes": 231
+  }
+ ],
+ "score": {
+  "primary_metric": "pair_f1",
+  "primary": 1.0,
+  "passed": true,
+  "metrics": {
+   "rows": 38,
+   "true_duplicate_pairs": 18,
+   "pairs_marked_same": 18,
+   "pairs_marked_review": 2,
+   "pair_precision": 1.0,
+   "pair_recall": 1.0,
+   "pair_f1": 1.0,
+   "closure_pair_precision": 1.0,
+   "closure_pair_recall": 1.0,
+   "closure_pair_f1": 1.0,
+   "false_merges": 0,
+   "hard_negative_merges": 0,
+   "ambiguous_pairs_marked_same": 0,
+   "correct_hold_rate": 0.5,
+   "true_duplicates_only_marked_review": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

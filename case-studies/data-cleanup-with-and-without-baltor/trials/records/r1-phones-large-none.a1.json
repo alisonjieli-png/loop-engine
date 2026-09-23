@@ -1,0 +1,187 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-phones-large-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "phones",
+ "arm": "large-none",
+ "model": "glm-5.2:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+ "started_at": "2026-09-23T03:38:23+00:00",
+ "ended_at": "2026-09-23T03:42:02+00:00",
+ "elapsed_seconds": 218.7,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 6,
+  "refused": [],
+  "outcomes": {
+   "ok": 6
+  },
+  "usage_known_requests": 6,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 71787,
+  "completion_tokens_known_sum": 14466,
+  "largest_prompt_tokens": 17518,
+  "model_seconds": 215.5,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 6,
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-phones-large-none-a1/work && wc -l input.csv && head -50 input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-phones-large-none-a1/work && python3 -c \\\"print(open('input.csv',encoding='utf-8').read())\\\" | cat -A | head -40\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"/home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-phones-large-none-a1/work/clean.py\", \"content\": \"import csv\\nimport re\\n\\nIN = \\\"input.csv\\\"\\nOUT = \\\"output.csv\\\"\\n\\nNULL_MARKERS = {\\\"\\\", \\\"n/a\\\", \\\"na\\\", \\\"null\\\", \\\"none\\\", \\\"u"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-phones-large-none-a1/work && python3 clean.py && cat output.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-phones-large-none-a1/work && wc -l output.csv input.csv\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 349,
+    "output": 64,
+    "cacheRead": 1324,
+    "cacheWrite": 0,
+    "totalTokens": 1737,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 511,
+    "output": 13384,
+    "cacheRead": 1672,
+    "cacheWrite": 0,
+    "totalTokens": 15567,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 13847,
+    "output": 892,
+    "cacheRead": 2182,
+    "cacheWrite": 0,
+    "totalTokens": 16921,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 935,
+    "output": 47,
+    "cacheRead": 16028,
+    "cacheWrite": 0,
+    "totalTokens": 17010,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 459,
+    "output": 76,
+    "cacheRead": 16962,
+    "cacheWrite": 0,
+    "totalTokens": 17497,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 98,
+    "output": 3,
+    "cacheRead": 17420,
+    "cacheWrite": 0,
+    "totalTokens": 17521,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "d370b7fe41f9303f1148cdabb543bbdad86b0576a268d22d514185de86ad5563",
+ "files_in_step_folder": [
+  {
+   "path": "clean.py",
+   "bytes": 2889
+  },
+  {
+   "path": "input.csv",
+   "bytes": 666
+  },
+  {
+   "path": "output.csv",
+   "bytes": 779
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 1.0,
+  "passed": true,
+  "metrics": {
+   "rows": 38,
+   "correct": 38,
+   "record_accuracy": 1.0,
+   "value_accuracy": 1.0,
+   "change_recall": 1.0,
+   "change_precision": 1.0,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 1.0,
+   "guess_rate_on_hold_rows": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

@@ -1,0 +1,327 @@
+{
+ "record_type": "data_cleanup_truth/v1",
+ "family": "emails",
+ "output_columns": [
+  "id",
+  "email",
+  "review"
+ ],
+ "value_column": "email",
+ "rows": [
+  {
+   "case_type": "impossible_domain_ending",
+   "variant": "con",
+   "input": "maria.okafor@gmail.con",
+   "kind": "change",
+   "expected": "maria.okafor@gmail.com",
+   "review": "no",
+   "id": "1"
+  },
+  {
+   "case_type": "punctuation_slip",
+   "variant": "comma_for_dot",
+   "input": "ines.costa@example,com",
+   "kind": "change",
+   "expected": "ines.costa@example.com",
+   "review": "no",
+   "id": "2"
+  },
+  {
+   "case_type": "spelled_out_symbols",
+   "variant": "parentheses",
+   "input": "lee.park(at)example(dot)net",
+   "kind": "change",
+   "expected": "lee.park@example.net",
+   "review": "no",
+   "id": "3"
+  },
+  {
+   "case_type": "spelled_out_symbols",
+   "variant": "upper_case_words",
+   "input": "sam.okoro AT example DOT com",
+   "kind": "change",
+   "expected": "sam.okoro@example.com",
+   "review": "no",
+   "id": "4"
+  },
+  {
+   "case_type": "hold_two_addresses",
+   "variant": "comma",
+   "input": "sales@globex.ca, support@globex.ca",
+   "kind": "hold",
+   "expected": "sales@globex.ca, support@globex.ca",
+   "review": "yes",
+   "id": "5"
+  },
+  {
+   "case_type": "wrapper",
+   "variant": "mailto_prefix",
+   "input": "mailto:li.wei@example.com",
+   "kind": "change",
+   "expected": "li.wei@example.com",
+   "review": "no",
+   "id": "6"
+  },
+  {
+   "case_type": "spelled_out_symbols",
+   "variant": "square_brackets",
+   "input": "mary.jones [at] example [dot] org",
+   "kind": "change",
+   "expected": "mary.jones@example.org",
+   "review": "no",
+   "id": "7"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "n_a",
+   "input": "n/a",
+   "kind": "keep",
+   "expected": "n/a",
+   "review": "no",
+   "id": "8"
+  },
+  {
+   "case_type": "hold_two_addresses",
+   "variant": "semicolon",
+   "input": "ana.lopez@example.com; bo.lin@example.com",
+   "kind": "hold",
+   "expected": "ana.lopez@example.com; bo.lin@example.com",
+   "review": "yes",
+   "id": "9"
+  },
+  {
+   "case_type": "valid_already_clean",
+   "variant": "valid",
+   "input": "k.nguyen@riverbend.io",
+   "kind": "keep",
+   "expected": "k.nguyen@riverbend.io",
+   "review": "no",
+   "id": "10"
+  },
+  {
+   "case_type": "hold_plausible_real_domain",
+   "variant": "plausible_registered_domain",
+   "input": "dan.reyes@hotmial.com",
+   "kind": "hold",
+   "expected": "dan.reyes@hotmial.com",
+   "review": "yes",
+   "id": "11"
+  },
+  {
+   "case_type": "wrapper",
+   "variant": "display_name",
+   "input": "Priya Nair <priya.nair@example.com>",
+   "kind": "change",
+   "expected": "priya.nair@example.com",
+   "review": "no",
+   "id": "12"
+  },
+  {
+   "case_type": "impossible_domain_ending",
+   "variant": "cmo",
+   "input": "t.brennan@yahoo.cmo",
+   "kind": "change",
+   "expected": "t.brennan@yahoo.com",
+   "review": "no",
+   "id": "13"
+  },
+  {
+   "case_type": "hold_unrecoverable",
+   "variant": "no_local_part",
+   "input": "@example.com",
+   "kind": "hold",
+   "expected": "@example.com",
+   "review": "yes",
+   "id": "14"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "none",
+   "input": "none",
+   "kind": "keep",
+   "expected": "none",
+   "review": "no",
+   "id": "15"
+  },
+  {
+   "case_type": "hold_plausible_real_domain",
+   "variant": "co_is_a_real_ending",
+   "input": "maria.okafor@gmail.co",
+   "kind": "hold",
+   "expected": "maria.okafor@gmail.co",
+   "review": "yes",
+   "id": "16"
+  },
+  {
+   "case_type": "case_or_spaces",
+   "variant": "mixed_case_domain",
+   "input": "Info@Harbor-Freight-Supply.com",
+   "kind": "change",
+   "expected": "info@harbor-freight-supply.com",
+   "review": "no",
+   "id": "17"
+  },
+  {
+   "case_type": "hold_plausible_real_domain",
+   "variant": "cm_is_a_real_ending",
+   "input": "liz.moreau@gmail.cm",
+   "kind": "hold",
+   "expected": "liz.moreau@gmail.cm",
+   "review": "yes",
+   "id": "18"
+  },
+  {
+   "case_type": "valid_already_clean",
+   "variant": "valid",
+   "input": "ana.lopez@example.com",
+   "kind": "keep",
+   "expected": "ana.lopez@example.com",
+   "review": "no",
+   "id": "19"
+  },
+  {
+   "case_type": "punctuation_slip",
+   "variant": "doubled_at",
+   "input": "pat.kim@@example.com",
+   "kind": "change",
+   "expected": "pat.kim@example.com",
+   "review": "no",
+   "id": "20"
+  },
+  {
+   "case_type": "punctuation_slip",
+   "variant": "trailing_period",
+   "input": "tom.berg@example.com.",
+   "kind": "change",
+   "expected": "tom.berg@example.com",
+   "review": "no",
+   "id": "21"
+  },
+  {
+   "case_type": "case_or_spaces",
+   "variant": "space_inside",
+   "input": "bob.chen @example.net",
+   "kind": "change",
+   "expected": "bob.chen@example.net",
+   "review": "no",
+   "id": "22"
+  },
+  {
+   "case_type": "spelled_out_symbols",
+   "variant": "words",
+   "input": "john.smith at example dot com",
+   "kind": "change",
+   "expected": "john.smith@example.com",
+   "review": "no",
+   "id": "23"
+  },
+  {
+   "case_type": "hold_unrecoverable",
+   "variant": "no_domain_ending",
+   "input": "bob.chen@example",
+   "kind": "hold",
+   "expected": "bob.chen@example",
+   "review": "yes",
+   "id": "24"
+  },
+  {
+   "case_type": "wrapper",
+   "variant": "angle_brackets",
+   "input": "<omar.haddad@example.org>",
+   "kind": "change",
+   "expected": "omar.haddad@example.org",
+   "review": "no",
+   "id": "25"
+  },
+  {
+   "case_type": "invisible_character",
+   "variant": "zero_width_space",
+   "input": "noor.ali@exa\u200bmple.com",
+   "kind": "change",
+   "expected": "noor.ali@example.com",
+   "review": "no",
+   "id": "26"
+  },
+  {
+   "case_type": "punctuation_slip",
+   "variant": "doubled_dot",
+   "input": "rosa.diaz@example..com",
+   "kind": "change",
+   "expected": "rosa.diaz@example.com",
+   "review": "no",
+   "id": "27"
+  },
+  {
+   "case_type": "null_marker",
+   "variant": "empty",
+   "input": "",
+   "kind": "keep",
+   "expected": "",
+   "review": "no",
+   "id": "28"
+  },
+  {
+   "case_type": "case_or_spaces",
+   "variant": "mixed_case",
+   "input": "Ana.Lopez@Example.COM",
+   "kind": "change",
+   "expected": "ana.lopez@example.com",
+   "review": "no",
+   "id": "29"
+  },
+  {
+   "case_type": "valid_already_clean",
+   "variant": "valid",
+   "input": "j.smith@acmewidgets.com",
+   "kind": "keep",
+   "expected": "j.smith@acmewidgets.com",
+   "review": "no",
+   "id": "30"
+  },
+  {
+   "case_type": "case_or_spaces",
+   "variant": "upper_case",
+   "input": "SALES@GLOBEX.CA",
+   "kind": "change",
+   "expected": "sales@globex.ca",
+   "review": "no",
+   "id": "31"
+  },
+  {
+   "case_type": "valid_already_clean",
+   "variant": "valid",
+   "input": "ops+billing@example.org",
+   "kind": "keep",
+   "expected": "ops+billing@example.org",
+   "review": "no",
+   "id": "32"
+  },
+  {
+   "case_type": "valid_already_clean",
+   "variant": "valid",
+   "input": "info@northwind-traders.co.uk",
+   "kind": "keep",
+   "expected": "info@northwind-traders.co.uk",
+   "review": "no",
+   "id": "33"
+  },
+  {
+   "case_type": "hold_unrecoverable",
+   "variant": "no_at_sign",
+   "input": "ana.lopez.example.com",
+   "kind": "hold",
+   "expected": "ana.lopez.example.com",
+   "review": "yes",
+   "id": "34"
+  },
+  {
+   "case_type": "impossible_domain_ending",
+   "variant": "comm",
+   "input": "eve.larsen@outlook.comm",
+   "kind": "change",
+   "expected": "eve.larsen@outlook.com",
+   "review": "no",
+   "id": "35"
+  }
+ ]
+}

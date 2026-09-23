@@ -1,0 +1,136 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-addresses-flash-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "addresses",
+ "arm": "flash-none",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "caa745cce868b1c34064e5ff43c9644ea4f00fd2988341111a4016290c81de05",
+ "started_at": "2026-09-23T03:42:07+00:00",
+ "ended_at": "2026-09-23T03:42:30+00:00",
+ "elapsed_seconds": 23.1,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 3,
+  "refused": [],
+  "outcomes": {
+   "ok": 3
+  },
+  "usage_known_requests": 3,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 11179,
+  "completion_tokens_known_sum": 4542,
+  "largest_prompt_tokens": 7173,
+  "model_seconds": 20.6,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 3,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cat > build_output.py << 'EOF'\\nimport csv\\n\\nrows = [\\n    # id, house_number, street, unit, city, region, postal_code, country, review\\n    [1, \\\"12\\\", \\\"N Main St\\\", \\\"Apt 4B\\\", \\\"Springfield\\\", \\\"IL\\\", \\\"62704\\\", \\\"USA\\\", \\"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "`output.csv` is written with all 32 rows parsed. Key decisions:\n- Empty/null values (rows 2, 25) \u2192 all parts empty, review `no`\n- Non-addresses (row 24 \"see notes\") \u2192 review `yes`\n- Ambiguous parses flagged for review: row 9 (intersection description) and row 15 (`Main St West` vs `West Springfield`",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1749,
+    "output": 21,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1770,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 2257,
+    "output": 4299,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 6556,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 7173,
+    "output": 222,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 7395,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "a0858cc396dcc8e2411606bada9e5d6b62fde3fee45731914a3085f5c2a0e96b",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 1274
+  },
+  {
+   "path": "output.csv",
+   "bytes": 1427
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.96875,
+  "passed": true,
+  "metrics": {
+   "rows": 32,
+   "correct": 31,
+   "record_accuracy": 0.96875,
+   "part_accuracy": 1.0,
+   "part_accuracy_by_part": {
+    "house_number": 1.0,
+    "street": 1.0,
+    "unit": 1.0,
+    "city": 1.0,
+    "region": 1.0,
+    "postal_code": 1.0,
+    "country": 1.0
+   },
+   "rewritten_parts": 0,
+   "rewritten_part_rate": 0.0,
+   "correct_hold_rate": 0.75,
+   "unneeded_review_rate": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

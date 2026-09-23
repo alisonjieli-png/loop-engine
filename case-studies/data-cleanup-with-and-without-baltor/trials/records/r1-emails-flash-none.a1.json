@@ -1,0 +1,219 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-emails-flash-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "emails",
+ "arm": "flash-none",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "5ce3a0a76345656a1546caab7c9b65dfeeb8464d9e0e9b533dfa29b7c6702968",
+ "started_at": "2026-09-23T03:49:04+00:00",
+ "ended_at": "2026-09-23T03:50:50+00:00",
+ "elapsed_seconds": 106.2,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 8,
+  "refused": [],
+  "outcomes": {
+   "ok": 8
+  },
+  "usage_known_requests": 8,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 109254,
+  "completion_tokens_known_sum": 16847,
+  "largest_prompt_tokens": 19493,
+  "model_seconds": 103.4,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 8,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-flash-none-a1/work && sed -n '27p' input.csv | hexdump -C && sed -n '3p' input.csv | hexdump -C | head -5\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"clean.py\", \"content\": \"import csv, re, unicodedata\\n\\nNULLS = {\\\"n/a\\\", \\\"na\\\", \\\"none\\\", \\\"null\\\", \\\"-\\\"}\\n\\ndef strip_invisible(s):\\n    # remove zero-width / control characters that are invisible junk\\n    return \\\"\\\".join(ch f"
+   },
+   {
+    "tool": "write",
+    "args": "{\"content\": \"import csv, re, unicodedata\\n\\nNULLS = {\\\"n/a\\\", \\\"na\\\", \\\"none\\\", \\\"null\\\", \\\"-\\\"}\\n\\ndef strip_invisible(s):\\n    # remove zero-width / invisible control junk (e.g. U+200B ZERO WIDTH SPACE)\\n    return \\\"\\\".join(ch for ch in "
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-flash-none-a1/work && python3 clean.py\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-flash-none-a1/work && python3 - <<'EOF'\\nimport csv\\nwith open('output.csv', newline='', encoding='utf-8') as f:\\n    rows = list(csv.reader(f))\\nprint(\\\"header:\\\", ro"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-emails-flash-none-a1/work && rm -f clean.py\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1625,
+    "output": 28,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1653,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 1998,
+    "output": 12510,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 14508,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 5749,
+    "output": 1275,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 15984,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 7038,
+    "output": 1835,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 17833,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 8886,
+    "output": 43,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 17889,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 9290,
+    "output": 1002,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 19252,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 5895,
+    "output": 151,
+    "cacheRead": 13440,
+    "cacheWrite": 0,
+    "totalTokens": 19486,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6053,
+    "output": 3,
+    "cacheRead": 13440,
+    "cacheWrite": 0,
+    "totalTokens": 19496,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "9594b6d503435f9aa355a6c134af3736aca80cdf85dd01903e37dddde9d64382",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 913
+  },
+  {
+   "path": "output.csv",
+   "bytes": 1009
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.914286,
+  "passed": true,
+  "metrics": {
+   "rows": 35,
+   "correct": 32,
+   "record_accuracy": 0.914286,
+   "value_accuracy": 0.914286,
+   "change_recall": 0.842105,
+   "change_precision": 1.0,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 1.0,
+   "guess_rate_on_hold_rows": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

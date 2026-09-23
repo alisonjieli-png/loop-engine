@@ -1,0 +1,187 @@
+{
+ "record_type": "data_cleanup_use_signals/v1",
+ "terms": {
+  "phones": [
+   "digit_count_unexpected",
+   "national length",
+   "national_length",
+   "0.93",
+   "0.95",
+   "0.35",
+   "confidence"
+  ],
+  "emails": [
+   "unrecoverable_shape",
+   "ambiguous_address",
+   "symbol_word",
+   "0.85",
+   "0.92",
+   "confidence"
+  ],
+  "addresses": [
+   "house_number_not_found",
+   "city_or_region_ambiguous",
+   "country_from_position",
+   "empty_address",
+   "remainder"
+  ],
+  "duplicates": [
+   "blocking",
+   "weakest",
+   "0.92",
+   "0.75",
+   "sequencematcher",
+   "difflib",
+   "initials"
+  ]
+ },
+ "cells": {
+  "addresses|flash-agents": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "addresses|flash-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "addresses|large-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "addresses|small-agents": {
+   "steps": 3,
+   "steps_with_any_term": 1,
+   "terms_seen": {
+    "city_or_region_ambiguous": 1,
+    "house_number_not_found": 1
+   }
+  },
+  "addresses|small-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "addresses|small-prompt": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "duplicates|flash-agents": {
+   "steps": 3,
+   "steps_with_any_term": 2,
+   "terms_seen": {
+    "0.75": 2,
+    "0.92": 2,
+    "blocking": 2,
+    "difflib": 2,
+    "initials": 2,
+    "sequencematcher": 2,
+    "weakest": 2
+   }
+  },
+  "duplicates|flash-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "duplicates|large-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "duplicates|small-agents": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "duplicates|small-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "duplicates|small-prompt": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "emails|flash-agents": {
+   "steps": 3,
+   "steps_with_any_term": 3,
+   "terms_seen": {
+    "0.85": 2,
+    "0.92": 2,
+    "confidence": 3,
+    "ambiguous_address": 1,
+    "symbol_word": 2,
+    "unrecoverable_shape": 1
+   }
+  },
+  "emails|flash-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "emails|large-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "emails|small-agents": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "emails|small-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "emails|small-prompt": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "phones|flash-agents": {
+   "steps": 3,
+   "steps_with_any_term": 3,
+   "terms_seen": {
+    "0.93": 3,
+    "0.95": 3,
+    "digit_count_unexpected": 3,
+    "national length": 3,
+    "national_length": 1,
+    "0.35": 1
+   }
+  },
+  "phones|flash-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "phones|large-none": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "phones|small-agents": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  },
+  "phones|small-none": {
+   "steps": 3,
+   "steps_with_any_term": 1,
+   "terms_seen": {
+    "confidence": 1
+   }
+  },
+  "phones|small-prompt": {
+   "steps": 3,
+   "steps_with_any_term": 0,
+   "terms_seen": {}
+  }
+ }
+}

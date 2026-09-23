@@ -1,0 +1,165 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r2-phones-flash-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 2,
+ "family": "phones",
+ "arm": "flash-none",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+ "started_at": "2026-09-23T03:50:52+00:00",
+ "ended_at": "2026-09-23T03:51:25+00:00",
+ "elapsed_seconds": 32.9,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 5,
+  "refused": [],
+  "outcomes": {
+   "ok": 5
+  },
+  "usage_known_requests": 5,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 36135,
+  "completion_tokens_known_sum": 8086,
+  "largest_prompt_tokens": 11083,
+  "model_seconds": 30.5,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 5,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 -c \\\"\\nimport re\\nrows=[l.rstrip('\\\\n') for l in open('input.csv')]\\nfor r in rows[1:]:\\n    p=r.split(',',1)[1]\\n    d=re.sub(r'\\\\D','',p)\\n    print(repr(p), '| digits:', d)\\n\\\"\"}"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"output.csv\", \"content\": \"id,phone,review\\n1,+441174960188,no\\n2,555 0149,yes\\n3,+14155550164,no\\n4,303-555-0121 / 303-555-0137,yes\\n5,-,no\\n6,(015) 555-0112,yes\\n7,+442079460176,no\\n8,+13035550199 ext 7,no\\n9,+447700900158,no\\n10,"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 -c \\\"\\nimport csv\\nrows=list(csv.reader(open('output.csv')))\\nassert rows[0]==['id','phone','review'], rows[0]\\nassert len(rows)==39, len(rows)\\nassert all(len(r)==3 for r in rows), [r for r in rows if len(r)!=3]\\nin_id"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1673,
+    "output": 28,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1701,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 2143,
+    "output": 7435,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 9578,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 10386,
+    "output": 452,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 10838,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6370,
+    "output": 168,
+    "cacheRead": 4480,
+    "cacheWrite": 0,
+    "totalTokens": 11018,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6603,
+    "output": 3,
+    "cacheRead": 4480,
+    "cacheWrite": 0,
+    "totalTokens": 11086,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "1fa239ba4614c3b714c6dd64f47b4ae6d227d560861c76e3151c9585cb72fcac",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 666
+  },
+  {
+   "path": "output.csv",
+   "bytes": 737
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.973684,
+  "passed": true,
+  "metrics": {
+   "rows": 38,
+   "correct": 37,
+   "record_accuracy": 0.973684,
+   "value_accuracy": 0.973684,
+   "change_recall": 1.0,
+   "change_precision": 0.956522,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 0.857143,
+   "guess_rate_on_hold_rows": 0.142857,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

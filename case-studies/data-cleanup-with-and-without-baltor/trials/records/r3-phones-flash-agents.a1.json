@@ -1,0 +1,158 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r3-phones-flash-agents",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 3,
+ "family": "phones",
+ "arm": "flash-agents",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "agents_file",
+ "material_items": [
+  {
+   "identity": "normalize_phone_numbers",
+   "body_sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+   "bytes": 2579,
+   "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_phone_numbers"
+  }
+ ],
+ "material_sha256": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+ "prompt_sha256": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+ "started_at": "2026-09-23T04:22:12+00:00",
+ "ended_at": "2026-09-23T04:23:55+00:00",
+ "elapsed_seconds": 102.8,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 4,
+  "refused": [],
+  "outcomes": {
+   "ok": 4
+  },
+  "usage_known_requests": 4,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 54366,
+  "completion_tokens_known_sum": 20373,
+  "largest_prompt_tokens": 24860,
+  "model_seconds": 100.4,
+  "requests_with_every_material_marker": 4,
+  "requests_with_any_material_marker": 4
+ },
+ "harness_report": {
+  "assistant_messages": 4,
+  "tool_calls": [
+   {
+    "tool": "read",
+    "args": "{\"path\": \"input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"cd /home/username/.le-ci-tmp/dcd-runs/run-1/steps/r3-phones-flash-agents-a1/work && python3 - <<'PY'\\nimport csv, re\\n\\n# Declared parameters for this table: customers in US/Canada\\nCC = '1'   # default country code\\nNL = 10   "
+   },
+   {
+    "tool": "read",
+    "args": "{\"path\": \"output.csv\"}"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 2349,
+    "output": 25,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 2374,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 2816,
+    "output": 20205,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 23021,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 24341,
+    "output": 98,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 24439,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 6940,
+    "output": 45,
+    "cacheRead": 17920,
+    "cacheWrite": 0,
+    "totalTokens": 24905,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "873f94c8152cccbfbc321e16327a7cfea8ad21f2663e5472eeb015f3d640ae01",
+ "files_in_step_folder": [
+  {
+   "path": "AGENTS.md",
+   "bytes": 2579
+  },
+  {
+   "path": "input.csv",
+   "bytes": 666
+  },
+  {
+   "path": "output.csv",
+   "bytes": 788
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 0.842105,
+  "passed": false,
+  "metrics": {
+   "rows": 38,
+   "correct": 32,
+   "record_accuracy": 0.842105,
+   "value_accuracy": 0.842105,
+   "change_recall": 0.818182,
+   "change_precision": 0.818182,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 0.714286,
+   "guess_rate_on_hold_rows": 0.285714,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}

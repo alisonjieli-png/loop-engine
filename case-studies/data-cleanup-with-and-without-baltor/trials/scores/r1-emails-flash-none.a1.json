@@ -1,0 +1,424 @@
+{
+ "record_type": "data_cleanup_step_score/v1",
+ "family": "emails",
+ "output_readable": true,
+ "primary_metric": "record_accuracy",
+ "primary": 0.914286,
+ "passed": true,
+ "thresholds": {
+  "record_accuracy_at_least": 0.9,
+  "wrong_changes_to_correct_values": 0
+ },
+ "metrics": {
+  "rows": 35,
+  "correct": 32,
+  "record_accuracy": 0.914286,
+  "value_accuracy": 0.914286,
+  "change_recall": 0.842105,
+  "change_precision": 1.0,
+  "wrong_changes_to_correct_values": 0,
+  "wrong_change_rate_on_correct_values": 0.0,
+  "correct_hold_rate": 1.0,
+  "guess_rate_on_hold_rows": 0.0,
+  "missing_rows": 0
+ },
+ "format_problems": {},
+ "by_case_type": {
+  "impossible_domain_ending": {
+   "rows": 3,
+   "correct": 0
+  },
+  "punctuation_slip": {
+   "rows": 4,
+   "correct": 4
+  },
+  "spelled_out_symbols": {
+   "rows": 4,
+   "correct": 4
+  },
+  "hold_two_addresses": {
+   "rows": 2,
+   "correct": 2
+  },
+  "wrapper": {
+   "rows": 3,
+   "correct": 3
+  },
+  "null_marker": {
+   "rows": 3,
+   "correct": 3
+  },
+  "valid_already_clean": {
+   "rows": 5,
+   "correct": 5
+  },
+  "hold_plausible_real_domain": {
+   "rows": 3,
+   "correct": 3
+  },
+  "hold_unrecoverable": {
+   "rows": 3,
+   "correct": 3
+  },
+  "case_or_spaces": {
+   "rows": 4,
+   "correct": 4
+  },
+  "invisible_character": {
+   "rows": 1,
+   "correct": 1
+  }
+ },
+ "outcomes": [
+  {
+   "id": "1",
+   "case_type": "impossible_domain_ending",
+   "kind": "change",
+   "outcome": "missed_change",
+   "output_value": "maria.okafor@gmail.con",
+   "output_review": "yes",
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "2",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "ines.costa@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "3",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "lee.park@example.net",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "4",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "sam.okoro@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "5",
+   "case_type": "hold_two_addresses",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "sales@globex.ca, support@globex.ca",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "6",
+   "case_type": "wrapper",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "li.wei@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "7",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "mary.jones@example.org",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "8",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "n/a",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "9",
+   "case_type": "hold_two_addresses",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "ana.lopez@example.com; bo.lin@example.com",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "10",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "k.nguyen@riverbend.io",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "11",
+   "case_type": "hold_plausible_real_domain",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "dan.reyes@hotmial.com",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "12",
+   "case_type": "wrapper",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "priya.nair@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "13",
+   "case_type": "impossible_domain_ending",
+   "kind": "change",
+   "outcome": "missed_change",
+   "output_value": "t.brennan@yahoo.cmo",
+   "output_review": "yes",
+   "value_ok": false,
+   "changed": false
+  },
+  {
+   "id": "14",
+   "case_type": "hold_unrecoverable",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "@example.com",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "15",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "none",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "16",
+   "case_type": "hold_plausible_real_domain",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "maria.okafor@gmail.co",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "17",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "info@harbor-freight-supply.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "18",
+   "case_type": "hold_plausible_real_domain",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "liz.moreau@gmail.cm",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "19",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "ana.lopez@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "20",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "pat.kim@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "21",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "tom.berg@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "22",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "bob.chen@example.net",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "23",
+   "case_type": "spelled_out_symbols",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "john.smith@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "24",
+   "case_type": "hold_unrecoverable",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "bob.chen@example",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "25",
+   "case_type": "wrapper",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "omar.haddad@example.org",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "26",
+   "case_type": "invisible_character",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "noor.ali@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "27",
+   "case_type": "punctuation_slip",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "rosa.diaz@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "28",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "29",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "ana.lopez@example.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "30",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "j.smith@acmewidgets.com",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "31",
+   "case_type": "case_or_spaces",
+   "kind": "change",
+   "outcome": "correct",
+   "output_value": "sales@globex.ca",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": true
+  },
+  {
+   "id": "32",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "ops+billing@example.org",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "33",
+   "case_type": "valid_already_clean",
+   "kind": "keep",
+   "outcome": "correct",
+   "output_value": "info@northwind-traders.co.uk",
+   "output_review": "no",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "34",
+   "case_type": "hold_unrecoverable",
+   "kind": "hold",
+   "outcome": "correct",
+   "output_value": "ana.lopez.example.com",
+   "output_review": "yes",
+   "value_ok": true,
+   "changed": false
+  },
+  {
+   "id": "35",
+   "case_type": "impossible_domain_ending",
+   "kind": "change",
+   "outcome": "missed_change",
+   "output_value": "eve.larsen@outlook.comm",
+   "output_review": "yes",
+   "value_ok": false,
+   "changed": false
+  }
+ ]
+}

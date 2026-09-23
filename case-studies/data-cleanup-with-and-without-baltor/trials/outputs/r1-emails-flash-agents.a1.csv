@@ -1,0 +1,36 @@
+id,email,review
+1,maria.okafor@gmail.com,no
+2,ines.costa@example.com,no
+3,lee.park@example.net,no
+4,sam.okoro@example.com,no
+5,"sales@globex.ca, support@globex.ca",yes
+6,li.wei@example.com,no
+7,mary.jones@example.org,no
+8,n/a,no
+9,ana.lopez@example.com; bo.lin@example.com,yes
+10,k.nguyen@riverbend.io,no
+11,dan.reyes@hotmail.com,no
+12,priya.nair@example.com,no
+13,t.brennan@yahoo.com,no
+14,@example.com,yes
+15,none,no
+16,maria.okafor@gmail.co,yes
+17,info@harbor-freight-supply.com,no
+18,liz.moreau@gmail.cm,yes
+19,ana.lopez@example.com,no
+20,pat.kim@example.com,no
+21,tom.berg@example.com,no
+22,bob.chen@example.net,no
+23,john.smith@example.com,no
+24,bob.chen@example,yes
+25,omar.haddad@example.org,no
+26,noor.ali@example.com,no
+27,rosa.diaz@example.com,no
+28,,no
+29,ana.lopez@example.com,no
+30,j.smith@acmewidgets.com,no
+31,sales@globex.ca,no
+32,ops+billing@example.org,no
+33,info@northwind-traders.co.uk,no
+34,ana.lopez.example.com,yes
+35,eve.larsen@outlook.com,no

@@ -41,4 +41,16 @@ Every case study reports:
 The deterministic SciFact run is an excluded engineering diagnostic and is
 not listed as performance evidence.
 
+## Measured demonstrations that are not full-system case studies
+
+These studies measure one product claim with a frozen population and an
+independent evaluator, but they do not run the full path of the admission
+rule above. They are listed here so that their records stay beside the case
+studies, not as case studies.
+
+- [Data cleanup with and without Baltor material](data-cleanup-with-and-without-baltor/README.md):
+  a fresh Pi harness for each step, a small, a cheap and a larger model, with
+  and without an approved starter catalogue item, scored by a deterministic
+  checker.
+
 Use [the case-study template](TEMPLATE.md) for a completed run.

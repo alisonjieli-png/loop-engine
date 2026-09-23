@@ -1,5 +1,371 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.bfc9ecf2016d8a54801fdc7e
+    owner: case-studies.data-cleanup-with-and-without-baltor.population.generate_population:address_rows.add
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.107f7dfe7c609e38d7cbc0ec
+    owner: case-studies.data-cleanup-with-and-without-baltor.population.generate_population
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is the frozen
+      task text of the duplicates family. Its digest is recorded as prompt_sha256
+      in population/manifest.json and in design-freeze.json, which version it.
+    classification: RESOURCE_OR_TEMPLATE
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.089482e4d8b9e3207579091f
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a loopback
+      address on this workstation: the study's own counting proxy, or a closed
+      local port that blocks other network access inside a step. It binds no
+      external provider.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.740d50b97347843ca8ae6118
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:prompt_for
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.818e1da818ddda29f3a05332
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:build_step
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a loopback
+      address on this workstation: the study's own counting proxy, or a closed
+      local port that blocks other network access inside a step. It binds no
+      external provider.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.443c2022f963cfd6663fb58a
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a fixed
+      variable of the environment built for one isolated harness process, part of
+      the frozen isolation recipe. It is not read from the deployment environment
+      and has no deployment lifecycle.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.834f1a6eafc999c16dd50169
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a fixed
+      variable of the environment built for one isolated harness process, part of
+      the frozen isolation recipe. It is not read from the deployment environment
+      and has no deployment lifecycle.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.83885214b6cb1a3fa6601dac
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a fixed
+      variable of the environment built for one isolated harness process, part of
+      the frozen isolation recipe. It is not read from the deployment environment
+      and has no deployment lifecycle.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.d4989571dac7cffd07bd0057
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a fixed
+      variable of the environment built for one isolated harness process, part of
+      the frozen isolation recipe. It is not read from the deployment environment
+      and has no deployment lifecycle.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.33523dac098dba5e260c64aa
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a fixed
+      variable of the environment built for one isolated harness process, part of
+      the frozen isolation recipe. It is not read from the deployment environment
+      and has no deployment lifecycle.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.e117a30e252630db1428d2ef
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a fixed
+      variable of the environment built for one isolated harness process, part of
+      the frozen isolation recipe. It is not read from the deployment environment
+      and has no deployment lifecycle.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.1132c5c15f4763652bd4fd8d
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:base_env
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a fixed
+      variable of the environment built for one isolated harness process, part of
+      the frozen isolation recipe. It is not read from the deployment environment
+      and has no deployment lifecycle.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.46b22dd3601080eef8c8fe23
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:summarize_events
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.68eb85690bc973321938d871
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:summarize_events
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.7545feba65a37afdfd219cb2
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:summarize_events
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.773747ca9f5cf7bbeb084a99
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:probe
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is a loopback
+      address on this workstation: the study's own counting proxy, or a closed
+      local port that blocks other network access inside a step. It binds no
+      external provider.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.ec95acaa8f1705c6167d1a5b
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.09064e9d1657a4b70b697a0b
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.c8ed95af7f3a7f620b732ae0
+    owner: case-studies.data-cleanup-with-and-without-baltor.runner.run_trials:main
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.1412a29d7808d83f3a25c217
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_value_family
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.4b8f87b63f0a614b1f634825
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_value_family
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.c54724bc9b757d5908a307a9
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_addresses
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.7959045cafb95668d1d8d035
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_addresses
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.05f49d11b20fe9977a7d9ff2
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_addresses
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.0a98cd683df3c1db10b7ba27
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_duplicates
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.2e8aa2ccc9b2fac5ca980aad
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_duplicates
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.e913275f7341153a1bee2242
+    owner: case-studies.data-cleanup-with-and-without-baltor.scorer.score_step:score_duplicates
+    rationale: >-
+      Frozen experiment code of the data cleanup case study: its digest is bound
+      by case-studies/data-cleanup-with-and-without-baltor/design-freeze.json from
+      commit f90babc, before the first model call, so moving the literal would
+      change the code that produced the recorded runs. The literal is one value of
+      the study's own closed vocabulary (truth row kinds, scorer outcomes, review
+      flags, duplicate decisions, Pi event types, run phases or material modes),
+      written the same way in the frozen design and truth files. It selects no
+      product runtime behavior.
+    classification: CLOSED_CONTROLLED_VOCABULARY
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
   - finding_id: hardcoding.aca044db7f593149180cfdfa
     owner: loop_engine_devtools.assurance.orientation
     rationale: >-

@@ -1,0 +1,94 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r1-duplicates-small-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 1,
+ "family": "duplicates",
+ "arm": "small-none",
+ "model": "qwen2.5-coder:7b",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "76ce0075546e06e7148b238f64b52f899f405bebf4c9d53a89ef690577d85e18",
+ "started_at": "2026-09-23T03:36:08+00:00",
+ "ended_at": "2026-09-23T03:36:14+00:00",
+ "elapsed_seconds": 5.9,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 1,
+  "refused": [],
+  "outcomes": {
+   "ok": 1
+  },
+  "usage_known_requests": 1,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 1542,
+  "completion_tokens_known_sum": 59,
+  "largest_prompt_tokens": 1542,
+  "model_seconds": 2.0,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 1,
+  "tool_calls": [],
+  "tool_errors": 0,
+  "final_text": "```json\n{\"name\": \"write\", \"arguments\": {\"path\": \"/home/username/.le-ci-tmp/dcd-runs/run-1/steps/r1-duplicates-small-none-a1/work/output.csv\", \"content\": \"id_a,id_b,decision\\n\"}}\n```",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1542,
+    "output": 59,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1601,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": false,
+ "output_sha256": null,
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 3804
+  }
+ ],
+ "score": {
+  "primary_metric": "pair_f1",
+  "primary": 0.0,
+  "passed": false,
+  "metrics": {
+   "rows": 38,
+   "true_duplicate_pairs": 18,
+   "pairs_marked_same": 0,
+   "pairs_marked_review": 0,
+   "pair_precision": 0.0,
+   "pair_recall": 0.0,
+   "pair_f1": 0.0,
+   "closure_pair_precision": 0.0,
+   "closure_pair_recall": 0.0,
+   "closure_pair_f1": 0.0,
+   "false_merges": 0,
+   "hard_negative_merges": 0,
+   "ambiguous_pairs_marked_same": 0,
+   "correct_hold_rate": 0.0,
+   "true_duplicates_only_marked_review": 0
+  },
+  "format_problems": {
+   "missing_output_file": 1
+  },
+  "output_readable": false
+ }
+}

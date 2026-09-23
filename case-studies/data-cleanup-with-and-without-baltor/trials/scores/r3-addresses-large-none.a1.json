@@ -1,0 +1,401 @@
+{
+ "record_type": "data_cleanup_step_score/v1",
+ "family": "addresses",
+ "output_readable": true,
+ "primary_metric": "record_accuracy",
+ "primary": 0.9375,
+ "passed": true,
+ "thresholds": {
+  "record_accuracy_at_least": 0.9,
+  "rewritten_parts": 0
+ },
+ "metrics": {
+  "rows": 32,
+  "correct": 30,
+  "record_accuracy": 0.9375,
+  "part_accuracy": 1.0,
+  "part_accuracy_by_part": {
+   "house_number": 1.0,
+   "street": 1.0,
+   "unit": 1.0,
+   "city": 1.0,
+   "region": 1.0,
+   "postal_code": 1.0,
+   "country": 1.0
+  },
+  "rewritten_parts": 0,
+  "rewritten_part_rate": 0.0,
+  "correct_hold_rate": 0.5,
+  "unneeded_review_rate": 0.0,
+  "missing_rows": 0
+ },
+ "format_problems": {},
+ "by_case_type": {
+  "united_states_full": {
+   "rows": 1,
+   "correct": 1
+  },
+  "null_marker": {
+   "rows": 2,
+   "correct": 2
+  },
+  "united_states": {
+   "rows": 2,
+   "correct": 2
+  },
+  "street_and_city_only": {
+   "rows": 2,
+   "correct": 2
+  },
+  "canada_postal_code_without_space": {
+   "rows": 1,
+   "correct": 1
+  },
+  "post_office_box_with_periods": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_states_zip_plus_four": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_states_suite_abbreviation": {
+   "rows": 1,
+   "correct": 1
+  },
+  "hold_intersection": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_kingdom_short_country": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_states_country_words": {
+   "rows": 1,
+   "correct": 1
+  },
+  "canada_no_comma_before_province": {
+   "rows": 1,
+   "correct": 1
+  },
+  "no_commas": {
+   "rows": 2,
+   "correct": 2
+  },
+  "hold_street_or_city_boundary": {
+   "rows": 1,
+   "correct": 0
+  },
+  "region_written_in_full": {
+   "rows": 1,
+   "correct": 1
+  },
+  "post_office_box": {
+   "rows": 1,
+   "correct": 1
+  },
+  "street_with_direction_suffix": {
+   "rows": 1,
+   "correct": 1
+  },
+  "canada_french_street": {
+   "rows": 2,
+   "correct": 2
+  },
+  "unit_before_number": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_states_hash_unit": {
+   "rows": 1,
+   "correct": 1
+  },
+  "hold_not_an_address": {
+   "rows": 1,
+   "correct": 1
+  },
+  "house_number_with_letter": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_kingdom_flat_before_number": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_kingdom": {
+   "rows": 1,
+   "correct": 1
+  },
+  "united_kingdom_with_county": {
+   "rows": 1,
+   "correct": 1
+  },
+  "no_house_number": {
+   "rows": 1,
+   "correct": 1
+  },
+  "hold_street_without_type_no_commas": {
+   "rows": 1,
+   "correct": 0
+  }
+ },
+ "outcomes": [
+  {
+   "id": "1",
+   "case_type": "united_states_full",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "2",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "3",
+   "case_type": "united_states",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "4",
+   "case_type": "street_and_city_only",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "5",
+   "case_type": "canada_postal_code_without_space",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "6",
+   "case_type": "post_office_box_with_periods",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "7",
+   "case_type": "united_states_zip_plus_four",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "8",
+   "case_type": "united_states_suite_abbreviation",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "9",
+   "case_type": "hold_intersection",
+   "kind": "hold",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "10",
+   "case_type": "united_kingdom_short_country",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "11",
+   "case_type": "united_states_country_words",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "12",
+   "case_type": "street_and_city_only",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "13",
+   "case_type": "canada_no_comma_before_province",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "14",
+   "case_type": "no_commas",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "15",
+   "case_type": "hold_street_or_city_boundary",
+   "kind": "hold",
+   "outcome": "missed_hold",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "16",
+   "case_type": "region_written_in_full",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "17",
+   "case_type": "post_office_box",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "18",
+   "case_type": "street_with_direction_suffix",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "19",
+   "case_type": "canada_french_street",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "20",
+   "case_type": "unit_before_number",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "21",
+   "case_type": "canada_french_street",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "22",
+   "case_type": "united_states_hash_unit",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "23",
+   "case_type": "no_commas",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "24",
+   "case_type": "hold_not_an_address",
+   "kind": "hold",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "25",
+   "case_type": "null_marker",
+   "kind": "keep",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "26",
+   "case_type": "house_number_with_letter",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "27",
+   "case_type": "united_states",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "28",
+   "case_type": "united_kingdom_flat_before_number",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "29",
+   "case_type": "united_kingdom",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "30",
+   "case_type": "united_kingdom_with_county",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "31",
+   "case_type": "no_house_number",
+   "kind": "split",
+   "outcome": "correct",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  },
+  {
+   "id": "32",
+   "case_type": "hold_street_without_type_no_commas",
+   "kind": "hold",
+   "outcome": "missed_hold",
+   "wrong_parts": [],
+   "rewritten_parts": []
+  }
+ ]
+}

@@ -1,0 +1,185 @@
+{
+ "record_type": "data_cleanup_step_score/v1",
+ "family": "duplicates",
+ "output_readable": true,
+ "primary_metric": "pair_f1",
+ "primary": 0.971429,
+ "passed": true,
+ "thresholds": {
+  "pair_f1_at_least": 0.9,
+  "hard_negative_merges": 0
+ },
+ "metrics": {
+  "rows": 38,
+  "true_duplicate_pairs": 18,
+  "pairs_marked_same": 17,
+  "pairs_marked_review": 2,
+  "pair_precision": 1.0,
+  "pair_recall": 0.944444,
+  "pair_f1": 0.971429,
+  "closure_pair_precision": 1.0,
+  "closure_pair_recall": 0.944444,
+  "closure_pair_f1": 0.971429,
+  "false_merges": 0,
+  "hard_negative_merges": 0,
+  "ambiguous_pairs_marked_same": 0,
+  "correct_hold_rate": 0.5,
+  "true_duplicates_only_marked_review": 0
+ },
+ "format_problems": {},
+ "by_case_type": {},
+ "outcomes": [
+  {
+   "pair": [
+    "1",
+    "33"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "2",
+    "3"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "2",
+    "15"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "3",
+    "15"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "4",
+    "29"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "4",
+    "30"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "6",
+    "17"
+   ],
+   "truth": "ambiguous",
+   "decision": "review"
+  },
+  {
+   "pair": [
+    "6",
+    "32"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "7",
+    "20"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "9",
+    "26"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "11",
+    "16"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "13",
+    "28"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "17",
+    "32"
+   ],
+   "truth": "ambiguous",
+   "decision": "review"
+  },
+  {
+   "pair": [
+    "18",
+    "31"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "19",
+    "21"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "25",
+    "35"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "25",
+    "38"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "29",
+    "30"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  },
+  {
+   "pair": [
+    "35",
+    "38"
+   ],
+   "truth": "duplicate",
+   "decision": "same"
+  }
+ ]
+}

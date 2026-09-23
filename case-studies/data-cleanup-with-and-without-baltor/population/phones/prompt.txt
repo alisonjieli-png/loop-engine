@@ -1,0 +1,16 @@
+You are doing one data cleaning step. Your working folder holds the file `input.csv`.
+
+Task: clean the `phone` column. The table has the columns `id` and `phone`. The customers are in the United States and Canada, so a number written without a country code has the country code 1.
+
+Write `output.csv` with the columns `id`, `phone` and `review`, one row for each input row, in any order:
+- Write each number in E.164 form: a plus sign, the country code and the rest of the number, with no spaces or punctuation, for example `+14155550123`.
+- When a number has an extension, keep it after the number as a space, the word `ext`, a space and the extension digits, for example `+14155550123 ext 12`.
+- Leave an empty value or a null marker such as `n/a` exactly as it is, with `review` set to `no`.
+- When you cannot be certain what the correct E.164 number is, do not guess: copy the input value exactly as it is and set `review` to `yes`.
+- Otherwise set `review` to `no`.
+
+Rules for this step:
+- Read `input.csv` and write `output.csv` in your working folder, as a comma-separated file with a header row and exactly the columns named above.
+- Do not change `input.csv`.
+- Work only inside your working folder. Python 3 with its standard library is available; no other Python packages are installed.
+- When `output.csv` is complete, reply with the single word DONE.

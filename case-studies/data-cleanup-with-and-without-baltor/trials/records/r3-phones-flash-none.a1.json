@@ -1,0 +1,165 @@
+{
+ "record_type": "data_cleanup_trial/v1",
+ "trial_id": "r3-phones-flash-none",
+ "attempt": 1,
+ "phase": "main",
+ "repetition": 3,
+ "family": "phones",
+ "arm": "flash-none",
+ "model": "glm-5.3-flash:cloud",
+ "material_mode": "none",
+ "material_items": [],
+ "material_sha256": null,
+ "prompt_sha256": "2304c1e65b52af26ef940b906c2b52762ea45412eddcb3c5783d9949f30b5260",
+ "started_at": "2026-09-23T04:12:31+00:00",
+ "ended_at": "2026-09-23T04:13:51+00:00",
+ "elapsed_seconds": 80.4,
+ "harness_exit_code": 0,
+ "timed_out": false,
+ "status": "completed",
+ "counts_in_results": true,
+ "requests": {
+  "physical": 5,
+  "refused": [],
+  "outcomes": {
+   "ok": 5
+  },
+  "usage_known_requests": 5,
+  "usage_unknown_requests": 0,
+  "prompt_tokens_known_sum": 52001,
+  "completion_tokens_known_sum": 14097,
+  "largest_prompt_tokens": 16677,
+  "model_seconds": 78.2,
+  "requests_with_every_material_marker": 0,
+  "requests_with_any_material_marker": 0
+ },
+ "harness_report": {
+  "assistant_messages": 5,
+  "tool_calls": [
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"ls -la && cat input.csv\"}"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 - <<'EOF'\\ndata = open('input.csv','rb').read()\\nprint(repr(data[:100]))\\nprint('has CR:', b'\\\\r' in data)\\nimport csv, io\\nrows = list(csv.reader(io.StringIO(data.decode('utf-8'))))\\nfor r in rows:\\n    # show any non-"
+   },
+   {
+    "tool": "write",
+    "args": "{\"path\": \"output.csv\", \"content\": \"id,phone,review\\n1,+441174960188,no\\n2,555 0149,yes\\n3,+14155550164,no\\n4,303-555-0121 / 303-555-0137,yes\\n5,-,no\\n6,(015) 555-0112,yes\\n7,+442079460176,no\\n8,+13035550199 ext 7,no\\n9,+447700900158,no\\n10,"
+   },
+   {
+    "tool": "bash",
+    "args": "{\"command\": \"python3 - <<'EOF'\\nimport csv, hashlib\\nprint('input sha:', hashlib.sha256(open('input.csv','rb').read()).hexdigest())\\nrows = list(csv.reader(open('output.csv')))\\nassert rows[0] == ['id','phone','review'], rows[0]\\nassert len"
+   }
+  ],
+  "tool_errors": 0,
+  "final_text": "DONE",
+  "harness_errors": [],
+  "reported_usage": [
+   {
+    "input": 1673,
+    "output": 27,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 1700,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 2238,
+    "output": 12426,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 14664,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 14988,
+    "output": 1425,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 16413,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 7465,
+    "output": 192,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 16617,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   },
+   {
+    "input": 7717,
+    "output": 27,
+    "cacheRead": 8960,
+    "cacheWrite": 0,
+    "totalTokens": 16704,
+    "cost": {
+     "input": 0,
+     "output": 0,
+     "cacheRead": 0,
+     "cacheWrite": 0,
+     "total": 0
+    }
+   }
+  ]
+ },
+ "input_unchanged": true,
+ "output_present": true,
+ "output_sha256": "b3223ccc8831edecdff52a7eb8c256d98c0c56fc44c0f4796bed0d3e8616f9f7",
+ "files_in_step_folder": [
+  {
+   "path": "input.csv",
+   "bytes": 666
+  },
+  {
+   "path": "output.csv",
+   "bytes": 739
+  }
+ ],
+ "score": {
+  "primary_metric": "record_accuracy",
+  "primary": 1.0,
+  "passed": true,
+  "metrics": {
+   "rows": 38,
+   "correct": 38,
+   "record_accuracy": 1.0,
+   "value_accuracy": 1.0,
+   "change_recall": 1.0,
+   "change_precision": 1.0,
+   "wrong_changes_to_correct_values": 0,
+   "wrong_change_rate_on_correct_values": 0.0,
+   "correct_hold_rate": 1.0,
+   "guess_rate_on_hold_rows": 0.0,
+   "missing_rows": 0
+  },
+  "format_problems": {},
+  "output_readable": true
+ }
+}
