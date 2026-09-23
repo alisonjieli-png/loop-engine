@@ -170,7 +170,7 @@ What happened after that, on 21 September 2026:
 - 6 items were rejected by at least one reviewer and stay candidates. They are not in the generated manifest and their bodies are not in the release image.
 - The two items with the licence `unknown` are among the six. Their rights are still unsettled, so nothing about the review changes what the loader does with them: it refuses them with `item_license_unknown` before registration.
 - The other 74 items of the 123 have no verdict in this repository. They stay candidates and nothing serves them. `reviews.json` holds a row for each of them with the outcome `not_reviewed`, so the record names every item of the catalogue and an item without a verdict is a written fact rather than an absence.
-- The reviewers read the bodies at anchor revision `381efec`. The catalogue was anchored again after that, most recently on 22 September 2026 to revision `4249eca`, revision `e2898c7`, revision `f29bddc` and revision `d893bba`, and each anchor change rewrote the trailing anchor line of every body. All 43 approvals were carried by `tools/carry_catalogue_approvals.py`, which proved for each one that the only difference between the bytes the reviewers read and the body today is that line and the revision it names. None of the 43 was refused. The bytes each approval covers stay readable in this repository's own history, at the commit and folder that `reviews.json` names under `reviewed_bodies_revision` and `reviewed_bodies_folder`.
+- The reviewers read the bodies at anchor revision `381efec`. The catalogue was anchored again after that, most recently on 22 September 2026 to revision `4249eca`, revision `e2898c7`, revision `f29bddc`, revision `d893bba` and revision `1700841`, and each anchor change rewrote the trailing anchor line of every body. All 43 approvals were carried by `tools/carry_catalogue_approvals.py`, which proved for each one that the only difference between the bytes the reviewers read and the body today is that line and the revision it names. None of the 43 was refused. The bytes each approval covers stay readable in this repository's own history, at the commit and folder that `reviews.json` names under `reviewed_bodies_revision` and `reviewed_bodies_folder`.
 
 Remaining steps, not done here and not authorized by this folder:
 
@@ -182,7 +182,7 @@ Remaining steps, not done here and not authorized by this folder:
 ## How to review one item
 
 1. Open the body from the first column and read it as a customer would.
-2. Check the grounding in `items.json`. For a body that restates its source, open the cited file at revision `d893bba` and check that the body says what the source says or does. For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true.
+2. Check the grounding in `items.json`. For a body that restates its source, open the cited file at revision `1700841` and check that the body says what the source says or does. For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true.
 3. Check the licence state and the declared effects in `items.json`.
 4. Write the decision in the approval column: approved with a name and a date, rejected with the reason, or the change that is needed.
 5. After any edit of a body, run the refresh tool and then the checks. Run these commands from the repository root. The first command only reports stale items. The second rewrites the derived fields.

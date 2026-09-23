@@ -40,4 +40,4 @@ A reviewer approves a change because the suite is green and the code is clean. T
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision d893bba.
+Licence: MIT. Written for this catalogue at revision 1700841.

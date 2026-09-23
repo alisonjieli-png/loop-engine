@@ -39,4 +39,4 @@ An author asks one reviewer whether the work is good. The answer is general prai
 
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the list of perspectives and the perspectives assigned to each step.
 
-Licence: MIT. Compiled from revision d893bba.
+Licence: MIT. Compiled from revision 1700841.
