@@ -9,8 +9,10 @@ gap; a low allowance pauses within a declared bound and a longer wait stops
 the run; the registry reader keeps only active latest entries, marks a
 snapshot complete only at its last page, and a status change or a vanished
 entry in a complete snapshot withdraws the item while an incomplete one
-infers nothing; an incremental sync is reconciled with a full one; and no
-request is sent without network authority.
+infers nothing; the upstream licence of an entry is read, never assumed; an
+unreadable licence or notice file never falls back to the licence above it;
+an incremental sync is reconciled with a full one; and no request is sent
+without network authority.
 """
 from __future__ import annotations
 
@@ -370,6 +372,43 @@ def self_test() -> dict:
                   ("io.github.two/beta", "status_changed")]
               and [(row["name"], row["reason"]) for row in partial_changes]
               == [("io.github.two/beta", "status_changed")], complete_changes)
+
+        # The upstream licence of a registry entry is read from its code repository, never assumed:
+        # both signals must agree, a missing licence is NONE, a repository that does not answer
+        # refuses the entry, and past the lookup ceiling the licence stays unknown.
+        def upstream(name, repository):
+            entry = registry_entry(name)
+            entry["server"]["repository"] = {"url": f"https://github.com/{repository}", "source": "github"}
+            return entry
+
+        def licence_answer(text, spdx):
+            data = text.encode()
+            return (200, json.dumps({"path": "LICENSE", "sha": git_blob_identity(data),
+                                     "content": base64.b64encode(data).decode(),
+                                     "license": {"spdx_id": spdx}}).encode())
+
+        upstream_table = {"repos/up-owner/licensed/license": licence_answer(MIT_FIXTURE, "MIT"),
+                          "repos/up-owner/claimed/license": licence_answer(PROPRIETARY_FIXTURE, "MIT"),
+                          "repos/up-owner/unlicensed": (200, b'{"name": "unlicensed"}')}
+        upstream_pages = [[upstream(f"io.github.up/{name}", f"up-owner/{name}")
+                           for name in ("licensed", "claimed", "unlicensed", "vanished", "late")]]
+        linked = McpOfficialRegistrySource(
+            FakeRegistry(upstream_pages, RequestBudget(maximum_requests=10), RequestLog()), quarantine,
+            github_reader=FakeGitHubReader(upstream_table, RequestBudget(maximum_requests=50), RequestLog()),
+            maximum_upstream_lookups=4).read_candidates(registry_declaration, _request("registry.mcp.official"))
+        upstream_evidence = {row["name"]: (row["provenance"]["licence_evidence"]["spdx_expression"],
+                                           row["provenance"]["licence_evidence"]["reason"])
+                             for row in linked["candidates"]}
+        upstream_refused = [(row["source_ref"]["repository"], row["reason"]) for row in linked["refusals"]]
+        check("the_upstream_licence_of_a_registry_entry_is_read_never_assumed",
+              upstream_evidence.get("io.github.up/licensed") == ("MIT", "upstream_repository_licence")
+              and upstream_evidence.get("io.github.up/claimed")
+              == ("NOASSERTION", "upstream_licence_signals_disagree")
+              and upstream_evidence.get("io.github.up/unlicensed")
+              == ("NONE", "upstream_repository_has_no_licence_file")
+              and upstream_refused == [("io.github.up/vanished", "upstream_repository_unreadable")]
+              and upstream_evidence.get("io.github.up/late") == ("NOASSERTION", "upstream_licence_not_checked"),
+              (upstream_evidence, upstream_refused))
 
         full = snapshot_index([registry_entry("io.github.one/alpha"), registry_entry("io.github.four/delta")])
         incremental = snapshot_index([registry_entry("io.github.one/alpha")])

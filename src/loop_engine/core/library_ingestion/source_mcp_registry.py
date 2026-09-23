@@ -7,7 +7,8 @@ entry. An entry is link-only: Baltor later writes the harness connection
 files from its facts, and the author's text is never copied. The licence
 evidence of a link-only entry records the licence of the upstream code
 repository when the entry names a GitHub repository and a GitHub reader is
-supplied; otherwise the licence stays unknown, never assumed. A status other
+supplied, and only when GitHub's licence interface and the licence text
+agree; otherwise the licence stays unknown, never assumed. A status other
 than active, an entry that is not the latest, and a declared copy are
 refused by name. The last page marks the snapshot complete; a ceiling stops
 it with the registry cursor to resume from.
@@ -223,4 +224,10 @@ class McpOfficialRegistrySource:
         matched = match_licence(data.decode("utf-8", "replace"))
         part = {"path": answer["path"], "sha256": bytes_digest(data), "github_spdx_id": github,
                 "matched_spdx": matched.spdx, "similarity": matched.similarity}
-        return (github if github != "NOASSERTION" else NO_ASSERTION), "upstream_repository_licence", part
+        # The rule of a repository licence at a pinned commit: the licence interface and the
+        # text must name the same licence, or the upstream licence stays unknown.
+        if github == NO_ASSERTION:
+            return NO_ASSERTION, "upstream_licence_not_asserted", part
+        if github != matched.spdx:
+            return NO_ASSERTION, "upstream_licence_signals_disagree", part
+        return github, "upstream_repository_licence", part
