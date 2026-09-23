@@ -51,9 +51,9 @@ class FakeUpstream:
                     {"choices": [{"index": 0, "delta": {}, "finish_reason": "tool_calls"}]},
                 ]
                 if usage:
-                    chunks.append({"choices": [], "usage": {"prompt_tokens": 120,
-                                                            "completion_tokens": 7,
-                                                            "total_tokens": 127}})
+                    chunks.append({"choices": [], "usage": {
+                        "prompt_tokens": 120, "completion_tokens": 7, "total_tokens": 127,
+                        "prompt_tokens_details": {"cached_tokens": 64}}})
                 for chunk in chunks:
                     self.wfile.write(b"data: " + json.dumps(chunk).encode() + b"\n\n")
                 self.wfile.write(b"data: [DONE]\n\n")
@@ -119,6 +119,8 @@ class MeterTests(unittest.TestCase):
         completed = self.ledger()[1]
         self.assertEqual(completed["usage"], {"prompt_tokens": 120, "completion_tokens": 7,
                                               "total_tokens": 127})
+        self.assertEqual(completed["usage_reported"]["prompt_tokens_details"],
+                         {"cached_tokens": 64})
         self.assertEqual(completed["tool_calls"], ["write"])
         self.assertEqual(completed["material_markers_present"], [True, False])
         self.assertNotIn("not-a-key", (self.root / "ledger.jsonl").read_text())

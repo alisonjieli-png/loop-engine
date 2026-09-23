@@ -1,7 +1,7 @@
 """Write or check the digests that freeze the design before any model call.
 
     python runner/freeze.py            # write design-freeze.json
-    python runner/freeze.py --check    # exit 1 when a frozen file changed
+    python runner/freeze.py --check    # exit 1 when a frozen file changed without an amendment
 
 The freeze covers the design record, the population and its generator, the
 scorer and its tests, the runner and the proxy, and the exact bytes of every
@@ -57,8 +57,18 @@ def main(argv=None):
     now = current()
     if args.check:
         frozen = json.loads(FREEZE.read_text(encoding="utf-8"))
-        changed = sorted(name for name in set(frozen["files"]) | set(now["files"])
-                         if frozen["files"].get(name) != now["files"].get(name))
+        amendments = STUDY / "amendments.json"
+        amended = dict(frozen["files"])
+        if amendments.is_file():
+            for amendment in json.loads(amendments.read_text(encoding="utf-8"))["amendments"]:
+                for name, change in amendment["files"].items():
+                    if amended.get(name) != change["from"]:
+                        print(f"amendment {amendment['id']} does not start from the recorded "
+                              f"digest of {name}")
+                        return 1
+                    amended[name] = change["to"]
+        changed = sorted(name for name in set(amended) | set(now["files"])
+                         if amended.get(name) != now["files"].get(name))
         changed += sorted(name for name in set(frozen["items"]) | set(now["items"])
                           if frozen["items"].get(name) != now["items"].get(name))
         for name in changed:

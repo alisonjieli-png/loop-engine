@@ -276,6 +276,7 @@ class Meter:
 def summarize_response(data):
     """Usage, finish reason and tool names from a streamed or plain response."""
     usage = None
+    usage_reported = None
     finish = None
     tools = []
     content_chars = reasoning_chars = 0
@@ -300,6 +301,7 @@ def summarize_response(data):
                 continue
     for payload in payloads:
         if isinstance(payload.get("usage"), dict):
+            usage_reported = payload["usage"]
             usage = {key: payload["usage"].get(key)
                      for key in ("prompt_tokens", "completion_tokens", "total_tokens")}
         for choice in payload.get("choices") or []:
@@ -312,5 +314,5 @@ def summarize_response(data):
                 name = (call.get("function") or {}).get("name")
                 if name:
                     tools.append(name)
-    return dict(usage=usage, finish_reason=finish, tool_calls=tools,
+    return dict(usage=usage, usage_reported=usage_reported, finish_reason=finish, tool_calls=tools,
                 content_chars=content_chars, reasoning_chars=reasoning_chars)

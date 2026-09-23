@@ -1,0 +1,24 @@
+{
+ "record_type": "data_cleanup_design_amendments/v1",
+ "rule": "After the pilot, only harness or recording plumbing may change. Each change names the files with their digest before and after, its reason and its effect on results.",
+ "amendments": [
+  {
+   "id": "A1",
+   "recorded_on": "2026-09-22",
+   "after": "pilot",
+   "kind": "recording plumbing",
+   "change": "The counting proxy also keeps the provider's full usage object for each request, which for the cloud models includes cached prompt tokens.",
+   "reason": "The pilot showed that Ollama Cloud reports prompt_tokens_details.cached_tokens, which the frozen proxy did not keep. The raw response files of the pilot still hold it.",
+   "effect_on_results": "None. Requests, prompts, arms, models, scoring, thresholds and claim rules are unchanged.",
+   "files": {
+    "runner/meter.py": {"from": "30c7b0de6575a7d63c1b1081f97e75e1c13ee9f40083e1b1690ef0a9a9e2f687", "to": "8dd09e8351f6a88d9a941a78f00e801bd1f1bea0fa7a564b7b8e3835c80a0bcd"},
+    "runner/test_meter.py": {"from": "54fd1476a7b750a8430ba23653bb256df9a09725e5ad224f02b747715d672d8c", "to": "a6ce04c3c207e074651c6b85f635d67548ee3331bd035a6b4612b96063bd2ce0"}
+   }
+  }
+ ],
+ "pilot_findings": [
+  "Probe: glm-5.2:cloud answered READY in one request.",
+  "pilot-phones-small-none: qwen2.5-coder:7b wrote its first tool call as JSON text inside a Markdown code fence instead of a structured tool call. Pi treated it as a final answer, and the step ended after one request with no output file. This is model behavior, not a plumbing fault: the same endpoint and harness return structured tool calls for the cloud models. The frozen design is kept and the small-model arms run as planned.",
+  "pilot-phones-flash-none: glm-5.3-flash:cloud read the file, inspected it, wrote the output with a Python script and replied DONE in four requests and 50.6 seconds. The scorer found 38 of 38 rows correct."
+ ]
+}
