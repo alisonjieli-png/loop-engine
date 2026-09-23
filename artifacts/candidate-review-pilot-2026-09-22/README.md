@@ -228,6 +228,7 @@ item could have been put to it: Claude Code wrote them all.
 | `source-mutants-1.json` | The first run. Not valid: the scratch copy lacked a folder that one catalogue item cites, so the unmutated checks already failed and every mutant counted as failing. The script now links every cited folder and runs no mutant against a failing baseline. |
 | `source-mutants-2.json` | A run on an intermediate tree, before the record builder's path and version corrections; kept, superseded by the next run. |
 | `source-mutants-3.json` | The run on the committed tree. |
+| `source-mutants-4.json` | The adversarial verification's run of 50 further mutants on revision `7564c71`, each removing a guard the list above did not cover: 35 killed, 15 survived. One survivor is an equivalent mutant that no check can tell apart; the other 14 guards had no check, and each now has one. Its mutants, except the equivalent one, are the first group of `VERIFICATION_MUTANTS` in `source_mutants.py`. |
 
 ## Limits
 

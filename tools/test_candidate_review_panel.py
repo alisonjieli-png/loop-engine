@@ -15,11 +15,12 @@ What the panel must guarantee
 │   └── one written rejection keeps the item a candidate, with its reasons
 ├── Before any call
 │   ├── a pre-check refusal ends the item with no reviewer asked
+│   ├── a scripted fixture reviewer is never asked outside a fixture run
 │   └── no model call happens without explicit model call authority
 ├── Answers
 │   ├── an answer about other bytes is not counted
-│   ├── a rejection without a cited criterion, an approval with a blocking
-│   │   finding, or an answer with unknown keys is not counted
+│   ├── a rejection without a cited criterion or a written reason, an approval
+│   │   with a blocking finding, or an answer with unknown keys is not counted
 │   ├── an answer of any shape, such as a criterion written as a list or text
 │   │   nested past the JSON reader's limit, is recorded as invalid, never raised
 │   └── an answer that is not counted, or a failed call, is replaced by a
@@ -31,6 +32,7 @@ What the panel must guarantee
 │   └── unknown usage stays unknown and is charged at its reservation
 └── Cursor
     ├── a stopped run, run again, asks only the reviewers still missing
+    ├── a ledger whose last line was not completed is refused
     ├── a finished run, run again, makes no call
     ├── a call that was dispatched and never completed is not repeated
     ├── a run identity the ledger already holds is refused, so a dispatch that
@@ -277,6 +279,22 @@ class BeforeAnyCallTest(unittest.TestCase):
             self.assertEqual(result.calls, [])
             self.assertEqual(ReviewLedger(harness.ledger_path).dispatches(), [])
 
+    def test_a_fixture_reviewer_is_never_asked_outside_a_fixture_run(self):
+        """A scripted reviewer answers only in a run declared a fixture run, so it can never decide a real item."""
+        with tempfile.TemporaryDirectory() as directory:
+            harness = Harness(directory, {"a": approving, "b": approving, "c": approving},
+                              families=("zhipu", "deepseek", "openai"))
+            panel = panel_module.ReviewPanel(
+                harness.configuration, CRITERIA, INSTRUCTIONS, harness.reviewers,
+                engines.build_precheck_engines(harness.configuration, only_builtin=True),
+                ReviewLedger(harness.ledger_path), sleeper=harness.sleep, clock=harness.clock)
+            result = panel.run(panel_module.PanelRunRequest(
+                run_id="real", requests=(_request(),), population=DATA.population_bodies(), call_ceiling=100,
+                token_ceiling=10_000_000, model_calls_authorized=True, fixture_run=False))
+            self.assertEqual([len(harness.calls(name)) for name in ("a", "b", "c")], [0, 0, 0])
+            self.assertEqual(set(result.ineligible.values()), {panel_module.FIXTURE_OUTSIDE_FIXTURE_RUN})
+            self.assertEqual(_only(result).outcome, panel_module.PANEL_INCOMPLETE)
+
     def test_no_model_call_without_explicit_authority(self):
         with tempfile.TemporaryDirectory() as directory:
             harness = Harness(directory, {"a": approving, "b": approving, "c": approving},
@@ -341,6 +359,11 @@ class AnswerValidationTest(unittest.TestCase):
                                                         answer_format=answer_format), (None, "answer_not_json"))
         _item, call, _harness = self._replaced_first(lambda prompt, n: attempt("[" * 5000))
         self.assertEqual((call["outcome"], call["error_code"]), (panel_module.INVALID_RESPONSE, "answer_not_json"))
+
+    def test_a_rejection_without_a_written_reason_is_not_counted(self):
+        _item, call, _harness = self._replaced_first(lambda prompt, n: attempt(answer(prompt, verdicts.REJECT,
+                                                                                      reasons=" ")))
+        self.assertEqual(call["error_code"], "rejection_without_reason")
 
     def test_an_approval_with_a_blocking_finding_is_not_counted(self):
         _item, call, _harness = self._replaced_first(lambda prompt, n: attempt(answer(
@@ -532,6 +555,18 @@ class CursorTest(unittest.TestCase):
                 harness.run([_request(SECOND)], run_id="resume")
             self.assertEqual(caught.exception.code, "run_identity_repeated")
             self.assertEqual([row["run_id"] for row in ReviewLedger(harness.ledger_path).runs()], ["resume"])
+
+    def test_a_ledger_whose_last_line_was_not_completed_is_refused(self):
+        """A write stopped part way leaves a line with no line break, and the next append would join it."""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "ledger.jsonl"
+            row = {"record_type": panel_module.RUN_RECORD, "run_id": "cut", "started_at": "2026-09-22T00:00:00Z",
+                   "policy_sha256": BASE.policy.sha256, "call_ceiling": 1, "token_ceiling": 1, "fixture_run": True,
+                   "requests": []}
+            path.write_text(json.dumps(row, sort_keys=True, separators=(",", ":")), encoding="utf-8")
+            with self.assertRaises(CandidateReviewError) as caught:
+                ReviewLedger(path)
+            self.assertEqual(caught.exception.code, "ledger_truncated")
 
     def test_a_ledger_file_that_holds_one_run_identity_twice_is_refused(self):
         """Such a ledger cannot tell two calls of the same name apart, so it is never read as a cursor."""

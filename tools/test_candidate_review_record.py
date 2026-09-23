@@ -16,7 +16,9 @@ Known-wrong records, each refused by the reader
 ├── a rejection with no written reason
 ├── a decision by a reviewer the record does not name
 ├── one reviewer, or one call, deciding a row twice
-├── a decision bound to other bytes than the row names
+├── a decision bound to other bytes than the row names, or naming no call
+├── rows that do not name the selected items, an approval reference prefix of
+│   another record, and a rejected row under another rule
 ├── an approved row with no digest, or an approval reference for another row
 ├── a row with no standing verdict that carries an approval reference
 ├── a finding under a criterion that does not apply to the row's kind of body
@@ -420,6 +422,42 @@ class PrecheckAndLicenceTest(unittest.TestCase):
         record = _with_a_refused_licence_precheck(copy.deepcopy(APPROVED_RECORD))
         with mock.patch.object(review_record, "_read_prechecks", lambda *arguments: None):
             self.assertEqual(_row(_read(record))["outcome"], panel_module.APPROVED)
+
+
+class RemainingRefusalTest(unittest.TestCase):
+    """Refusals of the reader that no other check held: each record here reads when its guard is removed."""
+
+    def test_a_fixture_run_record_is_refused_even_without_a_fixture_reviewer(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        for row in record["reviewers"] + record["calls"]:
+            row["engine_kind"] = "model_gateway"
+        _refused(self, record, "fixture_reviewer_in_record", allow_fixture=False)
+
+    def test_a_fixture_reviewer_is_refused_in_a_record_that_calls_itself_real(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        record["fixture_run"] = False
+        _refused(self, record, "fixture_reviewer_in_record", allow_fixture=False)
+
+    def test_rows_that_do_not_name_the_selected_items_are_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        record["population"]["selected"] = ["another_item"]
+        _refused(self, record, "rows_do_not_cover_population")
+
+    def test_an_approval_reference_prefix_of_another_record_is_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        record["approval_ref_prefix"] = "examples/fixture/another-record.json#"
+        _row(record)["approval_ref"] = record["approval_ref_prefix"] + _row(record)["identity"]
+        _refused(self, record, "approval_ref_inconsistent")
+
+    def test_a_decision_that_names_no_call_is_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        _row(record)["decisions"][0]["call_ref"] = "run-1#999"
+        _refused(self, record, "decision_without_call")
+
+    def test_a_rejected_row_under_another_rule_is_refused(self):
+        record = copy.deepcopy(REJECTED_RECORD)
+        _row(record)["rule_applied"] = panel_module.FAMILY_QUORUM_RULE
+        _refused(self, record, "rejection_inconsistent")
 
 
 class InterruptedDispatchTest(unittest.TestCase):
