@@ -19,6 +19,11 @@ const page=await context.newPage();page.on("pageerror",error=>errors.push(error.
 try{
   const home=await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone")&&document.querySelector("#service-status").textContent.includes("Service available"));
   check("HTTPS_homepage_is_available",home.status()===200);
+  /* The one label of every access action follows the state the deployed service reports: "Request an invitation" at /waitlist
+     while account creation is closed, "Get started" at /connect while it is open. */
+  const liveReport=(await (await page.request.get(origin+"/api/v1/capabilities",{maxRedirects:0})).json())?.result||{};
+  const liveOpen=liveReport.record_type==="service_capabilities/v1"&&liveReport.website?.registration_available===true;
+  const liveLabel=liveOpen?"Get started":"Request an invitation",livePath=liveOpen?"/connect":"/waitlist";
   check("live_page_has_four_intelligence_layers",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4);
   const liveHeadline=await page.locator('[data-view="home"] h1').innerText();
   const namesTheReader=text=>/\byour\b/i.test(text)&&/\bdevelopers?\b/i.test(text)&&/\bagents?\b/i.test(text);
@@ -44,10 +49,23 @@ try{
   const liveStates=(selector,key)=>page.locator(selector).evaluateAll((items,key)=>items.filter(item=>["available","live"].includes(item.querySelector(".status-tag")?.dataset.status)).map(item=>item.dataset[key]),key);
   const available={problems:await liveStates("[data-problem]","problem"),steps:await liveStates("[data-how-step]","howStep"),kinds:await liveStates("[data-kind]","kind")};
   check("live_homepage_calls_only_the_working_parts_available",JSON.stringify(available)===JSON.stringify({problems:["context","expertise"],steps:["search","download"],kinds:["skills"]}));
-  check("live_homepage_offers_one_primary_action",await page.locator('[data-view="home"] .hero .button.primary').count()===1&&await page.locator('[data-view="home"] .hero .button.primary').getAttribute("href")==="/connect"&&["waiting","open"].includes(await page.locator("#hero-primary").getAttribute("data-access-state")));
-  /* One primary action on the whole homepage and in the header, "Get started", opening the Get started page. */
-  const livePrimaries=await page.locator('header .button.primary, [data-view="home"] .button.primary, footer .button.primary').evaluateAll(items=>items.map(item=>[item.textContent.trim(),item.getAttribute("href"),Boolean(item.closest("header"))]));
-  check("live_every_primary_action_says_get_started",livePrimaries.length>=4&&livePrimaries.filter(([,,header])=>header).length===1&&livePrimaries.every(([label,href])=>label==="Get started"&&href==="/connect"));
+  check("live_homepage_offers_one_primary_action",await page.locator('[data-view="home"] .hero .button.primary').count()===1&&await page.locator('[data-view="home"] .hero .button.primary').getAttribute("href")===livePath&&["waiting","open"].includes(await page.locator("#hero-primary").getAttribute("data-access-state")));
+  /* One primary action on the whole homepage and in the header, with the one label of the reported state. */
+  const livePrimaries=await page.locator('header .button.primary, [data-view="home"] .button.primary, footer .button.primary').evaluateAll(items=>items.map(item=>[item.textContent.replace(/[↗→]/g,"").trim(),item.getAttribute("href"),Boolean(item.closest("header"))]));
+  check("live_every_primary_action_carries_the_one_label",livePrimaries.length>=4&&livePrimaries.filter(([,,header])=>header).length===1&&livePrimaries.every(([label,href])=>label===liveLabel&&href===livePath));
+  /* On a phone the header is one compact bar and the primary action stands in the first screen. While the service keeps a list
+     and account creation is closed, one press on it shows the invitation email field inside the first screen. */
+  const phone=await context.newPage();phone.on("pageerror",error=>errors.push(error.message));
+  await phone.setViewportSize({width:390,height:844});await phone.goto(origin+"/");
+  await phone.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
+  const liveFirst=await phone.evaluate(()=>{const box=document.getElementById("hero-primary").getBoundingClientRect();return {top:box.top,bottom:box.bottom,viewport:innerHeight,header:document.querySelector("header").getBoundingClientRect().height};});
+  check("live_phone_first_screen_holds_the_primary_action_under_a_compact_header",liveFirst.top>=0&&liveFirst.bottom<=liveFirst.viewport&&liveFirst.header<=80);
+  if(!liveOpen&&liveReport.website?.waitlist_available===true){
+    await phone.locator("#hero-primary").click();
+    const liveField=await phone.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node.getBoundingClientRect();return {path:location.pathname,shown:node.getClientRects().length>0,top:box.top,bottom:box.bottom,viewport:innerHeight};});
+    check("live_invitation_action_lands_on_a_visible_email_field",liveField.path==="/waitlist"&&liveField.shown&&liveField.top>=0&&liveField.bottom<=liveField.viewport);
+  }
+  await phone.close();
   check("live_navigation_starts_with_how_it_works",(await page.locator("header nav a").first().innerText()).trim()==="How it works");
   /* The connection entry on the homepage is written by the page script with the deployed address. */
   check("live_homepage_entry_uses_the_deployed_origin",(await page.locator("[data-home-recipe]").innerText()).includes('"url": "'+origin+'/mcp"'));

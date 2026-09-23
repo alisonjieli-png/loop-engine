@@ -293,8 +293,10 @@ states and counts. It never holds the address, the link or a credential.
 
 Since September 22, 2026 the form is not a page of its own. It sits in the
 invitation panel that leads the Get started page, and `/waitlist` opens that
-page. Every public action into the journey says "Get started"; the footer no
-longer carries a second link with another label.
+page. Every public action into the journey carries one label: "Request an
+invitation", opening `/waitlist`, while account creation is closed, and "Get
+started", opening `/connect`, once it is open. One press on the homepage's
+action shows the email field in the first screen, on a phone as well.
 
 The page makes no offer before the service answers. The invitation panel, the
 form, the link on the registration page and the discount sentence all start

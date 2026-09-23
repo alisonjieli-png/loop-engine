@@ -129,13 +129,18 @@ const publicVocabulary=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|r
    drifts between the two is a named failure below rather than a silent disagreement. */
 const retiredAccessWords=/\bpilots?\b|\bbetas?\b|early access/i;
 /* One call to action. The owner, September 22, 2026: "get started and join the waiting list are redundant". Every link or
-   button that starts the access journey says "Get started" and opens the one Get started page. That page leads with the one
-   action the service reports: account creation, the invitation request form, or the plain way to reach the operator. The
-   labels the owner called redundant are reported anywhere. The invitation request is offered only by the form that leads the
-   Get started page. Account creation is offered only while the service reports registration open, and then only on the Get
-   started page and the account page. Each rule has a known-wrong page of its own in the journey below. The readers return
-   empty values for a missing element, so a page without the new parts fails these checks by name instead of stopping. */
-const getStartedLabel="Get started",getStartedPath="/connect",getStartedAddresses=["/connect","/get-started","/waitlist"];
+   button that starts the access journey carries one label and opens the one Get started page. While account creation is
+   closed the label is "Request an invitation" and the address /waitlist, as the live review of September 22 asked, and the
+   page leads with the invitation form or, when the service keeps no list, with the way to reach the operator. While account
+   creation is open the label is "Get started" and the address /connect, and the page leads with account creation. The labels
+   the owner called redundant are reported anywhere, an invitation request is reported anywhere but on that journey, and
+   account creation is offered only while the service reports registration open, and then only on the Get started page and
+   the account page. Each rule has a known-wrong page of its own in the journey below. The readers return empty values for a
+   missing element, so a page without the new parts fails these checks by name instead of stopping. */
+const accessLabels={closed:"Request an invitation",open:"Get started"},accessPaths={closed:"/waitlist",open:"/connect"},accessAddresses=["/connect","/get-started","/waitlist"];
+const stateLabel=registrationOpen=>registrationOpen?accessLabels.open:accessLabels.closed,statePath=registrationOpen=>registrationOpen?accessPaths.open:accessPaths.closed;
+/* A link to a later step of the Get started page, such as its connection settings, is not the access journey. */
+const opensTheJourney=href=>{const [path,part=""]=href.split("#");return accessAddresses.includes(path)&&(part===""||part==="start-access");};
 const redundantAccessLabel=/join the waiting list|request access|early access/i,invitationAccessLabel=/ask for an invitation|request an invitation/i,creationAccessLabel=/create (?:your )?account|\bsign up\b/i;
 /* The public pages a visitor can open without signing in. Each is scanned on three real services below. */
 const accessJourneyPaths=["/","/pricing","/how-it-works","/connect","/signup","/examples","/security","/docs","/privacy","/login"];
@@ -147,12 +152,12 @@ const publicActions=target=>target.evaluate(()=>{
     .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",
       lead:Boolean(lead&&lead.contains(node)),account:Boolean(node.closest('[data-view="signup"]'))}));
 });
-const accessActionProblems=(actions,registrationOpen)=>[
-  ...actions.filter(action=>getStartedAddresses.includes(action.href.split("#")[0])&&action.text!==getStartedLabel).map(action=>"an action that opens the Get started page says "+JSON.stringify(action.text)),
-  ...actions.filter(action=>action.text===getStartedLabel&&action.href!==getStartedPath).map(action=>"a Get started action opens "+JSON.stringify(action.href)),
+const accessActionProblems=(actions,registrationOpen)=>{const label=stateLabel(registrationOpen),path=statePath(registrationOpen);return [
+  ...actions.filter(action=>opensTheJourney(action.href)&&action.text!==label).map(action=>"an action that opens the Get started page says "+JSON.stringify(action.text)),
+  ...actions.filter(action=>action.text===label&&!action.lead&&action.href!==path).map(action=>"a "+JSON.stringify(label)+" action opens "+JSON.stringify(action.href)),
   ...actions.filter(action=>redundantAccessLabel.test(action.text)).map(action=>"a second label for the same journey: "+JSON.stringify(action.text)),
-  ...actions.filter(action=>invitationAccessLabel.test(action.text)&&!action.lead).map(action=>"an invitation request outside the Get started page: "+JSON.stringify(action.text)),
-  ...actions.filter(action=>creationAccessLabel.test(action.text)&&(!registrationOpen||!(action.lead||action.account))).map(action=>(registrationOpen?"account creation offered outside the Get started and account pages: ":"account creation offered while registration is closed: ")+JSON.stringify(action.text))];
+  ...actions.filter(action=>invitationAccessLabel.test(action.text)&&!action.lead&&(registrationOpen||action.text!==label||action.href!==path)).map(action=>"an invitation request outside the invitation journey: "+JSON.stringify(action.text)),
+  ...actions.filter(action=>creationAccessLabel.test(action.text)&&(!registrationOpen||!(action.lead||action.account))).map(action=>(registrationOpen?"account creation offered outside the Get started and account pages: ":"account creation offered while registration is closed: ")+JSON.stringify(action.text))];};
 /* The Get started page leads with one panel: "register", "invite" or "operator". The reader says which panel is shown, whether
    the invitation form and the account action can be seen, and whether the panel is the first thing under the page heading. */
 const startLead=target=>target.evaluate(()=>{
@@ -179,6 +184,19 @@ const menuWorks=states=>states.closed.links.length===0&&states.closed.primary&&!
   &&JSON.stringify(states.keyed.links)===JSON.stringify(menuLinks)&&states.keyed.focusMark!=="none"
   &&states.chosen.path==="/pricing"&&!states.chosen.open&&states.chosen.links.length===0&&states.chosen.primary;
 const openGetStarted=async target=>{await target.locator('header a[data-page="setup"]').click();return startLead(target);};
+/* One press on the hero's primary action, and where the invitation email field then stands in the window. The live review of
+   September 22 asked for one action that lands on a visible email field with no page or press in between. */
+const pressThePrimaryAction=async (target,width,height)=>{
+  const label=((await target.locator("#hero-primary").textContent())||"").replace(/[↗→]/g,"").trim();
+  await target.locator("#hero-primary").click();
+  return {width,height,label,...await target.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node?node.getBoundingClientRect():null;
+    return {path:location.pathname,shown:Boolean(node&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden"),top:box?Math.round(box.top):-1,bottom:box?Math.round(box.bottom):-1,viewport:innerHeight};})};
+};
+const landsOnTheField=item=>item.label===accessLabels.closed&&item.path===accessPaths.closed&&item.shown&&item.top>=0&&item.bottom<=item.viewport;
+/* The first screen on a phone: where the hero's primary action stands, how tall the header is, and whether the page scrolls sideways. */
+const firstScreen=target=>target.evaluate(()=>{const box=document.getElementById("hero-primary")?.getBoundingClientRect()||{top:-1,bottom:-1};
+  return {top:Math.round(box.top),bottom:Math.round(box.bottom),viewport:innerHeight,width:innerWidth,header:Math.round(document.querySelector("header")?.getBoundingClientRect().height||0),overflow:document.documentElement.scrollWidth>innerWidth+1};});
+const phoneFirstScreen=item=>item.top>=0&&item.bottom<=item.viewport&&item.header>0&&item.header<=80;
 /* Visual structure. The owner, September 22, 2026: "there is too much white, no clear seperations or off white or best
    practices or horizontal breaks seperating sections". The page ground is not plain white, every top-level part of the
    homepage is a band, and each band is set off from the one above it by a change of ground and by a visible rule, as the design
@@ -200,8 +218,8 @@ const bandProblems=measured=>[...(measured.count<6?["the homepage has "+measured
 const primaryActions=target=>target.evaluate(()=>[...document.querySelectorAll("header .button.primary, footer .button.primary, [data-view]:not([hidden]) .button.primary")]
   .filter(node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden")
   .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",header:Boolean(node.closest("header"))})));
-const primaryProblems=actions=>[...(actions.length?[]:["no primary action is shown"]),
-  ...actions.filter(action=>action.text!==getStartedLabel||action.href!==getStartedPath).map(action=>"a primary action says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href))];
+const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:["no primary action is shown"]),
+  ...actions.filter(action=>action.text!==stateLabel(registrationOpen)||action.href!==statePath(registrationOpen)).map(action=>"a primary action says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href))];
 /* The demonstration of one step, as the design draws it: the search and the download are recorded from this release's library
    under one label in the panel's head, and the fresh harness below them carries its own label because it is being built. The
    names, kinds, licences, sizes and digests are compared with this release's packaged manifest, read from the source tree, and
@@ -258,6 +276,35 @@ const statusProblems=(cards,order,available)=>[...(JSON.stringify(cards.map(card
 const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-see-step","#hero-access-note",".hero-split","#step-demo",'[data-band="harnesses"]'].map(selector=>{
   const node=document.querySelector(selector);if(!node)return [selector,null];const box=node.getBoundingClientRect();
   return [selector,[Math.round(box.left),Math.round(box.top+scrollY),Math.round(box.width),Math.round(box.height)]];}));});
+/* Text contrast, as WCAG AA sets it: 4.5 to 1 for body text and 3 to 1 for large text, measured against the solid grounds
+   painted behind the text, with a translucent ground blended over the one below it. */
+const contrastProblems=target=>target.evaluate(()=>{
+  const parse=color=>{const found=color.match(/rgba?\(([^)]+)\)/);if(!found)return null;const part=found[1].split(",").map(Number);return {r:part[0],g:part[1],b:part[2],a:part.length>3?part[3]:1};};
+  const channel=value=>{value/=255;return value<=0.03928?value/12.92:Math.pow((value+0.055)/1.055,2.4);};
+  const light=color=>0.2126*channel(color.r)+0.7152*channel(color.g)+0.0722*channel(color.b);
+  const blend=(top,bottom)=>({r:top.r*top.a+bottom.r*(1-top.a),g:top.g*top.a+bottom.g*(1-top.a),b:top.b*top.a+bottom.b*(1-top.a),a:1});
+  const ground=node=>{const layers=[];for(let item=node;item;item=item.parentElement){const color=parse(getComputedStyle(item).backgroundColor);if(color&&color.a>0){layers.push(color);if(color.a>=1)break;}}
+    return layers.reverse().reduce((below,layer)=>blend(layer,below),{r:255,g:255,b:255,a:1});};
+  const ratio=(one,two)=>{const [high,low]=[light(one),light(two)].sort((x,y)=>y-x);return (high+0.05)/(low+0.05);};
+  const problems=[],seen=new Set(),walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  while(walker.nextNode()){
+    const node=walker.currentNode.parentElement;if(!walker.currentNode.textContent.trim()||!node||seen.has(node))continue;seen.add(node);
+    const style=getComputedStyle(node);if(!node.getClientRects().length||style.visibility==="hidden"||node.closest("[hidden]"))continue;
+    const colour=parse(style.color),below=ground(node);if(!colour)continue;
+    const size=parseFloat(style.fontSize),large=size>=24||(parseInt(style.fontWeight,10)>=700&&size>=18.66),need=large?3:4.5,have=ratio(colour.a<1?blend(colour,below):colour,below);
+    if(have<need-0.01)problems.push({text:walker.currentNode.textContent.trim().slice(0,40),ratio:Math.round(have*100)/100,need});
+  }
+  return problems;});
+/* The focus mark of each of the first stops the keyboard reaches: every one carries a visible outline at least two pixels wide. */
+const focusMarks=async (target,stops)=>{const marks=[];await target.evaluate(()=>{document.activeElement?.blur();scrollTo(0,0);});
+  /* A press on the appearance switch leaves the keyboard's starting point at the foot of the page, so the keyboard first comes
+     round to the skip link, which is where the count starts. */
+  for(let press=0;press<4&&!await target.evaluate(()=>Boolean(document.activeElement?.classList.contains("skip")));press++)await target.keyboard.press("Tab");
+  for(let index=0;index<stops;index++){if(index)await target.keyboard.press("Tab");marks.push(await target.evaluate(()=>{const node=document.activeElement,style=node?getComputedStyle(node):null;
+    const label=node?.id?document.querySelector('label[for="'+node.id+'"]'):null,shown=label&&getComputedStyle(label).outlineStyle!=="none"?getComputedStyle(label):style;
+    return {name:(node?.id||node?.textContent||node?.tagName||"").trim().slice(0,30),outline:shown?shown.outlineStyle:"none",width:shown?parseFloat(shown.outlineWidth):0};}));}
+  return marks;};
+const unmarkedStops=marks=>marks.filter(mark=>mark.outline==="none"||mark.width<2);
 const boxesMoved=(served,after)=>Object.keys(served).filter(key=>!served[key]||!after[key]||served[key].some((value,index)=>Math.abs(value-after[key][index])>1));
 const withEndpoint=(value,endpoint)=>value===endpointMark?endpoint:Array.isArray(value)?value.map(item=>withEndpoint(item,endpoint)):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,withEndpoint(item,endpoint)])):value;
 const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(key=>[key,ordered(value[key])])):value;
@@ -502,15 +549,16 @@ try {
   check("category_line_explanation_check_rejects_a_bare_phrase",["Harness and agent optimized operation.","Built for harness and agent optimized operation, one step at a time.","A harness is the program that runs your coding agent."].every(claim=>!explainsTheCategoryLine(claim))&&explainsTheCategoryLine(positioning));
   const heroSplit=await page.locator('[data-view="home"] .hero-split').innerText();
   check("homepage_states_the_free_and_paid_split",heroSplit.startsWith("Free to install. Paid access to the library")&&heroSplit.includes("29 United States dollars each month"),{split:heroSplit});
-  /* One primary action in the hero: "Get started", opening the Get started page. One secondary link beside it, which moves to
-     the demonstration on the same page, and no second way into the access journey anywhere in the hero. */
+  /* One primary action in the hero: while account creation is closed, "Request an invitation", opening the invitation form. One
+     secondary link beside it, which moves to the demonstration on the same page, and no second way into the access journey
+     anywhere in the hero. */
   const heroPrimary=page.locator('[data-view="home"] .hero .button.primary');
-  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("id")==="hero-primary"&&await heroPrimary.getAttribute("href")==="/connect"&&(await heroPrimary.innerText()).replace(/[↗]/g,"").trim()==="Get started"&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-see-step").isVisible()&&await page.locator("#hero-see-step").getAttribute("href")==="#step-demo"&&(await page.locator("#hero-see-step").innerText()).trim()==="See one step work"&&await page.locator('[data-view="home"] .hero a[href^="/signup"], [data-view="home"] .hero a[href="/waitlist"]').count()===0);
-  /* The single call to action. Every primary button a visitor can see on the homepage, in the header and in the footer says
-     "Get started" and opens the Get started page, and the header carries exactly one of them. */
+  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("id")==="hero-primary"&&await heroPrimary.getAttribute("href")===accessPaths.closed&&(await heroPrimary.innerText()).replace(/[↗→]/g,"").trim()===accessLabels.closed&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-see-step").isVisible()&&await page.locator("#hero-see-step").getAttribute("href")==="#step-demo"&&(await page.locator("#hero-see-step").innerText()).trim()==="See one step work"&&await page.locator('[data-view="home"] .hero a[href^="/signup"], [data-view="home"] .hero a[href^="/waitlist"], [data-view="home"] .hero a[href^="/connect"], [data-view="home"] .hero a[href^="/get-started"]').count()===1);
+  /* The single call to action. Every primary button a visitor can see on the homepage, in the header and in the footer carries
+     the one label of the reported state and opens the page behind it, and the header carries exactly one of them. */
   const homePrimaries=await primaryActions(page);
-  check("homepage_primary_actions_all_say_get_started",primaryProblems(homePrimaries).length===0&&homePrimaries.filter(action=>action.header).length===1&&homePrimaries.length>=4,{actions:homePrimaries,problems:primaryProblems(homePrimaries)});
-  check("primary_action_check_rejects_a_second_label_and_a_second_address",primaryProblems([...homePrimaries,{id:"planted",text:"Join the waiting list",href:"/connect",header:false}]).length===1&&primaryProblems([...homePrimaries,{id:"planted",text:"Get started",href:"/signup",header:false}]).length===1&&primaryProblems([]).length===1);
+  check("homepage_primary_actions_all_carry_the_one_label",primaryProblems(homePrimaries).length===0&&homePrimaries.filter(action=>action.header).length===1&&homePrimaries.length>=4,{actions:homePrimaries,problems:primaryProblems(homePrimaries)});
+  check("primary_action_check_rejects_a_second_label_and_a_second_address",primaryProblems([...homePrimaries,{id:"planted",text:"Join the waiting list",href:accessPaths.closed,header:false}]).length===1&&primaryProblems([...homePrimaries,{id:"planted",text:accessLabels.closed,href:"/signup#waiting-list",header:false}]).length===1&&primaryProblems(homePrimaries,true).length===homePrimaries.length&&primaryProblems([]).length===1);
   /* The design's order: the hero with the demonstration beside it, the harnesses, the six problems, how it works, the library,
      trust, pricing, questions and the closing band. Each is a band of its own, directly under the homepage view. */
   const bandOrder=["hero","harnesses","problems","how","library","trust","pricing","faq","closing"];
@@ -518,20 +566,27 @@ try {
   const followsTheDesign=flow=>JSON.stringify(flow.bands)===JSON.stringify(bandOrder)&&flow.demoIn==="hero";
   check("homepage_bands_follow_the_design_order",followsTheDesign(homeFlow),homeFlow);
   check("band_order_check_rejects_a_moved_band_and_a_demonstration_outside_the_hero",!followsTheDesign({...homeFlow,bands:[...bandOrder.slice(0,2),bandOrder[3],bandOrder[2],...bandOrder.slice(4)]})&&!followsTheDesign({...homeFlow,bands:bandOrder.slice(1)})&&!followsTheDesign({...homeFlow,demoIn:"how"}));
-  /* The owner saw the hero as one narrow column with empty space on both sides. At desktop width the hero spans the
-     page like every band below it, and the demonstration of one step sits beside the text. */
+  /* The opening message leads the page, with the supporting words beside it on a wide screen, and the demonstration of one step
+     follows below it at the full width of the page. The review of September 23 found the demonstration beside the message
+     taking the first look, so the known-wrong layout puts it back beside the message. */
   const heroLayout=await page.locator('[data-view="home"]').evaluate(home=>{
-    const hero=home.querySelector('.product-hero'),copy=hero?.querySelector('.hero-copy'),example=hero?.querySelector('.step-demo');
+    const hero=home.querySelector('.product-hero'),copy=hero?.querySelector('.hero-copy'),aside=hero?.querySelector('.hero-aside'),example=hero?.querySelector('.step-demo');
     const next=home.querySelector('.harness-strip');
-    const box=node=>node?node.getBoundingClientRect():{left:0,right:0,width:0,top:0};
-    return {heroWidth:box(hero).width,pageWidth:box(next).width,copyRight:box(copy).right,exampleLeft:box(example).left,
-      exampleTop:box(example).top,copyTop:box(copy).top,hasExample:Boolean(example),viewport:innerWidth};
+    const box=node=>node?node.getBoundingClientRect():{left:0,right:0,width:0,top:0,bottom:0};
+    return {pageWidth:box(next).width,copyBottom:box(copy).bottom,copyRight:box(copy).right,asideBottom:box(aside).bottom,asideLeft:box(aside).left,
+      exampleTop:box(example).top,exampleWidth:box(example).width,hasExample:Boolean(example),hasAside:Boolean(aside),viewport:innerWidth};
   });
-  const heroFillsThePage=m=>m.viewport<1100||(m.hasExample&&m.pageWidth>0&&m.heroWidth>=0.95*m.pageWidth&&m.exampleLeft>=m.copyRight-1);
-  check("homepage_hero_spans_the_page_with_the_demonstration_beside_it",heroFillsThePage(heroLayout),heroLayout);
-  check("hero_layout_check_rejects_a_narrow_column_and_a_missing_demonstration",
-    !heroFillsThePage({...heroLayout,viewport:1440,heroWidth:820})&&!heroFillsThePage({...heroLayout,viewport:1440,hasExample:false})
-    &&!heroFillsThePage({...heroLayout,viewport:1440,exampleLeft:heroLayout.copyRight-200}));
+  const demoBelowTheMessage=m=>m.hasExample&&m.hasAside&&m.pageWidth>0&&m.exampleTop>=Math.max(m.copyBottom,m.asideBottom)-1&&m.exampleWidth>=0.95*m.pageWidth&&(m.viewport<1100||m.asideLeft>=m.copyRight-1);
+  check("homepage_demonstration_sits_below_the_opening_message_at_full_width",demoBelowTheMessage(heroLayout),heroLayout);
+  check("hero_layout_check_rejects_a_demonstration_beside_the_message_or_narrower_than_the_page",!demoBelowTheMessage({...heroLayout,exampleTop:heroLayout.copyBottom-200})
+    &&!demoBelowTheMessage({...heroLayout,exampleWidth:heroLayout.pageWidth*0.5})&&!demoBelowTheMessage({...heroLayout,hasExample:false}));
+  /* The opening message says in plain words why a fresh, focused harness for each step helps, and the supporting words say what
+     works today and what is being built. */
+  const opening=await page.locator('[data-view="home"] .hero-subhead').innerText(),supporting=await page.locator('[data-view="home"] .hero-aside').innerText();
+  const saysWhy=text=>/fresh harness/i.test(text)&&/only what that step needs/i.test(text)&&/\bdrifts?\b/i.test(text);
+  const saysWhatWorksToday=text=>/\btoday\b/i.test(text)&&/being built/i.test(text);
+  check("opening_message_says_why_a_fresh_harness_for_each_step_helps",saysWhy(opening)&&saysWhatWorksToday(supporting),{opening,supporting});
+  check("opening_message_check_rejects_a_message_without_the_reason_or_the_limit",!saysWhy("Give your AI agents what they need for each step.")&&!saysWhatWorksToday("Each step runs in a fresh harness."));
   /* The link beside the primary action moves to the demonstration and stays on the homepage. */
   await page.locator("#hero-see-step").click();
   await page.waitForFunction(()=>{const box=document.getElementById("step-demo")?.getBoundingClientRect();return Boolean(box&&box.top<innerHeight&&box.bottom>0);});
@@ -608,6 +663,27 @@ try {
   const plantedBandProblems={};
   for(const change of ["ground","rules","white"]){plantedBandProblems[change]=await plantBands(change)?bandProblems(await homeBands(page)):["not planted"];await restoreBands();}
   check("band_check_rejects_one_ground_for_two_bands_a_missing_rule_and_a_white_ground",Object.values(plantedBandProblems).every(problems=>problems.length===1&&problems[0]!=="not planted")&&bandProblems(await homeBands(page)).length===0,{problems:plantedBandProblems});
+  /* Contrast and focus in both appearances. Every text on the public pages meets WCAG AA against the ground behind it, and each of
+     the first stops the keyboard reaches on the homepage carries a visible focus mark. The known-wrong page plants one grey line
+     on a white ground through the style object, which the page policy allows, and one focus stop without a mark. */
+  const contrastByTheme={},marksByTheme={};
+  for(const theme of ["light","dark"]){
+    for(const path of ["/","/waitlist","/pricing","/how-it-works","/docs","/privacy","/login"]){
+      await page.goto(fixture.base+path);await page.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
+      for(let press=0;press<3&&await page.evaluate(wanted=>document.documentElement.dataset.theme!==wanted,theme);press++)await page.click("#theme");
+      contrastByTheme[theme+" "+path]=await contrastProblems(page);
+      if(path==="/")marksByTheme[theme]=await focusMarks(page,12);
+    }
+  }
+  for(let press=0;press<3&&await page.evaluate(()=>document.documentElement.dataset.theme!=="light");press++)await page.click("#theme");
+  const lowContrast=Object.entries(contrastByTheme).filter(([,problems])=>problems.length).map(([page,problems])=>({page,problems:problems.slice(0,4)}));
+  check("public_text_meets_AA_contrast_in_both_appearances",Object.keys(contrastByTheme).length===14&&lowContrast.length===0,{pages:Object.keys(contrastByTheme).length,lowContrast});
+  await page.goto(fixture.base+"/");
+  const plantedGrey=await page.evaluate(()=>{const line=document.createElement("p");line.id="known-wrong-grey";line.textContent="A grey line nobody can read";line.style.color="#c4c4c4";line.style.backgroundColor="#ffffff";document.querySelector('[data-band="harnesses"]').append(line);return true;});
+  const greyProblems=await contrastProblems(page);await page.evaluate(()=>document.getElementById("known-wrong-grey")?.remove());
+  check("contrast_check_rejects_a_grey_line_on_white",plantedGrey&&greyProblems.length===1&&greyProblems[0].text==="A grey line nobody can read",{problems:greyProblems});
+  check("keyboard_focus_is_visible_in_both_appearances",["light","dark"].every(theme=>(marksByTheme[theme]||[]).length===12&&unmarkedStops(marksByTheme[theme]).length===0),{marks:marksByTheme});
+  check("focus_check_rejects_a_stop_without_a_mark",unmarkedStops([...(marksByTheme.light||[]),{name:"planted",outline:"none",width:0}]).length===1);
   /* The harnesses that connect today are exactly the clients of the reviewed recipes. Another client is named only as planned. */
   const strip=await page.locator(".harness-list li").evaluateAll(items=>items.map(item=>({name:item.querySelector(".harness-name")?.textContent.trim()||"",state:item.querySelector(".harness-state")?.textContent.trim()||""})));
   const recipeClients=recipeRecord.recipes.map(recipe=>recipe.name.replace(/\s+\d+(?:\.\w+)*$/,"")).sort();
@@ -674,7 +750,7 @@ try {
   };
   for(const path of servedRoutes){await page.goto(fixture.base+path);scanShownText(path,await readShownText(page));}
   /* The Get started page also answers at "/get-started", which the serving route table does not list yet, so that
-     address is reached through the navigation. Every link on the website points at "/connect", which is served. */
+     address is reached through the navigation. Every link on the website points at "/waitlist" or "/connect", both served. */
   await page.goto(fixture.base+"/");
   await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
   scanShownText("/get-started",await readShownText(page));
@@ -705,14 +781,14 @@ try {
   check("no_served_file_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedFileProblems.length===0,{files:servedTexts.length,problems:servedFileProblems});
   check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&["\n/* Join the private beta. */","\n/* Ask for early access. */"].every(planted=>servedTexts.every(([path,text])=>retiredIn(path,text+planted).length===1)),{files:servedTexts.length});
   check("runtime_word_check_rejects_a_known_wrong_page",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification.","A Practitioner owns the task."].every(claim=>publicVocabulary.test(claim))&&!publicVocabulary.test("Each step gets the material it needs."));
-  /* One way into the product from the header: the primary "Get started" beside the navigation, which starts with How it works.
+  /* One way into the product from the header: the one primary action beside the navigation, which starts with How it works.
      No link in the navigation is a second way into the same journey. */
   await page.goto(fixture.base+"/");
   const headerState=await page.evaluate(()=>({nav:[...document.querySelectorAll("header nav a")].filter(node=>!node.hidden).map(node=>({label:node.textContent.trim(),page:node.dataset.page||""})),
     primary:[...document.querySelectorAll("header .button.primary")].map(node=>({id:node.id,label:node.textContent.trim(),href:node.getAttribute("href")}))}));
-  const oneHeaderAction=state=>state.primary.length===1&&state.primary[0].label==="Get started"&&state.primary[0].href==="/connect"&&state.nav.length>1&&state.nav[0].label==="How it works"
+  const oneHeaderAction=state=>state.primary.length===1&&state.primary[0].label===accessLabels.closed&&state.primary[0].href===accessPaths.closed&&state.nav.length>1&&state.nav[0].label==="How it works"
     &&!state.nav.some(item=>item.page==="setup"||/get started|connect|join|waiting list|invitation/i.test(item.label));
-  check("header_offers_one_get_started_action_beside_the_navigation",oneHeaderAction(headerState),headerState);
+  check("header_offers_one_primary_action_beside_the_navigation",oneHeaderAction(headerState),headerState);
   check("header_check_rejects_a_second_way_in_and_a_missing_action",!oneHeaderAction({...headerState,nav:[{label:"Get started",page:"setup"},...headerState.nav]})&&!oneHeaderAction({...headerState,primary:[]})
     &&!oneHeaderAction({...headerState,nav:[...headerState.nav,{label:"Connect",page:"setup"}]})&&!oneHeaderAction({...headerState,primary:[...headerState.primary,{id:"planted",label:"Join the waiting list",href:"/waitlist"}]}));
   /* At phone width the links fold into a menu that works without the page script. A press on the menu button shows every link,
@@ -725,6 +801,19 @@ try {
   await page.locator("header .brand").focus();await page.keyboard.press("Tab");await page.keyboard.press("Space");menuStates.keyed=await menuState(page);
   await page.locator('header nav a[data-page="pricing"]').click();menuStates.chosen=await menuState(page);
   check("phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",menuWorks(menuStates),menuStates);
+  /* The first screen on a phone. At 390 by 844 the header is one compact bar and the hero's primary action stands wholly inside
+     the window; at 320 wide nothing scrolls sideways. The live review measured a header 254 pixels tall and the action below the
+     first screen. */
+  const firstScreens=[];
+  for(const [width,height] of [[390,844],[320,700]]){
+    await page.setViewportSize({width,height});await page.goto(fixture.base+"/");
+    await page.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
+    firstScreens.push({height,...await firstScreen(page)});
+  }
+  check("phone_first_screen_holds_the_whole_primary_action_under_a_compact_header",phoneFirstScreen(firstScreens[0]),{firstScreens});
+  check("narrow_phone_has_no_sideways_scroll",firstScreens.length===2&&firstScreens.every(item=>!item.overflow),{firstScreens});
+  check("first_screen_check_rejects_an_action_below_the_fold_and_a_tall_header",!phoneFirstScreen({...firstScreens[0],bottom:firstScreens[0].viewport+1})&&!phoneFirstScreen({...firstScreens[0],header:254}));
+  await page.setViewportSize({width:390,height:1000});await page.goto(fixture.base+"/");
   check("phone_menu_check_rejects_a_menu_that_stays_open_or_shows_nothing",!menuWorks({...menuStates,chosen:{...menuStates.chosen,open:true,links:menuLinks}})&&!menuWorks({...menuStates,pressed:{...menuStates.pressed,links:[]}})&&!menuWorks({...menuStates,keyed:{...menuStates.keyed,focusMark:"none"}}));
   await page.setViewportSize({width:1440,height:1000});await page.goto(fixture.base+"/");
   await page.locator('header a[data-page="setup"]').click();
@@ -732,7 +821,7 @@ try {
   /* The Get started page leads with access, because search and downloads need an account; the connection and the first search
      follow. The first step is the panel the service's record chooses, so its title is the same in every state. */
   const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["access","connect","search"])&&steps.every((item,index)=>item.index.startsWith("Step "+(index+1)+" / ")&&item.title.length>0);
-  check("get_started_page_names_the_three_steps_in_order",new URL(page.url()).pathname==="/connect"&&namesThreeStepsInOrder(orderedSteps)&&await page.locator('[data-view="setup"]').isVisible(),{steps:orderedSteps});
+  check("get_started_page_names_the_three_steps_in_order",new URL(page.url()).pathname===accessPaths.closed&&namesThreeStepsInOrder(orderedSteps)&&await page.locator('[data-view="setup"]').isVisible(),{steps:orderedSteps});
   check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]]].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
   await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   check("get_started_page_carries_the_copyable_connection_settings",await page.locator('#client-tabs[role="tablist"] [role="tab"]').count()===recipeRecord.recipes.length&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
@@ -862,12 +951,13 @@ try {
   await page.setViewportSize({width:1440,height:1000});
   /* The capabilities the service can report, for account creation, for a waiting list, for payment and for personal keys,
      each read from a real service, with the removed-guard controls for both directions and for the record version the page
-     was written against. Every public action says "Get started" in every state. The state shows in the note under the hero
-     action and in the one panel that leads the Get started page. */
-  const expectedAccess={waiting:{state:"waiting",href:"/connect",label:"Get started",note:waitingNote,tag:"Invitation only",closing:"Request an invitation today. Invited accounts are free while we open in small groups."},
-    open:{state:"open",href:"/connect",label:"Get started",note:openNote,tag:"Open to new accounts",closing:"Create your account today. Search is free, and invited accounts stay free."}};
-  /* The five actions that carry the state: the header, the hero, the plan on the homepage, the closing band and the pricing view. */
-  const accessActionIds=["closing-primary","header-primary","hero-primary","home-pricing-primary","pricing-primary"];
+     was written against. Every public action carries the one label of the reported state. The state also shows in the note under
+     the hero action and in the one panel that leads the Get started page. */
+  const expectedAccess={waiting:{state:"waiting",href:accessPaths.closed,label:accessLabels.closed,note:waitingNote,tag:"Invitation only",closing:"Request an invitation today. Invited accounts are free while we open in small groups."},
+    open:{state:"open",href:accessPaths.open,label:accessLabels.open,note:openNote,tag:"Open to new accounts",closing:"Create your account today. Search is free, and invited accounts stay free."}};
+  /* The ten actions that carry the state: the header, the hero, the plan on the homepage, the closing band, the pricing view,
+     How it works, the first example, access and data, the setup guide and the footer. */
+  const accessActionIds=["about-access","closing-primary","docs-access","examples-access","footer-access","header-primary","hero-primary","home-pricing-primary","pricing-primary","security-access"];
   const accessActions=target=>target.evaluate(()=>({note:document.getElementById("hero-access-note")?.textContent||"",tag:document.getElementById("home-plan-access")?.textContent||"",closing:document.getElementById("closing-note")?.textContent||"",
     actions:[...document.querySelectorAll("[data-access-state]")].map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("[data-access-label]")?.textContent||""})).sort((left,right)=>left.id<right.id?-1:1)}));
   const sameAccess=(found,want)=>JSON.stringify(found.actions.map(action=>action.id))===JSON.stringify(accessActionIds)&&found.actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label)
@@ -934,6 +1024,17 @@ try {
       note("get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list",sameLead(lead,"invite"),lead);
       const claims=await waitlistClaims(opened);
       note("unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list",sameWaitlistClaims(claims,waitlistWording.offered),claims);
+    }},
+    waitlist_landing:{origin:"account_base",run:async (opened,note)=>{
+      const landings=[];
+      for(const [width,height] of [[1440,900],[390,844]]){
+        await opened.setViewportSize({width,height});
+        await opened.evaluate(()=>{history.pushState({},"","/");dispatchEvent(new PopStateEvent("popstate"));scrollTo(0,0);});
+        landings.push(await pressThePrimaryAction(opened,width,height));
+      }
+      note("the_primary_action_opens_the_invitation_email_field_in_the_first_screen",landings.length===2&&landings.every(landsOnTheField),{landings});
+      note("landing_check_rejects_the_account_status_page_and_a_field_below_the_first_screen",landings.length===2&&!landsOnTheField({...landings[1],path:"/signup",shown:false})
+        &&!landsOnTheField({...landings[1],top:landings[1].viewport+10,bottom:landings[1].viewport+58})&&!landsOnTheField({...landings[1],label:"Get started"}),{landings});
     }},
     unsupported_version_waitlist:{origin:"account_base",version:"service_capabilities/v2",run:async (opened,note)=>{
       const claims=await waitlistClaims(opened),lead=await openGetStarted(opened);
@@ -1005,9 +1106,10 @@ try {
   const publicControls=[
     {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_actions_say_get_started_while_registration_is_closed"]},
     {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_actions_say_get_started_while_registration_is_open"]},
-    {name:"bring_back_the_waiting_list_label",scenario:"closed_service",find:'waiting:{label:"Get started"',replacement:'waiting:{label:"Join the waiting list"',expected:["public_actions_say_get_started_while_registration_is_closed","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
+    {name:"bring_back_the_waiting_list_label",scenario:"closed_service",find:'waiting:{label:"Request an invitation"',replacement:'waiting:{label:"Join the waiting list"',expected:["public_actions_say_get_started_while_registration_is_closed","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
     {name:"always_lead_with_account_creation",scenario:"closed_service",find:registrationLead,replacement:'true ? "register"',expected:["get_started_leads_with_the_operator_when_the_service_offers_neither","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
     {name:"never_lead_with_account_creation",scenario:"open_registration",find:registrationLead,replacement:'false ? "register"',expected:["get_started_leads_with_account_creation_when_registration_is_open"]},
+    {name:"send_the_invitation_action_to_the_account_status_page",scenario:"waitlist_landing",find:'href:"/waitlist", note:',replacement:'href:"/signup#waiting-list", note:',expected:["the_primary_action_opens_the_invitation_email_field_in_the_first_screen"]},
     {name:"never_lead_with_the_invitation_form",scenario:"waitlist_offered",find:invitationLead,replacement:'false ? "invite"',expected:["get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list"]},
     {name:"always_say_payment_is_open",scenario:"closed_service",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(true);",expected:["pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout"]},
     {name:"never_say_payment_is_open",scenario:"open_checkout",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(false);",expected:["pricing_view_says_payment_is_open_when_the_service_reports_checkout"]},
@@ -1058,13 +1160,19 @@ try {
     {name:"call_the_fresh_harness_live",changes:[{path:"/",find:'and nothing from your global settings.</p><p class="status-tag is-building" data-status="building">Being built</p>',replacement:'and nothing from your global settings.</p><p class="status-tag is-live" data-status="live">Live</p>'}],
      run:async (opened,note)=>note("how_it_works_steps_say_only_search_and_download_are_live",statusProblems(await statusCards(opened,"[data-how-step]","howStep"),stepOrder,liveSteps).length===0),
      expected:["how_it_works_steps_say_only_search_and_download_are_live"]},
+    {name:"unfold_the_phone_menu_into_the_header",changes:[{path:"/assets/architecture.css",find:"  .header nav{display:none;position:absolute;",replacement:"  .header nav{display:flex;flex-wrap:wrap;flex-basis:100%;position:static;"}],
+     run:async (opened,note)=>{await opened.setViewportSize({width:390,height:844});note("phone_first_screen_holds_the_whole_primary_action_under_a_compact_header",phoneFirstScreen(await firstScreen(opened)));},
+     expected:["phone_first_screen_holds_the_whole_primary_action_under_a_compact_header"]},
+    {name:"take_the_focus_mark_away",changes:[{path:"/assets/service.css",find:":focus-visible{outline:3px solid var(--accent);outline-offset:3px}",replacement:":focus-visible{outline:0}"},{path:"/assets/architecture.css",find:":focus-visible{outline:3px solid var(--accent);outline-offset:3px}",replacement:":focus-visible{outline:0}"}],
+     run:async (opened,note)=>note("keyboard_focus_is_visible_in_both_appearances",unmarkedStops(await focusMarks(opened,12)).length===0),
+     expected:["keyboard_focus_is_visible_in_both_appearances"]},
     {name:"leave_the_phone_menu_open_after_a_choice",changes:[{path:"/assets/service.js",find:'show(name); $("menu-toggle").checked = false;',replacement:"show(name);"}],
      run:async (opened,note)=>{await opened.setViewportSize({width:390,height:1000});await opened.locator("header .menu-button").click();await opened.locator('header nav a[data-page="pricing"]').click();
        const state=await menuState(opened);note("phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",state.path==="/pricing"&&!state.open&&state.links.length===0);},
      expected:["phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice"]},
-    {name:"add_a_second_primary_action_to_the_header",changes:[{path:"/",find:'<span data-access-label id="header-primary-label">Get started</span></a>',replacement:'<span data-access-label id="header-primary-label">Get started</span></a><a class="button primary" href="/waitlist">Join the waiting list</a>'}],
-     run:async (opened,note)=>{const actions=await primaryActions(opened);note("homepage_primary_actions_all_say_get_started",primaryProblems(actions).length===0&&actions.filter(action=>action.header).length===1&&actions.length>=4);},
-     expected:["homepage_primary_actions_all_say_get_started"]},
+    {name:"add_a_second_primary_action_to_the_header",changes:[{path:"/",find:'<span data-access-label id="header-primary-label">Request an invitation</span></a>',replacement:'<span data-access-label id="header-primary-label">Request an invitation</span></a><a class="button primary" href="/waitlist">Join the waiting list</a>'}],
+     run:async (opened,note)=>{const actions=await primaryActions(opened);note("homepage_primary_actions_all_carry_the_one_label",primaryProblems(actions).length===0&&actions.filter(action=>action.header).length===1&&actions.length>=4);},
+     expected:["homepage_primary_actions_all_carry_the_one_label"]},
     {name:"lengthen_the_hero_note_after_the_script_runs",changes:[{path:"/assets/service.js",find:'$("hero-access-note").textContent = state.note;',replacement:'$("hero-access-note").textContent = state.note + " " + state.note + " " + state.note;'}],
      run:async (opened,note)=>note("homepage_first_screen_does_not_move_when_the_script_runs",boxesMoved(servedHeroBoxes,await heroBoxes(opened)).length===0),
      expected:["homepage_first_screen_does_not_move_when_the_script_runs"]}];
@@ -1081,7 +1189,8 @@ try {
   /* The careful access state is the operator's panel leading the Get started page, with the invitation form and the account
      action held back, and the note under the hero action written for closed registration. */
   const carefulDefaults=["Payment not open","Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.",
-    "Payment is not open yet. Nothing on this page charges you today.",'data-start-access="operator"',waitingNote,keyWording.closed.offer,keyWording.closed.plan];
+    "Payment is not open yet. Nothing on this page charges you today.",'data-start-access="operator"',waitingNote,keyWording.closed.offer,keyWording.closed.plan,
+    'id="hero-primary" href="/waitlist" data-page="setup" data-access-state="waiting"><span data-access-label id="hero-primary-label">Request an invitation</span>'];
   const unsettled=/Checking payment|Checking whether payment is open/;
   const carefulProblems=text=>[...carefulDefaults.filter(value=>!text.includes(value)),...(unsettled.test(text)?["an unsettled placeholder"]:[])];
   check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedHome).length===0,{problems:carefulProblems(servedHome)});
@@ -1377,6 +1486,14 @@ try {
   page.once("dialog",dialog=>dialog.accept());await page.getByRole("button",{name:"Revoke My laptop",exact:true}).click();
   await page.waitForFunction(()=>document.querySelector("#client-access-list").textContent.includes("revoked"));
   check("customer_dashboard_revokes_real_client_access",(await page.request.get(fixture.account_base+"/api/v1/session",{headers:{Authorization:"Bearer "+personalToken}})).status()===401);
+  /* The account page follows the dashboard design: a side navigation whose every link opens a page or a section this service has,
+     with Overview marked as the current page. The design's settings page is left out, because this service has none yet. */
+  const dashboardNav=await page.evaluate(()=>[...(document.querySelector('[data-view="account"]')?.querySelectorAll(".dashboard-nav a")||[])].map(link=>{const href=link.getAttribute("href")||"",part=href.split("#")[1]||"";
+    return {label:link.textContent.trim(),href,current:link.getAttribute("aria-current")==="page",target:part?Boolean(document.getElementById(part)):href.startsWith("/")};}));
+  const navProblems=items=>[...(JSON.stringify(items.map(item=>item.label))===JSON.stringify(["Overview","Connect","Keys","Library","Usage","Billing"])?[]:["the sections are "+JSON.stringify(items.map(item=>item.label))]),
+    ...items.filter(item=>!item.target).map(item=>item.label+" points at a section the page does not have"),...(items.filter(item=>item.current).map(item=>item.label).join()==="Overview"?[]:["Overview is not marked as the current page"])];
+  check("account_page_carries_the_dashboard_navigation",navProblems(dashboardNav).length===0,{problems:navProblems(dashboardNav)});
+  check("dashboard_navigation_check_rejects_a_link_to_a_missing_section",dashboardNav.length===6&&navProblems([...dashboardNav.slice(0,5),{...dashboardNav[5],target:false}]).length===1&&navProblems(dashboardNav.map(item=>({...item,current:false}))).length===1);
   for(const width of [1440,390,320]){
     await page.setViewportSize({width,height:1000});
     check("customer_controls_fit_"+width,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
@@ -1392,8 +1509,8 @@ try {
   check("customer_sign_out_clears_tokens_before_delayed_reply",await page.locator("#client-access-controls").isHidden()&&await page.inputValue("#client-issued-token")===""&&await page.locator("#refresh-client-access").isDisabled());
   await page.unroute("**/api/v1/account/access");
   /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. The
-     form leads the Get started page, which every page reaches through the "Get started" item of the navigation, and the older
-     address /waitlist opens the same page. */
+     form leads the Get started page, which every page reaches through the one primary action of the header, "Request an
+     invitation" at /waitlist while account creation is closed, and /connect opens the same page. */
   await page.setViewportSize({width:1440,height:1000});
   await page.goto(fixture.base+"/waitlist"); await page.waitForFunction(()=>document.querySelector("#waitlist-state").textContent!=="Checking availability");
   check("a_service_without_a_waiting_list_makes_no_offer",await page.locator('[data-view="setup"]').isVisible()&&await page.locator("#waitlist-form").isHidden()&&await page.locator("#start-invite").isHidden()&&await page.locator("#waitlist-closed").isVisible()&&await page.locator("#waitlist-discount").isHidden());
@@ -1401,7 +1518,7 @@ try {
   check("a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",await page.locator("#signup-waitlist-link").isHidden());
   await page.goto(fixture.account_base+"/pricing"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
   await page.locator('header a[data-page="setup"]').click();
-  check("a_service_with_a_waiting_list_leads_the_get_started_page_with_the_form",new URL(page.url()).pathname==="/connect"&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden()&&sameLead(await startLead(page),"invite"));
+  check("a_service_with_a_waiting_list_leads_the_get_started_page_with_the_form",new URL(page.url()).pathname===accessPaths.closed&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden()&&sameLead(await startLead(page),"invite"));
   await page.goto(fixture.account_base+"/waitlist"); await page.waitForSelector("#waitlist-form",{state:"visible"});
   check("the_waiting_list_address_opens_the_same_get_started_page",new URL(page.url()).pathname==="/waitlist"&&await page.locator('[data-view="setup"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1&&(await page.title()).endsWith("| Get started"));
   check("the_discount_is_named_only_where_checkout_takes_a_code",await page.locator("#waitlist-discount").isHidden(),{discount_code:(await (await page.request.get(fixture.account_base+"/api/v1/capabilities")).json()).result.billing.discount_code});

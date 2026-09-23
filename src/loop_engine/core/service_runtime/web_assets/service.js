@@ -34,14 +34,15 @@
      They are read only from this exact record version, because another version may rename a field or give it a different meaning.
      Until the service answers, if it never answers, and for any other record version, the page keeps the careful state:
      registration closed, the operator's address leading the Get started page, payment not open, personal keys described as being prepared.
-     Every public access action says "Get started" and opens the Get started page in every state. The owner, September 22, 2026:
-     "get started and join the waiting list are redundant". The state shows in the note under the hero action and in the panel
-     that leads the Get started page. */
+     Every public access action carries one label in each state and opens the Get started page. The owner, September 22, 2026:
+     "get started and join the waiting list are redundant". While account creation is closed the label is "Request an invitation"
+     and the address is /waitlist, where the invitation form or the way to reach the operator leads the page; while it is open the
+     label is "Get started". The state also shows in the note under the hero action and in the panel that leads the page. */
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
     open:{label:"Get started", href:"/connect", note:"Account creation is open", tag:"Open to new accounts",
           closing:"Create your account today. Search is free, and invited accounts stay free."},
-    waiting:{label:"Get started", href:"/connect", note:"Invitation only while we open in small groups", tag:"Invitation only",
+    waiting:{label:"Request an invitation", href:"/waitlist", note:"Invitation only while we open in small groups", tag:"Invitation only",
              closing:"Request an invitation today. Invited accounts are free while we open in small groups."}};
   const paymentStates = {
     open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited accounts stay free."},

@@ -130,7 +130,7 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
    that a checkbox opens, so the menu works without the page script and nothing moves when the script runs. The checkbox is
    hidden from sight but not from the keyboard, and its focus shows on the menu button. With enlarged text the bar wraps
    onto a second line instead of running off the screen. */
-.header{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 2rem;min-height:72px;padding:0 var(--band-gutter);background:var(--paper);border-bottom:1px solid var(--border)}
+.header{position:relative;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 2rem;min-height:72px;padding:0 var(--band-gutter);background:var(--paper);border-bottom:1px solid var(--border)}
 .header .brand,.site-footer .brand{display:inline-flex;align-items:center;gap:.625rem;color:var(--ink);font-size:1.25rem;font-weight:700;letter-spacing:-.02em;text-decoration:none;white-space:nowrap}
 /* The mark is a placeholder the owner will replace: one file, baltor-mark.svg, used here and as the page icon. */
 .brand .brand-mark{display:block;flex-shrink:0;width:32px;height:32px;background:none;border-radius:7px}
@@ -142,10 +142,12 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
 .header .header-primary{flex-shrink:0;min-height:44px;padding:.5rem 1.25rem;border-radius:var(--radius-field);font-size:.9375rem}
 .menu-toggle,.menu-button{display:none}
 @media(max-width:860px){
-  .header{flex-wrap:wrap;gap:.5rem .75rem;min-height:64px;padding-top:.625rem;padding-bottom:.625rem}
+  .header{flex-wrap:wrap;gap:.5rem;min-height:64px;padding-top:.625rem;padding-bottom:.625rem}
+  .header .brand{gap:.5rem;font-size:1.125rem}
+  .header .header-primary{flex-shrink:1;min-width:0;min-height:44px;padding:.375rem .875rem;font-size:.875rem;line-height:1.25;text-align:center;white-space:normal}
   .header .header-primary{order:2;margin-left:auto}
-  .menu-toggle{display:block;position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
-  .menu-button{display:inline-grid;place-items:center;order:3;width:44px;height:44px;border:1px solid var(--border);border-radius:var(--radius-field);background:var(--paper);color:var(--ink);cursor:pointer}
+  .menu-toggle{display:block;position:absolute;width:1px;height:1px;min-height:0;margin:0;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+  .menu-button{display:inline-grid;place-items:center;order:3;width:44px;height:44px;margin:0;border:1px solid var(--border);border-radius:var(--radius-field);background:var(--paper);color:var(--ink);cursor:pointer}
   .menu-button svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
   .menu-toggle:focus-visible+.menu-button{outline:3px solid var(--accent);outline-offset:2px}
   .header nav{display:none;position:absolute;left:0;right:0;top:100%;z-index:20;flex-direction:column;align-items:stretch;gap:0;padding:.25rem var(--band-gutter) 1rem;background:var(--paper);border-bottom:1px solid var(--border);box-shadow:var(--card-shadow)}
@@ -154,6 +156,8 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
   .header nav a[aria-current=page]{box-shadow:none}
   .header .nav-sign-in{margin-left:0;border-bottom:0}
 }
+/* On the narrowest phones the mark stands without the name beside it, so the bar stays on one line. The link keeps its name. */
+@media(max-width:380px){.header .brand-name{display:none}}
 
 /* The homepage is a stack of bands. While the home view is shown, the main column spans the window and each band paints its
    own ground, draws a one pixel rule on its top edge and holds its content in one column. The selector reads the served markup,
@@ -173,20 +177,25 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
 
 /* The hero: the headline and the one action on the left, the demonstration of one step on the right, on a faint dot grid. */
 .home-band.band-hero{border-top:0;padding-top:clamp(2.5rem,6.1vw,5.5rem);padding-bottom:clamp(2.75rem,6.7vw,6rem);background-color:var(--ground);background-image:radial-gradient(var(--dot) 1px,transparent 1px);background-size:22px 22px}
-.band-hero .hero.product-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:center;max-width:none;margin:0;padding:0}
-@media(min-width:1100px){.band-hero .hero.product-hero{grid-template-columns:minmax(0,35rem) minmax(0,1fr);gap:clamp(3rem,5vw,4.5rem)}}
+/* The opening message and its action lead; the supporting words sit beside them on a wide screen and under the action on a
+   phone; the demonstration of one step follows below at the full width of the page. */
+.band-hero .hero.product-hero{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:end;max-width:none;margin:0;padding:0}
+@media(min-width:1100px){.band-hero .hero.product-hero{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:3rem clamp(3rem,6vw,6rem)}}
+.band-hero .hero.product-hero>.step-demo{grid-column:1/-1;margin-top:1rem}
+.band-hero .hero-aside{display:flex;flex-direction:column;gap:1rem;min-width:0;padding-top:1.25rem;border-top:1px solid var(--line-strong)}
+.band-hero .hero-aside>*{margin:0}
 .band-hero .hero-copy{display:flex;flex-direction:column;gap:1.75rem;min-width:0}
 .band-hero .hero-copy>*{margin:0}
 .band-hero .hero-chip{align-self:flex-start;display:inline-flex;align-items:center;gap:.5rem;min-height:32px;padding:0 .875rem;border:1px solid var(--border);border-radius:999px;background:var(--paper);color:var(--muted);font-size:.8125rem;font-weight:500;letter-spacing:0;text-transform:none}
 .band-hero .hero-chip .status-dot{width:8px;height:8px;margin:0;background:var(--button)}
 .band-hero .hero.product-hero h1{font-size:var(--text-hero);line-height:1.04;letter-spacing:-.035em;text-wrap:balance;max-width:none}
-.band-hero .hero-subhead,.band-hero .hero-positioning{max-width:none;padding:0;border:0;font-size:var(--text-lead);line-height:1.55;color:var(--muted);font-weight:400;text-wrap:pretty}
-.band-hero .hero-subhead{color:var(--ink);font-weight:500}
-.band-hero .hero-subhead+.hero-positioning{margin-top:-1.25rem}
+.band-hero .hero-subhead,.band-hero .hero-positioning{max-width:40rem;padding:0;border:0;font-size:var(--text-lead);line-height:1.55;color:var(--muted);font-weight:400;text-wrap:pretty}
+.band-hero .hero-subhead{color:var(--ink)}
+.band-hero .hero-aside .hero-positioning{font-size:1rem;line-height:1.6}
 .band-hero .hero-actions{display:flex;flex-wrap:wrap;gap:.75rem}
 .band-hero .hero-actions .button{min-height:52px;padding:0 1.6rem;font-size:1.0625rem}
 .band-hero .hero-facts{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;color:var(--subtle);font-size:.875rem}
-.band-hero .hero-split{max-width:34rem;color:var(--subtle);font-size:.875rem;font-weight:400}
+.band-hero .hero-split{max-width:40rem;color:var(--subtle);font-size:.875rem;font-weight:400}
 .band-hero .hero-split .hero-value{color:inherit;font-size:inherit}
 
 /* The demonstration of one step. The search and the download are recorded from this release's library; the fresh harness
@@ -202,6 +211,8 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
 .step-demo-number.is-dark{background:var(--night);color:#FFFFFF}
 .step-demo-body{min-width:0}
 .step-demo-query code{min-width:0}
+@media(min-width:1100px){.step-demo-parts{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-areas:"search folder" "download folder";gap:1rem 2rem;align-items:start}
+  .step-demo-part[data-demo-stage="search"]{grid-area:search}.step-demo-part[data-demo-stage="download"]{grid-area:download}.step-demo-part[data-demo-stage="folder"]{grid-area:folder}}
 /* On a narrow screen the parts drop their numbers, so the search, the download and the folder keep the whole width. */
 @media(max-width:480px){.step-demo-part{grid-template-columns:minmax(0,1fr)}.step-demo-number{display:none}.step-demo-parts{padding:1rem}}
 .step-demo-query{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem .625rem;min-height:40px;margin:0;padding:.35rem .875rem;border:1px solid var(--line-strong);border-radius:var(--radius-field);font-family:var(--font-mono);font-size:.875rem;overflow-wrap:anywhere}
@@ -412,7 +423,9 @@ main:has(> [data-view="setup"]:not([hidden])){max-width:none;padding:0}
 @container (max-width:28em){.recipe-facts{grid-template-columns:minmax(0,1fr);gap:.1rem}.recipe-facts dd{margin-bottom:.55rem}}
 .recipe-check .actions{margin:1rem 0 .5rem}
 @media(max-width:980px){.start-layout{grid-template-columns:minmax(0,1fr);gap:1.5rem}.start-steps-nav{position:static}.start-steps-nav ol{flex-direction:row;flex-wrap:wrap}.start-access{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:600px){.start-card{padding:1.25rem}.start-layout{padding-top:1.5rem;padding-bottom:3rem}.start-card .recipe-code{white-space:pre-wrap;overflow-wrap:anywhere}}
+/* On a phone the introduction is short and the step's own heading carries its number, so the invitation form and its button
+   sit in the first screen of the page the primary action opens. */
+@media(max-width:600px){.start-intro{gap:.5rem;padding-top:1.5rem;padding-bottom:1.5rem}.start-intro h1{font-size:1.875rem}.start-intro .lede{font-size:1rem}.start-card .feature-index{display:none}.start-card>h2,.start-access-main>h2{font-size:1.375rem}.start-invite textarea{height:4.5rem}.start-card{padding:1.25rem}.start-layout{padding-top:1.5rem;padding-bottom:3rem}.start-card .recipe-code{white-space:pre-wrap;overflow-wrap:anywhere}}
 
 /* The signed-in views, in the visual language of the dashboard design: a compact title card, white cards with room between
    them on the ground, muted card labels, fact rows divided by rules, and pills for states. No view shows anything it did not
@@ -423,9 +436,31 @@ main:has(> [data-view="setup"]:not([hidden])){max-width:none;padding:0}
 :is([data-view="workspace"],[data-view="account"],[data-view="admin"]) .panel{padding:1.5rem}
 :is([data-view="workspace"],[data-view="account"],[data-view="admin"]) .panel .eyebrow{color:var(--subtle);letter-spacing:.06em}
 :is([data-view="workspace"],[data-view="account"],[data-view="admin"]) .panel .section-heading h2{font-size:1.125rem;letter-spacing:-.01em}
-[data-view="account"]>.panel+.panel,[data-view="account"]>.panel+.bottom-grid,[data-view="workspace"]>.workspace-grid+.panel{margin-top:1.25rem}
 #account-facts{gap:0 1.5rem;margin:1rem 0}
 #account-facts dt,#account-facts dd{padding:.625rem 0;border-top:1px solid var(--border)}
 #account-facts dt{color:var(--subtle);font-size:.875rem}
 #account-facts dd{font-family:var(--font-mono);font-size:.875rem}
 [data-view="account"] #usage{margin:1rem 0 0;padding:1rem 1.25rem;background:var(--panel-head);border:1px solid var(--border);border-radius:12px;font-family:var(--font-mono);font-size:.8125rem}
+
+/* Inner pages open with an introduction band, as the Get started page does: white, the full width of the window, with a rule
+   under it, and the page's own content follows on the ground. The band is painted by an outset border image, which widens the
+   paint and not the layout, so no page scrolls sideways. */
+:is(.page-intro,.pricing-page>.page-heading,.architecture-page>.reading:first-child){margin-top:-3rem;margin-bottom:2.5rem;padding-top:clamp(2.5rem,5vw,4rem);padding-bottom:2.5rem;border-image:linear-gradient(to top,var(--rule) 0 1px,var(--band) 1px) fill 0/0/0 100vmax}
+.page-intro>:last-child,.architecture-page>.reading:first-child>:last-child{margin-bottom:0}
+.page-intro .lede{margin:1.25rem 0 0}
+.page-intro .actions{margin-top:1.5rem}
+@media(max-width:680px){:is(.page-intro,.pricing-page>.page-heading,.architecture-page>.reading:first-child){margin-top:-2rem;margin-bottom:1.75rem;padding-top:1.75rem;padding-bottom:1.75rem}}
+
+/* The side navigation of the dashboard design, on the workspace and the account page. It points only at sections these views
+   already have; the design's settings page and example figures wait for the account data they would need. */
+:is([data-view="workspace"],[data-view="account"]):not([hidden]){display:grid;grid-template-columns:minmax(0,1fr);gap:1.25rem;align-items:start}
+:is([data-view="workspace"],[data-view="account"])>*{min-width:0;margin-top:0;margin-bottom:0}
+.dashboard-nav{order:0;display:flex;flex-wrap:wrap;gap:.25rem;padding:.5rem;background:var(--paper);border:1px solid var(--border);border-radius:var(--radius-card)}
+.dashboard-nav a{display:flex;align-items:center;gap:.625rem;min-height:40px;padding:0 .75rem;border-radius:9px;color:var(--muted);font-size:.9375rem;font-weight:500;text-decoration:none}
+.dashboard-nav a:hover{background:var(--planned-soft);color:var(--ink)}
+.dashboard-nav a[aria-current=page]{background:var(--info-soft);color:var(--info);box-shadow:none}
+:is([data-view="workspace"],[data-view="account"])>.page-heading{margin-bottom:0}
+.dashboard-nav svg{flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+@media(min-width:1024px){:is([data-view="workspace"],[data-view="account"]):not([hidden]){grid-template-columns:13.5rem minmax(0,1fr);gap:1.25rem 1.5rem}
+  :is([data-view="workspace"],[data-view="account"])>*{grid-column:2}
+  :is([data-view="workspace"],[data-view="account"])>.dashboard-nav{grid-column:1;grid-row:1/span 6;position:sticky;top:1.5rem;flex-direction:column;align-items:stretch}}

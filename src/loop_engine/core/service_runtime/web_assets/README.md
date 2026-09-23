@@ -17,24 +17,32 @@ provider qualification.
 
 ## One call to action
 
-Every public link or button that starts the access journey says "Get
-started" and opens the Get started page at `/connect`. The addresses
-`/get-started` and `/waitlist` open the same page. That page leads with one
-panel, chosen from the service's capabilities record: account creation when
-`website.registration_available` is true, otherwise the invitation request
-form when `website.waitlist_available` is true, and otherwise the way to reach
-the operator. The operator's panel is also the careful state, so the served
-page shows it until the service answers, and keeps it when the record is
-missing or carries a version the page was not written for. The browser checks
-in `tools/check_service_workspace.mjs` read every public page on three real
-services and report a second label for the same journey, an invitation
-request outside that panel, and account creation while registration is closed.
+Every public link or button that starts the access journey carries one label
+in each state and opens the Get started page. While account creation is
+closed the label is "Request an invitation" and the address is `/waitlist`;
+while it is open the label is "Get started" and the address is `/connect`. The
+addresses `/connect`, `/get-started` and `/waitlist` open the same page. That
+page leads with one panel, chosen from the service's capabilities record:
+account creation when `website.registration_available` is true, otherwise the
+invitation request form when `website.waitlist_available` is true, and
+otherwise the way to reach the operator. The operator's panel is also the
+careful state, so the served page shows it until the service answers, and
+keeps it when the record is missing or carries a version the page was not
+written for. On a phone of 390 by 844 pixels the invitation email field and
+its button stand in the first screen of that page.
+
+The browser checks in `tools/check_service_workspace.mjs` read every public
+page on three real services and report a second label for the same journey,
+an invitation request anywhere but on that journey, and account creation while
+registration is closed. A named check presses the hero action on a service
+that keeps a list and finds the email field in the first screen; the old
+address `/signup#waiting-list` fails it.
 
 ## The design
 
 The public pages follow the design of September 23, 2026: a white header with
-the wordmark, five links and the one primary action, and a homepage made of
-bands. Each band is set off from the next by a change of ground and a one
+the mark, the name, five links and the one primary action, and a homepage made
+of bands. Each band is set off from the next by a change of ground and a one
 pixel rule, and a dark band carries how it works and the closing action.
 Every colour, typeface, radius and shadow is a custom property in the token
 block at the top of `service.css`, so a change of design edits that block.
@@ -45,6 +53,10 @@ The mark is a placeholder that the owner will replace. It is one file,
 `baltor-mark.svg`, used in the header and the footer and as the page icon,
 with `favicon-32.png`, `favicon-192.png` and `apple-touch-icon.png` drawn from
 it. Replacing those four files changes the mark everywhere.
+
+Every page other than the homepage opens with an introduction band like the
+one on the Get started page: white, the full width of the window, with a rule
+under it.
 
 The typefaces are Geist and Geist Mono from version 1.7.2 of the `geist`
 package, under the SIL Open Font License 1.1, whose text is in
@@ -61,8 +73,10 @@ wait for the account data they would need.
 
 ## The homepage demonstration
 
-The homepage shows one step of a task in three parts, in one panel beside the
-headline.
+The opening message says why a fresh harness for each step helps, and the
+words beside it say what works today and what is being built. Below them, at
+the full width of the page, the homepage shows one step of a task in three
+parts.
 
 - Recorded parts: the search and the download, under the label "Recorded from
   this release's library". Their item names, kinds, licences, sizes and
