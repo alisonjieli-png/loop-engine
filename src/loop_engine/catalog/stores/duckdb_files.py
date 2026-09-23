@@ -10,7 +10,8 @@ import json
 import os
 
 from ..capabilities import StoreCapabilities
-from ..protocol import StoreError, UnsupportedOperationError
+from ..protocol import (ATOMIC_BATCH_OPERATION, ATOMIC_REMOVAL_OPERATION, StoreError,
+                        UnsupportedOperationError)
 from ..query import (
     _FACET_COLUMNS,
     IntelligenceQuery,
@@ -47,7 +48,8 @@ class DuckDBFileQueryEngine:
             adapter_kind="file_sql", engine="duckdb",
             source_collections=("core",),
             operations={"get": True, "query": True, "stream": True,
-                        "write": False, "export": True, "import": False},
+                        "write": False, "export": True, "import": False,
+                        ATOMIC_BATCH_OPERATION: False, ATOMIC_REMOVAL_OPERATION: False},
             query_capabilities={"projection": False, "filter": True,
                                "join": False, "aggregation": False,
                                "relationship_traversal": False,

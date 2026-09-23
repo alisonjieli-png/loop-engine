@@ -2,7 +2,9 @@
 
 This is a scoped domain binding, not another database adapter. SQLite remains
 the default CatalogStore. Writes require exact atomic read-set semantics;
-other declared adapters can supply the same versioned optional protocol.
+other declared adapters can supply the same versioned optional protocol. A
+commit that removes records also requires the negotiated removal extension,
+and it is refused before any effect by a store that does not declare it.
 """
 from __future__ import annotations
 
@@ -14,7 +16,7 @@ import uuid
 
 from ...catalog.protocol import (
     BATCH_ACKNOWLEDGMENT_VERSION, CatalogBatchAcknowledgment, CatalogRecordPrecondition, CatalogWriteBatch,
-    PreconditionFailed, StoreError, require_atomic_batch,
+    PreconditionFailed, StoreError, require_atomic_batch, require_atomic_removal,
 )
 from ...catalog.handshake import negotiate
 from ...catalog.query import IntelligenceQuery
@@ -104,8 +106,22 @@ class ServiceCatalogBinding:
         return (CatalogRecordPrecondition(identity, must_not_exist=True) if row is None else
                 CatalogRecordPrecondition(row["record_id"], row["record_version"]))
 
-    def commit(self, store, records, guards):
-        request = CatalogWriteBatch.from_records(records, guards)
+    def commit(self, store, records, guards, removals=()):
+        """Commit writes and exact removals in one atomic batch, or raise.
+
+        A removal names a record identity, and `guards` must hold that record's
+        exact version, as `guard(row)` gives it. A store that does not declare
+        the removal extension is refused with `store_contract_unavailable`
+        before the batch is built or sent. The acknowledgment must name this
+        exact batch, and every write and removal is read back before success.
+        """
+        removals = tuple(removals)
+        if removals:
+            try:
+                require_atomic_removal(store)
+            except StoreError:
+                raise ServiceRuntimeError("store_contract_unavailable") from None
+        request = CatalogWriteBatch.from_records(records, guards, removals)
         try:
             acknowledgment = store.apply_batch(request)
         except PreconditionFailed:
@@ -116,10 +132,22 @@ class ServiceCatalogBinding:
                 or acknowledgment.record_type != BATCH_ACKNOWLEDGMENT_VERSION
                 or acknowledgment.batch_digest != request.digest or acknowledgment.committed is not True):
             raise ServiceCommitUnknown()
+        removed_versions = {guard.record_id: guard.record_version for guard in request.preconditions}
         try:
-            confirmed = all(store.get(row["record_id"]) == row for row in request.records)
+            confirmed = (all(store.get(row["record_id"]) == row for row in request.records)
+                         and all(_no_longer_held(store.get(identity), removed_versions[identity])
+                                 for identity in request.removals))
         except Exception:
             confirmed = False
         if not confirmed:
             raise ServiceCommitUnknown()
         return acknowledgment
+
+
+def _no_longer_held(row, removed_version):
+    """A removal is confirmed when the store no longer holds that record at the removed version.
+
+    A later writer may create the same identity again with a new version; that
+    is not the removed record, so it does not make the removal unknown.
+    """
+    return row is None or row.get("record_version") != removed_version

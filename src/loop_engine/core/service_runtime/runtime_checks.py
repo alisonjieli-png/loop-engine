@@ -13,7 +13,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import threading
 
-from ...catalog.protocol import (CatalogBatchAcknowledgment, CatalogRecordPrecondition,
+from ...catalog.protocol import (ATOMIC_BATCH_OPERATION, CatalogBatchAcknowledgment, CatalogRecordPrecondition,
     CatalogWriteBatch, PreconditionFailed, StoreError, UnsupportedOperationError, require_atomic_batch)
 from ...catalog.stores.in_memory import EphemeralRecordStore
 from ...catalog.stores.sqlite_store import SQLiteRecordStore
@@ -608,8 +608,15 @@ def run_checks():
         record = {"record_id": "one", "record_version": "1", "payload": {"value": "original"}}
         request = CatalogWriteBatch.from_records((record,), (CatalogRecordPrecondition("one", must_not_exist=True),))
         record["payload"]["value"] = "changed"
+        # The reference store declares the batch, so an adapter that leaves the
+        # operation out of its declaration is built from it for the refusal.
+        undeclared = EphemeralRecordStore()
+        declared = undeclared.capabilities()
+        undeclared.capabilities = lambda: replace(declared, operations={
+            name: value for name, value in declared.operations.items() if name != ATOMIC_BATCH_OPERATION})
+        require_atomic_batch(EphemeralRecordStore())
         return (request.records[0]["payload"]["value"] == "original"
-                and refused(lambda: require_atomic_batch(EphemeralRecordStore()))
+                and refused(lambda: require_atomic_batch(undeclared))
                 and refused(lambda: CatalogRecordPrecondition("one", "1", True))
                 and refused(lambda: CatalogWriteBatch.from_records((record,), (CatalogRecordPrecondition("one", "1"),))))
     check("batch_snapshot_and_exact_optional_contract_refuse_ambiguous_adapters", batch_contract)

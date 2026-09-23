@@ -31,6 +31,7 @@ from .observability import (
 from .records import ACCESS_MANAGE_SCOPE, BILLING_MANAGE_SCOPE, ServiceCommitUnknown, ServiceRuntimeError
 from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
+from .retention import RetentionSchedule, ServiceRetentionPolicy
 from .waitlist import ServiceWaitlist, administer_waitlist, join_request
 from .web_pages import HTML_MEDIA_TYPE, WEB_ASSETS, missing_address_page, served_asset
 
@@ -538,6 +539,7 @@ class ServiceHttpApplication:
     account_email: object | None = field(default=None, repr=False)
     waitlist: object | None = field(default=None, repr=False)
     observability: ServiceObservabilityPolicy = ServiceObservabilityPolicy()
+    retention: ServiceRetentionPolicy = ServiceRetentionPolicy()
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -564,6 +566,11 @@ class ServiceHttpApplication:
             raise ValueError("the waiting list must bind the same durable runtime authority")
         if not isinstance(self.observability, ServiceObservabilityPolicy):
             raise TypeError("a typed observability policy is required")
+        if not isinstance(self.retention, ServiceRetentionPolicy):
+            raise TypeError("a typed retention policy is required")
+        # The one periodic removal of records whose promised time has passed.
+        # The lifespan starts it and cancels it; health reads its last outcome.
+        self.retention_schedule = RetentionSchedule(self.runtime, self.retention, waitlist=self.waitlist)
         self._workers = ThreadPoolExecutor(max_workers=self.configuration.maximum_concurrent_operations,
                                            thread_name_prefix="intelligence-service")
         self._slots = threading.BoundedSemaphore(self.configuration.maximum_concurrent_operations)
@@ -751,7 +758,8 @@ class ServiceHttpApplication:
                 browser_identity_installed=self.browser_identity is not None,
                 billing_sessions_installed=self.billing_sessions is not None,
                 billing_webhook_installed=self.billing_processor is not None,
-                billing_policy=(lambda: billing_policy_refusal(self)) if billed else None)
+                billing_policy=(lambda: billing_policy_refusal(self)) if billed else None,
+                retention=self.retention_schedule.readiness_check())
         waiting = asyncio.get_running_loop().run_in_executor(None, measure)
         try:
             return await asyncio.wait_for(asyncio.shield(waiting), self.configuration.request_timeout_seconds)
@@ -1081,8 +1089,13 @@ class ServiceHttpApplication:
 
         @asynccontextmanager
         async def lifespan(_app):
-            async with manager.run():
-                yield
+            schedule = self.retention_schedule
+            schedule.start()
+            try:
+                async with manager.run():
+                    yield
+            finally:
+                await schedule.stop()
             self._workers.shutdown(wait=False, cancel_futures=False)
 
         async def transport(scope, receive, send):

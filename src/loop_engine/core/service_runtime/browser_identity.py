@@ -78,6 +78,22 @@ class IdentityUserRequest:
     publishable_key: str = field(repr=False)
 
 
+def expired_by_now(claims, now):
+    """Whether a verified token's expiry has passed at `now`, the service runtime clock.
+
+    The signature check reads the expiry before the provider call and the
+    revocation read. A revocation is removed once its session has expired, so
+    the expiry is read again after the revocation: a session whose revocation
+    was removed while its request was being checked is past its expiry by then.
+    """
+    return claims["exp"] <= now
+
+
+def revocation_expiry(expires_at):
+    """The whole second a sign-out revocation is kept until: the token expiry, rounded up."""
+    return math.ceil(expires_at)
+
+
 def read_identity_user(request: IdentityUserRequest):
     import httpx
     import json
@@ -170,6 +186,8 @@ class BrowserIdentityAdapter:
             raise HttpAuthenticationError("verified_email_required")
         if self.runtime.browser_session_revoked(hashlib.sha256(credential.encode()).hexdigest()):
             raise HttpAuthenticationError("browser_session_revoked")
+        if expired_by_now(claims, self.runtime._now()):
+            raise HttpAuthenticationError()
         return claims
 
     def activate(self, credential):
@@ -190,6 +208,12 @@ class BrowserIdentityAdapter:
                                         float(claims["exp"]), self.configuration.allowed_scopes)
 
     def logout(self, request):
+        """Refuse this browser session until the last moment its token could still be accepted.
+
+        The revocation keeps the token expiry rounded up to a whole second, so
+        a token whose expiry falls inside a second is refused until the end of
+        that second, and the revocation is never removed before the token dies.
+        """
         current = self.authenticate(request.credential)
         return self.runtime.revoke_browser_session(current.principal,
-            hashlib.sha256(request.credential.encode()).hexdigest(), int(current.expires_at))
+            hashlib.sha256(request.credential.encode()).hexdigest(), revocation_expiry(current.expires_at))

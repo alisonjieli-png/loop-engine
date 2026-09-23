@@ -22,8 +22,7 @@ from .storage import ServiceCatalogBinding
 from .waitlist import (
     ADDRESS_HAS_ACCOUNT, ADDRESS_INVALID, ADDRESS_LISTED, DECISION_VERSION, ENTRY, ERASED_BY_FORGET, FORGET,
     INVITE, INVITED, JOINED, OPERATIONS, RECORD_DELIVERY, RECORD_JOIN, REMOVED, REQUEST_VERSION, SOURCE,
-    SOURCE_FLOODED, SOURCE_SCHEMA, SOURCE_SECRET_UNAVAILABLE, SOURCE_SECRET_UNUSABLE, UNCOUNTED_SOURCE,
-    UNKEYED_SOURCE, WAITING,
+    SOURCE_FLOODED, SOURCE_SECRET_UNAVAILABLE, UNCOUNTED_SOURCE, WAITING,
     ServiceWaitlist, WaitlistAccountDirectory, WaitlistDecision, WaitlistPolicy, WaitlistRequest,
     keyed_source_digest,
 )
@@ -100,12 +99,6 @@ def source_record_findings(row, address, catalog):
     return ([name + " in a stored field" for name, value in unkeyed.items() if value in text]
             + ["an identity named by " + name for name, value in unkeyed.items()
                if row.get("record_id") == catalog.identity(SOURCE, value)])
-
-
-def counts_outside_window(rows, now, window_seconds):
-    """Every stored count that is older than the window at `now`."""
-    return [value for row in rows for value in row["payload"].get("accepted", [])
-            if value <= now - window_seconds]
 
 
 def request(address, note="", source="203.0.113.7"):
@@ -339,131 +332,6 @@ def removal_checks(check, root):
           declined.waitlist.decide(declined_operator, WaitlistDecision(
               FORGET, declined_reference, "forget-6"))["state"] == REMOVED
           and "jean" not in json.dumps(_stored_row(declined, "jean@example.com"), sort_keys=True))
-
-
-def source_privacy_checks(check, root):
-    """What the flood guard keeps about a network address, and for how long.
-
-    The published privacy notice says the guard keeps the times of recent
-    requests under a keyed one-way digest of the sending address, never the
-    address itself, and removes them once the counting window has passed.
-    Each clause has a check over real records, and a known-wrong case beside
-    it shows that the check finds the defect it names.
-    """
-    address = "198.51.100.23"
-    keyed = prepared(root / "keyed", accepted_for_each_source=3)
-    keyed.waitlist.join(request("kay@example.com", source=address))
-    catalog, rows = keyed.runtime._catalog, source_rows(keyed.runtime)
-    check("no_stored_source_record_holds_the_address_or_an_unkeyed_digest_of_it",
-          len(rows) == 1 and not source_record_findings(rows[0], address, catalog)
-          and rows[0]["record_id"] == catalog.identity(SOURCE, keyed_source_digest(keyed.source_secret, address))
-          and set(rows[0]["payload"]) == {"record_type", "accepted", "window_seconds"})
-    # Known-wrong cases: a record named by the address itself, as the first
-    # version of this record was, and records that carry the address or an
-    # unkeyed digest of it in a field. The named check finds every one.
-    named = prepared(root / "named", accepted_for_each_source=3)
-    with patch("loop_engine.core.service_runtime.waitlist.keyed_source_digest", lambda _secret, key: key):
-        named.waitlist.join(request("una@example.com", source=address))
-    planted = [(row, named.runtime._catalog) for row in source_rows(named.runtime)] + [
-        ({**rows[0], "payload": {**rows[0]["payload"], **field}}, catalog) for field in (
-            {"note": "from " + address}, {"source_digest": digest([address])},
-            {"source_digest": hashlib.sha256(address.encode("utf-8")).hexdigest()})]
-    check("KNOWN_WRONG_a_source_record_that_gives_away_the_address_is_found_in_every_form",
-          len(planted) == 4 and all(source_record_findings(row, address, owner) for row, owner in planted))
-
-    # Nothing about an address outlives the window. Every request removes the
-    # counts that have left the window, from every source record, and a record
-    # with no count left keeps its version and an empty list and nothing else.
-    windowed = prepared(root / "window", accepted_for_each_source=3, source_window_seconds=60)
-    joins = ((1000.0, "early0@example.com", "198.51.100.40"), (1000.0, "early1@example.com", "198.51.100.41"),
-             (1030.0, "middle@example.com", "198.51.100.41"), (1061.0, "later@example.com", "198.51.100.42"))
-    for moment, email, source in joins:
-        with patch.object(windowed.runtime, "_clock", lambda moment=moment: moment):
-            windowed.waitlist.join(request(email, source=source))
-    kept = source_rows(windowed.runtime)
-    check("no_source_record_keeps_a_count_after_its_window",
-          len(kept) == 3 and counts_outside_window(kept, 1061.0, 60) == []
-          and sorted(tuple(row["payload"]["accepted"]) for row in kept) == [(), (1030.0,), (1061.0,)]
-          and all(set(row["payload"]) == {"record_type", "accepted", "window_seconds"} for row in kept))
-    # Known-wrong case: without the sweep, the first source's count stays in
-    # the store after its window, and the second source keeps its old count.
-    unswept = prepared(root / "unswept", accepted_for_each_source=3, source_window_seconds=60)
-    with patch.object(ServiceWaitlist, "_forget_expired_sources", lambda self, store, catalog, now: 0):
-        for moment, email, source in joins:
-            with patch.object(unswept.runtime, "_clock", lambda moment=moment: moment):
-                unswept.waitlist.join(request(email, source=source))
-    check("KNOWN_WRONG_without_the_sweep_a_count_outlives_its_window",
-          counts_outside_window(source_rows(unswept.runtime), 1061.0, 60) != [])
-
-    # A host that names no secret takes no count, exactly as a host that
-    # declares no address source does. It never falls back to a plain digest.
-    secretless = prepared(root / "secretless", keyed=False, accepted_for_each_source=2)
-    answers = [_attempt(lambda index=index: secretless.waitlist.join(
-        request(f"open{index}@example.com", source=address)))[0] for index in range(3)]
-    check("a_host_that_names_no_secret_takes_no_count_and_keeps_nothing_about_the_address",
-          [answer and answer["source_counted"] for answer in answers] == [UNKEYED_SOURCE] * 3
-          and source_rows(secretless.runtime) == [])
-    fallback = prepared(root / "fallback", keyed=False, accepted_for_each_source=2)
-    with patch.object(ServiceWaitlist, "_keyed_source", lambda self, key: digest([key])):
-        fell = [fallback.waitlist.join(request(f"fell{index}@example.com", source=address)) for index in range(2)]
-    fallen = source_rows(fallback.runtime)
-    check("KNOWN_WRONG_a_plain_digest_fallback_counts_and_keeps_a_digest_anyone_can_recompute",
-          [answer["source_counted"] for answer in fell] == ["counted", "counted"] and len(fallen) == 1
-          and bool(source_record_findings(fallen[0], address, fallback.runtime._catalog)))
-
-    # A secret the host names but the service cannot read, or one too short to
-    # key a digest, refuses the request before anything is written. Counting
-    # under a weaker digest instead would break the promise without a sign.
-    unreadable = prepared(root / "unreadable", secret=ServiceRuntimeError("configured_secret_unavailable"))
-    check("a_named_secret_that_cannot_be_read_refuses_the_request_before_any_write",
-          refused(lambda: unreadable.waitlist.join(request("rose@example.com", source=address)),
-                  SOURCE_SECRET_UNAVAILABLE)
-          and _stored_row(unreadable, "rose@example.com") is None and source_rows(unreadable.runtime) == [])
-    short = prepared(root / "short", secret="a-secret-too-short-to-key")
-    check("a_secret_too_short_to_key_a_digest_is_refused_instead_of_used",
-          refused(lambda: short.waitlist.join(request("sam@example.com", source=address)), SOURCE_SECRET_UNUSABLE)
-          and _stored_row(short, "sam@example.com") is None and source_rows(short.runtime) == [])
-
-    # The reader requires the current record version. A first version record
-    # anywhere in the collection refuses the request before any write, because
-    # this release will not rewrite or count a record it was not written for.
-    first_version = {"record_type": "service_waitlist_source/v1", "source_digest": digest(["198.51.100.60"]),
-                     "accepted": [], "window_seconds": 3600, "updated_at": 0}
-    versioned = prepared(root / "version")
-    _plant(versioned, SOURCE, "198.51.100.60", first_version)
-    check("a_first_version_source_record_is_refused_before_any_write",
-          refused(lambda: versioned.waitlist.join(request("vera@example.com", source="198.51.100.61")),
-                  "unsupported_or_corrupt_record")
-          and _stored_row(versioned, "vera@example.com") is None)
-    lenient = prepared(root / "lenient")
-    _plant(lenient, SOURCE, "198.51.100.60", first_version)
-    with patch.object(ServiceWaitlist, "_source_payload", staticmethod(lambda row: row["payload"])):
-        check("KNOWN_WRONG_a_reader_that_takes_any_version_admits_the_first_version",
-              lenient.waitlist.join(request("vera@example.com", source="198.51.100.61"))["state"] == WAITING)
-    # The current version holds its times and nothing else. A record of that
-    # version that carries one more field is refused rather than read around,
-    # so no writer can add something about the address unnoticed.
-    widened = prepared(root / "widened")
-    _plant(widened, SOURCE, keyed_source_digest(widened.source_secret, "198.51.100.62"),
-           {"record_type": SOURCE_SCHEMA, "accepted": [], "window_seconds": 3600, "source_address": "198.51.100.62"})
-    check("a_source_record_that_carries_any_other_field_is_refused_before_any_write",
-          refused(lambda: widened.waitlist.join(request("xena@example.com", source="198.51.100.63")),
-                  "unsupported_or_corrupt_record")
-          and _stored_row(widened, "xena@example.com") is None)
-
-    # The published notice promises one hour. A longer window would keep the
-    # times of an address past that promise, so the policy refuses it.
-    check("a_window_longer_than_the_published_hour_is_refused",
-          refused(lambda: WaitlistPolicy(source_window_seconds=3601), "invalid_waitlist_policy")
-          and WaitlistPolicy(source_window_seconds=3600).source_window_seconds == 3600)
-
-
-def _plant(fixture, kind, logical_identity, payload):
-    """Write one record the way an earlier release would have, for a refusal check."""
-    catalog = fixture.runtime._catalog
-    row = catalog.record(kind, logical_identity, payload)
-    with catalog.store(write=True) as store:
-        catalog.commit(store, (row,), (catalog.guard(None, row["record_id"]),))
 
 
 def http_checks(check, root):
@@ -779,10 +647,15 @@ def run_all_checks(root):
         tests.append({"test": name, "passed": bool(passed),
                       "detail": "real SQLite records and a real loopback transport; no external provider"})
     for name, function in (("domain", run_checks), ("decisions", decision_checks),
-                           ("removal", removal_checks), ("sources", source_privacy_checks),
-                           ("page", page_checks), ("host", host_checks), ("HTTP", http_checks)):
+                           ("removal", removal_checks), ("page", page_checks), ("host", host_checks),
+                           ("HTTP", http_checks)):
         directory = root / name
         directory.mkdir(parents=True, exist_ok=True)
         function(check, directory)
+    # The source record checks live in their own module, which imports the
+    # fixtures above, so it is imported here rather than at the top.
+    from .waitlist_source_checks import run_source_checks
+    (root / "sources").mkdir(parents=True, exist_ok=True)
+    run_source_checks(check, root / "sources")
     return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),
             "all_passed": all(row["passed"] for row in tests)}

@@ -176,11 +176,14 @@ class ServiceAccessAdministration:
         if (current.authentication_kind != SUBJECT or not isinstance(session, ServiceAccessSession)
                 or session.authentication_record_id != current.authentication_record_id):
             raise ServiceRuntimeError("browser_session_required")
-        if session.expires_at <= self.runtime._now():
-            raise ServiceRuntimeError("unauthorized")
         catalog = self.runtime._catalog
         revoked = catalog.read(store, SESSION_REVOCATION, session.credential_digest)
         if revoked is not None:
+            raise ServiceRuntimeError("unauthorized")
+        # The expiry is read after the revocation. A revocation is removed once
+        # its session has expired, so a session whose revocation disappeared
+        # between the two reads is already past its expiry here.
+        if session.expires_at <= self.runtime._now():
             raise ServiceRuntimeError("unauthorized")
         return current, (*guards, catalog.guard(None, catalog.identity(SESSION_REVOCATION, session.credential_digest)))
 

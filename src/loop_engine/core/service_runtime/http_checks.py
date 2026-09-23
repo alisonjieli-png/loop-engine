@@ -536,6 +536,9 @@ def self_test():
             check(row["test"], row["passed"])
     from .observability_checks import run_checks as observability_checks
     observability_checks(check)
+    from .retention_checks import run_checks as retention_checks
+    with tempfile.TemporaryDirectory(prefix="service-retention-") as directory:
+        retention_checks(check, Path(directory))
     check("every_service_check_module_is_run_by_a_suite", not unrun_service_check_modules())
     # Known-wrong case for the guard above: a merge can drop the call and keep
     # the import beside it. Nothing then runs the module, and the import alone

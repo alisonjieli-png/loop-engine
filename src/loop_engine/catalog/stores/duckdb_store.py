@@ -11,7 +11,7 @@ from copy import deepcopy
 from threading import RLock
 
 from ..capabilities import StoreCapabilities
-from ..protocol import PreconditionFailed, StoreError
+from ..protocol import ATOMIC_BATCH_OPERATION, ATOMIC_REMOVAL_OPERATION, PreconditionFailed, StoreError
 from ..query import (
     IntelligenceQuery,
     iter_query_records,
@@ -49,7 +49,9 @@ class DuckDBRecordStore:
             adapter_id="local.duckdb", adapter_version="1.0.0",
             adapter_kind="embedded_database", engine="duckdb",
             operations={"get": True, "query": True, "stream": True,
-                        "write": True, "export": True, "import": True},
+                        "write": True, "export": True, "import": True,
+                        # No atomic batch and no removal: declared, not implied.
+                        ATOMIC_BATCH_OPERATION: False, ATOMIC_REMOVAL_OPERATION: False},
             query_capabilities={"projection": False, "filter": True,
                                "join": False, "aggregation": False,
                                "relationship_traversal": False,

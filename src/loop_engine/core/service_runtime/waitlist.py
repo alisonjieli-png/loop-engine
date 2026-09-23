@@ -58,8 +58,9 @@ source record, service_waitlist_source/v2
 │   anyone could recompute from a guessed address
 ├── holds the times of accepted entries inside the window and nothing else
 └── every request removes the times that have left the window from every
-    source record; a record with no time left keeps its version and an empty
-    list, because the catalogue store has no removal operation
+    source record, and removes a record with no time left through the
+    catalogue removal batch; the retention task in retention.py does the
+    same on its own schedule, so a quiet list keeps nothing past the window
 ```
 
 A host that names no secret takes no count, and the entry records
@@ -377,35 +378,21 @@ class ServiceWaitlist:
         return keyed_source_digest(self._source_secret(), source_key)
 
     def _forget_expired_sources(self, store, catalog, now):
-        """Remove every count that has left the window, from every source record.
+        """Remove every count that has left the window, and every source record left with none.
 
         It runs on every request to join, whether or not that request is
         counted, so a source that never returns does not keep its times until
-        it does. A record with no count left keeps its version and an empty
-        list: the catalogue store has no removal operation, and the record's
-        name is a keyed digest that nobody without the host secret can link to
-        an address. Another writer that changed one of these records first is
-        not an error here. That writer ran the same sweep, and the next request
-        sweeps again. An unknown commit is reported, never assumed.
+        it does. Another writer that changed or removed one of these records
+        first is not an error here. That writer ran the same sweep, and the
+        next request sweeps again. An unknown commit is reported, never
+        assumed.
         """
-        oldest = now - self.policy.source_window_seconds
-        changed, guards = [], []
-        for row in catalog.rows_all(store, SOURCE):
-            payload = self._source_payload(row)
-            kept = [value for value in payload["accepted"] if value > oldest]
-            if kept != payload["accepted"]:
-                changed.append({**row, "record_version": uuid.uuid4().hex,
-                                "payload": {**payload, "accepted": kept}})
-                guards.append(catalog.guard(row))
-        if not changed:
-            return 0
         try:
-            catalog.commit(store, changed, guards)
+            return forget_expired_sources(catalog, store, now, self.policy.source_window_seconds)
         except ServiceRuntimeError as error:
             if error.code != "concurrent_update":
                 raise
-            return 0
-        return len(changed)
+            return {"trimmed": 0, "removed": 0}
 
     def _source_guard(self, store, catalog, request, now):
         """Count accepted entries for one source inside the window; refuse an obvious flood."""
@@ -514,6 +501,43 @@ class ServiceWaitlist:
             catalog.commit(store, (changed,), (*guards, catalog.guard(row)))
             return {"record_type": RESULT_VERSION, "committed": True, "replayed": False, "state": state,
                     "entry": self._view(changed), "request_id": decision.request_id}
+
+
+def plan_source_sweep(rows, now, window_seconds):
+    """Decide what the sweep does with each source record: keep it, trim its old times, or remove it.
+
+    Returns the trimmed records as pairs of the stored row and its replacement,
+    and the rows to remove. A record with no time left inside the window is
+    removed, including one that an earlier release left with an empty list.
+    Every row is read through the exact source reader first, so a record of
+    another version refuses the whole sweep instead of being rewritten.
+    """
+    oldest = now - window_seconds
+    trimmed, removed = [], []
+    for row in rows:
+        payload = ServiceWaitlist._source_payload(row)
+        kept = [value for value in payload["accepted"] if value > oldest]
+        if not kept:
+            removed.append(row)
+        elif kept != payload["accepted"]:
+            trimmed.append((row, {**row, "record_version": uuid.uuid4().hex,
+                                  "payload": {**payload, "accepted": kept}}))
+    return trimmed, removed
+
+
+def forget_expired_sources(catalog, store, now, window_seconds):
+    """Trim and remove source records in one atomic batch guarded by each record's exact version.
+
+    The caller holds a write connection. A lost race is raised as
+    `concurrent_update` for the caller to handle; the counts say what this
+    batch changed.
+    """
+    trimmed, removed = plan_source_sweep(catalog.rows_all(store, SOURCE), now, window_seconds)
+    if trimmed or removed:
+        catalog.commit(store, tuple(new for _stored, new in trimmed),
+                       tuple(catalog.guard(row) for row in (*(stored for stored, _new in trimmed), *removed)),
+                       tuple(row["record_id"] for row in removed))
+    return {"trimmed": len(trimmed), "removed": len(removed)}
 
 
 def join_request(waitlist, payload, source_key):

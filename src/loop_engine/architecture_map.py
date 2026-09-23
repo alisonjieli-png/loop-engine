@@ -64,6 +64,7 @@ MODULE_MAP = {
         "observability", "observability_checks",
         "waitlist", "waitlist_checks",
         "protocol_checks",
+        "retention", "retention_checks", "waitlist_source_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "ontology": (

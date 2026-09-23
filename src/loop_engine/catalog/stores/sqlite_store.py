@@ -13,8 +13,9 @@ from copy import deepcopy
 from pathlib import Path
 
 from ..capabilities import StoreCapabilities
-from ..protocol import (ATOMIC_BATCH_OPERATION, ATOMIC_BATCH_VERSION, CatalogBatchAcknowledgment,
-                        CatalogWriteBatch, PreconditionFailed, StoreError, UnsupportedOperationError)
+from ..protocol import (ATOMIC_BATCH_OPERATION, ATOMIC_BATCH_VERSION, ATOMIC_REMOVAL_BATCH_VERSION,
+                        ATOMIC_REMOVAL_OPERATION, CatalogBatchAcknowledgment, CatalogWriteBatch,
+                        PreconditionFailed, StoreError, UnsupportedOperationError)
 from ..query import (
     IntelligenceQuery,
     iter_query_records,
@@ -23,6 +24,9 @@ from ..query import (
 )
 
 WAL_JOURNAL_MODE = "wal"
+#: The atomic batch versions this adapter applies: writes, and writes with
+#: exact removals. A batch of any other version is refused before any effect.
+APPLIED_BATCH_VERSIONS = (ATOMIC_BATCH_VERSION, ATOMIC_REMOVAL_BATCH_VERSION)
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS records (
@@ -86,7 +90,8 @@ class SQLiteRecordStore:
             operations={"get": True, "query": True, "stream": True,
                         "write": not self._read_only, "export": True,
                         "import": not self._read_only,
-                        ATOMIC_BATCH_OPERATION: not self._read_only},
+                        ATOMIC_BATCH_OPERATION: not self._read_only,
+                        ATOMIC_REMOVAL_OPERATION: not self._read_only},
             query_capabilities={"projection": False, "filter": True,
                                "join": False, "aggregation": False,
                                "relationship_traversal": False,
@@ -99,6 +104,7 @@ class SQLiteRecordStore:
                           "atomic_preconditions": not self._read_only,
                           "atomic_import": not self._read_only,
                           "atomic_batch_version": ATOMIC_BATCH_VERSION,
+                          "atomic_removal_batch_version": ATOMIC_REMOVAL_BATCH_VERSION,
                           "atomic_read_set": not self._read_only,
                           "atomic_scope": "one_database",
                           "writer_topology": "serialized_single_writer",
@@ -201,13 +207,16 @@ class SQLiteRecordStore:
             "payload=excluded.payload", values)
 
     def apply_batch(self, request: CatalogWriteBatch) -> CatalogBatchAcknowledgment:
-        """Check the complete read set and commit all writes in one transaction."""
+        """Check the complete read set, then commit every write and every removal in one transaction."""
         if self._read_only:
             raise UnsupportedOperationError("SQLite store is read-only")
         if not isinstance(request, CatalogWriteBatch):
             raise StoreError("a typed atomic batch request is required")
         request.__post_init__()
+        if request.record_type not in APPLIED_BATCH_VERSIONS:
+            raise UnsupportedOperationError("this atomic batch version is not applied here")
         values = tuple(_record_values(row) for row in request.records)
+        expected_versions = {row.record_id: row.record_version for row in request.preconditions}
         try:
             self._begin_write()
             for expected in request.preconditions:
@@ -219,6 +228,13 @@ class SQLiteRecordStore:
                     raise PreconditionFailed("atomic batch read-set precondition failed")
             for row in values:
                 self._write_values(row)
+            for identity in request.removals:
+                # The version is part of the statement as well as the read
+                # set, so a removal can only ever remove the version it names.
+                removed = self._con.execute("DELETE FROM records WHERE record_id = ? AND record_version = ?",
+                                            (identity, expected_versions[identity])).rowcount
+                if removed != 1:
+                    raise PreconditionFailed("atomic batch removal found no record at its expected version")
             self._con.commit()
         except (sqlite3.Error, StoreError) as exc:
             self._con.rollback()
@@ -455,6 +471,64 @@ def self_test() -> dict:
             wins = list(pool.map(contend, (1, 2)))
         check("atomic_version_precondition_has_one_concurrent_winner",
               sum(wins) == 1)
+
+        # Removal batches: exact version, missing record refused, one
+        # transaction with the writes, and a failed removal rolls back all.
+        from ..protocol import CatalogRecordPrecondition, require_atomic_removal
+        removing = SQLiteRecordStore(os.path.join(tmp, "removal.sqlite"))
+        try:
+            require_atomic_removal(removing)
+            declared = True
+        except StoreError:
+            declared = False
+        check("a_writable_sqlite_store_declares_the_removal_extension", declared)
+        for identity in ("gone", "kept", "blocked"):
+            removing.put(dict(record, record_id=identity, record_version="1"))
+        refusals = []
+        for identity, version in (("gone", "0"), ("absent", "1")):
+            try:
+                removing.apply_batch(CatalogWriteBatch.from_records(
+                    (), (CatalogRecordPrecondition(identity, version),), (identity,)))
+                refusals.append(False)
+            except PreconditionFailed:
+                refusals.append(True)
+        check("a_removal_at_a_stale_version_or_of_a_missing_record_is_refused",
+              refusals == [True, True] and removing.get("gone") is not None)
+        exact = CatalogWriteBatch.from_records(
+            (dict(record, record_id="written", record_version="1"),),
+            (CatalogRecordPrecondition("gone", "1"), CatalogRecordPrecondition("written", must_not_exist=True)),
+            ("gone",))
+        acknowledgment = removing.apply_batch(exact)
+        check("an_exact_removal_commits_in_one_transaction_with_the_writes_of_its_batch",
+              acknowledgment.batch_digest == exact.digest and acknowledgment.committed is True
+              and removing.get("gone") is None and removing.get("written") is not None
+              and removing.get("kept") is not None)
+        removing._con.execute(
+            "CREATE TRIGGER keep_fixture BEFORE DELETE ON records "
+            "WHEN OLD.record_id = 'blocked' BEGIN SELECT RAISE(ABORT, 'fixture'); END")
+        removing._con.commit()
+        try:
+            removing.apply_batch(CatalogWriteBatch.from_records(
+                (dict(record, record_id="rolled", record_version="1"),),
+                (CatalogRecordPrecondition("blocked", "1"), CatalogRecordPrecondition("rolled", must_not_exist=True)),
+                ("blocked",)))
+            check("a_failed_removal_rolls_back_every_write_of_its_batch", False)
+        except StoreError:
+            check("a_failed_removal_rolls_back_every_write_of_its_batch",
+                  removing.get("rolled") is None and removing.get("blocked") is not None
+                  and not removing._con.in_transaction)
+        removing.close()
+        reader = SQLiteRecordStore(os.path.join(tmp, "removal.sqlite"), read_only=True)
+        try:
+            reader.apply_batch(CatalogWriteBatch.from_records(
+                (), (CatalogRecordPrecondition("kept", "1"),), ("kept",)))
+            refused_read_only = False
+        except UnsupportedOperationError:
+            refused_read_only = True
+        check("a_read_only_store_declares_no_removal_and_refuses_one",
+              refused_read_only and not reader.capabilities().supports(ATOMIC_REMOVAL_OPERATION)
+              and reader.get("kept") is not None)
+        reader.close()
         from unittest.mock import patch
         with patch.object(sqlite3, "sqlite_version_info", (3, 46, 1)):
             old_rejected = not _wal_runtime_qualified()

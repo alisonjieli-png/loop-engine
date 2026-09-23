@@ -172,8 +172,9 @@ Reported, and a failure does not remove the machine
 ├── browser_identity_installed: browser sign-in is configured
 ├── billing_sessions_installed: subscription checkout is configured
 ├── billing_webhook_installed: payment provider callbacks are configured
-└── billing_policy_current: the stored billing policies are the ones the
-    running release computes from the host file
+├── billing_policy_current: the stored billing policies are the ones the
+│   running release computes from the host file
+└── retention_sweep_current: the last removal of expired records finished
 ```
 
 The second group is deliberate. An empty catalogue is a configuration state and
@@ -183,6 +184,15 @@ stops a person signing in through a browser and stops nothing else. The service
 runs on one machine, so reporting not ready for either would take the working
 programming interface down as well, and restarting cannot put a file back into
 an image. An operator reads them in the health record and decides.
+
+`retention_sweep_current` reports the periodic task that removes the records
+the privacy notice keeps for a bounded time. Reading it never runs a removal.
+When it does not pass, its code says why: `retention_sweep_not_run_yet` in the
+first moments after start, `retention_sweep_not_running` on a service without
+host write authority, or the code of the last failed run, such as
+`store_unavailable`. The task keeps its schedule after a failure, and the
+[service runtime guide](../../src/loop_engine/core/service_runtime/README.md#retention-of-expired-records)
+describes it.
 
 The volume check is the one that the store check cannot replace. When a volume
 fills, a read still answers and only writes fail, so a health route that only
