@@ -235,6 +235,21 @@ def self_test() -> dict:
               and all(quarantine.has(row["provenance"]["source_digest"]) for row in batch["candidates"]),
               (decisions, reasons))
 
+        # A licence or notice file that cannot be read is still in the tree: the item beside it
+        # must not fall back to the repository licence as if its folder held none.
+        unreadable = repository_table({**files, "skills/alpha/NOTICE": b"Notices for alpha.\n"})
+        unreadable[f"repos/{REPOSITORY}/contents/skills/closed/LICENSE.txt?ref={COMMIT}"] = (500, b"{}")
+        unreadable[f"repos/{REPOSITORY}/contents/skills/alpha/NOTICE?ref={COMMIT}"] = (502, b"{}")
+        unread = GitHubPinnedRepositoriesSource(FakeGitHubReader(
+            unreadable, RequestBudget(maximum_requests=50), RequestLog()), quarantine
+        ).read_candidates(declaration(), _request())
+        unread_evidence = {row["name"]: row["provenance"]["licence_evidence"] for row in unread["candidates"]}
+        check("a_licence_or_notice_file_that_cannot_be_read_blocks_a_verbatim_copy",
+              unread_evidence["closed"]["decision"] == "outline_only"
+              and unread_evidence["alpha"]["decision"] == "outline_only"
+              and unread_evidence["beta"]["decision"] == "verbatim_permitted",
+              {name: (row["decision"], row["reason"]) for name, row in unread_evidence.items()})
+
         drifted = repository_table(files)
         other_licence = (MIT_FIXTURE + "\nA line the pinned commit does not hold.\n").encode()
         drifted[f"repos/{REPOSITORY}/license?ref={COMMIT}"] = (200, json.dumps({

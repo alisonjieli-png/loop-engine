@@ -123,6 +123,7 @@ without changing an engine.
 ```text
 One fetched file
 ├── the governing licence file is the nearest one, from the file's folder up to the root
+│   └── a licence or notice file there that cannot be read leaves an outline only
 ├── the licence text is compared with stored word sets of the canonical texts
 │   ├── recognized only at 98 percent similarity or more, clearly ahead of the next licence
 │   └── and only when it adds no word the canonical text lacks: a short added condition
@@ -238,16 +239,16 @@ PYTHONPATH=src:tools python -m unittest tools.test_ingest_outside_material tools
 
 The seven check modules run offline against recorded fake transports. They
 hold the known-wrong cases: a candidate without provenance, verbatim import
-without an accepted licence, a proprietary licence, a short condition added to a
-permissive licence, a nested licence file, a
-licence answer that is not the pinned blob, a source curated for outlines,
-tampered bytes, symbolic links and submodules, a truncated tree, request
-ceilings and allowance pauses, a licence that binds the reader to outside
-terms, reuse of cached bytes that are not the pinned blob, registry status
-changes and vanished entries,
-secrets and plain addresses in connection files, the malicious and benign
-regression set of the scanner, duplicates, bundled files and outlines that
-repeat source words.
+without an accepted licence, a proprietary licence, a short condition added
+to a permissive licence, a nested licence file, a licence or notice file
+that cannot be read, a licence answer that is not the pinned blob, a source
+curated for outlines, tampered bytes, symbolic links and submodules, a
+truncated tree, request ceilings and allowance pauses, a licence that binds
+the reader to outside terms, reuse of cached bytes that are not the pinned
+blob, registry status changes and vanished entries, secrets and plain
+addresses in connection files, the malicious and benign regression set of
+the scanner, duplicates, bundled files and outlines that repeat source
+words.
 
 ## Limits
 

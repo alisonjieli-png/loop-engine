@@ -5,10 +5,11 @@ versioned contents interface. It lists the tree once and refuses a
 truncated tree rather than guessing, selects the declared paths whose file
 name is a native harness format, refuses symbolic links and submodules,
 reads the repository licence through GitHub's licence interface and every
-nested licence and notice file that could govern a selected file, checks
-each file's bytes against the blob identity in the tree, places the bytes
-in quarantine and returns typed candidates, each with its provenance and
-licence evidence. A request ceiling or an allowance wait beyond its bound
+nested licence and notice file that could govern a selected file (one that
+cannot be read lowers every item it covers to an outline, never to the
+licence above it), checks each file's bytes against the blob identity in
+the tree, places the bytes in quarantine and returns typed candidates, each
+with its provenance and licence evidence. A request ceiling or an allowance wait beyond its bound
 stops the source cleanly with a cursor to resume from. It executes nothing.
 """
 from __future__ import annotations
@@ -36,6 +37,9 @@ NATIVE_FILES = (
 _SYMLINK_MODE, _SUBMODULE_TYPE = "120000", "commit"
 #: The curated use that allows outlines only.
 OUTLINE_USE = "outline"
+#: Why a verbatim decision was lowered to an outline: a licence or notice file that could
+#: govern or qualify the item is in the tree, but its bytes could not be read.
+LICENCE_FILE_UNREADABLE = "licence_or_notice_file_unreadable"
 _SPDX_HEADER = re.compile(r"SPDX-License-Identifier:\s*([A-Za-z0-9.+-]+(?: (?:AND|OR|WITH) [A-Za-z0-9.+-]+)*)")
 
 
@@ -78,6 +82,12 @@ def frontmatter_licence(text: str) -> "str | None":
 
 def spdx_headers(text: str) -> tuple:
     return tuple(match.group(1) for match in _SPDX_HEADER.finditer("\n".join(text.splitlines()[:30])))
+
+
+def applies_to_folder(path: str, folder: str) -> bool:
+    """True when a licence or notice file sits in the item's folder or in a folder above it."""
+    parent = str(PurePosixPath(path).parent)
+    return folder == parent or parent == "." or folder.startswith(parent + "/")
 
 
 class GitHubPinnedRepositoriesSource:
@@ -167,10 +177,10 @@ class GitHubPinnedRepositoriesSource:
             licences = self._licence_files(repository, commit, blobs, chosen, declaration, refusals)
             if licences is None:
                 return finish(False, "source_refused")
-            licence_files, root_path, notices = licences
+            licence_files, root_path, notices, unreadable = licences
             for path in chosen:
                 self._read_item(declaration, path, blobs[path], blobs, licence_files, root_path, notices,
-                                candidates, refusals)
+                                unreadable, candidates, refusals)
                 state["cursor"] = path
         except RequestCeilingReached:
             return finish(False, "request_ceiling")
@@ -179,8 +189,12 @@ class GitHubPinnedRepositoriesSource:
         return finish(False, "candidate_ceiling") if more else finish(True, "complete")
 
     def _licence_files(self, repository, commit, blobs, chosen, declaration, refusals):
-        """Read the repository licence and every licence or notice file above a chosen path."""
-        files, root_path, notices = {}, None, []
+        """Read the repository licence and every licence or notice file above a chosen path.
+
+        A licence or notice file whose bytes cannot be read is returned by path, so
+        the items it could govern are never decided as if their folder held none.
+        """
+        files, root_path, notices, unreadable = {}, None, [], []
         status, answer = self._json(f"repos/{repository}/license?ref={commit}")
         if answer is not None:
             data = base64.b64decode(answer.get("content", ""))
@@ -216,13 +230,14 @@ class GitHubPinnedRepositoriesSource:
             if is_licence_file(path) or is_notice_file(path):
                 data = self._contents(repository, commit, path, blobs[path])
                 if data is None:
+                    unreadable.append(path)
                     continue
                 self.quarantine.put(data)
                 if is_licence_file(path):
                     files[path] = LicenceFile(path, bytes_digest(data), data.decode("utf-8", "replace"))
                 else:
                     notices.append((path, bytes_digest(data)))
-        return files, root_path, notices
+        return files, root_path, notices, unreadable
 
     def _contents(self, repository, commit, path, blob) -> "bytes | None":
         if self.blob_cache is not None:
@@ -237,7 +252,7 @@ class GitHubPinnedRepositoriesSource:
             return None
         return data
 
-    def _read_item(self, declaration, path, blob, blobs, licence_files, root_path, notices,
+    def _read_item(self, declaration, path, blob, blobs, licence_files, root_path, notices, unreadable,
                    candidates, refusals) -> None:
         repository, commit = declaration["repository"], declaration["commit"]
         ref = {"origin": GITHUB_ORIGIN, "repository": repository, "immutable_revision": commit, "path": path}
@@ -274,13 +289,13 @@ class GitHubPinnedRepositoriesSource:
         kind, native = native_format(path)
         folder = str(PurePosixPath(path).parent)
         folder_notices = [(notice_path, digest) for notice_path, digest in notices
-                          if folder == str(PurePosixPath(notice_path).parent)
-                          or folder.startswith(str(PurePosixPath(notice_path).parent) + "/")
-                          or str(PurePosixPath(notice_path).parent) == "."]
+                          if applies_to_folder(notice_path, folder)]
         evidence = decide_licence(path, licence_files, root_path=root_path,
                                   frontmatter_licence=frontmatter_licence(text) if kind == SKILL else None,
                                   item_sha256=entry.digest, spdx_headers=spdx_headers(text),
                                   notice_files=folder_notices)
+        if any(applies_to_folder(other, folder) for other in unreadable):
+            evidence = cap_to_outline(evidence, LICENCE_FILE_UNREADABLE)
         if declaration["use"] == OUTLINE_USE:
             evidence = cap_to_outline(evidence)
         provenance = OutsideSourceProvenance(
