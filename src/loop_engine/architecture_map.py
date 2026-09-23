@@ -65,7 +65,10 @@ MODULE_MAP = {
         "protocol_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
-    "core.engines": ("__init__",),
+    "core.engines": (
+        "__init__", "records", "host_records", "selection_records", "decision_records",
+        "records_checks", "selection_records_checks",
+    ),
     "core.step_execution": ("__init__",),
     "ontology": (
         "artifacts", "catalog", "folders", "loop_definition_record",

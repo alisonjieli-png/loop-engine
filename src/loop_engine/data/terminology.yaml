@@ -1220,6 +1220,133 @@ vocabulary:
       The version policy needs documents that name the retired spelling and
       state that active readers refuse it.
     status: retired_record_spelling
+  engine slot:
+    kind: technical_word
+    definition: >-
+      The owner's swap point: one functional component's typed socket that
+      fixes its edge contract, engine protocol, engine kinds, factory table,
+      registry, selection rules and conformance kit. Written in full, because
+      slot alone already names prompt slots.
+    pattern: '\bengine slots?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  engine (of an engine slot):
+    kind: technical_word
+    definition: >-
+      One interchangeable implementation behind one engine slot, identified
+      as engine_id@engine_version with a content digest. Qualification rule:
+      technical documents write engine for an implementation only with its
+      slot or its identifier (an engine of the step_executor slot, the engine
+      local.sqlite); the proper name Loop Engine, or the local engine, names
+      the product part and keeps the owner's definition.
+    pattern: '\bengines? of (?:an?|the|each|every|one) (?:\S+ )?(?:engine )?slots?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  engine kind:
+    kind: technical_word
+    definition: >-
+      The owner's type of engine: a closed, per-slot class of engines that
+      share an isolation and cost profile. It is not a run mode, a role, a
+      profile or an intelligence family.
+    pattern: '\bengine kinds?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  engine descriptor:
+    kind: technical_word
+    definition: >-
+      The passive, digested projection of an engine's native declaration into
+      one common shape, engine_descriptor/v1. It is not permission,
+      qualification or a promise of behavior.
+    pattern: '\bengine descriptors?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  engine installation:
+    kind: technical_word
+    definition: >-
+      One host's declaration that an engine is installed, with typed settings
+      and an explicit enabled flag, engine_installation/v1. It is not
+      permission to run the engine, and its settings never carry authority or
+      a credential.
+    pattern: '\bengine installations?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  executor profile:
+    kind: technical_word
+    definition: >-
+      The step executor slot's own capability record inside its engine
+      descriptors, executor_profile/v1. It is not a Loop role profile.
+    pattern: '\bexecutor profiles?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  engine preference:
+    kind: technical_word
+    definition: >-
+      A typed request from a Loop or a harness to pin, exclude or prefer
+      eligible engines, carried as engine_selection_override/v1 with its
+      existing ParameterSourceKind and its sender, and applied only within the
+      sender's authority. It is not a grant, and prose or model output never
+      becomes one.
+    pattern: '\bengine preferences?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
+  nested slot:
+    kind: technical_word
+    definition: >-
+      An engine slot whose engine is chosen inside the envelope of another
+      slot's engine, with the parent decision recorded in
+      parent_decision_digest. It is not a second runtime, a graph vertex or a
+      new relationship kind.
+    pattern: '\bnested slots?\b'
+    case_sensitive: false
+    may_appear:
+    - source_code
+    - technical_documents
+    - command_output
+    must_not_appear:
+    - public_website_pages
+    status: decided_by_engineering_2026_09_22
 proposed_renames:
   catalogue_and_catalog:
     same_idea_two_names: >-
