@@ -530,20 +530,57 @@ try {
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
-  /* The placeholder mark: the header shows it as an image with an empty text alternative, because the name follows it, and the
-     page names it as its icon. Each file is served with its exact media type. */
+  /* The brand mark, traced from variation 52 of the owner's logo sheet of September 23, 2026: the header shows it as an image
+     with an empty text alternative, because the name follows it, and the page names it as its icon. Each file is served with
+     its exact media type. */
   const markState=await page.evaluate(()=>{const mark=document.querySelector("header .brand img.brand-mark");
     return {src:mark?.getAttribute("src")||"",alt:mark?.getAttribute("alt"),loaded:Boolean(mark&&mark.complete&&mark.naturalWidth>0),named:document.querySelector("header .brand")?.getAttribute("aria-label")||"",
       icons:[...document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]')].map(link=>[link.getAttribute("rel"),link.getAttribute("type")||"",link.getAttribute("href")])};});
   const iconTypes={"/assets/baltor-mark.svg":"image/svg+xml","/assets/favicon-32.png":"image/png","/assets/favicon-192.png":"image/png","/assets/apple-touch-icon.png":"image/png"};
   const servedTypes={};
   for(const path of Object.keys(iconTypes)){const response=await page.request.get(fixture.base+path);servedTypes[path]=response.status()===200?(response.headers()["content-type"]||""):"status "+response.status();}
-  const markProblems=(state,types)=>[...(state.src==="/assets/baltor-mark.svg"&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the placeholder image with an empty alternative"]),
+  const markProblems=(state,types)=>[...(state.src==="/assets/baltor-mark.svg"&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the brand mark image with an empty alternative"]),
     ...(state.icons.some(([rel,type,href])=>rel==="icon"&&type==="image/svg+xml"&&href==="/assets/baltor-mark.svg")&&state.icons.some(([rel,,href])=>rel==="apple-touch-icon"&&href==="/assets/apple-touch-icon.png")?[]:["the page does not name its icons"]),
     ...Object.entries(iconTypes).filter(([path,type])=>!(types[path]||"").startsWith(type)).map(([path])=>path+" is served as "+types[path])];
-  check("placeholder_mark_is_shown_named_and_served",markProblems(markState,servedTypes).length===0,{mark:markState,served:servedTypes,problems:markProblems(markState,servedTypes)});
+  check("brand_mark_is_shown_named_and_served",markProblems(markState,servedTypes).length===0,{mark:markState,served:servedTypes,problems:markProblems(markState,servedTypes)});
   check("mark_check_rejects_a_missing_icon_a_wrong_media_type_and_a_repeated_name",markProblems({...markState,icons:[]},servedTypes).length===1
     &&markProblems(markState,{...servedTypes,"/assets/favicon-32.png":"text/plain"}).length===1&&markProblems({...markState,alt:"Baltor logo"},servedTypes).length===1);
+  /* The tile shows nothing outside its rounded corners. The first tracing carried white fragments of the sheet's paper there,
+     which showed as white corners on a dark ground and in a dark browser tab. The bytes each address serves are drawn on a
+     canvas at the file's own size in a blank page, because the service's page policy admits images from its own origin only,
+     and every light pixel outside the rounded tile is counted. The known-wrong mark is the served mark with one white corner
+     added, drawn the same way. */
+  const lightOutsideTheTile=async sources=>{
+    const drawn=[];
+    for(const [name,address,size,planted] of sources){
+      const response=await page.request.get(fixture.base+address),bytes=await response.body();
+      const body=address.endsWith(".svg")?Buffer.from(bytes.toString("utf8").replace("<svg ",'<svg width="'+size+'" height="'+size+'" ').replace("</svg>",planted+"</svg>")):bytes;
+      drawn.push([name,"data:"+(address.endsWith(".svg")?"image/svg+xml":"image/png")+";base64,"+body.toString("base64"),size,response.status()]);
+    }
+    const blank=await context.newPage();
+    try{return await blank.evaluate(async drawn=>{
+      const counts={};
+      for(const [name,source,size,status] of drawn){
+        if(status!==200){counts[name]="status "+status;continue;}
+        const image=new Image();image.src=source;await image.decode();
+        const canvas=document.createElement("canvas");canvas.width=size;canvas.height=size;
+        const drawing=canvas.getContext("2d");drawing.drawImage(image,0,0,size,size);
+        const pixels=drawing.getImageData(0,0,size,size).data,radius=0.22*size;let light=0;
+        for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+          const cx=x+.5,cy=y+.5,ax=cx<radius?radius:cx>size-radius?size-radius:null,ay=cy<radius?radius:cy>size-radius?size-radius:null;
+          if(ax===null||ay===null||Math.hypot(cx-ax,cy-ay)<=radius-1)continue;
+          const at=(y*size+x)*4;if(pixels[at+3]>64&&Math.min(pixels[at],pixels[at+1],pixels[at+2])>180)light++;
+        }
+        counts[name]=light;
+      }
+      return counts;
+    },drawn);}finally{await blank.close();}
+  };
+  const tileCorners=await lightOutsideTheTile([["baltor-mark.svg","/assets/baltor-mark.svg",200,""],["favicon-32.png","/assets/favicon-32.png",32,""],
+    ["favicon-192.png","/assets/favicon-192.png",192,""],["apple-touch-icon.png","/assets/apple-touch-icon.png",180,""]]);
+  const plantedCorner=await lightOutsideTheTile([["baltor-mark.svg with a white corner","/assets/baltor-mark.svg",200,'<path d="M0 0H110V110H0Z" fill="#FFFFFF"/>']]);
+  check("brand_mark_and_icons_show_nothing_outside_the_rounded_tile",Object.keys(tileCorners).length===4&&Object.values(tileCorners).every(count=>count===0),{light_pixels_outside_the_tile:tileCorners});
+  check("tile_corner_check_rejects_a_mark_with_a_white_corner",Object.values(plantedCorner)[0]>0,{light_pixels_outside_the_tile:plantedCorner});
   /* The typefaces come from this service, not from a font host: the page policy allows fonts from its own origin only, and every
      request to another origin is refused and reported by this suite. Both faces the design names are in use on the homepage. */
   const typefaces=await page.evaluate(async()=>{await document.fonts.ready;return [...new Set([...document.fonts].filter(face=>face.status==="loaded").map(face=>face.family.replace(/["']/g,"")))];});
