@@ -1,0 +1,149 @@
+{
+  "record_type": "ls1_licence_template_verification/v1",
+  "verified_at": "2026-09-23T05:27:34Z",
+  "source": {
+    "repository": "github/choosealicense.com",
+    "commit": "58267f8f2c5c0099810849cfd7677f52ae0c0eb3",
+    "fetched_at": "2026-09-23T00:57:00Z"
+  },
+  "templates_file": "src/loop_engine/core/library_ingestion/licence_templates.json",
+  "templates": [
+    {
+      "spdx": "MIT",
+      "path": "_licenses/mit.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "d9dac6bb4967168f51d23b488dc2c5e81c98abc4cf6f1877d5de47915bf6e0ce"
+    },
+    {
+      "spdx": "Apache-2.0",
+      "path": "_licenses/apache-2.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "1afd94a7d1366ee5fd5e0dcd60fd7c7b4682753cfd93c509678634dc1e004d4f"
+    },
+    {
+      "spdx": "BSD-2-Clause",
+      "path": "_licenses/bsd-2-clause.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "293ad1ee2d84e8fca484971369b0929127565fbca89c7eb90c03947af5f3e6e2"
+    },
+    {
+      "spdx": "BSD-3-Clause",
+      "path": "_licenses/bsd-3-clause.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "ed0e5548d256ad767feddba2e0c549a377350ad4e84d0cc4605f715b00268e0e"
+    },
+    {
+      "spdx": "ISC",
+      "path": "_licenses/isc.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "d9e3053879533258c7d17de0ec87a6bd51da7bdb18bc60c1b628a75efd7c0b8f"
+    },
+    {
+      "spdx": "CC0-1.0",
+      "path": "_licenses/cc0-1.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "631b1c4ab80f09627a2eff89e34222b435e98e72cbcad2e25c0fe02917a588bc"
+    },
+    {
+      "spdx": "CC-BY-4.0",
+      "path": "_licenses/cc-by-4.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "769f6521730cf9665e3d989f9c1d0ebb9c49ce3f37efb9fe0f418ec5265564df"
+    },
+    {
+      "spdx": "CC-BY-SA-4.0",
+      "path": "_licenses/cc-by-sa-4.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "38434f310533c5aaf669fee9890cc7358a4dc069fa64424ed4bcc1ae8f545f94"
+    },
+    {
+      "spdx": "GPL-2.0",
+      "path": "_licenses/gpl-2.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "40f9732054ef45cede0c93eb31eaa1708722eb557e8dc3e02257f7269c5eaef0"
+    },
+    {
+      "spdx": "GPL-3.0",
+      "path": "_licenses/gpl-3.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "9f42b9f093980c3175094c38775a3078e7384795fc80649e0674b7b5ac28e895"
+    },
+    {
+      "spdx": "AGPL-3.0",
+      "path": "_licenses/agpl-3.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "3e2c95bbb3901a11a34abf115124cae90caf03661700ca9f0210d0852e3bd75e"
+    },
+    {
+      "spdx": "LGPL-3.0",
+      "path": "_licenses/lgpl-3.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "fbbfd7e3a1eaf5a399b0cb02f2af65ff51dfc62d37032c531af5b781601421c2"
+    },
+    {
+      "spdx": "MPL-2.0",
+      "path": "_licenses/mpl-2.0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "a8d17973047590049b22b44e5a3390923a8e986b62e593df37103ea9bc7152e0"
+    },
+    {
+      "spdx": "0BSD",
+      "path": "_licenses/0bsd.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "2b5af8db92f55191e5e39ad772bd1612aa514216058c4c745015d39e359d8707"
+    },
+    {
+      "spdx": "MIT-0",
+      "path": "_licenses/mit-0.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "2ae519a4a5926a607d4998e4135c6f67c76043b0ca480907c10025d6a7c6b1fa"
+    },
+    {
+      "spdx": "Unlicense",
+      "path": "_licenses/unlicense.txt",
+      "status": 200,
+      "sha256_matches": true,
+      "word_set_reproduces": true,
+      "request_digest": "3521b52c9461595f8ed4179329897b60e3479703df3c8ddc3c31d9ce19c300d9"
+    }
+  ],
+  "all_digests_match": true,
+  "all_word_sets_reproduce": true,
+  "requests": {
+    "requests": 16,
+    "by_outcome": {
+      "gh_api:ok": 16
+    },
+    "bytes": 286202
+  }
+}

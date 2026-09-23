@@ -1,0 +1,410 @@
+{
+  "record_type": "library_ingestion_staging_report/v1",
+  "staged_at": "2026-09-23T05:26:40Z",
+  "database": "/home/username/.le-library/ls1-runs/run-2026-09-23-b/candidates.db",
+  "namespace": "library.outside",
+  "populations": [
+    {
+      "population": 1,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 2,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 3,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 4,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 5,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 6,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 7,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 8,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 9,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 10,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 11,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 12,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 13,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 14,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 15,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 16,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 17,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 18,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 19,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 20,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 21,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 22,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 23,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 24,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 25,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 26,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 27,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 28,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 29,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 30,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 31,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 32,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 33,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 34,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 35,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 36,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 37,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 38,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 39,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 40,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 41,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 42,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 43,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 44,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 45,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 46,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 47,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 48,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 49,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 50,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 51,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 52,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 53,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 54,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 55,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 56,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 57,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 58,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 59,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 60,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 61,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 62,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 63,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 64,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 65,
+      "state": "already_staged",
+      "records": 50,
+      "batch_digest": null
+    },
+    {
+      "population": 66,
+      "state": "already_staged",
+      "records": 1,
+      "batch_digest": null
+    }
+  ],
+  "records_in_namespace": 3251,
+  "normal_search_hits": 0,
+  "normal_search_excluded": 3251,
+  "title_probes_found_in_first_three": 3221,
+  "approved": false,
+  "hosted_publication": false
+}
