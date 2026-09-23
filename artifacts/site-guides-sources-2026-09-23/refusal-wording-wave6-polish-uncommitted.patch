@@ -1,0 +1,155 @@
+diff --git a/src/loop_engine/_self_test.py b/src/loop_engine/_self_test.py
+index 4bcc3c16..c3e806d5 100644
+--- a/src/loop_engine/_self_test.py
++++ b/src/loop_engine/_self_test.py
+@@ -175,7 +175,7 @@ def self_test() -> dict:
+         "core.external_service_intelligence", "core.provisioning_server", "core.provisioning_mcp_checks",
+         "core.service_runtime.runtime", "core.service_runtime.billing",
+         "core.service_runtime.stripe_provider", "core.service_runtime.http_checks",
+-        "core.service_runtime.refusals",
++        "core.service_runtime.refusals", "run_history_cli",
+         "core.service_runtime.stripe_sessions",
+         "decision_cli", "core.decisions.contracts", "core.decisions.jev", "core.decisions.system_one", "code_nodes.decision_tools",
+         "core.retrieval_backends",
+diff --git a/src/loop_engine/core/service_runtime/refusals.py b/src/loop_engine/core/service_runtime/refusals.py
+index 56e0b500..bca47ebc 100644
+--- a/src/loop_engine/core/service_runtime/refusals.py
++++ b/src/loop_engine/core/service_runtime/refusals.py
+@@ -176,6 +176,40 @@ CODE_GUIDANCE = {
+                                    "Send provider notifications through the configured signed webhook only."),
+     "invalid_account_activation": ("This activation link is not valid, or it was already used.",
+                                    "Request a new confirmation email, then open the newest link."),
++    # Sign-in through the identity provider. An invited person meets the first
++    # of these whenever the operator has confirmed their email but has not yet
++    # bound their account, which is one manual step during the private beta.
++    "account_unavailable": ("This sign-in is verified, but no service account is bound to it yet.",
++                            "Ask the person who invited you to finish setting up your account, then sign in again."),
++    "verified_customer_identity_required": ("This sign-in is not a verified personal account.",
++                                            "Sign in on the website with the personal account whose email "
++                                            "address you confirmed."),
++    "identity_subject_mismatch": ("The sign-in provider described this session differently on a second reading, "
++                                  "so it was not trusted.",
++                                  "Sign out, sign in again, and report it if it happens twice."),
++    "browser_session_revoked": ("This sign-in session was ended, so it can no longer be used.",
++                                "Sign in again on the website."),
++    "email_signup_requires_account_admission": ("Creating an account from this page needs an invitation first.",
++                                                "Ask the person who runs this service for an invitation."),
++    "invalid_access_request": ("One field in this token request did not match the documented shape.",
++                               "Give the token a label, at least one operation and a lifetime within the "
++                               "published maximum, then send it again."),
++    "access_lifetime_exceeded": ("The requested lifetime is longer than this service issues.",
++                                 "Ask for a lifetime within the maximum shown beside the form, then retry."),
++    "invalid_expiry": ("The expiry time in this request is not one the service accepts.",
++                       "Give a whole number of minutes in the future, within the published maximum."),
++    "subject_not_found": ("No service account is bound to this sign-in.",
++                          "Ask the person who invited you to finish setting up your account."),
++    "unissued_principal": ("The credential on this request does not identify an account this service issued.",
++                           "Use a token created on your account page, or ask your operator for one."),
++    "invalid_usage_request": ("One field in this usage request did not match the documented shape.",
++                              "Ask for usage without extra fields, then read the record it returns."),
++    "invalid_selected_digest": ("The digest on this request is not a valid item digest.",
++                                "Search again and copy the digest from the result exactly."),
++    "not_found": ("The service has nothing under that identity.",
++                  "Search again and take the identity from the result, then retry."),
++    "forbidden": ("This account is not permitted to perform that operation.",
++                  "Ask the person who runs this service to grant the operation, then retry."),
+ }
+ 
+ 
+@@ -213,7 +247,10 @@ def self_test():
+               for key, (message, action) in pairs))
+     # A refusal is read by someone who is already confused. Wording that names
+     # a credential value, or tells a reader to send one somewhere, would be
+-    # read as an instruction to expose it.
++    # read as an instruction to expose it. "password" is on the list because a
++    # refusal that mentions one is a step away from asking for it, and every
++    # sentence here reads as well without the word; say what to do on the
++    # sign-in page instead. Do not remove a word to let one sentence through.
+     forbidden = ("password", "secret key", "api key", "bearer ", "sk_", "le_", "authorization: ")
+     check("no_refusal_wording_names_or_asks_for_a_secret_value",
+           not any(word in (message + " " + action).lower()
+diff --git a/src/loop_engine/run_history_cli.py b/src/loop_engine/run_history_cli.py
+index c3def58d..def4b619 100644
+--- a/src/loop_engine/run_history_cli.py
++++ b/src/loop_engine/run_history_cli.py
+@@ -8,6 +8,17 @@ from __future__ import annotations
+ import html
+ import json
+ 
++#: What to do next after each way `report` can refuse. A refusal that names
++#: only what went wrong leaves a reader guessing, and the guess is usually to
++#: run the same command again. Every code this module can emit has an entry,
++#: and a check requires it.
++REPORT_NEXT_ACTIONS = {
++    "NO_SAVED_RUNS": "Run `loop-engine solve` to perform a task, then run this command again.",
++    "RUN_NOT_FOUND": "Run `loop-engine runs` to list the saved runs, then report on one of those.",
++    "RUN_HISTORY_INVALID": "Run `loop-engine runs` to see which saved runs are still readable, "
++                           "and keep this run folder if you want the failure investigated.",
++}
++
+ 
+ def run_history_command(args) -> int:
+     """List saved runs or render one report in the requested format."""
+@@ -77,28 +88,31 @@ def run_history_command(args) -> int:
+     if not saved:
+         value = {"record_type": "loop_report_error/v1",
+                  "error_code": "NO_SAVED_RUNS",
+-                 "error": "No saved runs to report on yet."}
++                 "error": "No saved runs to report on yet.",
++                 "next_action": REPORT_NEXT_ACTIONS["NO_SAVED_RUNS"]}
+         print(json.dumps(value, indent=1) if args.format == "json"
+-              else value["error"])
++              else value["error"] + " " + value["next_action"])
+         return 1
+     run_id = saved[-1] if args.report == "@last" else args.report
+     if run_id not in saved:
+         value = {"record_type": "loop_report_error/v1",
+                  "error_code": "RUN_NOT_FOUND",
+                  "error": f"No saved run named {run_id!r}.",
+-                 "known_runs": saved[:8]}
++                 "known_runs": saved[:8],
++                 "next_action": REPORT_NEXT_ACTIONS["RUN_NOT_FOUND"]}
+         print(json.dumps(value, indent=1) if args.format == "json"
+               else value["error"] + " Known runs: "
+-              + ", ".join(value["known_runs"]))
++              + ", ".join(value["known_runs"]) + ". " + value["next_action"])
+         return 1
+     try:
+         report = report_from_run(runs_dir, run_id)
+     except (OSError, ValueError, RunHistoryIntegrityError) as exc:
+         value = {"record_type": "loop_report_error/v1",
+                  "error_code": "RUN_HISTORY_INVALID",
+-                 "run_id": run_id, "error": str(exc)}
++                 "run_id": run_id, "error": str(exc),
++                 "next_action": REPORT_NEXT_ACTIONS["RUN_HISTORY_INVALID"]}
+         print(json.dumps(value, indent=1) if args.format == "json"
+-              else f"Run {run_id} is invalid: {exc}")
++              else f"Run {run_id} is invalid: {exc} " + value["next_action"])
+         return 1
+     body = {"text": render_text, "markdown": render_markdown,
+             "html": render_html,
+@@ -113,4 +127,23 @@ def run_history_command(args) -> int:
+     return 0
+ 
+ 
+-__all__ = ("run_history_command",)
++def self_test() -> dict:
++    """Check that every way `report` refuses also says what to do next."""
++    import re
++    source = __loader__.get_source(__name__) if hasattr(__loader__, "get_source") else ""
++    emitted = set(re.findall(r'"error_code": "([A-Z_]+)"', source))
++    tests = [{"test": "every_report_refusal_names_what_to_do_next",
++              "passed": bool(emitted) and emitted == set(REPORT_NEXT_ACTIONS)
++                        and all(len(value.split()) >= 5 and value.endswith(".")
++                                for value in REPORT_NEXT_ACTIONS.values()),
++              "detail": "refusal codes read from this module's own source"}]
++    # A next action that only repeats the command that just refused sends the
++    # reader round the same loop.
++    tests.append({"test": "a_report_next_action_does_not_send_the_reader_back_to_the_same_command",
++                  "passed": all("loop-engine report" not in value
++                                for value in REPORT_NEXT_ACTIONS.values()),
++                  "detail": "refusal wording only"})
++    return {"tests": tests}
++
++
++__all__ = ("run_history_command", "REPORT_NEXT_ACTIONS", "self_test")
