@@ -215,6 +215,22 @@ def self_test() -> dict:
           and any(notice["kind"] == "frontmatter_licence" for notice in matching["file_level_notices"]),
           [conflicting["reason"], matching["reason"], pointing["reason"], free_text["reason"]])
 
+    # A notice that names a licence and also says "license" still names that licence: the
+    # word alone is not a pointer to a file called LICENSE. A pointer counts only when the
+    # rest of the notice is plain connecting words, so "Proprietary license", or an address
+    # that ends in LICENSE, never agrees with whatever file happens to be named LICENSE.
+    naming = {notice: _decide(item, root, root_path="LICENSE", frontmatter_licence=notice)
+              for notice in ("GPL-3.0 license", "Proprietary license", "Non-commercial license",
+                             "MIT License (non-commercial use only)", "Proprietary. See LICENSE",
+                             "https://example.invalid/another-project/blob/main/LICENSE")}
+    plain = {notice: _decide(item, root, root_path="LICENSE", frontmatter_licence=notice)
+             for notice in ("The MIT License", "Licensed under MIT", "MIT license", "See LICENSE")}
+    check("a_notice_that_names_another_licence_is_never_read_as_a_pointer_to_the_licence_file",
+          all(row["decision"] != VERBATIM for row in naming.values())
+          and naming["GPL-3.0 license"]["reason"] == "licence_notices_disagree"
+          and all(row["decision"] == VERBATIM for row in plain.values()),
+          {notice: (row["decision"], row["reason"]) for notice, row in {**naming, **plain}.items()})
+
     refused_policies = []
     for accepted_list in (("MIT", "NONE"), ("unknown",), ("MIT", "MIT"), ("GPL-3.0 OR MIT",), ()):
         try:

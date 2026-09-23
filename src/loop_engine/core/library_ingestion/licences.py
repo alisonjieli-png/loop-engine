@@ -267,16 +267,49 @@ _ALIASES = {"mitlicense": "MIT", "apache20": "Apache-2.0", "apachelicense20": "A
             "apachelicenseversion20": "Apache-2.0", "apache2": "Apache-2.0", "cc0": "CC0-1.0",
             "ccby40": "CC-BY-4.0", "bsd3clause": "BSD-3-Clause", "bsd2clause": "BSD-2-Clause",
             "isclicense": "ISC"}
+#: Words a short notice puts around a licence name without changing which licence it names,
+#: as in "The MIT License", "Apache-2.0 license" or "Licensed under the Apache License, Version 2.0".
+_NAME_FILLER = frozenset({"the", "license", "licence", "licensed", "licenced", "under", "version"})
+#: The only words a notice may put around a pointer to a licence file, as in "Complete terms in
+#: LICENSE.txt". Any other word, such as "Proprietary", a licence name or a web address, makes
+#: the notice more than a pointer, and the word "license" alone is never a pointer to a file.
+_POINTER_WORDS = frozenset({"see", "complete", "full", "terms", "in", "the", "file", "for", "details", "text",
+                            "of", "and", "conditions", "refer", "to", "found", "is", "are", "at", "has", "a",
+                            "copy", "this", "license", "licence", "under"})
+
+
+def _without_filler(value: str) -> str:
+    return " ".join(word for word in value.split() if word.lower().strip(",.;:()[]") not in _NAME_FILLER)
 
 
 def notice_identifier(value: str, templates: "dict | None" = None) -> "str | None":
-    """The licence a short notice names, or None when it names none this gate knows."""
+    """The licence a short notice names, or None when it names none this gate knows.
+
+    The notice is read as written and then without the filler words around a
+    licence name, so "GPL-3.0 license" names GPL-3.0 instead of passing for a
+    pointer to a file called LICENSE.
+    """
     templates = templates or load_templates()
-    wanted = _canonical_id(value)
-    for spdx in templates:
-        if _canonical_id(spdx) == wanted:
-            return spdx
-    return _ALIASES.get(wanted)
+    for text in (value, _without_filler(value)):
+        wanted = _canonical_id(text)
+        if not wanted:
+            continue
+        for spdx in templates:
+            if _canonical_id(spdx) == wanted:
+                return spdx
+        if wanted in _ALIASES:
+            return _ALIASES[wanted]
+    return None
+
+
+def file_pointer(value: str, names: "str | None") -> "str | None":
+    """The licence file a notice points at, only when the notice is nothing but that pointer."""
+    found = list(_FILE_REFERENCE.finditer(value)) if names is None else []
+    if not found:
+        return None
+    pointer = found[-1]
+    rest = (value[:pointer.start()] + " " + value[pointer.end():]).lower()
+    return pointer.group(1) if set(re.findall(r"[a-z0-9]+", rest)) <= _POINTER_WORDS else None
 
 
 def _governing_part(governing: "LicenceFile | None", match: "LicenceMatch | None"):
@@ -306,9 +339,8 @@ class _Notice:
 
 
 def _read_notice(kind: str, path: str, sha256: str, value: str, templates) -> _Notice:
-    reference = _FILE_REFERENCE.search(value)
-    return _Notice(kind, path, sha256, value.strip()[:512] or "(empty)", notice_identifier(value, templates),
-                   reference.group(1) if reference and notice_identifier(value, templates) is None else None)
+    names = notice_identifier(value, templates)
+    return _Notice(kind, path, sha256, value.strip()[:512] or "(empty)", names, file_pointer(value, names))
 
 
 #: Why a verbatim decision was lowered to an outline: the curated source list reads this source for outlines.

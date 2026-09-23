@@ -130,6 +130,10 @@ One fetched file
 │       barely moves the similarity, so the sentences that add words are read instead
 ├── a repository licence must also agree with GitHub's licence interface at the pinned commit
 ├── every file-level notice (a frontmatter licence field, an SPDX header) must agree
+│   ├── a notice that names a licence is read by that name, whatever filler words surround
+│   │   it: "GPL-3.0 license" names GPL-3.0
+│   └── a notice agrees by pointing at the licence file only when it is nothing but that
+│       pointer ("Complete terms in LICENSE.txt"); "Proprietary license" is not a pointer
 └── decision
     ├── verbatim_permitted: an accepted licence, proven by its file; the bytes may be copied
     │   with the licence file and the attribution
