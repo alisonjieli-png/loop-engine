@@ -64,6 +64,21 @@ _OPTIONAL_SECTIONS = (
     r"creative commons is not a party to its public licen[cs]es.*\Z",
     r"statement of purpose",
 )
+#: The two optional sections above that run to the end of a text end, in the canonical text, at
+#: a fixed sentence. Text written after that sentence is not part of the licence the text resembles.
+_TRAILING_SECTIONS = ((r"appendix: how to apply the apache license", r"limitations under the licen[cs]e"),
+                      (r"creative commons is not a party to its public licen[cs]es",
+                       r"creative commons may be contacted at\W+creativecommons\.org"))
+_NOTICE_LINE = re.compile(r"\s*(?:copyright|\(c\)|©)")
+_PLACEHOLDER = re.compile(r"\[[^\]]{0,40}\]|<[^>]{0,40}>|\{[^}]{0,40}\}")
+#: Words that state a condition. A plain copyright notice names a holder and a year, so a line
+#: set aside as a notice, or a placeholder set aside as a name, that carries one of these words
+#: while the licence's own text lacks it adds a condition and is read like any other added words.
+_CONDITION_WORDS = frozenset({
+    "may", "must", "shall", "cannot", "not", "no", "only", "except", "unless", "without", "prohibited",
+    "forbidden", "permitted", "permission", "allowed", "restricted", "sell", "resell", "sold", "commercial",
+    "commercially", "noncommercial", "redistribute", "redistribution", "distribute", "modify", "modification",
+    "derivative", "derivatives", "reproduce", "copy", "use", "agree", "terms", "licensed", "sublicense"})
 _SPELLINGS = (("licence", "license"), ("licenced", "licensed"), ("licencing", "licensing"))
 _PROHIBITION = re.compile(
     r"(?:may not|must not|shall not|not permitted to|prohibited from|you are not allowed to)"
@@ -147,29 +162,62 @@ def _joined_words(text: str) -> list:
     return re.sub(r"[^a-z0-9]+", " ", text).split()
 
 
-def licence_words(text: str) -> frozenset:
-    """Distinct normalized words: copyright lines, addresses and placeholders removed."""
+def _set_aside(text: str) -> tuple:
+    """The text word sets are built from, and what the normalizer sets aside on the way.
+
+    Returns (kept text, notice lines, placeholders, text after the canonical end
+    of a trailing optional section). The kept text is exactly what the stored
+    word sets were built from, so the templates still reproduce.
+    """
     if text.startswith("---\n"):
         end = text.find("\n---\n", 4)
         if end >= 0:
             text = text[end + 5:]
     lowered = re.sub(r"https?://\S+", " ", text.lower())
-    kept = [line for line in lowered.splitlines()
-            if not re.match(r"\s*(?:copyright|\(c\)|\u00a9)", line) and "all rights reserved" not in line]
+    kept, notices = [], []
+    for line in lowered.splitlines():
+        (notices if _NOTICE_LINE.match(line) or "all rights reserved" in line else kept).append(line)
     joined = "\n".join(kept)
+    trailing = []
+    for heading, closing in _TRAILING_SECTIONS:
+        start = re.search(heading.replace(" ", r"\s+"), joined)
+        if start:
+            end = re.search(closing.replace(" ", r"\s+"), joined[start.end():])
+            # Without its canonical closing sentence the whole section is unexplained text.
+            trailing.append(joined[start.end() + end.end():] if end else joined[start.end():])
     for section in _OPTIONAL_SECTIONS:
         joined = re.sub(section.replace(" ", r"\s+"), " ", joined, flags=re.S)
-    joined = re.sub(r"\[[^\]]{0,40}\]|<[^>]{0,40}>|\{[^}]{0,40}\}", " ", joined)
-    return frozenset(_joined_words(joined))
+    placeholders = _PLACEHOLDER.findall(joined)
+    return _PLACEHOLDER.sub(" ", joined), tuple(notices), tuple(placeholders), tuple(trailing)
+
+
+def licence_words(text: str) -> frozenset:
+    """Distinct normalized words: copyright lines, addresses and placeholders removed."""
+    return frozenset(_joined_words(_set_aside(text)[0]))
+
+
+def set_aside_words(text: str, template_words: frozenset) -> frozenset:
+    """Words the normalizer set aside that the licence's own text lacks and that still count.
+
+    Text after the canonical end of a trailing optional section counts whole.
+    A notice line or a placeholder counts only through its condition words,
+    because a plain notice names a holder and a year.
+    """
+    _kept, notices, placeholders, trailing = _set_aside(text)
+    words = {word for piece in trailing for word in _joined_words(piece)}
+    words.update(word for piece in (*notices, *placeholders) for word in _joined_words(piece)
+                 if word in _CONDITION_WORDS)
+    return frozenset(words) - template_words
 
 
 def added_sentences(text: str, template_words: frozenset) -> str:
     """The sentences of a licence text that carry a word its template lacks, joined.
 
     A sentence ends only at a full stop, as in the prohibition rule, so a
-    condition wrapped across lines stays one sentence and is read whole.
+    condition wrapped across lines stays one sentence and is read whole. The
+    words the normalizer set aside count too.
     """
-    added = licence_words(text) - template_words
+    added = (licence_words(text) | set_aside_words(text, template_words)) - template_words
     sentences = re.sub(r"https?://\S+", " ", text.lower()).split(".")
     return ". ".join(sentence for sentence in sentences if added.intersection(_joined_words(sentence)))
 
@@ -222,7 +270,13 @@ def match_words(words: frozenset, templates: "dict | None" = None,
 
 def match_licence(text: str, templates: "dict | None" = None,
                   policy: "LicencePolicy | None" = None) -> LicenceMatch:
-    return match_words(licence_words(text), templates, policy)
+    """match_words on a text, which is also not its licence when the text it sets aside adds words."""
+    templates = templates or load_templates()
+    match = match_words(licence_words(text), templates, policy)
+    if match.spdx is not None and set_aside_words(text, templates[match.spdx].words):
+        return LicenceMatch(None, match.best, match.similarity, match.runner_up, match.runner_up_similarity,
+                            ADDS_WORDS)
+    return match
 
 
 def prohibits_recreation(text: str) -> bool:

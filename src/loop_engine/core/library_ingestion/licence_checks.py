@@ -179,6 +179,43 @@ def self_test() -> dict:
           and headed["decision"] == OUTLINE_ONLY,
           [(row["decision"], row["reason"]) for row in short] + [(headed["decision"], headed["reason"])])
 
+    # Before words are compared, the normalizer sets text aside: copyright lines, "all rights
+    # reserved" lines, short bracketed placeholders, and everything after the Apache appendix
+    # heading or the Creative Commons closing notice. A condition written there is still read:
+    # text after the canonical end of such a section counts whole, and a set-aside line or
+    # placeholder that carries a condition word its licence lacks counts as added words.
+    apache_text = (" ".join(sorted(templates["Apache-2.0"].words)) + ".\n\nAPPENDIX: How to apply the Apache "
+                   "License to your work.\n\n   Attach the notice below.\n\n   Copyright [yyyy] [name of copyright "
+                   "owner]\n\n   See the License for the specific language governing permissions and\n"
+                   "   limitations under the License.\n")
+    cc_text = (" ".join(sorted(templates["CC-BY-4.0"].words)) + ".\n\nCreative Commons is not a party to its "
+               "public licenses.\n\nCreative Commons may be contacted at creativecommons.org.\n")
+    sale = ("\nAdditional condition: the rights granted above do not include the right to sell the software "
+            "or to offer it to customers as a paid hosted service.\n")
+    hidden = {name: _decide(item, [_file("skills/example/LICENSE.txt", text)]) for name, text in (
+        ("after_the_apache_appendix", apache_text + sale),
+        ("after_the_creative_commons_notice", cc_text + sale),
+        ("on_an_all_rights_reserved_line", MIT_FIXTURE.replace(
+            "Permission is hereby granted",
+            "All rights reserved; you may not modify or sell this software.\n\nPermission is hereby granted")),
+        ("on_the_copyright_line", MIT_FIXTURE.replace(
+            "Copyright (c) 2026 Example Author",
+            "Copyright (c) 2026 Example Author. You may not modify or sell this software.")),
+        ("as_an_enumerated_c_clause", MIT_FIXTURE + "\n(c) You may not sell the Software.\n"),
+        ("in_brackets", MIT_FIXTURE.replace("free of charge,", "free of charge, [for noncommercial use only]")))}
+    plain_notices = {name: _decide(item, [_file("skills/example/LICENSE.txt", text)]) for name, text in (
+        ("apache_with_its_appendix", apache_text), ("creative_commons_with_its_notice", cc_text),
+        ("holder_and_reserved", MIT_FIXTURE.replace("Copyright (c) 2026 Example Author",
+                                                    "Copyright (c) Example Corporation. All rights reserved.")),
+        ("reserved_line", MIT_FIXTURE.replace("Copyright (c) 2026 Example Author",
+                                              "Copyright (c) 2026 Example Author\nAll rights reserved.")))}
+    check("a_condition_in_text_the_normalizer_sets_aside_is_still_read",
+          all(row["decision"] != VERBATIM for row in hidden.values())
+          and hidden["on_the_copyright_line"]["decision"] == REFUSED
+          and hidden["on_an_all_rights_reserved_line"]["decision"] == REFUSED
+          and all(row["decision"] == VERBATIM for row in plain_notices.values()),
+          {name: (row["decision"], row["reason"]) for name, row in {**hidden, **plain_notices}.items()})
+
     nested_refused = _decide(item, [_file("LICENSE", MIT_FIXTURE, "MIT"),
                                     _file("skills/example/LICENSE.txt", PROPRIETARY_FIXTURE)],
                              root_path="LICENSE")

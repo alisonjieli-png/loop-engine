@@ -128,8 +128,12 @@ One fetched file
 │   └── a licence or notice file there that cannot be read leaves an outline only
 ├── the licence text is compared with stored word sets of the canonical texts
 │   ├── recognized only at 98 percent similarity or more, clearly ahead of the next licence
-│   └── and only when it adds no word the canonical text lacks: a short added condition
-│       barely moves the similarity, so the sentences that add words are read instead
+│   ├── and only when it adds no word the canonical text lacks: a short added condition
+│   │   barely moves the similarity, so the sentences that add words are read instead
+│   └── the text set aside before words are compared is read too: anything after the end
+│       of the Apache appendix or the Creative Commons closing notice counts whole, and a
+│       copyright line, an "all rights reserved" line or a bracketed placeholder counts
+│       through its condition words
 ├── a repository licence must also agree with GitHub's licence interface at the pinned commit
 ├── every file-level notice (a frontmatter licence field, an SPDX header) must agree
 │   ├── a notice that names a licence is read by that name, whatever filler words surround
@@ -280,7 +284,11 @@ duplicates, bundled files and outlines that repeat source words.
   A condition written only in words the licence already uses, and a grant
   with words removed, still score as that licence; the similarity bound,
   and for a repository licence GitHub's licence interface, are the only
-  guards there.
+  guards there. A copyright line, an "all rights reserved" line or a
+  bracketed placeholder is read only through a closed list of condition
+  words, so a condition there that uses none of them, or only words the
+  licence already holds (an enumerated Apache clause such as "(c) You may
+  not sell"), still passes.
 - A registry entry's upstream licence text is compared and its digest
   recorded, but its bytes are not kept in quarantine.
 - Candidate counts are internal. A public library number counts approved,
