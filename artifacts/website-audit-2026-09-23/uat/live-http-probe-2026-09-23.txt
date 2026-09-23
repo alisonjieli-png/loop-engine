@@ -1,0 +1,73 @@
+observed_at=2026-09-23T13:41:38Z origin=https://baltor.ai
+== status, media type and size of named addresses (GET, browser-like Accept header)
+/                            200 text/html; charset=utf-8 89815B
+/how-it-works                200 text/html; charset=utf-8 89815B
+/pricing                     200 text/html; charset=utf-8 89815B
+/connect                     200 text/html; charset=utf-8 89815B
+/waitlist                    200 text/html; charset=utf-8 89815B
+/get-started                 404 text/html; charset=utf-8 938B
+/docs                        200 text/html; charset=utf-8 89815B
+/examples                    200 text/html; charset=utf-8 89815B
+/security                    200 text/html; charset=utf-8 89815B
+/privacy                     200 text/html; charset=utf-8 89815B
+/login                       200 text/html; charset=utf-8 89815B
+/signup                      200 text/html; charset=utf-8 89815B
+/app                         200 text/html; charset=utf-8 89815B
+/account                     200 text/html; charset=utf-8 89815B
+/admin                       200 text/html; charset=utf-8 89815B
+/robots.txt                  404 text/html; charset=utf-8 938B
+/sitemap.xml                 404 text/html; charset=utf-8 938B
+/favicon.ico                 404 text/html; charset=utf-8 938B
+/manifest.webmanifest        404 text/html; charset=utf-8 938B
+/site.webmanifest            404 text/html; charset=utf-8 938B
+/.well-known/security.txt    404 text/html; charset=utf-8 938B
+/no-such-page                404 text/html; charset=utf-8 938B
+/api/v1/capabilities         200 application/json 2570B
+/api/v1/health               200 application/json 1703B
+== the same unknown addresses without a browser Accept header
+/robots.txt                  404 application/json
+/no-such-page                404 application/json
+== HEAD requests to pages
+HEAD /                       404 application/json
+HEAD /pricing                404 application/json
+HEAD /docs                   404 application/json
+== response headers of the home page (GET)
+HTTP/2 200 
+date: Wed, 23 Sep 2026 13:41:56 GMT
+server: Fly/454af3fb (2026-09-21)
+content-security-policy: default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self' https://qfzxmjznlwiopgvfgtsw.supabase.co; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+referrer-policy: no-referrer
+x-frame-options: DENY
+permissions-policy: camera=(), microphone=(), geolocation=()
+content-length: 89815
+content-type: text/html; charset=utf-8
+cache-control: no-store
+x-content-type-options: nosniff
+via: 2 fly.io
+fly-request-id: 01M3780T8HMGZ3H7WC5YPHF2VP-iad
+
+== caching and compression of static files (GET with Accept-Encoding)
+/                              status=200 encoding=zstd cache=no-store bytes_on_wire=27398
+/assets/service.css            status=200 encoding=zstd cache=no-store bytes_on_wire=7905
+/assets/service.js             status=200 encoding=zstd cache=no-store bytes_on_wire=21328
+/assets/supabase-client.js     status=200 encoding=zstd cache=no-store bytes_on_wire=66440
+/assets/geist.woff2            status=200 encoding= cache=no-store bytes_on_wire=69652
+/assets/geist-mono.woff2       status=200 encoding= cache=no-store bytes_on_wire=71368
+/assets/baltor-mark.svg        status=200 encoding=zstd cache=no-store bytes_on_wire=995
+== plain HTTP and the other hostnames (GET /, redirects not followed)
+https://baltor.ai                200 redirect=
+https://www.baltor.ai            200 redirect=
+https://app.baltor.ai            200 redirect=
+https://docs.baltor.ai           200 redirect=
+https://status.baltor.ai         200 redirect=
+https://examples.baltor.ai       200 redirect=
+https://demo.baltor.ai           200 redirect=
+https://baltor-pilot.fly.dev     200 redirect=
+http://baltor.ai/            301 redirect=https://baltor.ai/
+== head tags a link preview or search engine reads without running the page script
+<meta name="description" content="Baltor is a library your coding tools can search and download from, so each step of the work starts with the material it needs. The part you install is free.">
+<title>Baltor | Material your coding tools can search</title>
+<link rel="icon" type="image/svg+xml" href="/assets/baltor-mark.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
