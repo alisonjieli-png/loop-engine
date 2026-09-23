@@ -36,9 +36,14 @@ recorded exemption: an entry of the baseline below that also has a reason in
 ``suite_collection_exceptions``. The baseline is the list measured on
 September 22, 2026 at revision ``e2898c7`` and may only shrink. An exemption
 leaves it when its suite is collected again or when no collected suite imports
-its module at load any more, and the check refuses a stale entry, so paid debt
-cannot silently return. An entry that was not on the starting list is refused
-by the digest of that list.
+its module at load any more. The check refuses an entry that stays after that,
+so a suite collected again cannot later stop running unnoticed behind its old
+entry. An entry that was not on the starting list is refused by the digest of
+that list.
+
+How the baseline shrinks. When the check reports an entry as stale, add it to
+``_LEFT_THE_BASELINE`` in the same change. Never add an entry to
+``_BASELINE_AT_START``: a new live dependency needs its suite collected.
 """
 from __future__ import annotations
 
@@ -122,7 +127,21 @@ _BASELINE_AT_START_DIGEST = "597aace25dc46bfa234966aecce4c3599ad1411753b38909ad7
 #: Entries that left the baseline since the start, because their suite is
 #: collected again or because no collected suite imports their module at load
 #: any more.
-_LEFT_THE_BASELINE: tuple[str, ...] = ()
+_LEFT_THE_BASELINE: tuple[str, ...] = (
+    # Collected again on September 22, 2026 by package F11 of
+    # docs/research/ENGINE-IMPLEMENTATION-PLAN-2026-09-22.md: these modules are
+    # live dependencies of collected code, not the retired in-process
+    # execution capability.
+    "core/capability_directory.py",
+    "core/context_artifacts.py",
+    "core/contract_matching.py",
+    "core/model_capabilities.py",
+    "core/model_response_admission.py",
+    "core/model_response_admission_checks.py",
+    "core/outcome_vector.py",
+    "loop/effect_approval.py",
+    "loop/loop_profile_ontology.py",
+)
 
 
 @dataclass(frozen=True)
@@ -575,12 +594,14 @@ def self_test() -> dict:
                     {**record, "unexpected_field": True}, missing_field):
         try:
             LiveDependencyMeasurement.from_dict(mutated)
-            refusals.append(False)
+            refusals.append("accepted")
         except ValueError:
-            refusals.append(True)
+            refusals.append("refused")
+        except Exception as exc:  # any other error is not the declared refusal
+            refusals.append(f"raised {type(exc).__name__}")
     check("the_measurement_record_round_trips_and_refuses_another_version_or_a_changed_field_set",
           live is not None and LiveDependencyMeasurement.from_dict(record) == live
-          and all(refusals), live_error or str(refusals))
+          and refusals == ["refused"] * 3, live_error or str(refusals))
     passed = sum(1 for item in tests if item["passed"])
     return {"module": "core.live_dependency_checks", "tests": tests,
             "passed": passed, "total": len(tests), "all_passed": passed == len(tests)}
