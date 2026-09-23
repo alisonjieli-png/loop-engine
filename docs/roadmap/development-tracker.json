@@ -864,7 +864,7 @@
      "S-6.40"
     ],
     "id": "S-6.62",
-    "next_local_work": "Release the stop-following command, the corrected first-time runbook step that follows only granted accounts, and checks with removed-guard controls; return the five non-owner accounts to empty snapshots and confirm isolation live; only then publish a second catalogue release. Then the account library settings and pinning a release for search.",
+    "next_local_work": "Publish the first release that adds new items (the library-scale importer's reviewed candidates once the independent review panel approves them); then the account library settings, pinning a release for search, paged listing, and the index-file and object-storage engines the 100,000 item measurement calls for.",
     "phase": 6,
     "status": "building",
     "title": "Catalogue releases and library settings with good defaults",
@@ -3136,5 +3136,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:e281b603e0101fb711d53035f51dfc3b965b4dda933004ac3f3051d4e62ae7fe"
+ "source_fingerprint": "sha256:6f6138ec11bbbbe453389b3325ca51e5c7f5e864c88fafd822964c4ff06e4789"
 }

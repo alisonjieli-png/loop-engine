@@ -1,0 +1,44 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T09:45:00+00:00",
+ "release": 17,
+ "fly_release_version": 19,
+ "source_revision": "421f37ce32f4c132ce92525d9b2098fd449739a4",
+ "image": "registry.fly.io/baltor-pilot@sha256:23b004901a63e2d302f002acd0e5b5bbf07576215bcc9cc0c3077c8522c1a4f5",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35842816005, dispatched on main with operation deploy, after the continuous integration run 35841066689 passed on this exact revision. The Machine took the new image at 2026-09-23T09:27:17Z. Every workflow step passed.",
+ "deployment_switch": {
+  "set_true_at": "2026-09-23T09:25:07Z",
+  "set_false_at": "2026-09-23T09:27:43Z"
+ },
+ "before_release": {
+  "host_file": "No change.",
+  "local_checks": "All 12 stages of the continuous integration command set passed on an export of this exact revision: self-test passed, tools 847 tests, browser 481 of 481 with 71 of 71 planted faults caught, conformance, component guides, hardcoding audit with no new high finding, examples, markdown lint, embodiment, qualification, publish guard and retired words. The grant fix line alone passed the same set at 05910b3 (self-test 3,222 of 3,222). The merge lost no line; the one file both sides changed, the service runtime README, keeps every added line."
+ },
+ "what_this_release_changes": "The catalogue grant isolation fix: the command stop-following-catalogue-release returns an account to a version 1 snapshot equal to what it receives now, follow-catalogue-release --all-tenants moves only accounts that already receive every served item, the runbook's first-time step follows only pilot-owner and adds the isolation check, 16 new checks with removed-guard controls, and the starter catalogue anchored to 565e133, with the homepage demonstration showing that anchor's digests.",
+ "post_deploy_steps": [
+  "09:30 UTC: stop-following-catalogue-release for pilot-boundary, billing-check, billing-check-2, billing-check-3 and baltor-admin; each answered engine snapshot with 0 grants against catalogue release ad440982.",
+  "Hosted service check 19 of 19 after the repair, with the store's digest 32fca6ee (hosted-release19-service-after-stop-following.json).",
+  "Second catalogue release published without a redeploy: bundle starter-r19-565e133 (43 items, bundle digest 0c29263a54a7af9899aa65eeb060fc3edc98b9a41018ed6d410ac43783ce7924, archive digest 2d838901... matched on the Machine), release c824a1d2e2228d2caf9005057efd1085277393391d65d8a6dbdbf4743aeb6753, 43 changed, previous ad440982. The service served it within a minute with no restart; the incoming copy was removed."
+ ],
+ "after_release": {
+  "health": "service_health/v2, alive and ready; the catalogue is served from the store, release c824a1d2e222, 43 items, catalogue state revision 13",
+  "hostnames": "All eight hostnames answered 200 for the home page and for /privacy and returned the same public capabilities record",
+  "website": "81 of 81 browser checks on baltor.ai, www.baltor.ai and app.baltor.ai; 80 of 81 on baltor-pilot.fly.dev, the known host-name check",
+  "catalogue": "6 of 6; 34 offered and 9 withheld until effects are declared",
+  "hosted_service": "19 of 19 with the phone item digest 8f0ab269db267078c2f9b3f4671d8785a9e8a3dcce0fbdac578f6b2dacf255ef, which the image and the served store release now share, including the isolation checks"
+ },
+ "known_gaps": [
+  "HEAD on the root answers 404.",
+  "The signed-in header still shows Sign in and Request an invitation.",
+  "The homepage demonstration features normalize_phone_numbers, the item the data cleanup study found harmful on its population."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:e63354aeee58b0c497672658e49fab8cf0d181600cce84cf8010df2d45f6e717",
+  "fly_release_version": 18,
+  "host_file": "No host file change is needed.",
+  "effect": "Release 18 serves catalogue state version 1 but has no stop-following command; the five accounts keep their snapshots, which release 18 reads."
+ }
+}

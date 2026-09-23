@@ -3,7 +3,7 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:e281b603e0101fb711d53035f51dfc3b965b4dda933004ac3f3051d4e62ae7fe`.
+Source fingerprint: `sha256:6f6138ec11bbbbe453389b3325ca51e5c7f5e864c88fafd822964c4ff06e4789`.
 
 ## Where things stand
 
