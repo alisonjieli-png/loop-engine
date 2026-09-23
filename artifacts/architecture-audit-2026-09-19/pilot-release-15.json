@@ -1,0 +1,43 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T06:25:00+00:00",
+ "release": 15,
+ "fly_release_version": 17,
+ "source_revision": "381cc525a1178c9885eb35f4a08cf2199adb1ef4",
+ "image": "registry.fly.io/baltor-pilot@sha256:cd593bc47b098f9b8c68987388be96fa2404611a76cb1868403ba0a9908d328c",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35825420925, dispatched on main with operation deploy, after the continuous integration run 35824162536 passed on this exact revision. The Machine took the new image at 2026-09-23T06:10:54Z. Every workflow step passed, including the readiness poll, the catalogue grant step and the host billing policy step on the Machine.",
+ "deployment_switch": {
+  "set_true_at": "2026-09-23T06:08:46Z",
+  "set_false_at": "2026-09-23T06:11:22Z"
+ },
+ "before_release": {
+  "host_file": "No change. With no catalogue section in /data/host.json the release serves the packaged manifest, as release 16 did.",
+  "local_checks": "All 12 stages of the continuous integration command set passed on an export of a1e70a9 (this revision without the release 16 record merged after it): self-test 3,206 of 3,206, tools 836 tests, browser 412 of 412 with 60 of 60 planted faults caught, conformance, component guides, hardcoding audit with no new high finding, examples 24 of 24, markdown lint 642 files, embodiment 106, qualification 3, publish guard and retired words. On the merge itself: conformance passed, the starter catalogue tests 32 of 32, the records index and the context routes."
+ },
+ "what_this_release_changes": "The engine framework, wave A: engine records, the catalogue of 45 engine slots, live dependency guards, the harness recipe catalogue and the step executor adapter contract, under core/engines and core/step_execution. Catalogue releases without a redeploy: a content-addressed body store, releases with an active pointer and durable withdrawals, an attribute schema defined as data, search filters, grants that can follow the active release, and five new service commands (publish-catalogue, rollback-catalogue, withdraw-catalogue-item, catalogue-status, follow-catalogue-release); health gains catalogue_view_current and reports the served catalogue. The data cleanup demonstration and its negative result. The starter catalogue anchored to 40fce69.",
+ "post_deploy_steps": [],
+ "after_release": {
+  "health": "service_health/v2, alive and ready; every check passing, including catalogue_view_current; the served catalogue comes from the image with 43 items and catalogue state revision 0",
+  "hostnames": "All eight hostnames answered 200 for the home page and for /privacy and returned the same public capabilities record",
+  "capabilities": "registration_available false; waitlist_available true; billing checkout true, portal true, webhook true",
+  "website": "74 of 74 browser checks on baltor.ai, www.baltor.ai and app.baltor.ai; 73 of 74 on baltor-pilot.fly.dev, the known host-name check",
+  "catalogue": "6 of 6; 34 offered and 9 withheld until effects are declared",
+  "hosted_service": "19 of 19 with the phone item's digest for this anchor, 32fca6ee4464cb2fb43eb06a5347fa0b6e87b0544910193565e8053dd562131c, including one metered read, tenant isolation and the official protocol client at both revisions",
+  "waiting_list": "One request from qa-release-17-waitlist@baltor.ai was recorded once in the waiting state with source_counted counted; a second request was refused with waitlist_address_already_listed; the operator tool removed it and erased its address and note, and a new listing no longer showed it",
+  "first_run": "The first hosted service run stopped after 17 of 19 checks with FileNotFoundError: the checker runs the official protocol client from <tree>/.venv/bin/python, and the release worktree had no .venv link. After the link was added the run passed 19 of 19. The interrupted report is kept with the suffix -first-run-missing-venv.",
+  "head": "HEAD on the root still answered 404 on baltor.ai"
+ },
+ "known_gaps": [
+  "HEAD on the root answers 404; every subdomain serves the homepage.",
+  "Catalogue releases are in the image but not switched on: the host file has no catalogue section yet."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:0fa11f15d0d116a4495586c7eef0fd46ff08b6245f1b077e062a5ce652f9bec8",
+  "fly_release_version": 16,
+  "host_file": "No host file change is needed while the host file has no catalogue section.",
+  "effect": "Release 16 predates catalogue state. Once the catalogue section is added to /data/host.json, release 16 and every older image refuse the host file and are no longer rollback targets; the section must not be removed to start an older image while any catalogue state exists."
+ }
+}
