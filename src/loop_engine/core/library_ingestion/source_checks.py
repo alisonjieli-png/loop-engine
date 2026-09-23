@@ -386,6 +386,17 @@ def self_test() -> dict:
         check("a_quarantined_file_whose_bytes_changed_is_refused_when_read",
               _code(lambda: quarantine.get(stored.digest)) == "quarantine_corrupted")
 
+        # Every request is on disk the moment it is made, so a run that stops halfway still
+        # names every request it sent.
+        log_path = Path(folder) / "requests.jsonl"
+        written_log = RequestLog(log_path)
+        for status in (200, 404):
+            written_log.record(RequestObservation("gh_api", "api.github.com", f"repos/{REPOSITORY}", status, b"{}",
+                                                  "2026-09-22T12:00:00Z", 1.0, "ok" if status == 200 else "not_found"))
+        on_disk = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines()]
+        check("every_request_record_is_written_to_the_run_file_as_it_is_made",
+              on_disk == written_log.records and len(on_disk) == 2, len(on_disk))
+
         # gh finds its own login; no other variable of this process, such as a model key, reaches it.
         check("the_github_reader_passes_only_the_declared_environment",
               set(passthrough_environment(names=("PATH",))) <= {"PATH"})

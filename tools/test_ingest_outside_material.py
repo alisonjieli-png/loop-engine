@@ -21,10 +21,13 @@ from loop_engine.core.library_ingestion.pipeline_checks import self_test as pipe
 from loop_engine.core.library_ingestion.source_checks import (  # noqa: E402
     COMMIT, FakeGitHubReader, FakeRegistry, registry_entry, repository_table, skill_text)
 from loop_engine.core.library_ingestion.licence_checks import MIT_FIXTURE  # noqa: E402
+from loop_engine.core.library_ingestion.github_reader import GhCliReader  # noqa: E402
+from loop_engine.core.library_ingestion.outline_model import ModelOutline  # noqa: E402
 from loop_engine.core.library_ingestion.provenance import OUTLINE_ONLY  # noqa: E402
 from loop_engine.core.library_ingestion.provenance_checks import (  # noqa: E402
     fixture_evidence, fixture_provenance)
 from loop_engine.core.library_ingestion.request_log import RequestBudget, RequestLog  # noqa: E402
+from loop_engine.core.library_ingestion.scan_skillspector import SkillSpectorStatic  # noqa: E402
 from tools.ingest_outside_material import (  # noqa: E402
     CollectOptions, StagingConflict, collect, stage_populations)
 from tools.stage_intelligence_candidates import (  # noqa: E402
@@ -276,6 +279,69 @@ class OutsideIngestionChecks(unittest.TestCase):
         rows = [json.loads(line) for line in written.read_text(encoding="utf-8").splitlines()]
         self.assertEqual([(row["outcome"], row["usage"]) for row in rows],
                          [("ok", {"prompt_tokens": 40, "completion_tokens": 9})])
+
+    def test_collect_refuses_a_model_call_log_that_differs_from_the_calls_it_made(self):
+        sources = _sources(self.root)
+        sources["sources"] = [dict(sources["sources"][0], use="outline", expected_licence=None)]
+        answer = SimpleNamespace(ok=True, text="Helps an assistant weigh measurements against saved numbers.",
+                                 model="fixture-model", prompt_tokens=40, eval_tokens=9, usage_reported=True,
+                                 error="", retry_after_seconds=None, response_received=True)
+        original = ModelOutline._record
+
+        def record_and_add_a_stray_line(engine, *args, **kwargs):
+            row = original(engine, *args, **kwargs)
+            with engine.record_path.open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps({**row, "sequence": 999}, sort_keys=True) + "\n")
+            return row
+
+        log = RequestLog()
+        github = FakeGitHubReader(self.table, RequestBudget(maximum_requests=200), log)
+        registry = FakeRegistry(self.pages, RequestBudget(maximum_requests=20), log)
+        options = CollectOptions(run_folder=self.root / "stray", network_reads_authorized=True,
+                                 model_calls_authorized=True, outline_model="fixture-model", model_call_ceiling=5)
+        with mock.patch("loop_engine.core.library_ingestion.outline_model._chat",
+                        return_value=lambda *args, **kwargs: answer), \
+                mock.patch.object(ModelOutline, "_record", record_and_add_a_stray_line):
+            with self.assertRaisesRegex(RuntimeError, "model call log"):
+                collect(sources, options, github_reader=github, registry_transport=registry, request_log=log)
+
+    def test_a_failed_skillspector_run_marks_every_package_it_covered(self):
+        engine = SkillSpectorStatic(str(self.root / "no-such-skillspector"), str(self.root / "work"))
+        findings = engine.scan_packages({"alpha": (("alpha/SKILL.md", b"---\nname: alpha\n---\nBody.\n"),),
+                                         "beta": (("beta/SKILL.md", b"---\nname: beta\n---\nBody.\n"),),
+                                         "connection": (("baltor-connection.json", b"{}"),)})
+        self.assertEqual({key: [row["rule"] for row in rows] for key, rows in findings.items()},
+                         {"alpha": ["skillspector_run_failed"], "beta": ["skillspector_run_failed"],
+                          "connection": []})
+
+    def test_the_github_reader_waits_for_an_exhausted_allowance_and_asks_once_more(self):
+        # A stand-in for gh that answers 403 with no allowance left, then 200 once asked again.
+        program = self.root / "gh"
+        program.write_text(
+            f"#!{sys.executable}\nimport pathlib, sys\nasked = pathlib.Path(sys.argv[0]).with_name('asked')\n"
+            "if asked.exists():\n"
+            "    sys.stdout.write('HTTP/2.0 200 OK\\nX-Ratelimit-Remaining: 4999\\n\\n{}')\n"
+            "else:\n"
+            "    asked.write_text('1')\n"
+            "    sys.stdout.write('HTTP/2.0 403 Forbidden\\nX-Ratelimit-Remaining: 0\\n"
+            "X-Ratelimit-Reset: 1010\\n\\n{}')\n", encoding="utf-8")
+        program.chmod(0o755)
+        clock, slept = [1000.0], []
+
+        def sleep(seconds):
+            slept.append(seconds)
+            clock[0] += seconds
+
+        budget = RequestBudget(maximum_requests=5, maximum_pause_seconds=60, reserve=100, sleep=sleep,
+                               clock=lambda: clock[0])
+        log = RequestLog()
+        response = GhCliReader(budget, log, gh=str(program)).get(
+            f"repos/example-owner/example-skills/git/trees/{COMMIT}?recursive=1")
+        self.assertEqual(response.status, 200)
+        self.assertEqual(budget.used, 2)
+        self.assertEqual([row["outcome"] for row in log.records], ["rate_limited", "ok"])
+        self.assertGreaterEqual(sum(slept), 11)
+        self.assertTrue(all(row["taken"] for row in budget.pauses))
 
     def test_the_component_pipeline_checks_pass_here(self):
         result = pipeline_self_test()

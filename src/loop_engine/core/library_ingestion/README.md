@@ -263,7 +263,17 @@ are not the pinned blob, registry status changes and vanished entries, an
 upstream licence whose signals disagree, redirects, a scanner sandbox with
 network or an inherited environment, secrets and plain addresses in
 connection files, the malicious and benign regression set of the scanner,
-duplicates, bundled files and outlines that repeat source words.
+duplicates, bundled files and outlines that repeat source words. Later
+checks hold a notice that names another licence while saying "license", a
+second licence file in the governing folder, a condition in text the
+normalizer sets aside, a rule file's own licence field, a verbatim copy
+without its licence or notice file, a secret-shaped header value or
+environment default, a rendered licence field that is not the evidence's,
+a candidate key that does not follow its provenance, a request record not
+written to the run file, a template outline that repeats its source, a
+model call log that differs from the calls made, a failed scanner run
+read as clean and a GitHub allowance that runs out (the last three in the
+tool tests, because they start a process or patch an engine).
 
 ## Limits
 

@@ -169,6 +169,26 @@ def _attachment_checks(check, quarantine) -> None:
           carried)
 
 
+def _template_outline_checks(check, quarantine) -> None:
+    """The template outline is compared with its source, like the model's sentence.
+
+    A source that happens to hold the template's own closing sentence gets no
+    outline rather than an outline that repeats five of its words.
+    """
+    echo = _candidate(quarantine, "example-owner/unlicensed-echo", "skills/echo-rules/SKILL.md",
+                      skill("echo-rules", "Echo the rules",
+                            body=_steps("Repeat rule {n} back to the reader in plain words")
+                            + "Use no sentence, list or example from the source.\n"), "")
+    engines = PipelineEngines(validators=(AgentSkillsBuiltinRules(),), scanners=(BuiltinStaticRules(),),
+                              near_duplicate=BuiltinMinHashLsh(), outline=DeterministicOutline(),
+                              fallback_outline=DeterministicOutline())
+    result = run_pipeline([_batch("github.echo", [echo])], quarantine, engines,
+                          PipelineSettings(source_order=("github.echo",)))
+    reasons = [row["reason"] for row in result["refusals"] if row["candidate_key"] == echo["candidate_key"]]
+    check("a_template_outline_that_would_repeat_its_source_is_refused",
+          not result["outlines"] and "outline_would_copy_source_text" in reasons, reasons)
+
+
 def _bundled_and_endpoint_checks(check, quarantine) -> None:
     """A second, separate population: bundled folders and modules, and one endpoint under two names.
 
@@ -370,6 +390,7 @@ def self_test() -> dict:
         _bundled_and_endpoint_checks(check, quarantine)
         _restricted_copy_checks(check, quarantine)
         _attachment_checks(check, quarantine)
+        _template_outline_checks(check, quarantine)
 
     passed = sum(1 for item in tests if item["passed"] is True)
     executed = [item for item in tests if item.get("not_tested") is not True]

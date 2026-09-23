@@ -179,6 +179,28 @@ def self_test() -> dict:
               "required_arguments_not_rendered", "package_type_not_rendered"),
           (plain_http, shaped, required, unsupported))
 
+    # A fixed header value and an environment default are written into the harness files as
+    # given, so a secret-shaped one is refused by name rather than copied into a candidate.
+    header_secret = _refused(lambda: render_connection(_entry(packages=[], remotes=[{
+        "type": "streamable-http", "url": "https://weather.example/mcp",
+        "headers": [{"name": "X-Api-Key", "value": fake_key}]}]), registry))
+    default_secret = _refused(lambda: render_connection(_entry(packages=[{
+        "registryType": "npm", "identifier": "weather", "version": "1.0.0", "transport": {"type": "stdio"},
+        "environmentVariables": [{"name": "WEATHER_API_KEY", "default": fake_key}]}]), registry))
+    check("a_secret_shaped_header_value_or_environment_default_is_refused_by_name",
+          (header_secret, default_secret) == ("credential_shaped_value_in_entry",) * 2,
+          (header_secret, default_secret))
+
+    # The licence field of a rendered skill is the licence its evidence proves; an upstream
+    # field that says something else, such as a pointer to the licence file, moves to metadata.
+    pointed = render_skill(parse_skill(UPSTREAM_SKILL.replace("license: MIT", "license: Complete terms in LICENSE.txt")),
+                           provenance, licence_file=("LICENSE.txt", b"MIT licence text\n"))
+    pointed_fields = parse_skill(pointed.main_text).frontmatter
+    check("a_rendered_skill_names_the_licence_its_evidence_proves",
+          pointed_fields["license"] == provenance.spdx == "MIT"
+          and pointed_fields["metadata"]["upstream-license"] == "Complete terms in LICENSE.txt"
+          and pointed_fields["metadata"]["baltor-licence-file"] == "LICENSE.txt", pointed_fields)
+
     def image(identifier, version=None):
         package = {"registryType": "oci", "identifier": identifier, "transport": {"type": "stdio"}}
         if version is not None:

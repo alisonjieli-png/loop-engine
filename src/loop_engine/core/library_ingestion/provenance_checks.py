@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 
-from .candidates import OUTLINE_RECORD_TYPE, read_outline
+from .candidates import OUTLINE_RECORD_TYPE, read_outline, read_source_candidate, source_candidate
 from .provenance import (
     GITHUB_ORIGIN, LICENCE_EVIDENCE_RECORD_TYPE, OUTLINE_ONLY, PROVENANCE_FIELDS,
     PROVENANCE_RECORD_TYPE, REGISTRY_ORIGIN, VERBATIM, read_licence_evidence,
@@ -176,6 +176,16 @@ def self_test() -> dict:
     changed = read_outside_provenance({**complete, "source_digest": bytes_digest(b"other bytes")})
     check("the_identity_key_follows_the_bytes_and_not_the_fetch_time",
           later.identity_key() == read.identity_key() and changed.identity_key() != read.identity_key())
+
+    # The candidate key names the bytes: a candidate whose key was copied from another item,
+    # or kept after its bytes changed, is refused, so a duplicate or a review cannot follow it.
+    candidate = source_candidate("skill", "agent_skill", "example-skill", read, "skills/example-skill")
+    rekeyed = {**candidate, "candidate_key": bytes_digest(b"another item")}
+    moved = {**candidate, "provenance": {**complete, "source_digest": bytes_digest(b"other bytes")}}
+    check("a_candidate_key_must_follow_the_provenance_it_names",
+          read_source_candidate(candidate) == candidate
+          and _code(lambda: read_source_candidate(rekeyed)) == "candidate_key_mismatch"
+          and _code(lambda: read_source_candidate(moved)) == "candidate_key_mismatch")
 
     passed = sum(item["passed"] for item in tests)
     return {"record_type": "library_provenance_test/v1", "tests": tests, "passed": passed,
