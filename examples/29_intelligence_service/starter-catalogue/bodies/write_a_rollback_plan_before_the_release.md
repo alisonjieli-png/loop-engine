@@ -40,4 +40,4 @@ A release goes out with a migration that drops a column. Errors appear, and the 
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 9a483df.
+Licence: MIT. Written for this catalogue at revision 40fce69.

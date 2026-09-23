@@ -40,4 +40,4 @@ A service returns the same general failure with the text "request failed" for a 
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 9a483df.
+Licence: MIT. Written for this catalogue at revision 40fce69.

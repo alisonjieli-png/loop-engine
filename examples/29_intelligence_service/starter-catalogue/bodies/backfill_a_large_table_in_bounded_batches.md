@@ -40,4 +40,4 @@ An engineer runs a single update over forty million rows in one transaction. The
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 9a483df.
+Licence: MIT. Written for this catalogue at revision 40fce69.

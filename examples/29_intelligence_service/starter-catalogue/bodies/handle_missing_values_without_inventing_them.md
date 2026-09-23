@@ -40,4 +40,4 @@ An import turns a missing price into zero, because the column is numeric. The mo
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 9a483df.
+Licence: MIT. Written for this catalogue at revision 40fce69.

@@ -40,4 +40,4 @@ A reporting endpoint accepts a page size chosen by the caller. A script asks for
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 9a483df.
+Licence: MIT. Written for this catalogue at revision 40fce69.

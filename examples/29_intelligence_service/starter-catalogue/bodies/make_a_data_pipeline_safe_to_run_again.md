@@ -35,4 +35,4 @@ A daily job appends the rows of the day to a table. It fails after the insert an
 
 - `src/loop_engine/governance/candidates/part-00000.jsonl`: four candidate statements for the data engineer position, with the digests `12ad368bd931250d`, `3ec05e8681b71131`, `609e32f1daafd4d9` and `b4c5790b1fb0c283`.
 
-Licence state: needs review. A language model generated the four source statements during work in this repository on 23 August 2026, and no person has reviewed them. The example is an illustration that was added during compilation. Compiled from revision 9a483df.
+Licence state: needs review. A language model generated the four source statements during work in this repository on 23 August 2026, and no person has reviewed them. The example is an illustration that was added during compilation. Compiled from revision 40fce69.
