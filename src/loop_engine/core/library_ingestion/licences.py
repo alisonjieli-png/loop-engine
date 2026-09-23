@@ -5,9 +5,11 @@ the accepted list and the licence file itself proves it. The governing file
 is the licence file nearest to the item (a folder's own LICENSE.txt
 overrides the repository licence). Its text is compared with stored word
 sets of the canonical licence texts (the Sorensen-Dice coefficient on
-distinct words, the method licensee uses), and a repository licence must
-also agree with what GitHub's licence interface reports. A notice on the
-file itself (a frontmatter licence or an SPDX header) must agree too.
+distinct words, the method licensee uses), and it counts as a licence only
+when it also adds no word that licence's text lacks, because a short added
+condition barely moves the similarity. A repository licence must also agree
+with what GitHub's licence interface reports. A notice on the file itself
+(a frontmatter licence or an SPDX header) must agree too.
 
 Everything else is decided conservatively. No licence file, an unrecognized
 text, a recognized licence the policy does not list, disagreeing signals or
@@ -41,6 +43,11 @@ DEFAULT_ACCEPTED = ("MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", 
                     "CC-BY-4.0")
 #: The one match reason under which a text counts as the licence it resembles.
 RECOGNIZED = "recognized"
+#: A text close to a template that still adds words the template lacks. Similarity alone
+#: hides a short added condition ("You may not modify this software." keeps MIT above 98
+#: percent), and the SPDX matching guidelines count no added text as a match, so such a
+#: text is not the licence it resembles and its added sentences are read.
+ADDS_WORDS = "adds_words_the_template_lacks"
 #: licensee's own default confidence for its word-set matcher is 98 percent.
 DEFAULT_MINIMUM_SIMILARITY = 0.98
 #: The best template must beat the next one by this much, or the text is ambiguous.
@@ -133,6 +140,13 @@ class LicencePolicy:
                 "minimum_margin": self.minimum_margin}
 
 
+def _joined_words(text: str) -> list:
+    """The words of lower-case text with British spellings joined to American ones."""
+    for british, american in _SPELLINGS:
+        text = text.replace(british, american)
+    return re.sub(r"[^a-z0-9]+", " ", text).split()
+
+
 def licence_words(text: str) -> frozenset:
     """Distinct normalized words: copyright lines, addresses and placeholders removed."""
     if text.startswith("---\n"):
@@ -146,9 +160,18 @@ def licence_words(text: str) -> frozenset:
     for section in _OPTIONAL_SECTIONS:
         joined = re.sub(section.replace(" ", r"\s+"), " ", joined, flags=re.S)
     joined = re.sub(r"\[[^\]]{0,40}\]|<[^>]{0,40}>|\{[^}]{0,40}\}", " ", joined)
-    for british, american in _SPELLINGS:
-        joined = joined.replace(british, american)
-    return frozenset(re.sub(r"[^a-z0-9]+", " ", joined).split())
+    return frozenset(_joined_words(joined))
+
+
+def added_sentences(text: str, template_words: frozenset) -> str:
+    """The sentences of a licence text that carry a word its template lacks, joined.
+
+    A sentence ends only at a full stop, as in the prohibition rule, so a
+    condition wrapped across lines stays one sentence and is read whole.
+    """
+    added = licence_words(text) - template_words
+    sentences = re.sub(r"https?://\S+", " ", text.lower()).split(".")
+    return ". ".join(sentence for sentence in sentences if added.intersection(_joined_words(sentence)))
 
 
 @lru_cache(maxsize=4)
@@ -189,6 +212,8 @@ def match_words(words: frozenset, templates: "dict | None" = None,
         reason = "ambiguous_between_templates"
     elif marked:
         reason = "carries_a_word_the_template_forbids"
+    elif words - templates[best].words:
+        reason = ADDS_WORDS
     else:
         reason = RECOGNIZED
     return LicenceMatch(best if reason == RECOGNIZED else None, best, round(best_score, 4), runner,
@@ -347,10 +372,14 @@ def decide_licence(item_path: str, licence_files: dict, *, root_path: "str | Non
     if match.spdx is None:
         # The prohibition rule reads only a text no template recognizes. A known
         # licence's own terms are known, and several of them use the same words
-        # ("shall not", "derivative works") without forbidding an adaptation.
-        if prohibits_recreation(governing.text):
+        # ("shall not", "derivative works") without forbidding an adaptation, so a
+        # text that only adds words to a template is read in its added sentences.
+        read = governing.text
+        if match.reason == ADDS_WORDS:
+            read = added_sentences(governing.text, templates[match.best].words)
+        if prohibits_recreation(read):
             return outcome(NO_ASSERTION, REFUSED, "licence_prohibits_derivatives")
-        if binds_to_outside_terms(governing.text):
+        if binds_to_outside_terms(read):
             return outcome(NO_ASSERTION, REFUSED, "licence_binds_to_outside_terms")
         return outcome(NO_ASSERTION, OUTLINE_ONLY, f"licence_text_{match.reason}")
     if governing is root_file:

@@ -6,7 +6,8 @@ licence the policy does not list all refuse verbatim import; a licence that
 forbids derivative works refuses an outline as well; a nested licence file
 overrides the repository licence; the licence interface and the text must
 agree for a repository licence; a file-level notice that disagrees blocks a
-verbatim copy; an added restriction makes a permissive text unrecognized;
+verbatim copy; an added restriction, however short, makes a permissive
+text unrecognized and its added sentences are read;
 and a share-alike text is never taken for the plain attribution licence.
 """
 from __future__ import annotations
@@ -55,6 +56,26 @@ Notwithstanding anything in the agreement, users may not:
 - Reproduce or copy these materials
 - Create derivative works based on these materials
 - Distribute, sublicense or transfer these materials to any third party
+"""
+
+
+#: Short added conditions. Each adds only one to three words to the MIT text, so the
+#: similarity stays above 98 percent; only reading the added words can see them.
+SHORT_RIDERS = ("You may not modify this software.", "Not for commercial use.", "No derivative works.",
+                "The Software shall not be sold.")
+#: The standard notice from the appendix of the Apache License, which some licence files carry
+#: above the licence. It adds words to the template and restricts nothing.
+APACHE_NOTICE_FIXTURE = """Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 
@@ -134,6 +155,19 @@ def self_test() -> dict:
     check("a_recognized_licence_is_read_by_its_template_not_by_the_prohibition_rule",
           prohibits_recreation(apache_like) and apache["decision"] == VERBATIM
           and apache["spdx_expression"] == "Apache-2.0", apache["reason"])
+
+    # A similarity above 98 percent hides a short added condition, so a text that adds any
+    # word its template lacks is not that licence, and the sentences carrying the added
+    # words are read by the prohibition rule. The standard Apache notice adds words too,
+    # but restricts nothing, so it leaves an outline rather than a refusal.
+    short = [_decide(item, [_file("skills/example/LICENSE.txt", MIT_FIXTURE + "\n" + rider + "\n")])
+             for rider in SHORT_RIDERS]
+    headed = _decide(item, [_file("skills/example/LICENSE.txt", APACHE_NOTICE_FIXTURE + "\n" + apache_like)])
+    check("a_short_added_condition_is_read_and_never_imported_verbatim",
+          all(row["decision"] != VERBATIM for row in short)
+          and short[0]["decision"] == REFUSED and short[0]["reason"] == "licence_prohibits_derivatives"
+          and headed["decision"] == OUTLINE_ONLY,
+          [(row["decision"], row["reason"]) for row in short] + [(headed["decision"], headed["reason"])])
 
     nested_refused = _decide(item, [_file("LICENSE", MIT_FIXTURE, "MIT"),
                                     _file("skills/example/LICENSE.txt", PROPRIETARY_FIXTURE)],

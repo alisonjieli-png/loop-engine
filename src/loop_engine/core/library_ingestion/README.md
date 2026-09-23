@@ -124,7 +124,9 @@ without changing an engine.
 One fetched file
 ├── the governing licence file is the nearest one, from the file's folder up to the root
 ├── the licence text is compared with stored word sets of the canonical texts
-│   └── recognized only at 98 percent similarity or more, clearly ahead of the next licence
+│   ├── recognized only at 98 percent similarity or more, clearly ahead of the next licence
+│   └── and only when it adds no word the canonical text lacks: a short added condition
+│       barely moves the similarity, so the sentences that add words are read instead
 ├── a repository licence must also agree with GitHub's licence interface at the pinned commit
 ├── every file-level notice (a frontmatter licence field, an SPDX header) must agree
 └── decision
@@ -219,7 +221,7 @@ staging tool writes candidates through the existing catalogue contract.
 | datasketch 1.6.5 | MIT | Adopted as the near-duplicate engine (MinHash with locality-sensitive hashing). An optional dependency; the built-in engine is the declared fallback and finds the same pairs on the fixture. |
 | skills-ref 0.1.0 from agentskills/agentskills | Apache-2.0 | Adopted as a second format engine on the rendered file. Its own guide calls it a demonstration, so it runs beside the built-in rules, never instead of them. It needs Python 3.11 or later. |
 | NVIDIA SkillSpector 2.11.2 | Apache-2.0 | Adopted as a static scanner, with its model stage off, over many skills per run, inside a bubblewrap sandbox without network. |
-| licensee | MIT | Adapted: its method (the Sorensen-Dice coefficient over distinct normalized words, 98 percent confidence) is written here in Python. The gem itself is rejected, because it would add a Ruby runtime. |
+| licensee | MIT | Adapted: its method (the Sorensen-Dice coefficient over distinct normalized words, 98 percent confidence) is written here in Python, with one rule added from the SPDX matching guidelines: a text that adds words its licence lacks is not that licence. The gem itself is rejected, because it would add a Ruby runtime. |
 | github/choosealicense.com | MIT | Adopted as the canonical licence texts; only their normalized word sets are stored, with each file's digest and the pinned commit. |
 | GitHub licence interface | Service | Adopted as the second signal for a repository licence; it must agree with the text. |
 | Official Model Context Protocol registry, list interface v0.1 | Service | Adopted as the link-mode source. The registry is a metadata directory; a listing is never admission. |
@@ -236,7 +238,8 @@ PYTHONPATH=src:tools python -m unittest tools.test_ingest_outside_material tools
 
 The seven check modules run offline against recorded fake transports. They
 hold the known-wrong cases: a candidate without provenance, verbatim import
-without an accepted licence, a proprietary licence, a nested licence file, a
+without an accepted licence, a proprietary licence, a short condition added to a
+permissive licence, a nested licence file, a
 licence answer that is not the pinned blob, a source curated for outlines,
 tampered bytes, symbolic links and submodules, a truncated tree, request
 ceilings and allowance pauses, a licence that binds the reader to outside
