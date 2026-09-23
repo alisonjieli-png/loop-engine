@@ -217,6 +217,39 @@ reads those records by newest, by `--tenant` or by the `--reference` a customer
 read out of a refusal, and it writes nothing. The operator procedure is in
 [the service failure diagnosis guide](../../guides/service-failure-diagnosis.md).
 
+## Billing policies after a release
+
+The service stores two billing policies from the host file: the entitlement
+policy, which says which prices grant paid access, and the session policy,
+record `service_billing_session_policy/v2`, which holds the checkout and portal
+terms. Checkout and the portal are offered only while the stored session
+policy is the one the running release computes. Release 13 computed a
+different digest from an unchanged host file, and checkout stayed unavailable
+until the policy was stored again.
+
+- `loop-engine service apply-billing-policy --config /data/host.json` stores
+  both policies again. It names each record version it read as the expected
+  one, prints the held and the applied digests in one
+  `service_billing_policy_application/v1` record, registers nothing, calls no
+  provider, and changes nothing on a second run. It refuses an entitlement
+  policy change that would end paid access, with
+  `billing_policy_change_ends_paid_access`, unless the operator passes
+  `--reset-paid-access`. A refusal prints a
+  `service_billing_policy_refusal/v1` record with its code.
+- The health record reports `billing_policy_current`, which fails with a code
+  such as `session_policy_changed` and never shows a digest. It is reported and
+  not required, because every other route still answers and only the command
+  can repair it.
+- The release workflow runs the command after the grant step and requires the
+  capabilities record to report checkout and the portal as the host file
+  offers them.
+
+The session digest covers the terms alone: account, provider version, test or
+live mode, plans, return addresses, portal configuration and the discount code
+choice. A changed timeout or network switch no longer invalidates it. The
+[service runtime guide](../../../src/loop_engine/core/service_runtime/README.md#billing-policies-after-a-release)
+records the decision, its reasons and the checks that hold each rule.
+
 ## Current behaviour, observed today
 
 These facts were read from the deployed service on September 21, 2026. They

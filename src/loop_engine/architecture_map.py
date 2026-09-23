@@ -54,6 +54,7 @@ MODULE_MAP = {
         "__init__", "records", "storage", "runtime", "runtime_checks", "provisioning",
         "billing", "billing_records", "billing_checks", "stripe_provider",
         "billing_effects", "stripe_sessions", "stripe_session_checks", "stripe_session_transport_checks",
+        "billing_policy", "billing_policy_checks",
         "http", "http_auth", "http_entrypoint", "http_checks", "http_boundary_checks",
         "http_test_fixtures", "refusals", "web_pages", "access", "access_checks",
         "browser_identity", "browser_identity_checks",

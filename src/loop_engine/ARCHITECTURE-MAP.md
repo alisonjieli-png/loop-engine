@@ -13,8 +13,8 @@ ARCHITECTURE MAP: 9 top-level package groups
       __init__, contracts, contract_checks, credentials, configuration, gateway, http_transport, wire, jev, jev_checks, system_one, system_one_checks
     core.practitioner_runtime/  (4 modules)
       __init__, capabilities, observations, provisioning
-    core.service_runtime/  (38 modules)
-      __init__, records, storage, runtime, runtime_checks, provisioning, billing, billing_records, billing_checks, stripe_provider, billing_effects, stripe_sessions, stripe_session_checks, stripe_session_transport_checks, http, http_auth, http_entrypoint, http_checks, http_boundary_checks, http_test_fixtures, refusals, web_pages, access, access_checks, browser_identity, browser_identity_checks, request_limits, request_limit_checks, capacity_checks, promotions, promotion_checks, account_email, account_email_checks, observability, observability_checks, waitlist, waitlist_checks, protocol_checks
+    core.service_runtime/  (40 modules)
+      __init__, records, storage, runtime, runtime_checks, provisioning, billing, billing_records, billing_checks, stripe_provider, billing_effects, stripe_sessions, stripe_session_checks, stripe_session_transport_checks, billing_policy, billing_policy_checks, http, http_auth, http_entrypoint, http_checks, http_boundary_checks, http_test_fixtures, refusals, web_pages, access, access_checks, browser_identity, browser_identity_checks, request_limits, request_limit_checks, capacity_checks, promotions, promotion_checks, account_email, account_email_checks, observability, observability_checks, waitlist, waitlist_checks, protocol_checks
   catalog/  (8 modules)
     capabilities, composite, conformance, handshake, protocol, registry, query, versioning
     catalog.stores/  (5 modules)

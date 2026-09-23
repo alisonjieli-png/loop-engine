@@ -36,7 +36,8 @@ HOST_CONFIGURATION_VERSION = "service_http_host_configuration/v1"
 #: `loop-engine service` names the same set, and a check compares the two,
 #: because a command the help names and the parser refuses fails only on the
 #: day an operator needs it.
-SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures")
+SERVICE_COMMANDS = ("serve", "configure", "apply-grants", "issue-key", "smoke", "failures",
+                    "apply-billing-policy")
 LOOPBACK_BINDINGS = ("127.0.0.1", "::1", "localhost")
 MANIFEST_VERSION = "host_attested_intelligence_manifest/v1"
 ENVIRONMENT_REFERENCE_PREFIX = "env:"
@@ -559,6 +560,9 @@ def main(argv=None):
                         help="failures: how many of the newest records to show.")
     parser.add_argument("--reference",
                         help="failures: the request reference a customer read out of a refusal.")
+    parser.add_argument("--reset-paid-access", action="store_true",
+                        help="apply-billing-policy: apply a changed entitlement policy although accounts "
+                             "with paid access under the held one lose it until their next subscription event.")
     from .records import SCOPES
     parser.add_argument("--scope", action="append", choices=SCOPES,
                         help="Repeat to narrow issued-key scopes; billing requires an explicit billing:manage grant.")
@@ -576,6 +580,9 @@ def main(argv=None):
     if arguments.command == "apply-grants":
         print(json.dumps(apply_host_grants(arguments.config), sort_keys=True))
         return 0
+    if arguments.command == "apply-billing-policy":
+        from .billing_policy import run_command
+        return run_command(arguments.config, reset_paid_access=arguments.reset_paid_access)
     if arguments.command == "failures":
         # A read-only operator view. It loads no manifest, starts no server and
         # opens no provider connection, so it answers while the service is down.

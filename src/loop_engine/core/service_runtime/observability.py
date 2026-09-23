@@ -441,8 +441,48 @@ def web_asset_readiness():
                           "" if body else "web_asset_empty")
 
 
+#: The check that compares the stored billing policies with the running
+#: configuration. `billing_sessions_installed` says an adapter exists; only
+#: this check says whether the policy it enforces is the one stored.
+BILLING_POLICY_CHECK = "billing_policy_current"
+
+
+def billing_policy_readiness(measure):
+    """Report whether the stored billing policies serve the running configuration. Not required.
+
+    `measure` returns empty text when they do, or the code that names why not,
+    such as `session_policy_changed`; it is None when the host installs no
+    billing. The answer carries that code and never a digest.
+
+    Release 13 kept serving with checkout and the portal unavailable, because
+    the stored session policy held the digest an older release computed, and
+    `billing_sessions_installed` still passed. This check fails in that state.
+
+    It is not required, for three reasons. Every other route, including paid
+    access for accounts that already have it, still answers correctly, so by
+    the rule of `readiness_report` the machine must stay in service. Restarting
+    cannot repair it; only the operator command `apply-billing-policy` can. And
+    the release checks readiness right after the deploy and runs that command
+    after the check, so a required check would stop every release before the
+    step that repairs it. The release instead requires the capabilities record
+    to report checkout as the host file offers it once the command has run.
+    """
+    if measure is None:
+        return ReadinessCheck(BILLING_POLICY_CHECK, False, False, "billing_not_installed")
+    try:
+        code = measure()
+    except ServiceRuntimeError as error:
+        code = error.code
+    except Exception:
+        code = "billing_policy_unreadable"
+    if not isinstance(code, str):
+        code = "billing_policy_unreadable"
+    return ReadinessCheck(BILLING_POLICY_CHECK, False, not code, code)
+
+
 def readiness_report(*, config, provisioning, authentication_modes, policy,
-                     browser_identity_installed, billing_sessions_installed, billing_webhook_installed):
+                     browser_identity_installed, billing_sessions_installed, billing_webhook_installed,
+                     billing_policy=None):
     """Measure every dependency now and separate alive from ready.
 
     Alive is what the process can say about itself: this code is running and
@@ -469,7 +509,8 @@ def readiness_report(*, config, provisioning, authentication_modes, policy,
               catalogue_readiness(provisioning), web_asset_readiness(),
               ReadinessCheck("browser_identity_installed", False, bool(browser_identity_installed)),
               ReadinessCheck("billing_sessions_installed", False, bool(billing_sessions_installed)),
-              ReadinessCheck("billing_webhook_installed", False, bool(billing_webhook_installed))]
+              ReadinessCheck("billing_webhook_installed", False, bool(billing_webhook_installed)),
+              billing_policy_readiness(billing_policy)]
     return health_record(checks, policy)
 
 

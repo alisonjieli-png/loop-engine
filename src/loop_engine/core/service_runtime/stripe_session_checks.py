@@ -17,7 +17,8 @@ import time
 from types import SimpleNamespace
 
 from .billing_effects import (
-    BillingSessionEffectSpec, SESSION_EFFECT_KIND, SESSION_POLICY_KIND, EFFECT_UNKNOWN, EFFECT_CONFIRMED,
+    BillingSessionEffectSpec, SESSION_EFFECT_KIND, SESSION_POLICY_IDENTITY, SESSION_POLICY_KIND, EFFECT_UNKNOWN,
+    EFFECT_CONFIRMED,
 )
 from .billing_records import StripeEntitlementPolicy, TENANT_METADATA_KEY
 from .records import (
@@ -221,7 +222,7 @@ def quiet(function):
 def install_policy(held, adapter):
     """Install this adapter's own session policy over the one the fixture set."""
     with held.runtime._catalog.store() as store:
-        row = held.runtime._catalog.read(store, SESSION_POLICY_KIND, "stripe")
+        row = held.runtime._catalog.read(store, SESSION_POLICY_KIND, SESSION_POLICY_IDENTITY)
     return adapter.configure_policy(expected_version=row["record_version"])
 
 

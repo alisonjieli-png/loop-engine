@@ -207,6 +207,180 @@ issuer, signature, audience, expiry, and token profile before calling it.
 Principals are issued in process and bind their authentication source. They
 are not reconstructed from request JSON.
 
+## Billing policies after a release
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it.
+
+The host file names two billing policies. The service stores each once, with a
+digest, and compares the stored digest with the one the running release
+computes from the host file.
+
+```text
+Stored billing policies
+├── Entitlement policy, service_billing_policy/v1
+│   ├── Which provider prices grant paid access
+│   └── Every paid access record and payment notification names its digest
+└── Session policy, service_billing_session_policy/v2
+    ├── The session terms, a billing_session_terms/v1 document
+    ├── The digest of the entitlement policy it was checked against
+    └── Every checkout and portal session compares its digest with the running one
+```
+
+`loop-engine service configure` stores both once and cannot run again, because
+it also registers tenants. Release 13 added `allow_promotion_codes` to the
+session configuration. The version one digest covered every configuration
+field, so it changed although the host file did not, and checkout and the
+portal were unavailable with `session_policy_changed`. The health record still
+passed `billing_sessions_installed`, and nothing could store the new policy.
+
+### What the session digest covers
+
+The digest covers the session terms: every field of `StripeSessionConfiguration`
+except the ones `SESSION_OPERATION_FIELDS` in `stripe_sessions.py` names, each
+with its reason there.
+
+| Terms, which change the digest | Operational settings, which do not |
+|---|---|
+| Provider account, provider API version, test or live mode | The credential reference, which is checked against the account before every provider call |
+| Each plan: price, quantity, reference and label | The network switch and the session creation switch, read at every use |
+| The success, cancel and portal return addresses | The permission for loopback return addresses; the addresses themselves are terms |
+| The portal configuration and whether a discount code is accepted | The timeout, the response size limit, the reconciliation window and the version of the host block |
+
+The reason is what a digest decides. A customer's selection carries the
+digest, so a changed operational setting refused an open selection with
+`session_selection_changed`. Each checkout effect record names the digest too,
+so after a changed timeout an uncertain checkout could no longer be reconciled
+under its own idempotency key, and a new request would open a second session.
+Neither setting changes what a customer is offered, what they are charged or
+where they return. A field a release adds is a term until someone names it
+operational with a reason, so a field nobody sorted can only make the digest
+stricter.
+
+Other systems draw the same line. The payment provider compares only the
+parameters of a repeated idempotent request, not how the client sent it. A
+Kubernetes object raises its generation only when its specification changes,
+and a controller that reports an older observed generation has drifted.
+Terraform compares the desired configuration with the recorded state and
+applies a change only when asked, under a lock. Here the digest is the
+specification, the health check reports drift, and the operator command
+applies the change with the held record version as the lock.
+
+`each_term_changes_the_policy_digest` changes the price, the quantity, the
+plan reference and label, the account, the three return addresses, the portal
+configuration, test or live mode, the discount code choice and the provider
+version one at a time, and each must change the digest.
+`each_operational_setting_leaves_the_policy_digest_unchanged` does the reverse
+for every operational setting.
+
+### Version two and one record for each version
+
+The version two record holds the terms alone. `BillingSessionPolicyDefinition`
+refuses a policy that is not a `billing_session_terms/v1` document, so the
+version one shape, a whole host configuration, is refused with
+`unsupported_session_policy` rather than read as terms.
+
+Each record version is stored under its own identity,
+`SESSION_POLICY_IDENTITY` in `billing_effects.py`. A release reads and writes
+only the record of its own version. It never reads a version one record and
+never overwrites one. Release 15 and earlier read the version one record, so a
+rollback to one of them finds the record it left and can repair it with its own
+writer. The first run of the command below on a deployment writes the version
+two record beside the version one record, and reports the older one under
+`other_record_versions`.
+
+### The operator command
+
+`loop-engine service apply-billing-policy --config /data/host.json` applies
+both policies of the host file again, through the existing writers.
+
+- It loads the host file through the loader the service itself uses.
+- It reads the held record version of each policy and names it as the exact
+  expected revision of `configure_billing_policy` and `configure_policy`. A
+  writer that changed a record in between is refused with
+  `billing_policy_revision_required` or `session_policy_revision_required`,
+  not overwritten.
+- It refuses a host file whose session prices are not all in its own
+  entitlement policy, `session_price_not_in_billing_policy`, before anything is
+  written.
+- It refuses an entitlement policy change while any account holds paid access
+  under the held policy, with `billing_policy_change_ends_paid_access`. Each
+  paid access record names the digest it was decided under, so a changed
+  entitlement policy reads it as no access until that account's next
+  subscription notification. `--reset-paid-access` applies the change anyway,
+  and the record counts those accounts in `paid_access_ended_for_accounts`.
+  The release workflow never passes it.
+- It prints one `service_billing_policy_application/v1` record: for each
+  policy the held and the applied record version and digest and whether it
+  changed, `every_installed_policy_current`, and `checkout_expected` and
+  `portal_expected`, which say what the host file offers before any stored
+  state is read. It prints no secret, resolves no credential, calls no
+  provider and registers nothing.
+- It exits with status one when a policy is still not current afterwards.
+- A refusal it declares, one of `APPLICATION_REFUSALS` in `billing_policy.py`,
+  prints a `service_billing_policy_refusal/v1` record with its code and exits
+  with status one. The `loop-engine service` wrapper reports any other failure
+  by one generic code, so without this record an operator could not read why
+  the command stopped.
+- A second run changes nothing.
+
+### The health check
+
+`billing_policy_current` passes only when three facts hold. The stored
+entitlement policy is the one the host file names; otherwise every payment
+notification is refused with `billing_policy_mismatch`. The stored session
+policy is the one the running release computes. The session policy was stored
+against the entitlement policy stored now. The last two are the comparison
+every checkout and portal session makes, and both answers come from the same
+code. The check reports a code and never a digest: `billing_policy_changed`,
+`billing_policy_not_installed`, `session_policy_changed`,
+`session_record_unavailable`, or `billing_not_installed` for a host without
+billing.
+
+The check is reported and not required, for three reasons. Every other route,
+paid access for accounts that already have it included, still answers
+correctly, so by the rule of `readiness_report` the machine stays in service.
+Restarting cannot repair it; only the operator command can. And the release
+checks readiness right after the deploy and runs the command after that check,
+so a required check would stop every release before the step that repairs it.
+The release instead requires the capabilities record to report checkout and
+the portal as the host file offers them.
+
+### The release step
+
+The guarded workflow runs the command on the one started Machine right after
+the grant step, through the Machines API exec call and `setpriv`, as the grant
+step does. It requires exit status zero and one record whose policies are
+current, with no paid access ended, no tenant registered and no provider call.
+It then requires `billing.checkout` and `billing.portal` in the live
+capabilities record to equal `checkout_expected` and `portal_expected`, and
+ends with the shared readiness gate. `tools/test_fly_deployment.py` fails when
+the step is removed, moved before the grant step or the deploy, runs another
+command, passes `--reset-paid-access`, drops a gate, reads the capabilities
+before the command, reaches another Machine or opens a remote shell. It runs
+the step's own filters over what the real command prints and what the real
+service serves, and the release 13 state must fail them.
+`tools/check_fly_service_container.py` stores the release 13 state in the
+image, runs the command as root the way the exec call does, and requires the
+health record to pass afterwards and a second run to change nothing.
+
+| Guard | Removed-guard control |
+|---|---|
+| The health check names a drifted policy | `removed_billing_policy_health_check_is_detected` |
+| The command stores the session policy it reports | `removed_session_policy_application_is_detected` |
+| The held version is the expected revision | `removed_expected_revision_is_detected` |
+| The price check comes before any write | `removed_price_check_before_any_write_is_detected` |
+| Paid access ends only when the operator says so | `removed_paid_access_guard_is_detected` |
+| A return address is a term | `a_return_address_left_out_of_the_terms_is_detected` |
+| A timeout is not a term | `a_timeout_counted_as_a_term_is_detected` |
+| This release never reads the version one record | `reading_the_version_one_slot_is_detected` |
+
+The checks live in `billing_policy_checks.py` and run with
+`stripe_sessions.self_test()`. They use a real host file, the real entry point,
+the served routes through the application's own interface and a real store.
+The session transport and the secret resolver are replaced by recorders, so a
+check shows that nothing reached either.
+
 ## Customer-owned client credentials
 
 `ServiceAccessAdministration` applies either the existing administrator policy
