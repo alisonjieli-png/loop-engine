@@ -226,7 +226,12 @@ until the takeover session committed the work on September 20, 2026.
    dated handoff, or the decision table below. The owner, September 20, 2026,
    in the evening, objected to "asking me to make decisions when you can make
    your own judgement decisions or A/B test". September 22, 2026: "Use your
-   best judgement, document it".
+   best judgement, document it". September 23, 2026: "You need to stop asking
+   me for stupid 'decisions for you', your just is to use best practices, or
+   implemeent necessary tools to collect data then make a decision. We don't
+   need real paid device for testing." A report therefore ends with the
+   decisions made and their reasons, never with a list of questions; where
+   data is missing, build the tool that collects it, then decide.
 5. **Never tell the owner to rotate, revoke or re-create a credential.** This
    covers a credential pasted into a chat window and a full secret live
    payment key. State a genuine new risk once, store the credential in the
