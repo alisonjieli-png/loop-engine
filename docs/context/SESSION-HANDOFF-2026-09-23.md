@@ -107,7 +107,7 @@ Each line ran in its own detached worktree under `/home/username/.le-integration
 Eleven lines reached `main` at the handoff; four stay patches. Full CI passed in
 all 12 stages on the first merged tree (`b64aa56a`: tools 1,101 tests, the
 self-test, the browser suite and conformance); on the final tree every stage
-passed except the flaky check named in item 0 below.
+passed except the flaky check repaired in item 0 below.
 The table in [the line register](../../artifacts/handoff-2026-09-23/LINES.md)
 gives each line's commit, its own handoff file, whether it reached `main`, and
 where its patch is kept when it did not.
@@ -127,14 +127,13 @@ where its patch is kept when it did not.
 
 ## Ordered work that remains
 
-0. Repair the flaky self-test check
-   `a_request_in_flight_finishes_on_the_view_it_started_with` in
-   `src/loop_engine/core/service_runtime/catalogue_serving_checks.py`. It is
-   older than this session: run alone it failed 1 of 6 times on untouched
-   `243a8811` and 1 of 3 times on the handoff tree. Full CI passed it on
-   `b64aa56a` and failed it on `9c57c9a4`, whose other 11 stages all passed.
-   A red run blocks a release, so fix the race (a catalogue view swap against
-   a request in flight) before releasing, not by retrying.
+0. Done at the handoff: the self-test check
+   `a_request_in_flight_finishes_on_the_view_it_started_with` failed about one
+   run in three, on untouched `243a8811` and in GitHub CI on main, because the
+   served catalogue refresher (every 50 milliseconds) could install the newest
+   view before the old view was read or while the request ran. The check now
+   holds the refresher's lock while it runs; it then passed 10 of 10 runs in a
+   row and 6 of 6 run at once. Watch the next CI runs on `main` to confirm.
 1. Merge the website lines in this order, each checked for line survival after
    the merge (every line a branch added is still present) and then the full CI
    set: release 21 (terms at `/terms` and the traced logo), then the header,

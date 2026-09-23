@@ -12,7 +12,7 @@ including an item published afterwards.
 """
 from __future__ import annotations
 
-from contextlib import redirect_stdout
+from contextlib import nullcontext, redirect_stdout
 import io
 import json
 from pathlib import Path
@@ -132,7 +132,19 @@ def _serving_checks(check, root):
 
 
 def _mid_flight_checks(check, case, served, client):
-    """A request that started before a swap is answered wholly from the view it started with."""
+    """A request that started before a swap is answered wholly from the view it started with.
+
+    The served refresher swaps in the newest view every 50 milliseconds. Its lock is held for these
+    checks, so it cannot install the third release before the old view is read or while the request
+    runs; without that, the check failed about one run in three for the refresher's timing, not for
+    the rule it names (CI on main, September 23, 2026).
+    """
+    refresher = getattr(served.provisioning, "catalogue_refresher", None)
+    with (refresher._lock if refresher is not None else nullcontext()):
+        _mid_flight_checks_while_held(check, case, served, client)
+
+
+def _mid_flight_checks_while_held(check, case, served, client):
     third = case.publish([case.line("clean_supplier_names", "# Clean supplier names\nalpha three\n",
                                     attributes={"domain": ["data"]})])
     old_view = served.provisioning.current_view()
