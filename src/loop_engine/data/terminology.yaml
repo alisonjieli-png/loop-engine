@@ -833,11 +833,13 @@ vocabulary:
     kind: technical_word
     definition: >-
       The provisioning view that serves authorized material to one harness
-      assignment, and the family of intelligence material shaped to drop
-      into a working directory as files a standard harness already knows
-      how to read, such as SKILL.md, AGENTS.md, plugin declarations and
-      protocol server configurations, for harnesses such as Codex,
-      OpenCode and Claude Code. It is a view and a family, not a fifth
+      assignment, and the family of intelligence material made of any
+      file a standard harness picks up from its working directory or its
+      step configuration: instruction files such as AGENTS.md and
+      CLAUDE.md, skills with their scripts, references and assets, tools
+      and reusable code, subagent and command definitions, hooks, plugin
+      declarations and protocol server configurations, for harnesses such
+      as Codex, OpenCode, Claude Code and Pi. It is a view and a family, not a fifth
       persistent layer, and it is not the Intelligence Library, which is the
       searchable view every Loop uses.
     pattern: '\bHarness Intelligence\b'

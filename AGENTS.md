@@ -324,7 +324,7 @@ direction. Each stands until the owner changes it.
 | Public positioning | The category line is harness and agent optimized operation, the owner's phrase. |
 | Hosting plans | Stay on the free Supabase and Resend plans. The owner, September 22, 2026: "Why do we need supabase and resend paid plans? I thought we don't need that?" The free limits (a project pauses after a week without activity; 100 emails a day) fit an invited beta; engineering keeps the identity project active and watches the email cap, and asks again only when usage nears a limit. |
 | Operator and contact | Baltor.AI, 1428 Bryn Mawr St, Saxton, PA 16678, United States, as the owner gave on September 22, 2026. The privacy notice names it. |
-| A library of 10,000 items | The owner, September 22, 2026: 10,000 fully searchable, retrievable, indexed harness intelligence files; material without a licence that allows direct copying is used only as inspiration for an original rewrite; reviews by Claude Code, Kimi, GLM, other Ollama models and Codex models; managed releases of new files; user settings with good defaults. Engineering's plan is roadmap step S-6.40 and the steps it names. |
+| A library of 100,000 harness files | The owner, September 22, 2026: 10,000 fully searchable, retrievable, indexed harness intelligence files; material without a licence that allows direct copying is used only as inspiration for an original rewrite; reviews by Claude Code, Kimi, GLM, other Ollama models and Codex models; managed releases of new files; user settings with good defaults. Later the same evening: "we need to move towards a fully working SaaS, better UI/UX, and 100K harness files". So 10,000 is the first milestone and 100,000 the target, counted as distinct approved packages of any file type a harness reads, as the Intelligence rules define harness intelligence. Engineering's plan is roadmap step S-6.40 and the steps it names. |
 
 ## Pre-launch version policy
 
@@ -565,10 +565,12 @@ Intelligence families
 │   ├── built for the Loop runtime
 │   └── bodies live in the four persistent layers
 ├── Harness intelligence
-│   ├── built to drop into a working directory as files a standard
-│   │   harness already knows how to read: SKILL.md, AGENTS.md, plugin
-│   │   declarations, protocol server configurations
-│   ├── for harnesses such as Codex, OpenCode and Claude Code
+│   ├── any file a standard harness picks up from its working directory
+│   │   or its step configuration: instruction files such as AGENTS.md
+│   │   and CLAUDE.md, skills with their scripts, references and assets,
+│   │   tools and reusable code, subagent and command definitions, hooks,
+│   │   plugin declarations and protocol server configurations
+│   ├── for harnesses such as Codex, OpenCode, Claude Code and Pi
 │   └── bodies keep their own identity in the harness_local source layer,
 │       never a second copy of a body a Loop-native layer owns
 └── Open Knowledge Format intelligence
@@ -576,6 +578,15 @@ Intelligence families
     ├── shaped by no harness and no runtime
     └── classified into a persistent layer by meaning
 ```
+
+The owner, September 22, 2026: "when we say harness intelligence, we mean
+any type of file that can be placed into a harness working directory and
+pickedup by the harness, not just MD files, it can also be tools, skills,
+agents.md, codex.md, etc". A served item is therefore a package of one or
+more files of any type a harness reads, each file with its own digest and
+its own place in the step's working directory or configuration. Today the
+served items are single Markdown files; multi-file packages and their
+placement are roadmap work (S-6.62 and S-6.44).
 
 The private beta serves harness intelligence first: the drop-in files a
 customer's existing harness can use immediately. Loop-native and Open
