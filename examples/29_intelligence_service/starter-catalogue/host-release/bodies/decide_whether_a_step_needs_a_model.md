@@ -40,4 +40,4 @@ A pipeline sends every phone number to a large model and asks it to format the n
 - `src/loop_engine/strings/question_engine.py`: the question forms named `model_necessity`, `implementation_choice`, `train_or_call`, `data_sufficiency`, `minimum_context`, `context_boundary_probe`, `efficiency_check`, `step_confidence` and `reuse_before_reasoning`.
 - `src/loop_engine/strings/interrogation.py`: the integration question about turning a repeated answer into a deterministic function.
 
-Licence: MIT. Compiled from revision d893bba.
+Licence: MIT. Compiled from revision 9cec9d7.

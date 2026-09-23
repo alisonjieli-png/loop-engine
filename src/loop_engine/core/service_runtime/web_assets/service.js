@@ -36,7 +36,12 @@
     waiting:{label:"Join the waiting list", href:"/signup#waiting-list", note:"Accounts open in small groups. Join the waiting list and we will write to you when your turn comes."}};
   const paymentStates = {
     open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited accounts stay free."},
+    invitation_only:{badge:"Invitation only", note:"Accounts open by invitation. Invited accounts stay free. A signed-in account can subscribe from its account page when checkout is available.", teaser:"Accounts open by invitation, and invited accounts stay free."},
     closed:{badge:"Payment not open", note:"Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.", teaser:"Payment is not open yet. Nothing on this page charges you today."}};
+  /* One public payment state from two reported facts. While account creation is closed the page says invitation only, whatever checkout reports,
+     so it never offers the waiting list beside "Payment open". Payment is open only when account creation and checkout are both open.
+     The account page keeps its own checkout and portal buttons, which follow the session options of the signed-in account. */
+  const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : checkout === true ? "open" : "closed";
   const applyAccessState = open => {
     const state = open === true ? accessStates.open : accessStates.waiting;
     for (const id of ["hero-primary", "pricing-primary", "closing-primary"]) {
@@ -45,8 +50,8 @@
     }
     $("hero-access-note").textContent = state.note;
   };
-  const applyPaymentState = open => {
-    const state = open === true ? paymentStates.open : paymentStates.closed;
+  const applyPaymentState = name => {
+    const state = paymentStates[name] || paymentStates.closed;
     $("pricing-state").textContent = state.badge; $("pricing-payment-state").textContent = state.note;
     $("pricing-teaser-note").textContent = state.teaser;
   };
@@ -59,7 +64,7 @@
     const state = open === true ? clientAccessStates.open : clientAccessStates.closed;
     $("offer-usage-keys").textContent = state.offer; $("plan-keys-detail").textContent = state.plan;
   };
-  applyAccessState(false); applyPaymentState(false); applyClientAccessState(false);
+  applyAccessState(false); applyPaymentState("closed"); applyClientAccessState(false);
   /* The benefit list on the homepage. Every detail is written in the page source, so a reader who never runs this
      file sees all six. Once this file runs, one benefit is open at a time. Pointing at a title, moving keyboard focus
      to it and pressing it each open that one and close the others, so a touch screen and a keyboard reach the same
@@ -529,7 +534,7 @@
     /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */
     if (value.record_type === CAPABILITIES_RECORD_TYPE) {
       applyAccessState(value.website.registration_available === true);
-      applyPaymentState(value.billing.checkout === true);
+      applyPaymentState(publicPaymentState(value.website.registration_available === true, value.billing.checkout === true));
       applyClientAccessState(value.website.client_access_available === true);
       if (value.website.browser_identity_available) openBrowserIdentity();
     }

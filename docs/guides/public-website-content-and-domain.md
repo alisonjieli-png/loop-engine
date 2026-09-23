@@ -201,12 +201,23 @@ When the service reports that account creation is open, the action reads
 waiting list" and leads to `/signup#waiting-list`, where the page explains
 that accounts open in small groups. Before the service answers, and if it
 never answers, the page keeps the careful state. The same rule drives the
-payment state on the pricing view, which reads `billing.checkout`, and the
 personal-key wording on the homepage and the pricing view, which reads
 `website.client_access_available`. While that field is false, both places say
 that creating and revoking a key for each device is being prepared and that
 the person who runs the service issues the key. The deployed release reports
 it as false, so the page may not state the control as working today.
+
+The payment state on the pricing view reads two fields, so the account action
+and the payment wording come from one state. While
+`website.registration_available` is false the pricing view says "Invitation
+only", whatever `billing.checkout` reports: accounts open by invitation,
+invited accounts stay free, and a signed-in account can subscribe from its
+account page when checkout is available. A visitor therefore never reads "Join
+the waiting list" beside "Payment open". The view says "Payment open" only
+when account creation and checkout are both open, and "Payment not open" when
+account creation is open and checkout is not. The account page keeps its own
+checkout and portal buttons, which follow the session options of the signed-in
+account.
 
 The page reads those three fields only from the record version it was written
 against, `service_capabilities/v1`. Any other record version keeps the careful
@@ -217,9 +228,10 @@ instead of "Checking payment".
 
 `tools/check_service_workspace.mjs` holds every state as a named check. Each
 state is produced by a real service on its own loopback origin, not by a
-rewritten reply, and nine removed-guard controls prove that a page which
-ignores the reported state, or which ignores the record version, fails a
-named check.
+rewritten reply, and removed-guard controls prove that a page which ignores a
+reported state, ignores the record version, says "Payment open" beside the
+waiting list or ignores account creation when checkout is open fails a named
+check.
 
 Do not position Baltor as a context-layer product. Context is one input to
 work whose execution can also use an existing function, a small decision

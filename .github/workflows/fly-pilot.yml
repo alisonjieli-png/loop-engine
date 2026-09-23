@@ -210,6 +210,44 @@ jobs:
             "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null
           echo "The packaged grants were applied on Machine ${machine}, and service readiness passed again."
 
+      - name: Apply the host billing policy on the one Machine
+        if: inputs.operation == 'deploy'
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          BILLING_POLICY_COMMAND: setpriv --reuid=65534 --regid=65534 --clear-groups loop-engine service apply-billing-policy --config /data/host.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Each release computes its billing policy digests from the host
+          # file, and checkout and the customer portal stay unavailable while
+          # the stored digests differ. Fly release 13 served for a day with
+          # both unavailable, because the one command that stored them,
+          # configure, cannot run twice. This command stores the policies of
+          # the running release, naming each record version it read as the
+          # expected one. It registers nothing and calls no provider, and on
+          # an unchanged host it changes nothing. It never passes
+          # --reset-paid-access, so an entitlement policy change that would end
+          # paid access stops the release here for an operator to decide. It
+          # goes through the Machines API exec call and setpriv like the grant
+          # step, and tools/check_fly_service_container.py ran the same command
+          # against this image before it was published.
+          machine="$(flyctl machine list --app "${FLY_APP}" --json \
+            | jq -e -r 'if type == "array" and length == 1 and .[0].state == "started" then .[0].id else error("expected exactly one started Machine") end')"
+          [[ "${machine}" =~ ^[0-9a-f]{8,32}$ ]] || exit 1
+          applied="$(flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json)"
+          # The record holds record versions, digests and, on a refusal, its
+          # code. It holds no secret, and it is the release record's evidence.
+          printf '%s\n' "${applied}" | jq -r '.stdout // ""'
+          printf '%s\n' "${applied}" | jq -e '(.exit_code // 0) == 0 and (((.stdout // "") | fromjson?) // null | .record_type == "service_billing_policy_application/v1" and .every_installed_policy_current == true and .paid_access_ended_for_accounts == 0 and .tenants_registered == 0 and .remote_accounts_created == false and .provider_calls == 0 and (.checkout_expected | type == "boolean") and (.portal_expected | type == "boolean"))' >/dev/null
+          # The live capabilities record must now report checkout and the
+          # portal exactly as the host file offers them.
+          expected="$(printf '%s\n' "${applied}" | jq -e -c '.stdout | fromjson | {checkout: .checkout_expected, portal: .portal_expected}')"
+          curl --fail --silent --show-error --max-time 20 "https://${FLY_APP}.fly.dev/api/v1/capabilities" \
+            | jq -e --argjson expected "${expected}" '.result.record_type == "service_capabilities/v1" and .result.billing.checkout == $expected.checkout and .result.billing.portal == $expected.portal' >/dev/null
+          curl --fail --silent --show-error --max-time 20 \
+            "https://${FLY_APP}.fly.dev/api/v1/health" | jq -e "${SERVICE_READINESS_GATE}" >/dev/null
+          echo "The host billing policy was applied on Machine ${machine}; checkout and the portal are reported as the host file offers them, and service readiness passed again."
+
       - name: Remove registry login from the temporary runner
         if: always() && inputs.operation == 'deploy'
         env:

@@ -44,6 +44,7 @@ const holdDigestScript=()=>{
     return value;};
 };
 const program=`from contextlib import ExitStack
+from dataclasses import replace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json,sys,time
@@ -63,7 +64,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 import jwt
 with ExitStack() as stack:
     root=Path(stack.enter_context(TemporaryDirectory(prefix="service-browser-")))
-    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir(); (root/"signups").mkdir(); (root/"browse").mkdir()
+    (root/"intelligence").mkdir(); (root/"billing").mkdir(); (root/"accounts").mkdir(); (root/"signups").mkdir(); (root/"browse").mkdir(); (root/"selling").mkdir()
     held=prepared(root/"intelligence")
     factory=lambda config:ServiceHttpApplication(held.runtime,held.provisioning,config,access_administration=held.administration)
     base,_=stack.enter_context(running_http(held,application_factory=factory,display_name="Baltor"))
@@ -86,6 +87,10 @@ with ExitStack() as stack:
     signups=HttpDomainFixture(root/"signups",operator_access=False)
     signup_identity=BrowserIdentityAdapter(signups.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-signups",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",starter_bindings=(signups.bindings["skill.alpha"],),transport=lambda _:user)
     signup_base,_=stack.enter_context(running_http(signups,application_factory=lambda config:ServiceHttpApplication(signups.runtime,signups.provisioning,config,browser_identity=signup_identity),display_name="Baltor"))
+    # A sixth real service that opens email sign-up and takes payment, so the one public state that says payment is open is compared with a service that reports both, not with a rewritten reply.
+    selling=fixture(root/"selling")
+    selling_identity=BrowserIdentityAdapter(selling.runtime,BrowserIdentityConfiguration(provider,"fixture:publishable","browser-selling",registration_enabled=True,email_signup_enabled=True,allow_network=True,allow_loopback=True),lambda _:"sb_publishable_browser_fixture",transport=lambda _:user)
+    checkout_signup_base,_=stack.enter_context(running_http(selling,application_factory=lambda config:replace(_application(selling,config),browser_identity=selling_identity),display_name="Baltor"))
     # A fifth real service whose catalogue spans the persistent groups, so browsing is compared with a real
     # reply from a real service. One of the four groups is left empty on purpose, one item is granted
     # without its body, one item names no licence, and two items name the development tool they were
@@ -106,7 +111,7 @@ with ExitStack() as stack:
         browse.bindings[item.identity]=ProvisioningItemBinding.from_item(item)
     browse.runtime.set_grants("alpha",tuple(ProvisioningGrant("alpha",browse.bindings[draft.identity],allowed) for draft,_body,allowed in published))
     browse_base,_=stack.enter_context(running_http(browse,display_name="Baltor"))
-    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key}),flush=True)
+    print(json.dumps({"base":base,"token":held.keys["alpha"].key,"admin_token":held.admin_key.key,"billing_base":billing_base,"billing_token":billing.keys["alpha"].key,"account_base":account_base,"signup_base":signup_base,"checkout_signup_base":checkout_signup_base,"browse_base":browse_base,"browse_token":browse.keys["alpha"].key,"identity_origin":provider,"identity_token":identity_token,"identity_user":user,"account_admin_token":account_operator.key}),flush=True)
     sys.stdin.readline()
 `;
 const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
@@ -272,7 +277,7 @@ async function checkRefusedRecord(context,base,note,wrong,mutation){
   if(!closed)await checkShownRecipe(page,base,wrong.served,wrong.served.recipes.find(recipe=>recipe.id===wrong.id),note);
   await page.close();return state;
 }
-const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.browse_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
+const localOnly=route=>{const url=route.request().url(); if([fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base,fixture.identity_origin].some(origin=>url.startsWith(origin+"/")))route.continue(); else {network.push(new URL(url).origin);route.abort();}};
 /* Planted values for the known-wrong records. Each is made for this run. The key in the standard base64 alphabet is broken by plus signs into pieces that the
    other alphabet never reports, and the short literal, the number and the shaped name are what a person could type by mistake. The header and the environment
    name that carry the short literal hold no word that names a credential, so only the rule for their table refuses them. */
@@ -664,6 +669,11 @@ try {
       unfinished:unfinished?unfinished.innerText.split(". ")[0]+".":null};});};
   const sameWaitlistClaims=(claims,want)=>claims.link===want.offered&&claims.form===want.offered&&claims.signup_link===want.offered
     &&claims.pending_note===!want.offered&&claims.unfinished===want.unfinished;
+  /* Payment wording follows two reported facts. While account creation is closed the pricing view says invitation only,
+     whatever checkout reports, so the page never offers the waiting list beside "Payment open". Payment is open only when
+     account creation and checkout are both open; with account creation open and no checkout, payment is not open. */
+  const invitationOnly=(actions,payment)=>sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Invitation only"
+    &&["by invitation","stay free","account page"].every(words=>payment.shown.includes(words));
   const carefulState=async (opened,note,name)=>{
     const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened);
     note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed),{actions,payment,keys});
@@ -674,7 +684,7 @@ try {
       note("public_action_offers_the_waiting_list_when_account_creation_is_closed",sameAccess(actions,expectedAccess.waiting),{actions});
       note("personal_key_claim_is_held_back_when_the_service_reports_no_client_access",sameKeys(keys,keyWording.closed),keys);
       const payment=await paymentState(opened);
-      note("pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),payment);
+      note("pricing_view_says_invitation_only_while_account_creation_is_closed",invitationOnly(actions,payment),{actions,payment});
       const claims=await waitlistClaims(opened);
       note("unfinished_work_names_the_waiting_list_form_while_the_service_offers_no_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
     }},
@@ -689,10 +699,16 @@ try {
     open_registration:{origin:"signup_base",run:async (opened,note)=>{
       const actions=await accessActions(opened);
       note("public_action_offers_account_creation_when_the_service_reports_it",sameAccess(actions,expectedAccess.open),{actions});
+      const payment=await paymentState(opened);
+      note("pricing_view_says_payment_is_not_open_when_account_creation_is_open_without_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),{actions,payment});
     }},
     open_checkout:{origin:"billing_base",run:async (opened,note)=>{
-      const payment=await paymentState(opened);
-      note("pricing_view_says_payment_is_open_when_the_service_reports_checkout",payment.badge==="Payment open"&&payment.shown.includes("Payment is open"),payment);
+      const actions=await accessActions(opened),payment=await paymentState(opened);
+      note("pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed",invitationOnly(actions,payment),{actions,payment});
+    }},
+    open_sales:{origin:"checkout_signup_base",run:async (opened,note)=>{
+      const actions=await accessActions(opened),payment=await paymentState(opened);
+      note("pricing_view_says_payment_is_open_when_account_creation_and_checkout_are_open",sameAccess(actions,expectedAccess.open)&&payment.badge==="Payment open"&&payment.shown.includes("Payment is open"),{actions,payment});
     }},
     client_access:{origin:"account_base",run:async (opened,note)=>{
       const keys=await keyState(opened);
@@ -704,25 +720,32 @@ try {
       run:(opened,note)=>carefulState(opened,note,"unsupported_capabilities_version_keeps_the_careful_state_over_checkout")},
     unsupported_version_client_access:{origin:"account_base",version:"service_capabilities/v2",
       run:(opened,note)=>carefulState(opened,note,"unsupported_capabilities_version_keeps_the_careful_state_over_client_access")}};
-  const publicOrigins=["base","signup_base","billing_base","account_base"];
+  const publicOrigins=["base","signup_base","billing_base","account_base","checkout_signup_base"];
   const reported=[];
   for(const name of publicOrigins){const value=(await (await page.request.get(fixture[name]+"/api/v1/capabilities")).json()).result;reported.push({name,record_type:value.record_type,registration:value.website.registration_available,checkout:value.billing.checkout,client_access:value.website.client_access_available});}
   check("the_public_states_are_reported_by_real_services",JSON.stringify(reported)===JSON.stringify([
     {name:"base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:false},
     {name:"signup_base",record_type:"service_capabilities/v1",registration:true,checkout:false,client_access:false},
     {name:"billing_base",record_type:"service_capabilities/v1",registration:false,checkout:true,client_access:false},
-    {name:"account_base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:true}]),{reported});
+    {name:"account_base",record_type:"service_capabilities/v1",registration:false,checkout:false,client_access:true},
+    {name:"checkout_signup_base",record_type:"service_capabilities/v1",registration:true,checkout:true,client_access:false}]),{reported});
   for(const name of Object.keys(scenarios)){
     const scenario=scenarios[name],{page:opened}=await openPublic(fixture[scenario.origin],null,scenario.version);
     await scenario.run(opened,check);await opened.close();
   }
   const versionGate="if (value.record_type === CAPABILITIES_RECORD_TYPE) {";
+  const paymentCall="applyPaymentState(publicPaymentState(value.website.registration_available === true, value.billing.checkout === true));";
+  const paymentRule='const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : checkout === true ? "open" : "closed";';
   const waitlistGate="const open = value?.record_type === CAPABILITIES_RECORD_TYPE && value.website?.waitlist_available === true;";
   const publicControls=[
     {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_action_offers_the_waiting_list_when_account_creation_is_closed"]},
     {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_action_offers_account_creation_when_the_service_reports_it"]},
-    {name:"always_say_payment_is_open",scenario:"closed_service",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(true);",expected:["pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout"]},
-    {name:"never_say_payment_is_open",scenario:"open_checkout",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(false);",expected:["pricing_view_says_payment_is_open_when_the_service_reports_checkout"]},
+    {name:"always_say_payment_is_open",scenario:"closed_service",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_says_invitation_only_while_account_creation_is_closed"]},
+    {name:"always_say_payment_is_open_once_checkout_is_open",scenario:"open_checkout",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed"]},
+    {name:"ignore_account_creation_when_checkout_is_open",scenario:"open_checkout",find:paymentRule,replacement:'const publicPaymentState = (registration, checkout) => checkout === true ? "open" : "closed";',expected:["pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed"]},
+    {name:"ignore_checkout_when_account_creation_is_open",scenario:"open_registration",find:paymentRule,replacement:'const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : "open";',expected:["pricing_view_says_payment_is_not_open_when_account_creation_is_open_without_checkout"]},
+    {name:"never_say_payment_is_open",scenario:"open_sales",find:paymentCall,replacement:"applyPaymentState(publicPaymentState(value.website.registration_available === true, false));",expected:["pricing_view_says_payment_is_open_when_account_creation_and_checkout_are_open"]},
+    {name:"always_say_invitation_only",scenario:"open_sales",find:paymentCall,replacement:'applyPaymentState("invitation_only");',expected:["pricing_view_says_payment_is_open_when_account_creation_and_checkout_are_open"]},
     {name:"always_claim_personal_keys",scenario:"closed_service",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(true);",expected:["personal_key_claim_is_held_back_when_the_service_reports_no_client_access"]},
     {name:"never_claim_personal_keys",scenario:"client_access",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(false);",expected:["personal_key_claim_appears_when_the_service_reports_client_access"]},
     {name:"ignore_the_capabilities_record_version",scenario:"unsupported_version_registration",find:versionGate,replacement:"if (true) {",expected:["unsupported_capabilities_version_keeps_the_careful_state_over_registration"]},

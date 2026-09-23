@@ -18,7 +18,19 @@ from .records import BILLING_MANAGE_SCOPE, ServiceRuntimeError, canonical, diges
 from .runtime import BILLING_POLICY, CUSTOMER, ServiceRuntime
 
 SESSION_POLICY_KIND = "service_billing_session_policy"
-SESSION_POLICY_VERSION = "service_billing_session_policy/v1"
+#: Version two holds the session terms alone, a `billing_session_terms/v1`
+#: document: what a customer is offered, what they are charged and where they
+#: return. Version one held every field of the host session configuration, so a
+#: changed timeout, or a field a release added with a default that changes
+#: nothing, changed its digest and stopped checkout until the policy was
+#: installed again. A release reads only the version it writes.
+SESSION_POLICY_VERSION = "service_billing_session_policy/v2"
+SESSION_TERMS_VERSION = "billing_session_terms/v1"
+#: Each record version has its own slot. A release reads and writes only the
+#: slot of the version it understands, so it never overwrites a record that an
+#: older release still reads, and a rollback finds its own record where it left
+#: it. The version one slot was the bare provider name, "stripe".
+SESSION_POLICY_IDENTITY = ("stripe", SESSION_POLICY_VERSION)
 SESSION_EFFECT_KIND = "service_billing_session_effect"
 SESSION_EFFECT_VERSION = "service_billing_session_effect/v1"
 EFFECT_SPEC_VERSION = "billing_session_effect_spec/v1"
@@ -47,6 +59,10 @@ class BillingSessionPolicyDefinition:
         value = json.loads(self.policy_json)
         if not isinstance(value, dict):
             raise ServiceRuntimeError("invalid_session_policy")
+        # Only a terms document is a policy. A whole host configuration, the
+        # shape version one stored, is refused rather than read as terms.
+        if value.get("record_type") != SESSION_TERMS_VERSION:
+            raise ServiceRuntimeError("unsupported_session_policy")
         prices = tuple(self.price_ids)
         if len(prices) != len(set(prices)):
             raise ServiceRuntimeError("duplicate_session_price")
@@ -143,7 +159,7 @@ class BillingSessionEffectStore:
                 raise ServiceRuntimeError("session_price_not_in_billing_policy")
             wanted = {"record_type": SESSION_POLICY_VERSION, "policy": json.loads(definition.policy_json),
                       "policy_digest": definition.digest, "billing_policy_digest": financial["policy_digest"]}
-            held = self._catalog.read(store, SESSION_POLICY_KIND, "stripe")
+            held = self._catalog.read(store, SESSION_POLICY_KIND, SESSION_POLICY_IDENTITY)
             if held is not None:
                 if self._payload(held, SESSION_POLICY_VERSION) == wanted:
                     return {"committed": True, "record_version": held["record_version"], "policy_digest": definition.digest}
@@ -151,12 +167,27 @@ class BillingSessionEffectStore:
                     raise ServiceRuntimeError("session_policy_revision_required")
             elif expected_version is not None:
                 raise ServiceRuntimeError("session_policy_revision_required")
-            row = self._catalog.record(SESSION_POLICY_KIND, "stripe", wanted)
+            row = self._catalog.record(SESSION_POLICY_KIND, SESSION_POLICY_IDENTITY, wanted)
             self._catalog.commit(store, (row,), (self._catalog.guard(billing), self._catalog.guard(held, row["record_id"])))
         return {"committed": True, "record_version": row["record_version"], "policy_digest": definition.digest}
 
+    def held_policy(self):
+        """The stored session policy of this release's version, for an operator report. This reads.
+
+        It returns the record version, which a later write names as its exact
+        expected revision, and the two digests the record holds, or None when
+        the slot of this version is empty.
+        """
+        with self._catalog.store() as store:
+            row = self._catalog.read(store, SESSION_POLICY_KIND, SESSION_POLICY_IDENTITY)
+        if row is None:
+            return None
+        held = self._payload(row, SESSION_POLICY_VERSION)
+        return {"record_version": row["record_version"], "policy_digest": held["policy_digest"],
+                "billing_policy_digest": held["billing_policy_digest"]}
+
     def _policy(self, store, expected_digest):
-        row = self._catalog.read(store, SESSION_POLICY_KIND, "stripe")
+        row = self._catalog.read(store, SESSION_POLICY_KIND, SESSION_POLICY_IDENTITY)
         held = self._payload(row, SESSION_POLICY_VERSION)
         financial = self._catalog.read(store, BILLING_POLICY, "stripe")
         if (held["policy_digest"] != expected_digest or self.runtime._payload(financial, BILLING_POLICY)["policy_digest"]

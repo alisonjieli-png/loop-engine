@@ -171,7 +171,9 @@ Reported, and a failure does not remove the machine
 ├── interface_page_readable: the packaged sign-in page can be read
 ├── browser_identity_installed: browser sign-in is configured
 ├── billing_sessions_installed: subscription checkout is configured
-└── billing_webhook_installed: payment provider callbacks are configured
+├── billing_webhook_installed: payment provider callbacks are configured
+└── billing_policy_current: the stored billing policies are the ones the
+    running release computes from the host file
 ```
 
 The second group is deliberate. An empty catalogue is a configuration state and
@@ -188,6 +190,13 @@ read would report a perfectly healthy service while every usage record, account
 record and failure record was being lost. Free space is measured with one system
 call and nothing is written, so asking the question does not consume the space
 it is measuring.
+
+`billing_policy_current` is the check that `billing_sessions_installed` cannot
+replace. Release 13 served with checkout and the portal unavailable while the
+installed check passed, because the stored session policy held the digest an
+older release computed. The check names that state with a code, never a
+digest. It is not required: every other route still answers, restarting
+cannot repair it, and the release runs its repair after the readiness check.
 
 ## The first failure of each dependency
 
@@ -238,6 +247,13 @@ the operator invitation command, not by a customer request.
   has refused to guess. Reconcile against the payment provider's own record
   before taking any action, and never retry a charge on the strength of an
   unknown result.
+- Checkout and the portal unavailable with `session_policy_changed`, or
+  payment notifications refused with `billing_policy_mismatch`, means a stored
+  billing policy is not the one the running release computes. The health
+  record names it under `billing_policy_current`. What to do: run
+  `loop-engine service apply-billing-policy --config /data/host.json` on the
+  Machine as the service user, read the held and the applied digests it
+  prints, and check that the capabilities record reports checkout again.
 
 ### The volume
 

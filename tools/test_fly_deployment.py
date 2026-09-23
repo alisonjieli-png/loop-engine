@@ -34,6 +34,15 @@ READINESS = 'jq -e "${SERVICE_READINESS_GATE}" >/dev/null'
 #: command line tool's own mixed in.
 GRANT_CALL = 'flyctl machine exec "${machine}" "${GRANT_COMMAND}" --app "${FLY_APP}" --json'
 GRANT_GATE = re.compile(r"""jq -e --arg manifest "\$\{PACKAGED_MANIFEST\}" '(.+?)' >/dev/null""")
+BILLING_STEP = "Apply the host billing policy on the one Machine"
+BILLING_CALL = 'flyctl machine exec "${machine}" "${BILLING_POLICY_COMMAND}" --app "${FLY_APP}" --json'
+#: The billing step reads three filters out of its script: the gate on what the
+#: command printed, the filter that takes from that record what the host file
+#: offers, and the gate on the live capabilities record.
+BILLING_GATE = re.compile(r"""\| jq -e '(.+?)' >/dev/null""")
+EXPECTED_FILTER = re.compile(r"""\| jq -e -c '(.+?)'\)""")
+CAPABILITIES_GATE = re.compile(r"""jq -e --argjson expected "\$\{expected\}" '(.+?)' >/dev/null""")
+CAPABILITIES_READ = '"https://${FLY_APP}.fly.dev/api/v1/capabilities"'
 
 
 def exec_output(**fields):
@@ -105,6 +114,57 @@ def grant_step_problems(workflow):
         problems.append("the grant step does not gate on what the grant command printed")
     elif GRANT_CALL in run and run.rfind(READINESS) < run.find(GRANT_CALL):
         problems.append("the readiness check does not follow the grant command")
+    return problems
+
+
+def billing_step_problems(workflow):
+    """Every way the release's post-deploy billing policy step falls short, or nothing.
+
+    Fly release 13 served for a day with checkout and the portal unavailable,
+    because the stored session policy held the digest an older release
+    computed and nothing applied the policy again. The step must exist, follow
+    the grant step, run the exact command the container check qualified on the
+    one started Machine without --reset-paid-access, gate on what that command
+    printed, require the live capabilities record to report checkout and the
+    portal as the host file offers them, and end with the shared readiness
+    check. It must not open a remote shell.
+    """
+    steps = workflow["jobs"]["pilot"]["steps"]
+    names = [row.get("name") for row in steps]
+    if BILLING_STEP not in names:
+        return ["the release has no step that applies the host billing policy after the deploy"]
+    step = steps[names.index(BILLING_STEP)]
+    problems = []
+    if DEPLOY_STEP not in names or GRANT_STEP not in names or not (
+            names.index(DEPLOY_STEP) < names.index(GRANT_STEP) < names.index(BILLING_STEP)):
+        problems.append("the billing policy step does not run after the deploy and the grant step")
+    if step.get("if") != "inputs.operation == 'deploy'":
+        problems.append("the billing policy step is not limited to a deployment")
+    if step.get("continue-on-error", "false") != "false":
+        problems.append("a failed billing policy step would not stop the release")
+    environment, run = step.get("env", {}), step.get("run", "")
+    if environment.get("BILLING_POLICY_COMMAND") != " ".join(container_check.POST_DEPLOY_BILLING_POLICY_COMMAND):
+        problems.append("the billing policy step does not run the command the container check qualified")
+    commands = "\n".join(line for line in run.splitlines() if not line.strip().startswith("#"))
+    if "--reset-paid-access" in environment.get("BILLING_POLICY_COMMAND", "") + commands:
+        problems.append("the release could end paid access without an operator deciding it")
+    if environment.get("FLY_API_TOKEN") != "${{ secrets.FLY_API_TOKEN }}":
+        problems.append("the billing policy step does not hold its own step-scoped Fly credential")
+    required = ('set -euo pipefail', 'flyctl machine list --app "${FLY_APP}" --json',
+                'length == 1 and .[0].state == "started"', BILLING_CALL,
+                'service_billing_policy_application/v1', CAPABILITIES_READ, READINESS)
+    problems += [f"the billing policy step does not contain {text}" for text in required if text not in run]
+    if "flyctl ssh" in run:
+        problems.append("the billing policy step opens a remote shell, which adds a WireGuard peer on every run")
+    gate, expected, capabilities = BILLING_GATE.search(run), EXPECTED_FILTER.search(run), CAPABILITIES_GATE.search(run)
+    if gate is None:
+        problems.append("the billing policy step does not gate on what the command printed")
+    if expected is None or capabilities is None:
+        problems.append("the billing policy step does not compare the live capabilities with what the host file offers")
+    if gate is not None and capabilities is not None and BILLING_CALL in run and READINESS in run:
+        order = [run.find(BILLING_CALL), gate.start(), capabilities.start(), run.rfind(READINESS)]
+        if order != sorted(order) or len(set(order)) != len(order):
+            problems.append("the billing policy step does not read the command, then the capabilities, then readiness")
     return problems
 
 
@@ -234,7 +294,7 @@ class FlyDeploymentTests(unittest.TestCase):
         if shutil.which("jq") is None:
             self.skipTest("jq is required to run the workflow's own health gate")
         gate = self.workflow["jobs"]["pilot"]["env"]["SERVICE_READINESS_GATE"]
-        for name in (DEPLOY_STEP, GRANT_STEP):
+        for name in (DEPLOY_STEP, GRANT_STEP, BILLING_STEP):
             with self.subTest(step=name):
                 self.assertIn(READINESS, next(row["run"] for row in self.steps if row["name"] == name))
 
@@ -388,7 +448,7 @@ class FlyDeploymentTests(unittest.TestCase):
 
         mutants = {"no shared gate": no_shared_gate,
                    "the job continues after an error": the_job_continues_after_an_error}
-        for name in (DEPLOY_STEP, GRANT_STEP):
+        for name in (DEPLOY_STEP, GRANT_STEP, BILLING_STEP):
             mutants[f"{name}: its own gate in its settings"] = own_gate_in_the_settings(name)
             mutants[f"{name}: its own gate in its script"] = own_gate_in_the_script(name)
             mutants[f"{name}: continues after an error"] = continues_after_an_error(name)
@@ -465,6 +525,155 @@ class FlyDeploymentTests(unittest.TestCase):
             with self.subTest(known_wrong=name):
                 self.assertNotEqual(run_gate(text), 0)
 
+    def test_the_release_applies_the_host_billing_policy_after_the_grants(self):
+        """Fly release 13 kept checkout unavailable because nothing applied the billing policy again."""
+        self.assertEqual(billing_step_problems(self.workflow), [])
+
+    def test_a_workflow_without_a_complete_billing_policy_step_is_refused(self):
+        def changed(edit):
+            workflow = copy.deepcopy(self.workflow)
+            edit(workflow["jobs"]["pilot"]["steps"])
+            return billing_step_problems(workflow)
+
+        def step(steps):
+            return next(row for row in steps if row.get("name") == BILLING_STEP)
+
+        def edit_run(function):
+            def edit(steps):
+                step(steps)["run"] = function(step(steps)["run"])
+            return edit
+
+        def remove(steps):
+            steps.remove(step(steps))
+
+        def moved_to(position):
+            def edit(steps):
+                moved = step(steps)
+                steps.remove(moved)
+                names = [row.get("name") for row in steps]
+                steps.insert(names.index(GRANT_STEP) if position == "grant" else 0, moved)
+            return edit
+
+        def command(text):
+            def edit(steps):
+                step(steps)["env"]["BILLING_POLICY_COMMAND"] = text
+            return edit
+
+        def capabilities_before_the_command(run):
+            lines = run.splitlines()
+            start = next(index for index, line in enumerate(lines) if CAPABILITIES_READ in line)
+            moved = lines[start:start + 2]
+            del lines[start:start + 2]
+            at = next(index for index, line in enumerate(lines) if line.strip().startswith("applied="))
+            return "\n".join(lines[:at] + moved + lines[at:])
+
+        def continue_after_a_failure(steps):
+            step(steps)["continue-on-error"] = "true"
+
+        mutants = {
+            "removed": remove, "before the grant step": moved_to("grant"), "before the deploy": moved_to("start"),
+            "configure instead": command("loop-engine service configure --config /data/host.json"),
+            "ends paid access": command(" ".join(container_check.POST_DEPLOY_BILLING_POLICY_COMMAND)
+                                        + " --reset-paid-access"),
+            "without readiness": edit_run(lambda run: run.replace(READINESS, ">/dev/null")),
+            "without the output gate": edit_run(lambda run: BILLING_GATE.sub("| cat >/dev/null", run)),
+            "without the capabilities gate": edit_run(lambda run: CAPABILITIES_GATE.sub("cat >/dev/null", run)),
+            "any machine": edit_run(lambda run: run.replace('exec "${machine}" ', "exec ")),
+            "through a remote shell": edit_run(lambda run: run.replace(
+                BILLING_CALL, 'flyctl ssh console --app "${FLY_APP}" --command "${BILLING_POLICY_COMMAND}"')),
+            "capabilities read before the command": edit_run(capabilities_before_the_command),
+            "continues after a failure": continue_after_a_failure}
+        for name, mutant in mutants.items():
+            with self.subTest(mutant=name):
+                self.assertNotEqual(changed(mutant), [])
+
+    def test_the_billing_gates_accept_what_the_service_answers_and_refuse_the_release_13_state(self):
+        """Run the step's own three filters over what the real command prints and the real service serves.
+
+        The service starts first and keeps running, as the deployed Machine
+        does, with the session terms an older release stored. The command then
+        runs as a separate call through the service entry point. Its record
+        must pass the output gate, the filter must read from it what the host
+        file offers, and the capabilities gate must refuse the capabilities the
+        service served before the command and accept the ones it serves after.
+        """
+        if shutil.which("jq") is None:
+            self.skipTest("jq is required to run the workflow's own billing gates")
+        from loop_engine.core.service_runtime import billing_policy_checks as fixtures
+        from loop_engine.core.service_runtime.http_entrypoint import main as service_main
+        run = next(row["run"] for row in self.steps if row["name"] == BILLING_STEP)
+        gate, offered = BILLING_GATE.search(run).group(1), EXPECTED_FILTER.search(run).group(1)
+        capabilities_gate = CAPABILITIES_GATE.search(run).group(1)
+
+        def jq(program, text, *arguments):
+            return subprocess.run(["jq", "-e", *arguments, program], input=text, capture_output=True,
+                                  text=True, timeout=10)
+
+        def command(path):
+            printed = io.StringIO()
+            with redirect_stdout(printed):
+                self.assertEqual(service_main(["apply-billing-policy", "--config", str(path)]), 0)
+            return printed.getvalue()
+
+        with tempfile.TemporaryDirectory(prefix="fly-billing-gate-") as directory:
+            root = Path(directory)
+            (root / "offered").mkdir()
+            (root / "withheld").mkdir()
+            path, running = fixtures.configured(root / "offered")
+            fixtures.plant_older_terms(running)
+            drifted = fixtures.served(running, "/api/v1/capabilities")
+            printed = command(path)
+            repaired = fixtures.served(running, "/api/v1/capabilities")
+            withheld_path, withheld_service = fixtures.configured(root / "withheld", sessions={"allow_network": False})
+            withheld_printed = command(withheld_path)
+            withheld = fixtures.served(withheld_service, "/api/v1/capabilities")
+            fixtures.rewrite(withheld_path, lambda host: host["billing"]["sessions"]["plans"].append(
+                {"plan_ref": "team", "label": "Team", "price_id": "price_other"}))
+            refused = io.StringIO()
+            with redirect_stdout(refused):
+                self.assertEqual(service_main(["apply-billing-policy", "--config", str(withheld_path)]), 1)
+            refused = refused.getvalue()
+        record = json.loads(printed)
+        self.assertEqual(printed.count("\n"), 1, "the billing policy command prints one line")
+        self.assertEqual(jq(gate, exec_output(stdout=printed)).returncode, 0, "the gate refused what the command prints")
+        self.assertEqual(jq(gate, exec_output(exit_code=0, stdout=printed, stderr="a warning\n")).returncode, 0)
+        known_wrong = {
+            "a policy still not current": {**record, "every_installed_policy_current": False},
+            "paid access ended": {**record, "paid_access_ended_for_accounts": 1},
+            "a tenant registered": {**record, "tenants_registered": 1},
+            "a remote account created": {**record, "remote_accounts_created": True},
+            "a provider call": {**record, "provider_calls": 1},
+            "another record": {**record, "record_type": "service_host_grant_application/v1"},
+            "no statement of the offered checkout": {key: value for key, value in record.items()
+                                                     if key != "checkout_expected"},
+            "the offered checkout as text": {**record, "checkout_expected": "true"}}
+        for name, value in known_wrong.items():
+            with self.subTest(known_wrong=name):
+                self.assertNotEqual(jq(gate, exec_output(stdout=json.dumps(value) + "\n")).returncode, 0)
+        self.assertEqual(json.loads(refused)["code"], "session_price_not_in_billing_policy")
+        for name, text in (("nothing printed", exec_output()),
+                           ("the record twice", exec_output(stdout=printed + printed)),
+                           ("the record, then a failure", exec_output(exit_code=1, stdout=printed)),
+                           ("a refusal the command printed", exec_output(exit_code=1, stdout=refused)),
+                           ("a refusal with a lost exit code", exec_output(stdout=refused)),
+                           ("the record as plain text", printed),
+                           ("an error of the command line tool", "Error: could not exec command on machine\n")):
+            with self.subTest(known_wrong=name):
+                self.assertNotEqual(jq(gate, text).returncode, 0)
+        expected = jq(offered, exec_output(stdout=printed), "-c").stdout.strip()
+        closed = jq(offered, exec_output(stdout=withheld_printed), "-c").stdout.strip()
+        self.assertEqual((json.loads(expected), json.loads(closed)),
+                         ({"checkout": True, "portal": True}, {"checkout": False, "portal": False}))
+
+        def capabilities(served, wanted):
+            return jq(capabilities_gate, json.dumps(served), "--argjson", "expected", wanted).returncode
+        self.assertEqual(capabilities(repaired, expected), 0, "the gate refused the repaired service")
+        self.assertNotEqual(capabilities(drifted, expected), 0, "the gate accepted the release 13 state")
+        self.assertEqual(capabilities(withheld, closed), 0, "the gate refused a host that offers no checkout")
+        self.assertNotEqual(capabilities(repaired, closed), 0, "the gate accepted checkout the host file withholds")
+        other = {**repaired, "result": {**repaired["result"], "record_type": "service_capabilities/v2"}}
+        self.assertNotEqual(capabilities(other, expected), 0, "the gate accepted another record version")
+
     def test_the_container_check_expects_the_command_the_image_declares(self):
         self.assertEqual(container_check.DEFAULT_COMMAND, image_default_command())
 
@@ -489,13 +698,15 @@ class FlyDeploymentTests(unittest.TestCase):
                 self.assertIn("request_limits", refusal_of_the_image_command(wrong))
 
     def test_the_post_deploy_command_runs_the_grant_command_as_the_service_user(self):
-        """Exactly the service's own apply-grants command, run as the user the image runs as."""
-        command = container_check.POST_DEPLOY_GRANT_COMMAND
-        self.assertEqual(command[command.index("loop-engine"):],
-                         ("loop-engine", "service", "apply-grants", "--config", "/data/host.json"))
-        self.assertEqual(command[:command.index("loop-engine")],
-                         ("setpriv", f"--reuid={container_check.SERVICE_USER}",
-                          f"--regid={container_check.SERVICE_USER}", "--clear-groups"))
+        """Exactly the service's own apply-grants and apply-billing-policy commands, run as the user the image runs as."""
+        for name, command in (("apply-grants", container_check.POST_DEPLOY_GRANT_COMMAND),
+                              ("apply-billing-policy", container_check.POST_DEPLOY_BILLING_POLICY_COMMAND)):
+            with self.subTest(command=name):
+                self.assertEqual(command[command.index("loop-engine"):],
+                                 ("loop-engine", "service", name, "--config", "/data/host.json"))
+                self.assertEqual(command[:command.index("loop-engine")],
+                                 ("setpriv", f"--reuid={container_check.SERVICE_USER}",
+                                  f"--regid={container_check.SERVICE_USER}", "--clear-groups"))
         self.assertIn(f"USER {container_check.SERVICE_USER}:{container_check.SERVICE_USER}",
                       (ROOT / "Dockerfile.service").read_text("utf-8"))
 
@@ -507,12 +718,13 @@ class FlyDeploymentTests(unittest.TestCase):
         command holds none, and splitting the workflow's line on spaces gives
         back exactly the words the container check ran.
         """
+        for command in (container_check.POST_DEPLOY_GRANT_COMMAND, container_check.POST_DEPLOY_BILLING_POLICY_COMMAND):
+            line = " ".join(command)
+            self.assertEqual(tuple(line.split(" ")), command)
+            for word in command:
+                with self.subTest(word=word):
+                    self.assertRegex(word, r"^[A-Za-z0-9/=._-]+$")
         command = container_check.POST_DEPLOY_GRANT_COMMAND
-        line = " ".join(command)
-        self.assertEqual(tuple(line.split(" ")), command)
-        for word in command:
-            with self.subTest(word=word):
-                self.assertRegex(word, r"^[A-Za-z0-9/=._-]+$")
         known_wrong = (*command[:-1], "/data/host file.json")
         self.assertNotEqual(tuple(" ".join(known_wrong).split(" ")), known_wrong)
 

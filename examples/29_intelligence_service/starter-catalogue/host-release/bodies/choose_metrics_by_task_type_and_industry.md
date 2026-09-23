@@ -46,4 +46,4 @@ A fraud model reports 99 percent accuracy. In this illustration 99 percent of th
 
 - `src/loop_engine/code_nodes/measurement.py`: `select_measures`, `MeasurementSignals` and the conventions in `measurement_pack`.
 
-Licence: MIT. Compiled from revision d893bba.
+Licence: MIT. Compiled from revision 9cec9d7.

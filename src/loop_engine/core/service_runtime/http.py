@@ -744,11 +744,14 @@ class ServiceHttpApplication:
         not answer inside the request deadline is a dependency that failed.
         """
         def measure():
+            from .billing_policy import billing_policy_refusal
+            billed = self.billing_sessions is not None or self.billing_processor is not None
             return readiness_report(config=self.runtime.config, provisioning=self.provisioning,
                 authentication_modes=self.authentication.modes, policy=self.observability,
                 browser_identity_installed=self.browser_identity is not None,
                 billing_sessions_installed=self.billing_sessions is not None,
-                billing_webhook_installed=self.billing_processor is not None)
+                billing_webhook_installed=self.billing_processor is not None,
+                billing_policy=(lambda: billing_policy_refusal(self)) if billed else None)
         waiting = asyncio.get_running_loop().run_in_executor(None, measure)
         try:
             return await asyncio.wait_for(asyncio.shield(waiting), self.configuration.request_timeout_seconds)

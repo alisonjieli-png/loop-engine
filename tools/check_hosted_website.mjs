@@ -56,7 +56,12 @@ try{
   const livePricing=await page.locator('[data-view="pricing"]').innerText();
   const pricingFacts=["Baltor Pro","29 United States dollars","each month","Search is free.","one downloaded item","Invited accounts are free."];
   check("live_pricing_view_states_every_published_fact",new URL(page.url()).pathname==="/pricing"&&pricingFacts.every(fact=>livePricing.includes(fact)));
-  check("live_pricing_view_reports_the_payment_state_from_the_service",["Payment open","Payment not open"].includes(await page.locator("#pricing-state").innerText()));
+  /* The badge follows two reported facts: invitation only while account creation is closed, whatever checkout reports;
+     payment open only when account creation and checkout are both open; otherwise payment not open. */
+  const livePublic=(await (await page.request.get(origin+"/api/v1/capabilities")).json()).result;
+  const expectedPayment=facts=>facts.website.registration_available!==true?"Invitation only":facts.billing.checkout===true?"Payment open":"Payment not open";
+  check("live_pricing_view_reports_the_payment_state_from_the_service",livePublic.record_type==="service_capabilities/v1"&&await page.locator("#pricing-state").innerText()===expectedPayment(livePublic));
+  check("payment_state_rule_rejects_payment_open_beside_the_waiting_list",expectedPayment({website:{registration_available:false},billing:{checkout:true}})==="Invitation only"&&expectedPayment({website:{registration_available:true},billing:{checkout:true}})==="Payment open");
   const plainWords=text=>!internalTerms.test(text);
   check("live_pricing_view_avoids_internal_runtime_names",plainWords(livePricing));
   check("plain_word_check_rejects_a_page_that_names_the_runtime",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the role profile.","Read the runtime classification."].every(claim=>!plainWords(livePricing+"\n"+claim)));

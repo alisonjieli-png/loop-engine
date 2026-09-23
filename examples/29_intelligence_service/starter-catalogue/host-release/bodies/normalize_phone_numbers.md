@@ -41,4 +41,4 @@ A script adds country code 1 to every ten digit number in a customer table that 
 
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `phone_normalize`.
 
-Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.
+Licence: MIT. Compiled from revision 9cec9d7. The operations module uses only the Python standard library.

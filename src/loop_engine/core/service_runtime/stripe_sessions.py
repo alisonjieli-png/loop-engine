@@ -24,6 +24,7 @@ from urllib.parse import parse_qsl, quote, urlencode, urlsplit
 from .billing_effects import (
     BillingSessionEffectSpec, BillingSessionEffectStore, BillingSessionPolicyDefinition,
     CHECKOUT_OPERATION, PORTAL_OPERATION, SESSION_OPERATIONS, PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS,
+    SESSION_TERMS_VERSION,
 )
 from .billing_records import (
     CUSTOMER_IDENTITY_PREFIX, CUSTOMER_OBJECT, TENANT_METADATA_KEY, StripeCustomerProjection, secret_reference,
@@ -88,6 +89,26 @@ MAXIMUM_RECONCILIATION_SECONDS = PROVIDER_MINIMUM_IDEMPOTENCY_RETENTION_SECONDS 
 # is. This floor keeps a host configuration from asking for that wait on every
 # attempt.
 MINIMUM_RECONCILIATION_SECONDS = PROVIDER_SEARCH_FRESHNESS_ALLOWANCE_SECONDS
+#: The session configuration fields that stay out of the policy digest. Every
+#: other field is a term: it decides what a customer is offered, what they are
+#: charged or where they return, and a changed term changes the digest. A field
+#: stays out only when it is named here with its reason, so a field a release
+#: adds is a term until someone decides otherwise.
+#:
+#: - `api_key_ref` names where the credential is read. The credential is
+#:   checked against the configured account, a term, before every provider call.
+#: - `allow_network` and `allow_session_creation` are switches read at every
+#:   use. Turning one off stops sessions at once without a new policy.
+#: - `allow_loopback_return_urls` only widens the check of the return
+#:   addresses, and the addresses themselves are terms.
+#: - `timeout_seconds` and `maximum_response_bytes` bound one provider call.
+#: - `reconciliation_seconds` bounds how long a retry reuses one idempotency
+#:   key. Each effect record keeps the window it was created with.
+#: - `record_type` is the version of the host block. The terms document
+#:   carries its own version, `billing_session_terms/v1`.
+SESSION_OPERATION_FIELDS = ("api_key_ref", "allow_network", "allow_session_creation",
+                            "allow_loopback_return_urls", "timeout_seconds", "maximum_response_bytes",
+                            "reconciliation_seconds", "record_type")
 
 
 class BillingSessionError(ServiceRuntimeError):
@@ -229,8 +250,14 @@ class StripeSessionConfiguration:
     def lease_seconds(self):
         return math.ceil(self.timeout_seconds * 4) + 5
 
+    def session_terms(self):
+        """The terms this configuration offers: every field except the operational ones."""
+        return {**{name: value for name, value in asdict(self).items() if name not in SESSION_OPERATION_FIELDS},
+                "record_type": SESSION_TERMS_VERSION}
+
     def policy_definition(self):
-        return BillingSessionPolicyDefinition(canonical(asdict(self)), tuple(plan.price_id for plan in self.plans))
+        return BillingSessionPolicyDefinition(canonical(self.session_terms()),
+                                              tuple(plan.price_id for plan in self.plans))
 
 
 @dataclass(frozen=True)
@@ -369,6 +396,18 @@ class StripeSessionAdapter:
                 raise
             return None
 
+    def host_offers(self):
+        """What the host's own choices offer, before any stored state is read.
+
+        The release reads this to know what the live capabilities record must
+        report once the stored policy is current, so that expectation never
+        depends on the stored state it is meant to check.
+        """
+        config = self.configuration
+        enabled = bool(self.runtime.config.writes_authorized and config.allow_network
+                       and config.allow_session_creation)
+        return {"checkout": enabled and bool(config.plans), "portal": enabled and bool(config.portal_configuration_id)}
+
     def options(self, principal=None):
         reason, bound = "", None
         try:
@@ -382,12 +421,13 @@ class StripeSessionAdapter:
         if not self.runtime.config.writes_authorized:
             reason = "host_write_authority_required"
         enabled = not reason and self.configuration.allow_network and self.configuration.allow_session_creation
+        offered = self.host_offers()
         # Checkout stays available for an account with no provider customer,
         # because checkout creates exactly one for it. The portal needs an
         # existing customer, so it stays unavailable until one is bound.
         return {"record_type": SESSION_OPTIONS_VERSION, "policy_digest": self.policy_digest,
-                "checkout_available": bool(enabled and self.configuration.plans),
-                "portal_available": bool(enabled and self.configuration.portal_configuration_id
+                "checkout_available": bool(not reason and offered["checkout"]),
+                "portal_available": bool(not reason and offered["portal"]
                                          and (principal is None or bound is not None)),
                 "plans": [{"plan_ref": plan.plan_ref, "label": plan.label} for plan in self.configuration.plans],
                 "discount_code_accepted": self.configuration.allow_promotion_codes,
@@ -639,4 +679,7 @@ class StripeSessionAdapter:
 
 def self_test():
     from .stripe_session_checks import run_checks
-    return run_checks()
+    from .billing_policy_checks import run_checks as run_billing_policy_checks
+    tests = run_checks()["tests"] + run_billing_policy_checks()["tests"]
+    return {"tests": tests, "passed": sum(row["passed"] for row in tests), "total": len(tests),
+            "all_passed": all(row["passed"] for row in tests)}

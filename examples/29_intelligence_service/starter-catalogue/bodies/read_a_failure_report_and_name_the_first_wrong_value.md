@@ -40,4 +40,4 @@ A service fails with a message about a missing key deep inside a formatting libr
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision d893bba.
+Licence: MIT. Written for this catalogue at revision 9cec9d7.
