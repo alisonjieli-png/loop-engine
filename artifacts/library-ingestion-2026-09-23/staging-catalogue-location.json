@@ -1,0 +1,182 @@
+{
+ "record_type": "library_ingestion_bulk_data_location/v1",
+ "recorded_at": "2026-09-23",
+ "package": "LS1, outside material with provenance",
+ "decision": "The staged catalogue and the run folders hold third-party bytes, so they stay outside the repository and outside every image, where the ingestion guide puts them. The repository keeps the evidence beside this file: counts, run and staging reports, per-source licence evidence, model call records, outlines and the staged index with a digest for every row, and no third-party text. The artifacts folder is excluded from every image build context by .dockerignore; the service image copies only src and the reviewed host release.",
+ "durability": "A folder on the development workstation, not durable storage (roadmap D-05). Keep it until the staged candidates are reviewed or restaged; nothing in the repository or the service reads it.",
+ "how_to_verify": "sha256sum the database; the tree digest is SHA-256 over the sorted lines 'relative path TAB file SHA-256 TAB size NEWLINE' of every file in the run folder.",
+ "runs": [
+  {
+   "run": 1,
+   "folder": "/home/username/.le-library/ls1-runs/run-2026-09-23-a",
+   "result_to_use": false,
+   "files": 4210,
+   "bytes": 77938863,
+   "tree_sha256": "fa52c80598f448ace69fc6100cfc709b1d020fcb055954f55719867ff45bbad0",
+   "parts": {
+    "batches": {
+     "files": 21,
+     "bytes": 8259449
+    },
+    "candidates.db": {
+     "files": 1,
+     "bytes": 23539712
+    },
+    "duplicates.jsonl": {
+     "files": 1,
+     "bytes": 630
+    },
+    "engine-decisions.json": {
+     "files": 1,
+     "bytes": 5094
+    },
+    "model-calls.jsonl": {
+     "files": 1,
+     "bytes": 96440
+    },
+    "outlines.jsonl": {
+     "files": 1,
+     "bytes": 433433
+    },
+    "populations": {
+     "files": 61,
+     "bytes": 22070045
+    },
+    "quarantine": {
+     "files": 4119,
+     "bytes": 20595483
+    },
+    "refusals.jsonl": {
+     "files": 1,
+     "bytes": 820160
+    },
+    "requests.jsonl": {
+     "files": 1,
+     "bytes": 2083706
+    },
+    "run-report.json": {
+     "files": 1,
+     "bytes": 23799
+    },
+    "staging-report-2026-09-23T045011Z.json": {
+     "files": 1,
+     "bytes": 10912
+    }
+   },
+   "candidate_database": {
+    "path": "/home/username/.le-library/ls1-runs/run-2026-09-23-a/candidates.db",
+    "bytes": 23539712,
+    "sha256": "2e82a3577d34ca5ed300f6d9e3f5ca2cf55f406776d92016e41f12a710738e09",
+    "table": "records",
+    "rows": 3025,
+    "rows_by_kind": {
+     "instruction_file": 220,
+     "skill": 595,
+     "tool": 2210
+    },
+    "every_row": [
+     {
+      "lifecycle": "candidate",
+      "namespace": "library.outside",
+      "license_state": "pending_review",
+      "execution_available": false,
+      "rows": 3025
+     }
+    ]
+   },
+   "evidence_in_repository": [
+    "run-report-1.json",
+    "staging-report-1.json"
+   ]
+  },
+  {
+   "run": 2,
+   "folder": "/home/username/.le-library/ls1-runs/run-2026-09-23-b",
+   "result_to_use": true,
+   "files": 4217,
+   "bytes": 80272015,
+   "tree_sha256": "f737e6f185bdcc81c6befa2dbb38ce429636b5acc321c19239c3455752a2168f",
+   "parts": {
+    "batches": {
+     "files": 21,
+     "bytes": 8261080
+    },
+    "candidates.db": {
+     "files": 1,
+     "bytes": 25399296
+    },
+    "duplicates.jsonl": {
+     "files": 1,
+     "bytes": 1894
+    },
+    "engine-decisions.json": {
+     "files": 1,
+     "bytes": 5094
+    },
+    "model-calls.jsonl": {
+     "files": 1,
+     "bytes": 120298
+    },
+    "outlines.jsonl": {
+     "files": 1,
+     "bytes": 419330
+    },
+    "populations": {
+     "files": 66,
+     "bytes": 23733933
+    },
+    "quarantine": {
+     "files": 4120,
+     "bytes": 20600292
+    },
+    "refusals.jsonl": {
+     "files": 1,
+     "bytes": 713379
+    },
+    "requests.jsonl": {
+     "files": 1,
+     "bytes": 973208
+    },
+    "run-report.json": {
+     "files": 1,
+     "bytes": 24233
+    },
+    "staging-report-2026-09-23T051715Z.json": {
+     "files": 1,
+     "bytes": 11771
+    },
+    "staging-report-2026-09-23T052640Z.json": {
+     "files": 1,
+     "bytes": 8207
+    }
+   },
+   "candidate_database": {
+    "path": "/home/username/.le-library/ls1-runs/run-2026-09-23-b/candidates.db",
+    "bytes": 25399296,
+    "sha256": "1e8e0bfce9414d1dc5eb25daf24572cbf3a8996c231a57c7fa377251e0ed0144",
+    "table": "records",
+    "rows": 3251,
+    "rows_by_kind": {
+     "instruction_file": 445,
+     "skill": 596,
+     "tool": 2210
+    },
+    "every_row": [
+     {
+      "lifecycle": "candidate",
+      "namespace": "library.outside",
+      "license_state": "pending_review",
+      "execution_available": false,
+      "rows": 3251
+     }
+    ]
+   },
+   "evidence_in_repository": [
+    "run-report-2.json",
+    "staging-report-2.json",
+    "staging-report-2-rerun.json",
+    "staged-index-2.json"
+   ]
+  }
+ ]
+}

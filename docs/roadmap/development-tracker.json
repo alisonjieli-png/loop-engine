@@ -1457,7 +1457,7 @@
      "S-6.30"
     ],
     "id": "S-6.40",
-    "next_local_work": "Use the saved candidate QA and exact final manifests to run the separate independent admission process, including rights, effects, native pickup and task-use gates; no author or QA replay can approve its own package. Build the production first-party candidate lane and measure a stratified 1,000-candidate campaign. The existing preparer refuses native YAML frontmatter, so a qualified adapter must preserve SKILL.md layout, scripts and all digests. Keep outside importers as a later lane. Scale serving, grants, releases and review throughput from measured yield before claiming 10,000 or 100,000 approved packages; publish unique eligible file counts separately.",
+    "next_local_work": "Use the saved candidate QA and exact final manifests to run the separate independent admission process, including rights, effects, native pickup and task-use gates; no author or QA replay can approve its own package. Build the production first-party candidate lane and measure a stratified 1,000-candidate campaign. The existing preparer refuses native YAML frontmatter, so a qualified adapter must preserve SKILL.md layout, scripts and all digests. Keep outside importers as a later lane. Scale serving, grants, releases and review throughput from measured yield before claiming 10,000 or 100,000 approved packages; publish unique eligible file counts separately. Before the review panel judges the 3,251 staged outside candidates, give it a reader for candidate_intelligence_specifications/v2 run folders that checks each body against its staged digest, written criteria and a producer declaration for verbatim, outline and link-only outside material, and review record version three naming each row's reviewers, rule and the run folder and database digest that hold the judged bytes; then run a seeded pilot across the three kinds under a declared call ceiling.",
     "phase": 6,
     "status": "proposed",
     "title": "Grow the library: original package factory first, scheduled source ingestion later",
@@ -3136,5 +3136,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:8e2170de0722842f0f908e817d962279316474698d9d0a2cf6538cd45bc12bad"
+ "source_fingerprint": "sha256:185197b3b690728acee5d17bd59b704eac6e0814ea747ab65dd16c79d77d2665"
 }
