@@ -41,4 +41,4 @@ A deduplication job drops every block above its limit without a trace. One very 
 
 - `src/loop_engine/code_nodes/duplicate_detection.py`: `DuplicateFieldSpec`, `DuplicatePolicy`, `find_duplicates` and `summarize`.
 
-Licence: MIT. Compiled from revision f29bddc. The module imports the text operations module beside it and the typed decision module of the same package. Everything else comes from the Python standard library.
+Licence: MIT. Compiled from revision d893bba. The module imports the text operations module beside it and the typed decision module of the same package. Everything else comes from the Python standard library.

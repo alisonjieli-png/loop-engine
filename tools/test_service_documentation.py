@@ -122,6 +122,17 @@ class ServiceDocumentationCheck(unittest.TestCase):
             self.assertIn("address", self.kinds(report))
             self.assertIn("/connect", self.values(report))
 
+    def test_the_privacy_notice_address_is_held_to_the_page_table(self):
+        """The setup guide names the privacy notice address, so the page table must keep serving it."""
+        with tempfile.TemporaryDirectory() as folder:
+            root = build_copy(Path(folder))
+            self.assertEqual(check(root)["findings"], [])
+            edit(root, "src/loop_engine/core/service_runtime/web_pages.py",
+                 '"/privacy"', '"/privacy-notice"', every=True)
+            report = check(root)
+            self.assertIn("address", self.kinds(report))
+            self.assertIn("/privacy", self.values(report))
+
     def test_a_record_version_the_source_does_not_declare_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
             root = build_copy(Path(folder))
@@ -187,7 +198,7 @@ class ServiceDocumentationCheck(unittest.TestCase):
         for code in ("unauthorized", "insufficient_scope", "item_unavailable",
                      "failed_attempt_limit_reached", "item_license_not_accepted"):
             self.assertIn(code, facts["refusal_codes"], code)
-        for address in ("/mcp", "/api/v1/session", "/api/v1/download", "/connect"):
+        for address in ("/mcp", "/api/v1/session", "/api/v1/download", "/connect", "/privacy"):
             self.assertIn(address, facts["addresses"], address)
         self.assertEqual(facts["credential_variable"], "BALTOR_SERVICE_TOKEN")
         self.assertIn("service", facts["root_commands"])

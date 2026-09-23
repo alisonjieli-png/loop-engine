@@ -377,7 +377,10 @@ def load_host_application(path):
     waitlist = None
     if configuration.get("waitlist"):
         from .waitlist import ServiceWaitlist, WaitlistPolicy
-        waitlist = ServiceWaitlist(runtime, WaitlistPolicy(**configuration["waitlist"]))
+        # The flood guard keys its source digest with a host secret named by
+        # an environment reference, resolved at use like every other secret.
+        waitlist = ServiceWaitlist(runtime, WaitlistPolicy(**configuration["waitlist"]),
+                                   secret_resolver=environment_secret)
     transport = ServiceHttpConfiguration(**configuration["http"])
     account_email = None
     if configuration.get("account_email"):

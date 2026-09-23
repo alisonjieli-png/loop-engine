@@ -40,4 +40,4 @@ Each service generates its own request number. An investigation into one slow ch
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision f29bddc.
+Licence: MIT. Written for this catalogue at revision d893bba.

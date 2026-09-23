@@ -9,7 +9,7 @@ import {resolve} from "node:path";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
-for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-browse-desktop.png","-browse-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
+for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-browse-desktop.png","-browse-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
 }
 /* Connection recipes. The reviewed record is read from the source tree before any process starts, so the page is compared with the record and not with itself. */
@@ -462,11 +462,13 @@ try {
   await plain.close();await withoutScript.close();
   /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
      The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
-  const servedRoutes=["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/app","/account","/docs"];
+  const servedRoutes=["/","/how-it-works","/pricing","/connect","/signup","/login","/examples","/security","/privacy","/app","/account","/docs"];
   /* The scan carries no exception. The one sentence that used to need one, on the account page, was rewritten with
      the rest of the retired words, so a retired word anywhere in what a customer reads is a named failure. */
   const vocabularyProblems=[];
-  const readShownText=target=>target.evaluate(()=>[document.querySelector("header").innerText,[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer").innerText].join("\n"));
+  /* A page without the shared header or footer, such as the page for an address the service does not serve, is read
+     as far as it goes, so an unserved address fails its own named checks instead of stopping the whole journey. */
+  const readShownText=target=>target.evaluate(()=>[document.querySelector("header")?.innerText||"",[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).map(item=>item.innerText).join("\n"),document.querySelector("footer")?.innerText||""].join("\n"));
   const scanShownText=(path,shownText)=>{
     if(retiredAccessWords.test(shownText))vocabularyProblems.push({path,rule:"retired access word",found:shownText.match(retiredAccessWords)[0]});
     if(path!=="/docs"&&publicVocabulary.test(shownText))vocabularyProblems.push({path,rule:"runtime word",found:shownText.match(publicVocabulary)[0]});
@@ -565,6 +567,63 @@ try {
   check("pricing_address_opens_the_pricing_view_after_a_reload",JSON.stringify(reloadedViews)===JSON.stringify(["pricing"]),{views:reloadedViews});
   await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:output.replace(/\.json$/,"-pricing-desktop.png"),fullPage:true});
   await page.setViewportSize({width:360,height:1000});await page.screenshot({path:output.replace(/\.json$/,"-pricing-mobile.png"),fullPage:true});
+  await page.setViewportSize({width:1440,height:1000});
+  /* The privacy notice the owner approved on September 22, 2026. It answers at its own address on a direct visit, it
+     names the operator and the postal contact address, the shared footer links to it, and the page says the same
+     words as the approved text in docs/legal/PRIVACY-NOTICE.md, read here from the source tree. Two removed-guard
+     controls serve changed bytes in memory, never a source file: the homepage without the footer link, and the
+     notice with one fact changed. Each must fail its own named check. */
+  const privacyOperator="Baltor.AI",privacyAddress="1428 Bryn Mawr St, Saxton, PA 16678, United States";
+  const privacyLink='<a href="/privacy" data-page="privacy">Privacy notice</a>';
+  /* The Markdown is read as a reader sees it rendered: a code span or strong text is the same word without its marks. */
+  const markdownWords=text=>text.replace(/`/g,"").replace(/\*\*/g,"").replace(/^#+\s/gm," ").replace(/^\|[-| :]+\|\s*$/gm," ").replace(/\|/g," ").replace(/^\s*- /gm," ").split(/\s+/).filter(Boolean);
+  const approvedWords=markdownWords(readFileSync(resolve(root,"docs/legal/PRIVACY-NOTICE.md"),"utf8"));
+  const sameWords=(shown,approved)=>shown.length>0&&JSON.stringify(shown)===JSON.stringify(approved);
+  const namesTheOperator=text=>text.includes("Operator: "+privacyOperator+", "+privacyAddress+".")&&text.split(privacyAddress).length-1===2;
+  const privacyState=async opened=>opened.evaluate(()=>{
+    const notice=document.querySelector("[data-privacy-notice]"),shown=[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden);
+    return {path:location.pathname,views:shown.map(item=>item.dataset.view),title:document.title,text:notice?notice.innerText:""};});
+  const openAt=async (path,mutation)=>{
+    const opened=await context.newPage(),state={applied:false,errors:[]};
+    opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
+    if(mutation)await opened.route(url=>url.origin===new URL(fixture.base).origin&&url.pathname===mutation.path,async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
+    await opened.goto(fixture.base+path);
+    await opened.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability");
+    return {page:opened,state};
+  };
+  const checkPrivacyNotice=async (opened,note)=>{
+    const state=await privacyState(opened);
+    note("privacy_notice_opens_at_its_own_address",state.path==="/privacy"&&JSON.stringify(state.views)===JSON.stringify(["privacy"])&&state.title.endsWith("| Privacy notice"),{path:state.path,views:state.views,title:state.title});
+    note("privacy_notice_names_the_operator_and_the_postal_contact_address",namesTheOperator(state.text),{operator:state.text.includes(privacyOperator),address:state.text.split(privacyAddress).length-1});
+    const shownWords=state.text.split(/\s+/).filter(Boolean),differs=shownWords.findIndex((word,index)=>word!==approvedWords[index]);
+    note("privacy_notice_says_the_same_words_as_the_approved_text",sameWords(shownWords,approvedWords),{shown:shownWords.length,approved:approvedWords.length,first_difference:differs<0?null:{index:differs,shown:shownWords[differs],approved:approvedWords[differs]}});
+  };
+  const checkFooterLink=async (opened,note)=>{
+    const links=await opened.locator('footer a[href="/privacy"]').evaluateAll(items=>items.map(item=>({text:item.textContent.trim(),page:item.dataset.page,shown:item.offsetParent!==null})));
+    if(links.length===1&&links[0].shown)await opened.locator('footer a[href="/privacy"]').click();
+    const state=await privacyState(opened);
+    note("the_footer_links_to_the_privacy_notice_from_the_homepage",links.length===1&&links[0].shown&&links[0].page==="privacy"&&state.path==="/privacy"&&JSON.stringify(state.views)===JSON.stringify(["privacy"])&&namesTheOperator(state.text),{links,path:state.path,views:state.views});
+  };
+  const directPrivacy=await page.request.get(fixture.base+"/privacy",{maxRedirects:0});
+  check("privacy_notice_is_served_on_a_direct_visit",directPrivacy.status()===200&&(directPrivacy.headers()["content-type"]||"").startsWith("text/html"),{status:directPrivacy.status(),content_type:directPrivacy.headers()["content-type"]||""});
+  {const {page:opened}=await openAt("/privacy");await checkPrivacyNotice(opened,check);
+    await opened.screenshot({path:output.replace(/\.json$/,"-privacy-desktop.png"),fullPage:true});
+    await opened.setViewportSize({width:360,height:1000});await opened.screenshot({path:output.replace(/\.json$/,"-privacy-mobile.png"),fullPage:true});await opened.close();}
+  {const {page:opened}=await openAt("/");await checkFooterLink(opened,check);await opened.close();}
+  check("privacy_checks_reject_a_page_without_the_operator_or_with_a_changed_word",!namesTheOperator(("Operator: "+privacyOperator+", "+privacyAddress+".").split(privacyOperator).join("Another operator"))
+    &&!namesTheOperator("Operator: "+privacyOperator+", "+privacyAddress+".")&&!sameWords(approvedWords.map(word=>word==="five"?"thirty":word),approvedWords)&&!sameWords(approvedWords.slice(1),approvedWords)&&!sameWords([],[]));
+  const privacyControls=[
+    {name:"remove_the_privacy_link_from_the_footer",path:"/",find:privacyLink,replacement:"",run:checkFooterLink,expected:["the_footer_links_to_the_privacy_notice_from_the_homepage"]},
+    {name:"change_one_fact_in_the_served_privacy_notice",path:"/privacy",find:"five days",replacement:"thirty days",run:checkPrivacyNotice,expected:["privacy_notice_says_the_same_words_as_the_approved_text"]},
+    {name:"drop_the_postal_address_from_the_served_privacy_notice",path:"/privacy",find:privacyAddress,replacement:"our office",run:checkPrivacyNotice,expected:["privacy_notice_names_the_operator_and_the_postal_contact_address","privacy_notice_says_the_same_words_as_the_approved_text"]}];
+  for(const control of privacyControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openAt(control.path,{path:control.path,find:control.find,replacement:control.replacement});applied=state.applied;await control.run(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
   const homeFits=[];
   for(const width of [1440,360]){await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");homeFits.push({width,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1}))});}
   check("homepage_fits_a_360_pixel_screen",homeFits.length===2&&homeFits.every(item=>!item.overflow),{measurements:homeFits});
@@ -900,7 +959,7 @@ try {
   check("changed_download_is_refused_by_the_browser",(await page.locator(".result").first().innerText()).includes("do not match")); await page.unroute("**/api/v1/download");
   for(const width of [1440,820,390,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/waitlist"]){
+    for(const path of ["/","/login","/signup","/pricing","/account","/admin","/app","/docs","/how-it-works","/connect","/examples","/security","/privacy","/waitlist"]){
       await page.goto(fixture.base+path);
       const measurement=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(x=>!x.hidden).length}));
       check(`responsive_${width}_${path}`,!measurement.overflow&&measurement.views===1,measurement);
@@ -908,7 +967,7 @@ try {
   }
   for(const width of [1440,320]){
     await page.setViewportSize({width,height:1000});
-    for(const path of ["/","/how-it-works","/pricing","/connect","/examples","/security"]){
+    for(const path of ["/","/how-it-works","/pricing","/connect","/examples","/security","/privacy"]){
       await page.goto(fixture.base+path); await page.evaluate(()=>document.documentElement.style.fontSize="200%");
       const enlarged=await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,views:[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length,items:[...document.querySelectorAll("body *")].filter(item=>{const box=item.getBoundingClientRect();return box.width&&box.right>innerWidth+1;}).slice(0,12).map(item=>({tag:item.tagName,id:item.id,className:String(item.className)}))}));
       check(`enlarged_text_${width}_${path}`,!enlarged.overflow&&enlarged.views===1,enlarged);

@@ -15,11 +15,11 @@ the host's namespace, and are written through the same atomic batch contract.
 A fifth operation, `forget`, erases the address and the note from an entry and
 moves it to the removed state, so the service can honour a request to be taken
 off the list without anyone rewriting a record row by hand. It leaves the
-one-way digest of the address, the decision history and the count of accepted
-entries for the source. It does not apply to an address that reached the
-joined state: that address belongs to an account, and an account is removed
-under its own contract. The same person may ask again afterwards, and the new
-request replaces the removed entry.
+one-way digest of the address and the decision history. It does not change the
+flood guard's count, which ends with its window. It does not apply to an
+address that reached the joined state: that address belongs to an account, and
+an account is removed under its own contract. The same person may ask again
+afterwards, and the new request replaces the removed entry.
 
 Four refusals matter, and each one has its own code:
 
@@ -35,15 +35,40 @@ The flood guard counts accepted entries for one source inside a window. It
 does not count refused attempts: the transport's existing failed-attempt limit
 for each client address already counts those, and the two must not be mixed.
 The guard is active only when the transport supplies a source key, which the
-host's request limit settings decide. Without a declared source a proxy would
-make every caller look like one source, so the count is recorded as not taken
-rather than taken from a value that means nothing.
+host's request limit settings decide, and the host names the secret that keys
+the source digest. Without a declared source a proxy would make every caller
+look like one source, so the count is recorded as not taken rather than taken
+from a value that means nothing.
 
 That has a price the host has to know: until the host declares where the
-client address comes from, this guard counts nobody, and only the one entry
-for each address limits what a stranger can leave. The host declares it in
-its own request limit settings, and `docs/guides/waiting-list-and-invitations.md`
-says what to set for a service behind a proxy.
+client address comes from and names the secret, this guard counts nobody, and
+only the one entry for each address limits what a stranger can leave. The
+host declares both in its own settings, and
+`docs/guides/waiting-list-and-invitations.md` says what to set for a service
+behind a proxy.
+
+What the guard stores about a network address is bounded by the published
+privacy notice, which promises a keyed one-way digest, never the address, and
+nothing kept past the one-hour window:
+
+```text
+source record, service_waitlist_source/v2
+├── named by HMAC-SHA256 of the source key under the host secret that
+│   source_secret_ref names; never by the address, and never by a digest
+│   anyone could recompute from a guessed address
+├── holds the times of accepted entries inside the window and nothing else
+└── every request removes the times that have left the window from every
+    source record; a record with no time left keeps its version and an empty
+    list, because the catalogue store has no removal operation
+```
+
+A host that names no secret takes no count, and the entry records
+`no_source_secret`, as a host that declares no source records
+`no_declared_source`. It never falls back to a plain digest. A named secret
+that cannot be read, or one shorter than 32 characters, refuses the request
+before any write. The reader refuses the first record version, which was named
+by the address itself; this release never counts or rewrites such a record.
+The window is at most one hour, the period the privacy notice promises.
 
 A listing shows the address and the note, so it requires the administration
 scope. A person who leaves an address learns only the state of their own
@@ -52,6 +77,8 @@ request, which is the state they just created.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import hashlib
+import hmac
 import re
 import uuid
 
@@ -65,7 +92,11 @@ DECISION_VERSION = "service_waitlist_decision/v1"
 LISTING_VERSION = "service_waitlist_listing/v1"
 ENTRY_VIEW_VERSION = "service_waitlist_entry_view/v1"
 ENTRY_SCHEMA = "service_waitlist_entry/v1"
-SOURCE_SCHEMA = "service_waitlist_source/v1"
+#: Version two is named by a keyed digest of the source and holds only the times
+#: inside the window. Version one was named by the address itself and kept its
+#: times until the same address returned, so this release refuses it.
+SOURCE_SCHEMA = "service_waitlist_source/v2"
+SOURCE_FIELDS = frozenset({"record_type", "accepted", "window_seconds"})
 ENTRY, SOURCE = "service_waitlist_entry", "service_waitlist_source"
 WAITING, INVITED, JOINED, DECLINED, REMOVED = "waiting", "invited", "joined", "declined", "removed"
 STATES = (WAITING, INVITED, JOINED, DECLINED, REMOVED)
@@ -88,6 +119,17 @@ NOT_FOUND = "waitlist_entry_not_found"
 TRANSITION_REFUSED = "waitlist_transition_refused"
 DIRECTORY_UNAVAILABLE = "waitlist_account_directory_unavailable"
 COUNTED_SOURCE, UNCOUNTED_SOURCE = "counted", "no_declared_source"
+UNKEYED_SOURCE = "no_source_secret"
+SOURCE_SECRET_UNAVAILABLE = "waitlist_source_secret_unavailable"
+SOURCE_SECRET_UNUSABLE = "waitlist_source_secret_unusable"
+#: The host names its source secret as an environment reference, the same
+#: form every other host secret takes, and never as the value itself.
+ENVIRONMENT_REFERENCE = re.compile(r"env:[A-Za-z0-9_./:-]+")
+#: A shorter secret could be guessed together with the address it keys.
+SHORTEST_SOURCE_SECRET = 32
+#: The published privacy notice promises that the times kept for an address
+#: are removed once the one-hour window has passed, so no host may set more.
+LONGEST_SOURCE_WINDOW_SECONDS = 3600
 LONGEST_ADDRESS = 254
 LONGEST_LOCAL_PART = 64
 # The same address shape that tools/invite_beta_user.py accepts. An address
@@ -108,22 +150,43 @@ def _positive(value, lowest, highest, code):
     return value
 
 
+def keyed_source_digest(secret, source_key):
+    """The keyed one-way digest that stands for one source in every stored record.
+
+    HMAC-SHA256 under the host secret. The record version is part of the
+    message, so the same secret gives unrelated digests to another purpose.
+    Without the secret nobody can test a guessed address against a record.
+    """
+    return hmac.new(secret.encode("utf-8"), (SOURCE_SCHEMA + "\n" + source_key).encode("utf-8"),
+                    hashlib.sha256).hexdigest()
+
+
 @dataclass(frozen=True)
 class WaitlistPolicy:
-    """Passive host-installed limits. A request cannot widen any of them."""
+    """Passive host-installed limits. A request cannot widen any of them.
+
+    `source_secret_ref` names the secret that keys the flood guard's source
+    digest, as an environment reference written `env:NAME`. Empty means the
+    host names no secret, and then the guard takes no count at all.
+    """
 
     writes_authorized: bool = False
     accepted_for_each_source: int = 5
     source_window_seconds: int = 3600
     longest_note_characters: int = 280
     longest_listing: int = 200
+    source_secret_ref: str = field(default="", repr=False)
     record_type: str = POLICY_VERSION
 
     def __post_init__(self):
         if self.record_type != POLICY_VERSION or type(self.writes_authorized) is not bool:
             raise ServiceRuntimeError("invalid_waitlist_policy")
+        if not isinstance(self.source_secret_ref, str) or (
+                self.source_secret_ref and ENVIRONMENT_REFERENCE.fullmatch(self.source_secret_ref) is None):
+            raise ServiceRuntimeError("invalid_waitlist_policy",
+                                      "the source secret is named as an environment reference, env:NAME")
         _positive(self.accepted_for_each_source, 1, 1000, "invalid_waitlist_policy")
-        _positive(self.source_window_seconds, 60, 2_592_000, "invalid_waitlist_policy")
+        _positive(self.source_window_seconds, 60, LONGEST_SOURCE_WINDOW_SECONDS, "invalid_waitlist_policy")
         _positive(self.longest_note_characters, 1, 2000, "invalid_waitlist_policy")
         _positive(self.longest_listing, 1, 1000, "invalid_waitlist_policy")
 
@@ -247,11 +310,14 @@ class ServiceWaitlist:
     """Catalogue-backed waiting list, used by governed HTTP operations."""
 
     def __init__(self, runtime: ServiceRuntime, policy: WaitlistPolicy = WaitlistPolicy(), *,
-                 account_directory: WaitlistAccountDirectory | None = None):
+                 account_directory: WaitlistAccountDirectory | None = None, secret_resolver=None):
         if (not isinstance(runtime, ServiceRuntime) or not isinstance(policy, WaitlistPolicy)
-                or (account_directory is not None and not isinstance(account_directory, WaitlistAccountDirectory))):
+                or (account_directory is not None and not isinstance(account_directory, WaitlistAccountDirectory))
+                or (secret_resolver is not None and not callable(secret_resolver))
+                or (policy.source_secret_ref and secret_resolver is None)):
             raise ServiceRuntimeError("invalid_waitlist_policy")
         self.runtime, self.policy, self.account_directory = runtime, policy, account_directory
+        self._secrets = secret_resolver
 
     @staticmethod
     def _entry(row):
@@ -276,22 +342,87 @@ class ServiceWaitlist:
             raise ServiceRuntimeError("waitlist_administration_forbidden")
         return current, guards
 
+    @staticmethod
+    def _source_payload(row):
+        """The payload of one source record of the current version, or a refusal.
+
+        The field set is exact, so a record that carries anything beyond its
+        times is refused rather than read around, and the first version, which
+        was named by the address itself, is refused rather than rewritten.
+        """
+        payload = row.get("payload") if row is not None else None
+        if (not isinstance(payload, dict) or payload.get("record_type") != SOURCE_SCHEMA
+                or set(payload) != SOURCE_FIELDS or not isinstance(payload["accepted"], list)
+                or any(type(value) not in (int, float) for value in payload["accepted"])):
+            raise ServiceRuntimeError("unsupported_or_corrupt_record")
+        return payload
+
+    def _source_secret(self):
+        """Read the host secret at use, the way every other host secret is read. It is never stored."""
+        try:
+            value = self._secrets(self.policy.source_secret_ref)
+        except Exception:
+            raise ServiceRuntimeError(SOURCE_SECRET_UNAVAILABLE,
+                                      "the secret that keys the source digest cannot be read") from None
+        if (not isinstance(value, str) or len(value) < SHORTEST_SOURCE_SECRET
+                or any(character.isspace() or not character.isprintable() for character in value)):
+            raise ServiceRuntimeError(SOURCE_SECRET_UNUSABLE,
+                                      "the secret that keys the source digest is too short or not plain text")
+        return value
+
+    def _keyed_source(self, source_key):
+        """The keyed digest that names one source's record, or None when the host names no secret."""
+        if not self.policy.source_secret_ref:
+            return None
+        return keyed_source_digest(self._source_secret(), source_key)
+
+    def _forget_expired_sources(self, store, catalog, now):
+        """Remove every count that has left the window, from every source record.
+
+        It runs on every request to join, whether or not that request is
+        counted, so a source that never returns does not keep its times until
+        it does. A record with no count left keeps its version and an empty
+        list: the catalogue store has no removal operation, and the record's
+        name is a keyed digest that nobody without the host secret can link to
+        an address. Another writer that changed one of these records first is
+        not an error here. That writer ran the same sweep, and the next request
+        sweeps again. An unknown commit is reported, never assumed.
+        """
+        oldest = now - self.policy.source_window_seconds
+        changed, guards = [], []
+        for row in catalog.rows_all(store, SOURCE):
+            payload = self._source_payload(row)
+            kept = [value for value in payload["accepted"] if value > oldest]
+            if kept != payload["accepted"]:
+                changed.append({**row, "record_version": uuid.uuid4().hex,
+                                "payload": {**payload, "accepted": kept}})
+                guards.append(catalog.guard(row))
+        if not changed:
+            return 0
+        try:
+            catalog.commit(store, changed, guards)
+        except ServiceRuntimeError as error:
+            if error.code != "concurrent_update":
+                raise
+            return 0
+        return len(changed)
+
     def _source_guard(self, store, catalog, request, now):
         """Count accepted entries for one source inside the window; refuse an obvious flood."""
         if not request.source_key:
             return None, None, UNCOUNTED_SOURCE
-        row = catalog.read(store, SOURCE, request.source_key)
-        payload = row["payload"] if row is not None else {}
-        if row is not None and payload.get("record_type") != SOURCE_SCHEMA:
-            raise ServiceRuntimeError("unsupported_or_corrupt_record")
+        keyed = self._keyed_source(request.source_key)
+        if keyed is None:
+            return None, None, UNKEYED_SOURCE
+        row = catalog.read(store, SOURCE, keyed)
+        payload = self._source_payload(row) if row is not None else {"accepted": []}
         oldest = now - self.policy.source_window_seconds
-        accepted = [value for value in payload.get("accepted", []) if type(value) in (int, float) and value > oldest]
+        accepted = [value for value in payload["accepted"] if value > oldest]
         if len(accepted) >= self.policy.accepted_for_each_source:
             raise ServiceRuntimeError(SOURCE_FLOODED, "this source has sent too many requests; try again later")
-        changed = catalog.record(SOURCE, request.source_key, {
-            "record_type": SOURCE_SCHEMA, "source_digest": digest([request.source_key]),
-            "accepted": [*accepted, now][-self.policy.accepted_for_each_source:],
-            "window_seconds": self.policy.source_window_seconds, "updated_at": now})
+        changed = catalog.record(SOURCE, keyed, {
+            "record_type": SOURCE_SCHEMA, "accepted": [*accepted, now][-self.policy.accepted_for_each_source:],
+            "window_seconds": self.policy.source_window_seconds})
         return changed, catalog.guard(row, changed["record_id"]), COUNTED_SOURCE
 
     def join(self, request: WaitlistRequest):
@@ -302,6 +433,7 @@ class ServiceWaitlist:
             raise ServiceRuntimeError("waitlist_writes_not_authorized")
         catalog, now = self.runtime._catalog, self.runtime._now()
         with catalog.store(write=True) as store:
+            self._forget_expired_sources(store, catalog, now)
             existing = catalog.read(store, ENTRY, request.email)
             held = self._entry(existing).get("state") if existing is not None else None
             if held == JOINED:

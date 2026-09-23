@@ -39,4 +39,4 @@ A stock counter is decreased by reading the current value, subtracting one and w
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision f29bddc.
+Licence: MIT. Written for this catalogue at revision d893bba.

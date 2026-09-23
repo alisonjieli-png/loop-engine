@@ -515,7 +515,8 @@ def _status(error):
     if code in ("meter_commit_unknown", "commit_unknown", "session_operation_in_progress",
                 "session_reconciliation_window_exhausted", "session_network_authority_required",
                 "billing_customer_not_bound", "session_record_unavailable",
-                "waitlist_unavailable", "waitlist_account_directory_unavailable"):
+                "waitlist_unavailable", "waitlist_account_directory_unavailable",
+                "waitlist_source_secret_unavailable", "waitlist_source_secret_unusable"):
         return 503, code
     return 400 if isinstance(error, (ProvisioningError, ServiceRuntimeError)) else 500, code
 

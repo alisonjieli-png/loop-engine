@@ -40,4 +40,4 @@ A manager asks whether the migration can go ahead on Friday. The answer is a log
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work function for communicating and preparing reuse.
 - `src/loop_engine/strings/question_engine.py`: the question forms named `report_shaping` and `stakeholder_view`.
 
-Licence: MIT. Compiled from revision f29bddc.
+Licence: MIT. Compiled from revision d893bba.
