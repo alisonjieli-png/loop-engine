@@ -1792,7 +1792,8 @@ slots:
     retired_engines: []
     known_direct_construction_sites: []
     existing_checks:
-      - core.service_runtime.http_checks:remote_protocol_refuses_unqualified_versions_without_silent_negotiation
+      - core.service_runtime.protocol_checks:initialize_for_an_unsupported_version_is_answered_with_a_supported_version
+      - core.service_runtime.protocol_checks:a_request_naming_an_unsupported_version_is_refused_before_any_effect
     planned_checks: [a_second_protocol_version_is_selected_only_by_exact_negotiation]
   - record_type: engine_slot/v1
     slot_id: request_limit_state
