@@ -2,8 +2,10 @@
 
 The fixture harness discovers material the way Codex does: its configuration
 folder, the skills of its home folder, the instruction files up to its git
-root and its declared protocol servers. It sends what it loaded to the
-loopback endpoint. The tests need Bubblewrap and run no real harness.
+root and its declared protocol servers. Asked to, it also reads the
+instruction file of the folder above its git root, as Pi and Claude Code do
+without their explicit flags. It sends what it loaded to the loopback
+endpoint. The tests need Bubblewrap and run no real harness.
 """
 from __future__ import annotations
 
@@ -34,7 +36,8 @@ provider = config["model_providers"][config["model_provider"]]
 cwd = Path.cwd()
 root = next((folder for folder in (cwd, *cwd.parents) if (folder / ".git").exists()), cwd)
 folders = [folder for folder in (cwd, *cwd.parents) if folder == root or root in folder.parents]
-instructions = [(folder / "AGENTS.md").read_text() for folder in folders if (folder / "AGENTS.md").is_file()]
+readable = folders + ([root.parent] if "--read-parent-instructions" in arguments else [])
+instructions = [(folder / "AGENTS.md").read_text() for folder in readable if (folder / "AGENTS.md").is_file()]
 roots = [home / ".agents" / "skills"] + [folder / ".agents" / "skills" for folder in folders]
 skills = [path.read_text() for base in roots if base.is_dir() for path in sorted(base.glob("*/SKILL.md"))]
 tools = []
@@ -181,6 +184,15 @@ class FreshInstanceCheckTest(unittest.TestCase):
         result = self._run(arguments=["exec", "--use-passwd-home", "{probe_prompt}"])
         self.assertEqual(result["status"], "failed")
         self.assertTrue(result["launches"]["recipe"]["decoys_found"])
+
+    @unittest.skipUnless(_sandbox_available(), "Bubblewrap with a network namespace is required")
+    def test_a_harness_that_reads_instruction_files_above_the_step_is_caught(self):
+        """The September 22 cross-harness finding: an instruction file in the
+        folder above the step reaches the request unless a flag stops it."""
+        result = self._run(arguments=["exec", "--read-parent-instructions", "{probe_prompt}"])
+        self.assertEqual(result["status"], "failed")
+        self.assertTrue(any("DECOY-PARENT" in marker
+                            for marker in result["launches"]["recipe"]["decoys_found"]))
 
     @unittest.skipUnless(_sandbox_available(), "Bubblewrap with a network namespace is required")
     def test_an_exit_without_a_request_is_not_loading(self):
