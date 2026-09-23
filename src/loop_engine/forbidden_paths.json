@@ -35,13 +35,17 @@
     "backend_isolation.py",
     "memory/__init__.py",
     "generation/__init__.py",
-    "templates/__init__.py"
+    "templates/__init__.py",
+    "core/harness_process_relay.py",
+    "core/harness_recipes.py"
   ],
   "dynamic_import_allowed_modules_reasons": {
     "__init__.py": "the package's documented public surface (from loop_engine import PractitionerLoop) resolved LAZILY, so importing the package stays cheap and no import cycle is created. This is a re-export of the canonical runtime, NOT the registration bypass the gate exists to catch: it registers nothing, and every name resolves to an already-mapped module.",
     "architecture_contract.py": "resolves the canonical runtime class declared in architecture.yaml",
     "backend_isolation.py": "proves the base package imports without optional backends",
     "catalog/__init__.py": "lazy public-name resolution for the catalog package, same pattern as the root package",
+    "core/harness_process_relay.py": "imports only the recipe module and the wire codec modules the release catalogue names and the sandbox mounts, each after its bytes match the catalogue digest",
+    "core/harness_recipes.py": "loads only a module the release recipe catalogue names, from the package folder, after its bytes match the digest the catalogue records; the process runner uses it to call the selected recipe's extract function, and loading registers nothing",
     "core/external_harness_adapters.py": "the adapter checks installed optional harness packages and their versions without registering or importing them during discovery; actual framework imports occur only after a caller selects and runs that explicit adapter.",
     "generation/__init__.py": "lazy public-name resolution for the generation package, same pattern as the root package",
     "memory/__init__.py": "lazy public-name resolution for the memory package, same pattern as the root package",

@@ -4154,6 +4154,111 @@ entries:
       A dated research source list drawn from the feed the owner shared on September 22, 2026. The research source watcher reads it only in an explicit, bounded online run and writes a new dated report; naming each address is the purpose of the file, and nothing in the product reads it.
     classification: STRATEGY_OR_PROVIDER_BINDING
     created_on: 2026-09-22
+  - finding_id: hardcoding.946c71660d9bd209b88b160e
+    owner: loop_engine.core.harness_builtin_recipes
+    rationale: >-
+      The loopback origin prefix is the refusal rule of the Aider, Continue and Pi recipes: the only model address they accept is the sandbox's own relay. It is a closed safety boundary, not a provider choice, and has no caller override or deployment lifecycle.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.cbfd412d362451566af1bf33
+    owner: loop_engine.core.harness_fresh_instances
+    rationale: >-
+      Names the environment variable from which a fresh instance's model configuration reads its credential. The value is supplied at launch, is never written to a record, and the offline check supplies an obviously fake one; the name itself is not a secret.
+    classification: SECRET_OR_CREDENTIAL_REFERENCE
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.42a63a61e00d76e891927ccb
+    owner: loop_engine.core.harness_fresh_instances
+    rationale: >-
+      The provenance rule of a fresh instance recipe: its upstream is a public repository address. The prefix validates recorded data and selects no provider or behaviour.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.c10ca6af8164e58748f4ee5d
+    owner: loop_engine.core.harness_fresh_instances
+    rationale: >-
+      A step's model endpoint must be a loopback origin; the prefix is the layout's refusal rule, a closed safety boundary rather than a configurable provider address.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.0c2f53122a9723fd1ec88ec8
+    owner: loop_engine.core.harness_fresh_instances:FreshInstanceRecipe.from_dict
+    rationale: >-
+      The label of a refusal message raised by the harness_fresh_instance_recipe/v1 reader for a malformed variable name. It names nothing a caller configures.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.ec4c59767cb9e8c254f3af5a
+    owner: loop_engine.core.harness_fresh_instances:FreshInstanceRecipe.from_dict
+    rationale: >-
+      The label of a refusal message raised by the harness_fresh_instance_recipe/v1 reader for a malformed variable template. It names nothing a caller configures.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.cc68fb3b12a4947e482e1354
+    owner: loop_engine.core.harness_fresh_instances:FreshInstanceRecipe.from_dict
+    rationale: >-
+      The exact field name of the versioned harness_fresh_instance_recipe/v1 record, read by that record's own reader after its exact key check. The record's field list is the contract; the name is not a deployment setting.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.0c57d4b4bee53f3b119a047d
+    owner: loop_engine.data.harness_recipes.yaml:fresh_instance_recipes[3].source.upstream
+    rationale: >-
+      Provenance of the Claude Code configuration folder recipe: the upstream repository address, recorded as data in the release recipe catalogue. It selects no provider and is never contacted.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.1ffe55a916249d7f4693ee85
+    owner: loop_engine.data.harness_recipes.yaml:fresh_instance_recipes[1].source.upstream
+    rationale: >-
+      Provenance of the OpenCode fresh instance recipe: the upstream repository address, recorded as data in the release recipe catalogue. It selects no provider and is never contacted.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.711197cd12156280617486f3
+    owner: loop_engine.data.harness_recipes.yaml:fresh_instance_recipes[2].source.upstream
+    rationale: >-
+      Provenance of the Claude Code bare recipe: the upstream repository address, recorded as data in the release recipe catalogue. It selects no provider and is never contacted.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.ba6f695e2ed61c0d331ed307
+    owner: loop_engine.data.harness_recipes.yaml:fresh_instance_recipes[0].source.upstream
+    rationale: >-
+      Provenance of the Codex fresh instance recipe: the upstream repository address, recorded as data in the release recipe catalogue. It selects no provider and is never contacted.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.c6e0b624c7fc08de180d986d
+    owner: loop_engine.data.harness_recipes.yaml:fresh_instance_recipes[4].source.upstream
+    rationale: >-
+      Provenance of the Pi fresh instance recipe: the upstream repository address, recorded as data in the release recipe catalogue. It selects no provider and is never contacted.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.ffad924987e8991f6542a00e
+    owner: loop_engine.data.harness_recipes.yaml:fresh_instance_recipes[5].source.upstream
+    rationale: >-
+      Provenance of the ZCode candidate recipe at its pinned source revision, recorded as data in the release recipe catalogue. The candidate is never launched, selects no provider and makes no support claim.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.e6c677a155574a1eaac916e9
+    owner: tools.check_harness_fresh_instances
+    rationale: >-
+      The origin of the offline check's own recording endpoint inside the sandbox's private network namespace. No model or provider is behind it and nothing outside the sandbox can reach it.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
+  - finding_id: hardcoding.9509c1f7df6acadcf405a10a
+    owner: tools.check_harness_fresh_instances:_inner
+    rationale: >-
+      The key of the offline check's private job file that holds the launched harness's exact variables, written by the same tool one step earlier. It is an internal file field, not a deployment setting.
+    classification: DEPLOYMENT_CONFIGURATION
+    created_on: 2026-09-22
+    expires_on: 2027-09-22
 excluded_paths:
   - path: embodiments/openinterpreter_rust/latest-release.json
     owner: embodiments.openinterpreter_rust
