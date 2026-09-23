@@ -99,6 +99,12 @@ following the historical launch-order list mechanically.
 | Boundaries and operations | D-13, D-14, D-15, D-16 | Qualify execution and service security boundaries, intelligence ingestion and withdrawal, reliability and the customer data lifecycle, and installation and compatibility. |
 | Release | D-11 | Qualify the exact source and deployment, recovery, support and owner-approved paid access. |
 | Continued development | D-12 | Compare interchangeable engines and reviewed improvements without delaying unrelated delivery. |
+| Go fully live | D-25 | Registration, the paid funnel, a verified first load in the customer's own harness, every built page live, status and support. |
+| Packages at scale | D-26 | 10,000, then 100,000 approved packages, then 100 to 1,000 more a day from scouts, watchers, producers and a three-family panel. |
+| Clear components | D-27 | One generated component index, contract test kits for engines alone, in groups and end to end, and one home for every topic and term. |
+| Selectable engines | D-28 | Pinned, preferred and automatic selection at every slot, and a Baltor-native engine beside every adopted project. |
+| Agents that manage the system | D-29 | Reusable workflows and recurring reviews whose output is always a report or a candidate, later run as Practitioner Loops. |
+| A release train | D-30 | Release records for every kind, a customer changelog, feature flags and upgrades of the local engine. |
 
 The [benefit guide](../guides/launch-benefits-and-evidence.md) translates the
 owner's three launch themes into falsifiable checks. Overnight work requires
@@ -107,6 +113,147 @@ require complete matched accounting at a preserved quality floor. Useful
 expert context requires actual loading and task outcomes, including cases
 where adding information is better. No draft becomes a public claim merely
 because a planning row is complete.
+
+## Launch and scale program
+
+On September 23, 2026 the owner asked to take the product fully live, to grow
+the library to at least 100,000 harness packages and then add 100 to 1,000 a
+day, to manage and improve the system with agents, to onboard and upgrade
+customers, and to ship new features, packages and engines continuously. The
+owner also asked for simple, separated and contracted components with engines
+that can be swapped, tested alone and in groups, and for one index that keeps
+discussions and names from conflicting. The owner's words are recorded in the
+evidence of each step.
+
+The program has six parts. Each part is a delivery package in
+[roadmap.yaml](roadmap.yaml), which holds its steps, verification cases,
+authority limits and rollback. The table above lists them with the earlier
+packages. This section is planning detail, not a second source of task state.
+
+### Order of work
+
+The owner column names who holds the work today: the Codex session that owns
+the September 23 consolidation line, the Claude Code session that wrote this
+plan, engineering in general, recurring agents, or the owner. Only one item
+asks for the owner, and it has a fallback: OWNER-03 closes the identity
+provider's back-door sign-up so that Baltor's own sign-up can open to everyone.
+If it does not happen, engineering neutralizes the back door with a
+service-side guard instead. Engineering decides everything else and records the
+reason, as the
+[commit, push and release authority](../../AGENTS.md#commit-push-and-release-authority)
+section of AGENTS.md says.
+
+| When | Owner | Work | Roadmap steps | Done when |
+|---|---|---|---|---|
+| Tonight | Codex | Push the consolidated tree after full continuous integration on the exact tree: catalogue re-anchoring, email-first sign-up (switched off), documentation pages, search effects, library tools and the review panel repairs. | S-6.29, S-6.62 | Continuous integration passes on the pushed revision and every line the tree added survives the merge. |
+| Tonight | Claude | Commit or archive every remaining piece of work: the Astra compiler handoff, the naming resolution, the reusable workflows, this session's research records and wave 5 candidates; list anything archived in the work archive register. | S-6.29, S-6.76 | No uncommitted work without an owner remains in the shared checkout; everything is on main or in the register. |
+| Tonight | Owner | OWNER-03, about 30 seconds: in Claude Code run /mcp and sign in to baltor-supabase, so engineering can close the identity provider's back-door sign-up. Baltor's own sign-up stays open to everyone; this is what makes opening it safe. | S-6.65 | Engineering confirms the back door is refused and opens registration. |
+| Tonight | Engineering | Release 22 from the consolidated main through the guarded workflow, run the live checks on all eight hostnames and record the release with its rollback image. | S-6.35, S-6.78 | The running image digest equals the built digest and every hosted check passes. |
+| Next 72 hours | Engineering | Fallback that needs nobody: a service-side guard that honours only accounts Baltor created and replaces a provider-created account when the real person signs up, with the pre-hijacking case as its known-wrong test. | S-6.65 | An account created through the provider's endpoint never reaches Baltor, and the real person's sign-up wins. |
+| Next 72 hours | Engineering | Stage the two sign-up secrets through standard input and the account email host block, switch registration on, and run the live sign-up journey with its negative controls. | S-6.65 | A fresh address signs up live; the provider's public path is refused. |
+| Next 72 hours | Engineering | One way in: every customer account comes from Baltor's sign-up; staff get superadmin, developer or analytics roles fixed in code; invitations, the waiting list, hand-issued customer keys and the provider's raw sign-up are retired as ways in. | S-6.85 | A named check refuses every other way to open an account. |
+| Next 72 hours | Engineering | Run the paid funnel with a staff test account: subscribe, portal, cancel; Get set up returns one exact path; the first package load is verified from the harness's own record. | S-6.66, S-6.21, S-6.48 | Each fact (entitled, set up, loaded) is recorded separately. |
+| Next 72 hours | Engineering | Serve every built page: /models, /use-cases and its pages, /status, the documentation pages, per-hostname pages, robots.txt, sitemap.xml, canonical and social tags; switch the site map check on. | S-6.67, S-6.33 | The site map check passes on every hostname. |
+| Next 72 hours | Engineering | Fix what the responsive lab found: the pricing button, headings at 200% text, the reader's text size, layout shift, 44 pixel targets and a 68 character measure; rerun the lab on three engines. | S-6.67, S-6.33 | The lab passes within the scroll budgets. |
+| Next 72 hours | Engineering | Calibrate the three-family panel on the malicious and benign controls with Ollama Cloud models and the Codex command line; record the error gate and the throughput per hour. | S-6.63, S-6.69 | The panel meets its gate; throughput is measured, not assumed. |
+| Next 72 hours | Engineering | Adjudicate the round two approval conflicts and release only the correctly approved subset; verify isolation and the demonstration digests. | S-6.62 | No item is released without a valid three-family approval. |
+| Next 72 hours | Engineering | Put wave 5 and the Codex twelve-package cohort through the panel and release what passes. | S-6.69 | Approved packages appear in a catalogue release with notes. |
+| Next 72 hours | Engineering | Run the overnight proof with Gemma 4 on Ollama Cloud within its 600-request ceiling and put the measured result on /models. | S-6.47, S-6.37 | The dated report shows accepted work, time, tokens and failures. |
+| Next 72 hours | Engineering | Pass the 100,000-row serving probe with paged listing and an index built once for each catalogue release. | S-6.70 | The probe passes its unchanged thresholds. |
+| This week | Engineering | Scale the factory to the panel's measured capacity: daily waves from the gap matrix and search misses, producers of two or more families, daily catalogue releases. | S-6.69, S-6.62 | Per-day counts of generated, approved and released packages and their files are recorded. |
+| This week | Engineering | Serve multi-file packages in each harness's own layout through the Harness Working Directory Compiler, native engine first, agent-harness as an optional engine for text configuration, binaries and modes written byte for byte. | S-6.44, S-6.75 | Two harnesses load the same package with every byte and mode intact. |
+| This week | Engineering | Add the index-backed search engine behind the search slot, calibrate the relevance floor on the held-out set and turn on the anti-scraping quotas. | S-6.32, S-6.52, S-6.39 | Recall, refusal accuracy and latency are recorded against the current engine. |
+| This week | Engineering | Adopt the functional component standard after independent review: the extended rule 6 in AGENTS.md, one standard document extending the engine slot design, the terms in terminology.yaml, and the first enforcing checks. | S-6.84, S-6.30 | Each rule maps to a field, record or check; no second registry appears. |
+| This week | Engineering | Generate the component index and add its drift check; settle the compiler and package names in terminology.yaml; start the topic index. | S-6.71, S-6.73 | The index check fails on a stale page and on a term with two definitions. |
+| This week | Engineering | Give the step executor, search and material install layout slots their contract test kits; add group and journey tests; run isolated bindings in containers. | S-6.72 | A deliberately broken engine fails the kit that a real engine passes. |
+| This week | Engineering | Map pinned, preferred and automatic selection onto the slot fields with decision records. | S-6.74 | A pinned engine never falls back; every selection is recorded. |
+| This week | Engineering | Commit the reusable workflows and declare the recurring reviews; choose the scheduler and record the first scheduled runs. | S-6.76 | Each recurring job has a recorded run and an effect policy. |
+| This week | Engineering | Support address, status view from the hosted checks and the incident runbook, exercised once. | S-6.68 | A forced check failure shows on the status view. |
+| This week | Engineering | Release records for every kind, a customer changelog page, and feature flags through host configuration, starting with registration. | S-6.78, S-6.79 | A flag turns a feature on for one account and off again without a release. |
+| Next two weeks | Engineering | Record the 10,000 approved packages milestone with its catalogue release, then keep the daily rate toward 100,000. | S-6.69 | The milestone names the release, the package count and the file count. |
+| Next two weeks | Engineering | Source scouts for skills, plugins, protocol servers and harness files, and release-note watchers for the supported harnesses and tools. | S-6.81, S-6.82 | Finds become candidates with licences or idea records; nothing restricted is copied. |
+| Next two weeks | Engineering | Plugins and setup paths: Claude Code plugin listing, Codex, OpenCode, Pi, Hermes and OpenClaw, and a protocol server bundle; one exact path per harness and hardware. | S-6.48, S-6.49 | Each plugin's session records the package offered, fetched, loaded and used. |
+| Next two weeks | Engineering | The harness executor slot delegates one real step to each supported harness, including through the Agent Client Protocol. | S-6.31, S-6.42 | One step per harness is recorded as configured, loaded, used and verified. |
+| Next two weeks | Engineering | With-and-without comparisons through Harbor on their own subdomains: data cleanup, tickets overnight on a small model, and a data science competition. | S-6.37, S-6.47 | Each comparison states its task population, models, failures and cost. |
+| Next two weeks | Engineering | Weekly Harness File Profile refresh and the first maintenance Practitioner Loop. | S-6.80, S-6.77 | A changed harness convention becomes a candidate profile change. |
+| Next two weeks | Engineering | Publish the local engine to a package index with an upgrade command, and write the scale plan from measured load. | S-6.78, S-6.57, S-4.6 | An upgrade negotiates versions and keeps settings; the scale plan names its trigger. |
+| Continuous | Agents | Daily state review, nightly library wave, weekly harness profile refresh, weekly research and news sweep, weekly plan validation, weekly restore drill. | S-6.76, S-6.80, S-6.82 | Every run is recorded; no job pushes, approves or publishes on its own. |
+| Continuous | Engineering | Maintain the library at scale: re-verify on harness changes, merge near-duplicates, withdraw with reasons, rank by measured use and learn from retrieval. | S-6.83, S-6.51 | The library stays correct as it grows. |
+| Continuous | Engineering | Wrap every newly adopted outside project behind a slot with a Baltor-native engine beside it. | S-6.75 | Swapping the two is a configuration change. |
+
+### The package factory
+
+The factory turns sources into approved packages and keeps them correct. Its
+milestone unit is a distinct approved package, as decided on September 22,
+2026. The files inside the packages are counted beside that number, and a
+candidate is never counted as approved.
+
+```text
+Package factory
+├── Sources
+│   ├── the gap matrix of file class, domain, harness and occupation
+│   ├── customer search misses and repeated asks
+│   ├── scouts over GitHub, package registries, skill and plugin marketplaces
+│   │   and the protocol server registry
+│   └── watchers over the release notes of harnesses, tools and standards
+├── Rights
+│   ├── copying allowed: the importer, with the licence file and notices
+│   └── copying not allowed: an idea record, then an original rewrite
+├── Producers from at least two model families
+├── Deterministic pre-checks: parsers, the Agent Skills validator, scripts
+│   against their own tests in a sandbox, secret and network scans, and the
+│   malicious-skill regression set
+├── Critique and repair by an agent that did not write the package
+├── Review panel: three approvals from three families that did not produce it
+├── Native loading sample: configured, loaded, used and verified
+├── Daily catalogue release with notes a customer can read
+└── Maintenance: re-verify on harness changes, merge near-duplicates,
+    withdraw with reasons, rank by measured use
+```
+
+The rate is set by measurement, not by hope. Reaching 10,000 approved packages
+in twenty days needs about 500 approvals a day; reaching 100,000 in a further
+ninety days needs about 1,000 a day. The panel's measured throughput and error
+gate (roadmap step S-6.63) decide the daily wave size, and every run declares a
+ceiling on model calls and stops before it.
+
+### Clear components, selectable engines and one index
+
+Every functional component keeps one typed, versioned contract, and any number
+of engines may implement it behind that contract. The design already exists in
+[Engines behind fixed edges](../architecture/ENGINES-BEHIND-FIXED-EDGES.md) and
+the slot catalogue `src/loop_engine/data/engine_slots.yaml`. Step S-6.84 writes
+it into the development rules as one short rule and one standard, each rule with
+a check.
+
+```text
+Functional component
+├── Contract: typed request, result, errors, effects and version
+├── Engines behind the contract
+│   ├── Baltor-native engine
+│   └── engine adapter around an outside project, pinned by revision and licence
+├── Binding: function, subprocess, HTTP, protocol server, WebAssembly or container
+├── Selection: pinned, preferred or automatic, with a recorded decision
+├── Tests
+│   ├── every engine alone against the shared contract test kit
+│   ├── components in groups over their typed edges
+│   └── customer journeys end to end
+└── One generated index entry with its guide, owning folder and terms
+```
+
+An outside project is used through an engine adapter. The word wrapper stays
+reserved for the layered harness wrappers of
+[the harness wrapper design](../architecture/LAYERED-HARNESS-WRAPPERS-AND-NATIVE-CONTROL.md),
+so the two ideas do not blur.
+
+### Agents that manage the system
+
+The [reusable development workflows](../../artifacts/agent-workflows-2026-09-23/README.md)
+review the state, grow the library, rediscover harnesses, sweep research and
+news, and validate the plan. The roadmap's recurring reviews declare their
+schedules and effect policies: reports and candidates only. A recurring job
+never pushes, approves or publishes on its own. Step S-6.77 later runs these
+jobs as Practitioner Loops through the canonical runtime.
 
 ## One architecture, several delivery surfaces
 

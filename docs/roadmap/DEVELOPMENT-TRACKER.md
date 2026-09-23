@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8c9c21f033ad8`.
+Source fingerprint: `sha256:142e277f8dafa74eccf934041cd20a412a755f95c49797fa4c5331e5e1d03d28`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 36 |
-| Can start next | 12 |
-| Waiting on earlier work | 50 |
+| Being built now | 39 |
+| Can start next | 13 |
+| Waiting on earlier work | 67 |
 | Blocked | 2 |
 | Done | 42 |
 
@@ -22,10 +22,13 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 | S-6.29 | Consolidate every branch and worktree onto main, restore what the September 22 merges dropped, and keep only the snapshot branch | building | S-6.28 |
 | S-6.35 | Release automation and automated live checks after every release | building | S-6.26 |
 | S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
+| S-6.67 | Serve every built page and hostname surface | building | S-6.33 |
+| S-6.65 | Open public registration with email-first sign-up | building | S-6.24, S-6.46 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | Land the authority section, reconcile the entry points, then apply the README plan. |
 | S-6.30 | Engines behind fixed edges: the shared engine framework | building | S-6.28 |
 | S-6.31 | The harness executor slot: delegate each step to a standard harness | building | S-6.30 |
 | S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | building | S-6.31 |
+| S-6.69 | The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day | building | S-6.40, S-6.63, S-6.62 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification. |
@@ -61,6 +64,7 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
 | S-6.44 | Harness Working Directory Compiler and native package compatibility | proposed | Extend ClientLayoutProfile and the existing material_install_layout slot into the Harness Working Directory Compiler: a Baltor engine and optional upstream engine consume passive versioned compatibility profiles. Keep co |
+| S-6.76 | Reusable development workflows and recurring reviews with declared effect policies | ready | Choose a scheduler that can run the workflows against this machine (a timer that starts a headless harness, or a hosted routine for read-only jobs) and record the first scheduled runs. |
 | S-2.10 | Intelligence access contract and no-direct-edit conformance rule | proposed |  |
 | S-2.18 | Relayer each declared boundary package from core one boundary at a time | proposed |  |
 | S-2.19 | Move the specifications at the docs root into their kind folders with redirect stubs | proposed |  |
@@ -77,9 +81,12 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 
 | Step | Title | Status | Waiting on or next work |
 |---|---|---|---|
+| S-6.68 | Support, status and incident response for paying customers | proposed | S-6.35 |
 | S-6.46 | Close the dated deadlines and small gaps before inviting users | proposed | S-6.35 |
+| S-6.85 | One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code | proposed | S-6.65 |
 | S-6.39 | Search access policy: protect the library from scraping, with a free quota to start | proposed | S-6.32 |
 | S-6.38 | A familiar customer dashboard with the full account lifecycle | proposed | S-6.33 |
+| S-6.66 | Self-serve paid onboarding with a verified first load in the customer's harness | proposed | S-6.65, S-6.21, S-6.48 |
 | S-6.48 | Setup paths for every kind of customer, with seeded starter files | proposed | S-6.42 |
 | S-6.55 | Persona reviews after every release | proposed | S-6.33 |
 | S-6.49 | Subscription plugins for Hermes Agent and OpenClaw | proposed | S-6.44 |
@@ -89,7 +96,10 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 | S-6.52 | More retrieval engines behind the search slot | proposed | S-6.32 |
 | S-6.60 | A layer before every model call that decides one model or several | proposed | S-6.30 |
 | S-6.40 | Grow the library: original package factory first, scheduled source ingestion later | proposed | S-6.30 |
+| S-6.81 | Source scouts: search tools for skills, plugins, protocol servers and harness files | proposed | S-6.40, S-6.76 |
 | S-6.63 | An independent review panel of several model families | proposed | S-6.45 |
+| S-6.70 | Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search | proposed | S-6.62, S-6.32 |
+| S-6.83 | Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal | proposed | S-6.69, S-6.51 |
 | S-6.64 | Independently authored alternatives to restricted-source ideas | proposed | S-6.63 |
 | S-6.54 | Data-work intelligence packs as text and as tested code | proposed | S-6.40 |
 | S-6.53 | Generate intelligence along the occupation grid | proposed | S-6.40 |
@@ -102,6 +112,8 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 | S-6.47 | Measure each item against a no-skill arm and a raw-source arm before claiming a benefit | proposed | S-6.37 |
 | S-6.59 | Go-to-market: early, useful replies under popular posts, approved by a person | proposed | S-6.36 |
 | S-6.57 | A scale plan from one machine to many services | proposed | S-6.35 |
+| S-6.78 | A release train for the service, the catalogue, client recipes and plugins, and the local engine | proposed | S-6.35, S-6.62 |
+| S-6.79 | Feature flags and staged rollout through versioned host configuration | proposed | S-6.78 |
 | S-6.8 | Connect credential leases and resource admission to harness lifetime | proposed | S-6.7 |
 | S-6.10 | Publish qualified starter packages and prove client retrieval | proposed | S-6.4, S-6.5 |
 | S-6.9 | Qualify actual instruction and capability use in native harnesses | proposed | S-6.5, S-6.7, S-6.8 |
@@ -111,6 +123,15 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 | S-6.14 | Qualify the release candidate on the exact exported tree | proposed | S-6.4, S-6.5, S-6.6, S-6.10, S-6.12, S-6.13, S-6.21, S-6.23, S-6.24, S-6.26, S-6.27 |
 | S-6.16 | Activate approved paid access and publish the release decision | proposed | S-6.6, S-6.15, S-6.21 |
 | S-6.19 | Continue flexible composition and controlled improvement research | proposed | S-6.3, S-6.20, S-6.14 |
+| S-6.84 | Write the functional component standard into the development rules, with a check for each rule | proposed | S-6.30, S-6.34 |
+| S-6.71 | One generated component index with a drift check | proposed | S-6.30, S-6.34 |
+| S-6.72 | Contract test kits: every engine alone, components in groups, the system end to end | proposed | S-6.30, S-6.71 |
+| S-6.73 | One topic and decision index, with a term conflict check | proposed | S-6.34, S-6.71 |
+| S-6.74 | Pinned, preferred and automatic engine selection at every slot | proposed | S-6.30 |
+| S-6.75 | An upstream engine and a Baltor-native engine for every adopted outside project | proposed | S-6.74, S-6.72 |
+| S-6.77 | Maintenance as Practitioner Loops that stage candidates for independent review | proposed | S-6.76, S-6.41 |
+| S-6.80 | Keep every Harness File Profile current with a verified weekly refresh | proposed | S-6.44, S-6.76 |
+| S-6.82 | News and release watchers that turn changes into component work | proposed | S-6.81 |
 | S-2.11 | Search characteristics sidecar and hybrid retrieval over two adapters | proposed | S-2.10 |
 | S-2.21 | Browser harness adapter with an element table reader and independent outcome verification | proposed | S-2.2 |
 | S-2.25 | Execution profile per workload class instead of one shape for every node | proposed | S-2.23 |
@@ -176,6 +197,12 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 | D-22 | Learn from every request and grow the library by occupation and data work | continued_improvement | 0 of 8 |
 | D-23 | Show, review, reach and scale | initial_service | 0 of 4 |
 | D-24 | Take requests for access and invite one person from them | initial_service | 0 of 3 |
+| D-25 | Go fully live: open registration and self-serve paid onboarding | public_launch | 0 of 7 |
+| D-26 | Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day | public_launch | 0 of 9 |
+| D-27 | Clear components: one index, contract test kits and one home for every topic and term | continued_improvement | 0 of 4 |
+| D-28 | Selectable engines at every slot, with a Baltor-native engine beside every adopted project | continued_improvement | 0 of 7 |
+| D-29 | Agents that manage and improve the system | continued_improvement | 0 of 6 |
+| D-30 | A release train for upgrades, features, packages and engines | public_launch | 0 of 4 |
 
 ## Only the owner can do these
 
@@ -183,7 +210,7 @@ Source fingerprint: `sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8
 |---|---|---|
 | OWNER-01 | Private pilot limits are recorded | prepared |
 | OWNER-02 | Fly account and private pilot are prepared | prepared |
-| OWNER-03 | Optional: grant authentication-settings access at the identity provider | optional |
+| OWNER-03 | Close the identity provider's back-door sign-up so that Baltor registration can open to everyone | now |
 | OWNER-04 | Engineering prepares private intelligence storage | engineering |
 | OWNER-05 | Stripe sandbox credentials are prepared | engineering |
 | OWNER-06 | Domain and registrar access are prepared | engineering |

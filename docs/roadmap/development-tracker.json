@@ -2,9 +2,9 @@
  "counts": {
   "blocked": 2,
   "done": 42,
-  "next": 12,
-  "now": 36,
-  "waiting": 50
+  "next": 13,
+  "now": 39,
+  "waiting": 67
  },
  "lanes": {
   "blocked": [
@@ -611,6 +611,19 @@
     "waiting_on": []
    },
    {
+    "acceptance": "The system can be reviewed, researched and grown on a schedule by agents whose output is always a report or a candidate for independent review.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.17"
+    ],
+    "id": "S-6.76",
+    "next_local_work": "Choose a scheduler that can run the workflows against this machine (a timer that starts a headless harness, or a hosted routine for read-only jobs) and record the first scheduled runs.",
+    "phase": 6,
+    "status": "ready",
+    "title": "Reusable development workflows and recurring reviews with declared effect policies",
+    "waiting_on": []
+   },
+   {
     "acceptance": "",
     "blocked_on": "",
     "depends_on": [
@@ -800,6 +813,38 @@
     ]
    },
    {
+    "acceptance": "Every page that was built is reachable and live, each hostname shows its own page, and the layout checks pass on three browser engines.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.33"
+    ],
+    "id": "S-6.67",
+    "next_local_work": "Land the documentation pages from the Codex consolidation, write the use-case and status views from the saved patch, generate robots.txt and sitemap.xml from the typed site map, then switch tools/check_website_site_map.py on in continuous integration.",
+    "phase": 6,
+    "status": "building",
+    "title": "Serve every built page and hostname surface",
+    "waiting_on": [
+     "S-6.33"
+    ]
+   },
+   {
+    "acceptance": "Anyone can create an account on baltor.ai with an email address, confirm it and choose a password, and the provider's own sign-up path cannot create an account that keeps an attacker's first password.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.24",
+     "S-6.46"
+    ],
+    "id": "S-6.65",
+    "next_local_work": "After OWNER-03, stage the secrets, switch registration_enabled and email_signup_enabled on in the host configuration, release, and run the live sign-up journey with a fresh address and the negative controls.",
+    "phase": 6,
+    "status": "building",
+    "title": "Open public registration with email-first sign-up",
+    "waiting_on": [
+     "S-6.24",
+     "S-6.46"
+    ]
+   },
+   {
     "acceptance": "Every agent reads one consistent set of rules; every README matches the code and the live state; historical documents are archived, not deleted.",
     "blocked_on": "",
     "depends_on": [
@@ -855,6 +900,25 @@
     "title": "Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness",
     "waiting_on": [
      "S-6.31"
+    ]
+   },
+   {
+    "acceptance": "The library reaches 10,000 and then 100,000 distinct approved packages through the independent panel, and then adds 100 to 1,000 approved packages a day, with the counts recorded per day.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.63",
+     "S-6.62"
+    ],
+    "id": "S-6.69",
+    "next_local_work": "Calibrate the three-family panel on the malicious and benign controls and measure its throughput, run wave 5 and the Codex twelve-package cohort through it, then size the daily waves to the measured capacity.",
+    "phase": 6,
+    "status": "building",
+    "title": "The package factory: 10,000, then 100,000 approved packages, then 100 to 1,000 more each day",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.63",
+     "S-6.62"
     ]
    },
    {
@@ -1286,6 +1350,21 @@
   ],
   "waiting": [
    {
+    "acceptance": "A paying customer can see whether the service works, reach a person, and trust that an outage is detected, rolled back and explained.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.35"
+    ],
+    "id": "S-6.68",
+    "next_local_work": "Serve the status view from the recorded hosted-check results and write the incident runbook beside the release procedure.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Support, status and incident response for paying customers",
+    "waiting_on": [
+     "S-6.35"
+    ]
+   },
+   {
     "acceptance": "Every listed gap is closed or recorded with its reason, each with a named check.",
     "blocked_on": "",
     "depends_on": [
@@ -1298,6 +1377,21 @@
     "title": "Close the dated deadlines and small gaps before inviting users",
     "waiting_on": [
      "S-6.35"
+    ]
+   },
+   {
+    "acceptance": "A visitor has exactly one way to become a customer, staff have exactly three roles with fixed permissions, and nothing else can open an account.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.65"
+    ],
+    "id": "S-6.85",
+    "next_local_work": "Inventory every current way in (provider sign-up, waiting list, invitations, operator-issued keys, operator entitlements, the pilot tenants), define the three staff roles and their permissions in code, and retire the rest behind the new sign-up.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "One way in: every customer account comes from Baltor's sign-up, and internal staff roles are fixed in code",
+    "waiting_on": [
+     "S-6.65"
     ]
    },
    {
@@ -1328,6 +1422,25 @@
     "title": "A familiar customer dashboard with the full account lifecycle",
     "waiting_on": [
      "S-6.33"
+    ]
+   },
+   {
+    "acceptance": "A developer who has never used Baltor signs up, pays, connects their own harness and sees the first package load in it without help, and the record names each fact separately.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.65",
+     "S-6.21",
+     "S-6.48"
+    ],
+    "id": "S-6.66",
+    "next_local_work": "Wire the funnel steps after registration opens, prove the entitlement path with an operator-entitled test account, and add the first-load record to the account view.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Self-serve paid onboarding with a verified first load in the customer's harness",
+    "waiting_on": [
+     "S-6.65",
+     "S-6.21",
+     "S-6.48"
     ]
    },
    {
@@ -1466,6 +1579,23 @@
     ]
    },
    {
+    "acceptance": "The factory never runs out of useful ideas and never copies what it may not copy.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.40",
+     "S-6.76"
+    ],
+    "id": "S-6.81",
+    "next_local_work": "Extend the research source watch list to skill, plugin and protocol server sources and write the first scout as a candidate-only job.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Source scouts: search tools for skills, plugins, protocol servers and harness files",
+    "waiting_on": [
+     "S-6.40",
+     "S-6.76"
+    ]
+   },
+   {
     "acceptance": "The panel reviews thousands of candidates only after its risk-specific error gate and throughput are measured; every approval names independent reviewers, and a sampled audit never grants approval to unsampled bytes.",
     "blocked_on": "",
     "depends_on": [
@@ -1478,6 +1608,40 @@
     "title": "An independent review panel of several model families",
     "waiting_on": [
      "S-6.45"
+    ]
+   },
+   {
+    "acceptance": "The live service answers search, listing and download at 100,000 approved packages within the probe's thresholds on the current machine size, or the scale plan names the next machine.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.62",
+     "S-6.32"
+    ],
+    "id": "S-6.70",
+    "next_local_work": "Apply the smallest change that passes the probe from the September 23 retrieval study, then add the index-backed search engine behind the search slot.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Serve 100,000 packages: pass the capacity probe with paged listing and an indexed search",
+    "waiting_on": [
+     "S-6.62",
+     "S-6.32"
+    ]
+   },
+   {
+    "acceptance": "The library stays correct and useful as it grows, not only large.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.69",
+     "S-6.51"
+    ],
+    "id": "S-6.83",
+    "next_local_work": "Add the near-duplicate engine behind the search slot and a re-verification job keyed by harness profile version.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Maintain 100,000 packages: re-verification, near-duplicates, deprecation and withdrawal",
+    "waiting_on": [
+     "S-6.69",
+     "S-6.51"
     ]
    },
    {
@@ -1658,6 +1822,38 @@
     "title": "A scale plan from one machine to many services",
     "waiting_on": [
      "S-6.35"
+    ]
+   },
+   {
+    "acceptance": "New features, packages and engines reach customers on a predictable train, and each customer can see what changed.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.35",
+     "S-6.62"
+    ],
+    "id": "S-6.78",
+    "next_local_work": "Generate the customer changelog from the existing release records and resolve why package index publication (S-4.6) is blocked.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "A release train for the service, the catalogue, client recipes and plugins, and the local engine",
+    "waiting_on": [
+     "S-6.35",
+     "S-6.62"
+    ]
+   },
+   {
+    "acceptance": "Features ship switched off, turn on in stages and turn off without a redeploy.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.78"
+    ],
+    "id": "S-6.79",
+    "next_local_work": "Put registration and email sign-up behind this mechanism first, since they are already host settings.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Feature flags and staged rollout through versioned host configuration",
+    "waiting_on": [
+     "S-6.78"
     ]
    },
    {
@@ -1843,6 +2039,155 @@
      "S-6.3",
      "S-6.20",
      "S-6.14"
+    ]
+   },
+   {
+    "acceptance": "Every developer and agent reads one short rule and one standard that say how a functional component, its contract, its engines, its tests and its selection work, and the checks enforce it.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30",
+     "S-6.34"
+    ],
+    "id": "S-6.84",
+    "next_local_work": "Review the drafted standard, rule text and terminology from the September 23 research, then commit them with the checks that enforce the first rules.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Write the functional component standard into the development rules, with a check for each rule",
+    "waiting_on": [
+     "S-6.30",
+     "S-6.34"
+    ]
+   },
+   {
+    "acceptance": "Anyone can find, in one place, what each component does, which contract it keeps, which engines can run it and how it is tested.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30",
+     "S-6.34"
+    ],
+    "id": "S-6.71",
+    "next_local_work": "Write the generator over the existing catalogues and add its check to continuous integration.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "One generated component index with a drift check",
+    "waiting_on": [
+     "S-6.30",
+     "S-6.34"
+    ]
+   },
+   {
+    "acceptance": "Swapping an engine is safe because the new engine passed the same kit as the old one, and groups and journeys are tested beyond single components.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30",
+     "S-6.71"
+    ],
+    "id": "S-6.72",
+    "next_local_work": "Turn each slot's conformance suite into a kit parameterized by engine, starting with the step executor, the search slot and the material install layout.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Contract test kits: every engine alone, components in groups, the system end to end",
+    "waiting_on": [
+     "S-6.30",
+     "S-6.71"
+    ]
+   },
+   {
+    "acceptance": "Discussions, names and decisions are simple to find and do not conflict or blur into each other.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.34",
+     "S-6.71"
+    ],
+    "id": "S-6.73",
+    "next_local_work": "Settle the compiler and package names in terminology.yaml, write the topic index over the records index, and add the conflict check.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "One topic and decision index, with a term conflict check",
+    "waiting_on": [
+     "S-6.34",
+     "S-6.71"
+    ]
+   },
+   {
+    "acceptance": "A harness, a Loop or a customer can pin, prefer or leave automatic the engine of any component within its authority, and every choice is recorded.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.30"
+    ],
+    "id": "S-6.74",
+    "next_local_work": "Map the three modes onto the existing slot fields and decision records rather than adding a second registry.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Pinned, preferred and automatic engine selection at every slot",
+    "waiting_on": [
+     "S-6.30"
+    ]
+   },
+   {
+    "acceptance": "Every outside project Baltor uses can be replaced by Baltor's own engine or by another project without touching its neighbours.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.74",
+     "S-6.72"
+    ],
+    "id": "S-6.75",
+    "next_local_work": "Start with agent-harness as a configuration compiler engine beside the native compiler, with the byte-preserving writer and post-render checks.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "An upstream engine and a Baltor-native engine for every adopted outside project",
+    "waiting_on": [
+     "S-6.74",
+     "S-6.72"
+    ]
+   },
+   {
+    "acceptance": "Maintenance runs as ordinary Loops through the canonical runtime, not as a second scheduler.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.76",
+     "S-6.41"
+    ],
+    "id": "S-6.77",
+    "next_local_work": "Model the daily state review as the first maintenance Loop profile.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Maintenance as Practitioner Loops that stage candidates for independent review",
+    "waiting_on": [
+     "S-6.76",
+     "S-6.41"
+    ]
+   },
+   {
+    "acceptance": "Baltor keeps placing files where each harness actually reads them as the harnesses change.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.44",
+     "S-6.76"
+    ],
+    "id": "S-6.80",
+    "next_local_work": "Run the harness discovery workflow weekly and load its verified profiles as candidate profile data.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "Keep every Harness File Profile current with a verified weekly refresh",
+    "waiting_on": [
+     "S-6.44",
+     "S-6.76"
+    ]
+   },
+   {
+    "acceptance": "When a harness or tool changes, the library and the compiler learn about it within a week.",
+    "blocked_on": "",
+    "depends_on": [
+     "S-6.81"
+    ],
+    "id": "S-6.82",
+    "next_local_work": "Add release-note sources for the supported harnesses to the watch list.",
+    "phase": 6,
+    "status": "proposed",
+    "title": "News and release watchers that turn changes into component work",
+    "waiting_on": [
+     "S-6.81"
     ]
    },
    {
@@ -2194,14 +2539,16 @@
    "title": "Fly account and private pilot are prepared"
   },
   {
-   "completion": "Project access is prepared. Sign-up no longer depends on this grant.",
+   "completion": "The provider's back-door sign-up is refused or neutralized by the service-side guard, Baltor's email-first sign-up works end to end for everyone, and registration is open under S-6.65.",
    "id": "OWNER-03",
    "instructions": [
-    "Nothing is needed for sign-up. The service creates confirmation and recovery links through the identity provider's administration interface and sends its own email, so the journey stays on the baltor.ai domain.",
-    "Grant authentication-settings access only if you later want the identity provider to send its own email or to change its redirect settings."
+    "This does not close Baltor's sign-up. It closes the identity provider's own raw sign-up endpoint, a back door through which someone could create an account under another person's email with a password they chose. Baltor's email-first sign-up creates accounts through the administration interface and stays open to everyone.",
+    "Quickest: in Claude Code run /mcp and sign in to the prepared baltor-supabase connection, so engineering can change the one setting and record it. Or, in the Supabase dashboard for the Baltor project, turn off the setting that allows new users to sign up through the provider.",
+    "If neither happens, engineering builds a service-side guard instead (roadmap S-6.65): the service honours only accounts it created and replaces any provider-created account when the real person signs up, so registration can open without this action.",
+    "Engineering then checks that the provider's public sign-up is refused and that Baltor's own sign-up still works, before registration opens."
    ],
-   "phase": "optional",
-   "title": "Optional: grant authentication-settings access at the identity provider"
+   "phase": "now",
+   "title": "Close the identity provider's back-door sign-up so that Baltor registration can open to everyone"
   },
   {
    "completion": "The empty private bucket and its actual delivery adapter are separately verified by engineering.",
@@ -3132,9 +3479,191 @@
    ],
    "title": "Take requests for access and invite one person from them",
    "total_steps": 3
+  },
+  {
+   "acceptance": "A stranger finds Baltor, creates an account, pays, connects their own harness and uses a package, can see status and reach support, and can leave with their data.",
+   "actions": [
+    "Close the identity provider's back-door sign-up (OWNER-03, or the service-side guard), stage the sign-up secrets through standard input, and switch registration and email sign-up on.",
+    "Keep one way in for customers, Baltor's sign-up, and three internal staff roles with permissions fixed in code: superadmin, developer and analytics. Retire invitations, the waiting list, operator-issued customer keys and the provider's raw sign-up as ways in.",
+    "Run the whole funnel live: request, confirm, choose a password, subscribe, get set up, and a verified first load in the customer's own harness.",
+    "Serve every built page and hostname surface with robots, sitemap, canonical and social metadata, and pass the responsive lab on three browser engines.",
+    "Show real service status, give customers a support address and exercise the incident runbook once.",
+    "Complete the account lifecycle: keys, usage, plan changes, cancellation, data export and account deletion."
+   ],
+   "depends_on": [
+    "D-17",
+    "D-24"
+   ],
+   "done_steps": 0,
+   "id": "D-25",
+   "stage": "public_launch",
+   "status_counts": {
+    "building": 2,
+    "proposed": 5
+   },
+   "steps": [
+    "S-6.65",
+    "S-6.85",
+    "S-6.66",
+    "S-6.67",
+    "S-6.68",
+    "S-6.38",
+    "S-6.46"
+   ],
+   "title": "Go fully live: open registration and self-serve paid onboarding",
+   "total_steps": 7
+  },
+  {
+   "acceptance": "The library holds 10,000 and then 100,000 distinct approved packages served in each harness's own layout, and grows by 100 to 1,000 approved packages a day with every count and model call recorded.",
+   "actions": [
+    "Calibrate the three-family review panel on malicious and benign controls and measure its throughput and error gate on Ollama Cloud models and the Codex command line.",
+    "Run generation waves from the gap matrix and customer search misses with producers of at least two families, deterministic pre-checks, critique and repair.",
+    "Scout skill, plugin, protocol server and harness file sources; import what may be copied with its licence, and turn the rest into idea records for original rewrites.",
+    "Release approved packages daily as catalogue releases with customer-readable notes, and pass the 100,000-row serving probe.",
+    "Maintain the library: re-verify on harness changes, merge near-duplicates, withdraw with reasons and rank by measured use."
+   ],
+   "depends_on": [
+    "D-20",
+    "D-22"
+   ],
+   "done_steps": 0,
+   "id": "D-26",
+   "stage": "public_launch",
+   "status_counts": {
+    "building": 2,
+    "proposed": 7
+   },
+   "steps": [
+    "S-6.69",
+    "S-6.70",
+    "S-6.81",
+    "S-6.82",
+    "S-6.83",
+    "S-6.40",
+    "S-6.62",
+    "S-6.63",
+    "S-6.64"
+   ],
+   "title": "Reach 10,000 and then 100,000 approved harness packages, then add 100 to 1,000 a day",
+   "total_steps": 9
+  },
+  {
+   "acceptance": "Every component has one contract, one guide, one owning folder, tested engines and simple names that do not conflict, and all of it is findable in one generated index.",
+   "actions": [
+    "Generate one component index from the slot catalogue, component interactions, folder map, boundary registry, guide map and terminology, and refuse a stale index.",
+    "Give every slot one contract test kit that every engine passes alone, add composition tests for joined slots and end-to-end journey tests, and run isolated bindings in containers.",
+    "Keep one authoritative record per topic and one definition per term, map every alias to one current term, and refuse conflicting definitions.",
+    "Write the functional component standard into the development rules: one short rule in AGENTS.md, one standard document that extends the engine slot design, and a check for each rule."
+   ],
+   "depends_on": [
+    "D-19"
+   ],
+   "done_steps": 0,
+   "id": "D-27",
+   "stage": "continued_improvement",
+   "status_counts": {
+    "proposed": 4
+   },
+   "steps": [
+    "S-6.84",
+    "S-6.71",
+    "S-6.72",
+    "S-6.73"
+   ],
+   "title": "Clear components: one index, contract test kits and one home for every topic and term",
+   "total_steps": 4
+  },
+  {
+   "acceptance": "Any component's engine can be pinned, preferred or chosen automatically, replaced without touching its neighbours, and compared on recorded evidence.",
+   "actions": [
+    "Map pinned, preferred and automatic selection onto the slot fields and record every decision.",
+    "Wrap every adopted outside project as a pinned engine behind one slot and build a Baltor-native engine that passes the same kit.",
+    "Serve multi-file packages through the Harness Working Directory Compiler with a native engine and an optional agent-harness engine, writing binaries and file modes byte for byte.",
+    "Add the index-backed and hybrid search engines behind the search slot and measure each on the held-out query set."
+   ],
+   "depends_on": [
+    "D-19",
+    "D-27"
+   ],
+   "done_steps": 0,
+   "id": "D-28",
+   "stage": "continued_improvement",
+   "status_counts": {
+    "building": 2,
+    "proposed": 5
+   },
+   "steps": [
+    "S-6.74",
+    "S-6.75",
+    "S-6.30",
+    "S-6.31",
+    "S-6.32",
+    "S-6.44",
+    "S-6.52"
+   ],
+   "title": "Selectable engines at every slot, with a Baltor-native engine beside every adopted project",
+   "total_steps": 7
+  },
+  {
+   "acceptance": "The system is reviewed, researched, measured and grown on a schedule, and every change an agent proposes reaches main or the live service only through review.",
+   "actions": [
+    "Keep the state review, library wave, harness discovery, research sweep and plan validation workflows in the repository, parameterized and free of machine paths.",
+    "Declare each recurring job with its schedule, workflow and an effect policy of reports or candidates only, and record every run.",
+    "Refresh the Harness File Profiles weekly from each harness's own documentation and source.",
+    "Run a persona review after every release and learn from retrieval: wrong context, repeated asks and items fetched together.",
+    "Model the recurring jobs as Practitioner Loops that stage candidates for independent review."
+   ],
+   "depends_on": [
+    "D-18"
+   ],
+   "done_steps": 0,
+   "id": "D-29",
+   "stage": "continued_improvement",
+   "status_counts": {
+    "proposed": 5,
+    "ready": 1
+   },
+   "steps": [
+    "S-6.76",
+    "S-6.77",
+    "S-6.80",
+    "S-6.55",
+    "S-6.41",
+    "S-6.51"
+   ],
+   "title": "Agents that manage and improve the system",
+   "total_steps": 6
+  },
+  {
+   "acceptance": "Customers get new features, packages and engines on a predictable train, can see what changed, and can upgrade or roll back safely.",
+   "actions": [
+    "Record every release kind with a versioned record: the service by image digest, the catalogue by manifest digest, client recipes and plugins by version, and the local engine by package version.",
+    "Generate a customer changelog page from those records.",
+    "Put new features behind versioned host configuration flags and roll them out in stages.",
+    "Publish the local engine to a package index with an upgrade command that negotiates versions with the service.",
+    "Measure the machine under load and name the first scale step and its trigger."
+   ],
+   "depends_on": [
+    "D-18"
+   ],
+   "done_steps": 0,
+   "id": "D-30",
+   "stage": "public_launch",
+   "status_counts": {
+    "building": 1,
+    "proposed": 3
+   },
+   "steps": [
+    "S-6.78",
+    "S-6.79",
+    "S-6.35",
+    "S-6.57"
+   ],
+   "title": "A release train for upgrades, features, packages and engines",
+   "total_steps": 4
   }
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:74d22670b38f9fa7774d066482c5165c3eacc6ac251fec4c00c8c9c21f033ad8"
+ "source_fingerprint": "sha256:142e277f8dafa74eccf934041cd20a412a755f95c49797fa4c5331e5e1d03d28"
 }
