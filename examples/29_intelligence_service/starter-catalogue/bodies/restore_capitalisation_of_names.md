@@ -50,4 +50,4 @@ A generic title case function turns `IBM SERVICES OF AMERICA` into `Ibm Services
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `case_normalize`.
 - `src/loop_engine/data/text_conformance_catalogs.yaml`: the particle, minor word, preserved token, prefix and surname exception lists.
 
-Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.
+Licence: MIT. Compiled from revision 379c271. The operations module uses only the Python standard library.

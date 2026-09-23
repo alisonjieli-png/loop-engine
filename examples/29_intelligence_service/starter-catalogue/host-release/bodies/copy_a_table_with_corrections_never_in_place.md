@@ -37,4 +37,4 @@ A cleanup runs `UPDATE` statements on the production table and keeps no copy. A 
 
 - `src/loop_engine/code_nodes/database_copy.py`: `TableLocation`, `ColumnCorrection`, `copy_table` and `read_rows`.
 
-Licence: MIT. Compiled from revision d893bba. The module uses the Python standard library modules `csv`, `sqlite3` and `hashlib`, and the threshold function of the text operations module beside it.
+Licence: MIT. Compiled from revision 379c271. The module uses the Python standard library modules `csv`, `sqlite3` and `hashlib`, and the threshold function of the text operations module beside it.

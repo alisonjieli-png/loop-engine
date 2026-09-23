@@ -40,4 +40,4 @@ Two thousand workers fail at the same second during a brief outage and all retry
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision d893bba.
+Licence: MIT. Written for this catalogue at revision 379c271.

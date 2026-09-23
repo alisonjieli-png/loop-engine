@@ -40,4 +40,4 @@ A team changes a duration field from seconds to milliseconds and keeps the same 
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision d893bba.
+Licence: MIT. Written for this catalogue at revision 379c271.

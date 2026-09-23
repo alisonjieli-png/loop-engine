@@ -40,4 +40,4 @@ A migration takes four seconds on a test database with a thousand rows. On produ
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision d893bba.
+Licence: MIT. Written for this catalogue at revision 379c271.
