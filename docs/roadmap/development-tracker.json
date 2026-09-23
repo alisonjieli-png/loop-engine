@@ -604,7 +604,7 @@
      "S-6.43"
     ],
     "id": "S-6.44",
-    "next_local_work": "Extend the existing selected-material installer with versioned client-native layout profiles, clean home and ancestor isolation, and a no-model native discovery probe before adding other file kinds.",
+    "next_local_work": "Keep Baltor's own layout profiles as the default placement engine and add an optional Agent Harness engine behind the same edge, never running U-Haul and refusing a key through a placeholder; publish a Baltor preset registry for Agent Harness users with the connection written per tool (Claude Code ${NAME}, Cursor and VS Code ${env:NAME}, Codex bearer_token_env_var). Known-wrong checks: a connection file that contains a key value, a Codex connection that names the key by value, and an install that deletes an existing instruction file must each fail by name.",
     "phase": 6,
     "status": "proposed",
     "title": "Serve the open formats in each harness's own layout",
@@ -3136,5 +3136,5 @@
  ],
  "record_type": "development_tracker/v1",
  "source": "docs/roadmap/roadmap.yaml",
- "source_fingerprint": "sha256:2fc6d53f2d4b56d4226a1d537bf06ac06bd18827729b6806b2b45054ee25444e"
+ "source_fingerprint": "sha256:3f283dfa3bea16e2891c8b2ba4e327cbebbcbeba0c14ce737bc3618200c9406a"
 }
