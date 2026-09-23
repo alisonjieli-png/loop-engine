@@ -117,9 +117,13 @@ The answer, exactly as returned:
 | `query` | yes | Text, at most 4096 bytes after encoding, not only spaces. |
 | `mode` | no | `lexical` or `hybrid`. Default `lexical`. |
 | `top_n` | no | A whole number from 1 to the published `search_results` limit, 50 on the deployed service. Default 10. |
+| `filters` | no | A release that includes catalogue releases reads it. A mapping of at most eight catalogue details to one condition each: `equals`, `any_of`, or `at_least` and `at_most` for a number or a date. |
 
 Any other field is refused, so a typing mistake fails loudly instead of being
-ignored.
+ignored. A filter may name only a detail the catalogue declares as filterable
+and public; any other is refused with `search_filter_not_allowed`, and a
+condition of the wrong shape with `search_filter_invalid`. The release 15
+service does not read `filters` and refuses a request that sends it.
 
 ### How to read a hit
 
@@ -137,6 +141,11 @@ ignored.
 | `qualification_basis` | `host_attested` or `authoritative`. It never means independently qualified. |
 | `body_allowed` | Whether this account, with this token, may download the body. |
 | `score` and `modes` | The ranking value and which retrieval modes contributed. |
+| `attributes` | The catalogue details the release shows for this item, such as the source file it restates. Empty when the catalogue declares none. |
+| `package` | For an item published as a catalogue release: `body_form`, `package_digest` and each file's `path`, `media_type`, `role`, `size_bytes` and `digest`. |
+
+A service that serves catalogue releases also names the served release in
+`catalogue_release`, so two answers can be compared.
 
 `score` orders the hits within one answer. It is not a quality measurement and
 it is not comparable between queries.
@@ -240,6 +249,28 @@ this reason.
 `request_id` is required and it is yours to choose. It identifies one download
 attempt. Repeating the same `request_id` for the same item does not record a
 second measured unit, which is what makes a retry safe.
+
+### One file of a package
+
+An item can be a package of several files: a skill with scripts, references
+and assets, an instruction file such as `AGENTS.md`, or a protocol server
+configuration. The search hit lists the files under `package`. A one-file text
+item downloads as the file itself, exactly as above. For any other package,
+the download above returns the `catalogue_package/v1` document that lists the
+files, and each file is downloaded by adding its `path`:
+
+```json
+{"record_type": "service_provisioning_request/v1", "operation": "read",
+ "identity": "layout_with_assets", "request_id": "package-read-1",
+ "path": "assets/logo.png"}
+```
+
+`X-Content-SHA256` then carries the digest of that one file, which must equal
+the file's `digest` in the package document. Use the same `request_id` for
+every file of one package: the package is one measured unit, recorded once. A
+path the package does not hold is refused with `package_file_not_found`. This
+request shape is read by a release that includes catalogue releases, not by
+release 15.
 
 ### The same read inside JSON
 

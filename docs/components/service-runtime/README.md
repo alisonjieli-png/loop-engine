@@ -59,7 +59,13 @@ Hosted intelligence service
 ├── Authenticated delivery
 │   ├── catalogue discovery, listing and manifests
 │   ├── one selected body, inline or by download
+│   ├── one file of a multi-file package, by download
 │   └── metadata search over the authorized catalogue
+├── Catalogue releases
+│   ├── a content-addressed body store behind catalogue_body_store/v1
+│   ├── releases, an active release pointer and durable withdrawals
+│   ├── an attribute schema declared as data
+│   └── a served view swapped in while the service runs
 ├── Accounting
 │   ├── one usage record for each delivered item
 │   └── the tenant's own usage total
@@ -71,6 +77,10 @@ Hosted intelligence service
 It does not own the catalogue's content. Approval of an intelligence item
 belongs to the independent review process described in
 [the reusable capability admission guide](../intelligence-layers/REUSABLE-CAPABILITY-FLYWHEEL.md).
+It publishes an approved release and serves it: the
+[catalogue release design record](../../architecture/CATALOGUE-RELEASES-AND-HOT-SWAP-2026-09-22.md)
+explains how new items, attributes and withdrawals reach a running service
+without a new image.
 
 ## Typed inputs and outputs
 
@@ -84,7 +94,7 @@ effect, so an older release cannot silently reinterpret a newer request.
 | Session | `service_session/v1` | `service_session/v1` |
 | Provisioning | `service_provisioning_request/v1` | `provisioning_discover/v2`, `provisioning_list/v2`, `provisioning_manifest/v2` or `provisioning_body/v2` |
 | Download | `service_provisioning_request/v1` with operation `read` | `provisioning_body/v2` |
-| Metadata search | `service_retrieval_request/v1` | `service_retrieval_result/v1` |
+| Metadata search | `service_retrieval_request/v1`, with optional `filters` | `service_retrieval_result/v1`, each hit with `attributes` and `package` |
 | Usage | none | `durable_tenant_usage/v1` |
 | Client access | `service_client_access_options/v1` | `service_client_access_result/v1` |
 | Administrator access | `service_client_access_options/v1` | `service_client_access_result/v1` |
@@ -197,6 +207,9 @@ These are the refusals a client meets most often:
 | `billing_customer_binding_mismatch` | The stored payment customer does not match the provider's. |
 | `concurrent_update` | Another writer changed the record; read it again and retry. |
 | `commit_unknown` | The effect may or may not have committed. It is never reported as success. |
+| `item_withdrawn` | The item version was withdrawn from the library after the served view was built. |
+| `search_filter_not_allowed` | A search filtered on an attribute that is undeclared, internal or not filterable. |
+| `package_file_not_found` | A download named a path the item's package does not hold. |
 
 The request limit is separate. When a client address exceeds the configured
 failed-attempt limit, the service answers with
@@ -235,6 +248,32 @@ describe one deployment, not the component's full capability.
 - Health reports `readiness_checked` false and
   `deployed_provider_qualification` false.
 
+## Catalogue releases
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it.
+
+```text
+Catalogue release operations, in `loop-engine service`
+├── publish-catalogue         check a bundle, store its bodies by digest, move the pointer
+├── rollback-catalogue        move the pointer to an earlier release after verifying it
+├── withdraw-catalogue-item   record a withdrawal every release, rollback and image honours
+├── catalogue-status          read the state version, the active release and every release
+└── follow-catalogue-release  move accounts to grants that follow the active release
+```
+
+The host file's `catalogue` section, `service_catalogue_source/v1`, chooses
+`image` or `store` and names the body folder and the refresh interval. The
+health record names the served view under `catalogue_release`, with a
+`catalogue_view_current` check that is reported and not required, so a failed
+refresh keeps the previous view serving. An image refuses to start on a
+catalogue state version it does not understand, and the rollback target of an
+image rollback must understand the current one. The
+[service runtime guide](../../../src/loop_engine/core/service_runtime/README.md#catalogue-releases)
+has the full rules and the
+[operations runbook](../../guides/launch-setup-runbook.md#publish-and-roll-back-a-catalogue-release)
+the procedure.
+
 ## Designed but not built
 
 The component reports these as explicit negative facts rather than leaving them
@@ -251,6 +290,12 @@ unstated. Each one is designed and refused today, not silently missing.
 - Readiness checking and deployed provider qualification are designed. Health
   reports both as false, so a healthy answer is not a statement that the
   provider behind the service was qualified.
+- Object storage for catalogue bodies is a designed second engine behind
+  `catalogue_body_store/v1`. Only the service volume engine is built.
+- `sortable` attributes are declared and validated. No route sorts on them yet.
+- Paging of the full catalogue listing is not built. At 10,000 items one
+  listing is larger than the default response limit, so clients search and
+  select instead of listing everything.
 
 ## How to check it
 

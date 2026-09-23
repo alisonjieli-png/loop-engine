@@ -1,0 +1,86 @@
+{
+ "record_type": "catalogue_release_scale_measurement/v1",
+ "label": "local measurement on one workstation, not a production claim",
+ "measured_at": "2026-09-23T00:13:56-0400",
+ "machine": {
+  "processors": 16,
+  "python": "3.10.20",
+  "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43"
+ },
+ "prepare": {
+  "items": 10000,
+  "files": 14329,
+  "body_bytes": 28192249,
+  "multi_file_items": 1939,
+  "seconds": {
+   "generate": 3.36,
+   "write_bundle": 5.68,
+   "validate_bundle": 1.51,
+   "publish": 13.31
+  },
+  "bundle_digest": "87a67f732e1221f0c42e32605a7b5205ea8bc55ec7a815eefc1499bb226c405f",
+  "bundle_bytes_on_disk": 41349575,
+  "release_record_bytes": 2240321,
+  "item_version_records_bytes": 12175797,
+  "service_store_bytes_on_disk": 24457216,
+  "body_store_bytes_on_disk": 28192249,
+  "body_store_bytes_allocated": 59719680,
+  "bundle_bytes_allocated": 72880128,
+  "first_release": "ad81ed7e41b4d1c630327158f2df37cfd55b3026f18a880ede5ca17eaeb3815c"
+ },
+ "serve": {
+  "view_build_seconds": 4.86,
+  "process_peak_rss_kib_before_build": 30724,
+  "process_peak_rss_kib_after_build": 172320,
+  "index": {
+   "record_type": "catalogue_view_index/v1",
+   "entries": 10000,
+   "vector_bytes": 20480000,
+   "filterable_attributes": [
+    "catalogued_on",
+    "cited_source",
+    "origin_layer"
+   ],
+   "full_text_bytes_in_memory": 6901760,
+   "stored_on_disk": false
+  },
+  "search_lexical": {
+   "p50_ms": 16.8,
+   "p95_ms": 23.5,
+   "samples": 40
+  },
+  "search_hybrid": {
+   "p50_ms": 45.3,
+   "p95_ms": 59.1,
+   "samples": 40
+  },
+  "search_lexical_with_filter": {
+   "p50_ms": 28.5,
+   "p95_ms": 42.5,
+   "samples": 40
+  },
+  "full_listing": {
+   "items": 9549,
+   "seconds": 0.66
+  },
+  "second_publish": {
+   "seconds": 5.33,
+   "release_id": "3d83c633e29b3c126ed9f21108b7307cec16bc720d6ad64b961312b3423cf9db",
+   "added": 100,
+   "changed": 10,
+   "bodies_written": 147
+  },
+  "hot_swap": {
+   "seconds": 4.9,
+   "changed": true,
+   "failure": null,
+   "release_is_second": true,
+   "process_peak_rss_kib_after_swap": 241892
+  },
+  "search_hybrid_after_swap": {
+   "p50_ms": 44.2,
+   "p95_ms": 48.7,
+   "samples": 20
+  }
+ }
+}

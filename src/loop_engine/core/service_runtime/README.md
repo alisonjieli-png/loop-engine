@@ -52,6 +52,7 @@ Existing service boundary
 ├── request_limits.py: failed-attempt settings record and its table in process memory
 ├── waitlist.py: the public waiting list, its operator decisions and removal on request
 ├── web_pages.py: the served page address table and the packaged files behind it
+├── catalogue_*.py: catalogue releases, the body store edge and the served view
 └── http*.py: separately owned remote transport and host configuration
 ```
 
@@ -998,6 +999,109 @@ selected body and refuses a changed item before loading or metering.
 Host-attested review remains distinct from independent source qualification.
 The service does not infer promotion from labels, subscriptions, or retrieval.
 Metadata-only key scopes also narrow the returned `body_allowed` projection.
+
+## Catalogue releases
+
+This section describes the source in this repository. A deployment serves it
+only after a release that includes it. The design, the prior art and the
+decision record are in
+[the catalogue release design record](../../../../docs/architecture/CATALOGUE-RELEASES-AND-HOT-SWAP-2026-09-22.md).
+
+A host can add, change and withdraw harness intelligence items while the
+service runs. The host file's `catalogue` section, record
+`service_catalogue_source/v1`, chooses the source:
+
+```text
+Catalogue source
+├── image   the reviewed manifest packaged in the image; the behaviour before this change
+└── store   the active release in the service store, bodies in the declared body folder
+```
+
+```json
+"catalogue": {"record_type": "service_catalogue_source/v1", "source": "store",
+              "body_store_root": "/data/catalogue-bodies", "refresh_seconds": 60,
+              "new_accounts_follow_release": false}
+```
+
+`refresh_seconds` is a whole number from 5 to 3600. `body_store_root` is an
+existing absolute folder on the volume, never inside the image. With
+`new_accounts_follow_release` true, a new account follows the active release
+instead of copying `starter_identities` once, so the host file names no
+starter identities.
+
+```text
+Catalogue modules
+├── catalogue_packages.py   packages of any harness file type, and the body store edge catalogue_body_store/v1
+├── catalogue_schema.py     the attribute schema catalogue_attribute_schema/v1
+├── catalogue_bundle.py     the release bundle an operator publishes, read with the manifest rules
+├── catalogue_releases.py   releases, the pointer, withdrawals, the state marker, publish and rollback
+├── catalogue_grants.py     grants that follow the active release, service_grants/v2
+├── catalogue_search.py     one reusable index for each view, and the authorized search over it
+├── catalogue_serving.py    the served view, the refresher and the start gate
+└── catalogue_commands.py   the operator commands
+```
+
+**What is served.** Every request captures one immutable view: the catalogue,
+the qualification resolver, the body reader and one search index. The
+refresher, started with the web application, reads the state marker every
+`refresh_seconds`. When the active release changed, it builds the next view
+off to the side on the default executor, reads every body of every served
+item and checks its digest, builds the index, and installs the view with one
+assignment. A request already running finishes on its own view. A failed
+build keeps the previous view and writes a failure record with refusal code
+`catalogue_refresh:<code>` to the failure journal, which
+`loop-engine service failures` reads. A withdrawal alone does not rebuild the
+index; the next view leaves the item out and shares the index.
+
+**Search.** Full text covers the purpose, identity, kind and source layer, as
+before, and the words of every searchable attribute. A request may add
+`filters`, a mapping of at most eight attributes to `equals`, `any_of`, or
+`at_least` and `at_most` for a number or date. A filter on an undeclared or
+internal attribute is refused with `search_filter_not_allowed`. Each hit adds
+`attributes`, with shown public attributes only, and `package`, with the file
+list of a store item. The result names `catalogue_release`.
+
+**Packages.** An item's files each carry a placement path, digest, size, media
+type and role. A one-file UTF-8 text package serves the file itself. Any other
+package serves its canonical `catalogue_package/v1` document, and
+`/api/v1/download` with `path` returns one file of it, with that file's digest
+in `X-Content-SHA256`. The same `request_id` for every file of one package
+records one measured unit.
+
+**Grants.** The grants record of an account is version 1, the exact snapshot
+that `apply-grants` writes, or version 2, which follows the active release:
+every approved item of the served view minus the account's denials.
+`follow-catalogue-release` moves accounts to version 2. `apply-grants` reports a
+following account's count and never writes over it. An item that declares
+effects is withheld until the client declares them, for both versions.
+
+**Withdrawals and rollbacks.** A withdrawal names an item identity and its exact
+body digest. A later release that lists it is refused, a rolled-back view
+leaves it out, and every manifest and body read checks the withdrawal record
+first, so a withdrawal is refused at once with `item_withdrawn` even on a view
+built before it. An item left out of the view answers `item_unavailable`, the
+answer the service gives for any item a caller may not see.
+
+**The state marker.** The first catalogue write creates `catalogue_state/v1`
+with state version 1. An image refuses to start on a state version it does not
+list, and refuses to start when the store holds catalogue state and the host
+file has no `catalogue` section. Every catalogue command needs that section, and
+an image that predates this change refuses a host file that has it. The rule for
+an image rollback follows: the rollback target must understand the current
+catalogue state version, which `loop-engine service catalogue-status` prints.
+
+The checks are `catalogue_release_checks.py`, in the folded self-test, and
+`catalogue_serving_checks.py`, on loopback inside `http_checks.self_test()`.
+Each known-wrong case has a removed-guard control, listed in the design record.
+
+**Limits, measured locally.** On one workstation a synthetic 10,000-item release
+built its view in 4.9 seconds with a peak of 168 megabytes resident, searched in
+17 milliseconds at the median in lexical mode and 45 in hybrid mode, and swapped
+to the next release in 4.9 seconds. At 100,000 items the view needs about 1.4
+gigabytes and a swap about 2.0 gigabytes, and the bodies take 592 megabytes of
+disk, so that size needs the next engines named in the design record: an index
+file built by the publisher, and object storage for bodies. These are local
+measurements, not production claims.
 
 ## Stripe event and provider contracts
 

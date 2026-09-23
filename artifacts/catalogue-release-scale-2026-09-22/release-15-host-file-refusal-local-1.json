@@ -1,0 +1,16 @@
+{
+  "record_type": "release_rollback_compatibility_observation/v1",
+  "label": "local observation on one workstation; the live Machine was not used",
+  "observed_at": "2026-09-23T00:10:00-0400",
+  "question": "How does release 15, which predates catalogue state, behave against a host file that has the catalogue section?",
+  "method": "The exact source of revision a51ac96 (release 15) was extracted with git archive into a scratch folder, and its own load_host_application and command line were run against one host file without and one with the catalogue section.",
+  "revision": "a51ac96378ce63cd4504499ea865a22e78168fec",
+  "results": [
+    {"host_file": "without the catalogue section", "call": "load_host_application", "outcome": "started", "items": 43},
+    {"host_file": "with the catalogue section", "call": "load_host_application", "outcome": "refused", "code": "unsupported_host_configuration"},
+    {"host_file": "with the catalogue section", "call": "loop-engine service apply-grants", "exit_code": 1, "code": "service_operation_refused"},
+    {"host_file": "with the catalogue section", "call": "loop-engine service serve", "exit_code": 1, "code": "service_operation_refused"}
+  ],
+  "consequence": "Once the catalogue section is in /data/host.json, a rollback to release 15 cannot start and cannot apply grants, so the release workflow's readiness gate fails and the service stays down until an image that understands catalogue state version 1 is deployed again.",
+  "limitations": ["This observation used a local host file and a local store, not the live volume.", "It does not exercise Fly's own restart or health check behaviour."]
+}
