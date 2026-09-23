@@ -44,6 +44,11 @@ gone; use the copies here.
 
 ## On claude.ai (the owner's login)
 
+On the evening of September 23, 2026, these claude.ai pages stopped resolving
+for this account: the handbook, the seven topic pages, the website design
+canvas and the website audit canvas. The local copies listed here are the
+record.
+
 | Artifact | Local copy |
 |---|---|
 | Website audit canvas <https://claude.ai/artifact/U8VDRBQYdvShmaVVUYM8k4> | `audit-canvas/` here |
