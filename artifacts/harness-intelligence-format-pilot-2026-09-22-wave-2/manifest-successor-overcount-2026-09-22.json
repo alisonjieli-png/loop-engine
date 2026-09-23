@@ -1,0 +1,199 @@
+{
+  "all_tracked_files_excluding_manifest": 21,
+  "approval_state": "candidate_only",
+  "distinct_delivery_body_digests": 7,
+  "file_inventory": [
+    {
+      "bytes": 1984,
+      "path": "INITIAL-FAILED-CONTROLS-2026-09-22.md",
+      "role": "historical_failure_evidence",
+      "sha256": "04a518670d894d8ec1a61714560d80022352d3425fde0572764e487310cd0c63"
+    },
+    {
+      "bytes": 3289,
+      "path": "README.md",
+      "role": "batch_document",
+      "sha256": "d2256e71054519289894d6c096c532d7ca40164f3ae12aa8a7c417a998b74129"
+    },
+    {
+      "bytes": 2162,
+      "path": "candidate-items.json",
+      "role": "candidate_metadata",
+      "sha256": "7aa8cabb7a0e4c0454ea7ac538ee1eb94d4125b84e85252af44f29b3560626c2"
+    },
+    {
+      "bytes": 6143,
+      "path": "make_manifest.py",
+      "role": "local_manifest_builder",
+      "sha256": "2b07183f51d50e81e2cbe9b844337bb224902276177d69264e53891a891c2f99"
+    },
+    {
+      "bytes": 6536,
+      "path": "manifest-initial-failed-2026-09-22.json",
+      "role": "historical_failed_manifest",
+      "sha256": "92d792aa5abe5bbe7c6609fc0d49928fa86917ab91831560411ec86a9cf7715e"
+    },
+    {
+      "bytes": 2372,
+      "path": "packages/audit-join-cardinality/SKILL.md",
+      "role": "skill_entry",
+      "sha256": "1d6b7b835ce1c144295bbc530dd31446b57707a7dd349cd9cb1c9a02659c0164"
+    },
+    {
+      "bytes": 6729,
+      "path": "packages/audit-join-cardinality/scripts/audit_join_cardinality.py",
+      "role": "implementation_script",
+      "sha256": "54b63e1ef2ba7f0952c0e4a785499c4795ba9ff8b0d34a1b1e2d3cede466218f"
+    },
+    {
+      "bytes": 3633,
+      "path": "packages/audit-join-cardinality/scripts/confined_input.py",
+      "role": "reused_confinement_helper",
+      "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+    },
+    {
+      "bytes": 1664,
+      "path": "packages/audit-text-encoding/SKILL.md",
+      "role": "skill_entry",
+      "sha256": "48ec6cb9a92c0d50ecb3bd926458b8929888f3e76e988dbc65f018e20368f238"
+    },
+    {
+      "bytes": 3250,
+      "path": "packages/audit-text-encoding/scripts/audit_text_encoding.py",
+      "role": "implementation_script",
+      "sha256": "8d880888746dc0560ed9b4ae000b6eed94ddb014b2309151e7d51bb91f32e1cb"
+    },
+    {
+      "bytes": 3633,
+      "path": "packages/audit-text-encoding/scripts/confined_input.py",
+      "role": "reused_confinement_helper",
+      "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+    },
+    {
+      "bytes": 2613,
+      "path": "packages/audit-zip-package/SKILL.md",
+      "role": "skill_entry",
+      "sha256": "fb25c91b76f5e6caa8ba6f175842a882832980db3e10e24a89a9c2fafef8c7d6"
+    },
+    {
+      "bytes": 8625,
+      "path": "packages/audit-zip-package/scripts/audit_zip_package.py",
+      "role": "implementation_script",
+      "sha256": "932d92fd428058205ed089fff2dbd7f948b1fd0c29640df6d5e8abff52cf8d87"
+    },
+    {
+      "bytes": 3633,
+      "path": "packages/audit-zip-package/scripts/confined_input.py",
+      "role": "reused_confinement_helper",
+      "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+    },
+    {
+      "bytes": 1608,
+      "path": "reviews/audit-join-cardinality.md",
+      "role": "producer_note",
+      "sha256": "280ab69c3b2b3b13ff07f0bc4f52e4ec36ab7160f275307ae4416ef34675770d"
+    },
+    {
+      "bytes": 1484,
+      "path": "reviews/audit-text-encoding.md",
+      "role": "producer_note",
+      "sha256": "51ae6a6aa7563b053c080539740e0a773d01d5713bfd4018d32d25765bee1fb4"
+    },
+    {
+      "bytes": 2044,
+      "path": "reviews/audit-zip-package.md",
+      "role": "producer_note",
+      "sha256": "9d8dfb4575ce81aef31534aa99330f5c2579eef3a0c0acd571936f6e5e273920"
+    },
+    {
+      "bytes": 3623,
+      "path": "test_make_manifest.py",
+      "role": "batch_test",
+      "sha256": "5d773f2afd57a670c52a17666551444c1882e060f582c6f043a280926370cd73"
+    },
+    {
+      "bytes": 5352,
+      "path": "tests/test_audit_join_cardinality.py",
+      "role": "known_wrong_tests",
+      "sha256": "57bb74e6a2f183a8484608b850b3beb8f575ad945b20b83d6ae5f4c68e8e0c74"
+    },
+    {
+      "bytes": 3488,
+      "path": "tests/test_audit_text_encoding.py",
+      "role": "known_wrong_tests",
+      "sha256": "4dfc059495fab86c65e42657364fd6c8c67a7e5c53c7ebbcb2aa4f99bc85e87f"
+    },
+    {
+      "bytes": 10392,
+      "path": "tests/test_audit_zip_package.py",
+      "role": "known_wrong_tests",
+      "sha256": "eae05333c763840ab7e37abe45c0dead2f8d0f9dffa50e9d44370fd027afe3c5"
+    }
+  ],
+  "logical_packages": 3,
+  "package_trees": {
+    "audit-join-cardinality": [
+      {
+        "bytes": 2372,
+        "path": "packages/audit-join-cardinality/SKILL.md",
+        "role": "skill_entry",
+        "sha256": "1d6b7b835ce1c144295bbc530dd31446b57707a7dd349cd9cb1c9a02659c0164"
+      },
+      {
+        "bytes": 6729,
+        "path": "packages/audit-join-cardinality/scripts/audit_join_cardinality.py",
+        "role": "implementation_script",
+        "sha256": "54b63e1ef2ba7f0952c0e4a785499c4795ba9ff8b0d34a1b1e2d3cede466218f"
+      },
+      {
+        "bytes": 3633,
+        "path": "packages/audit-join-cardinality/scripts/confined_input.py",
+        "role": "reused_confinement_helper",
+        "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+      }
+    ],
+    "audit-text-encoding": [
+      {
+        "bytes": 1664,
+        "path": "packages/audit-text-encoding/SKILL.md",
+        "role": "skill_entry",
+        "sha256": "48ec6cb9a92c0d50ecb3bd926458b8929888f3e76e988dbc65f018e20368f238"
+      },
+      {
+        "bytes": 3250,
+        "path": "packages/audit-text-encoding/scripts/audit_text_encoding.py",
+        "role": "implementation_script",
+        "sha256": "8d880888746dc0560ed9b4ae000b6eed94ddb014b2309151e7d51bb91f32e1cb"
+      },
+      {
+        "bytes": 3633,
+        "path": "packages/audit-text-encoding/scripts/confined_input.py",
+        "role": "reused_confinement_helper",
+        "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+      }
+    ],
+    "audit-zip-package": [
+      {
+        "bytes": 2613,
+        "path": "packages/audit-zip-package/SKILL.md",
+        "role": "skill_entry",
+        "sha256": "fb25c91b76f5e6caa8ba6f175842a882832980db3e10e24a89a9c2fafef8c7d6"
+      },
+      {
+        "bytes": 8625,
+        "path": "packages/audit-zip-package/scripts/audit_zip_package.py",
+        "role": "implementation_script",
+        "sha256": "932d92fd428058205ed089fff2dbd7f948b1fd0c29640df6d5e8abff52cf8d87"
+      },
+      {
+        "bytes": 3633,
+        "path": "packages/audit-zip-package/scripts/confined_input.py",
+        "role": "reused_confinement_helper",
+        "sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24"
+      }
+    ]
+  },
+  "physical_delivery_paths": 9,
+  "reused_helper_sha256": "209f273fcca9249cb2778475f667f821f42a8613d987f20c59df6eb6e1aa9a24",
+  "schema": "first_party_multifile_manifest/v1"
+}

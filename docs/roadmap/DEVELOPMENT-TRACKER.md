@@ -3,15 +3,15 @@
 Kind: generated view. Do not edit by hand. The only task authority is
 [roadmap.yaml](roadmap.yaml); change it, then run
 `PYTHONPATH=src:tools .venv/bin/python tools/build_development_tracker.py`.
-Source fingerprint: `sha256:d4a63ce60bd34af8c4cfa84e8e2c728ef502793d3c2a535a058b014bf737a42f`.
+Source fingerprint: `sha256:e281b603e0101fb711d53035f51dfc3b965b4dda933004ac3f3051d4e62ae7fe`.
 
 ## Where things stand
 
 | Lane | Steps |
 |---|---:|
-| Being built now | 33 |
+| Being built now | 36 |
 | Can start next | 12 |
-| Waiting on earlier work | 53 |
+| Waiting on earlier work | 50 |
 | Blocked | 2 |
 | Done | 42 |
 
@@ -23,6 +23,9 @@ Source fingerprint: `sha256:d4a63ce60bd34af8c4cfa84e8e2c728ef502793d3c2a535a058b
 | S-6.35 | Release automation and automated live checks after every release | building | S-6.26 |
 | S-6.33 | Website fixes from the persona and interface reviews | building | S-6.12 |
 | S-6.34 | One home for rules and authority, and a documentation cleanup | building | Land the authority section, reconcile the entry points, then apply the README plan. |
+| S-6.30 | Engines behind fixed edges: the shared engine framework | building | S-6.28 |
+| S-6.31 | The harness executor slot: delegate each step to a standard harness | building | S-6.30 |
+| S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | building | S-6.31 |
 | S-6.62 | Catalogue releases and library settings with good defaults | building | S-6.40 |
 | S-6.36 | Y Combinator application package, fact-checked | building | S-6.34 |
 | S-6.4 | Bind the provisioning catalogue to durable records and tenant disclosure authority | building | Connect authoritative qualification adapters for every intelligence layer and templates; add restore checks without treating host attestation as independent qualification. |
@@ -80,9 +83,6 @@ Source fingerprint: `sha256:d4a63ce60bd34af8c4cfa84e8e2c728ef502793d3c2a535a058b
 | S-6.48 | Setup paths for every kind of customer, with seeded starter files | proposed | S-6.42 |
 | S-6.55 | Persona reviews after every release | proposed | S-6.33 |
 | S-6.49 | Subscription plugins for Hermes Agent and OpenClaw | proposed | S-6.44 |
-| S-6.30 | Engines behind fixed edges: the shared engine framework | proposed | S-6.28 |
-| S-6.31 | The harness executor slot: delegate each step to a standard harness | proposed | S-6.30 |
-| S-6.42 | Harness landscape: forks of Pi and OpenCode, and independent instances in every supported harness | proposed | S-6.31 |
 | S-6.50 | Baltor forks of OpenCode and Pi | proposed | S-6.42 |
 | S-6.61 | One place for the customer's credentials and connections, with scoped access for every step | proposed | S-6.31 |
 | S-6.32 | Hosted search as an engine slot with the measured policy and a relevance floor | proposed | S-6.30 |

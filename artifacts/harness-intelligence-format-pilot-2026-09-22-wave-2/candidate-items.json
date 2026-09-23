@@ -1,0 +1,43 @@
+{
+  "schema": "first_party_multifile_harness_candidates/v1",
+  "approval_state": "candidate_only",
+  "source_rights": "First-party original candidate procedures and scripts. The confined_input.py helper is reused byte-for-byte from the local first-party mixed-format pilot. Customer distribution licence and independent exact-byte approval are pending.",
+  "items": [
+    {
+      "id": "audit-join-cardinality",
+      "purpose": "Measure two-table join multiplicity, missing keys, and unmatched rows before a data transformation.",
+      "search_tasks": ["join cardinality", "duplicate join keys", "join row expansion", "unmatched foreign keys"],
+      "delivery_files": [
+        "packages/audit-join-cardinality/SKILL.md",
+        "packages/audit-join-cardinality/scripts/audit_join_cardinality.py",
+        "packages/audit-join-cardinality/scripts/confined_input.py"
+      ],
+      "review_note": "reviews/audit-join-cardinality.md",
+      "verification": "tests/test_audit_join_cardinality.py"
+    },
+    {
+      "id": "audit-zip-package",
+      "purpose": "Screen a ZIP package's metadata before any separately authorized extraction.",
+      "search_tasks": ["archive preflight", "zip traversal", "zip duplicate paths", "archive expansion"],
+      "delivery_files": [
+        "packages/audit-zip-package/SKILL.md",
+        "packages/audit-zip-package/scripts/audit_zip_package.py",
+        "packages/audit-zip-package/scripts/confined_input.py"
+      ],
+      "review_note": "reviews/audit-zip-package.md",
+      "verification": "tests/test_audit_zip_package.py"
+    },
+    {
+      "id": "audit-text-encoding",
+      "purpose": "Report UTF-8, newline, NUL, and line-length issues in a bounded text input.",
+      "search_tasks": ["text encoding audit", "invalid utf8", "mixed newline", "text ingest preflight"],
+      "delivery_files": [
+        "packages/audit-text-encoding/SKILL.md",
+        "packages/audit-text-encoding/scripts/audit_text_encoding.py",
+        "packages/audit-text-encoding/scripts/confined_input.py"
+      ],
+      "review_note": "reviews/audit-text-encoding.md",
+      "verification": "tests/test_audit_text_encoding.py"
+    }
+  ]
+}

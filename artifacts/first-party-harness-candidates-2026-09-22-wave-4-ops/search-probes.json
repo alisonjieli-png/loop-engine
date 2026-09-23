@@ -1,0 +1,62 @@
+{
+  "record_type": "local_candidate_search_probe/v1",
+  "selection_rule": "One author-written task query per proposed method, drafted before running this local evaluator; five unrelated no-answer controls. Not independent or blind.",
+  "source_batch": "first-party-harness-candidates-2026-09-22-wave-4-ops",
+  "queries": [
+    {
+      "query": "We have fewer usable components than confirmed customer orders. Allocate what is on hand without promising the same unit twice.",
+      "expected_name": "allocate-scarce-stock-by-promised-service"
+    },
+    {
+      "query": "Compare direct freight against a cheaper two-hop lane that misses the arrival promise.",
+      "expected_name": "compare-distribution-paths-with-failure-costs"
+    },
+    {
+      "query": "For this approved maintenance procedure, identify missing calibrated fixtures and compatible replacement parts before scheduling the repair.",
+      "expected_name": "map-repair-support-requirements-to-assets"
+    },
+    {
+      "query": "Our subcontractor uploaded a report and marked the job done. Which agreement deliverables still lack signed acceptance?",
+      "expected_name": "reconcile-subcontractor-delivery-to-obligations"
+    },
+    {
+      "query": "A contractor is available next week, but approved funds may start later than the work. Can the project request be committed?",
+      "expected_name": "trace-resource-request-to-funding-window"
+    },
+    {
+      "query": "Our project responsibility sheet lists the same employee as preparer and independent approver. Check coverage and conflicts.",
+      "expected_name": "balance-project-duty-coverage"
+    },
+    {
+      "query": "Separate spent money from open purchase commitments when explaining why a work package differs from its authorized baseline.",
+      "expected_name": "explain-work-package-cost-variance"
+    },
+    {
+      "query": "This mixed service and equipment invoice could go to several accounts. Propose the right ledger classification from the chart rules.",
+      "expected_name": "classify-ambiguous-posting-account"
+    },
+    {
+      "query": "Show every ledger account and consolidation adjustment behind the reported revenue line, including duplicate mappings.",
+      "expected_name": "trace-statement-line-to-ledger"
+    },
+    {
+      "query": "The vendor bills for units ordered, but only part of the shipment was accepted. Prepare an invoice exception before anyone pays.",
+      "expected_name": "screen-payable-for-document-mismatch"
+    },
+    {
+      "query": "The support issue was fixed internally, yet we cannot find the follow-up the agent promised the customer. Is the case finished?",
+      "expected_name": "track-customer-promises-through-case-updates"
+    },
+    {
+      "query": "The requested refund includes a unit already credited last month. Check eligible returned quantities and the original sale price.",
+      "expected_name": "reconcile-return-credit-to-original-sale"
+    }
+  ],
+  "no_answer_queries": [
+    "How should I prune an apple tree in winter?",
+    "Translate a medieval Latin poem into Spanish.",
+    "What tide height is forecast for the eastern harbor?",
+    "Design a watercolor poster for a children's book.",
+    "Which telescope eyepiece should I buy for Jupiter?"
+  ]
+}

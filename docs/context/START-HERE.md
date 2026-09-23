@@ -19,6 +19,12 @@ repair, the work in flight and the open problems. Then read the
 for changes, tests, checkpoints and releases, the repairs of September 20 and
 the private beta definition. Its live-state table describes September 20.
 
+For the current 100,000-package service research, candidate files and live
+interface findings, read the [component research artifacts](../research/BALTOR-COMPONENT-RESEARCH-ARTIFACTS-2026-09-23.md)
+and [Codex side research handoff](CODEX-SIDE-RESEARCH-HANDOFF-2026-09-22.md).
+They link the exact new reports, manifests and saved failed attempts. The
+roadmap remains the task authority.
+
 The [September 21 handoff](SESSION-HANDOFF-2026-09-21.md), its
 [evening addendum](SESSION-HANDOFF-2026-09-21-EVENING.md), the
 [September 20 development checkpoint](DEVELOPMENT-CHECKPOINT-2026-09-20.md)

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" role="img" aria-labelledby="title">
+  <title id="title">Baltor lifted muzzle, dedicated 16 pixel mark</title>
+  <path d="m2 15 3-5Q3 7 5 5V1l3 3q2 0 3 2l3 1q2 0 1 2l-3 1q-2 1-1 3l1 2Z" fill="#092e5b"/>
+  <path d="m6 3 1 2H6Z" fill="#fff"/>
+  <path d="M6 7q1-2 3-1l2 2h3v1l-3 1-2 2v1l-3 2H4l2-4Z" fill="#fff"/>
+  <path d="M9 6h2v1H9Z" fill="#092e5b"/>
+</svg>

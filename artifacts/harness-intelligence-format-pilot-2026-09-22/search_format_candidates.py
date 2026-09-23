@@ -90,6 +90,27 @@ def _check_variant_dependencies(paths: list[str], by_path: dict[str, dict]) -> N
                     raise FormatCandidateSearchError(f"local Python dependency missing: {sibling}")
 
 
+def _check_client_payload_path(item: dict, client: str, path: str) -> None:
+    parts = PurePosixPath(path).parts
+    identity_parts = item["id"].split(".")
+    if len(identity_parts) != 4:
+        raise FormatCandidateSearchError("candidate identity shape invalid")
+    slug = identity_parts[2]
+    kind = item["kind"]
+    if kind == "native_step_instructions":
+        valid = (len(parts) == 5 and parts[:2] == ("context", slug)
+                 and parts[2:4] == (client, "work"))
+    elif kind == "skill_with_python_tool":
+        valid = (len(parts) >= 3 and parts[:2] == ("tools", slug))
+    elif kind == "local_protocol_server_connection":
+        valid = (len(parts) >= 6 and parts[:5] ==
+                 ("connections", slug, "layouts", client, "work"))
+    else:
+        raise FormatCandidateSearchError("unknown candidate kind")
+    if not valid:
+        raise FormatCandidateSearchError(f"wrong client layout or package path: {path}")
+
+
 def _read_record(path: Path, maximum: int = 200_000) -> tuple[dict, str]:
     if path.is_symlink() or not path.is_file():
         raise FormatCandidateSearchError(f"missing or symlinked record: {path}")
@@ -163,11 +184,18 @@ def validated_catalogue() -> tuple[list[dict], dict[str, dict], str, str]:
             if path not in by_path or (path in file_owners and file_owners[path] != identity):
                 raise FormatCandidateSearchError(f"missing or cross-item repeated deliverable: {path}")
             file_owners[path] = identity
-        for variant_paths in item["delivery_variants"].values():
+        for path in item["source_files"]:
+            if by_path[path]["file_role"] not in {"canonical_source", "delivery_payload"}:
+                raise FormatCandidateSearchError(f"non-source candidate file: {path}")
+        for client, variant_paths in item["delivery_variants"].items():
+            for path in variant_paths:
+                if by_path[path]["file_role"] != "delivery_payload":
+                    raise FormatCandidateSearchError(f"non-payload delivery file: {path}")
+                _check_client_payload_path(item, client, path)
             _check_variant_dependencies(variant_paths, by_path)
         note = _safe_path(item["review_note"], "review_note")
-        if note not in by_path:
-            raise FormatCandidateSearchError("review note is missing from exact file manifest")
+        if note not in by_path or by_path[note]["file_role"] != "review_only":
+            raise FormatCandidateSearchError("review note role or file missing from exact manifest")
         for field in ("kind", "title", "description", "activation", "effect_requirement"):
             _safe_text(item[field], field)
     return items, by_path, manifest_digest, catalog_digest

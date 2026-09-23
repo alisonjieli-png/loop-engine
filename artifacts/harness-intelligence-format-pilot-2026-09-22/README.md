@@ -44,9 +44,12 @@ The [logical candidate catalogue](candidate-items.json) records **six
 packages**: two instruction templates, three skills with tested Python
 tools, and one local protocol connection package. The
 [exact-file manifest](manifest.json) currently binds 52 physical source,
-rendering and review files. Those counts answer different questions;
+rendering, review, test and receipt files. Its version-two file roles mark
+28 paths as delivery payload, two as canonical connection source, and the
+other 22 as non-delivery. Those counts answer different questions;
 tests and client renderings are not extra intelligence methods. The
 [mixed-format search](search_format_candidates.py) checks both records
+and refuses a review note, test path or wrong-client file inserted into a variant
 before returning metadata and digests. With `--client codex`, it shows
 only the Codex delivery variant, while an unfiltered card requires a
 client choice before any file can be installed. It is local reviewer

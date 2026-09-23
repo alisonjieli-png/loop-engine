@@ -1,0 +1,3 @@
+# Initial local search evaluation refusal
+
+The first author-written [probe file](search-probes-rejected-overlength.json) has SHA-256 `2b9c31e3ebc7ba5c9e1f399f140250405a4e943f6bbc7560db023c67dbb5e7e2`. The existing local candidate search refused the evaluation before it wrote a result: `query has more than 16 meaningful terms`. The freight query contained 18 meaningful terms under that tool's stopword set. A shorter version in [the successor probe file](search-probes.json) keeps the same task intent and falls inside the limit. This is a query-format correction, not a search-score tuning claim. No score exists for the rejected attempt.

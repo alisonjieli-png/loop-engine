@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" role="img" aria-labelledby="title">
+  <title id="title">Baltor husky mask and two paws on ice, dedicated 32 pixel mark</title>
+  <rect width="32" height="32" rx="6" fill="#eaf2ff"/>
+  <path d="M4 14 6 2l6 6q4-2 8 0l6-6 2 12q1 5-4 9l-8 3-8-3q-5-4-4-9Z" fill="#092e5b"/>
+  <path d="M6 16q0-4 4-4 2 0 4 4l2-7 2 7q2-4 4-4 4 0 4 4l-3 5q-3 3-7 3t-7-3Z" fill="#fff"/>
+  <path d="M10 16h1a1 1 0 0 1 1 1 1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1 1 1 0 0 1 1-1Zm11 0h1a1 1 0 0 1 1 1 1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1 1 1 0 0 1 1-1ZM14 20h4l-2 2Z" fill="#092e5b"/>
+  <path d="m2 30 14-6 14 6Z" fill="#2e73d2"/>
+  <path d="M8 24h4q1 0 1 1v2H7v-2q0-1 1-1Zm12 0h4q1 0 1 1v2h-6v-2q0-1 1-1Z" fill="#fff"/>
+</svg>

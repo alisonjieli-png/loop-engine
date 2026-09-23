@@ -1,0 +1,320 @@
+{
+  "base": "isolated loopback fixture",
+  "viewports": [
+    {
+      "label": "desktop-1440x900",
+      "home": {
+        "title": "Baltor | Material your coding tools can search",
+        "mainAction": {
+          "text": "Get started\n↗",
+          "href": "/connect"
+        },
+        "pageWidth": 1440,
+        "viewportWidth": 1440,
+        "pageHeight": 4640,
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 85,
+          "bottom": 85,
+          "display": "flex"
+        },
+        "nav": {
+          "x": 186,
+          "y": 23,
+          "width": 873,
+          "height": 38,
+          "bottom": 61,
+          "display": "flex"
+        },
+        "heading": {
+          "x": 60,
+          "y": 184,
+          "width": 607,
+          "height": 85,
+          "bottom": 268,
+          "display": "block"
+        },
+        "primary": {
+          "x": 60,
+          "y": 573,
+          "width": 150,
+          "height": 51,
+          "bottom": 624,
+          "display": "flex"
+        },
+        "heroNote": {
+          "x": 60,
+          "y": 638,
+          "width": 440,
+          "height": 43,
+          "bottom": 682,
+          "display": "block"
+        },
+        "demo": {
+          "x": 725,
+          "y": 145,
+          "width": 655,
+          "height": 642,
+          "bottom": 787,
+          "display": "block"
+        },
+        "nextBand": {
+          "x": 0,
+          "y": 863,
+          "width": 1440,
+          "height": 613,
+          "bottom": 1476,
+          "display": "block"
+        },
+        "demoActive": "split",
+        "waitlistVisible": true
+      },
+      "afterPrimary": {
+        "path": "/connect",
+        "scrollY": 0,
+        "formVisible": true,
+        "email": {
+          "y": 654,
+          "bottom": 701
+        },
+        "submit": {
+          "y": 926,
+          "bottom": 972
+        },
+        "firstPanel": {
+          "y": 433,
+          "bottom": 1103
+        },
+        "pageWidth": 1440
+      }
+    },
+    {
+      "label": "mobile-390x844",
+      "home": {
+        "title": "Baltor | Material your coding tools can search",
+        "mainAction": {
+          "text": "Get started\n↗",
+          "href": "/connect"
+        },
+        "pageWidth": 390,
+        "viewportWidth": 390,
+        "pageHeight": 8228,
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 254,
+          "bottom": 254,
+          "display": "flex"
+        },
+        "nav": {
+          "x": 16,
+          "y": 140,
+          "width": 358,
+          "height": 93,
+          "bottom": 233,
+          "display": "flex"
+        },
+        "heading": {
+          "x": 16,
+          "y": 344,
+          "width": 358,
+          "height": 108,
+          "bottom": 452,
+          "display": "block"
+        },
+        "primary": {
+          "x": 16,
+          "y": 849,
+          "width": 150,
+          "height": 51,
+          "bottom": 900,
+          "display": "flex"
+        },
+        "heroNote": {
+          "x": 16,
+          "y": 914,
+          "width": 358,
+          "height": 43,
+          "bottom": 958,
+          "display": "block"
+        },
+        "demo": {
+          "x": 16,
+          "y": 1046,
+          "width": 358,
+          "height": 771,
+          "bottom": 1817,
+          "display": "block"
+        },
+        "nextBand": {
+          "x": 0,
+          "y": 1865,
+          "width": 390,
+          "height": 1123,
+          "bottom": 2988,
+          "display": "block"
+        },
+        "demoActive": "split",
+        "waitlistVisible": true
+      },
+      "afterPrimary": {
+        "path": "/connect",
+        "scrollY": 0,
+        "formVisible": true,
+        "email": {
+          "y": 1102,
+          "bottom": 1150
+        },
+        "submit": {
+          "y": 1439,
+          "bottom": 1485
+        },
+        "firstPanel": {
+          "y": 558,
+          "bottom": 1668
+        },
+        "pageWidth": 390
+      }
+    },
+    {
+      "label": "mobile-320x700",
+      "home": {
+        "title": "Baltor | Material your coding tools can search",
+        "mainAction": {
+          "text": "Get started\n↗",
+          "href": "/connect"
+        },
+        "pageWidth": 320,
+        "viewportWidth": 320,
+        "pageHeight": 9474,
+        "header": {
+          "x": 0,
+          "y": 0,
+          "width": 320,
+          "height": 254,
+          "bottom": 254,
+          "display": "flex"
+        },
+        "nav": {
+          "x": 16,
+          "y": 140,
+          "width": 288,
+          "height": 93,
+          "bottom": 233,
+          "display": "flex"
+        },
+        "heading": {
+          "x": 16,
+          "y": 344,
+          "width": 288,
+          "height": 108,
+          "bottom": 452,
+          "display": "block"
+        },
+        "primary": {
+          "x": 16,
+          "y": 924,
+          "width": 150,
+          "height": 51,
+          "bottom": 975,
+          "display": "flex"
+        },
+        "heroNote": {
+          "x": 16,
+          "y": 1030,
+          "width": 288,
+          "height": 65,
+          "bottom": 1095,
+          "display": "block"
+        },
+        "demo": {
+          "x": 16,
+          "y": 1183,
+          "width": 288,
+          "height": 870,
+          "bottom": 2053,
+          "display": "block"
+        },
+        "nextBand": {
+          "x": 0,
+          "y": 2101,
+          "width": 320,
+          "height": 1310,
+          "bottom": 3411,
+          "display": "block"
+        },
+        "demoActive": "split",
+        "waitlistVisible": true
+      },
+      "afterPrimary": {
+        "path": "/connect",
+        "scrollY": 0,
+        "formVisible": true,
+        "email": {
+          "y": 1243,
+          "bottom": 1291
+        },
+        "submit": {
+          "y": 1602,
+          "bottom": 1648
+        },
+        "firstPanel": {
+          "y": 622,
+          "bottom": 1878
+        },
+        "pageWidth": 320
+      }
+    }
+  ],
+  "pageErrors": [],
+  "stages": [
+    {
+      "value": "split",
+      "selected": "split",
+      "visiblePanels": [
+        "split"
+      ],
+      "label": "Illustration of the design being built",
+      "panelHeight": 480
+    },
+    {
+      "value": "search",
+      "selected": "search",
+      "visiblePanels": [
+        "search"
+      ],
+      "label": "Recorded from this release's library",
+      "panelHeight": 480
+    },
+    {
+      "value": "download",
+      "selected": "download",
+      "visiblePanels": [
+        "download"
+      ],
+      "label": "Recorded from this release's library",
+      "panelHeight": 480
+    },
+    {
+      "value": "folder",
+      "selected": "folder",
+      "visiblePanels": [
+        "folder"
+      ],
+      "label": "Illustration of the design being built",
+      "panelHeight": 480
+    },
+    {
+      "value": "check",
+      "selected": "check",
+      "visiblePanels": [
+        "check"
+      ],
+      "label": "Illustration of the design being built",
+      "panelHeight": 480
+    }
+  ]
+}
