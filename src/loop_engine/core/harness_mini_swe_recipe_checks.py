@@ -26,7 +26,7 @@ def self_test():
         config = {"command_prefix": ["/declared/python"], "model": "exact-model",
                   "workspace_path": str(root), "task_path": str(task),
                   "output_allowance": 77, "timeout_seconds": 31}
-        argv, env, stdin = prepare_mini_swe_recipe(config, "http://127.0.0.1:23456/v1")
+        argv, env, stdin = prepare_mini_swe_recipe("mini_swe_agent", config, "http://127.0.0.1:23456/v1")
         body = json.loads((root / "mini-semantic-config.json").read_text())
         check("mini_task_body_is_private_config_not_argv", "private task" not in argv
               and stdin is None and body["task"] == "private task")
@@ -35,7 +35,7 @@ def self_test():
         check("mini_home_and_user_startup_are_isolated", env["MSWEA_GLOBAL_CONFIG_DIR"].startswith(str(root))
               and env["PYTHONNOUSERSITE"] == "1")
         try:
-            prepare_mini_swe_recipe(config, "https://other.example/v1")
+            prepare_mini_swe_recipe("mini_swe_agent", config, "https://other.example/v1")
         except ValueError:
             check("mini_foreign_relay_refused", True)
         else:
@@ -51,9 +51,10 @@ def self_test():
             check("mini_malformed_submission_refused_" + str(len(tests)), False)
     row = {"type": "mini_swe_semantic_result", "exit_status": "Submitted", "candidate": "answer",
            "native_execution": False, "ok": True}
-    check("mini_exact_candidate_admitted_only_after_submission", extract_mini_swe_output(json.dumps(row), "answer") == "answer")
+    check("mini_exact_candidate_admitted_only_after_submission", extract_mini_swe_output("mini_swe_agent", json.dumps(row), "answer") == "answer")
     check("mini_failed_or_native_execution_result_refused", not extract_mini_swe_output(
-        json.dumps({**row, "native_execution": True}), "answer")
-        and not extract_mini_swe_output(json.dumps({**row, "ok": False}), "answer"))
-    check("mini_foreign_candidate_refused", not extract_mini_swe_output(json.dumps(row), "other"))
+        "mini_swe_agent", json.dumps({**row, "native_execution": True}), "answer")
+        and not extract_mini_swe_output("mini_swe_agent", json.dumps({**row, "ok": False}), "answer"))
+    check("mini_foreign_candidate_refused", not extract_mini_swe_output("mini_swe_agent", json.dumps(row), "other"))
+    check("mini_functions_refuse_another_style", not extract_mini_swe_output("gptme", json.dumps(row), "answer"))
     return {"passed": sum(t["passed"] for t in tests), "total": len(tests), "tests": tests}

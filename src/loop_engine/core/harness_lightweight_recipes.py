@@ -147,7 +147,7 @@ def _text_content(value):
     return "".join(part["text"] for part in value)
 
 
-def prepare_trae_semantic_recipe(config, base_url):
+def prepare_trae_semantic_recipe(style, config, base_url):
     """Select an explicit SDK text profile, retaining Trae's execution loop.
 
     Public Agent.run(tool_names=[]) preserves the empty tool registry. The
@@ -155,7 +155,9 @@ def prepare_trae_semantic_recipe(config, base_url):
     conditions and emits a versioned result. It never substitutes a raw model
     call for the upstream Agent execution.
     """
-    _, environment, _ = prepare_lightweight_recipe("trae_agent", config, base_url)
+    if style != "trae_agent":
+        raise LightweightRecipeError("unsupported_trae_semantic_style")
+    _, environment, _ = prepare_lightweight_recipe(style, config, base_url)
     prefix = tuple(config["command_prefix"])
     if len(prefix) != 1 or not Path(prefix[0]).is_absolute():
         raise LightweightRecipeError("trae_explicit_python_required")
