@@ -1,0 +1,176 @@
+[
+  {
+    "record_type": "library_engine_selection/v1",
+    "slot_id": "library_ingestion_source",
+    "slot_version": "1.0.0",
+    "selection_mode": "set_of",
+    "declared_order": [
+      "github_pinned_repositories",
+      "mcp_official_registry"
+    ],
+    "eligibility": [
+      {
+        "engine_id": "github_pinned_repositories",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "available"
+      },
+      {
+        "engine_id": "mcp_official_registry",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "available"
+      }
+    ],
+    "chosen": [
+      "github_pinned_repositories",
+      "mcp_official_registry"
+    ],
+    "authority_granted": false,
+    "decided_at": "2026-09-23T04:39:43Z",
+    "settings_digest": "d1b372091e1517acb256799e8447093bcfaaa3b46c994dacdcaba34472d74ccf",
+    "decision_digest": "22ff80758ab3c874ff206ab37f1bb291e4f28d8fc53105a82186817989791d4c"
+  },
+  {
+    "record_type": "library_engine_selection/v1",
+    "slot_id": "library_format_validation",
+    "slot_version": "1.0.0",
+    "selection_mode": "set_of",
+    "declared_order": [
+      "agent_skills_builtin_rules",
+      "agent_skills_reference_validator",
+      "connection_builtin_rules",
+      "connection_schema_validator"
+    ],
+    "eligibility": [
+      {
+        "engine_id": "agent_skills_builtin_rules",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "always_available"
+      },
+      {
+        "engine_id": "agent_skills_reference_validator",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "available"
+      },
+      {
+        "engine_id": "connection_builtin_rules",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "always_available"
+      },
+      {
+        "engine_id": "connection_schema_validator",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "available"
+      }
+    ],
+    "chosen": [
+      "agent_skills_builtin_rules",
+      "agent_skills_reference_validator",
+      "connection_builtin_rules",
+      "connection_schema_validator"
+    ],
+    "authority_granted": false,
+    "decided_at": "2026-09-23T04:39:43Z",
+    "settings_digest": "d1b372091e1517acb256799e8447093bcfaaa3b46c994dacdcaba34472d74ccf",
+    "decision_digest": "2521a963be663893d329eb0cb7edf3517ba09878d754540f7d75e211a6faad1f"
+  },
+  {
+    "record_type": "library_engine_selection/v1",
+    "slot_id": "library_safety_scan",
+    "slot_version": "1.0.0",
+    "selection_mode": "set_of",
+    "declared_order": [
+      "builtin_static_rules",
+      "skillspector_static"
+    ],
+    "eligibility": [
+      {
+        "engine_id": "builtin_static_rules",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "always_available"
+      },
+      {
+        "engine_id": "skillspector_static",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "available"
+      }
+    ],
+    "chosen": [
+      "builtin_static_rules",
+      "skillspector_static"
+    ],
+    "authority_granted": false,
+    "decided_at": "2026-09-23T04:39:43Z",
+    "settings_digest": "d1b372091e1517acb256799e8447093bcfaaa3b46c994dacdcaba34472d74ccf",
+    "decision_digest": "65136c6b5b7b189e439bad581b1d1afe8ce3e5bea7fc725b22ecb6e0713d9806"
+  },
+  {
+    "record_type": "library_engine_selection/v1",
+    "slot_id": "library_near_duplicate",
+    "slot_version": "1.0.0",
+    "selection_mode": "one_of",
+    "declared_order": [
+      "datasketch_minhash_lsh",
+      "builtin_minhash_lsh"
+    ],
+    "eligibility": [
+      {
+        "engine_id": "datasketch_minhash_lsh",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "available"
+      },
+      {
+        "engine_id": "builtin_minhash_lsh",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "always_available"
+      }
+    ],
+    "chosen": [
+      "datasketch_minhash_lsh"
+    ],
+    "authority_granted": false,
+    "decided_at": "2026-09-23T04:39:44Z",
+    "settings_digest": "d1b372091e1517acb256799e8447093bcfaaa3b46c994dacdcaba34472d74ccf",
+    "decision_digest": "4b8bf0cf9e00541ae90880e6422b2f3326ebcbad5c5c291abd09038743943006"
+  },
+  {
+    "record_type": "library_engine_selection/v1",
+    "slot_id": "library_outline",
+    "slot_version": "1.0.0",
+    "selection_mode": "one_of",
+    "declared_order": [
+      "model_outline",
+      "deterministic_outline"
+    ],
+    "eligibility": [
+      {
+        "engine_id": "model_outline",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "available"
+      },
+      {
+        "engine_id": "deterministic_outline",
+        "engine_version": "1.0.0",
+        "eligible": true,
+        "reason": "always_available"
+      }
+    ],
+    "chosen": [
+      "model_outline"
+    ],
+    "authority_granted": false,
+    "decided_at": "2026-09-23T04:39:44Z",
+    "settings_digest": "d1b372091e1517acb256799e8447093bcfaaa3b46c994dacdcaba34472d74ccf",
+    "decision_digest": "84f8469af7318dfe0dfffa501a00a2d780d7c449f03090ff12fe09e3c9477d83"
+  }
+]

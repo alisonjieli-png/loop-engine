@@ -1,0 +1,568 @@
+{
+  "record_type": "ls1_run_sources_summary/v1",
+  "sources": [
+    {
+      "source_id": "github.anthropics.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "anthropics/skills",
+      "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 19,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": null,
+      "licence_decisions": {
+        "verbatim_permitted": 14,
+        "outline_only": 1,
+        "refused": 4
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 10,
+        "licence/licence_outline_only": 1,
+        "licence/licence_refused": 4
+      },
+      "staged_rows_kept_from_this_source": 4
+    },
+    {
+      "source_id": "github.openai.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "openai/skills",
+      "commit": "49f948faa9258a0c61caceaf225e179651397431",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 44,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": null,
+      "licence_decisions": {
+        "verbatim_permitted": 36,
+        "refused": 8
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 30,
+        "licence/licence_refused": 8,
+        "safety/safety_scan_blocked": 1
+      },
+      "staged_rows_kept_from_this_source": 5
+    },
+    {
+      "source_id": "github.huggingface.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "huggingface/skills",
+      "commit": "abc20ae526d8b4c0e4dff89f904adce28a4a0eb6",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 26,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "github_spdx_id": "Apache-2.0",
+        "matched_spdx": "Apache-2.0",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 25,
+        "outline_only": 1
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 16,
+        "licence/licence_outline_only": 1,
+        "safety/safety_scan_blocked": 1
+      },
+      "staged_rows_kept_from_this_source": 8
+    },
+    {
+      "source_id": "github.obra.superpowers",
+      "engine": "github_pinned_repositories",
+      "repository": "obra/superpowers",
+      "commit": "5bf4e78011075bcfc0dc295f0724994cd123ee71",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 15,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 15
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 9
+      },
+      "staged_rows_kept_from_this_source": 6
+    },
+    {
+      "source_id": "github.mattpocock.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "mattpocock/skills",
+      "commit": "c55ee46073ed923f86ce59a5eb3b6d895095d1b7",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 29,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 29
+      },
+      "refusals_by_reason": {
+        "format/body_too_short": 2,
+        "format/bundled_files_not_supported_yet": 13
+      },
+      "staged_rows_kept_from_this_source": 14
+    },
+    {
+      "source_id": "github.addyosmani.web-quality-skills",
+      "engine": "github_pinned_repositories",
+      "repository": "addyosmani/web-quality-skills",
+      "commit": "afa8da942115f2961fdbfa80807ea0b232ff6c00",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 6,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "c122223ac43e86421958e18623979942c21b642951e2e3736dcb63eff13587c3",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 6
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 6
+      },
+      "staged_rows_kept_from_this_source": 0
+    },
+    {
+      "source_id": "github.blader.humanizer",
+      "engine": "github_pinned_repositories",
+      "repository": "blader/humanizer",
+      "commit": "9862685f575c65a8247f90369951df1b3416e3d6",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 1,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 1
+      },
+      "refusals_by_reason": {},
+      "staged_rows_kept_from_this_source": 1
+    },
+    {
+      "source_id": "github.vercel-labs.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "vercel-labs/skills",
+      "commit": "7407f3893ad4dceab546ac002c3ef806e4000c73",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 1,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "661142e53c313d2bb5e1b055f5c0a39001450ff1b5e27b89dc4bc7de9a6352ca",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 1
+      },
+      "refusals_by_reason": {},
+      "staged_rows_kept_from_this_source": 1
+    },
+    {
+      "source_id": "github.fission-ai.openspec",
+      "engine": "github_pinned_repositories",
+      "repository": "Fission-AI/OpenSpec",
+      "commit": "f179ed4e40567cdb56501ee3f4d09efbcb1557b8",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 12,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "c3c7235bea1214ab62df643473975c2e8b8848f528901a976693f7d069713e64",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 12
+      },
+      "refusals_by_reason": {},
+      "staged_rows_kept_from_this_source": 12
+    },
+    {
+      "source_id": "github.github.spec-kit",
+      "engine": "github_pinned_repositories",
+      "repository": "github/spec-kit",
+      "commit": "3a96599d778f7cb138c78f33cbb221cca9a0690a",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 2,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "2510b446bc1f0cf9702453075d20cd88631e20e5642658edb7325d9c1eb534f7",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 2
+      },
+      "refusals_by_reason": {},
+      "staged_rows_kept_from_this_source": 2
+    },
+    {
+      "source_id": "github.nextlevelbuilder.ui-ux-pro-max-skill",
+      "engine": "github_pinned_repositories",
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "dcc40ff5133ef78276117db0cc34e7b83cc8aeba",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 7,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "738f69dfa83db5c347c678fb9d90e560877059f0de93a327c39001bff92dc014",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 6,
+        "outline_only": 1
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 6,
+        "licence/licence_outline_only": 1
+      },
+      "staged_rows_kept_from_this_source": 0
+    },
+    {
+      "source_id": "github.k-dense-ai.claude-scientific-skills",
+      "engine": "github_pinned_repositories",
+      "repository": "K-Dense-AI/claude-scientific-skills",
+      "commit": "49c6e97775eaa18ba791bebe23162a70ae601c18",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 166,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE.md",
+        "sha256": "09b02a3c9df3053c55531d503357a9c7cde275970e6c3ceaa1ddf5f0e90b40c1",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 106,
+        "outline_only": 56,
+        "refused": 4
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 100,
+        "licence/licence_outline_only": 56,
+        "licence/licence_refused": 4
+      },
+      "staged_rows_kept_from_this_source": 6
+    },
+    {
+      "source_id": "github.wshobson.agents",
+      "engine": "github_pinned_repositories",
+      "repository": "wshobson/agents",
+      "commit": "4236bb91f8395b0435f1d8b8baf9e8e4c69a8620",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 183,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "f89abb55d9f073f38f1703e4518f0613c788c6174be7f13b8dfe48a1c076c746",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 183
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 140,
+        "safety/safety_scan_blocked": 4
+      },
+      "staged_rows_kept_from_this_source": 39
+    },
+    {
+      "source_id": "github.affaan-m.everything-claude-code",
+      "engine": "github_pinned_repositories",
+      "repository": "affaan-m/everything-claude-code",
+      "commit": "bf70150eb2df8070024e5bdf08e4aa08959e2735",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 292,
+      "refusals": 0,
+      "requests_made": 3,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "326146379f01bb137c0a5d3c54770c1aa31076705c8b88a7f6b26a460f6221b2",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 284,
+        "outline_only": 8
+      },
+      "refusals_by_reason": {
+        "format/bundled_files_not_supported_yet": 31,
+        "licence/licence_outline_only": 8,
+        "safety/safety_scan_blocked": 13
+      },
+      "staged_rows_kept_from_this_source": 240
+    },
+    {
+      "source_id": "github.github.awesome-copilot",
+      "engine": "github_pinned_repositories",
+      "repository": "github/awesome-copilot",
+      "commit": "a89cd67e19bbd856c11c27da07cb30bbd8f8c2c1",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 616,
+      "refusals": 1,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "e32449d23085399adc1222f7a17408b730550258e51627c153cb108ca9955823",
+        "github_spdx_id": "MIT",
+        "matched_spdx": "MIT",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 609,
+        "outline_only": 7
+      },
+      "refusals_by_reason": {
+        "fetch/source_file_too_large": 1,
+        "format/bundled_files_not_supported_yet": 150,
+        "licence/licence_outline_only": 7,
+        "safety/safety_scan_blocked": 7
+      },
+      "staged_rows_kept_from_this_source": 451
+    },
+    {
+      "source_id": "github.patrickjs.awesome-cursorrules",
+      "engine": "github_pinned_repositories",
+      "repository": "PatrickJS/awesome-cursorrules",
+      "commit": "b044f956f021b6e8877f16781bcfc466a6a120e9",
+      "use": "verbatim",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 257,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "36ffd9dc085d529a7e60e1276d73ae5a030b020313e6c5408593a6ae2af39673",
+        "github_spdx_id": "CC0-1.0",
+        "matched_spdx": "CC0-1.0",
+        "similarity": 0.9957
+      },
+      "licence_decisions": {
+        "verbatim_permitted": 257
+      },
+      "refusals_by_reason": {
+        "format/body_too_short": 1
+      },
+      "staged_rows_kept_from_this_source": 252
+    },
+    {
+      "source_id": "github.juliusbrussee.caveman",
+      "engine": "github_pinned_repositories",
+      "repository": "JuliusBrussee/caveman",
+      "commit": "2fd153c67988e980fb0b2455c90832159a6a5a25",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 20,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "94fe75d355887f84ee7eefca68e06d8d082a23dad47a8e1f58a94d98900edf5b",
+        "github_spdx_id": "NOASSERTION",
+        "matched_spdx": null,
+        "similarity": 0.8341
+      },
+      "licence_decisions": {
+        "outline_only": 20
+      },
+      "refusals_by_reason": {
+        "licence/licence_outline_only": 20
+      },
+      "staged_rows_kept_from_this_source": 0
+    },
+    {
+      "source_id": "github.coleam00.excalidraw-diagram-skill",
+      "engine": "github_pinned_repositories",
+      "repository": "coleam00/excalidraw-diagram-skill",
+      "commit": "8646fcc9f74f38539c6cdb4c969723336a96ddcd",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 1,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": null,
+      "licence_decisions": {
+        "outline_only": 1
+      },
+      "refusals_by_reason": {
+        "licence/licence_outline_only": 1
+      },
+      "staged_rows_kept_from_this_source": 0
+    },
+    {
+      "source_id": "github.vercel-labs.agent-skills",
+      "engine": "github_pinned_repositories",
+      "repository": "vercel-labs/agent-skills",
+      "commit": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 9,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": null,
+      "licence_decisions": {
+        "outline_only": 9
+      },
+      "refusals_by_reason": {
+        "licence/licence_outline_only": 9
+      },
+      "staged_rows_kept_from_this_source": 0
+    },
+    {
+      "source_id": "github.trailofbits.skills",
+      "engine": "github_pinned_repositories",
+      "repository": "trailofbits/skills",
+      "commit": "32e34f8173796e3566a51aee877dc96bc5191f64",
+      "use": "outline",
+      "complete": true,
+      "stopped_reason": "complete",
+      "next_cursor": null,
+      "candidates": 83,
+      "refusals": 0,
+      "requests_made": 2,
+      "repository_licence_verified": {
+        "path": "LICENSE",
+        "sha256": "7abe19ec9bb73b36141b999b861d24ad855e808bafe0f81e84cce28556f6c297",
+        "github_spdx_id": "CC-BY-SA-4.0",
+        "matched_spdx": "CC-BY-SA-4.0",
+        "similarity": 1.0
+      },
+      "licence_decisions": {
+        "outline_only": 83
+      },
+      "refusals_by_reason": {
+        "licence/licence_outline_only": 83
+      },
+      "staged_rows_kept_from_this_source": 0
+    },
+    {
+      "source_id": "registry.mcp.official",
+      "engine": "mcp_official_registry",
+      "repository": "registry.modelcontextprotocol.io",
+      "commit": null,
+      "use": "link",
+      "complete": false,
+      "stopped_reason": "candidate_ceiling",
+      "next_cursor": "com.appstorecopilot/appstorecopilot:1.0.0",
+      "candidates": 2260,
+      "refusals": 740,
+      "requests_made": 31,
+      "repository_licence_verified": null,
+      "licence_decisions": {
+        "link_only": 2260
+      },
+      "refusals_by_reason": {
+        "registry/credential_shaped_value_in_entry": 2,
+        "registry/excluded_by_declaration": 213,
+        "registry/no_transport_rendered": 10,
+        "registry/package_does_not_resolve": 10,
+        "registry/package_type_not_rendered": 6,
+        "registry/registry_status_not_active": 25,
+        "registry/required_arguments_not_rendered": 7,
+        "registry/upstream_repository_unreadable": 502,
+        "registry/url_template_not_rendered": 11,
+        "safety/safety_scan_blocked": 3
+      },
+      "staged_rows_kept_from_this_source": 2210
+    }
+  ]
+}

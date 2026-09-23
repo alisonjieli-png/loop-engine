@@ -254,6 +254,10 @@ repeat source words.
 - A registry entry is link-only: its upstream code is not read, and a remote
   server may change without a package digest.
 - The scanners are triage for reviewers. A clean scan is not safety proof,
-  and a rendered file has not been loaded by a harness here.
+  and a rendered file has not been loaded by a harness here. They refuse
+  conservatively: a skill that quotes an injection phrase in order to forbid
+  it is refused today, as the
+  [evidence of September 23, 2026](../../../../artifacts/library-ingestion-2026-09-23/README.md)
+  records.
 - Candidate counts are internal. A public library number counts approved,
   active packages only.

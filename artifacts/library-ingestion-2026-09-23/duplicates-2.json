@@ -1,0 +1,16 @@
+{
+  "record_type": "ls1_run_duplicates_summary/v1",
+  "by_kind": {
+    "exact": 1,
+    "near": 5
+  },
+  "links": 6,
+  "across_repositories": [
+    {
+      "kind": "exact",
+      "similarity": 1.0,
+      "kept": "ai.newzai.api/NewzAI/v0.1/servers/ai.newzai.api%2FNewzAI/versions/1.0.2",
+      "merged": "ai.newzai.api/news-mcp/v0.1/servers/ai.newzai.api%2Fnews-mcp/versions/1.0.0"
+    }
+  ]
+}

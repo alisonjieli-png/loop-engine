@@ -1,0 +1,410 @@
+{
+  "record_type": "library_ingestion_staging_report/v1",
+  "staged_at": "2026-09-23T05:17:15Z",
+  "database": "/home/username/.le-library/ls1-runs/run-2026-09-23-b/candidates.db",
+  "namespace": "library.outside",
+  "populations": [
+    {
+      "population": 1,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "47f89f0c053436401579d21aa8efb9b4434df21b2dd9bb1007723f98389b4145"
+    },
+    {
+      "population": 2,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "8b603938ea6426b71cc63b5e381ac666d31bad1df560476c6f1aaaef7abc267b"
+    },
+    {
+      "population": 3,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "dcbfcb2dc0255da7306a7f92f3f806feae9835b8b97212ec65e040ab40d386d7"
+    },
+    {
+      "population": 4,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "2681b88b27da80f6065ab13ca4021b807bcd605c50a33ed69b546b920a2a94c7"
+    },
+    {
+      "population": 5,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "6f47073b5fcaf4858abd4d7e977bdc5d3524ecd1b90a8886ab3960417b29c05e"
+    },
+    {
+      "population": 6,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "f5fd9f43dda5cafbfe0461960c15b4001e4b0584a2ffd4c01e3809013c3ef81a"
+    },
+    {
+      "population": 7,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "ff5e3a10b36f7f6346b98a0392c865862c727a902ccac0146d7a7abffab37ea1"
+    },
+    {
+      "population": 8,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "e4e1e77a05b5dd0451c25182a88fdc459808bfab641765c246739bbd1268c090"
+    },
+    {
+      "population": 9,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "192f8f805060b0ee9dc8f03b0f3a85ffd44794dc7474bd60821b41b27cf464a2"
+    },
+    {
+      "population": 10,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "c61f4654a71e1809699628e2927c7069c8af69f30006f9859cee8f08452d2406"
+    },
+    {
+      "population": 11,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "ee514197acc6a9cc4607ff94cb7e4c0d486feccbf2c9ce5d61578442d12cd1f4"
+    },
+    {
+      "population": 12,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "6a34f269be92cded97278e3d3dea197c830ad60b0e763236d6037be0216c4dbb"
+    },
+    {
+      "population": 13,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "79b11948dfc706410c10fbb4d970d83d66fe679685565a03a9a19f132f14c057"
+    },
+    {
+      "population": 14,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "545c07d8509d71710bf5ab13ffa43d4babd17338e05feaa36bc7e17e7bbc783c"
+    },
+    {
+      "population": 15,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "df23f5012a3e41f0f6394630513b7f2f7c9fe24a46bc7f74a2a92d2e98380c47"
+    },
+    {
+      "population": 16,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "cd45ed3128f94bae9ddd511f325203dbe16e765802d18d16d918b8d994e67b5a"
+    },
+    {
+      "population": 17,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "f89d804f1f81b69b1f7b7325ab8f1c1223f90b635c9c23d7c4c43cede1c68c9e"
+    },
+    {
+      "population": 18,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "bebf93e81d72d339cf84123e6e64e373a9212df7543590103cdc1e9d21521509"
+    },
+    {
+      "population": 19,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "8e94480f129648d088141bf14efaf78cdb6a627ca87f8828268160869bac4155"
+    },
+    {
+      "population": 20,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "ed4dd55905c0ee08246fdf0ac088c0dea661e2136d4e5d67f740eaa947617fcd"
+    },
+    {
+      "population": 21,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "431e7d7a8af2fefdd0a0307d25f1593ef39d2a9f1111f23debe7a6aef9849a0c"
+    },
+    {
+      "population": 22,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "ff6d15c3db0401480cf8cd2d0680fd1b8e9c9179f085057a9b49efe8d44bb68a"
+    },
+    {
+      "population": 23,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "afceba28336daf58687759c0c21bfcf6920928e3bb9d38eeb73961f87ff89476"
+    },
+    {
+      "population": 24,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "13d39a63a2611b80f169d32869405198f6b41b02a6a5a5f4ede51837c3f15646"
+    },
+    {
+      "population": 25,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "4b57d530fbcddc09e0a38898ce09bbc6ecd47e31185e884c3c53735184e16bcb"
+    },
+    {
+      "population": 26,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "b9c9d8652b5fb6e0da0f93f6268b3bd0769454a908e1907e97b2b2de036f05af"
+    },
+    {
+      "population": 27,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "2c4e9353637d5e55a0091c92d63550154038e81b3e3891405be2732183c6ae84"
+    },
+    {
+      "population": 28,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "d07d6bb79d8ae673dbe15f2c31c72e1f496036c57e42265e3c039eed24e1175e"
+    },
+    {
+      "population": 29,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "541e25790014ce63c5fd19e33cc67457a626c25c70335f1948b2a9851bd9a6aa"
+    },
+    {
+      "population": 30,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "4c2b0d1094b4120d7886d40fbf9b0bec3581c3fb4ad4505fcc50c1b56078e273"
+    },
+    {
+      "population": 31,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "c72b10d03748ea925aa56caffa2743ae9f394b87110f1dbb9b74c87f146360fa"
+    },
+    {
+      "population": 32,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "1b06caffe0dad416df0b798c4f5a27ca69295f42f51d35b219b274bfef399032"
+    },
+    {
+      "population": 33,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "ebb35a4f15f12d037f97aff13cae43d975cf091038b57852dfdac78b63824a07"
+    },
+    {
+      "population": 34,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "3154ab45848844f145de476b378f6af73a65be51574eaac2d304d1a9935af08c"
+    },
+    {
+      "population": 35,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "bec21001a1ab5e052da9fcacb63c20dc953210cbae4fd4332cf911690f6c63ec"
+    },
+    {
+      "population": 36,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "a5dd40c09ace080c18fc5b0c09215757684f652974c929705d7aafd9836211d5"
+    },
+    {
+      "population": 37,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "b44ea6e9fe58c77e990efafd5916fef33bfd864e6432a92e7becd2401197c8ab"
+    },
+    {
+      "population": 38,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "b23a3f039d5c229c62f9523f26cafc5e6e8c3346ccd0f88be8bc154367f6c26d"
+    },
+    {
+      "population": 39,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "a3e2147e62737e6d2af3506399f2def2e62df9dca07ea0315bbf56d2e1651d80"
+    },
+    {
+      "population": 40,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "c7e7879234933a67b7f2c219da88161e3a3161efc4d7c8a9aeed1ee72cbac450"
+    },
+    {
+      "population": 41,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "73f24dd18fe9e2e94838fade46c463871872a7a7a144fdefa9ce79b9f3241414"
+    },
+    {
+      "population": 42,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "09b1d9b0f1ef709d74535aa460cc4dcf60315d76be2af27f69c930fdf9046b52"
+    },
+    {
+      "population": 43,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "12c0ca4d0c00452df312af79e4526fb5f96a13985a0803ca254ea78588544c01"
+    },
+    {
+      "population": 44,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "e358e921bd619facec34bc9628ce5fc3a903331d5cdd7c688ce15adf105440f5"
+    },
+    {
+      "population": 45,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "2c961207ecd8784096a405dc693101e2e88767a2e30f0fc17bf63054b0d31495"
+    },
+    {
+      "population": 46,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "12e7d6fc4593978d0ad9bcac2db77eeb7b664cf770b71ee2d0ae1534f70c9576"
+    },
+    {
+      "population": 47,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "12f4532278904c88f35b833c1e070ab23bca2788eabacb5b379458748ee63486"
+    },
+    {
+      "population": 48,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "d8a54b2f4bc735e8f850ec13b34e47d274904e98b6176afaf450412667838e91"
+    },
+    {
+      "population": 49,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "35b97e3a871abf0e4ae2b5c66773ec923e1ac63bf0e5bedeaabe0883a284410a"
+    },
+    {
+      "population": 50,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "e3fb14dea5df0bf45b83bb1434692061382b8ca6472f94001f94f5b5002a21d4"
+    },
+    {
+      "population": 51,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "bc6b5739377445ee05d3752c4d3b67c3b8fef4d187480c547282d8ef0fd64c1e"
+    },
+    {
+      "population": 52,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "b227a333ad5f5253afff16a714951cfc92d7b927a4388495a10753ea03d174be"
+    },
+    {
+      "population": 53,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "efb9a8aea9524bca8457c320defddb096e8330b29b1a18eea89b91b2a633e1fd"
+    },
+    {
+      "population": 54,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "c0cf1210a01ea322ee7ea9aaf067b0b9e9d5c99841117a175ed31387dae10f9a"
+    },
+    {
+      "population": 55,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "854adb61324acfa006d1e963a5616677eb3bb67af7f2fd3875d2fb60ea398192"
+    },
+    {
+      "population": 56,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "27912eba406a7320e32fd453460f9f08d116ea20da3447e89d8dc982134868c3"
+    },
+    {
+      "population": 57,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "20aa48581f20fc981a7047a02875dd13cd4687fc2634af61accf0c4e12e32c94"
+    },
+    {
+      "population": 58,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "2b0a258db643b8c421d0885347679520cfd40464caf3825d134178e41d4cb714"
+    },
+    {
+      "population": 59,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "f64a9012958c5e84d2f28af852834548dac2b614bff5d183271ec2c31ce5583a"
+    },
+    {
+      "population": 60,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "c1beab2d113775e69ea7b468356a0ebef319ad87071bd52f770a07f0c3b78cd4"
+    },
+    {
+      "population": 61,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "fc0b04fcb689788dea8781b07efabc5d4b0875889860005c615cf47851442a4f"
+    },
+    {
+      "population": 62,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "078f7854d6e18fbb79c57094f9465f2f64ca4693fc89f3f7ef6c5d784c9b4333"
+    },
+    {
+      "population": 63,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "93943b03b42364266898ce9b67d095c3f087532de9de5bddebba085741716b4f"
+    },
+    {
+      "population": 64,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "3c3fff181407279b8f95ba7c2c9365c88fccb45005f39f3fa4c1664e61b88bce"
+    },
+    {
+      "population": 65,
+      "state": "staged",
+      "records": 50,
+      "batch_digest": "5cbf4ba999c4fe2261c0a4a8bae1907fce22fe878445def0703cb91787a1c8b6"
+    },
+    {
+      "population": 66,
+      "state": "staged",
+      "records": 1,
+      "batch_digest": "f50106c9ec8d955ae2e9cb55145ad382fe086833c3c8fbb81e327a614ee4e9a7"
+    }
+  ],
+  "records_in_namespace": 3251,
+  "normal_search_hits": 0,
+  "normal_search_excluded": 3251,
+  "title_probes_found_in_first_three": 3221,
+  "approved": false,
+  "hosted_publication": false
+}

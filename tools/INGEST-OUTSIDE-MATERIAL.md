@@ -8,6 +8,10 @@ commands. None of them approves, serves, publishes or installs anything, and
 every staged row stays a candidate until an independent review approves its
 exact bytes.
 
+The first two real runs, of September 23, 2026, are recorded with their
+counts in
+[artifacts/library-ingestion-2026-09-23](../artifacts/library-ingestion-2026-09-23/README.md).
+
 ## Collect
 
 `collect` reads the curated sources in
