@@ -35,6 +35,9 @@ BIND_TO_BODY_DIGEST = True
 FENCED = re.compile(r"\A```(?:json)?[ \t]*\n(.*)\n```\Z", re.DOTALL)
 TEXT_LIMIT = 4000
 MAXIMUM_FINDINGS = 40
+#: What the JSON reader raises on text that is not one answer. Text nested deeper than the reader's
+#: recursion limit raises RecursionError, which is not a ValueError; an answer never stops the run.
+UNREADABLE = (ValueError, RecursionError)
 
 
 @dataclass(frozen=True)
@@ -65,7 +68,7 @@ def _final_object(text: str):
     for index in reversed([position for position, character in enumerate(stripped) if character == "{"]):
         try:
             value, end = decoder.raw_decode(stripped, index)
-        except ValueError:
+        except UNREADABLE:
             continue
         if type(value) is dict and not stripped[end:].strip():
             return value
@@ -85,7 +88,7 @@ def parse_verdict(text: str, *, body_sha256: str, criteria_ids, answer_format: s
             stripped = fenced.group(1).strip()
         try:
             value = json.loads(stripped)
-        except ValueError:
+        except UNREADABLE:
             value = None
     if type(value) is not dict:
         return None, "answer_not_json"
@@ -106,7 +109,7 @@ def parse_verdict(text: str, *, body_sha256: str, criteria_ids, answer_format: s
         return None, "findings_invalid"
     findings = []
     for row in rows:
-        if type(row) is not dict or set(row) != FINDING_FIELDS:
+        if type(row) is not dict or set(row) != FINDING_FIELDS or type(row["criterion_id"]) is not str:
             return None, "finding_invalid"
         if row["criterion_id"] not in criteria_ids:
             return None, "finding_cites_unknown_criterion"

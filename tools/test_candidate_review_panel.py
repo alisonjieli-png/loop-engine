@@ -20,6 +20,8 @@ What the panel must guarantee
 │   ├── an answer about other bytes is not counted
 │   ├── a rejection without a cited criterion, an approval with a blocking
 │   │   finding, or an answer with unknown keys is not counted
+│   ├── an answer of any shape, such as a criterion written as a list or text
+│   │   nested past the JSON reader's limit, is recorded as invalid, never raised
 │   └── an answer that is not counted, or a failed call, is replaced by a
 │       reviewer of a family not yet heard
 ├── Budget
@@ -314,6 +316,31 @@ class AnswerValidationTest(unittest.TestCase):
         _item, call, _harness = self._replaced_first(lambda prompt, n: attempt(answer(
             prompt, verdicts.REJECT, findings=[{"criterion_id": "vibes", "blocking": True, "text": "No."}])))
         self.assertEqual(call["error_code"], "finding_cites_unknown_criterion")
+
+    def test_a_finding_that_names_its_criterion_as_a_list_or_object_is_recorded_not_raised(self):
+        """Known-wrong case: an answer is untrusted text of any shape. A criterion written as a list or an
+        object must be an invalid answer whose call is recorded with its usage, not an error that stops the
+        run after the call returned and leaves the call without its call row."""
+        for criterion in (["read_as_a_customer"], {"criterion_id": "read_as_a_customer"}):
+            with self.subTest(criterion=criterion):
+                item, call, harness = self._replaced_first(lambda prompt, n, criterion=criterion: attempt(answer(
+                    prompt, verdicts.REJECT, findings=[{"criterion_id": criterion, "blocking": True,
+                                                        "text": "No."}])))
+                self.assertEqual(call["outcome"], panel_module.INVALID_RESPONSE)
+                self.assertEqual(call["error_code"], "finding_invalid")
+                self.assertEqual((call["usage"]["input_tokens"], call["usage"]["output_tokens"]), (1000, 100))
+                self.assertEqual(item.outcome, panel_module.APPROVED)
+                self.assertEqual(len(harness.calls("d")), 1)
+
+    def test_deeply_nested_answer_text_is_recorded_not_raised(self):
+        """Known-wrong case: text nested deeper than the JSON reader's recursion limit is not one answer."""
+        for answer_format, text in ((verdicts.JSON_ONLY, "[" * 5000),
+                                    (verdicts.JSON_AFTER_REASONING, "Reasoning. " + '{"a":' * 5000)):
+            with self.subTest(answer_format=answer_format):
+                self.assertEqual(verdicts.parse_verdict(text, body_sha256="a" * 64, criteria_ids=frozenset(),
+                                                        answer_format=answer_format), (None, "answer_not_json"))
+        _item, call, _harness = self._replaced_first(lambda prompt, n: attempt("[" * 5000))
+        self.assertEqual((call["outcome"], call["error_code"]), (panel_module.INVALID_RESPONSE, "answer_not_json"))
 
     def test_an_approval_with_a_blocking_finding_is_not_counted(self):
         _item, call, _harness = self._replaced_first(lambda prompt, n: attempt(answer(
