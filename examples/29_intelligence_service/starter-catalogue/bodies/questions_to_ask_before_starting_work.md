@@ -42,4 +42,4 @@ An agent is asked to speed up a report. It spends a day rewriting queries and ma
 
 - `src/loop_engine/strings/question_engine.py`: the general purpose question forms, among them `done_definition`, `acceptance_inversion`, `definition_check`, `state_the_unknowns`, `assumption_audit`, `cheapest_check`, `smallest_first_step`, `failure_mode_map`, `reversibility`, `resource_horizon`, `stakeholder_view`, `second_order` and `constraint_inversion`.
 
-Licence: MIT. Compiled from revision 40fce69.
+Licence: MIT. Compiled from revision 565e133.

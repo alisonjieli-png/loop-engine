@@ -40,4 +40,4 @@ A brief says to improve error handling in the payments module. The agent wraps e
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 40fce69.
+Licence: MIT. Written for this catalogue at revision 565e133.

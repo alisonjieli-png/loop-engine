@@ -41,4 +41,4 @@ A cleaner averages its signals. A whitespace repair at 0.99 and an ambiguous suf
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `correction`, `classify`, `apply_rules_to_row` and `summarize`.
 - `src/loop_engine/code_nodes/text_conformance.py`: `ConformancePolicy`, `ConformanceReport`, `run_conformance` and `second_pass_changes`.
 
-Licence: MIT. Compiled from revision 40fce69. The operations module uses only the Python standard library.
+Licence: MIT. Compiled from revision 565e133. The operations module uses only the Python standard library.

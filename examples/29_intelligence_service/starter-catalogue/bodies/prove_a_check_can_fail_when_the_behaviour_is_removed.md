@@ -40,4 +40,4 @@ A team adds a check that a settings file holds no plain text password. It passes
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 40fce69.
+Licence: MIT. Written for this catalogue at revision 565e133.

@@ -40,4 +40,4 @@ A report says a change made the importer forty percent faster. Rebuilt, the meas
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision 40fce69.
+Licence: MIT. Written for this catalogue at revision 565e133.

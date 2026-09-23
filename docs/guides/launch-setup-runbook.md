@@ -519,8 +519,11 @@ withdrawal was committed while it read the served release; run it again.
 
 Then check isolation from this workstation:
 `python3 tools/check_hosted_service.py --origin https://baltor-pilot.fly.dev --account pilot-owner --isolated-account pilot-boundary --identity IDENTITY --digest DIGEST --query "QUERY" --authorize-metered-read --output REPORT`.
-`IDENTITY` and `DIGEST` name one item the owner receives, as the host release
-manifest lists it, and `REPORT` is a new file under
+`IDENTITY` names one item the owner receives and `DIGEST` the digest the
+service serves for it now, which the owner's listing and the `items.jsonl` of
+the published bundle both carry. Once the source is the store, the manifest in
+this repository can name other digests: it follows the latest anchor, not the
+published release. `REPORT` is a new file under
 `artifacts/architecture-audit-2026-09-19/`. The check makes one metered read
 for the owner. All 19 checks must pass, among them
 `isolated_tenant_has_no_owner_grants` and `another_tenant_cannot_read_the_body`.
