@@ -397,6 +397,34 @@ try {
   const currentPathFirst=flow=>!flow.hasWorkflowRail&&flow.startBeforeOffer&&flow.offerBeforeBenefits;
   check("homepage_starts_with_the_current_customer_path",currentPathFirst(homeFlow),homeFlow);
   check("homepage_flow_check_rejects_the_workflow_rail_and_old_order",!currentPathFirst({...homeFlow,hasWorkflowRail:true})&&!currentPathFirst({...homeFlow,startBeforeOffer:false})&&!currentPathFirst({...homeFlow,offerBeforeBenefits:false}));
+  /* The owner saw the hero as one narrow column with empty space on both sides. At desktop width the hero spans the
+     page like every section below it, and the example sits beside the text. The example shows only the live path:
+     one search, the references it returned, one download whose bytes match its digest. */
+  const heroLayout=await page.locator('[data-view="home"]').evaluate(home=>{
+    const hero=home.querySelector('.product-hero'),copy=hero.querySelector('.hero-copy'),example=hero.querySelector('.hero-example');
+    const next=home.querySelector('.start-strip');
+    const box=node=>node?node.getBoundingClientRect():{left:0,right:0,width:0,top:0};
+    return {heroWidth:box(hero).width,pageWidth:box(next).width,copyRight:box(copy).right,exampleLeft:box(example).left,
+      exampleTop:box(example).top,copyTop:box(copy).top,hasExample:Boolean(example),viewport:innerWidth,
+      exampleText:example?example.innerText:""};
+  });
+  const heroFillsThePage=m=>m.viewport<1100||(m.hasExample&&m.heroWidth>=0.95*m.pageWidth&&m.exampleLeft>=m.copyRight-1);
+  check("homepage_hero_spans_the_page_with_the_example_beside_it",heroFillsThePage(heroLayout),heroLayout);
+  check("hero_layout_check_rejects_a_narrow_column_and_a_missing_example",
+    !heroFillsThePage({...heroLayout,viewport:1440,heroWidth:820})&&!heroFillsThePage({...heroLayout,viewport:1440,hasExample:false})
+    &&!heroFillsThePage({...heroLayout,viewport:1440,exampleLeft:heroLayout.copyRight-200}));
+  const showsOnlyTheLivePath=text=>/\bsearch\b/.test(text)&&/\bdownload\b/.test(text)&&/sha256/.test(text)
+    &&/Bytes match the digest/.test(text)&&!/workflow|illustration|reusable solution|coming soon/i.test(text);
+  const exampleItems=await page.locator('[data-view="home"] .hero-example [data-example-item]').evaluateAll(items=>items.map(item=>item.dataset.exampleItem));
+  check("hero_example_shows_only_the_live_search_and_download_path",showsOnlyTheLivePath(heroLayout.exampleText)&&exampleItems.length===3,{exampleItems});
+  check("hero_example_check_rejects_a_workflow_illustration",
+    !showsOnlyTheLivePath(heroLayout.exampleText+" Example workflow")&&!showsOnlyTheLivePath("Prepare a customer import. Illustration."));
+  /* The example names real items. Each one must be an approved item of the released catalogue, so withdrawing an
+     item forces the example to change instead of leaving the page naming something the library no longer serves. */
+  const releasedIdentities=JSON.parse(readFileSync(resolve(root,"examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"),"utf8")).items.map(item=>item.reference.identity);
+  const namesOnlyReleasedItems=names=>names.length>0&&names.every(name=>releasedIdentities.includes(name));
+  check("hero_example_names_only_released_catalogue_items",namesOnlyReleasedItems(exampleItems),{exampleItems});
+  check("hero_example_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...exampleItems,"invented_item_nobody_approved"]));
   const startSteps=await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()),startText=await page.locator(".start-strip").innerText();
   check("homepage_shows_a_three_step_strip",JSON.stringify(startSteps)===JSON.stringify(["ask","connect","keep"])&&["OpenCode","Codex","Claude Code"].every(client=>startText.includes(client)),{steps:startSteps});
   const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),offerText=await page.locator(".offer-section").innerText();
