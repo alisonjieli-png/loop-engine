@@ -25,7 +25,9 @@ from .https_transport import quote_part
 from .licences import LicenceFile, cap_to_outline, decide_licence, is_licence_file, is_notice_file
 from .provenance import GITHUB_ORIGIN, ORIGIN_HOSTS, OutsideSourceProvenance
 from .record_rules import bytes_digest, git_blob_identity, now_utc
+from .rendering_types import RenderRefused
 from .request_log import PauseExceedsBound, RequestCeilingReached
+from .skill_rendering import parse_rule
 from .source_declarations import read_github_source, selected
 
 #: File names that are native harness formats, and what each one is.
@@ -63,20 +65,22 @@ def item_name(path: str, native: str, repository: str = "") -> str:
 
 
 def frontmatter_licence(text: str) -> "str | None":
-    """The licence a file's own frontmatter names, if it names one."""
-    if not text.startswith("---\n"):
-        return None
-    end = text.find("\n---", 4)
-    if end < 0:
-        return None
-    import yaml
+    """The licence a file's own frontmatter names, if it names one.
 
-    try:
-        values = yaml.safe_load(text[4:end])
-    except yaml.YAMLError:
+    Every native format is read, not only a skill: a Cursor or Copilot rule
+    file can carry its own licence field. The frontmatter is read as YAML, or
+    in Cursor's own format of one setting per line, where a value such as **/*
+    is plain text; the field may be spelled license or licence.
+    """
+    if not text.startswith("---"):
         return None
-    if isinstance(values, dict) and values.get("license") not in (None, ""):
-        return str(values["license"])[:512]
+    try:
+        values = parse_rule(text).frontmatter
+    except RenderRefused:
+        return None
+    for key, value in values.items():
+        if str(key).lower() in ("license", "licence") and value not in (None, ""):
+            return str(value)[:512]
     return None
 
 
@@ -291,7 +295,7 @@ class GitHubPinnedRepositoriesSource:
         folder_notices = [(notice_path, digest) for notice_path, digest in notices
                           if applies_to_folder(notice_path, folder)]
         evidence = decide_licence(path, licence_files, root_path=root_path,
-                                  frontmatter_licence=frontmatter_licence(text) if kind == SKILL else None,
+                                  frontmatter_licence=frontmatter_licence(text),
                                   item_sha256=entry.digest, spdx_headers=spdx_headers(text),
                                   notice_files=folder_notices)
         if any(applies_to_folder(other, folder) for other in unreadable):

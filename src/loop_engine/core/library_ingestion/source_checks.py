@@ -191,6 +191,37 @@ def _cache_checks(check, files) -> None:
               (refetched, spoiled.skipped))
 
 
+def _file_notice_checks(check, quarantine) -> None:
+    """Every notice on and beside a fetched file reaches its licence decision through the engine.
+
+    A skill's frontmatter licence, a Cursor rule's own licence field (in Cursor's
+    frontmatter, where a value such as **/* is not YAML), an SPDX header and a NOTICE
+    file in the item's folder are read when the source is read, so a rule file that
+    names a non-commercial licence is never copied under the repository's MIT file.
+    """
+    files = {"LICENSE": MIT_FIXTURE.encode(),
+             "skills/copyleft/SKILL.md": skill_text("copyleft", "\nlicense: GPL-3.0").encode(),
+             "skills/noticed/SKILL.md": skill_text("noticed").encode(),
+             "skills/noticed/NOTICE": b"Notices for the noticed skill.\n",
+             ".cursor/rules/closed-rule.mdc": (b"---\ndescription: Keep generated code private\nglobs: **/*\n"
+                                               b"license: CC-BY-NC-4.0\n---\n# Closed rule\n\nKeep it private.\n"),
+             ".cursor/rules/header-rule.mdc": (b"<!-- SPDX-License-Identifier: GPL-3.0-only -->\n# Header rule\n\n"
+                                               b"Keep the header on every file.\n"),
+             ".cursor/rules/open-rule.mdc": (b"---\ndescription: Name things plainly\nglobs: **/*\n---\n"
+                                             b"# Open rule\n\nName things plainly.\n")}
+    batch = GitHubPinnedRepositoriesSource(FakeGitHubReader(
+        repository_table(files), RequestBudget(maximum_requests=50), RequestLog()), quarantine).read_candidates(
+        declaration(include=["skills/*/SKILL.md", ".cursor/rules/*.mdc"]), _request())
+    evidence = {row["name"]: row["provenance"]["licence_evidence"] for row in batch["candidates"]}
+    noticed = evidence.get("noticed", {"file_level_notices": []})["file_level_notices"]
+    check("notices_on_and_beside_a_file_reach_its_licence_decision",
+          {name: row["decision"] for name, row in evidence.items()}
+          == {"copyleft": "outline_only", "noticed": "verbatim_permitted", "closed-rule": "outline_only",
+              "header-rule": "outline_only", "open-rule": "verbatim_permitted"}
+          and [row["path"] for row in noticed if row["kind"] == "notice_file"] == ["skills/noticed/NOTICE"],
+          {name: (row["decision"], row["reason"]) for name, row in evidence.items()})
+
+
 def self_test() -> dict:
     tests = []
 
@@ -292,6 +323,7 @@ def self_test() -> dict:
               == {"source_curated_for_outlines"}, outlined_decisions)
 
         _cache_checks(check, files)
+        _file_notice_checks(check, quarantine)
 
         submodule_batch = engine.read_candidates(declaration(include=["skills/**"]), _request())
         check("a_symbolic_link_and_a_submodule_are_never_imported",

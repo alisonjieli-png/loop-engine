@@ -135,7 +135,8 @@ One fetched file
 │       copyright line, an "all rights reserved" line or a bracketed placeholder counts
 │       through its condition words
 ├── a repository licence must also agree with GitHub's licence interface at the pinned commit
-├── every file-level notice (a frontmatter licence field, an SPDX header) must agree
+├── every file-level notice (the frontmatter licence field of a skill or of a Cursor or
+│   Copilot rule file, an SPDX header) must agree
 │   ├── a notice that names a licence is read by that name, whatever filler words surround
 │   │   it: "GPL-3.0 license" names GPL-3.0
 │   └── a notice agrees by pointing at the licence file only when it is nothing but that
