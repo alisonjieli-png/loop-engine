@@ -150,8 +150,8 @@ ways, which the record also names.
 
 | Version | How a client reaches it | Capabilities field |
 |---|---|---|
-| `2025-11-25` | The `initialize` handshake, then the version in the `MCP-Protocol-Version` header of every later request | `protocol.handshake_versions` |
-| `2026-07-28` | No handshake. The version in the header and in `_meta` of every request, and `server/discover` to ask which versions are served | `protocol.per_request_versions` |
+| `2025-11-25` | The `initialize` handshake, then the version in the `MCP-Protocol-Version` header of every later request | `handshake_versions` in the `protocol` object |
+| `2026-07-28` | No handshake. The version in the header and in `_meta` of every request, and `server/discover` to ask which versions are served | `per_request_versions` in the `protocol` object |
 
 The service chooses the version of every request before the protocol library
 sees it, because the library also speaks older versions that this release has

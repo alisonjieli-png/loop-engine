@@ -62,6 +62,7 @@ MODULE_MAP = {
         "account_email", "account_email_checks",
         "observability", "observability_checks",
         "waitlist", "waitlist_checks",
+        "protocol_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "ontology": (
