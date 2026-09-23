@@ -373,10 +373,19 @@ def decide_licence(item_path: str, licence_files: dict, *, root_path: "str | Non
     governing_path = governing_licence_path(item_path, set(licence_files))
     governing = licence_files.get(governing_path) if governing_path else None
     match = None
+    # Every licence file of the governing folder is read, not only the first by name: a folder
+    # can hold a licence for its code and another for its content.
+    folder_files = []
     if governing is not None:
-        match = root_match if governing is root_file else match_licence(governing.text, templates, policy)
-        notices.append({"kind": "licence_file", "path": governing.path, "sha256": governing.sha256,
-                        "value": match.spdx or f"unrecognized, closest {match.best}"})
+        folder = PurePosixPath(governing.path).parent
+        for path in [governing.path, *sorted(path for path in licence_files if path != governing.path
+                                             and PurePosixPath(path).parent == folder)]:
+            licence_file = licence_files[path]
+            found = root_match if licence_file is root_file else match_licence(licence_file.text, templates, policy)
+            folder_files.append((licence_file, found))
+            notices.append({"kind": "licence_file", "path": licence_file.path, "sha256": licence_file.sha256,
+                            "value": found.spdx or f"unrecognized, closest {found.best}"})
+        match = folder_files[0][1]
     for path, sha256 in notice_files:
         notices.append({"kind": "notice_file", "path": path, "sha256": sha256, "value": "notice file"})
     file_notices = []
@@ -401,19 +410,23 @@ def decide_licence(item_path: str, licence_files: dict, *, root_path: "str | Non
         return outcome(NO_ASSERTION, REFUSED, "file_level_notice_binds_to_outside_terms")
     if governing is None:
         return outcome(NO_LICENCE, OUTLINE_ONLY, "no_licence_file")
+    for licence_file, found in folder_files:
+        if found.spdx is None:
+            # The prohibition rule reads only a text no template recognizes. A known
+            # licence's own terms are known, and several of them use the same words
+            # ("shall not", "derivative works") without forbidding an adaptation, so a
+            # text that only adds words to a template is read in its added sentences.
+            read = licence_file.text
+            if found.reason == ADDS_WORDS:
+                read = added_sentences(licence_file.text, templates[found.best].words)
+            if prohibits_recreation(read):
+                return outcome(NO_ASSERTION, REFUSED, "licence_prohibits_derivatives")
+            if binds_to_outside_terms(read):
+                return outcome(NO_ASSERTION, REFUSED, "licence_binds_to_outside_terms")
     if match.spdx is None:
-        # The prohibition rule reads only a text no template recognizes. A known
-        # licence's own terms are known, and several of them use the same words
-        # ("shall not", "derivative works") without forbidding an adaptation, so a
-        # text that only adds words to a template is read in its added sentences.
-        read = governing.text
-        if match.reason == ADDS_WORDS:
-            read = added_sentences(governing.text, templates[match.best].words)
-        if prohibits_recreation(read):
-            return outcome(NO_ASSERTION, REFUSED, "licence_prohibits_derivatives")
-        if binds_to_outside_terms(read):
-            return outcome(NO_ASSERTION, REFUSED, "licence_binds_to_outside_terms")
         return outcome(NO_ASSERTION, OUTLINE_ONLY, f"licence_text_{match.reason}")
+    if any(found.spdx != match.spdx for _licence_file, found in folder_files):
+        return outcome(NO_ASSERTION, OUTLINE_ONLY, "licence_files_in_one_folder_disagree")
     if governing is root_file:
         github = root_file.github_spdx_id
         if github in (None, NO_ASSERTION, "other"):

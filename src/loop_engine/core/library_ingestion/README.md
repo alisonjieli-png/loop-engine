@@ -123,6 +123,8 @@ without changing an engine.
 ```text
 One fetched file
 ├── the governing licence file is the nearest one, from the file's folder up to the root
+│   ├── every licence file of that folder is read: all must be the same licence, and one
+│   │   that forbids copies refuses the item
 │   └── a licence or notice file there that cannot be read leaves an outline only
 ├── the licence text is compared with stored word sets of the canonical texts
 │   ├── recognized only at 98 percent similarity or more, clearly ahead of the next licence

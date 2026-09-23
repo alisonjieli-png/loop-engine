@@ -189,6 +189,27 @@ def self_test() -> dict:
           and nested_allowed["governing_file"]["path"] == "skills/example/LICENSE.txt",
           [nested_refused["reason"], nested_allowed["reason"]])
 
+    # A folder may hold more than one licence file, one for code and one for content. Every
+    # licence file of the governing folder is read, not only the first by name: the item is
+    # copied only when all of them are the same licence, and one that forbids copies refuses it.
+    restrictive = ("Copyright 2026 Example Company.\n\nThe skill files in this folder may be read, but you "
+                   "may not copy, modify or redistribute them without written permission.\n")
+    crowded = [_decide(item, [_file("LICENSE", MIT_FIXTURE, "MIT"), _file("skills/example/LICENSE", MIT_FIXTURE),
+                              _file(f"skills/example/{name}", restrictive)], root_path="LICENSE")
+               for name in ("LICENSE-CONTENT.md", "LICENSE.skills.md", "LICENSE.txt")]
+    root_pair = _decide(item, [_file("LICENSE", MIT_FIXTURE, "MIT"), _file("LICENSE-DOCS.md", restrictive)],
+                        root_path="LICENSE")
+    dual = _decide(item, [_file("skills/example/LICENSE-MIT", MIT_FIXTURE),
+                          _file("skills/example/LICENSE-GPL", " ".join(sorted(templates["GPL-3.0"].words)))])
+    same_twice = _decide(item, [_file("skills/example/LICENSE", MIT_FIXTURE),
+                                _file("skills/example/LICENSE.md", MIT_FIXTURE)])
+    check("every_licence_file_in_the_governing_folder_is_read",
+          all(row["decision"] == REFUSED for row in (*crowded, root_pair))
+          and dual["decision"] == OUTLINE_ONLY and dual["reason"] == "licence_files_in_one_folder_disagree"
+          and same_twice["decision"] == VERBATIM
+          and len([row for row in same_twice["file_level_notices"] if row["kind"] == "licence_file"]) == 2,
+          [(row["decision"], row["reason"]) for row in (*crowded, root_pair, dual, same_twice)])
+
     disagree = _decide(item, [_file("LICENSE", MIT_FIXTURE, "Apache-2.0")], root_path="LICENSE")
     unasserted = _decide(item, [_file("LICENSE", MIT_FIXTURE, "NOASSERTION")], root_path="LICENSE")
     check("a_repository_licence_needs_the_licence_interface_and_the_text_to_agree",
