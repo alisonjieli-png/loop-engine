@@ -40,4 +40,4 @@ An error metric is read with the default direction. Root mean squared error is 8
 
 - `src/loop_engine/code_nodes/measurement.py`: `read_generalization_gap` and `GapReading`.
 
-Licence: MIT. Compiled from revision d893bba. The function is plain arithmetic. The module imports one text module of the same package.
+Licence: MIT. Compiled from revision a0ca182. The function is plain arithmetic. The module imports one text module of the same package.

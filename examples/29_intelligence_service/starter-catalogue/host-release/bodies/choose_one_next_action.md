@@ -40,4 +40,4 @@ After a failing build, an agent changes the compiler flags, upgrades two librari
 - `src/loop_engine/intelligence/context/core/practitioner_context_intelligence.yaml`: the questions of the step that decides the next action, and the guidance records about one next action, the baseline, the cheapest discriminating test, the stopping rule and the options not chosen.
 - `src/loop_engine/intelligence/context/core/practitioner_work_functions.yaml`: the work functions for allocating attention and for exercising judgment.
 
-Licence: MIT. Compiled from revision d893bba.
+Licence: MIT. Compiled from revision a0ca182.

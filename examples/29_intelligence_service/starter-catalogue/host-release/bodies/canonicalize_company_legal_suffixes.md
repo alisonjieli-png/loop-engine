@@ -37,4 +37,4 @@ A rule writes every trailing `as` in upper case, so `nordic fish as` becomes `no
 - `src/loop_engine/code_nodes/text_conformance_operations.py`: `suffix_canonicalize`.
 - `src/loop_engine/data/text_conformance_catalogs.yaml`: the legal suffix map, the ambiguous suffix table and the long forms.
 
-Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.
+Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.

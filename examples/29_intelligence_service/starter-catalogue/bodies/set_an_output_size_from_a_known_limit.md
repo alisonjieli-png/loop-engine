@@ -40,4 +40,4 @@ A service sets the answer limit to a round two thousand tokens, because that see
 
 The steps above are ordinary engineering practice, written for this catalogue in its own words.
 
-Licence: MIT. Written for this catalogue at revision d893bba.
+Licence: MIT. Written for this catalogue at revision a0ca182.

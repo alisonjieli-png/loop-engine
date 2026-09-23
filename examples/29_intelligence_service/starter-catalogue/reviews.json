@@ -4,7 +4,7 @@
   "catalogue_folder": "examples/29_intelligence_service/starter-catalogue",
   "catalogue_items_file": "items.json",
   "catalogue_items_record_type": "starter_catalogue_candidate_items/v2",
-  "catalogue_source_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+  "catalogue_source_revision": "a0ca18200faf32b2f8327424d8583de078997316",
   "previous_catalogue_source_revisions": [
     "381efecb8999f50a5d163d501d9590b289a0da8c",
     "7ed4e853270bcdd94fddc0f6f34ea79231cdaeb6",
@@ -12,7 +12,8 @@
     "ae7362f5a3f3b2f086d9d44b6e7098d1c7ffbcf3",
     "4249eca0da57d1e3eeae3bbe517a500398bab3e0",
     "e2898c7bf886d9c695ce5623a3be5f81490d6bf7",
-    "f29bddc9b64dbfbe9f4531ae2713cd2ae442dd1f"
+    "f29bddc9b64dbfbe9f4531ae2713cd2ae442dd1f",
+    "d893bba3ae8786147ec0e77f858fc89be00c1a63"
   ],
   "reviewed_bodies_revision": "81f341d0e400c32541e5e592de7226f59a7b4ecc",
   "reviewed_bodies_folder": "examples/29_intelligence_service/starter-catalogue/bodies",
@@ -57,7 +58,7 @@
     {
       "identity": "profile_text_column_before_cleaning",
       "body_path": "bodies/profile_text_column_before_cleaning.md",
-      "body_digest": "2c3bab4472861bc2d0f3c794b1a624cde03604f78811e930c081e9e1abd9caa7",
+      "body_digest": "b7c31f3e3e80642580787195e37210da35063331f82c443a24b50e7f16d54a16",
       "body_size_bytes": 2904,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -84,13 +85,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#profile_text_column_before_cleaning",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "065ff1aae9ae74a9b6804a5bbd56535e4350a26901f578b9cd6f26305bc67440",
         "reviewed_body_size_bytes": 2904,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "2c3bab4472861bc2d0f3c794b1a624cde03604f78811e930c081e9e1abd9caa7",
+        "carried_body_digest": "b7c31f3e3e80642580787195e37210da35063331f82c443a24b50e7f16d54a16",
         "carried_body_size_bytes": 2904,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -100,16 +101,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The operations module uses only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "normalize_whitespace_and_unicode_text",
       "body_path": "bodies/normalize_whitespace_and_unicode_text.md",
-      "body_digest": "a6225a66214f264766e271b4cf345104b86ff63bfb692132441559c7f83ac078",
+      "body_digest": "a450b992f775f5d1aaa0b43d36764387f275b178e02384c75773df27b0583f32",
       "body_size_bytes": 2688,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -136,13 +137,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_whitespace_and_unicode_text",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "5a9eb40dfd5474ff89b790388d315fd9b0427187767e529ed9bc21dde7a98687",
         "reviewed_body_size_bytes": 2688,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "a6225a66214f264766e271b4cf345104b86ff63bfb692132441559c7f83ac078",
+        "carried_body_digest": "a450b992f775f5d1aaa0b43d36764387f275b178e02384c75773df27b0583f32",
         "carried_body_size_bytes": 2688,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -152,16 +153,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The operations module uses only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "restore_capitalisation_of_names",
       "body_path": "bodies/restore_capitalisation_of_names.md",
-      "body_digest": "a97aee76c962c12d1926bba67258e3041906f9ee4b8b1e101ee23205c321ead8",
+      "body_digest": "6f2aa68ba7494178d0e189ba0101647cd7ec437619a063ec4621059886eb364e",
       "body_size_bytes": 3627,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -188,13 +189,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#restore_capitalisation_of_names",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "99332e5a5c756df9df35126fe24c28b5265ff8b45a0541ab9373b2b56b060e84",
         "reviewed_body_size_bytes": 3627,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "a97aee76c962c12d1926bba67258e3041906f9ee4b8b1e101ee23205c321ead8",
+        "carried_body_digest": "6f2aa68ba7494178d0e189ba0101647cd7ec437619a063ec4621059886eb364e",
         "carried_body_size_bytes": 3627,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -204,16 +205,16 @@
           "identical_lines": 52,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The operations module uses only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "canonicalize_company_legal_suffixes",
       "body_path": "bodies/canonicalize_company_legal_suffixes.md",
-      "body_digest": "d7823dd63e93d0cdd661b4bcdb6e99065e5837a06f07523d557228a227ca66d0",
+      "body_digest": "44db7bb98b903fec7ca459df7e945f6d14aae11e718ee6b850342d42b5b46d53",
       "body_size_bytes": 2801,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -240,13 +241,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#canonicalize_company_legal_suffixes",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "f0a8defdea8f87c62bb1cd2b44260137187b5db54635c15a2eee6485ea4713c5",
         "reviewed_body_size_bytes": 2801,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "d7823dd63e93d0cdd661b4bcdb6e99065e5837a06f07523d557228a227ca66d0",
+        "carried_body_digest": "44db7bb98b903fec7ca459df7e945f6d14aae11e718ee6b850342d42b5b46d53",
         "carried_body_size_bytes": 2801,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -256,16 +257,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The operations module uses only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "normalize_phone_numbers",
       "body_path": "bodies/normalize_phone_numbers.md",
-      "body_digest": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+      "body_digest": "75dd8db22a4af94afdb406a87c0751fb390d8db053766fcce1cc8d0623302c31",
       "body_size_bytes": 2579,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -292,13 +293,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_phone_numbers",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "85f05c9e754d4a1c5e288fc6d74bcf80ed0b8065cf546d1a60c63275389a524e",
         "reviewed_body_size_bytes": 2579,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "b451b3663599c0971185feb21c5dd74e84145da5fad99580cfdd05067c209b63",
+        "carried_body_digest": "75dd8db22a4af94afdb406a87c0751fb390d8db053766fcce1cc8d0623302c31",
         "carried_body_size_bytes": 2579,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -308,16 +309,16 @@
           "identical_lines": 43,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The operations module uses only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "normalize_website_addresses",
       "body_path": "bodies/normalize_website_addresses.md",
-      "body_digest": "33410c55bf748a26821149f72d9082d905fece3ca73dfcf82bb50cf8cc24e834",
+      "body_digest": "5f40e2c4e7e6469a47be88fe2167f3323d466981f3941bddb1450a45568fc253",
       "body_size_bytes": 2351,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -344,13 +345,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_website_addresses",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "896e99df8bc1ee06eff77d54974a9991a186264b08f11aea21e6fe4c43c7bdba",
         "reviewed_body_size_bytes": 2351,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "33410c55bf748a26821149f72d9082d905fece3ca73dfcf82bb50cf8cc24e834",
+        "carried_body_digest": "5f40e2c4e7e6469a47be88fe2167f3323d466981f3941bddb1450a45568fc253",
         "carried_body_size_bytes": 2351,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -360,16 +361,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The operations module uses only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "normalize_and_recover_email_addresses",
       "body_path": "bodies/normalize_and_recover_email_addresses.md",
-      "body_digest": "64ce838e3053982542820402655c12728f0844e7d70641fef3caa6b7cf732809",
+      "body_digest": "3dccb1b6e0f0596f28a959a86179991ded39c36d84157f69e57558534e170a8e",
       "body_size_bytes": 2691,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -396,13 +397,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#normalize_and_recover_email_addresses",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "4403b31cdd866b97cc21e06892bcdac6314c1123a4165af4d916bc57f5894589",
         "reviewed_body_size_bytes": 2691,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "64ce838e3053982542820402655c12728f0844e7d70641fef3caa6b7cf732809",
+        "carried_body_digest": "3dccb1b6e0f0596f28a959a86179991ded39c36d84157f69e57558534e170a8e",
         "carried_body_size_bytes": 2691,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -412,16 +413,16 @@
           "identical_lines": 43,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The two modules depend only on each other and on the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The two modules depend only on each other and on the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The two modules depend only on each other and on the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "apply_hold_or_escalate_each_correction",
       "body_path": "bodies/apply_hold_or_escalate_each_correction.md",
-      "body_digest": "240a86102dd95bcbd40c1e653131f44bb5aa0a28d8db2191179cf5ae96560850",
+      "body_digest": "6531d3c89066a1fb267235bb881c59330fa7638c66f264c22ecfe702edd6f105",
       "body_size_bytes": 2903,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -448,13 +449,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#apply_hold_or_escalate_each_correction",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "4dd86e90109847297bd353786483e2129238fb3333fe3b5df8140e776db22389",
         "reviewed_body_size_bytes": 2903,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "240a86102dd95bcbd40c1e653131f44bb5aa0a28d8db2191179cf5ae96560850",
+        "carried_body_digest": "6531d3c89066a1fb267235bb881c59330fa7638c66f264c22ecfe702edd6f105",
         "carried_body_size_bytes": 2903,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -464,16 +465,16 @@
           "identical_lines": 43,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The operations module uses only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The operations module uses only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The operations module uses only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "layer_exception_catalogs_with_precedence",
       "body_path": "bodies/layer_exception_catalogs_with_precedence.md",
-      "body_digest": "9cf9d600436f8bacec6c93d7b7d65c113c235964ad0dd063163622d756b9f082",
+      "body_digest": "3e545183e4eae7faea830d0b883da689c4345736ac46939f96653a8aa6c245bd",
       "body_size_bytes": 2754,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -500,13 +501,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#layer_exception_catalogs_with_precedence",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "c50508d972e6cd2b52b73490e91e8f896bdaef17a9c32e72905f979a3448bd56",
         "reviewed_body_size_bytes": 2754,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "9cf9d600436f8bacec6c93d7b7d65c113c235964ad0dd063163622d756b9f082",
+        "carried_body_digest": "3e545183e4eae7faea830d0b883da689c4345736ac46939f96653a8aa6c245bd",
         "carried_body_size_bytes": 2754,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -516,16 +517,16 @@
           "identical_lines": 45,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. Reading the packaged file and a YAML task file needs the PyYAML package.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. Reading the packaged file and a YAML task file needs the PyYAML package.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. Reading the packaged file and a YAML task file needs the PyYAML package.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "escalate_uncertain_values_with_candidates",
       "body_path": "bodies/escalate_uncertain_values_with_candidates.md",
-      "body_digest": "8c9cdda006147c3ade17162a7ad6a23c3487eb205229a98a60d2b7bceb26a09b",
+      "body_digest": "2c1e3916d82694b19b46d2f874cd58c24e16a44fd623f0338f02643fc6ccd412",
       "body_size_bytes": 2645,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -552,13 +553,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#escalate_uncertain_values_with_candidates",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "f8a252199507f1acefeef96718ade06f3cd839ee6911843f14828e7bd537c762",
         "reviewed_body_size_bytes": 2645,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "8c9cdda006147c3ade17162a7ad6a23c3487eb205229a98a60d2b7bceb26a09b",
+        "carried_body_digest": "2c1e3916d82694b19b46d2f874cd58c24e16a44fd623f0338f02643fc6ccd412",
         "carried_body_size_bytes": 2645,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -568,16 +569,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "find_duplicate_records_with_blocking_keys",
       "body_path": "bodies/find_duplicate_records_with_blocking_keys.md",
-      "body_digest": "80645d9eba97e1d4c27d1e5eefc4c30980dcae52069223e502fc40f0945ae6fa",
+      "body_digest": "14fc6f90b3573e64169464b050897194c4e8f9d99509568d067531c33f65a2ac",
       "body_size_bytes": 2722,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -604,13 +605,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#find_duplicate_records_with_blocking_keys",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "678df3671fed5712492c18538ce69b4cec636f429cb6f0461b431e5800432813",
         "reviewed_body_size_bytes": 2722,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "80645d9eba97e1d4c27d1e5eefc4c30980dcae52069223e502fc40f0945ae6fa",
+        "carried_body_digest": "14fc6f90b3573e64169464b050897194c4e8f9d99509568d067531c33f65a2ac",
         "carried_body_size_bytes": 2722,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -620,16 +621,16 @@
           "identical_lines": 43,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The module imports the text operations module beside it and the typed decision module of the same package. Everything else comes from the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The module imports the text operations module beside it and the typed decision module of the same package. Everything else comes from the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The module imports the text operations module beside it and the typed decision module of the same package. Everything else comes from the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "score_duplicate_pairs_by_weakest_signal",
       "body_path": "bodies/score_duplicate_pairs_by_weakest_signal.md",
-      "body_digest": "4278146c5996b8774d2a7fceec1429818e09f81daae4d4874f3309bb015ce299",
+      "body_digest": "9eadd955878030e6e5ed85460dad681e017fce03fecf17c910fc885619d2df3e",
       "body_size_bytes": 2573,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -656,13 +657,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#score_duplicate_pairs_by_weakest_signal",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "0ad0985851a2fb759acd4475bead244e025e374744c3ed5d5f35d516d715e1a0",
         "reviewed_body_size_bytes": 2573,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "4278146c5996b8774d2a7fceec1429818e09f81daae4d4874f3309bb015ce299",
+        "carried_body_digest": "9eadd955878030e6e5ed85460dad681e017fce03fecf17c910fc885619d2df3e",
         "carried_body_size_bytes": 2573,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -672,16 +673,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The sequence ratio comes from the Python standard library module `difflib`.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The sequence ratio comes from the Python standard library module `difflib`.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The sequence ratio comes from the Python standard library module `difflib`.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "propose_a_dedupe_without_deleting_rows",
       "body_path": "bodies/propose_a_dedupe_without_deleting_rows.md",
-      "body_digest": "587043354cfda1b0344912c45913d2b8aeb6cbec8783d0e6e2b9ede5a7a7ef16",
+      "body_digest": "e9756a556b1e70651f33d0c9048cb1e9a5f5a2c471e7cdad3f69aa4ce2e7fa43",
       "body_size_bytes": 2591,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -708,13 +709,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#propose_a_dedupe_without_deleting_rows",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "ad2980a5b4af24ad380bee202894f404fa6cefbdc67f684b80e8b5996b8966ae",
         "reviewed_body_size_bytes": 2591,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "587043354cfda1b0344912c45913d2b8aeb6cbec8783d0e6e2b9ede5a7a7ef16",
+        "carried_body_digest": "e9756a556b1e70651f33d0c9048cb1e9a5f5a2c471e7cdad3f69aa4ce2e7fa43",
         "carried_body_size_bytes": 2591,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -724,16 +725,16 @@
           "identical_lines": 37,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The module imports the typed decision module of the same package for the decision requests. The proposal itself is plain data.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The module imports the typed decision module of the same package for the decision requests. The proposal itself is plain data.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The module imports the typed decision module of the same package for the decision requests. The proposal itself is plain data.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "detect_malformed_values_by_dominant_pattern",
       "body_path": "bodies/detect_malformed_values_by_dominant_pattern.md",
-      "body_digest": "5009f1814e4d2a4e92f1c4fd0b0f7b98299cf421f90860682c914d6608418eb0",
+      "body_digest": "5eac13b7bc1e7b2b15903dbc707a804320b62cebc70ebb003896205713a1cbc2",
       "body_size_bytes": 2754,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -760,13 +761,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#detect_malformed_values_by_dominant_pattern",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "78be20e4f046cf5390d7c0aa67a8b1abcba1576eeb041b41309f9772afd2bd67",
         "reviewed_body_size_bytes": 2754,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "5009f1814e4d2a4e92f1c4fd0b0f7b98299cf421f90860682c914d6608418eb0",
+        "carried_body_digest": "5eac13b7bc1e7b2b15903dbc707a804320b62cebc70ebb003896205713a1cbc2",
         "carried_body_size_bytes": 2754,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -776,16 +777,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The two modules depend only on each other and on the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The two modules depend only on each other and on the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The two modules depend only on each other and on the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "split_address_lines_into_components",
       "body_path": "bodies/split_address_lines_into_components.md",
-      "body_digest": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+      "body_digest": "623c44403898c17e6db04829af039168547256f75e67810be4415f15d76d2389",
       "body_size_bytes": 3009,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -812,13 +813,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#split_address_lines_into_components",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "3556cf52026dc774e144c745da11fed579b13aa30b61f3e7d067875d97f26775",
         "reviewed_body_size_bytes": 3009,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "1c97907b8c86d67cd059d9c63efb77cce3f54acb86de3c7480ebbc535042a2b7",
+        "carried_body_digest": "623c44403898c17e6db04829af039168547256f75e67810be4415f15d76d2389",
         "carried_body_size_bytes": 3009,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -828,16 +829,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The standard parser uses only the Python standard library. The two external packages are optional.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The standard parser uses only the Python standard library. The two external packages are optional.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The standard parser uses only the Python standard library. The two external packages are optional.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "copy_a_table_with_corrections_never_in_place",
       "body_path": "bodies/copy_a_table_with_corrections_never_in_place.md",
-      "body_digest": "3732fd0f70dc1d8a67d5443d38e61ce5fec17eeb1a45d539baf5c2789afeff78",
+      "body_digest": "0e9767816e31057300bb1a5cab6b1bdb913bd14a1350d983c8df46863a3b48be",
       "body_size_bytes": 2716,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -864,13 +865,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#copy_a_table_with_corrections_never_in_place",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "c9a321227805545b9f690abeb41bf8fd05a7cb7c2223a4317218e1701d5837bb",
         "reviewed_body_size_bytes": 2716,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "3732fd0f70dc1d8a67d5443d38e61ce5fec17eeb1a45d539baf5c2789afeff78",
+        "carried_body_digest": "0e9767816e31057300bb1a5cab6b1bdb913bd14a1350d983c8df46863a3b48be",
         "carried_body_size_bytes": 2716,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -880,16 +881,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The module uses the Python standard library modules `csv`, `sqlite3` and `hashlib`, and the threshold function of the text operations module beside it.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The module uses the Python standard library modules `csv`, `sqlite3` and `hashlib`, and the threshold function of the text operations module beside it.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The module uses the Python standard library modules `csv`, `sqlite3` and `hashlib`, and the threshold function of the text operations module beside it.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "export_a_standalone_python_package",
       "body_path": "bodies/export_a_standalone_python_package.md",
-      "body_digest": "a834a73bdd2ab15e24593006dedc3a0ac822b9a40e0d51790d7b809fcb668022",
+      "body_digest": "5138ebc4e03cd23b98c33078818f9de5a7b443b745d3cce3b30e4919aef3f441",
       "body_size_bytes": 2754,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -916,13 +917,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#export_a_standalone_python_package",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "2ea68d3f2cac0e37d24e3c40bfe16958f7b48b9406c1bf5cb9d4d7291213866d",
         "reviewed_body_size_bytes": 2754,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "a834a73bdd2ab15e24593006dedc3a0ac822b9a40e0d51790d7b809fcb668022",
+        "carried_body_digest": "5138ebc4e03cd23b98c33078818f9de5a7b443b745d3cce3b30e4919aef3f441",
         "carried_body_size_bytes": 2754,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -932,16 +933,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The module uses the Python standard library and one template module of the same package.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The module uses the Python standard library and one template module of the same package.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The module uses the Python standard library and one template module of the same package.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "verify_an_export_in_an_isolated_interpreter",
       "body_path": "bodies/verify_an_export_in_an_isolated_interpreter.md",
-      "body_digest": "54a221d2643c2124839ff6f34ce75d8a34359fc7e00167fc785a16ba44b35403",
+      "body_digest": "3922e9f3a0cb33179948e9700942acffebfcc0925576591f431bc6f0bae5f029",
       "body_size_bytes": 2809,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -968,13 +969,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#verify_an_export_in_an_isolated_interpreter",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "18d1ffdaaae0bb9a3d71f5ed1ebad2f227cc4feac39eb04f49887e2cdf08e5d5",
         "reviewed_body_size_bytes": 2809,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "54a221d2643c2124839ff6f34ce75d8a34359fc7e00167fc785a16ba44b35403",
+        "carried_body_digest": "3922e9f3a0cb33179948e9700942acffebfcc0925576591f431bc6f0bae5f029",
         "carried_body_size_bytes": 2809,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -984,9 +985,9 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The module uses the Python standard library and starts the verification in a separate interpreter process.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The module uses the Python standard library and starts the verification in a separate interpreter process.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The module uses the Python standard library and starts the verification in a separate interpreter process.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
@@ -1022,7 +1023,7 @@
     {
       "identity": "write_a_pinned_container_and_batch_job",
       "body_path": "bodies/write_a_pinned_container_and_batch_job.md",
-      "body_digest": "13333fc8ed5d3f8bb693e74858e6e99f74d823d9152caedb1fe62cba8a4abb64",
+      "body_digest": "26804aaa8f6601e4bea4af671860b1771d5c86eba2763570913dfce363d0c186",
       "body_size_bytes": 2660,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -1049,13 +1050,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#write_a_pinned_container_and_batch_job",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "47bc02c6f8ae0f0c8bf667ab8fec3d7c16084f3e1e11014dddbb7c0c01f4d8c9",
         "reviewed_body_size_bytes": 2660,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "13333fc8ed5d3f8bb693e74858e6e99f74d823d9152caedb1fe62cba8a4abb64",
+        "carried_body_digest": "26804aaa8f6601e4bea4af671860b1771d5c86eba2763570913dfce363d0c186",
         "carried_body_size_bytes": 2660,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1065,16 +1066,16 @@
           "identical_lines": 41,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The render functions use only the Python standard library.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The render functions use only the Python standard library.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The render functions use only the Python standard library.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "read_the_train_validation_gap",
       "body_path": "bodies/read_the_train_validation_gap.md",
-      "body_digest": "80a4bf2a750c8ee13e32eda9fdfea8ca843071f280a149a596f305351394e58d",
+      "body_digest": "38d0a1b19f515e12736143b7f40d5394628657a49a5e037d88a0c27d8800ffe2",
       "body_size_bytes": 2803,
       "declared_license": "MIT",
       "source_layer": "code_intelligence",
@@ -1101,13 +1102,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#read_the_train_validation_gap",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "82197d8e99396512ee8a64bbd22e6c21db0b0ccadaba8094892c14804367f745",
         "reviewed_body_size_bytes": 2803,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "80a4bf2a750c8ee13e32eda9fdfea8ca843071f280a149a596f305351394e58d",
+        "carried_body_digest": "38d0a1b19f515e12736143b7f40d5394628657a49a5e037d88a0c27d8800ffe2",
         "carried_body_size_bytes": 2803,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1117,16 +1118,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec. The function is plain arithmetic. The module imports one text module of the same package.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba. The function is plain arithmetic. The module imports one text module of the same package.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182. The function is plain arithmetic. The module imports one text module of the same package.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "choose_metrics_by_task_type_and_industry",
       "body_path": "bodies/choose_metrics_by_task_type_and_industry.md",
-      "body_digest": "92ac52e7a3219fc699fcdabad462b74279d18d456a6f945b639f4407d2b7fd36",
+      "body_digest": "c7d57752d017a0e09673a9d8ee7b73f2a3faca6b4f6ced7355f4c31d106281cd",
       "body_size_bytes": 3530,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1153,13 +1154,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#choose_metrics_by_task_type_and_industry",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "cd0cc819fa3c3b1526f1ceabb720d3531ef54a26d1d0bc835b271a1b4e7df077",
         "reviewed_body_size_bytes": 3530,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "92ac52e7a3219fc699fcdabad462b74279d18d456a6f945b639f4407d2b7fd36",
+        "carried_body_digest": "c7d57752d017a0e09673a9d8ee7b73f2a3faca6b4f6ced7355f4c31d106281cd",
         "carried_body_size_bytes": 3530,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1169,16 +1170,16 @@
           "identical_lines": 48,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "freeze_the_success_metric_before_measuring",
       "body_path": "bodies/freeze_the_success_metric_before_measuring.md",
-      "body_digest": "d3a9c6ffc3afeb719a26b92bc99f25f5b1a27366ce7bc38ae45217e125d40ba7",
+      "body_digest": "1d3185d18df8aaf854bb27d0f5a92d8a5d9c98efe45139a363f147635c1ee3ab",
       "body_size_bytes": 2811,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1205,13 +1206,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#freeze_the_success_metric_before_measuring",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "9319c8f7d8be3240885bfe9f7c5d5319a94ae961782a5073065a061d4ca00c44",
         "reviewed_body_size_bytes": 2811,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "d3a9c6ffc3afeb719a26b92bc99f25f5b1a27366ce7bc38ae45217e125d40ba7",
+        "carried_body_digest": "1d3185d18df8aaf854bb27d0f5a92d8a5d9c98efe45139a363f147635c1ee3ab",
         "carried_body_size_bytes": 2811,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1221,16 +1222,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "orient_on_a_task_and_write_its_contracts",
       "body_path": "bodies/orient_on_a_task_and_write_its_contracts.md",
-      "body_digest": "fc3f499ded77defd532fb06b03bc6eb47e16b8bf9f4bb67c6fecc1b4616356b6",
+      "body_digest": "6ae22c781f4f6c9b1396c21e20647978ea27a64df083b72de21d307303664d66",
       "body_size_bytes": 2861,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1257,13 +1258,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#orient_on_a_task_and_write_its_contracts",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "c86357c206b368d96df8a0b64bed60bc036d8765de14635f4986e000bd3393f5",
         "reviewed_body_size_bytes": 2861,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "fc3f499ded77defd532fb06b03bc6eb47e16b8bf9f4bb67c6fecc1b4616356b6",
+        "carried_body_digest": "6ae22c781f4f6c9b1396c21e20647978ea27a64df083b72de21d307303664d66",
         "carried_body_size_bytes": 2861,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1273,16 +1274,16 @@
           "identical_lines": 48,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "carry_competing_readings_of_a_request",
       "body_path": "bodies/carry_competing_readings_of_a_request.md",
-      "body_digest": "3093931a2f629e6dcf4a0be2eb9e51ba0501561d6cb21baf869bb3212e30d6b7",
+      "body_digest": "41128c357d05461b8f6dc90cebd4864937e67a1807b6a7fd9199d04eb074bb6b",
       "body_size_bytes": 2432,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1309,13 +1310,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#carry_competing_readings_of_a_request",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "195ee5a5ee7424f86bd3af8dd7be0aa8b4e6f6dabf4ebe812fab874a2c485f4c",
         "reviewed_body_size_bytes": 2432,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "3093931a2f629e6dcf4a0be2eb9e51ba0501561d6cb21baf869bb3212e30d6b7",
+        "carried_body_digest": "41128c357d05461b8f6dc90cebd4864937e67a1807b6a7fd9199d04eb074bb6b",
         "carried_body_size_bytes": 2432,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1325,16 +1326,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "forecast_an_action_then_compare",
       "body_path": "bodies/forecast_an_action_then_compare.md",
-      "body_digest": "f894f135149071cfd05babbdb6a387999663c0974b25f10e52cd02886fb31732",
+      "body_digest": "8d2dbeb0d93fa1e7bbd3eff4d0632d34e6ea9dc169796bd03a13d4562a89315d",
       "body_size_bytes": 2664,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1361,13 +1362,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#forecast_an_action_then_compare",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "6e670864408eb68d201b4a5fcc7d2cb967609dc5ddb82a10cb3002d427248812",
         "reviewed_body_size_bytes": 2664,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "f894f135149071cfd05babbdb6a387999663c0974b25f10e52cd02886fb31732",
+        "carried_body_digest": "8d2dbeb0d93fa1e7bbd3eff4d0632d34e6ea9dc169796bd03a13d4562a89315d",
         "carried_body_size_bytes": 2664,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1377,16 +1378,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "diagnose_a_stall_and_change_strategy",
       "body_path": "bodies/diagnose_a_stall_and_change_strategy.md",
-      "body_digest": "aff724d15551f8185629c091da79b6e56c0eb58029c2eacbf80bd3285736ee8f",
+      "body_digest": "9393b80eec83f0d376b2e76d137c03daa60a37cc2beafee94628e9c71c35253f",
       "body_size_bytes": 2891,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1413,13 +1414,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#diagnose_a_stall_and_change_strategy",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "0f4d13eab03200daf6256d569b921c84e7f4256263494864855020844fadaab9",
         "reviewed_body_size_bytes": 2891,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "aff724d15551f8185629c091da79b6e56c0eb58029c2eacbf80bd3285736ee8f",
+        "carried_body_digest": "9393b80eec83f0d376b2e76d137c03daa60a37cc2beafee94628e9c71c35253f",
         "carried_body_size_bytes": 2891,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1429,16 +1430,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "verify_the_requested_output",
       "body_path": "bodies/verify_the_requested_output.md",
-      "body_digest": "24a1fbdbd49023acfa006cde30268d3988800a719a1cf1a74489794c9f4b179e",
+      "body_digest": "ebe52a48a328442ded1b15dd14d013945f1035e7e1f9d8233b06d3cbed2e684d",
       "body_size_bytes": 2876,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1465,13 +1466,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#verify_the_requested_output",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "aba76a5560feb22e1c133b0a322ceb39032b5da1cae6a0269735ae75290044aa",
         "reviewed_body_size_bytes": 2876,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "24a1fbdbd49023acfa006cde30268d3988800a719a1cf1a74489794c9f4b179e",
+        "carried_body_digest": "ebe52a48a328442ded1b15dd14d013945f1035e7e1f9d8233b06d3cbed2e684d",
         "carried_body_size_bytes": 2876,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1481,16 +1482,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "choose_review_perspectives",
       "body_path": "bodies/choose_review_perspectives.md",
-      "body_digest": "662f989679b4eb443b520e75fe0175d446a5ba833952f8fde2fe1a391cb2252f",
+      "body_digest": "f83ba4fccfd6e4007c3842687ae5512c40bc933ebe3695573b9161ff92cad4c5",
       "body_size_bytes": 3390,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1517,13 +1518,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#choose_review_perspectives",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "3cccffcfa1efada0686678a7c8a58118c3dc5e5875b12615e46888e6ffdbdc89",
         "reviewed_body_size_bytes": 3390,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "662f989679b4eb443b520e75fe0175d446a5ba833952f8fde2fe1a391cb2252f",
+        "carried_body_digest": "f83ba4fccfd6e4007c3842687ae5512c40bc933ebe3695573b9161ff92cad4c5",
         "carried_body_size_bytes": 3390,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1533,16 +1534,16 @@
           "identical_lines": 41,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "deliver_the_best_available_result_when_blocked",
       "body_path": "bodies/deliver_the_best_available_result_when_blocked.md",
-      "body_digest": "8ce5210afe9bdccc37d0a38eec8b73f63815d907faf094ffe6f335c29bac04c8",
+      "body_digest": "7018452094d6f342acc8bfd737fe7f42ab12cddaa24d198a486c4e322073a0ff",
       "body_size_bytes": 2577,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1569,13 +1570,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#deliver_the_best_available_result_when_blocked",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "645fd24b7a0cd7397ac97b93197c7bf292aa3c8a16fff3e023b98c710e5ef805",
         "reviewed_body_size_bytes": 2577,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "8ce5210afe9bdccc37d0a38eec8b73f63815d907faf094ffe6f335c29bac04c8",
+        "carried_body_digest": "7018452094d6f342acc8bfd737fe7f42ab12cddaa24d198a486c4e322073a0ff",
         "carried_body_size_bytes": 2577,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1585,16 +1586,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "resolve_missing_information",
       "body_path": "bodies/resolve_missing_information.md",
-      "body_digest": "43605c4e5e532434502469659666294e3e967a6bae899dc68d95bc1bab88fcac",
+      "body_digest": "44a71874b474b28665f4be16b9346f5e9de7a905637a0d894c520766740f4070",
       "body_size_bytes": 2579,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1621,13 +1622,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#resolve_missing_information",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "6c978687df2c84a5af4e6df157e029cd0b7a1236f4f4fdd76903ec275b3fc434",
         "reviewed_body_size_bytes": 2579,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "43605c4e5e532434502469659666294e3e967a6bae899dc68d95bc1bab88fcac",
+        "carried_body_digest": "44a71874b474b28665f4be16b9346f5e9de7a905637a0d894c520766740f4070",
         "carried_body_size_bytes": 2579,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1637,16 +1638,16 @@
           "identical_lines": 41,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "choose_one_next_action",
       "body_path": "bodies/choose_one_next_action.md",
-      "body_digest": "f735dc31712528fa0973ac26a84d7de7bdeec07b65751c576d28d54f353f0e5d",
+      "body_digest": "dc17802034d1513204a26c886d60b3ae16c5b4a50cebf28dd691635342c62786",
       "body_size_bytes": 2738,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1673,13 +1674,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#choose_one_next_action",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "1b94bb2ace8c94654168b1a8c14442ad5c4fc9424c163415ed393b2644d95188",
         "reviewed_body_size_bytes": 2738,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "f735dc31712528fa0973ac26a84d7de7bdeec07b65751c576d28d54f353f0e5d",
+        "carried_body_digest": "dc17802034d1513204a26c886d60b3ae16c5b4a50cebf28dd691635342c62786",
         "carried_body_size_bytes": 2738,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1689,16 +1690,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "report_observed_derived_assumed_and_unknown",
       "body_path": "bodies/report_observed_derived_assumed_and_unknown.md",
-      "body_digest": "8fcdbf64a684d88bd4ea6ba8b769cb413b6146027c9c879126ff7fda57ad2512",
+      "body_digest": "4905a903d831a257c7f83dbcbc744c83848b0543e4098b5baf84886e85ba11c4",
       "body_size_bytes": 2301,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1725,13 +1726,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#report_observed_derived_assumed_and_unknown",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "f37e09ea1bab67a8421a3ab47b61dd003eceefea1dae2970f29a8a15dc6275c0",
         "reviewed_body_size_bytes": 2301,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "8fcdbf64a684d88bd4ea6ba8b769cb413b6146027c9c879126ff7fda57ad2512",
+        "carried_body_digest": "4905a903d831a257c7f83dbcbc744c83848b0543e4098b5baf84886e85ba11c4",
         "carried_body_size_bytes": 2301,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1741,16 +1742,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "check_for_existing_work_before_building",
       "body_path": "bodies/check_for_existing_work_before_building.md",
-      "body_digest": "fb988f4ee5bb6d9665dc9024cb87670e563b98738590a9cc60bb322507b67bb6",
+      "body_digest": "0b9c09d22a700f45e57e5ae939b7eed3040041704d2bd67848ca8acce51047f4",
       "body_size_bytes": 3010,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1777,13 +1778,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#check_for_existing_work_before_building",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "7df406045238fe90957696bb03331d039393d1a7743d98739ff5ee726205b4ab",
         "reviewed_body_size_bytes": 3010,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "fb988f4ee5bb6d9665dc9024cb87670e563b98738590a9cc60bb322507b67bb6",
+        "carried_body_digest": "0b9c09d22a700f45e57e5ae939b7eed3040041704d2bd67848ca8acce51047f4",
         "carried_body_size_bytes": 3010,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1793,16 +1794,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "measure_the_environment_before_relying_on_it",
       "body_path": "bodies/measure_the_environment_before_relying_on_it.md",
-      "body_digest": "ec43070e3c1ebe1c603ae00c918badcde403320ba0961562a738162b32ac5b61",
+      "body_digest": "3f21e6faa76ffe784329a4194cbf000d051e48100b2624aac9bfb2e0aa405018",
       "body_size_bytes": 2653,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1829,13 +1830,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#measure_the_environment_before_relying_on_it",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "4d9f748a7fc48b5c2def6f2c6acb00e203424d3d5caf55c4221836061f416484",
         "reviewed_body_size_bytes": 2653,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "ec43070e3c1ebe1c603ae00c918badcde403320ba0961562a738162b32ac5b61",
+        "carried_body_digest": "3f21e6faa76ffe784329a4194cbf000d051e48100b2624aac9bfb2e0aa405018",
         "carried_body_size_bytes": 2653,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1845,16 +1846,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "hand_over_a_result_its_consumer_can_use",
       "body_path": "bodies/hand_over_a_result_its_consumer_can_use.md",
-      "body_digest": "379e8c4e687dd66ae3a40939ab442100c1c51fb3767cd3fdb759710ad838c131",
+      "body_digest": "bb5f7b9fc96db7b5afbb931bcf9c52d8d3cf57275c90876c8f1e0d680194d357",
       "body_size_bytes": 2733,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1881,13 +1882,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#hand_over_a_result_its_consumer_can_use",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "127675ea8f8191fab1e60770c4b927793ce098f7ea8b8f375298aa4853e8494f",
         "reviewed_body_size_bytes": 2733,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "379e8c4e687dd66ae3a40939ab442100c1c51fb3767cd3fdb759710ad838c131",
+        "carried_body_digest": "bb5f7b9fc96db7b5afbb931bcf9c52d8d3cf57275c90876c8f1e0d680194d357",
         "carried_body_size_bytes": 2733,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1897,16 +1898,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "plan_and_split_work_with_explicit_joins",
       "body_path": "bodies/plan_and_split_work_with_explicit_joins.md",
-      "body_digest": "d68352a408d3758d317cb407bf8ce3ccd838a552d78a876c71ca457443201722",
+      "body_digest": "3ad881d9b1bd6e2f30b64c47483ffc1ce6b1b4cfe3ae5aaa1b9163d22c1dcaba",
       "body_size_bytes": 2737,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -1933,13 +1934,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#plan_and_split_work_with_explicit_joins",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "935b573e884d9391ea200d118ab3ee58cb6b9d14c244462b0a48f7d47e2cf2b7",
         "reviewed_body_size_bytes": 2737,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "d68352a408d3758d317cb407bf8ce3ccd838a552d78a876c71ca457443201722",
+        "carried_body_digest": "3ad881d9b1bd6e2f30b64c47483ffc1ce6b1b4cfe3ae5aaa1b9163d22c1dcaba",
         "carried_body_size_bytes": 2737,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -1949,9 +1950,9 @@
           "identical_lines": 44,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
@@ -2016,7 +2017,7 @@
     {
       "identity": "decide_whether_a_step_needs_a_model",
       "body_path": "bodies/decide_whether_a_step_needs_a_model.md",
-      "body_digest": "ce4465de7c77b6339e72bde53c7536c9e331ea3cce83dd24135aae86173b21a0",
+      "body_digest": "59d0abcac758fe705710ebb4340897ec6f8c688d199ae50794e9a0bd29e3c74a",
       "body_size_bytes": 3457,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -2043,13 +2044,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#decide_whether_a_step_needs_a_model",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "391c2da2069cd8a53703c9a3890bd9e42cef74d1707549b39eb0cdaa1f149503",
         "reviewed_body_size_bytes": 3457,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "ce4465de7c77b6339e72bde53c7536c9e331ea3cce83dd24135aae86173b21a0",
+        "carried_body_digest": "59d0abcac758fe705710ebb4340897ec6f8c688d199ae50794e9a0bd29e3c74a",
         "carried_body_size_bytes": 3457,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -2059,16 +2060,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "look_for_structure_the_model_missed",
       "body_path": "bodies/look_for_structure_the_model_missed.md",
-      "body_digest": "8f6e68fdccfa433b0164502e0eb550fda7a95d9fa4c2de96be57569e4894b86b",
+      "body_digest": "61db021e61405a01d168c133ced5fca34725b52075f5d322cec51323fedc3582",
       "body_size_bytes": 2704,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -2095,13 +2096,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#look_for_structure_the_model_missed",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "cb93ad286a927703b169a6265a22080cec0772b1e48320fb8fdeddd6afd07921",
         "reviewed_body_size_bytes": 2704,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "8f6e68fdccfa433b0164502e0eb550fda7a95d9fa4c2de96be57569e4894b86b",
+        "carried_body_digest": "61db021e61405a01d168c133ced5fca34725b52075f5d322cec51323fedc3582",
         "carried_body_size_bytes": 2704,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -2111,16 +2112,16 @@
           "identical_lines": 38,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "check_that_a_result_is_stable_and_generalizes",
       "body_path": "bodies/check_that_a_result_is_stable_and_generalizes.md",
-      "body_digest": "b17c388b101b6da0ab79431af045e20f1b7e3cfdb431e0753c891ec8e6244543",
+      "body_digest": "9b4e0875491f471b9a9ed1e5fa413b10ab0c4cb8df8ed211a58ec942d1b7c968",
       "body_size_bytes": 2709,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -2147,13 +2148,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#check_that_a_result_is_stable_and_generalizes",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "49897a2e8f7001719b591dcc6736761c25e39b086b4212ef60852de0e2c5c805",
         "reviewed_body_size_bytes": 2709,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "b17c388b101b6da0ab79431af045e20f1b7e3cfdb431e0753c891ec8e6244543",
+        "carried_body_digest": "9b4e0875491f471b9a9ed1e5fa413b10ab0c4cb8df8ed211a58ec942d1b7c968",
         "carried_body_size_bytes": 2709,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -2163,16 +2164,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "audit_data_splits_for_errors_and_leakage",
       "body_path": "bodies/audit_data_splits_for_errors_and_leakage.md",
-      "body_digest": "326cbf875ae3f5431dd2f6ad1ec72c595adfbfbdc76bfe8b573204a47144b954",
+      "body_digest": "3fa8aa8b5b1db9f2691350c132d123d825dff88af920945c050a8218f9e050aa",
       "body_size_bytes": 2665,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -2199,13 +2200,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#audit_data_splits_for_errors_and_leakage",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "58123198e78f48f806d745ab65514e68eb58a7b1c393a53a0885538fbae4adc7",
         "reviewed_body_size_bytes": 2665,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "326cbf875ae3f5431dd2f6ad1ec72c595adfbfbdc76bfe8b573204a47144b954",
+        "carried_body_digest": "3fa8aa8b5b1db9f2691350c132d123d825dff88af920945c050a8218f9e050aa",
         "carried_body_size_bytes": 2665,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -2215,16 +2216,16 @@
           "identical_lines": 40,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "analyse_errors_by_segment_and_cluster",
       "body_path": "bodies/analyse_errors_by_segment_and_cluster.md",
-      "body_digest": "f9906d18adeda8b0f6ab0b70116f4462dd99991090d775a4f6b774e25de5b2ca",
+      "body_digest": "6c81d6fe10e7e68525e7dd9e1a8a1398aa8f112a00ce8e814671419863e3dcc6",
       "body_size_bytes": 2569,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -2251,13 +2252,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#analyse_errors_by_segment_and_cluster",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "c404dfd2f5d6ada09f9cc0538163c622e28d2654f753be43c645849520c4a8a7",
         "reviewed_body_size_bytes": 2569,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "f9906d18adeda8b0f6ab0b70116f4462dd99991090d775a4f6b774e25de5b2ca",
+        "carried_body_digest": "6c81d6fe10e7e68525e7dd9e1a8a1398aa8f112a00ce8e814671419863e3dcc6",
         "carried_body_size_bytes": 2569,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -2267,16 +2268,16 @@
           "identical_lines": 39,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "review_an_accepted_solution_adversarially",
       "body_path": "bodies/review_an_accepted_solution_adversarially.md",
-      "body_digest": "a82e5a65a963c457b73d3695d3c7aabf68775a3f2fedf6b328747500f1e3e64b",
+      "body_digest": "054160a5b3bd64490149c69e28eabf1d223535b090e4a95f752544a9340f1d35",
       "body_size_bytes": 3147,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -2303,13 +2304,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#review_an_accepted_solution_adversarially",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "036fcb7fc725a249689be4fa5e579d8b3492fe0d8e5da779f8fef5b052f10ec7",
         "reviewed_body_size_bytes": 3147,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "a82e5a65a963c457b73d3695d3c7aabf68775a3f2fedf6b328747500f1e3e64b",
+        "carried_body_digest": "054160a5b3bd64490149c69e28eabf1d223535b090e4a95f752544a9340f1d35",
         "carried_body_size_bytes": 3147,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -2319,16 +2320,16 @@
           "identical_lines": 42,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
     {
       "identity": "test_driven_change_red_green_refactor",
       "body_path": "bodies/test_driven_change_red_green_refactor.md",
-      "body_digest": "1bf5df3a234efaead9b73f0b49e4a955b1b2ef1de74188c740c00bd3eb4e0d4e",
+      "body_digest": "c27f48b974ccd21160665f1dc0596a0c849be0532fc481e691f9ab8775eef5e0",
       "body_size_bytes": 2356,
       "declared_license": "MIT",
       "source_layer": "context_intelligence",
@@ -2355,13 +2356,13 @@
       "approval_ref": "examples/29_intelligence_service/starter-catalogue/reviews.json#test_driven_change_red_green_refactor",
       "carry": {
         "record_type": "starter_catalogue_approval_carry/v1",
-        "carried_at": "2026-09-22",
+        "carried_at": "2026-09-23",
         "reviewed_body_digest": "6c0560a81edb8ebde89c6441fe0da984dd2fb257a48b89e6f355e8238df04795",
         "reviewed_body_size_bytes": 2356,
         "reviewed_revision": "381efecb8999f50a5d163d501d9590b289a0da8c",
-        "carried_body_digest": "1bf5df3a234efaead9b73f0b49e4a955b1b2ef1de74188c740c00bd3eb4e0d4e",
+        "carried_body_digest": "c27f48b974ccd21160665f1dc0596a0c849be0532fc481e691f9ab8775eef5e0",
         "carried_body_size_bytes": 2356,
-        "carried_revision": "d893bba3ae8786147ec0e77f858fc89be00c1a63",
+        "carried_revision": "a0ca18200faf32b2f8327424d8583de078997316",
         "decisions_unchanged": true,
         "reviewed_again": false,
         "proof": {
@@ -2371,9 +2372,9 @@
           "identical_lines": 43,
           "sentence": "Compiled from revision {revision}.",
           "reviewed_anchor_line": "Licence: MIT. Compiled from revision 381efec.",
-          "carried_anchor_line": "Licence: MIT. Compiled from revision d893bba.",
+          "carried_anchor_line": "Licence: MIT. Compiled from revision a0ca182.",
           "reviewed_revision_named": "381efec",
-          "carried_revision_named": "d893bba"
+          "carried_revision_named": "a0ca182"
         }
       }
     },
