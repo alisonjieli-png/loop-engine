@@ -1,0 +1,900 @@
+{
+  "record_type": "codex_review_transfer/v1",
+  "source_worktree": "/home/username/.le-codex-review-20260923",
+  "base_revision": "abcad4f8ce346e7d0759ccad703e0111574148a6",
+  "tracked_patch_sha256": "f8a9e9fa2f73ac359a9569e4c570222b174d36698a3d52708e276847dc0437c5",
+  "additional_files": [
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/README.md",
+      "size_bytes": 4870,
+      "sha256": "3d26f0436478595d92b54387320d6e1e17f7f9e3994f3477bb8fca2374c0a9b6"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/browser-check.json",
+      "size_bytes": 7621,
+      "sha256": "93809ce019a25ae03e2e7d5624e2b23c6e9bb7fa6731ec157f0cd031d2f685f4"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/content.json",
+      "size_bytes": 15839,
+      "sha256": "fa572e4d725a0651f173db426bb534d1ac75ff76b258838ad6ef8cf1fe35549b"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/editorial.css",
+      "size_bytes": 10291,
+      "sha256": "63ef0015ba820377f3e1b52b2ec9426e05c250afd4a1ef696ab4da57a1441026"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/render_preview.py",
+      "size_bytes": 12844,
+      "sha256": "723dcfb7c3ac6c530854219fc0aa98c70f56c39719476f24a355003b94e5bfdf"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/THIRD-PARTY-NOTICES.txt",
+      "size_bytes": 8977,
+      "sha256": "a5edbb5097e5f124c904aa1deb00f6536eb5a8aac9c5f36e725343cef13308fe"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/baltor-mark.svg",
+      "size_bytes": 1805,
+      "sha256": "c0db56476c6df357a92c1cf1509c4f9e2c86864f4fe86e14586cfe355422caa1"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/geist-mono.woff2",
+      "size_bytes": 71368,
+      "sha256": "fba8f577f38a2bbcbe818efa6348dd58f36303a10b8737c42fefad275be563ab"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/geist.woff2",
+      "size_bytes": 69652,
+      "sha256": "a369fcf5628ea2aa4e1b9e2ec6a5b3624e365bda588e1f0f2f12b564f728fbb8"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/live-16.svg",
+      "size_bytes": 1805,
+      "sha256": "c0db56476c6df357a92c1cf1509c4f9e2c86864f4fe86e14586cfe355422caa1"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/live-32.svg",
+      "size_bytes": 1805,
+      "sha256": "c0db56476c6df357a92c1cf1509c4f9e2c86864f4fe86e14586cfe355422caa1"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/single-cut-16.svg",
+      "size_bytes": 372,
+      "sha256": "cbb9a51f397df09725f2d15d6bb73b6cb897149e7e20901cb73e453bb07b499a"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/single-cut-32.svg",
+      "size_bytes": 405,
+      "sha256": "a1fb1e1e6d7fa33c018ab042b46953d4f72edfa4753ef1cf0d65c0e31eb8577a"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/soft-16.svg",
+      "size_bytes": 441,
+      "sha256": "bdfc08ad9beebfc5e97f663e52865d7fdff14627976711b9989ad59d28374703"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/assets/soft-32.svg",
+      "size_bytes": 528,
+      "sha256": "89d6257c5b69ea52de87e26dc465ef1e56a5130d835133a0d77de6ee84a5ac6e"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/brand.html",
+      "size_bytes": 2979,
+      "sha256": "5a40cc74381fa60495d8eec0ec03c7d36f098a4db7c38d90b190d94851d020fc"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/editorial.css",
+      "size_bytes": 10291,
+      "sha256": "63ef0015ba820377f3e1b52b2ec9426e05c250afd4a1ef696ab4da57a1441026"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/growing-a-harness-library.html",
+      "size_bytes": 5842,
+      "sha256": "374717aefe3638e981ddc4ba0c4ae40bb972f82f317e02dec81bc8c92aa8572b"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/index.html",
+      "size_bytes": 3917,
+      "sha256": "570f14b8d7dbce4a14fda162066e41f57fcc193eace2438f3fde083483e00255"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/team.html",
+      "size_bytes": 3122,
+      "sha256": "1296b05087b7d23f91b9b11c6bf3ac2d1af45ab85e55e2ad85bb9b80a67468ce"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/what-your-harness-actually-reads.html",
+      "size_bytes": 5783,
+      "sha256": "e4dbd24b492c1bc3389a5a2da9d1b5826e1b2160dbb13c8ec9dd208fdfacd06a"
+    },
+    {
+      "relative_path": "artifacts/editorial-pages-2026-09-23/site/when-a-reviewed-skill-made-a-model-worse.html",
+      "size_bytes": 7582,
+      "sha256": "4e9e6c2cd6a1c5384fa78e8ffa690e983819ead235800a17b818c023927f17dd"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/CODEX-PICKUP-20260923T131730.json",
+      "size_bytes": 3131,
+      "sha256": "a92aa1fe2aae1cfa93abcb6feaa817306993900f3e67d7488b53cbbd78ae4dd0"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/CODEX-PICKUP-20260923T132425.json",
+      "size_bytes": 3131,
+      "sha256": "864a732e61a9338c6e947c6b44cac57729e4c661c4aa10f0e7741b3ac7c4bd68"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/README.md",
+      "size_bytes": 8532,
+      "sha256": "c11c044f45921062dae94b0349b61616de150e9513ec094adfebc75ac62056eb"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/check_removed_guards.py",
+      "size_bytes": 3073,
+      "sha256": "e48079c4fbcbd7c3b209b3df968c70dba42f04a3e6284b1980da72160ae965d4"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/AGENTS.md",
+      "size_bytes": 4153,
+      "sha256": "b5f0c607915cce9ae838a40a28aa38c3b9f87c45bece7f9bd29edb519ee19adf"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/CLAUDE.md",
+      "size_bytes": 146,
+      "sha256": "50051d41a88f3de34cab19be87979ec5cb34e30637d301e671891e2b863dfd40"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/checklist.md",
+      "size_bytes": 1054,
+      "sha256": "f8cedda49384464ef4f5b2fb8b49e6af1d16e12e4fee72769d30cb8e62375b1c"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/input.json",
+      "size_bytes": 414,
+      "sha256": "3be7aa1133fb15b11bd75281cdc6b5b6c7d4d157617b73d2836df26bc318ae29"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/input.schema.json",
+      "size_bytes": 797,
+      "sha256": "117ae6a1278e82ed48c55da09c16f812aacd8bc3033402a2bebcd27c9962ae8f"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/node_context.md",
+      "size_bytes": 2170,
+      "sha256": "7a4b42ff1ec2fe9c923c09f1521ed1b0fa472519e4024e1b5a97dc0faeb47e56"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/output.schema.json",
+      "size_bytes": 674,
+      "sha256": "b25f3319448c46f24b3a98dad38ae438661e59413d7d94b0be06520343cb2aa9"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/packet-manifest.json",
+      "size_bytes": 1696,
+      "sha256": "c4d9ee340ecdc2ee8541b45a7e05521bde8547dbcbb46a6e3705a8cd6652cb30"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/run-state.json",
+      "size_bytes": 476,
+      "sha256": "0deb6c1d48400cf3ed8a40b9910ca624b5ff8bd82864f23f8c113cdc4d337ac1"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/incident-timeline/task.json",
+      "size_bytes": 450,
+      "sha256": "20a4a5e9f7ed33026a8641637af65d34519c6d4929451029aa04494ac96d21e6"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/AGENTS.md",
+      "size_bytes": 4034,
+      "sha256": "8814e7c0c129e6e3969e8f32b4a9d9d18e19cd6f908e3c404c8a86c50e9ee2dd"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/checklist.md",
+      "size_bytes": 1130,
+      "sha256": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/input.json",
+      "size_bytes": 182,
+      "sha256": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/input.schema.json",
+      "size_bytes": 835,
+      "sha256": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/node_context.md",
+      "size_bytes": 2311,
+      "sha256": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/output.schema.json",
+      "size_bytes": 635,
+      "sha256": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/packet-manifest.json",
+      "size_bytes": 1560,
+      "sha256": "7abb460eb20f0ce94e91667065e3b0a23bac06fc610715965bbf9c86f9943ad9"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/run-state.json",
+      "size_bytes": 603,
+      "sha256": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/failed-attempts/pre-format-packets/inventory-reconciliation/task.json",
+      "size_bytes": 463,
+      "sha256": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/fixture-bindings-before-format-repair.json",
+      "size_bytes": 1720,
+      "sha256": "12a9f7dcf7429a1750bf2772ac5d733dbb705faed4505116bc48f893dc5706cd"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/fixture-bindings.json",
+      "size_bytes": 1720,
+      "sha256": "63d70ad52660ec2564ebfbd9d3b05434cd7398a2bbe78a47f2281594baeb453d"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/fixtures/incident-timeline.json",
+      "size_bytes": 4033,
+      "sha256": "f9688d40d4f0b193a34a6606d0e2d0f9a9f633d377b9ea950ae3a7c7d973d5ce"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/fixtures/inventory-reconciliation.json",
+      "size_bytes": 3956,
+      "sha256": "327d757ba051c5aebb719c7dd5a5b48fdbdc6ec22aa568ce375d141e9dc553e1"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/independent-boundary-checks.json",
+      "size_bytes": 768,
+      "sha256": "7f97072e06f1ba97a811991611b319bf009bfd353b49a6734144e010abd9fc74"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/markdown-before-format-repair.json",
+      "size_bytes": 12708,
+      "sha256": "70ffacd2e3a58703dbea4e26ff8744ab192ab36de44f3786d3ae2822031f8920"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/markdown-final.json",
+      "size_bytes": 992,
+      "sha256": "127489cb57a09edaa4a66b6817fc0cc0a3fddf0c7496007105fc96af0ccc6c94"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/AGENTS.md",
+      "size_bytes": 4167,
+      "sha256": "c9963ce6eb38ca3f0b717c98dde7f822528d08b45667dfef7f92dbccbc356436"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/CLAUDE.md",
+      "size_bytes": 146,
+      "sha256": "0ae19b8594ac0f5d4530f51e15da3433187e1b4e7b8f9e4d8dab192e2b6a1f45"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/checklist.md",
+      "size_bytes": 1054,
+      "sha256": "f8cedda49384464ef4f5b2fb8b49e6af1d16e12e4fee72769d30cb8e62375b1c"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/input.json",
+      "size_bytes": 414,
+      "sha256": "3be7aa1133fb15b11bd75281cdc6b5b6c7d4d157617b73d2836df26bc318ae29"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/input.schema.json",
+      "size_bytes": 797,
+      "sha256": "117ae6a1278e82ed48c55da09c16f812aacd8bc3033402a2bebcd27c9962ae8f"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/node_context.md",
+      "size_bytes": 2170,
+      "sha256": "7a4b42ff1ec2fe9c923c09f1521ed1b0fa472519e4024e1b5a97dc0faeb47e56"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/output.schema.json",
+      "size_bytes": 674,
+      "sha256": "b25f3319448c46f24b3a98dad38ae438661e59413d7d94b0be06520343cb2aa9"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/packet-manifest.json",
+      "size_bytes": 1696,
+      "sha256": "883722cb5a56d96f4e329f8bd130d5f122ea8b49b8b0e16a851ce8bd9b5b37fe"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/run-state.json",
+      "size_bytes": 476,
+      "sha256": "0deb6c1d48400cf3ed8a40b9910ca624b5ff8bd82864f23f8c113cdc4d337ac1"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/incident-timeline/task.json",
+      "size_bytes": 450,
+      "sha256": "20a4a5e9f7ed33026a8641637af65d34519c6d4929451029aa04494ac96d21e6"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/AGENTS.md",
+      "size_bytes": 4048,
+      "sha256": "339a7320c4c50109fd2acdd77784286fa94679096c12e57fc312565e38a498c5"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/checklist.md",
+      "size_bytes": 1130,
+      "sha256": "969bb68aec472e3d79882c94ce3a07650799c2f882a014e05ddb60c5b5e913ca"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/input.json",
+      "size_bytes": 182,
+      "sha256": "238638ff5ace970502c4d26b95a68852a666d3cb2d8044627feb737b18ca7e9b"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/input.schema.json",
+      "size_bytes": 835,
+      "sha256": "938a49bd957408d721614d9fad543c7653a932ee1d6105af899c3e9bf6ad7dbd"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/node_context.md",
+      "size_bytes": 2311,
+      "sha256": "f11bf4f6d9d83d88c31956c1b3f47af0a59e6074714bff2d912f067d240e4b2b"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/output.schema.json",
+      "size_bytes": 635,
+      "sha256": "885449159fd6f9d62d11b8817b33dd6b9f50cefa3b8920c997690d11c549f18e"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/packet-manifest.json",
+      "size_bytes": 1560,
+      "sha256": "e2a2d63911daddc495cef76fa20763aab70acef6a44a6507e6591914158ab8d2"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/run-state.json",
+      "size_bytes": 603,
+      "sha256": "242df2627b9f706bbf68ff43e9f12da6068336776ce38a8e7e48e32cccba6a13"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/packets/inventory-reconciliation/task.json",
+      "size_bytes": 463,
+      "sha256": "0ca559797a093e8c6aedd24805b1070fee183289d53e756a67046567fe036d54"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/probe_codex.py",
+      "size_bytes": 4991,
+      "sha256": "a9b0584800188d04728c81a9f97830c4ac314343389acd0551303e8e1bdf13d2"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/removed-guard-checks-20260923T132551.json",
+      "size_bytes": 2496,
+      "sha256": "f49a65c1b4cef1290876e32e2c8118b148ae78dce705c53cdaa6a2bb36997564"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/removed-guard-checks-20260923T132739.json",
+      "size_bytes": 2497,
+      "sha256": "b566e24752f9164968ffe745c31fe03ca7c3cf29183228dc7dd5854dbdd1b7cd"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/removed-guard-checks.json",
+      "size_bytes": 2496,
+      "sha256": "58fd3a274f94c8178cdd772478f123607fe2c449e21ed0db5ebc16c414e82b9e"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/render_packet.py",
+      "size_bytes": 18906,
+      "sha256": "6f9e28c6a30c3f409182805fd5c6c65b00d7104398bdca38025f43aa6fda7762"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/test_render_packet.py",
+      "size_bytes": 10867,
+      "sha256": "ada56887743feb966c47267bb7e83853d74b6ca09688c406a0d5057e2abdfa39"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/tests-after-renderer-initial.txt",
+      "size_bytes": 1530,
+      "sha256": "b8fc9fad78fd64860f1acf1cec5d5804d37b78bb359f091136760f2c1d1945d3"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/tests-after-version-repair.txt",
+      "size_bytes": 1622,
+      "sha256": "36a71b0cd972c258b9f9e8f0687732deb92b2b057f388bed6eb119e6fc1c7670"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/tests-before-renderer.txt",
+      "size_bytes": 16018,
+      "sha256": "6e9edca83dac6317aff6798f5d3665d4152bdfc8316bc6670c46ccbef68f0401"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/tests-before-schema-refusal-repair.txt",
+      "size_bytes": 3458,
+      "sha256": "fc8829b6f5a6c93e46175ae10bba3813ca09fe3062f72aadeaef13ecc6a65210"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/tests-before-version-repair.txt",
+      "size_bytes": 2176,
+      "sha256": "52f0bafda1d6e91debe4b9a1871000486904d9b7a7351ab5714d886737a487e1"
+    },
+    {
+      "relative_path": "artifacts/focused-step-packet-2026-09-23/tests-final.txt",
+      "size_bytes": 1709,
+      "sha256": "d187ed8c14305d75464a88cd989c9f1ef614c6fcb6fbfde9ffbc2742c6c78b58"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/INDEPENDENT-QA-2026-09-23.md",
+      "size_bytes": 5800,
+      "sha256": "1d73563f1699c501b54f99c208d2f3f0a0411a8c71c87bc8fe0a75a9a289f63e"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/README.md",
+      "size_bytes": 8887,
+      "sha256": "3ac73edbe93d51e7709b0a11112465227a666947dcc36607f2fa444d8eb64cee"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/build_manifest.py",
+      "size_bytes": 3987,
+      "sha256": "56fe4f477dd6878757a67757b0c6243433d376c841bd541b08176f9d32a75cf0"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/candidate-manifest.json",
+      "size_bytes": 4246,
+      "sha256": "fdfd23ea7ea160a66d5d3be7805261050595ea07597497b35c021da8a4ee68ff"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/final-checks-2.json",
+      "size_bytes": 8811,
+      "sha256": "581c03aefba3cdadefc4190b58be9f566d4fe7abe76d0628759a7b1e271ff186"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/final-checks-3.json",
+      "size_bytes": 8010,
+      "sha256": "bd1ddde781f3ee0a42bdc3a0bb82b24bb3cc63d0cef98243920c29e78ffdc852"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/final-checks-4.json",
+      "size_bytes": 10507,
+      "sha256": "1970636fa26924253c4e9642859d2b05f75418f83f69b8927a4514e246789849"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/final-checks.json",
+      "size_bytes": 7935,
+      "sha256": "280d2a9c4a96f39513d80a9903ac46639c38d2b49ccb684596b40f8aa055ee93"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/hook-path-failure.json",
+      "size_bytes": 420,
+      "sha256": "a21424f9166dd7f3271b71f623e5bf3bbf3cf96ea895e376e4eb8b04d1987499"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/initial-brief-input.schema.json",
+      "size_bytes": 4172,
+      "sha256": "2aab9c6e53195a26159528c23c52be3f234dd68e6f635f0871bd97be708878d2"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/initial-brief-reviewer.md.txt",
+      "size_bytes": 1173,
+      "sha256": "c59a599ddefad3eb71280f573aaa514f5536afddae8c2141b977a4efd3d2d281"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/initial-build-manifest.py.txt",
+      "size_bytes": 3654,
+      "sha256": "d59ab2ccfb0893df82cc88e9b9412362066e51a4df26b03665795e63d990c014"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/initial-candidate-manifest.json",
+      "size_bytes": 4187,
+      "sha256": "fea893da6ade5a3d5a41130f2267f34f090043bfd04b68f3ee4b1995af9c9f92"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/initial-check-brief.md.txt",
+      "size_bytes": 1719,
+      "sha256": "2acfbad714ebc0985b143357291054b68ab804658c787f2d2a1dd29ecc65907e"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/initial-hooks.json",
+      "size_bytes": 316,
+      "sha256": "ac187c0bdcc267dc3bd9b27caf65723c7070f1cf10fb216448c25a1733563961"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/manifest-fifo-failure.json",
+      "size_bytes": 637,
+      "sha256": "8404c8643889722d9c86aee92a0966c58de21a61b4b532bfa2a8165368f988a8"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/native-components-initial.json",
+      "size_bytes": 2234,
+      "sha256": "0fe3ebbb77f0b851ba79a88cdc88227b5e31541d10a31cd7865cf9879a8005d9"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/native-components-isolated.json",
+      "size_bytes": 2925,
+      "sha256": "b535232d4cf6f6f3933b93116ac66930863df8dda057890162c39ba87f5c8db2"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/native-validation-initial.json",
+      "size_bytes": 873,
+      "sha256": "ac0da05cff1eed3ad7057023b44f22ddf60b31c6a50f2d5403f538aa5d8168e4"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/schema-boundary-correction.json",
+      "size_bytes": 632,
+      "sha256": "73a1fc16e728ca75e59bc4bf640d0a6a9fb23aea463fc47e87705f4e1a1c179e"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/evidence/second-candidate-manifest.json",
+      "size_bytes": 4187,
+      "sha256": "7b9d52d01e0da5ac219d528850d86ca4024a6c35058e16790c0c49a789471321"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/.claude-plugin/plugin.json",
+      "size_bytes": 233,
+      "sha256": "761c680c56909384b0a1e9cee7a072a134f8ac77b7c200229f102a72cf175c42"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/LICENSE",
+      "size_bytes": 1068,
+      "sha256": "663e093e45c8440e61d1dd5e5db8181eb1f305402aad1e91ce3765408b7a46ea"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/agents/brief-reviewer.md",
+      "size_bytes": 1204,
+      "sha256": "8afc506f010c6b942f7ccff96eee1c42910ef885ac35f00b22b28080a9a6bbb4"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/commands/check-brief.md",
+      "size_bytes": 1862,
+      "sha256": "445c661f7d05b1c26a02b1d17971bf4f65b4f1785386323fed9974b5285a4587"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/contracts/brief-input.schema.json",
+      "size_bytes": 4448,
+      "sha256": "a21ab5811b6715ccaf0f55d0c485a64c49f85b84aced3302d147b2ce34094a26"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/contracts/brief-output.schema.json",
+      "size_bytes": 1487,
+      "sha256": "9737600b93ba2c85ad073dff90fe89ef46b29e1562a45e4f14980e8d69dd92a5"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/contracts/example-brief.json",
+      "size_bytes": 756,
+      "sha256": "6a3cad77c976b97e969fecf65da4c18d801563daee2f31958b725f6795ec326c"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/contracts/hook-input.schema.json",
+      "size_bytes": 518,
+      "sha256": "53790328f5c43cb79d04bafcd964abba70aaf82bfc186b42f5d9f48600c712ee"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/contracts/hook-output.schema.json",
+      "size_bytes": 834,
+      "sha256": "ff76b58c9f467505da9f8a4c14c46147dc8b9f4b68d7939c27d14d19d62002de"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/hooks/hooks.json",
+      "size_bytes": 325,
+      "sha256": "4ba8a9023c7b204918cfe4d95b01269d94a4e525a40e706077bd0bd6b180b9b3"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/scripts/check_brief.py",
+      "size_bytes": 4960,
+      "sha256": "6af5545af3760ba25b0478ce03d51b76af36fc064229d2bb24c45ad039373887"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/scripts/protocol.py",
+      "size_bytes": 1981,
+      "sha256": "9d289b0f4e732bc3014c17eb2ea4c6e66f2c4cd0ca4a7bbd072a310ad8340e09"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/plugin/scripts/session_start.py",
+      "size_bytes": 1925,
+      "sha256": "e6772480609063d05b7e3e1953a52f1214bfcfa47407e9e3dcfc8e87b3642413"
+    },
+    {
+      "relative_path": "artifacts/harness-plugin-context-2026-09-23/tests/test_candidate.py",
+      "size_bytes": 11527,
+      "sha256": "8be4e6953ab30362cc5e326e5c1bb07cde3f3de26b5928307f3c1f8c934d8c08"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/README.md",
+      "size_bytes": 5452,
+      "sha256": "989962b218dd1867d8c0e91caf0d73df7d79c66201f3a5ef3eb0ea0688fc990d"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/audit_supply.py",
+      "size_bytes": 35213,
+      "sha256": "1720d54a1b3fe556a44bb430344a17124e3b4383980557067891019dd8e519b4"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/probe_streaming.py",
+      "size_bytes": 6273,
+      "sha256": "93cdebfc6dacd7b7992aa3b1e074d0950f8b525ceb4c5ad696a212f79d8c346a"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-current-with-unmerged-evidence-2026-09-23/report.json",
+      "size_bytes": 7704,
+      "sha256": "fac804d5a2378bd2640b4afb451f51cd60603ee1db638f0427a6903fb4e06ccd"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-current-with-unmerged-evidence-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "8c4bcbc62f28b46fc8836bb21010b9d0890a6f434715c7ebf40026c224d4f6b4"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-historical-panel-dispute-2026-09-23/report.json",
+      "size_bytes": 9988,
+      "sha256": "93899ec4df825607ea86252901dfdbe5c953b3b104a4f1f96f9320f46f17c5ce"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-historical-panel-dispute-2026-09-23/review-queue.jsonl",
+      "size_bytes": 54439,
+      "sha256": "a1a63e065b27b9fd499e05c3870f3f9b35427f8faf2d6e9d2a309f8b21005f7b"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-initial-2026-09-23/report.json",
+      "size_bytes": 6494,
+      "sha256": "c07431db88519dce5ebf9936b1095d03b738cf62eaa73b0adc8a1ec6c32909c2"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-initial-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "0db966abe07f48097c157e069f6787b9ab22f6dff6b71cc168a3a31c2b370176"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-panel-initial-2026-09-23/report.json",
+      "size_bytes": 6973,
+      "sha256": "0f461c071f57a78db824141f63e47c73b4ed4454e5c901955ba23a4adc156491"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-panel-initial-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "8c4bcbc62f28b46fc8836bb21010b9d0890a6f434715c7ebf40026c224d4f6b4"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-streaming-panel-2026-09-23/report.json",
+      "size_bytes": 6973,
+      "sha256": "0f461c071f57a78db824141f63e47c73b4ed4454e5c901955ba23a4adc156491"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-streaming-panel-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "8c4bcbc62f28b46fc8836bb21010b9d0890a6f434715c7ebf40026c224d4f6b4"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-bundle-50000-2026-09-23/report.json",
+      "size_bytes": 7073,
+      "sha256": "c494338efd6e03705e7b2ae3a8e263960d6878d1912da8162db3c126e65a1121"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-bundle-50000-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "0db966abe07f48097c157e069f6787b9ab22f6dff6b71cc168a3a31c2b370176"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-bundles-1000000-2026-09-23/report.json",
+      "size_bytes": 9278,
+      "sha256": "09db63305b378661f8a404a2907e6bc31f0a2900d43feae521c0a86ab34f053b"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-bundles-1000000-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "0db966abe07f48097c157e069f6787b9ab22f6dff6b71cc168a3a31c2b370176"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-million-after-dispute-2026-09-23/report.json",
+      "size_bytes": 9399,
+      "sha256": "a90b8be1a384c27daf74df0e72b94249c95dea598289c5080edfdf7305727f34"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-million-after-dispute-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "0db966abe07f48097c157e069f6787b9ab22f6dff6b71cc168a3a31c2b370176"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-million-after-dispute-2026-09-23/scale-probe.json",
+      "size_bytes": 1504,
+      "sha256": "aae82ad487eb59f4eba008c920e2880fc8d2a67e6c28bc1eb0ff9103805b9bca"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-million-final-2026-09-23/report.json",
+      "size_bytes": 9399,
+      "sha256": "03dd87e3b7474c46fa38f118873565cf4bac2ba122af03b4a060a8fc6232045c"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-million-final-2026-09-23/review-queue.jsonl",
+      "size_bytes": 52530,
+      "sha256": "0db966abe07f48097c157e069f6787b9ab22f6dff6b71cc168a3a31c2b370176"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/receipt-synthetic-million-final-2026-09-23/scale-probe.json",
+      "size_bytes": 1503,
+      "sha256": "f5c130f86e6126cc6bee71520d4abbff13df294a7ca65178a06a0f22157dcff0"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/scale-probe-1000000-2026-09-23.json",
+      "size_bytes": 1200,
+      "sha256": "d618fba6965cfb7a2df2970d9d63f1de5eecb903188b2318b9a6d242e567c82f"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/scale-probe-50000-2026-09-23.json",
+      "size_bytes": 1177,
+      "sha256": "07459a7b58d9861a015a6415828d26e06e60dcf7162f571f8c9e532d640f51b0"
+    },
+    {
+      "relative_path": "artifacts/million-harness-supply-audit-2026-09-23/test_audit_supply.py",
+      "size_bytes": 11418,
+      "sha256": "0a83fe52bd941db1c2eaa61522d95b848150959e2acce7eba0eb784f522b8dd8"
+    },
+    {
+      "relative_path": "artifacts/website-copy-review-2026-09-23/browser-after-copy-fix.json",
+      "size_bytes": 172467,
+      "sha256": "256602a2b86587e634afd9d89a18b0c4c8f283fb0199f8b3c38d94e537f1394b"
+    },
+    {
+      "relative_path": "artifacts/website-copy-review-2026-09-23/documentation-structure-check.json",
+      "size_bytes": 86,
+      "sha256": "2efcc97a3457b875677d64e4deeb06588167aa73f61cdb7e40d69fa3b5c4006f"
+    },
+    {
+      "relative_path": "artifacts/website-copy-review-2026-09-23/optional-ruff-baseline-comparison.json",
+      "size_bytes": 7614,
+      "sha256": "b24af91794eb850aa97356c1fd941496b1be79fd015fb4f37aba1bdcda2e4db5"
+    },
+    {
+      "relative_path": "artifacts/website-copy-review-2026-09-23/owning-tests-after.txt",
+      "size_bytes": 1641,
+      "sha256": "b6355586523819c836b0066937b9675203d8b8ab6b345d960560223263f3e4ea"
+    },
+    {
+      "relative_path": "artifacts/website-copy-review-2026-09-23/removed-claim-guard.json",
+      "size_bytes": 2852,
+      "sha256": "5efe4d9ea3ccd5603e62b31e8fc94c9b0620c2ade90f9f18624c923b1e06a62e"
+    },
+    {
+      "relative_path": "docs/context/CODEX-NATIVE-PACKAGES-AND-STATUS-HANDOFF-2026-09-23.md",
+      "size_bytes": 10012,
+      "sha256": "c88e02c5e789e5606baf77a80a6b4179c6786f6b78747d19f29474d3381e80a5"
+    },
+    {
+      "relative_path": "docs/research/MILLION-HARNESS-SUPPLY-NEXT-STEPS-2026-09-23.md",
+      "size_bytes": 13037,
+      "sha256": "9db1141591b738436ba701b8b9478ebb5b116df1803521209ade5f93a37c1a80"
+    },
+    {
+      "relative_path": "docs/verification/CLAUDE-AND-ROADMAP-STATUS-2026-09-23-MORNING.md",
+      "size_bytes": 16896,
+      "sha256": "d73662cd3ad0a3dc7c7e5e05a6d8f8472a0956ef105ef5745b7ebfee0dd92b81"
+    },
+    {
+      "relative_path": "docs/verification/FOCUSED-STEP-CONTEXT-PACKET-2026-09-23.md",
+      "size_bytes": 10753,
+      "sha256": "7fc68f34c3f290f2c7cf2e3e36ee99da71e5257c3826918765a67b232215d39c"
+    },
+    {
+      "relative_path": "docs/verification/HARNESS-PLUGIN-AND-HOOK-CANDIDATE-2026-09-23.md",
+      "size_bytes": 12212,
+      "sha256": "50f6a2f26c6ec0357faef285961938a5e31a47a5d76ab177604fa0a2ee1e59cc"
+    },
+    {
+      "relative_path": "docs/verification/LIVE-BALTOR-REVIEW-2026-09-23-MORNING.md",
+      "size_bytes": 14256,
+      "sha256": "535bcd46ce7c3253d9e8f19fd6ed9f7ec7479d93c4d05edc85582c4781330dbd"
+    },
+    {
+      "relative_path": "docs/verification/WEBSITE-COPY-AND-EDITORIAL-CANDIDATES-2026-09-23.md",
+      "size_bytes": 4231,
+      "sha256": "aeef67187897abc36a8159426722ef7ef6603b195d2cb8da2a6fd44b1193cbfa"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/account-signed-out.png",
+      "size_bytes": 103091,
+      "sha256": "631b33df8b920bb1bec748c3763e6d0d316b6fdc191b9c8c3ca73001eeed8f80"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/browser-observations.json",
+      "size_bytes": 118515,
+      "sha256": "e3742d45a8ff78664c9d394eab3bca47e9812167d524c94bdb5c893af2531435"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/connect-phone-full.png",
+      "size_bytes": 398401,
+      "sha256": "fb6361532afaf56b6b92d432c92f0dc68b19b6c162c9966b1f19b03637c2a7b9"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/connect-phone.png",
+      "size_bytes": 68187,
+      "sha256": "bd9adaea27e73d9776db223f1c0828b498d18d7c3e0dc66b965020000d4f2169"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/docs-desktop.png",
+      "size_bytes": 101443,
+      "sha256": "4a68bb778a22ab66c2b93cf4e1d4a267ed1de6a63ad15cece6f89419fbeceaa1"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/home-desktop-full.png",
+      "size_bytes": 894036,
+      "sha256": "4e27c39b3d30d4bc75c123d90ae9d73bfa7682853a274223caace22dd1e09a96"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/home-desktop.png",
+      "size_bytes": 162836,
+      "sha256": "45a943ca2aef63953f718e9e933c7fb33077bbd0520f9b6c6fec62f2d924d277"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/home-phone-full.png",
+      "size_bytes": 828133,
+      "sha256": "624ba7273c0705fb3771af2abdfc365a89ccf1778c1ec2a0cdd62e78ae53c1a1"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/home-phone.png",
+      "size_bytes": 77170,
+      "sha256": "99d37477519ba0f3f39b94212e2751e86504039f2c67ea753e27f04cfc532ecc"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/home-small-phone-full.png",
+      "size_bytes": 836760,
+      "sha256": "b216819cb1c2dfc1a2c8a404a7cc2948bc131cd901d6ab13aa083d86c128ebb4"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/home-small-phone.png",
+      "size_bytes": 49897,
+      "sha256": "344e9c8f2c9713177ec530b3ae478a24b382f0e5eb1656b80474f913a48a9741"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/how-it-works-phone-full.png",
+      "size_bytes": 829228,
+      "sha256": "c331c876d40afce2666524f4145098b4ba4daca9b9966ef83e009fd9c457982d"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/how-it-works-phone.png",
+      "size_bytes": 83031,
+      "sha256": "bfa9ae421688043b2cc10d9a0eee809dcfb1ffc00c4aaf219e7e00a4ca10dc07"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/http-observations.json",
+      "size_bytes": 26398,
+      "sha256": "ef182319e87a521a91b79336e9f97f7e80b36ec36bdb233d6c6c48e8266aa62e"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/inspect.mjs",
+      "size_bytes": 6187,
+      "sha256": "f550d7a091cd86742de650b895f750ffbb52680f0658e16f79fdf2bcd3ed2250"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/phone-invitation-from-hero.png",
+      "size_bytes": 68181,
+      "sha256": "b8b1272ff9c8e0cbabe49a6052fb0af028e4424f825980c3ee62c313ebd6166e"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/phone-menu-open.png",
+      "size_bytes": 64838,
+      "sha256": "06fb640fc6bd460fbf00b6d8dc7917f7aee2e2e58aa32965c70147a13258b5fa"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/pricing-desktop.png",
+      "size_bytes": 163036,
+      "sha256": "6e0764e05c3e625b3477ab2b4d5d60f82106fc25e19dc5b4d789d59a92394689"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/signup-phone.png",
+      "size_bytes": 71411,
+      "sha256": "632590980335612bb736c08b3bfa97bdd5a1867f85de277fe381aec62c79f118"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/waitlist-phone-full.png",
+      "size_bytes": 398401,
+      "sha256": "fb6361532afaf56b6b92d432c92f0dc68b19b6c162c9966b1f19b03637c2a7b9"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/waitlist-phone.png",
+      "size_bytes": 68187,
+      "sha256": "bd9adaea27e73d9776db223f1c0828b498d18d7c3e0dc66b965020000d4f2169"
+    },
+    {
+      "relative_path": "docs/verification/assets/live-baltor-morning-2026-09-23/workspace-signed-out.png",
+      "size_bytes": 126764,
+      "sha256": "abbad8edb6f0e2f12b186333b0885ca629d9a9a2632bed3567c883d7ea21ac99"
+    }
+  ],
+  "candidate_admission": false,
+  "published": false
+}
