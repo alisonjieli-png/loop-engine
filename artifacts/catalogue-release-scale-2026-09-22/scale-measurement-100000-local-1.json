@@ -1,0 +1,89 @@
+{
+ "record_type": "catalogue_release_scale_measurement/v1",
+ "label": "local measurement on one workstation, not a production claim",
+ "measured_at": "2026-09-23T00:12:35-0400",
+ "machine": {
+  "processors": 16,
+  "python": "3.10.20",
+  "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43"
+ },
+ "prepare": {
+  "items": 100000,
+  "files": 144323,
+  "body_bytes": 281310068,
+  "multi_file_items": 19738,
+  "seconds": {
+   "generate": 48.78,
+   "write_bundle": 35.82,
+   "validate_bundle": 21.77,
+   "publish": 170.81
+  },
+  "bundle_digest": "f713f77cbd32a12e448ec56ea491f689e2aaea72f68a3abeffcfd15c609a99d6",
+  "bundle_bytes_on_disk": 413095900,
+  "release_record_bytes": 22400321,
+  "item_version_records_bytes": 121984301,
+  "service_store_bytes_on_disk": 244502528,
+  "body_store_bytes_on_disk": 281310068,
+  "first_release": "a9bfc5712266fbb47cb660c227612f994cc932784c7847ed9551f6739988dff2",
+  "allocated_bytes_measured_with_du": {
+   "body_store": 620756992,
+   "bundle": 751828992,
+   "note": "du reported 592M for the body folder and 717M for the first bundle: each small file takes at least one 4 KiB block"
+  }
+ },
+ "serve": {
+  "view_build_seconds": 59.31,
+  "process_peak_rss_kib_before_build": 32016,
+  "process_peak_rss_kib_after_build": 1425152,
+  "index": {
+   "record_type": "catalogue_view_index/v1",
+   "entries": 100000,
+   "vector_bytes": 204800000,
+   "filterable_attributes": [
+    "catalogued_on",
+    "cited_source",
+    "origin_layer"
+   ],
+   "full_text_bytes_in_memory": 78725120,
+   "stored_on_disk": false
+  },
+  "search_lexical": {
+   "p50_ms": 107.7,
+   "p95_ms": 187.2,
+   "samples": 40
+  },
+  "search_hybrid": {
+   "p50_ms": 478.9,
+   "p95_ms": 787.0,
+   "samples": 40
+  },
+  "search_lexical_with_filter": {
+   "p50_ms": 362.6,
+   "p95_ms": 597.1,
+   "samples": 40
+  },
+  "full_listing": {
+   "items": 95153,
+   "seconds": 9.43
+  },
+  "second_publish": {
+   "seconds": 94.64,
+   "release_id": "26dddd7bdaf2cca71149e090fd6ac045d523d12ac59b166f120f0aa02389c69f",
+   "added": 100,
+   "changed": 10,
+   "bodies_written": 160
+  },
+  "hot_swap": {
+   "seconds": 64.76,
+   "changed": true,
+   "failure": null,
+   "release_is_second": true,
+   "process_peak_rss_kib_after_swap": 2090160
+  },
+  "search_hybrid_after_swap": {
+   "p50_ms": 462.7,
+   "p95_ms": 642.9,
+   "samples": 20
+  }
+ }
+}

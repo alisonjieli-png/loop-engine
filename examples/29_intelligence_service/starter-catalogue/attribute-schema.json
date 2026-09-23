@@ -1,0 +1,35 @@
+{
+  "record_type": "catalogue_attribute_schema/v1",
+  "attributes": [
+    {
+      "name": "cited_source",
+      "type": "keyword",
+      "searchable": true,
+      "filterable": true,
+      "shown": true,
+      "description": "The repository file the item restates, without its revision."
+    },
+    {
+      "name": "origin_layer",
+      "type": "choice",
+      "choices": ["context_intelligence", "code_intelligence"],
+      "filterable": true,
+      "shown": true,
+      "description": "The persistent layer whose material the item was written from."
+    },
+    {
+      "name": "catalogued_on",
+      "type": "date",
+      "filterable": true,
+      "sortable": true,
+      "shown": true,
+      "description": "The date of the review record that covers the item."
+    },
+    {
+      "name": "batch",
+      "type": "keyword",
+      "visibility": "internal",
+      "description": "The operator's name for the batch the item arrived in. Stored, never searched or shown."
+    }
+  ]
+}

@@ -262,17 +262,18 @@ def _web_checks(check, root):
 
 def _retrieval_snapshot_checks(check, root):
     import httpx
-    from ..retrieval import Retriever
+    # The ranking seam is the view's reusable index since catalogue releases.
+    from .catalogue_search import ReleaseSearchIndex
     for change in ("revoke", "replace", "entitlement"):
         folder = root / change
         folder.mkdir()
         fixture = HttpDomainFixture(folder)
         principal = fixture.runtime.authenticate_key(fixture.keys["alpha"].key)
         grants, _guard = fixture.runtime.grant_snapshot(principal)
-        original = Retriever.search
+        original = ReleaseSearchIndex.rank
 
-        def mutate_after_ranking(retriever, *args, **kwargs):
-            result = original(retriever, *args, **kwargs)
+        def mutate_after_ranking(index, *args, **kwargs):
+            result = original(index, *args, **kwargs)
             if change == "entitlement":
                 fixture.runtime.revoke_entitlement("alpha")
             else:
@@ -284,7 +285,7 @@ def _retrieval_snapshot_checks(check, root):
         payload = {"record_type": RETRIEVAL_REQUEST_VERSION, "query": "Alpha"}
         with running_http(fixture) as (base, _service):
             with httpx.Client(base_url=base, headers=fixture.headers(), trust_env=False) as client:
-                with patch.object(Retriever, "search", mutate_after_ranking):
+                with patch.object(ReleaseSearchIndex, "rank", mutate_after_ranking):
                     response = client.post("/api/v1/retrieval", json=payload)
                 following = client.post("/api/v1/retrieval", json=payload)
         check("retrieval_completion_refuses_in_flight_" + change,
@@ -539,6 +540,9 @@ def self_test():
     from .retention_checks import run_checks as retention_checks
     with tempfile.TemporaryDirectory(prefix="service-retention-") as directory:
         retention_checks(check, Path(directory))
+    from .catalogue_serving_checks import run_checks as catalogue_serving_checks
+    with tempfile.TemporaryDirectory(prefix="service-catalogue-serving-") as directory:
+        catalogue_serving_checks(check, Path(directory))
     check("every_service_check_module_is_run_by_a_suite", not unrun_service_check_modules())
     # Known-wrong case for the guard above: a merge can drop the call and keep
     # the import beside it. Nothing then runs the module, and the import alone

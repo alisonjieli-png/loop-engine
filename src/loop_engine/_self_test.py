@@ -92,6 +92,7 @@ def self_test() -> dict:
         "core.outcome_vector", "core.model_capabilities", "core.contract_matching", "core.model_response_admission",
         "core.model_response_admission_checks", "core.custom_endpoint", "core.custom_endpoint_checks",
         "core.provider_failure_classes", "loop.effect_approval", "loop.loop_profile_ontology",
+        "core.service_runtime.catalogue_release_checks",
     ]
     import importlib as _importlib
     import importlib.util as _importlib_util

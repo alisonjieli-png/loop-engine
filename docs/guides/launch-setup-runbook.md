@@ -327,7 +327,9 @@ run by hand did. It does not open a remote shell, because from a new runner
 each shell session adds a WireGuard peer to the organization that nothing
 removes. The exec call starts the command as root, so the command runs as user
 `65534` by way of `setpriv`. The command registers no tenant and replaces the
-grants of each tenant the packaged manifest names. The step reads the JSON
+grants of each tenant the packaged manifest names, except an account that
+follows the active catalogue release: for that account it reports the count of
+items the account receives and writes nothing. The step reads the JSON
 answer of the exec call, which leaves out the exit code when it is zero. It
 fails unless the exit code is zero and the command printed exactly one grant
 record, for the manifest at `/opt/baltor/catalogue/manifest.json`, with at
@@ -407,6 +409,83 @@ alone does not prove that preparation happened. A healthy process does not
 qualify identity, payments, intelligence usefulness or the paid release.
 Supabase integration remains separate work. No Fly application, Machine,
 volume or public deployment was created during the GitHub connection setup.
+
+### Publish and roll back a catalogue release
+
+This procedure is written and tested locally. It has not been run against
+the live Machine. It needs a deployed release that includes catalogue
+releases; release 15 does not. The design is in
+[the catalogue release design record](../architecture/CATALOGUE-RELEASES-AND-HOT-SWAP-2026-09-22.md).
+Library bodies are private: a bundle is built outside this public repository,
+travels only over `fly ssh sftp` from this workstation, and is removed from the
+volume after it is published. In the commands below, `MACHINE` is the one
+started Machine that `flyctl machine list --app baltor-pilot --json` names,
+and `AS_SERVICE` is `setpriv --reuid=65534 --regid=65534 --clear-groups`, the
+prefix the release workflow uses so that a command runs as the service user
+that owns `/data`.
+
+**Rollback rule.** An image rollback target must understand the current
+catalogue state version. `loop-engine service catalogue-status` prints
+`catalogue_state_version` and the versions the running image supports. Release
+15 and every older release predate catalogue state: they refuse a host file
+that has the `catalogue` section and fail the health check, which leaves the
+service down until a compatible image is deployed again. They are not rollback
+targets once the section exists. Do not remove the section to start an older
+image while any catalogue state exists, because that image would serve items
+the store has withdrawn and its `apply-grants` would turn accounts that follow
+the release back into fixed lists.
+
+Once, before the first release:
+
+1. Create the body folder and the incoming folder as the service user:
+   `flyctl machine exec MACHINE "AS_SERVICE mkdir -p /data/catalogue-bodies /data/incoming" --app baltor-pilot`.
+2. Fetch `/data/host.json` with `python3 tools/fly_operator.py --account ACCOUNT -- ssh sftp get /data/host.json host.json --app baltor-pilot`,
+   add the `catalogue` section with `"source": "image"` and
+   `"body_store_root": "/data/catalogue-bodies"`, put it back with
+   `ssh sftp put`, and restart the Machine. From this moment release 15 refuses
+   the host file. Check that `/api/v1/health` answers ready.
+
+For each release:
+
+1. Build the bundle on this workstation, outside the repository:
+   `PYTHONPATH=src python tools/build_catalogue_release_bundle.py --catalogue examples/29_intelligence_service/starter-catalogue --output ~/baltor-bundles/NAME --notes "WHAT CHANGED" --write`.
+   Keep the printed `bundle_digest`.
+2. Pack and measure it: `tar -C ~/baltor-bundles -cf NAME.tar NAME` and
+   `sha256sum NAME.tar`.
+3. Upload it privately:
+   `python3 tools/fly_operator.py --account ACCOUNT -- ssh sftp put ~/baltor-bundles/NAME.tar /data/incoming/NAME.tar --app baltor-pilot`.
+   Run this from this workstation, whose WireGuard peer already exists; a new
+   runner would add a peer that nothing removes.
+4. Check the archive digest on the Machine, then unpack it as the service user:
+   `flyctl machine exec MACHINE "sha256sum /data/incoming/NAME.tar" --app baltor-pilot --json`
+   must print the digest from step 2, then
+   `flyctl machine exec MACHINE "AS_SERVICE tar -C /data/incoming -xf /data/incoming/NAME.tar" --app baltor-pilot`.
+5. Publish:
+   `flyctl machine exec MACHINE "AS_SERVICE loop-engine service publish-catalogue --config /data/host.json --bundle /data/incoming/NAME --expected-bundle-digest DIGEST" --app baltor-pilot --json`.
+   The answer is one `service_catalogue_operation/v1` record whose `state` is
+   `published` or `unchanged`. A wrong digest is refused with
+   `bundle_digest_mismatch` and nothing is written.
+6. The first time only, change the host file's `source` to `"store"` and
+   restart the Machine. After that, every release reaches the running service
+   within `refresh_seconds` without a restart.
+7. The first time only, move accounts to grants that follow the release:
+   `flyctl machine exec MACHINE "AS_SERVICE loop-engine service follow-catalogue-release --config /data/host.json --all-tenants" --app baltor-pilot --json`.
+8. Verify: `/api/v1/health` names the new `release_id` under
+   `catalogue_release` and the `catalogue_view_current` check passes;
+   `loop-engine service catalogue-status` names it as active; run
+   `tools/check_hosted_catalogue.py`.
+9. Remove the incoming copy:
+   `flyctl machine exec MACHINE "AS_SERVICE rm -r /data/incoming/NAME /data/incoming/NAME.tar" --app baltor-pilot`.
+   The body store keeps its own copy, and two copies of a large library take a
+   large share of the one gigabyte volume.
+
+To roll back a release, read the active and earlier release identities with
+`catalogue-status`, then run
+`loop-engine service rollback-catalogue --config /data/host.json --to-release EARLIER --expected-release ACTIVE`.
+The target is verified completely before the pointer moves, and every
+withdrawal stays honoured. To withdraw one item at once, run
+`loop-engine service withdraw-catalogue-item --config /data/host.json --identity IDENTITY --note "REASON"`;
+a body read is refused immediately and the next view leaves the item out.
 
 ## 2. Create the Supabase account, then connect it
 

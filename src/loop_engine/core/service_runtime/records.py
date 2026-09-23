@@ -170,10 +170,15 @@ class SubjectTenantRegistration:
     scopes: tuple[str, ...] = DEFAULT_SCOPES
     starter_bindings: tuple = ()
     record_type: str = SUBJECT_TENANT_REGISTRATION_VERSION
+    #: A new account follows the active catalogue release instead of copying
+    #: starter bindings once. The two are alternatives, so naming both refuses.
+    follows_active_release: bool = False
 
     def __post_init__(self):
         if self.record_type != SUBJECT_TENANT_REGISTRATION_VERSION:
             raise ServiceRuntimeError("unsupported_version")
+        if type(self.follows_active_release) is not bool or (self.follows_active_release and self.starter_bindings):
+            raise ServiceRuntimeError("invalid_starter_bindings")
         text(self.issuer, "issuer"); text(self.subject, "subject")
         identifier(self.namespace_prefix, "namespace prefix")
         if len(self.issuer) > 2048 or len(self.subject) > 512 or len(self.namespace_prefix) > 32:

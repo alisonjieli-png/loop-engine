@@ -298,6 +298,12 @@ def build(folder: Path, *, artifact_root: str, accepted_licenses, grants, includ
                 f"{list(policy.accepted_licenses)}, so it is never written into a manifest it could not be served from")
         exact = replace(item, digest=measured, size_bytes=len(payload))
         relative = f"{BODIES_FOLDER}/{Path(row['body_path']).name}"
+        if relative in bodies:
+            # The release folder names a body by its file name alone, so two
+            # bodies with one name would leave one item beside another's bytes.
+            raise ManifestBuildError("duplicate_release_path",
+                f"item {identity!r} and another item both name the release path {relative!r}; give each body "
+                "its own file name before it is released")
         items.append({"reference": exact.reference(), "body_path": relative,
                       "approval_ref": review["approval_ref"], "grants": list(grants)})
         bodies[relative] = payload

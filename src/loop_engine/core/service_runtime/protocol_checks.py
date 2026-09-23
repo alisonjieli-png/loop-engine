@@ -115,13 +115,13 @@ async def _protocol_checks(check, root):
                       valid_reference(named) and len(logged) == 1 and logged[0]["route"] == "/mcp"
                       and logged[0]["method"] == "POST" and logged[0]["tenant_id"] == "alpha"
                       and logged[0]["refusal_code"] == refused.structured_content["error"]["code"])
-                from ..retrieval import Retriever
-                original = Retriever.search
-                def revoke_after_ranking(retriever, *args, **kwargs):
-                    result = original(retriever, *args, **kwargs)
+                from .catalogue_search import ReleaseSearchIndex
+                original = ReleaseSearchIndex.rank
+                def revoke_after_ranking(index, *args, **kwargs):
+                    result = original(index, *args, **kwargs)
                     fixture.runtime.set_grants("alpha", ())
                     return result
-                with patch.object(Retriever, "search", revoke_after_ranking):
+                with patch.object(ReleaseSearchIndex, "rank", revoke_after_ranking):
                     revoked = await client.call_tool("intelligence_search", {"query": "Alpha"})
                 check(names["completion"],
                       revoked.is_error and revoked.structured_content["error"]["code"] == "disclosure_grant_changed"

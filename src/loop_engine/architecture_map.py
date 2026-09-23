@@ -65,6 +65,9 @@ MODULE_MAP = {
         "waitlist", "waitlist_checks",
         "protocol_checks",
         "retention", "retention_checks", "waitlist_source_checks",
+        "catalogue_packages", "catalogue_schema", "catalogue_bundle", "catalogue_releases",
+        "catalogue_search", "catalogue_serving", "catalogue_grants", "catalogue_commands",
+        "catalogue_release_checks", "catalogue_serving_checks",
     ),
     "core.practitioner_runtime": ("__init__", "capabilities", "observations", "provisioning"),
     "core.engines": (

@@ -469,6 +469,9 @@ def http_provisioning_schema(operation):
         schema["properties"]["expected_digest"] = {"type": "string", "pattern": "^[0-9a-f]{64}$"}
     if operation == READ_OPERATION:
         schema["required"] = ["identity", "request_id"]
+        # One file of a multi-file package, fetched through the download
+        # address after the item's own read is authorized and metered.
+        schema["properties"]["path"] = {"type": "string", "minLength": 1, "maxLength": 200}
     return schema
 
 
@@ -511,7 +514,8 @@ def _status(error):
         return 401, code
     if code == "promotion_redemption_unavailable":
         return 503, code
-    if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found"):
+    if code in ("item_unavailable", "managed_access_token_not_found", "waitlist_entry_not_found",
+                "item_withdrawn", "package_file_not_found", "package_files_unavailable"):
         return 404, code
     if code in ("meter_commit_unknown", "commit_unknown", "session_operation_in_progress",
                 "session_reconciliation_window_exhausted", "session_network_authority_required",
@@ -540,6 +544,9 @@ class ServiceHttpApplication:
     waitlist: object | None = field(default=None, repr=False)
     observability: ServiceObservabilityPolicy = ServiceObservabilityPolicy()
     retention: ServiceRetentionPolicy = ServiceRetentionPolicy()
+    #: The host's catalogue refresher, started with the application and
+    #: stopped with it. None serves the catalogue loaded at start unchanged.
+    catalogue_refresher: object | None = field(default=None, repr=False)
 
     def __post_init__(self):
         from .runtime import ServiceRuntime
@@ -614,11 +621,13 @@ class ServiceHttpApplication:
                 "retrieval": {"modes": ["lexical", "hybrid"], "lexical_backend": "sqlite_fts5",
                               "vector_backend": "deterministic_character_hash",
                               "semantic_embedding_model_installed": False,
-                              "scope": "authorized_catalogue_metadata", "returns_bodies": False},
+                              "scope": "authorized_catalogue_metadata", "returns_bodies": False,
+                              "index": "one_reusable_index_for_each_catalogue_view",
+                              "filters": "declared_filterable_public_attributes"},
                 "delivery": {"inline_body_bytes": self.configuration.maximum_inline_body_bytes,
                              "download_bytes": self.configuration.maximum_download_bytes,
                              "download_endpoint": "/api/v1/download", "requires_reauthorization": True,
-                             "body_format": "utf8_text"},
+                             "body_format": "utf8_text", "package_files": "download_by_path"},
                 "limits": {"request_bytes": self.configuration.maximum_request_bytes,
                            "response_bytes": self.configuration.maximum_response_bytes,
                            "search_results": self.configuration.maximum_search_results,
@@ -822,12 +831,15 @@ class ServiceHttpApplication:
     def _invoke(self, authentication, operation, fields):
         current = self.authenticator.revalidate(authentication)
         self._require_scope(current, "provisioning:read" if operation == READ_OPERATION else "provisioning:metadata")
+        if "path" in fields:
+            raise ServiceHttpError("package_file_requires_download")
+        view = self.provisioning.current_view()
         if operation == READ_OPERATION:
-            manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION,
+            manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION, view=view,
                 **{key: value for key, value in fields.items() if key != "request_id"})
             if manifest["size_bytes"] > self.configuration.maximum_inline_body_bytes:
                 raise ServiceHttpError("download_required", 413)
-        result = self.provisioning.invoke_for_principal(current.principal, operation, **fields)
+        result = self.provisioning.invoke_for_principal(current.principal, operation, view=view, **fields)
         if "provisioning:read" not in current.effective_scopes:
             if operation == LIST_OPERATION:
                 result = {**result, "items": [{**row, "body_allowed": False} for row in result["items"]]}
@@ -839,42 +851,46 @@ class ServiceHttpApplication:
         return result
 
     def _search(self, authentication, fields):
-        from ..retrieval import Retriever
-        from ..store_serve import StoreRecord
+        from dataclasses import asdict
         from ..harness_intelligence import HarnessIntelligenceItem
         from ..intelligence_tagging import TagSet
+        from .catalogue_search import authorized_hits
 
         current = self.authenticator.revalidate(authentication)
         self._require_scope(current, "provisioning:metadata")
         _grants, grant_guard = self.runtime.grant_snapshot(current.principal)
-        listing = self.provisioning.invoke_for_principal(current.principal, LIST_OPERATION)
-        rows = {row["identity"]: row for row in listing["items"]}
-        records = [StoreRecord(identity, "context", row["purpose"],
-                    body={"description": row["purpose"], "keywords": [identity, row["kind"], row["source_layer"]]})
-                   for identity, row in rows.items()]
-        result = Retriever(records).search(fields["query"], mode=fields.get("mode", "lexical"),
-                                            top_n=fields.get("top_n", 10))
+        # One view for the whole request: the index that ranks, the listing
+        # that authorizes and the references returned all come from it.
+        view = self.provisioning.current_view()
+
+        def authorize(candidates):
+            listing = self.provisioning.invoke_for_principal(current.principal, LIST_OPERATION, view=view,
+                                                             candidates=candidates)
+            return {row["identity"]: row for row in listing["items"]}
+        ranked, rows = authorized_hits(view, fields, authorize)
         hits = []
-        for hit in result["hits"]:
-            row = rows[hit["record_id"]]
+        for identity, score, modes in ranked:
+            row = rows[identity]
             item = HarnessIntelligenceItem(
                 identity=row["identity"], kind=row["kind"], purpose=row["purpose"], digest=row["digest"],
                 source_layer=row["source_layer"], source_ref=row["source_ref"], size_bytes=row["size_bytes"],
                 license_name=row["license"], declared_effects=tuple(row["declared_effects"]),
                 styles=tuple(row["styles"]), default_exposure=row["exposure"], availability=row["availability"],
                 tags=TagSet({key: value for key, value in row["tags"].items() if key != "record_type"}))
-            from dataclasses import asdict
             hits.append({"reference": asdict(ProvisioningItemBinding.from_item(item)),
                          "purpose": row["purpose"], "kind": row["kind"], "size_bytes": row["size_bytes"],
                          "license": row["license"], "declared_effects": row["declared_effects"],
                          "harness_styles": row["styles"],
-                         "score": hit["rrf"], "modes": hit["modes"],
+                         "score": score, "modes": modes,
                          "qualification_basis": row["qualification_basis"],
-                         "body_allowed": row["body_allowed"] and "provisioning:read" in current.effective_scopes})
+                         "body_allowed": row["body_allowed"] and "provisioning:read" in current.effective_scopes,
+                         "attributes": view.shown_attributes(identity),
+                         "package": view.package_summary(identity)})
         self._verify_search_snapshot(authentication, current, grant_guard)
         return {"record_type": "service_retrieval_result/v1", "hits": hits,
                 "mode": fields.get("mode", "lexical"), "bodies_loaded": False,
                 "backend": self.capabilities()["retrieval"],
+                "catalogue_release": view.release_id or None,
                 "limitations": ["Hash vectors measure character similarity, not learned semantic understanding.",
                                 "Distribution references do not grant local code execution or independent Code admission."]}
 
@@ -955,7 +971,8 @@ class ServiceHttpApplication:
     def _validate_search(self, payload, *, versioned=True):
         if not isinstance(payload, dict):
             raise ServiceHttpError("object_required")
-        if set(payload) - ({"record_type", "query", "mode", "top_n"} if versioned else {"query", "mode", "top_n"}):
+        if set(payload) - ({"record_type", "query", "mode", "top_n", "filters"} if versioned
+                           else {"query", "mode", "top_n", "filters"}):
             raise ServiceHttpError("unknown_request_field")
         if versioned and payload.get("record_type") != RETRIEVAL_REQUEST_VERSION:
             raise ServiceHttpError("unsupported_version")
@@ -967,6 +984,8 @@ class ServiceHttpApplication:
         if (type(payload.get("top_n", 10)) is not int
                 or not 1 <= payload.get("top_n", 10) <= self.configuration.maximum_search_results):
             raise ServiceHttpError("invalid_search_limit")
+        if "filters" in payload and not isinstance(payload["filters"], dict):
+            raise ServiceHttpError("search_filter_invalid")
         return {key: value for key, value in payload.items() if key != "record_type"}
 
     def _validate_provisioning(self, payload):
@@ -1015,7 +1034,8 @@ class ServiceHttpApplication:
             tools.append(types.Tool(name="intelligence_search", description="Search authorized metadata only",
                 inputSchema={"type": "object", "required": ["query"], "additionalProperties": False,
                     "properties": {"query": {"type": "string"}, "mode": {"enum": ["lexical", "hybrid"]},
-                                   "top_n": {"type": "integer", "minimum": 1}}}))
+                                   "top_n": {"type": "integer", "minimum": 1},
+                                   "filters": {"type": "object"}}}))
             return types.ListToolsResult(tools=tools)
 
         async def call_tool(ctx, params):
@@ -1092,7 +1112,7 @@ class ServiceHttpApplication:
             schedule = self.retention_schedule
             schedule.start()
             try:
-                async with manager.run():
+                async with manager.run(), self._catalogue_refresh():
                     yield
             finally:
                 await schedule.stop()
@@ -1222,6 +1242,18 @@ class ServiceHttpApplication:
         if self.observability.captures_request_body and request.url.path not in CREDENTIAL_BODY_ROUTES:
             request.scope[CAPTURED_BODY_KEY] = body
         return body
+
+    @asynccontextmanager
+    async def _catalogue_refresh(self):
+        """Run the host's catalogue refresher for the life of the application, then stop it."""
+        refresher = self.catalogue_refresher
+        task = asyncio.create_task(refresher.run()) if refresher is not None else None
+        try:
+            yield
+        finally:
+            if task is not None:
+                task.cancel()
+                await asyncio.gather(task, return_exceptions=True)
 
     def _page_headers(self):
         """The headers every served page carries, refusals included."""
@@ -1383,21 +1415,33 @@ class ServiceHttpApplication:
                 if path.endswith("download"):
                     if operation != READ_OPERATION:
                         raise ServiceHttpError("download_requires_read")
+                    selected_path = fields.pop("path", None)
                     def download():
                         current = self.authenticator.revalidate(context)
                         self._require_scope(current, "provisioning:read")
+                        view = self.provisioning.current_view()
                         manifest = self.provisioning.invoke_for_principal(current.principal, MANIFEST_OPERATION,
-                            **{key: value for key, value in fields.items() if key != "request_id"})
+                            view=view, **{key: value for key, value in fields.items() if key != "request_id"})
                         if manifest["size_bytes"] > self.configuration.maximum_download_bytes:
                             raise ServiceHttpError("download_limit_exceeded", 413)
-                        value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION, **fields)
+                        value = self.provisioning.invoke_for_principal(current.principal, READ_OPERATION,
+                                                                        view=view, **fields)
                         self.authenticator.revalidate(context)
                         if len(value["body"].encode("utf-8")) > self.configuration.maximum_download_bytes:
                             raise ServiceHttpError("download_limit_exceeded", 413)
+                        if selected_path is not None:
+                            # The item's own read was authorized and metered
+                            # above; one file of its package is then read from
+                            # the same view and checked against its digest.
+                            payload, entry = view.read_package_file(value["identity"], selected_path)
+                            if len(payload) > self.configuration.maximum_download_bytes:
+                                raise ServiceHttpError("download_limit_exceeded", 413)
+                            return {**value, "body": None, "file": payload, "digest": entry.digest}
                         return value
                     output = await self._tenant_work(context, lambda: invoke_http_service_as_loop("download", download))
                     value = output["result"]
-                    return Response(value["body"].encode("utf-8"), media_type="application/octet-stream",
+                    return Response(value["file"] if value.get("file") is not None else value["body"].encode("utf-8"),
+                        media_type="application/octet-stream",
                         headers={"X-Loop-Engine-Record-Type": "service_download/v1",
                                  "X-Content-SHA256": value["digest"],
                                  "Content-Disposition": 'attachment; filename="intelligence.txt"'})
