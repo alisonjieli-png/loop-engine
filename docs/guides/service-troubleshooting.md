@@ -101,13 +101,13 @@ The discover answer is a quick second opinion. It reports `items_held`, which
 is how many items this account may see, and `bodies_available`, which is
 whether any of them can be downloaded at all.
 
-## The client is too old for the protocol
+## The client and the service share no protocol version
 
-**What you see.** Status 400 and the code `unsupported_protocol_version`. In a
-harness this usually appears as the server failing to connect, or as the tool
-list never arriving.
+**What you see.** Status 400. In a harness this usually appears as the server
+failing to connect, or as the tool list never arriving.
 
-**Deployed**, from an `initialize` that asked for `2025-06-18`:
+**Deployed**, the release that ran on 2026-09-21, from an `initialize` that
+asked for `2025-06-18`:
 
 ```json
 {"record_type": "service_http_error/v1",
@@ -115,23 +115,39 @@ list never arriving.
  "effect_commitment": "not_asserted", "automatic_retry": false}
 ```
 
-**What it means.** The service offers exactly one protocol version,
-`2025-11-25`, and refuses anything else rather than guessing. This applies to
-the `initialize` parameters and to the `MCP-Protocol-Version` header on every
-later request.
+**Local**, the source in this repository on 2026-09-22, from a `tools/list`
+that named `2025-06-18` in `MCP-Protocol-Version`:
+
+```json
+{"jsonrpc": "2.0", "id": 2,
+ "error": {"code": -32022, "message": "Unsupported protocol version",
+           "data": {"supported": ["2026-07-28", "2025-11-25"], "requested": "2025-06-18"}}}
+```
+
+**What it means.** The source in this repository serves two protocol
+versions: `2025-11-25` through the `initialize` handshake, and `2026-07-28`
+named on every request. An `initialize` for any other version is answered with
+`2025-11-25`, and the client decides whether to continue; the release that ran
+on 2026-09-21 refused it instead, as shown above. Any other request that names
+a version the service does not serve is refused with protocol error `-32022`,
+which lists the served versions, and nothing is done for it. A request with no
+`MCP-Protocol-Version` header, or a header that is not a version, is refused
+with protocol error `-32020`.
 
 **What to do.** Update the client. Check the version you have with the
-client's own version option, and compare against the version the service
+client's own version option, and compare against the versions the service
 publishes:
 
 ```bash
 curl -sS https://app.baltor.ai/api/v1/capabilities
 ```
 
-Read `protocol.versions` from that answer. If your client cannot speak that
-version, use the direct JSON addresses instead. `/api/v1/retrieval`,
-`/api/v1/provisioning` and `/api/v1/download` do everything the tools do and
-have no protocol version requirement of their own.
+Read `protocol.versions` from that answer. `protocol.handshake_versions` are
+reached with `initialize` and `protocol.per_request_versions` are named on
+every request. If your client can speak none of them, use the direct JSON
+addresses instead. `/api/v1/retrieval`, `/api/v1/provisioning` and
+`/api/v1/download` do everything the tools do and have no protocol version
+requirement of their own.
 
 ## A body request without a grant, a scope or an entitlement
 

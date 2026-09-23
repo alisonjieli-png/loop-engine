@@ -91,19 +91,20 @@ class DecisionToolBinding:
         import mcp.types as types
         from mcp.server.lowlevel import Server
         from jsonschema import validate
-        sdk = Server("loop-engine-decisions", version="1.0.0")
-        @sdk.list_tools()
-        async def list_tools():
-            return [types.Tool(name="decision_capabilities", description="Inspect configured decision engines without a model call.",
+
+        async def list_tools(_ctx, _params):
+            return types.ListToolsResult(tools=[
+                types.Tool(name="decision_capabilities", description="Inspect configured decision engines without a model call.",
                 inputSchema={"type": "object", "properties": {}, "additionalProperties": False},
                 annotations=types.ToolAnnotations(readOnlyHint=True, idempotentHint=True)),
                 types.Tool(name="decision_evaluate", description=("Evaluate Choice, Score or boolean probability questions under the host's "
                     "configured model allowance. Returns typed judgments, not verified task outcomes. "
                     "Does not execute the selected action. A repeat can incur another model call."),
                     inputSchema=decision_input_schema(), annotations=types.ToolAnnotations(
-                        readOnlyHint=False, destructiveHint=False, idempotentHint=False))]
-        @sdk.call_tool(validate_input=False)
-        async def call_tool(name, arguments):
+                        readOnlyHint=False, destructiveHint=False, idempotentHint=False))])
+
+        async def call_tool(_ctx, params):
+            name, arguments = params.name, params.arguments or {}
             try:
                 if name == "decision_capabilities":
                     if arguments:
@@ -123,6 +124,11 @@ class DecisionToolBinding:
                          "task_accepted": False}
                 return types.CallToolResult(content=[types.TextContent(type="text", text=json.dumps(value))],
                                             structuredContent=value, isError=True)
+
+        sdk = Server("loop-engine-decisions", version="1.0.0", on_list_tools=list_tools, on_call_tool=call_tool)
+        # The library records every message as a trace span by default; this
+        # tool has no telemetry setting, so it records none.
+        sdk.middleware = []
         return sdk
 
     async def serve(self):
@@ -132,25 +138,42 @@ class DecisionToolBinding:
             await self.run_streams(incoming, outgoing)
 
     async def run_streams(self, incoming, outgoing):
+        """Serve one connection at the 2025-11-25 handshake and nothing else.
+
+        The installed protocol library opens a connection in whatever version
+        the first request carries. This tool has qualified only the handshake,
+        so a request that carries the 2026-07-28 per-request version is
+        refused before the library sees it. `server/discover` is answered as a
+        server without it would answer, so a client that probes with it falls
+        back to the handshake.
+        """
         import anyio
         import mcp.types as types
         from mcp.shared.message import SessionMessage
-        from ..core.provisioning_mcp import PROTOCOL_VERSION
+        from ..core.provisioning_mcp import PER_REQUEST_VERSION_KEY, PROTOCOL_VERSION
         sdk = self.sdk_server()
         guarded_send, guarded_receive = anyio.create_memory_object_stream(0)
+        async def refuse(value, code, message):
+            await outgoing.send(SessionMessage(types.JSONRPCError(
+                jsonrpc="2.0", id=value.id, error=types.ErrorData(code=code, message=message))))
         async def forward():
             async with guarded_send:
                 async for message in incoming:
                     if not isinstance(message, SessionMessage):
                         continue
-                    value = message.message.root
+                    value = message.message
                     if isinstance(value, types.JSONRPCRequest):
-                        oversized = len(message.message.model_dump_json(by_alias=True).encode()) > self.maximum_request_bytes
+                        oversized = len(value.model_dump_json(by_alias=True).encode()) > self.maximum_request_bytes
                         unsupported = value.method == "initialize" and (value.params or {}).get("protocolVersion") != PROTOCOL_VERSION
                         if oversized or unsupported:
-                            await outgoing.send(SessionMessage(types.JSONRPCMessage(types.JSONRPCError(
-                                jsonrpc="2.0", id=value.id, error=types.ErrorData(code=types.INVALID_PARAMS,
-                                    message="Unsupported decision protocol request")))))
+                            await refuse(value, types.INVALID_PARAMS, "Unsupported decision protocol request")
+                            continue
+                        if value.method == "server/discover":
+                            await refuse(value, types.METHOD_NOT_FOUND, "Method not found")
+                            continue
+                        meta = (value.params or {}).get("_meta")
+                        if isinstance(meta, dict) and PER_REQUEST_VERSION_KEY in meta:
+                            await refuse(value, types.INVALID_REQUEST, "This tool serves only the initialize handshake")
                             continue
                     await guarded_send.send(message)
         async with anyio.create_task_group() as group:

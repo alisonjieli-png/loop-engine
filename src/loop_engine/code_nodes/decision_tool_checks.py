@@ -31,17 +31,45 @@ async def _protocol(check):
             available = await client.list_tools()
             metadata = await client.call_tool("decision_capabilities", {})
             check("official_protocol_client_discovers_without_a_provider_call",
-                  initialized.protocolVersion == "2025-11-25" and len(available.tools) == 2
-                  and not metadata.isError and not calls)
+                  initialized.protocol_version == "2025-11-25" and len(available.tools) == 2
+                  and not metadata.is_error and not calls)
             output = await client.call_tool("decision_evaluate", fixture_request().to_dict())
             check("harness_tool_uses_the_same_gateway_and_budget",
-                  not output.isError and output.structuredContent["answers"]["route"]["choice"] == "inspect"
-                  and output.structuredContent["execution"]["runtime_type"] == "Loop" and session.calls_used == 1)
+                  not output.is_error and output.structured_content["answers"]["route"]["choice"] == "inspect"
+                  and output.structured_content["execution"]["runtime_type"] == "Loop" and session.calls_used == 1)
             exhausted = await client.call_tool("decision_evaluate", fixture_request().to_dict())
-            check("protocol_repeat_cannot_replenish_model_authority", exhausted.isError and len(calls) == 1)
+            check("protocol_repeat_cannot_replenish_model_authority", exhausted.is_error and len(calls) == 1)
             injected = await client.call_tool("decision_evaluate", {**fixture_request().to_dict(), "api_key": "PRIVATE_FIXTURE_VALUE"})
-            check("protocol_authority_injection_is_refused_without_echo", injected.isError
+            check("protocol_authority_injection_is_refused_without_echo", injected.is_error
                   and "PRIVATE_FIXTURE_VALUE" not in str(injected) and len(calls) == 1)
+        group.cancel_scope.cancel()
+    # The installed library opens a connection in whatever version its first
+    # request carries. This tool has qualified only the handshake, so a client
+    # that probes with the 2026-07-28 discovery request is answered as a
+    # server without it would answer, and falls back to the handshake.
+    import mcp.types as types
+    from mcp.shared.exceptions import MCPError
+    per_request, _parent, probe_calls, _adapter = fixture(maximum_calls=1)
+    probing = DecisionToolBinding(per_request)
+    client_send, server_read = anyio.create_memory_object_stream(0)
+    server_send, client_read = anyio.create_memory_object_stream(0)
+    meta = {"io.modelcontextprotocol/protocolVersion": "2026-07-28", "io.modelcontextprotocol/clientCapabilities": {}}
+    async with anyio.create_task_group() as group:
+        group.start_soon(probing.run_streams, server_read, server_send)
+        async with ClientSession(client_read, client_send) as client:
+            codes = []
+            for opening, result_type in ((types.DiscoverRequest(params=types.RequestParams(_meta=meta)), types.DiscoverResult),
+                                         (types.ListToolsRequest(params=types.PaginatedRequestParams(_meta=meta)),
+                                          types.ListToolsResult)):
+                try:
+                    await client.send_request(opening, result_type)
+                except MCPError as error:
+                    codes.append(error.error.code)
+            initialized = await client.initialize()
+            available = await client.list_tools()
+            check("a_per_request_probe_falls_back_to_the_handshake_without_a_provider_call",
+                  codes == [types.METHOD_NOT_FOUND, types.INVALID_REQUEST]
+                  and initialized.protocol_version == "2025-11-25" and len(available.tools) == 2 and not probe_calls)
         group.cancel_scope.cancel()
 
 
@@ -62,14 +90,14 @@ async def _configured_endpoint_protocol(check):
                 await client.initialize()
                 discovery = await client.call_tool("decision_capabilities", {})
                 check("configured_circuit_harness_discovery_launches_no_model_or_endpoint",
-                      not state["calls"] and discovery.structuredContent["engines"][0]["engine"] == "circuit")
+                      not state["calls"] and discovery.structured_content["engines"][0]["engine"] == "circuit")
                 answer = await client.call_tool("decision_evaluate", fixture_request().to_dict())
                 check("configured_circuit_harness_tool_reaches_the_external_endpoint",
-                      not answer.isError and answer.structuredContent["route"] == engine["name"]
+                      not answer.is_error and answer.structured_content["route"] == engine["name"]
                       and len(state["calls"]) == 1 and binding.session.calls_used == 1)
                 exhausted = await client.call_tool("decision_evaluate", fixture_request().to_dict())
                 check("configured_circuit_tool_shares_the_existing_session_ceiling",
-                      exhausted.isError and len(state["calls"]) == 1)
+                      exhausted.is_error and len(state["calls"]) == 1)
             group.cancel_scope.cancel()
 
 

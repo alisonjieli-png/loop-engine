@@ -364,6 +364,105 @@ nothing counted it and nothing stopped an anonymous caller from sending it
 again without end. The depth is published under `limits` as
 `request_nesting_depth`.
 
+## Model Context Protocol versions
+
+This section describes current behavior of this source. A deployment serves
+it only after a release that includes it.
+
+`/mcp` serves protocol version `2025-11-25` through the `initialize`
+handshake and `2026-07-28` with no handshake, where every request names its
+version in the `MCP-Protocol-Version` header and in `_meta`. Both come from
+the installed `mcp` library, version 2.2.0, behind one stateless Streamable
+HTTP endpoint. The library speaks more versions than this release has
+qualified, so `select_protocol_binding` in `http.py` chooses the version of
+every request before the library sees it, and tells the library its choice in
+the header the library routes on.
+
+```text
+One request to /mcp
+├── initialize         the 2025-11-25 handshake, whatever version header it carries
+│   ├── a served version        answered with that version
+│   └── any other version       answered with 2025-11-25; the client decides whether to continue
+├── any other request  the version in MCP-Protocol-Version
+│   ├── a served version        served at that version
+│   ├── another version         400 and error -32022, listing every served version, newest first
+│   └── no header, a repeated header or one that is not a version
+│                               400 and error -32020
+└── GET or DELETE      405 with Allow: POST, because the service keeps no session
+```
+
+The 2025-11-25 lifecycle requires the answer to an `initialize` for an
+unsupported version to name a supported one. This transport refused such a
+request with status 400 until September 22, 2026. A refusal on `/mcp` that is
+about the protocol itself is answered in the protocol's own error shape,
+because a client chooses a version from its code and its list. Every other
+refusal keeps the service's own record.
+
+`server/discover` lists every served version, newest first. Its answer and
+the tool list carry `ttlMs`, five minutes, and `cacheScope`, `private`, so a
+client may reuse them for that long and a shared cache may not hand them to
+another caller. The library records every protocol message as a trace span by
+default. The service has no telemetry setting for protocol traffic, so it
+turns that off. The application refuses to start when the installed library
+cannot serve a version the host configured.
+
+### The host record
+
+A host can serve fewer versions. `protocol_versions` in the `http` block of
+the host file, record `service_http_configuration/v2`, names them, oldest
+first, and both are served when it is absent. Naming only `2025-11-25` stops
+the per-request version without a new release.
+
+Version 1 of the record pinned one version in `protocol_version`. Reading it
+as both versions would widen what a host file meant, so this release refuses
+it, and a release before it refuses version 2. Before a release with this
+change starts, a host file whose `http` block carries
+`"record_type": "service_http_configuration/v1"` or `"protocol_version"` needs
+both members removed, which serves both versions, or replaced:
+
+```json
+{
+  "http": {
+    "record_type": "service_http_configuration/v2",
+    "protocol_versions": ["2025-11-25", "2026-07-28"]
+  }
+}
+```
+
+Keep every other member of the block as it is. A host file written by
+`examples/29_intelligence_service/prepare.py` before this change carries both
+old members.
+
+### The local protocol adapters
+
+The in-process provisioning transport in `core/provisioning_mcp.py` and the
+decision tool in `code_nodes/decision_tools.py` use the same library and serve
+only the 2025-11-25 handshake. The library would open a connection in the
+per-request version if the first request carried it, so both refuse such a
+request before the library sees it, and the decision tool answers
+`server/discover` as a server without it would, so a client falls back to the
+handshake. Both still refuse an `initialize` for another version instead of
+answering with 2025-11-25. That is the same lifecycle rule and is not repaired
+yet.
+
+### Checks
+
+| Rule | Check in `http_checks.py` unless named |
+|---|---|
+| An `initialize` for an unsupported version is answered with 2025-11-25 | `initialize_for_an_unsupported_version_is_answered_with_a_supported_version` |
+| An `initialize` gets the handshake whatever header it carries | `an_initialize_selects_the_handshake_whatever_version_header_it_carries` |
+| A later request for an unserved version is refused before any effect | `a_request_naming_an_unsupported_version_is_refused_before_any_effect` |
+| The refusal lists every served version, newest first | `an_unserved_version_is_answered_with_every_served_version_newest_first` |
+| A missing, repeated or malformed header is a header fault | `a_missing_repeated_or_malformed_version_header_is_a_header_fault` |
+| Only POST is answered | `the_protocol_endpoint_answers_only_POST` |
+| Discovery lists every served version | `discovery_lists_every_served_version_newest_first` |
+| The official client works at each version | `official_client_uses_real_StreamableHTTP_with_the_exact_supported_profile`, `official_client_uses_the_per_request_version_without_a_handshake`, `an_automatic_client_selects_the_per_request_version_through_discovery` |
+| The host record refuses version 1 and unqualified versions | `the_http_record_refuses_version_one_and_versions_this_release_has_not_qualified` |
+| A host that serves one version | `a_host_serving_only_the_handshake_refuses_the_per_request_version_and_clients_fall_back`, `a_host_serving_only_the_per_request_version_names_it_when_it_refuses_an_initialize` |
+| The installed library must serve each configured version | `an_installed_library_that_cannot_serve_a_configured_version_refuses_the_application` |
+| No trace spans without a telemetry setting | `protocol_messages_record_no_trace_spans_without_a_telemetry_setting` |
+| The local adapters stay on the handshake | `a_per_request_opening_cannot_select_an_unqualified_protocol_version` in `provisioning_mcp_checks.py`, `a_per_request_probe_falls_back_to_the_handshake_without_a_provider_call` in `decision_tool_checks.py` |
+
 ## A binding the public can reach
 
 This section describes current behavior. `serve` refuses to start on a

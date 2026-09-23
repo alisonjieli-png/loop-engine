@@ -7,7 +7,9 @@ meet with its exact code.
 
 The facts below were read from the service source in this repository and
 confirmed against the deployed service and a local instance on 2026-09-21.
-Each recorded answer is marked **deployed** or **local**.
+The protocol version facts changed on 2026-09-22 and were confirmed against a
+local instance only. A deployment serves them after a release that includes
+that change. Each recorded answer is marked **deployed** or **local**.
 
 ## The connection in one view
 
@@ -15,7 +17,7 @@ Each recorded answer is marked **deployed** or **local**.
 One client request
 ├── Host and origin           exact Host, and Origin only when the browser sends one
 ├── Credential                one Authorization header, Bearer, one token
-├── Protocol version          2025-11-25, in initialize or in MCP-Protocol-Version
+├── Protocol version          2025-11-25 through initialize, or 2026-07-28 on every request
 ├── Address
 │   ├── /mcp                  the protocol transport for a harness
 │   └── /api/v1/retrieval     one of the direct JSON addresses
@@ -29,15 +31,19 @@ One client request
 
 | Fact | Value | Where the service states it |
 |---|---|---|
-| Protocol version | `2025-11-25` | `protocol.versions` in the capabilities record |
+| Protocol versions | `2025-11-25` and `2026-07-28` | `protocol.versions` in the capabilities record |
+| Reached through the `initialize` handshake | `2025-11-25` | `protocol.handshake_versions` |
+| Named on every request, with no handshake | `2026-07-28` | `protocol.per_request_versions` |
 | Transport | `streamable_http` | `protocol.transport` |
 | Session state | `stateless` | `protocol.session_state` |
 | Endpoint | `/mcp` | The Connect page at `/connect` shows it with the origin filled in |
 | External authorization metadata | Not published | `oauth_resource_metadata` is false |
 
-The deployed service reported `sdk_version` as `1.29.1` on 2026-09-21. Only
-one protocol version is offered. There is no negotiation down to an older one
-and no negotiation up.
+The deployed service reported `sdk_version` as `1.29.1` on 2026-09-21 and
+offered `2025-11-25` alone. The source now uses version `2.2.0` of the same
+library and offers both versions. A client that asks for a version the
+service does not serve is told which versions it does serve, and chooses. The
+service never serves a request at a version the client did not name.
 
 Read the capabilities record without a credential at any time:
 
@@ -78,13 +84,46 @@ After the handshake the client asks for the tool list and gets five tools:
 schema, and `provisioning_read` is the only one the server does not mark as
 read only.
 
+### Without a handshake
+
+At `2026-07-28` there is no handshake. Every request names its version in the
+`MCP-Protocol-Version` header and again in `_meta`, together with its
+capabilities, and names its method in `Mcp-Method`. A client may first ask
+which versions the service serves.
+
+**Local**, on 2026-09-22. The request, sent with
+`MCP-Protocol-Version: 2026-07-28` and `Mcp-Method: server/discover`:
+
+```json
+{"jsonrpc": "2.0", "id": 4, "method": "server/discover",
+ "params": {"_meta": {"io.modelcontextprotocol/protocolVersion": "2026-07-28",
+                      "io.modelcontextprotocol/clientCapabilities": {},
+                      "io.modelcontextprotocol/clientInfo": {"name": "documentation-probe", "version": "1.0.0"}}}}
+```
+
+The answer, delivered as `application/json`:
+
+```json
+{"jsonrpc": "2.0", "id": 4,
+ "result": {"cacheScope": "private", "capabilities": {"tools": {"listChanged": false}},
+            "resultType": "complete", "supportedVersions": ["2026-07-28", "2025-11-25"],
+            "ttlMs": 300000,
+            "_meta": {"io.modelcontextprotocol/serverInfo": {"name": "loop-engine-intelligence", "version": "1.0.0"}}}}
+```
+
+The tool list at this version is the same five tools. It and the discovery
+answer carry `ttlMs` and `cacheScope`: a client may reuse them for five
+minutes, and a shared cache may not give them to another caller.
+
 ### Headers a client sends and receives
 
 | Header | Direction | Purpose |
 |---|---|---|
 | `Authorization` | sent | `Bearer` and one token. Exactly one such header, or the request is refused. |
 | `Content-Type` | sent | `application/json` on every request that carries a body. |
-| `MCP-Protocol-Version` | sent | `2025-11-25` on every `/mcp` request after `initialize`. |
+| `MCP-Protocol-Version` | sent | `2025-11-25` on every `/mcp` request after `initialize`, or `2026-07-28` on every request. |
+| `Mcp-Method` | sent | At `2026-07-28`, the method of the request, on every request. |
+| `Mcp-Name` | sent | At `2026-07-28`, the tool name of a `tools/call`. |
 | `Accept` | sent | `application/json, text/event-stream` for the protocol transport. |
 | `X-Content-SHA256` | received | The SHA-256 digest of a downloaded body. |
 | `X-Loop-Engine-Record-Type` | received | `service_download/v1` on a download answer. |
@@ -101,29 +140,73 @@ gets past the protocol layer is always refused in the service's own shape.
 
 ## What happens when versions do not match
 
-The protocol version is checked in two places, and the refusal is the same
-code in both.
+The version is checked before the service does anything else with a protocol
+request, and an `initialize` is treated differently from every other request.
 
-1. On `initialize`, the service compares `protocolVersion` in the parameters.
-2. On every later `/mcp` request, it compares the `MCP-Protocol-Version`
-   header.
+1. An `initialize` always starts the `2025-11-25` handshake, whatever version
+   header it carries. When its `protocolVersion` names a version the service
+   does not serve, the answer names `2025-11-25` instead. This is the
+   negotiation rule of the 2025-11-25 lifecycle: the server answers with a
+   version it supports, and the client decides whether to continue. A client
+   that cannot speak `2025-11-25` disconnects.
+2. Every other request is served at the version in its `MCP-Protocol-Version`
+   header. A version the service does not serve is refused with status 400 and
+   the error the 2026-07-28 revision defines, code `-32022`, which lists every
+   version the service serves, newest first, so that a client can choose one
+   and send the request again. A missing header, a repeated one or one that is
+   not a version is refused with status 400 and code `-32020`. Nothing is done
+   for a refused request.
 
-**Deployed.** An `initialize` that asked for `2025-06-18`:
+**Local**, on 2026-09-22, an `initialize` that asked for `2025-06-18` was
+answered with status 200 and one server-sent event:
 
 ```json
-{"record_type": "service_http_error/v1",
- "error": {"code": "unsupported_protocol_version"},
- "effect_commitment": "not_asserted", "automatic_retry": false}
+{"jsonrpc": "2.0", "id": 1,
+ "result": {"capabilities": {"experimental": {}, "tools": {"listChanged": false}},
+            "protocolVersion": "2025-11-25",
+            "serverInfo": {"name": "loop-engine-intelligence", "version": "1.0.0"}}}
 ```
 
-The status was 400. **Local**, a `tools/list` request carrying
-`MCP-Protocol-Version: 2025-06-18` was refused with the same code and status.
+**Deployed**, the release that ran on 2026-09-21 refused that same
+`initialize` with status 400 and `unsupported_protocol_version`. That refusal
+broke the negotiation rule above. A deployment serves the answer shown here
+only after a release that includes this change.
 
-There is no downgrade. A client that cannot speak `2025-11-25` cannot connect,
-and the service will not reinterpret its request under an older profile. The
-record contracts behave the same way: a request record whose `record_type` is
-not the exact supported version is refused with `unsupported_version` rather
-than read under a guess.
+**Local**, a `tools/list` request carrying
+`MCP-Protocol-Version: 2025-06-18` was refused with status 400:
+
+```json
+{"jsonrpc": "2.0", "id": 2,
+ "error": {"code": -32022, "message": "Unsupported protocol version",
+           "data": {"supported": ["2026-07-28", "2025-11-25"], "requested": "2025-06-18"}}}
+```
+
+**Local**, the same request with no `MCP-Protocol-Version` header:
+
+```json
+{"jsonrpc": "2.0", "id": 3,
+ "error": {"code": -32020, "message": "The MCP-Protocol-Version header is required"}}
+```
+
+These refusals are about the protocol itself, so they come in the protocol's
+own error shape and not as a `service_http_error/v1` record: a client chooses
+a version from the code and the list. Negotiation is not a downgrade. After
+the handshake, a request is never served at a version other than the one it
+names, and the service will not reinterpret a request under an older profile. The record
+contracts behave the same way: a request record whose `record_type` is not the
+exact supported version is refused with `unsupported_version` rather than read
+under a guess.
+
+### Clients observed on 2026-09-22
+
+**Local**, each client configured from its published recipe against a local
+instance of this source, with no model call:
+
+| Client | Command | Result |
+|---|---|---|
+| Claude Code 2.1.280 | `claude mcp list` | Connected at `2026-07-28`: `server/discover`, then `tools/list`, with no handshake. Against a local instance of revision `74aa21e`, the source before this change, it asked for `2026-07-28` first, was refused, and fell back to the `2025-11-25` handshake. |
+| OpenCode 1.18.32 | `opencode mcp list` | Connected at `2025-11-25` through the handshake. Its request to open a stream was answered with 405 and it continued. |
+| Codex 0.155.1 | `codex mcp list` | Listed the configuration. This command does not connect, so it proves no handshake. |
 
 ## Session behaviour
 
@@ -136,7 +219,10 @@ requests, so:
   every request, and again before a metadata answer is released. If your
   permissions change while a search is in flight, the answer is refused with
   `disclosure_grant_changed` rather than delivered under the old permissions.
-- There is nothing to close. Stopping the client is enough.
+- There is nothing to close. Stopping the client is enough. A `GET` or a
+  `DELETE` on `/mcp`, which open a stream or end a session in the
+  `2025-11-25` transport, are refused with status 405 and `Allow: POST`,
+  because there is no session and no stream to open.
 - A request that reaches its deadline is refused with `deadline_exceeded`. The
   work it started may still finish on the server. The service never retries it
   for you, and a missing answer is not proof that nothing was recorded.
@@ -184,7 +270,11 @@ service never repeats your request for you.
 | `request_limit_exceeded` | 413 | The request body is larger than the published `request_bytes`. | Send a smaller request. |
 | `request_body_deadline` | 408 | The body did not arrive within the request deadline. | Send the whole body promptly. |
 | `route_unavailable` | 404 | No such address, or not with that method. | Check the address list on this page. |
-| `unsupported_protocol_version` | 400 | The protocol version does not match. | Use `2025-11-25`. |
+| `unsupported_protocol_version` | 400 | A `/mcp` request names a protocol version the service does not serve. It comes as protocol error `-32022` with the served versions. | Send a version from the list: `2025-11-25` after the handshake, or `2026-07-28` on every request. |
+| `protocol_version_header_missing` | 400 | A `/mcp` request other than `initialize` carries no `MCP-Protocol-Version` header. It comes as protocol error `-32020`. | Send the header with the version you use. |
+| `protocol_version_header_repeated` | 400 | The `MCP-Protocol-Version` header appears more than once. It comes as protocol error `-32020`. | Send it once. |
+| `protocol_version_header_malformed` | 400 | The `MCP-Protocol-Version` header is not a protocol version. It comes as protocol error `-32020`. | Send a version such as `2025-11-25`. |
+| `protocol_method_not_allowed` | 405 | `/mcp` was asked with a method other than `POST`. | Send every protocol message as a `POST`. |
 
 The schema is checked before anything else, so a field that is present but
 malformed answers `invalid_request` rather than a more specific code. Verified

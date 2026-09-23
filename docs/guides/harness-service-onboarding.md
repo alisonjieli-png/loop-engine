@@ -62,21 +62,25 @@ verification, an expired session, and revocation. A successful connection
 does not prove that the harness loaded or used a skill. Record each of those
 observations separately.
 
-Current behavior: the service accepts exactly Model Context Protocol version
-`2025-11-25`. It refuses every other version, including the newer published
-version `2026-07-28`, and it does not negotiate a different version silently.
-The version that the service implements is documented in the
-[transport specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
+Current behavior: the source in this repository serves Model Context
+Protocol versions `2025-11-25` and `2026-07-28` at the same endpoint. A client
+reaches `2025-11-25` through the `initialize` handshake. When it asks for
+another version there, the answer names `2025-11-25`, as the lifecycle rule of
+that version requires, and the client decides whether to continue. A client
+reaches `2026-07-28` with no handshake, naming the version on every request.
+Any request that names a version the service does not serve is refused before
+any effect with the error that lists the served versions. A deployment serves
+this after a release that includes the change of September 22, 2026; the
+release that ran on September 21 served `2025-11-25` alone. The versions are
+documented in the
+[2025-11-25 transport specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports),
+the
+[2025-11-25 authorization specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization),
+the
+[2026-07-28 transport specification](https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http)
 and the
-[authorization specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization).
+[2026-07-28 versioning rules](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning).
 Client templates must identify their tested compatibility profile.
-
-Planned behavior: support for version `2026-07-28` is separate work. That
-version removes protocol-level sessions and the initialization handshake, so
-it needs its own tested adapter profile, an explicit negotiation of the
-supported versions, and its own qualification. An earlier version of this
-guide linked the `2026-07-28` specification as the current protocol. It was
-corrected on September 20, 2026.
 
 ## Configure local Ollama
 

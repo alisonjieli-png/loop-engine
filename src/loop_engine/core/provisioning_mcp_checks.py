@@ -64,8 +64,7 @@ def _fixture(*, meter=None, metering="required"):
 
 async def _checks(check):
     import mcp.types as types
-    from mcp.shared.exceptions import McpError
-    from datetime import timedelta
+    from mcp.shared.exceptions import MCPError
     meter = RecordedMeter()
     server, reads = _fixture(meter=meter)
     transport = ProvisioningMcpTransport(server, _KEY)
@@ -75,33 +74,33 @@ async def _checks(check):
         tools = await session.list_tools()
         responses.extend((initialized.model_dump(mode="json"), tools.model_dump(mode="json")))
         check("actual_local_client_negotiates_only_the_declared_profile_and_discovers_four_tools",
-              initialized.protocolVersion == PROTOCOL_VERSION
+              initialized.protocol_version == PROTOCOL_VERSION
               and {tool.name for tool in tools.tools} == {
                   "provisioning_discover", "provisioning_list", "provisioning_manifest", "provisioning_read"}
-              and all("key" not in tool.inputSchema.get("properties", {}) for tool in tools.tools))
+              and all("key" not in tool.input_schema.get("properties", {}) for tool in tools.tools))
         discovery = await session.call_tool("provisioning_discover", {})
         listed = await session.call_tool("provisioning_list", {})
         manifest = await session.call_tool("provisioning_manifest", {"identity": "approved"})
         responses.extend(row.model_dump(mode="json") for row in (discovery, listed, manifest))
-        visible = listed.structuredContent["result"]
+        visible = listed.structured_content["result"]
         check("protocol_metadata_operations_are_scoped_body_free_and_unmetered",
-              not any(row.isError for row in (discovery, listed, manifest))
-              and discovery.structuredContent["result"]["items_held"] == 2
+              not any(row.is_error for row in (discovery, listed, manifest))
+              and discovery.structured_content["result"]["items_held"] == 2
               and {row["identity"] for row in visible["items"]} == {"approved", "metadata"}
               and _CANDIDATE not in json.dumps(responses) and _PRIVATE not in json.dumps(responses)
               and _BODY not in json.dumps(responses) and not reads and not meter.rows
-              and all(row.structuredContent["result"]["metered"] is False
+              and all(row.structured_content["result"]["metered"] is False
                       for row in (discovery, listed, manifest)))
         body = await session.call_tool("provisioning_read", {"identity": "approved", "request_id": "read-one"})
-        result = body.structuredContent["result"]
+        result = body.structured_content["result"]
         repeated = await session.call_tool("provisioning_read", {"identity": "approved", "request_id": "read-one"})
         responses.extend(row.model_dump(mode="json") for row in (body, repeated))
         check("body_result_preserves_exact_committed_acknowledgment_and_volatile_durability",
-              not body.isError and result["body"] == _BODY and result["metered"] is True
+              not body.is_error and result["body"] == _BODY and result["metered"] is True
               and result["metering_acknowledgment"]["committed"] is True
               and result["metering_acknowledgment"]["durability"] == "volatile"
               and result["metering_acknowledgment"]["request"]["request_id"] == "read-one"
-              and repeated.structuredContent["result"]["metering_acknowledgment"]
+              and repeated.structured_content["result"]["metering_acknowledgment"]
                   == result["metering_acknowledgment"]
               and len(meter.rows) == 1)
         before = len(reads)
@@ -112,8 +111,8 @@ async def _checks(check):
         for identity in (_CANDIDATE, _PRIVATE, "missing"):
             refusals.append(await session.call_tool("provisioning_manifest", {"identity": identity}))
         check("candidate_private_and_metadata_only_bodies_refuse_without_read_or_meter",
-              all(row.isError for row in refusals) and len(reads) == before and len(meter.rows) == 1
-              and all(row.structuredContent["metering_status"] == "not_asserted" for row in refusals)
+              all(row.is_error for row in refusals) and len(reads) == before and len(meter.rows) == 1
+              and all(row.structured_content["metering_status"] == "not_asserted" for row in refusals)
               and all(identity not in json.dumps([row.model_dump(mode="json") for row in refusals])
                       for identity in (_CANDIDATE, _PRIVATE, "CANDIDATE_BODY_FIXTURE", "METADATA_ONLY_BODY_FIXTURE")))
         malformed = await session.call_tool("provisioning_read", {
@@ -121,12 +120,12 @@ async def _checks(check):
         old_request = await session.call_tool("provisioning_read", {
             "identity": "approved", "record_type": "provisioning_request/v1"})
         check("tool_arguments_cannot_replace_credentials_or_domain_contract_version",
-              malformed.isError and old_request.isError and len(reads) == before
+              malformed.is_error and old_request.is_error and len(reads) == before
               and "ATTEMPTED_CREDENTIAL_OVERRIDE" not in str(malformed))
         unrelated_code, unrelated_message = None, ""
         try:
             await session.call_tool("unregistered_fixture_tool", {"text": "UNRELATED_INPUT_FIXTURE"})
-        except McpError as error:
+        except MCPError as error:
             unrelated_code, unrelated_message = error.error.code, str(error)
         check("unregistered_tools_refuse_without_domain_work_or_input_echo",
               unrelated_code == types.INVALID_PARAMS and len(reads) == before
@@ -136,7 +135,7 @@ async def _checks(check):
         revoked = await session.call_tool("provisioning_read", {"identity": "approved", "request_id": "revoked"})
         empty = await session.call_tool("provisioning_list", {})
         check("an_open_protocol_session_observes_host_grant_revocation",
-              revoked.isError and empty.structuredContent["result"]["items"] == []
+              revoked.is_error and empty.structured_content["result"]["items"] == []
               and len(reads) == before and len(meter.rows) == 1)
         responses.extend(row.model_dump(mode="json") for row in (revoked, empty))
     check("credentials_and_disclosed_bodies_do_not_enter_loop_events_or_adapter_representations",
@@ -161,7 +160,7 @@ async def _checks(check):
         safe_error = False
         try:
             await session.initialize()
-        except McpError as error:
+        except MCPError as error:
             code = error.error.code
             safe_error = "WRONG_CREDENTIAL_FIXTURE" not in str(error)
         check("authentication_errors_do_not_reflect_credentials", safe_error)
@@ -173,16 +172,16 @@ async def _checks(check):
     async with incompatible.client_session() as session:
         code = bypass_code = None
         try:
-            await session.send_request(types.ClientRequest(types.InitializeRequest(params=types.InitializeRequestParams(
-                protocolVersion="2026-07-28", capabilities=types.ClientCapabilities(),
-                clientInfo=types.Implementation(name="unsupported-profile-fixture", version="1.0.0")))),
+            await session.send_request(types.InitializeRequest(params=types.InitializeRequestParams(
+                protocol_version="2026-07-28", capabilities=types.ClientCapabilities(),
+                client_info=types.Implementation(name="unsupported-profile-fixture", version="1.0.0"))),
                 types.InitializeResult)
-        except McpError as error:
+        except MCPError as error:
             code = error.error.code
-        await session.send_notification(types.ClientNotification(types.InitializedNotification()))
+        await session.send_notification(types.InitializedNotification())
         try:
             await session.call_tool("provisioning_discover", {})
-        except McpError as error:
+        except MCPError as error:
             bypass_code = error.error.code
         check("unsupported_initialization_and_forged_initialized_notification_cannot_reach_domain",
               code == types.INVALID_PARAMS and bypass_code == types.INVALID_REQUEST
@@ -194,7 +193,7 @@ async def _checks(check):
         code = None
         try:
             await session.call_tool("provisioning_manifest", {"identity": "x" * 2048})
-        except McpError as error:
+        except MCPError as error:
             code = error.error.code
         check("oversized_serialized_request_refuses_before_domain_work",
               code == types.INVALID_PARAMS and not bounded.ledger.events and not fresh_reads)
@@ -210,17 +209,17 @@ async def _checks(check):
             await session.initialize()
             reply = await session.call_tool("provisioning_read", {"identity": "approved", "request_id": label})
             check(label + "_meter_acknowledgment_never_becomes_body_success",
-                  reply.isError and "body" not in reply.structuredContent
-                  and "metered" not in reply.structuredContent
-                  and reply.structuredContent["metering_status"] == "not_asserted")
+                  reply.is_error and "body" not in reply.structured_content
+                  and "metered" not in reply.structured_content
+                  and reply.structured_content["metering_status"] == "not_asserted")
     check("unknown_meter_commit_has_one_attempt_without_automatic_retry", len(uncertain_calls) == 1)
     unmetered, _ = _fixture(metering="unmetered")
     async with ProvisioningMcpTransport(unmetered, _KEY).client_session() as session:
         await session.initialize()
         reply = await session.call_tool("provisioning_read", {"identity": "approved"})
         check("explicit_unmetered_grant_reports_no_acknowledgment_and_no_charge_claim",
-              not reply.isError and reply.structuredContent["result"]["metered"] is False
-              and reply.structuredContent["result"]["metering_acknowledgment"] is None)
+              not reply.is_error and reply.structured_content["result"]["metered"] is False
+              and reply.structured_content["result"]["metering_acknowledgment"] is None)
 
     entered, release = threading.Event(), threading.Event()
     calls, completed = [], []
@@ -234,14 +233,16 @@ async def _checks(check):
     delayed, _ = _fixture(meter=delayed_meter)
     adapter = ProvisioningMcpTransport(delayed, _KEY)
     original_guard = adapter._guard_requests
-    wire_request_ids = []
+    wire_request_ids, wire_cancellations = [], []
 
     async def observed_guard(incoming, forwarded, outgoing):
         async def messages():
             async for message in incoming:
-                root = message.message.root
+                root = message.message
                 if isinstance(root, types.JSONRPCRequest) and root.method == "tools/call":
                     wire_request_ids.append(root.id)
+                if isinstance(root, types.JSONRPCNotification) and root.method == "notifications/cancelled":
+                    wire_cancellations.append((root.params or {}).get("requestId"))
                 yield message
         await original_guard(messages(), forwarded, outgoing)
 
@@ -249,26 +250,52 @@ async def _checks(check):
         async with adapter.client_session() as session:
             await session.initialize()
             request = asyncio.create_task(session.call_tool("provisioning_read", {
-                "identity": "approved", "request_id": "cancelled-once"},
-                read_timeout_seconds=timedelta(seconds=3.0)))
+                "identity": "approved", "request_id": "cancelled-once"}, read_timeout_seconds=3.0))
             deadline = asyncio.get_running_loop().time() + 1.0
             while not entered.is_set() and asyncio.get_running_loop().time() < deadline:
                 await asyncio.sleep(0.001)
             cancelled = False
             try:
-                if entered.is_set() and wire_request_ids:
-                    await session.send_notification(types.ClientNotification(types.CancelledNotification(
-                        params=types.CancelledNotificationParams(requestId=wire_request_ids[0]))))
+                if entered.is_set():
+                    # The client cancels its own call; the protocol library
+                    # tells the server with notifications/cancelled.
+                    request.cancel()
                 await request
-            except McpError as error:
-                cancelled = error.error.message == "Request cancelled"
+            except asyncio.CancelledError:
+                cancelled = True
             finally:
                 release.set()
             deadline = asyncio.get_running_loop().time() + 1.0
-            while not completed and asyncio.get_running_loop().time() < deadline:
+            while ((not completed or not wire_cancellations)
+                   and asyncio.get_running_loop().time() < deadline):
                 await asyncio.sleep(0.001)
             check("client_cancellation_does_not_retry_uncertain_metering_or_claim_no_commit",
-                  cancelled and entered.is_set() and len(calls) == len(completed) == 1)
+                  cancelled and entered.is_set() and len(calls) == len(completed) == 1
+                  and wire_cancellations == wire_request_ids[:1] and len(wire_request_ids) == 1)
+
+    # The installed library opens a connection in whatever version its first
+    # request carries. A request that carries the 2026-07-28 per-request
+    # version must not open one here, even a ping, which is allowed before
+    # the handshake, because this transport has qualified only the handshake.
+    probe, probe_reads = _fixture(meter=RecordedMeter())
+    per_request = ProvisioningMcpTransport(probe, _KEY)
+    per_request_meta = {"io.modelcontextprotocol/protocolVersion": "2026-07-28",
+                        "io.modelcontextprotocol/clientCapabilities": {}}
+    openings = ((types.PingRequest(params=types.RequestParams(_meta=per_request_meta)), types.EmptyResult),
+                (types.DiscoverRequest(params=types.RequestParams(_meta=per_request_meta)), types.DiscoverResult),
+                (types.ListToolsRequest(params=types.PaginatedRequestParams(_meta=per_request_meta)),
+                 types.ListToolsResult))
+    async with per_request.client_session() as session:
+        refused_codes = []
+        for opening, result_type in openings:
+            try:
+                await session.send_request(opening, result_type)
+            except MCPError as error:
+                refused_codes.append(error.error.code)
+        initialized = await session.initialize()
+        check("a_per_request_opening_cannot_select_an_unqualified_protocol_version",
+              refused_codes == [types.INVALID_REQUEST] * 3 and initialized.protocol_version == PROTOCOL_VERSION
+              and not per_request.ledger.events and not probe_reads)
 
 
 def self_test() -> dict:

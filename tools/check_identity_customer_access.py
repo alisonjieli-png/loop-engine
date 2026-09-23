@@ -63,8 +63,9 @@ def main(argv=None):
     from loop_engine.core.service_runtime.http import ServiceHttpApplication
     from loop_engine.core.service_runtime.http_test_fixtures import HttpDomainFixture, running_http
     from loop_engine.core.service_runtime.records import SubjectBindingRequest
-    from mcp import ClientSession
-    from mcp.client.streamable_http import streamablehttp_client
+    import httpx2
+    from mcp import Client
+    from mcp.client.streamable_http import streamable_http_client
 
     root = Path(__file__).resolve().parents[1]
     sources = [root / "src/loop_engine/core/service_runtime" / name for name in (
@@ -186,13 +187,12 @@ def main(argv=None):
                     denied = client.post("/api/v1/account/access", headers=client_headers, json=body)
                     check("client_key_cannot_mint_more_credentials", denied.status_code == 403)
                     async def protocol():
-                        async with streamablehttp_client(base + "/mcp", headers=client_headers) as (reader, writer, *_):
-                            async with ClientSession(reader, writer) as session:
-                                initialized = await session.initialize()
-                                check("issued_key_connects_through_the_real_protocol_sdk", initialized.protocolVersion == "2025-11-25")
+                        async with httpx2.AsyncClient(headers=client_headers, timeout=30) as http:
+                            async with Client(streamable_http_client(base + "/mcp", http_client=http), mode="legacy") as session:
+                                check("issued_key_connects_through_the_real_protocol_sdk", session.protocol_version == "2025-11-25")
                                 found = await session.call_tool("intelligence_search", {"query": sample_query, "mode": "lexical"})
-                                result = found.structuredContent or json.loads(next(item.text for item in found.content if item.type == "text"))
-                                check("issued_key_retrieves_only_permitted_reference_metadata", not found.isError
+                                result = found.structured_content or json.loads(next(item.text for item in found.content if item.type == "text"))
+                                check("issued_key_retrieves_only_permitted_reference_metadata", not found.is_error
                                       and len(result["result"]["hits"]) == 1 and result["result"]["hits"][0]["reference"]["identity"] == sample_identity
                                       and result["result"]["hits"][0]["body_allowed"] is False)
                     asyncio.run(protocol())

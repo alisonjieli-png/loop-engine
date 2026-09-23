@@ -20,7 +20,7 @@ import uuid
 
 #: The exact number of checks this probe runs when nothing interrupts it. A
 #: report that carries fewer has stopped early and is not a pass.
-PLANNED_CHECKS = 18
+PLANNED_CHECKS = 19
 
 
 class RefuseRedirect(urllib.request.HTTPRedirectHandler):
@@ -145,20 +145,29 @@ def main():
         check("unexpected_browser_origin_refuses", status == 403)
         # The official SDK runs in the project environment. The credential crosses
         # only an anonymous pipe, not command arguments, a file or tool output.
+        # It connects twice: once with the initialize handshake and once with
+        # the per-request version, so each served kind of version is used.
         code = '''
 import asyncio,json,sys
-from mcp import ClientSession
-from mcp.client.streamable_http import streamablehttp_client
+import httpx2
+from mcp import Client
+from mcp.client.streamable_http import streamable_http_client
 settings=json.load(sys.stdin)
+async def connect(mode):
+    async with httpx2.AsyncClient(headers={'Authorization':'Bearer '+settings['key']},timeout=30) as http:
+        async with Client(streamable_http_client(settings['origin']+'/mcp',http_client=http),mode=mode) as client:
+            tools=await client.list_tools()
+            search=await client.call_tool('intelligence_search',{'query':settings['query']})
+            return {'protocol':client.protocol_version,'tool_count':len(tools.tools),
+                'search_ok':not search.is_error and bool(search.structured_content['result']['hits']),
+                'bodies_loaded':search.structured_content['result']['bodies_loaded']}
 async def run():
-    async with streamablehttp_client(settings['origin']+'/mcp',headers={'Authorization':'Bearer '+settings['key']}) as streams:
-        async with ClientSession(streams[0],streams[1]) as session:
-            init=await session.initialize()
-            tools=await session.list_tools()
-            search=await session.call_tool('intelligence_search',{'query':settings['query']})
-            print(json.dumps({'protocol':init.protocolVersion,'tool_count':len(tools.tools),
-                'search_ok':not search.isError and bool(search.structuredContent['result']['hits']),
-                'bodies_loaded':search.structuredContent['result']['bodies_loaded']}))
+    handshake=await connect('legacy')
+    try:
+        per_request=await connect('2026-07-28')
+    except Exception as error:
+        per_request={'error_type':type(error).__name__}
+    print(json.dumps({**handshake,'per_request':per_request}))
 asyncio.run(run())
 '''
         executable = Path(__file__).resolve().parents[1] / ".venv/bin/python"
@@ -170,6 +179,12 @@ asyncio.run(run())
               and protocol.get("protocol") == "2025-11-25" and protocol.get("tool_count") == 5)
         check("MCP_search_returns_permitted_references", protocol.get("search_ok") is True
               and protocol.get("bodies_loaded") is False)
+        # A release older than September 22, 2026 serves only the handshake,
+        # so this check fails against it by design.
+        per_request = protocol.get("per_request") or {}
+        check("official_MCP_client_uses_the_per_request_version_over_real_HTTPS",
+              per_request.get("protocol") == "2026-07-28" and per_request.get("tool_count") == 5
+              and per_request.get("search_ok") is True and per_request.get("bodies_loaded") is False)
     except Exception as error:
         checks.append({"name": "remaining_checks_interrupted", "passed": False, "error_type": type(error).__name__})
     report = {"record_type": "hosted_service_transport_qualification/v1",

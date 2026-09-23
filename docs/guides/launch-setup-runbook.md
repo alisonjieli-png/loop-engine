@@ -503,8 +503,14 @@ process is responding; it does not qualify identity, storage or payments.
 ## 6. Connect local harnesses and optional Jev
 
 Model Context Protocol is the tool protocol. Authentication determines who
-may call it. The hosted service needs both. Its current supported protocol is
-`2025-11-25`; `2026-07-28` is not silently accepted.
+may call it. The hosted service needs both. The source serves protocol versions
+`2025-11-25`, through the `initialize` handshake, and `2026-07-28`, named on
+every request. A client that asks for an unserved version in `initialize` is
+answered with `2025-11-25` and decides whether to continue. A host file whose
+`http` block names `service_http_configuration/v1` or `protocol_version` must
+be changed before a release with this source starts; the
+[service runtime guide](../../src/loop_engine/core/service_runtime/README.md#the-host-record)
+shows the change.
 
 Use the [Jev and client setup guide](jev-and-harness-decision-tools.md) for
 the decision configuration, direct command and harness tool process. Keep
