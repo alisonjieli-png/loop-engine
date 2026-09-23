@@ -118,6 +118,8 @@ const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root
 const lines=createInterface({input:child.stdout});
 const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
 const checks=[],errors=[],network=[]; let browser;
+/* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
+let servedHeroBoxes={};
 const check=(name,passed,detail={})=>checks.push({name,passed:passed===true,detail});
 const secrets=[fixture.token,fixture.billing_token,fixture.admin_token,fixture.browse_token,fixture.identity_token,fixture.account_admin_token];
 const safeError=error=>secrets.reduce((text,secret)=>text.replaceAll(secret,"[redacted]"),String(error));
@@ -131,51 +133,184 @@ const publicVocabulary=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|r
    offers "early access" is reported. The hosted check reads the deployed pages with the same rule, and a copy that
    drifts between the two is a named failure below rather than a silent disagreement. */
 const retiredAccessWords=/\bpilots?\b|\bbetas?\b|early access/i;
-/* The six benefits. The titles, the detail sentence that proves the detail was rendered, and the state readers used by
-   the interaction checks and by their removed-guard controls. */
-const benefitNames=["material","reuse","model","export","review","resume"];
-const benefitTitles=["Each step gets the material it needs","Reuse code instead of writing it again","Not every step needs a large model","Solutions you can run without us","A failed check is examined, not obeyed","Work that can stop and start again"];
-const benefitSentences=["A search returns short references, not whole files.","Before a step writes new code, it can look for code that already does the job","Every model route says what kind of model it is","it can be written out as an installable package","A check can be wrong as well as the work it checks.","Long work gets interrupted"];
-const shownBenefits=target=>target.locator("[data-benefit]").evaluateAll(items=>items.filter(item=>getComputedStyle(item.querySelector("[data-benefit-detail]")).display!=="none").map(item=>item.dataset.benefit));
-const expandedBenefits=target=>target.locator("[data-benefit-title]").evaluateAll(items=>items.filter(item=>item.getAttribute("aria-expanded")==="true").map(item=>item.dataset.benefitTitle));
-const only=name=>JSON.stringify([name]);
-/* Hovering, keyboard focus and a press must each reveal one benefit and close the others. A touch screen and a
-   keyboard therefore reach the same detail that a mouse reaches. Every rule here has a removed-guard control below. */
-async function checkBenefitList(opened,note){
-  const shownTitles=await opened.locator("[data-benefit-title] .benefit-name").allInnerTexts();
-  note("homepage_lists_six_benefits_with_their_titles",JSON.stringify(shownTitles)===JSON.stringify(benefitTitles),{titles:shownTitles});
-  /* A press. The event is sent straight to the title, so the pointer never moves and the focus never changes, and this
-     measures the press by itself rather than the hover and the focus that a real click also performs. The order runs
-     backwards from the benefit the page opens first, so the first press has to change something. */
-  const pressed=[];
-  for(const name of [...benefitNames].reverse()){
-    await opened.locator('[data-benefit-title="'+name+'"]').dispatchEvent("click");
-    pressed.push({name,shown:await shownBenefits(opened),expanded:await expandedBenefits(opened),detail:await opened.locator('[data-benefit-detail="'+name+'"]').innerText()});
+/* One call to action. The owner, September 22, 2026: "get started and join the waiting list are redundant". Every link or
+   button that starts the access journey carries one label and opens the one Get started page. While account creation is
+   closed the label is "Request an invitation" and the address /waitlist, as the live review of September 22 asked, and the
+   page leads with the invitation form or, when the service keeps no list, with the way to reach the operator. While account
+   creation is open the label is "Get started" and the address /connect, and the page leads with account creation. The labels
+   the owner called redundant are reported anywhere, an invitation request is reported anywhere but on that journey, and
+   account creation is offered only while the service reports registration open, and then only on the Get started page and
+   the account page. Each rule has a known-wrong page of its own in the journey below. The readers return empty values for a
+   missing element, so a page without the new parts fails these checks by name instead of stopping. */
+const accessLabels={closed:"Request an invitation",open:"Get started"},accessPaths={closed:"/waitlist",open:"/connect"},accessAddresses=["/connect","/get-started","/waitlist"];
+const stateLabel=registrationOpen=>registrationOpen?accessLabels.open:accessLabels.closed,statePath=registrationOpen=>registrationOpen?accessPaths.open:accessPaths.closed;
+/* A link to a later step of the Get started page, such as its connection settings, is not the access journey. */
+const opensTheJourney=href=>{const [path,part=""]=href.split("#");return accessAddresses.includes(path)&&(part===""||part==="start-access");};
+const redundantAccessLabel=/join the waiting list|request access|early access/i,invitationAccessLabel=/ask for an invitation|request an invitation/i,creationAccessLabel=/create (?:your )?account|\bsign up\b/i;
+/* The public pages a visitor can open without signing in. Each is scanned on three real services below. */
+const accessJourneyPaths=["/","/pricing","/how-it-works","/connect","/signup","/examples","/security","/docs","/privacy","/login"];
+const waitingNote="Invitation only while we open in small groups";
+const openNote="Account creation is open";
+const publicActions=target=>target.evaluate(()=>{
+  const lead=document.getElementById("start-access"),shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
+  return [...document.querySelectorAll("header a, header button, footer a, [data-view]:not([hidden]) a, [data-view]:not([hidden]) button")].filter(shown)
+    .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",
+      lead:Boolean(lead&&lead.contains(node)),account:Boolean(node.closest('[data-view="signup"]'))}));
+});
+const accessActionProblems=(actions,registrationOpen)=>{const label=stateLabel(registrationOpen),path=statePath(registrationOpen);return [
+  ...actions.filter(action=>opensTheJourney(action.href)&&action.text!==label).map(action=>"an action that opens the Get started page says "+JSON.stringify(action.text)),
+  ...actions.filter(action=>action.text===label&&!action.lead&&action.href!==path).map(action=>"a "+JSON.stringify(label)+" action opens "+JSON.stringify(action.href)),
+  ...actions.filter(action=>redundantAccessLabel.test(action.text)).map(action=>"a second label for the same journey: "+JSON.stringify(action.text)),
+  ...actions.filter(action=>invitationAccessLabel.test(action.text)&&!action.lead&&(registrationOpen||action.text!==label||action.href!==path)).map(action=>"an invitation request outside the invitation journey: "+JSON.stringify(action.text)),
+  ...actions.filter(action=>creationAccessLabel.test(action.text)&&(!registrationOpen||!(action.lead||action.account))).map(action=>(registrationOpen?"account creation offered outside the Get started and account pages: ":"account creation offered while registration is closed: ")+JSON.stringify(action.text))];};
+/* The Get started page leads with one panel: "register", "invite" or "operator". The reader says which panel is shown, whether
+   the invitation form and the account action can be seen, and whether the panel is the first thing under the page heading. */
+const startLead=target=>target.evaluate(()=>{
+  const lead=document.getElementById("start-access"),seen=id=>{const node=document.getElementById(id);return Boolean(node&&node.getClientRects().length>0);};
+  return {state:lead?.dataset.startAccess||"",shown:[...document.querySelectorAll("[data-start-state]")].filter(panel=>!panel.hidden).map(panel=>panel.dataset.startState),
+    form:seen("waitlist-form"),register:seen("start-register"),signIn:seen("start-sign-in"),
+    leads:Boolean(lead&&document.querySelector('[data-view="setup"] [data-get-started-step]')===lead)};
+});
+const sameLead=(lead,state)=>lead.state===state&&JSON.stringify(lead.shown)===JSON.stringify([state])&&lead.form===(state==="invite")&&lead.register===(state==="register")&&lead.signIn&&lead.leads;
+/* At phone width the header links fold into a menu, so the suite opens the menu first, as a visitor would. The Get started
+   action stays in the header bar at every width. */
+const headerLink=async (target,name)=>{
+  const link=target.locator('header a[data-page="'+name+'"]');
+  if(!await link.isVisible()&&await target.locator("header .menu-button").isVisible())await target.locator("header .menu-button").click();
+  await link.click();
+};
+const menuState=target=>target.evaluate(()=>({links:[...document.querySelectorAll("header nav a")].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim()),
+  primary:Boolean(document.getElementById("header-primary")?.getClientRects().length),open:document.getElementById("menu-toggle")?.checked===true,
+  focusMark:getComputedStyle(document.querySelector("header .menu-button")||document.body).outlineStyle,path:location.pathname}));
+const menuLinks=["How it works","Library","Pricing","Docs","Sign in"];
+const menuWorks=states=>states.closed.links.length===0&&states.closed.primary&&!states.closed.open
+  &&JSON.stringify(states.pressed.links)===JSON.stringify(menuLinks)&&states.pressed.open&&states.pressed.primary
+  &&!states.escaped.open&&states.escaped.links.length===0
+  &&JSON.stringify(states.keyed.links)===JSON.stringify(menuLinks)&&states.keyed.focusMark!=="none"
+  &&states.chosen.path==="/pricing"&&!states.chosen.open&&states.chosen.links.length===0&&states.chosen.primary;
+const openGetStarted=async target=>{await target.locator('header a[data-page="setup"]').click();return startLead(target);};
+/* One press on the hero's primary action, and where the invitation email field then stands in the window. The live review of
+   September 22 asked for one action that lands on a visible email field with no page or press in between. */
+const pressThePrimaryAction=async (target,width,height)=>{
+  const label=((await target.locator("#hero-primary").textContent())||"").replace(/[↗→]/g,"").trim();
+  await target.locator("#hero-primary").click();
+  return {width,height,label,...await target.evaluate(()=>{const node=document.getElementById("waitlist-email"),box=node?node.getBoundingClientRect():null;
+    return {path:location.pathname,shown:Boolean(node&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden"),top:box?Math.round(box.top):-1,bottom:box?Math.round(box.bottom):-1,viewport:innerHeight};})};
+};
+const landsOnTheField=item=>item.label===accessLabels.closed&&item.path===accessPaths.closed&&item.shown&&item.top>=0&&item.bottom<=item.viewport;
+/* The first screen on a phone: where the hero's primary action stands, how tall the header is, and whether the page scrolls sideways. */
+const firstScreen=target=>target.evaluate(()=>{const box=document.getElementById("hero-primary")?.getBoundingClientRect()||{top:-1,bottom:-1};
+  return {top:Math.round(box.top),bottom:Math.round(box.bottom),viewport:innerHeight,width:innerWidth,header:Math.round(document.querySelector("header")?.getBoundingClientRect().height||0),overflow:document.documentElement.scrollWidth>innerWidth+1};});
+const phoneFirstScreen=item=>item.top>=0&&item.bottom<=item.viewport&&item.header>0&&item.header<=80;
+/* Visual structure. The owner, September 22, 2026: "there is too much white, no clear seperations or off white or best
+   practices or horizontal breaks seperating sections". The page ground is not plain white, every top-level part of the
+   homepage is a band, and each band is set off from the one above it by a change of ground and by a visible rule, as the design
+   draws it. A colour that is fully transparent is read through to the colour behind it, and a rule counts only when it
+   differs from both grounds. */
+const homeBands=target=>target.evaluate(()=>{
+  const home=document.querySelector('[data-view="home"]');
+  const transparent=color=>color==="transparent"||/rgba\([^)]*,\s*0\)$/.test(color);
+  const painted=node=>{for(let current=node;current;current=current.parentElement){const color=getComputedStyle(current).backgroundColor;if(!transparent(color))return color;}return "rgb(255, 255, 255)";};
+  const edge=(node,side,grounds)=>{const style=getComputedStyle(node),color=style["border"+side+"Color"];return parseFloat(style["border"+side+"Width"])>0&&style["border"+side+"Style"]!=="none"&&!transparent(color)&&!grounds.includes(color)?color:"";};
+  const bands=home?[...home.children].filter(node=>getComputedStyle(node).display!=="none"&&node.getBoundingClientRect().height>0):[];
+  return {count:bands.length,ground:painted(document.body),pairs:bands.slice(1).map((node,index)=>{const above=bands[index],grounds=[painted(above),painted(node)];
+    return {above:above.dataset.band||above.className,below:node.dataset.band||node.className,grounds,rule:edge(above,"Bottom",grounds)||edge(node,"Top",grounds)};})};
+});
+const bandProblems=measured=>[...(measured.count<6?["the homepage has "+measured.count+" bands, fewer than six"]:[]),...(["","rgb(255, 255, 255)"].includes(measured.ground)?["the page ground is plain white"]:[]),
+  ...measured.pairs.filter(pair=>pair.grounds[0]===pair.grounds[1]).map(pair=>pair.above+" and "+pair.below+" share one ground"),
+  ...measured.pairs.filter(pair=>pair.rule==="").map(pair=>pair.above+" meets "+pair.below+" with no rule")];
+/* The primary buttons a visitor can see: in the header, in the footer and in the page that is shown. */
+const primaryActions=target=>target.evaluate(()=>[...document.querySelectorAll("header .button.primary, footer .button.primary, [data-view]:not([hidden]) .button.primary")]
+  .filter(node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden")
+  .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",header:Boolean(node.closest("header"))})));
+const primaryProblems=(actions,registrationOpen=false)=>[...(actions.length?[]:["no primary action is shown"]),
+  ...actions.filter(action=>action.text!==stateLabel(registrationOpen)||action.href!==statePath(registrationOpen)).map(action=>"a primary action says "+JSON.stringify(action.text)+" and opens "+JSON.stringify(action.href))];
+/* The demonstration of one step, as the design draws it: the search and the download are recorded from this release's library
+   under one label in the panel's head, and the fresh harness below them carries its own label because it is being built. The
+   names, kinds, licences, sizes and digests are compared with this release's packaged manifest, read from the source tree, and
+   the order of the search is compared with a real search of that library by tools/test_homepage_demonstration.py. */
+const demoStages=[["search","recorded"],["download","recorded"],["folder","illustration"]];
+const demoLabelWords={recorded:"Recorded from this release's library",illustration:"Being built"};
+const demoState=target=>target.evaluate(()=>{
+  const demo=document.getElementById("step-demo"),visible=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
+  const panels=demo?[...demo.querySelectorAll("[data-demo-stage]")]:[],head=demo?.querySelector(".step-demo-head [data-demo-label]");
+  const label=node=>node?[node.dataset.demoLabel,node.textContent.replace(/\s+/g," ").trim(),visible(node)]:["","",false];
+  return {stages:panels.map(panel=>[panel.dataset.demoStage,panel.dataset.demoEvidence||""]),shown:panels.filter(visible).map(panel=>panel.dataset.demoStage),
+    labels:Object.fromEntries(panels.map(panel=>[panel.dataset.demoStage,label(panel.querySelector("[data-demo-label]")||head)])),
+    text:Object.fromEntries(panels.map(panel=>[panel.dataset.demoStage,panel.textContent.replace(/\s+/g," ")]))};
+});
+const demoLabelProblems=state=>[...(JSON.stringify(state.stages)!==JSON.stringify(demoStages)?["the parts are "+JSON.stringify(state.stages)]:[]),
+  ...demoStages.filter(([stage,evidence])=>!state.labels[stage]||state.labels[stage][0]!==evidence||!state.labels[stage][1].includes(demoLabelWords[evidence])||!state.labels[stage][2]).map(([stage,evidence])=>"the "+stage+" part is not labelled "+JSON.stringify(demoLabelWords[evidence]))];
+const livePathProblems=state=>[
+  ...(/\bsearch\b/.test(state.text.search||"")&&/sha256/.test(state.text.search||"")?[]:["the search part shows no search with digests"]),
+  ...(/\bdownload\b/.test(state.text.download||"")&&/Bytes match the digest/.test(state.text.download||"")?[]:["the download part shows no checked download"]),
+  ...["search","download"].filter(stage=>/illustration|being built|workflow|coming soon/i.test(state.text[stage]||"")).map(stage=>"the recorded "+stage+" part carries illustrated or planned words")];
+const demoFacts=target=>target.evaluate(()=>{
+  const demo=document.getElementById("step-demo"),fact=(node,name)=>node?.querySelector('[data-fact="'+name+'"]')?.textContent.trim()||"";
+  return {items:demo?[...demo.querySelectorAll("[data-demo-item]")].map(node=>({identity:node.dataset.demoItem,kind:fact(node,"kind"),licence:fact(node,"licence"),size:fact(node,"size"),digest:fact(node,"digest"),chosen:node.classList.contains("is-chosen")})):[],
+    download:demo?.querySelector("[data-demo-download]")?.dataset.demoDownload||""};
+});
+const releasedManifest=JSON.parse(readFileSync(resolve(root,"examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"),"utf8"));
+const releasedReferences=Object.fromEntries(releasedManifest.items.map(item=>[item.reference.identity,item.reference])),releasedItemCount=releasedManifest.items.length;
+const kilobytes=size=>(size/1000).toFixed(1)+" KB";
+const shownDigestProblem=(place,shown,expected)=>/^[0-9a-f]{8,64}$/.test(shown)&&typeof expected==="string"&&expected.startsWith(shown)?"":place+" shows sha256 "+(shown||"(nothing)")+" and this release has "+(expected||"no such item");
+const demoFactProblems=facts=>[
+  ...(facts.items.length?[]:["the demonstration shows no search result"]),
+  ...facts.items.flatMap((item,index)=>{const released=releasedReferences[item.identity],place="search result "+(index+1)+" ("+item.identity+")";
+    if(!released)return [place+" is not an item of this release's library"];
+    return [...(item.kind!==released.kind?[place+" shows the kind "+item.kind]:[]),...(item.licence!==released.license?[place+" shows the licence "+item.licence]:[]),
+      ...(item.size!==kilobytes(released.size_bytes)?[place+" shows "+item.size+" and this release has "+kilobytes(released.size_bytes)]:[]),shownDigestProblem(place,item.digest,released.digest)].filter(Boolean);}),
+  ...(facts.download&&facts.items[0]?.identity===facts.download&&facts.items[0]?.chosen?[]:["the download does not name the reference the search chose"])];
+const folderPaths=target=>target.evaluate(()=>[...document.querySelectorAll("#step-demo [data-demo-path]")].map(node=>node.dataset.demoPath));
+const folderProblems=paths=>paths.some(path=>!/\.md$/i.test(path))?[]:["the step folder shows only Markdown files"];
+/* The six problems, the five steps and the six kinds of harness material each carry the honest state of the part behind them.
+   Only the parts that work on the live service today may say so: a narrow context and reviewed expertise among the problems,
+   search and download among the steps, and skills among the kinds. Any other card that claims to be available is the
+   known-wrong case. */
+const problemOrder=["context","model","expertise","reuse","mistakes","overnight"],availableProblems=["context","expertise"];
+const stepOrder=["split","search","download","run","check"],liveSteps=["search","download"];
+const kindOrder=["skills","instructions","tools","agents","hooks","servers"],availableKinds=["skills"];
+const statusCards=(target,selector,key)=>target.evaluate(([selector,key])=>[...document.querySelectorAll(selector)].map(node=>{const tag=node.querySelector(".status-tag");
+  return {name:node.dataset[key],status:tag?.dataset.status||"",text:tag?.textContent.trim()||"",shown:Boolean(tag&&tag.getClientRects().length)&&node.getClientRects().length>0};}),[selector,key]);
+const statusProblems=(cards,order,available)=>[...(JSON.stringify(cards.map(card=>card.name))!==JSON.stringify(order)?["the cards are "+JSON.stringify(cards.map(card=>card.name))]:[]),
+  ...cards.filter(card=>!card.shown||!card.text).map(card=>card.name+" shows no status"),
+  ...cards.filter(card=>["available","live"].includes(card.status)!==available.includes(card.name)).map(card=>card.name+" says "+JSON.stringify(card.text))];
+/* No layout shift from late script. The first screen is measured as served, with the page script held back, and again once
+   the script has run and the service has answered. Nothing measured here may move by more than one pixel. The fonts are
+   waited for in both pages, so a font that arrives late is not mistaken for the script. */
+const heroBoxes=target=>target.evaluate(async ()=>{await document.fonts.ready;return Object.fromEntries(['[data-view="home"] h1',"#hero-primary","#hero-see-step","#hero-access-note",".hero-split","#step-demo",'[data-band="harnesses"]'].map(selector=>{
+  const node=document.querySelector(selector);if(!node)return [selector,null];const box=node.getBoundingClientRect();
+  return [selector,[Math.round(box.left),Math.round(box.top+scrollY),Math.round(box.width),Math.round(box.height)]];}));});
+/* Text contrast, as WCAG AA sets it: 4.5 to 1 for body text and 3 to 1 for large text, measured against the solid grounds
+   painted behind the text, with a translucent ground blended over the one below it. */
+const contrastProblems=target=>target.evaluate(()=>{
+  const parse=color=>{const found=color.match(/rgba?\(([^)]+)\)/);if(!found)return null;const part=found[1].split(",").map(Number);return {r:part[0],g:part[1],b:part[2],a:part.length>3?part[3]:1};};
+  const channel=value=>{value/=255;return value<=0.03928?value/12.92:Math.pow((value+0.055)/1.055,2.4);};
+  const light=color=>0.2126*channel(color.r)+0.7152*channel(color.g)+0.0722*channel(color.b);
+  const blend=(top,bottom)=>({r:top.r*top.a+bottom.r*(1-top.a),g:top.g*top.a+bottom.g*(1-top.a),b:top.b*top.a+bottom.b*(1-top.a),a:1});
+  const ground=node=>{const layers=[];for(let item=node;item;item=item.parentElement){const color=parse(getComputedStyle(item).backgroundColor);if(color&&color.a>0){layers.push(color);if(color.a>=1)break;}}
+    return layers.reverse().reduce((below,layer)=>blend(layer,below),{r:255,g:255,b:255,a:1});};
+  const ratio=(one,two)=>{const [high,low]=[light(one),light(two)].sort((x,y)=>y-x);return (high+0.05)/(low+0.05);};
+  const problems=[],seen=new Set(),walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  while(walker.nextNode()){
+    const node=walker.currentNode.parentElement;if(!walker.currentNode.textContent.trim()||!node||seen.has(node))continue;seen.add(node);
+    const style=getComputedStyle(node);if(!node.getClientRects().length||style.visibility==="hidden"||node.closest("[hidden]"))continue;
+    const colour=parse(style.color),below=ground(node);if(!colour)continue;
+    const size=parseFloat(style.fontSize),large=size>=24||(parseInt(style.fontWeight,10)>=700&&size>=18.66),need=large?3:4.5,have=ratio(colour.a<1?blend(colour,below):colour,below);
+    if(have<need-0.01)problems.push({text:walker.currentNode.textContent.trim().slice(0,40),ratio:Math.round(have*100)/100,need});
   }
-  note("pressing_a_benefit_shows_only_its_own_detail",pressed.length===6&&pressed.every(item=>JSON.stringify(item.shown)===only(item.name)&&JSON.stringify(item.expanded)===only(item.name)&&item.detail.includes(benefitSentences[benefitNames.indexOf(item.name)])),{pressed:pressed.map(item=>({name:item.name,shown:item.shown}))});
-  /* Keyboard alone. The last benefit is opened first, so moving focus to the first one has to change something, and
-     the rest are reached with the Tab key and nothing else. */
-  const keyboard=[];
-  await opened.locator('[data-benefit-title="'+benefitNames[benefitNames.length-1]+'"]').dispatchEvent("click");
-  await opened.locator('[data-benefit-title="'+benefitNames[0]+'"]').focus();
-  for(const name of benefitNames){
-    keyboard.push({name,focused:await opened.evaluate(()=>document.activeElement?.dataset.benefitTitle||""),shown:await shownBenefits(opened)});
-    await opened.keyboard.press("Tab");
-  }
-  note("keyboard_focus_alone_opens_each_benefit",keyboard.length===6&&keyboard.every(item=>item.focused===item.name&&JSON.stringify(item.shown)===only(item.name)),{keyboard});
-  /* Pointing at one. The keyboard pass left the last benefit open, so pointing at the first has to change something. */
-  const hovered=[];
-  for(const name of benefitNames){
-    await opened.locator('[data-benefit="'+name+'"]').hover();
-    hovered.push({name,shown:await shownBenefits(opened)});
-  }
-  note("pointing_at_a_benefit_opens_it",hovered.length===6&&hovered.every(item=>JSON.stringify(item.shown)===only(item.name)),{hovered});
-  const wiring=await opened.locator("[data-benefit]").evaluateAll(items=>items.map(item=>{
-    const title=item.querySelector("[data-benefit-title]"),detail=item.querySelector("[data-benefit-detail]");
-    return {name:item.dataset.benefit,controls:title.getAttribute("aria-controls"),detailId:detail.id,labelled:detail.getAttribute("aria-labelledby"),titleId:title.id,
-      role:detail.getAttribute("role"),expanded:title.getAttribute("aria-expanded"),type:title.getAttribute("type"),heading:title.parentElement.tagName};}));
-  note("every_benefit_title_is_a_button_that_names_its_own_detail",wiring.length===6&&wiring.every(item=>item.controls===item.detailId&&item.labelled===item.titleId&&item.role==="region"&&item.type==="button"&&item.heading==="H3"&&["true","false"].includes(item.expanded)),{wiring});
-}
+  return problems;});
+/* The focus mark of each of the first stops the keyboard reaches: every one carries a visible outline at least two pixels wide. */
+const focusMarks=async (target,stops)=>{const marks=[];await target.evaluate(()=>{document.activeElement?.blur();scrollTo(0,0);});
+  /* A press on the appearance switch leaves the keyboard's starting point at the foot of the page, so the keyboard first comes
+     round to the skip link, which is where the count starts. */
+  for(let press=0;press<4&&!await target.evaluate(()=>Boolean(document.activeElement?.classList.contains("skip")));press++)await target.keyboard.press("Tab");
+  for(let index=0;index<stops;index++){if(index)await target.keyboard.press("Tab");marks.push(await target.evaluate(()=>{const node=document.activeElement,style=node?getComputedStyle(node):null;
+    const label=node?.id?document.querySelector('label[for="'+node.id+'"]'):null,shown=label&&getComputedStyle(label).outlineStyle!=="none"?getComputedStyle(label):style;
+    return {name:(node?.id||node?.textContent||node?.tagName||"").trim().slice(0,30),outline:shown?shown.outlineStyle:"none",width:shown?parseFloat(shown.outlineWidth):0};}));}
+  return marks;};
+const unmarkedStops=marks=>marks.filter(mark=>mark.outline==="none"||mark.width<2);
+const boxesMoved=(served,after)=>Object.keys(served).filter(key=>!served[key]||!after[key]||served[key].some((value,index)=>Math.abs(value-after[key][index])>1));
 const withEndpoint=(value,endpoint)=>value===endpointMark?endpoint:Array.isArray(value)?value.map(item=>withEndpoint(item,endpoint)):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,withEndpoint(item,endpoint)])):value;
 const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(key=>[key,ordered(value[key])])):value;
 const sameValue=(left,right)=>JSON.stringify(ordered(left))===JSON.stringify(ordered(right));
@@ -233,7 +368,7 @@ const recordProblems=record=>{
   (Array.isArray(record?.recipes)?record.recipes:[]).forEach((recipe,index)=>{const problems=configurationProblems(recipe?.configuration,endpointMark,variable),at=place=>"record.recipes["+index+"].configuration: "+place;found.keys.push(...problems.credentials.map(place=>at(place)+" (a credential position that does not hold a reference to the variable)"));found.addresses.push(...problems.addresses.map(at));if(!plainCommand.test(String(recipe?.verification_command)))found.commands.push("record.recipes["+index+"].verification_command");found.schemas.push(...problems.schemas.filter(address=>!sameHost(address,String(recipe?.source_url))).map(()=>"record.recipes["+index+"].configuration.$schema (not on the host of the cited source address)"));});
   return found;
 };
-const connectState=async page=>({shown:!await page.locator("#client-choice").isDisabled(),refusal:await page.locator("#setup-message").evaluate(node=>node.dataset.refusal||"")});
+const connectState=async page=>({shown:await page.locator('#client-tabs [role="tab"]').count()>0,refusal:await page.locator("#setup-message").evaluate(node=>node.dataset.refusal||"")});
 async function openConnect(context,base,{served,mutation}={}){
   const page=await context.newPage(),state={applied:false,errors:[],policy:""};
   page.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
@@ -241,15 +376,15 @@ async function openConnect(context,base,{served,mutation}={}){
   if(served)await page.route("**/assets/client-recipes.json",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(served)}));
   if(mutation)await page.route("**/assets/service.js",async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
   state.policy=(await page.goto(base+"/connect")).headers()["content-security-policy"]||"";
-  await page.waitForFunction(()=>!document.querySelector("#client-choice").disabled||document.querySelector("#setup-message").textContent!=="");
+  await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   return {page,state};
 }
 async function checkShownRecipe(page,base,record,recipe,note){
   const endpoint=base+"/mcp",variable=record.credential_variable,id=recipe.id,content=selector=>page.locator(selector).evaluate(node=>node.textContent);
-  await page.selectOption("#client-choice",id);
+  await page.locator("#client-tab-"+id).click();
   const shown=await content("#client-configuration"),expected=withEndpoint(recipe.configuration,endpoint);
   let parsed=null;try{parsed=recipe.format==="toml"?readToml(shown):JSON.parse(shown);}catch(_){}
-  note("recipe_renders_"+id,parsed!==null&&sameValue(parsed,expected)&&(recipe.format!=="json"||shown===JSON.stringify(expected,null,2))&&await content("#configuration-location")===recipe.configuration_location&&await content("#client-configuration-note")===recipe.configuration_note&&await content("#client-version-note")===recipe.version_note&&await page.locator("#client-choice option:checked").innerText()===recipe.name);
+  note("recipe_renders_"+id,parsed!==null&&sameValue(parsed,expected)&&(recipe.format!=="json"||shown===JSON.stringify(expected,null,2))&&await content("#configuration-location")===recipe.configuration_location&&await content("#client-configuration-note")===recipe.configuration_note&&await content("#client-version-note")===recipe.version_note&&JSON.stringify(await page.locator('#client-tabs [role="tab"][aria-selected="true"]').allInnerTexts())===JSON.stringify([recipe.name]));
   const view=await page.locator('[data-view="setup"]').innerText(),scrub=text=>text.replaceAll(endpoint,"").replaceAll(variable,"");
   // No key: the declared name is not key-shaped, no shown text is key-shaped, and every credential position of the shown configuration holds a reference to the variable.
   const problems=configurationProblems(parsed,endpoint,variable);
@@ -365,6 +500,26 @@ try {
   const page=await context.newPage(); page.on("pageerror",error=>errors.push(safeError(error.message)));
   await page.goto(fixture.base+"/"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available"));
   check("public_landing_has_real_routes_and_configured_brand",(await page.title()).startsWith("Baltor |")&&await page.locator('[data-view="home"]').isVisible());
+  /* The placeholder mark: the header shows it as an image with an empty text alternative, because the name follows it, and the
+     page names it as its icon. Each file is served with its exact media type. */
+  const markState=await page.evaluate(()=>{const mark=document.querySelector("header .brand img.brand-mark");
+    return {src:mark?.getAttribute("src")||"",alt:mark?.getAttribute("alt"),loaded:Boolean(mark&&mark.complete&&mark.naturalWidth>0),named:document.querySelector("header .brand")?.getAttribute("aria-label")||"",
+      icons:[...document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]')].map(link=>[link.getAttribute("rel"),link.getAttribute("type")||"",link.getAttribute("href")])};});
+  const iconTypes={"/assets/baltor-mark.svg":"image/svg+xml","/assets/favicon-32.png":"image/png","/assets/favicon-192.png":"image/png","/assets/apple-touch-icon.png":"image/png"};
+  const servedTypes={};
+  for(const path of Object.keys(iconTypes)){const response=await page.request.get(fixture.base+path);servedTypes[path]=response.status()===200?(response.headers()["content-type"]||""):"status "+response.status();}
+  const markProblems=(state,types)=>[...(state.src==="/assets/baltor-mark.svg"&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the placeholder image with an empty alternative"]),
+    ...(state.icons.some(([rel,type,href])=>rel==="icon"&&type==="image/svg+xml"&&href==="/assets/baltor-mark.svg")&&state.icons.some(([rel,,href])=>rel==="apple-touch-icon"&&href==="/assets/apple-touch-icon.png")?[]:["the page does not name its icons"]),
+    ...Object.entries(iconTypes).filter(([path,type])=>!(types[path]||"").startsWith(type)).map(([path])=>path+" is served as "+types[path])];
+  check("placeholder_mark_is_shown_named_and_served",markProblems(markState,servedTypes).length===0,{mark:markState,served:servedTypes,problems:markProblems(markState,servedTypes)});
+  check("mark_check_rejects_a_missing_icon_a_wrong_media_type_and_a_repeated_name",markProblems({...markState,icons:[]},servedTypes).length===1
+    &&markProblems(markState,{...servedTypes,"/assets/favicon-32.png":"text/plain"}).length===1&&markProblems({...markState,alt:"Baltor logo"},servedTypes).length===1);
+  /* The typefaces come from this service, not from a font host: the page policy allows fonts from its own origin only, and every
+     request to another origin is refused and reported by this suite. Both faces the design names are in use on the homepage. */
+  const typefaces=await page.evaluate(async()=>{await document.fonts.ready;return [...new Set([...document.fonts].filter(face=>face.status==="loaded").map(face=>face.family.replace(/["']/g,"")))];});
+  const bothFaces=families=>["Geist","Geist Mono"].every(family=>families.includes(family));
+  check("website_typefaces_load_from_this_service",bothFaces(typefaces),{typefaces});
+  check("typeface_check_rejects_a_page_without_the_code_face",!bothFaces(typefaces.filter(family=>family!=="Geist Mono"))&&!bothFaces([]));
   /* The headline is the owner's line. It has to name the two readers it addresses, the developers and the agents they run.
      The sentence under it names the unit of work this product sells. Each rule has its own known-wrong case beside it. */
   const headline=await page.locator('[data-view="home"] h1').innerText();
@@ -377,10 +532,16 @@ try {
   check("subhead_check_rejects_a_sentence_that_never_names_the_step",["Baltor is a library your coding tools can search.","Supercharge your developers and AI agents."].every(claim=>!namesTheStep(claim))&&namesTheStep("Give your AI agents what they need for each step."));
   check("homepage_says_the_model_keys_stay_with_the_customer",(await page.locator(".hero-value").innerText()).includes("Your model keys stay with you")&&(await page.locator(".hero-value").innerText()).includes("never asks you for a provider key")&&(await page.locator(".benefit-limits").innerText()).includes("No percentage reduction"));
   check("light_is_default_even_when_operating_system_is_dark",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
+  /* The light ground is an off-white, not white, so the rule reads the ground the page paints in a light system setting and
+     requires the same light ground in a dark one. Every channel of a light ground is at least 230. */
+  const lightGround=await page.evaluate(()=>getComputedStyle(document.body).backgroundColor);
+  const isLight=color=>{const channels=(color.match(/\d+(?:\.\d+)?/g)||[]).slice(0,3).map(Number);return channels.length===3&&channels.every(value=>value>=230);};
   await page.emulateMedia({colorScheme:"dark"});await page.reload();
-  check("operating_system_does_not_override_explicit_light_default",await page.evaluate(()=>document.documentElement.dataset.theme==="light"&&getComputedStyle(document.body).backgroundColor==="rgb(255, 255, 255)"));
+  check("operating_system_does_not_override_explicit_light_default",await page.evaluate(()=>document.documentElement.dataset.theme==="light")&&isLight(lightGround)&&await page.evaluate(()=>getComputedStyle(document.body).backgroundColor)===lightGround,{ground:lightGround});
+  check("light_ground_check_rejects_a_dark_ground",!isLight("rgb(12, 20, 36)")&&isLight("rgb(243, 245, 250)"));
   await page.emulateMedia({colorScheme:"light"});
-  check("optimization_message_does_not_guarantee_daily_improvement",(await page.locator(".optimization-callout").innerText()).includes("Model selection, context sizing, tool choice and code reuse")&&(await page.locator(".benefit-limits").innerText()).includes("guaranteed daily performance gain"));
+  /* The closing caption is the one place that names what nobody has measured, and it names the daily gain it does not promise. */
+  check("benefit_limits_do_not_guarantee_daily_improvement",(await page.locator('[data-band="closing"] .benefit-limits').innerText()).includes("guaranteed daily performance gain"));
   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
      service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
   /* The line above the headline is the owner's name for the positioning, written out in full. The word harness is
@@ -391,79 +552,193 @@ try {
   const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
   check("the_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(positioning),{positioning});
   check("category_line_explanation_check_rejects_a_bare_phrase",["Harness and agent optimized operation.","Built for harness and agent optimized operation, one step at a time.","A harness is the program that runs your coding agent."].every(claim=>!explainsTheCategoryLine(claim))&&explainsTheCategoryLine(positioning));
-  check("homepage_states_the_free_and_paid_split",(await page.locator('[data-view="home"] .hero-split').innerText()).startsWith("Free to install. Paid access to the library."));
+  const heroSplit=await page.locator('[data-view="home"] .hero-split').innerText();
+  check("homepage_states_the_free_and_paid_split",heroSplit.startsWith("Free to install. Paid access to the library")&&heroSplit.includes("29 United States dollars each month"),{split:heroSplit});
+  /* One primary action in the hero: while account creation is closed, "Request an invitation", opening the invitation form. One
+     secondary link beside it, which moves to the demonstration on the same page, and no second way into the access journey
+     anywhere in the hero. */
   const heroPrimary=page.locator('[data-view="home"] .hero .button.primary');
-  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("href")==="/connect"&&(await heroPrimary.innerText()).startsWith("Get started")&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown");
-  const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>{
-    const hero=home.querySelector('.product-hero'),start=home.querySelector('.start-strip'),offer=home.querySelector('.offer-section'),benefits=home.querySelector('.benefit-section');
-    const before=(first,second)=>Boolean(first.compareDocumentPosition(second)&Node.DOCUMENT_POSITION_FOLLOWING);
-    return {hasWorkflowRail:Boolean(hero.querySelector('.solution-preview')),startBeforeOffer:before(start,offer),offerBeforeBenefits:before(offer,benefits)};
-  });
-  const currentPathFirst=flow=>!flow.hasWorkflowRail&&flow.startBeforeOffer&&flow.offerBeforeBenefits;
-  check("homepage_starts_with_the_current_customer_path",currentPathFirst(homeFlow),homeFlow);
-  check("homepage_flow_check_rejects_the_workflow_rail_and_old_order",!currentPathFirst({...homeFlow,hasWorkflowRail:true})&&!currentPathFirst({...homeFlow,startBeforeOffer:false})&&!currentPathFirst({...homeFlow,offerBeforeBenefits:false}));
-  /* The owner saw the hero as one narrow column with empty space on both sides. At desktop width the hero spans the
-     page like every section below it, and the example sits beside the text. The example shows only the live path:
-     one search, the references it returned, one download whose bytes match its digest. */
+  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("id")==="hero-primary"&&await heroPrimary.getAttribute("href")===accessPaths.closed&&(await heroPrimary.innerText()).replace(/[↗→]/g,"").trim()===accessLabels.closed&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-see-step").isVisible()&&await page.locator("#hero-see-step").getAttribute("href")==="#step-demo"&&(await page.locator("#hero-see-step").innerText()).trim()==="See one step work"&&await page.locator('[data-view="home"] .hero a[href^="/signup"], [data-view="home"] .hero a[href^="/waitlist"], [data-view="home"] .hero a[href^="/connect"], [data-view="home"] .hero a[href^="/get-started"]').count()===1);
+  /* The single call to action. Every primary button a visitor can see on the homepage, in the header and in the footer carries
+     the one label of the reported state and opens the page behind it, and the header carries exactly one of them. */
+  const homePrimaries=await primaryActions(page);
+  check("homepage_primary_actions_all_carry_the_one_label",primaryProblems(homePrimaries).length===0&&homePrimaries.filter(action=>action.header).length===1&&homePrimaries.length>=4,{actions:homePrimaries,problems:primaryProblems(homePrimaries)});
+  check("primary_action_check_rejects_a_second_label_and_a_second_address",primaryProblems([...homePrimaries,{id:"planted",text:"Join the waiting list",href:accessPaths.closed,header:false}]).length===1&&primaryProblems([...homePrimaries,{id:"planted",text:accessLabels.closed,href:"/signup#waiting-list",header:false}]).length===1&&primaryProblems(homePrimaries,true).length===homePrimaries.length&&primaryProblems([]).length===1);
+  /* The design's order: the hero with the demonstration beside it, the harnesses, the six problems, how it works, the library,
+     trust, pricing, questions and the closing band. Each is a band of its own, directly under the homepage view. */
+  const bandOrder=["hero","harnesses","problems","how","library","trust","pricing","faq","closing"];
+  const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>({bands:[...home.children].map(node=>node.dataset.band||node.tagName.toLowerCase()),demoIn:document.getElementById("step-demo")?.closest("[data-band]")?.dataset.band||""}));
+  const followsTheDesign=flow=>JSON.stringify(flow.bands)===JSON.stringify(bandOrder)&&flow.demoIn==="hero";
+  check("homepage_bands_follow_the_design_order",followsTheDesign(homeFlow),homeFlow);
+  check("band_order_check_rejects_a_moved_band_and_a_demonstration_outside_the_hero",!followsTheDesign({...homeFlow,bands:[...bandOrder.slice(0,2),bandOrder[3],bandOrder[2],...bandOrder.slice(4)]})&&!followsTheDesign({...homeFlow,bands:bandOrder.slice(1)})&&!followsTheDesign({...homeFlow,demoIn:"how"}));
+  /* The opening message leads the page, with the supporting words beside it on a wide screen, and the demonstration of one step
+     follows below it at the full width of the page. The review of September 23 found the demonstration beside the message
+     taking the first look, so the known-wrong layout puts it back beside the message. */
   const heroLayout=await page.locator('[data-view="home"]').evaluate(home=>{
-    const hero=home.querySelector('.product-hero'),copy=hero.querySelector('.hero-copy'),example=hero.querySelector('.hero-example');
-    const next=home.querySelector('.start-strip');
-    const box=node=>node?node.getBoundingClientRect():{left:0,right:0,width:0,top:0};
-    return {heroWidth:box(hero).width,pageWidth:box(next).width,copyRight:box(copy).right,exampleLeft:box(example).left,
-      exampleTop:box(example).top,copyTop:box(copy).top,hasExample:Boolean(example),viewport:innerWidth,
-      exampleText:example?example.innerText:""};
+    const hero=home.querySelector('.product-hero'),copy=hero?.querySelector('.hero-copy'),aside=hero?.querySelector('.hero-aside'),example=hero?.querySelector('.step-demo');
+    const next=home.querySelector('.harness-strip');
+    const box=node=>node?node.getBoundingClientRect():{left:0,right:0,width:0,top:0,bottom:0};
+    return {pageWidth:box(next).width,copyBottom:box(copy).bottom,copyRight:box(copy).right,asideBottom:box(aside).bottom,asideLeft:box(aside).left,
+      exampleTop:box(example).top,exampleWidth:box(example).width,hasExample:Boolean(example),hasAside:Boolean(aside),viewport:innerWidth};
   });
-  const heroFillsThePage=m=>m.viewport<1100||(m.hasExample&&m.heroWidth>=0.95*m.pageWidth&&m.exampleLeft>=m.copyRight-1);
-  check("homepage_hero_spans_the_page_with_the_example_beside_it",heroFillsThePage(heroLayout),heroLayout);
-  check("hero_layout_check_rejects_a_narrow_column_and_a_missing_example",
-    !heroFillsThePage({...heroLayout,viewport:1440,heroWidth:820})&&!heroFillsThePage({...heroLayout,viewport:1440,hasExample:false})
-    &&!heroFillsThePage({...heroLayout,viewport:1440,exampleLeft:heroLayout.copyRight-200}));
-  const showsOnlyTheLivePath=text=>/\bsearch\b/.test(text)&&/\bdownload\b/.test(text)&&/sha256/.test(text)
-    &&/Bytes match the digest/.test(text)&&!/workflow|illustration|reusable solution|coming soon/i.test(text);
-  const exampleItems=await page.locator('[data-view="home"] .hero-example [data-example-item]').evaluateAll(items=>items.map(item=>item.dataset.exampleItem));
-  check("hero_example_shows_only_the_live_search_and_download_path",showsOnlyTheLivePath(heroLayout.exampleText)&&exampleItems.length===3,{exampleItems});
-  check("hero_example_check_rejects_a_workflow_illustration",
-    !showsOnlyTheLivePath(heroLayout.exampleText+" Example workflow")&&!showsOnlyTheLivePath("Prepare a customer import. Illustration."));
-  /* The example names real items. Each one must be an approved item of the released catalogue, so withdrawing an
-     item forces the example to change instead of leaving the page naming something the library no longer serves. */
-  const releasedIdentities=JSON.parse(readFileSync(resolve(root,"examples/29_intelligence_service/starter-catalogue/host-release/manifest.json"),"utf8")).items.map(item=>item.reference.identity);
+  const demoBelowTheMessage=m=>m.hasExample&&m.hasAside&&m.pageWidth>0&&m.exampleTop>=Math.max(m.copyBottom,m.asideBottom)-1&&m.exampleWidth>=0.95*m.pageWidth&&(m.viewport<1100||m.asideLeft>=m.copyRight-1);
+  check("homepage_demonstration_sits_below_the_opening_message_at_full_width",demoBelowTheMessage(heroLayout),heroLayout);
+  check("hero_layout_check_rejects_a_demonstration_beside_the_message_or_narrower_than_the_page",!demoBelowTheMessage({...heroLayout,exampleTop:heroLayout.copyBottom-200})
+    &&!demoBelowTheMessage({...heroLayout,exampleWidth:heroLayout.pageWidth*0.5})&&!demoBelowTheMessage({...heroLayout,hasExample:false}));
+  /* The opening message says in plain words why a fresh, focused harness for each step helps, and the supporting words say what
+     works today and what is being built. */
+  const opening=await page.locator('[data-view="home"] .hero-subhead').innerText(),supporting=await page.locator('[data-view="home"] .hero-aside').innerText();
+  const saysWhy=text=>/fresh harness/i.test(text)&&/only what that step needs/i.test(text)&&/\bdrifts?\b/i.test(text);
+  const saysWhatWorksToday=text=>/\btoday\b/i.test(text)&&/being built/i.test(text);
+  check("opening_message_says_why_a_fresh_harness_for_each_step_helps",saysWhy(opening)&&saysWhatWorksToday(supporting),{opening,supporting});
+  check("opening_message_check_rejects_a_message_without_the_reason_or_the_limit",!saysWhy("Give your AI agents what they need for each step.")&&!saysWhatWorksToday("Each step runs in a fresh harness."));
+  /* The link beside the primary action moves to the demonstration and stays on the homepage. */
+  await page.locator("#hero-see-step").click();
+  await page.waitForFunction(()=>{const box=document.getElementById("step-demo")?.getBoundingClientRect();return Boolean(box&&box.top<innerHeight&&box.bottom>0);});
+  const seeStep=await page.evaluate(()=>({path:location.pathname,hash:location.hash,home:!document.querySelector('[data-view="home"]').hidden,top:Math.round(document.getElementById("step-demo").getBoundingClientRect().top)}));
+  check("see_one_step_moves_to_the_demonstration_on_the_homepage",seeStep.path==="/"&&seeStep.hash==="#step-demo"&&seeStep.home&&Math.abs(seeStep.top)<=2,seeStep);
+  await page.evaluate(()=>{history.replaceState({},"","/");scrollTo(0,0);});
+  /* The demonstration of one step, read from the page as served: the search and the download, recorded from this release's
+     library under one label, and the fresh harness that is being built, under a label of its own. */
+  const demo=await demoState(page);
+  check("demo_shows_the_search_the_download_and_the_step_folder",JSON.stringify(demo.stages.map(([stage])=>stage))===JSON.stringify(demoStages.map(([stage])=>stage))&&JSON.stringify(demo.shown)===JSON.stringify(demoStages.map(([stage])=>stage)),{stages:demo.stages,shown:demo.shown});
+  check("demo_labels_each_part_as_recorded_or_as_being_built",demoLabelProblems(demo).length===0,{problems:demoLabelProblems(demo)});
+  check("demo_label_check_rejects_a_missing_label_and_a_folder_called_recorded",demoLabelProblems({...demo,labels:{...demo.labels,folder:["","",false]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,folder:["recorded",demoLabelWords.recorded,true]}}).length===1&&demoLabelProblems({...demo,labels:{...demo.labels,search:["recorded",demoLabelWords.recorded,false]}}).length===1);
+  check("demo_recorded_parts_show_only_the_live_search_and_download_path",livePathProblems(demo).length===0,{problems:livePathProblems(demo)});
+  check("demo_live_path_check_rejects_an_illustration_in_a_recorded_part",livePathProblems({...demo,text:{...demo.text,search:(demo.text.search||"")+" An illustration of a workflow."}}).length===1&&livePathProblems({...demo,text:{...demo.text,download:""}}).length===1);
+  /* The names, kinds, licences, sizes and digests the demonstration shows are this release's, read from the packaged manifest.
+     A catalogue release rewrites every body and so every digest, and the page must follow it. The download names the reference
+     the search chose. */
+  const shownFacts=await demoFacts(page);
+  check("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(shownFacts).length===0,{problems:demoFactProblems(shownFacts)});
+  const oneDigestChanged=structuredClone(shownFacts);
+  if(oneDigestChanged.items[1])oneDigestChanged.items[1].digest=oneDigestChanged.items[1].digest.replace(/.$/,last=>last==="0"?"1":"0");
+  check("demo_digest_check_rejects_a_digest_this_release_does_not_serve",shownFacts.items.length===3&&demoFactProblems(oneDigestChanged).length===1&&demoFactProblems({...shownFacts,download:shownFacts.items[1]?.identity||""}).length===1,{problems:demoFactProblems(oneDigestChanged)});
+  const releasedIdentities=Object.keys(releasedReferences);
   const namesOnlyReleasedItems=names=>names.length>0&&names.every(name=>releasedIdentities.includes(name));
-  check("hero_example_names_only_released_catalogue_items",namesOnlyReleasedItems(exampleItems),{exampleItems});
-  check("hero_example_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...exampleItems,"invented_item_nobody_approved"]));
-  const startSteps=await page.locator("[data-start-step]").evaluateAll(items=>items.map(item=>item.dataset.startStep).sort()),startText=await page.locator(".start-strip").innerText();
-  check("homepage_shows_a_three_step_strip",JSON.stringify(startSteps)===JSON.stringify(["ask","connect","keep"])&&["OpenCode","Codex","Claude Code"].every(client=>startText.includes(client)),{steps:startSteps});
-  const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),offerText=await page.locator(".offer-section").innerText();
-  check("homepage_says_what_an_account_gives_you",JSON.stringify(offers)===JSON.stringify(["downloads","recipes","search","usage"])&&["search","download","usage"].every(word=>offerText.toLowerCase().includes(word))&&["OpenCode","Codex","Claude Code"].every(client=>offerText.includes(client)),{offers});
+  check("demo_names_only_released_catalogue_items",namesOnlyReleasedItems(shownFacts.items.map(item=>item.identity)),{items:shownFacts.items.map(item=>item.identity)});
+  check("demo_item_check_rejects_an_item_the_library_does_not_serve",!namesOnlyReleasedItems([...shownFacts.items.map(item=>item.identity),"invented_item_nobody_approved"]));
+  /* The step folder. Harness material is any file a harness reads, so the folder shows files that are not Markdown, and the
+     library band says so in words. */
+  const shownPaths=await folderPaths(page),libraryText=await page.locator('[data-band="library"]').innerText();
+  check("demo_folder_holds_a_file_that_is_not_markdown",folderProblems(shownPaths).length===0&&/not only markdown/i.test(libraryText),{paths:shownPaths});
+  check("folder_check_rejects_a_folder_of_markdown_files_only",folderProblems(shownPaths.filter(path=>/\.md$/i.test(path))).length===1&&folderProblems(["AGENTS.md","scripts/run.py"]).length===0);
+  /* No motion of its own. With reduced motion requested, nothing on the homepage animates or moves by a transition. */
+  const moving=await page.evaluate(()=>[...document.querySelectorAll('[data-view="home"], [data-view="home"] *')].filter(node=>{const style=getComputedStyle(node);return (style.animationName!=="none"&&parseFloat(style.animationDuration)>0)||parseFloat(style.transitionDuration)>0;}).length);
+  check("homepage_has_no_motion_of_its_own",moving===0,{moving});
+  /* The library count is this release's: the number of items in the packaged manifest. */
+  const shownCount=await page.locator("[data-library-count]").innerText();
+  const countAgrees=shown=>shown.trim()===String(releasedItemCount);
+  check("library_count_agrees_with_this_release_manifest",countAgrees(shownCount),{shown:shownCount,released:releasedItemCount});
+  check("library_count_check_rejects_a_count_this_release_does_not_hold",!countAgrees(String(releasedItemCount+1))&&!countAgrees("10,000")&&countAgrees(String(releasedItemCount)));
+  /* The six problems, the five steps and the kinds of harness material each carry the honest state of the part behind them. */
+  const problemCards=await statusCards(page,"[data-problem]","problem"),stepCards=await statusCards(page,"[data-how-step]","howStep"),kindCards=await statusCards(page,"[data-kind]","kind");
+  check("homepage_names_six_problems_each_with_its_honest_state",statusProblems(problemCards,problemOrder,availableProblems).length===0,{problems:statusProblems(problemCards,problemOrder,availableProblems)});
+  check("problem_state_check_rejects_a_part_called_available_a_missing_state_and_a_new_order",
+    statusProblems(problemCards.map(card=>card.name==="overnight"?{...card,status:"available",text:"Available now"}:card),problemOrder,availableProblems).length===1
+    &&statusProblems(problemCards.map(card=>card.name==="context"?{...card,shown:false}:card),problemOrder,availableProblems).length===1
+    &&statusProblems([...problemCards].reverse(),problemOrder,availableProblems).length===1);
+  check("how_it_works_steps_say_only_search_and_download_are_live",statusProblems(stepCards,stepOrder,liveSteps).length===0,{problems:statusProblems(stepCards,stepOrder,liveSteps)});
+  check("step_state_check_rejects_a_fresh_harness_called_live",statusProblems(stepCards.map(card=>card.name==="run"?{...card,status:"live",text:"Live"}:card),stepOrder,liveSteps).length===1);
+  check("library_kinds_say_only_skills_download_today",statusProblems(kindCards,kindOrder,availableKinds).length===0,{problems:statusProblems(kindCards,kindOrder,availableKinds)});
+  check("kind_state_check_rejects_instruction_files_called_available",statusProblems(kindCards.map(card=>card.name==="instructions"?{...card,status:"available",text:"Available now"}:card),kindOrder,availableKinds).length===1);
+  /* Owner decision of September 21, 2026: the page says what the product does and names a real limit where there is one, and it
+     does not apologise for a measurement nobody asked for. The states above carry the limits; the problem cards carry no apology
+     and no percentage. */
+  const problemText=await page.locator('[data-band="problems"]').evaluate(node=>node.textContent);
+  const measurementApologies=["We have not measured","Nobody has measured it yet","We have not run that as an experiment","it is an aim and not a result"];
+  const apologyProblems=text=>[...measurementApologies.filter(sentence=>text.includes(sentence)).map(sentence=>"measurement apology: "+sentence),...(/\d+\s*%/.test(text)?["a percentage"]:[])];
+  check("problem_cards_carry_no_measurement_apology_and_no_percentage",apologyProblems(problemText).length===0,{problems:apologyProblems(problemText)});
+  check("apology_check_rejects_a_returned_apology_and_a_percentage",measurementApologies.every(sentence=>apologyProblems(problemText+" "+sentence).length===1)&&apologyProblems(problemText+" Saves 40% of tokens.").length===1);
+  /* The entry the how-it-works band shows is the reviewed Claude Code recipe. Once the page script has checked the record, it is
+     written with this service's own address, as the Get started page gives it; the served text, with the public address, is
+     compared with the record by tools/test_homepage_demonstration.py. */
+  const shownEntry=await page.locator("[data-home-recipe]").evaluate(node=>({id:node.dataset.homeRecipe,text:node.textContent}));
+  const isReviewedEntry=(entry,endpoint)=>{const recipe=recipeRecord.recipes.find(item=>item.id===entry.id);try{return Boolean(recipe)&&recipe.format==="json"&&entry.text===JSON.stringify(withEndpoint(recipe.configuration,endpoint),null,2);}catch(_){return false;}};
+  check("homepage_connection_entry_is_the_reviewed_recipe_with_this_address",isReviewedEntry(shownEntry,fixture.base+"/mcp"),{id:shownEntry.id});
+  check("homepage_entry_check_rejects_a_changed_variable_and_another_address",!isReviewedEntry({...shownEntry,text:shownEntry.text.replace(variable,"BALTOR_KEY")},fixture.base+"/mcp")&&!isReviewedEntry(shownEntry,otherOrigin)&&!isReviewedEntry({...shownEntry,id:"codex"},fixture.base+"/mcp"));
+  /* The bands. The page ground is an off-white, and each band is set off from the next by a change of ground and by a rule. The
+     known-wrong pages paint two neighbouring bands alike, take their rules away, and paint the ground white, each on its own,
+     through the style object, which the page policy allows, and then put everything back. */
+  const bands=await homeBands(page);
+  check("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(bands).length===0,{problems:bandProblems(bands),count:bands.count,ground:bands.ground});
+  const plantBands=change=>page.evaluate(change=>{const bands=[...(document.querySelector('[data-view="home"]')?.children||[])];if(bands.length<3)return false;const [upper,lower]=[bands[1],bands[2]];
+    if(change==="ground")lower.style.backgroundColor=getComputedStyle(upper).backgroundColor;if(change==="rules"){upper.style.borderBottom="0";lower.style.borderTop="0";}if(change==="white")document.body.style.backgroundColor="#ffffff";return true;},change);
+  const restoreBands=()=>page.evaluate(()=>{for(const node of [document.body,...(document.querySelector('[data-view="home"]')?.children||[])])node.removeAttribute("style");});
+  const plantedBandProblems={};
+  for(const change of ["ground","rules","white"]){plantedBandProblems[change]=await plantBands(change)?bandProblems(await homeBands(page)):["not planted"];await restoreBands();}
+  check("band_check_rejects_one_ground_for_two_bands_a_missing_rule_and_a_white_ground",Object.values(plantedBandProblems).every(problems=>problems.length===1&&problems[0]!=="not planted")&&bandProblems(await homeBands(page)).length===0,{problems:plantedBandProblems});
+  /* Contrast and focus in both appearances. Every text on the public pages meets WCAG AA against the ground behind it, and each of
+     the first stops the keyboard reaches on the homepage carries a visible focus mark. The known-wrong page plants one grey line
+     on a white ground through the style object, which the page policy allows, and one focus stop without a mark. */
+  const contrastByTheme={},marksByTheme={};
+  for(const theme of ["light","dark"]){
+    for(const path of ["/","/waitlist","/pricing","/how-it-works","/docs","/privacy","/login"]){
+      await page.goto(fixture.base+path);await page.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
+      for(let press=0;press<3&&await page.evaluate(wanted=>document.documentElement.dataset.theme!==wanted,theme);press++)await page.click("#theme");
+      contrastByTheme[theme+" "+path]=await contrastProblems(page);
+      if(path==="/")marksByTheme[theme]=await focusMarks(page,12);
+    }
+  }
+  for(let press=0;press<3&&await page.evaluate(()=>document.documentElement.dataset.theme!=="light");press++)await page.click("#theme");
+  const lowContrast=Object.entries(contrastByTheme).filter(([,problems])=>problems.length).map(([page,problems])=>({page,problems:problems.slice(0,4)}));
+  check("public_text_meets_AA_contrast_in_both_appearances",Object.keys(contrastByTheme).length===14&&lowContrast.length===0,{pages:Object.keys(contrastByTheme).length,lowContrast});
+  await page.goto(fixture.base+"/");
+  const plantedGrey=await page.evaluate(()=>{const line=document.createElement("p");line.id="known-wrong-grey";line.textContent="A grey line nobody can read";line.style.color="#c4c4c4";line.style.backgroundColor="#ffffff";document.querySelector('[data-band="harnesses"]').append(line);return true;});
+  const greyProblems=await contrastProblems(page);await page.evaluate(()=>document.getElementById("known-wrong-grey")?.remove());
+  check("contrast_check_rejects_a_grey_line_on_white",plantedGrey&&greyProblems.length===1&&greyProblems[0].text==="A grey line nobody can read",{problems:greyProblems});
+  check("keyboard_focus_is_visible_in_both_appearances",["light","dark"].every(theme=>(marksByTheme[theme]||[]).length===12&&unmarkedStops(marksByTheme[theme]).length===0),{marks:marksByTheme});
+  check("focus_check_rejects_a_stop_without_a_mark",unmarkedStops([...(marksByTheme.light||[]),{name:"planted",outline:"none",width:0}]).length===1);
+  /* The harnesses that connect today are exactly the clients of the reviewed recipes. Another client is named only as planned. */
+  const strip=await page.locator(".harness-list li").evaluateAll(items=>items.map(item=>({name:item.querySelector(".harness-name")?.textContent.trim()||"",state:item.querySelector(".harness-state")?.textContent.trim()||""})));
+  const recipeClients=recipeRecord.recipes.map(recipe=>recipe.name.replace(/\s+\d+(?:\.\w+)*$/,"")).sort();
+  const stripProblems=items=>[...(JSON.stringify(items.filter(item=>item.state==="Connect today").map(item=>item.name).sort())!==JSON.stringify(recipeClients)?["the clients that connect today are not the reviewed recipes"]:[]),
+    ...items.filter(item=>!["Connect today","Planned"].includes(item.state)).map(item=>item.name+" says "+JSON.stringify(item.state))];
+  check("harness_strip_names_the_reviewed_clients_and_marks_the_rest_planned",stripProblems(strip).length===0,{strip,problems:stripProblems(strip)});
+  check("harness_strip_check_rejects_a_planned_client_that_connects_today",stripProblems(strip.map(item=>item.state==="Planned"?{...item,state:"Connect today"}:item)).length===1&&stripProblems(strip.filter(item=>item.name!=="Codex")).length===1);
+  const offers=await page.locator("[data-offer]").evaluateAll(items=>items.map(item=>item.dataset.offer).sort()),planText=await page.locator(".plan-summary").innerText();
+  check("homepage_says_what_an_account_gives_you",JSON.stringify(offers)===JSON.stringify(["downloads","keys","recipes","search","usage"])&&["search","download","usage"].every(word=>planText.toLowerCase().includes(word)),{offers});
   const teaserText=await page.locator(".pricing-teaser").innerText();
-  check("homepage_states_the_plan_price_and_the_measured_unit",teaserText.includes("29 United States dollars each month")&&teaserText.includes("one downloaded item")&&teaserText.includes("invited accounts are free")&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing");
-  check("homepage_closes_with_an_action",await page.locator(".closing-callout #closing-primary").isVisible()&&await page.locator(".closing-callout .text-link").isVisible());
+  check("homepage_states_the_plan_price_and_the_measured_unit",teaserText.includes("$29")&&teaserText.includes("per month")&&/one downloaded item/i.test(teaserText)&&/invited accounts are free/i.test(teaserText)&&await page.locator('.pricing-teaser a[data-page="pricing"]').getAttribute("href")==="/pricing");
+  const closingActions=await page.locator('[data-band="closing"]').evaluate(band=>[...band.querySelectorAll("a, button")].filter(node=>node.getClientRects().length>0).map(node=>node.id||node.textContent.trim()));
+  check("homepage_closes_with_one_action",JSON.stringify(closingActions)===JSON.stringify(["closing-primary"]),{actions:closingActions});
   const promiseWords=/\d+\s*%|\bguarantee\w*\b|\balways\b/gi,homeClaims=await page.locator('[data-view="home"]').evaluate(node=>{const clone=node.cloneNode(true);clone.querySelectorAll(".benefit-limits").forEach(item=>item.remove());return clone.textContent;});
   check("homepage_makes_no_unmeasured_promise",(homeClaims.match(promiseWords)||[]).length===0,{words:[...new Set(homeClaims.match(promiseWords)||[])]});
   check("promise_check_rejects_a_known_wrong_claim",["Cut your token spend by 40%","Always picks the right model","Guaranteed savings every day","A 3 % better result"].every(claim=>(claim.match(promiseWords)||[]).length>0));
-  /* Owner decision of September 21, 2026. A benefit detail says what the product does, in the present tense, and it
-     names a real limit of what exists today where there is one: the library holds a small first collection, and the
-     ranking work is written but not connected to a live run. It does not apologise for a measurement nobody asked
-     for. Both halves of that rule have a known-wrong case: a missing limit and a returned apology each get reported. */
-  const benefitText=await page.locator(".benefit-section").evaluate(node=>node.textContent);
-  const realLimits=["The library on our server holds a small first collection of reviewed items today","That part is not connected to a live run yet."];
-  const measurementApologies=["We have not measured","Nobody has measured it yet","We have not run that as an experiment","it is an aim and not a result"];
-  const benefitProblems=text=>[...realLimits.filter(sentence=>!text.includes(sentence)).map(sentence=>"missing real limit: "+sentence),
-    ...measurementApologies.filter(sentence=>text.includes(sentence)).map(sentence=>"measurement apology: "+sentence)];
-  check("benefit_details_state_the_real_limits_without_a_measurement_apology",benefitProblems(benefitText).length===0&&!/\d+\s*%/.test(benefitText),{problems:benefitProblems(benefitText)});
-  check("benefit_detail_check_rejects_a_missing_limit_and_a_returned_apology",
-    realLimits.every(sentence=>benefitProblems(benefitText.split(sentence).join("")).length===1)&&
-    measurementApologies.every(sentence=>benefitProblems(benefitText+" "+sentence).length===1),
-    {limits:realLimits.length,apologies:measurementApologies.length});
-  await checkBenefitList(page,check);
-  /* The detail text belongs to the page, not to the script. A browser that never receives the script shows all six. */
+  /* The page reads without its script: a browser that never receives the script shows the six problems with their states, the
+     three parts of the demonstration and the reviewed entry with the public address. */
   const withoutScript=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
   await withoutScript.route("**/*",localOnly);
   await withoutScript.route("**/assets/service.js",route=>route.abort());
   const plain=await withoutScript.newPage();
   plain.on("pageerror",()=>{});
   await plain.goto(fixture.base+"/");
-  const plainShown=await shownBenefits(plain),plainText=await plain.locator(".benefit-section").innerText();
-  check("benefit_detail_reads_when_the_script_has_not_run",plainShown.length===6&&JSON.stringify(plainShown)===JSON.stringify(benefitNames)&&benefitSentences.every(sentence=>plainText.includes(sentence))&&benefitTitles.every(title=>plainText.includes(title)),{shown:plainShown});
+  const plainProblems=statusProblems(await statusCards(plain,"[data-problem]","problem"),problemOrder,availableProblems);
+  check("problems_read_when_the_script_has_not_run",plainProblems.length===0,{problems:plainProblems});
+  const plainDemo=await demoState(plain);
+  check("demo_reads_when_the_script_has_not_run",JSON.stringify(plainDemo.shown)===JSON.stringify(demoStages.map(([stage])=>stage))&&demoLabelProblems(plainDemo).length===0&&demoStages.every(([stage])=>(plainDemo.text[stage]||"").trim().length>40),{shown:plainDemo.shown});
+  const servedEntry=await plain.locator("[data-home-recipe]").evaluate(node=>({id:node.dataset.homeRecipe,text:node.textContent}));
+  /* The served entry carries the public address, which tools/test_homepage_demonstration.py holds exactly. Here the address is
+     read from the entry, and everything else in the entry must be the reviewed recipe. */
+  const servedAddress=(()=>{try{const found=textLeaves(JSON.parse(servedEntry.text)).filter(([key])=>key==="url");return found.length===1?found[0][1]:"";}catch(_){return "";}})();
+  check("served_connection_entry_is_the_reviewed_recipe_with_a_public_address",/^https:\/\/[a-z0-9.-]+\/mcp$/.test(servedAddress)&&servedAddress!==fixture.base+"/mcp"&&isReviewedEntry(servedEntry,servedAddress),{id:servedEntry.id,address:servedAddress});
+  /* No layout shift from late script. The first screen is measured without the page script, then on a page whose script has
+     run and whose service has answered, at the desktop and the phone width. */
+  const steadiness=[];
+  for(const width of [1440,390]){
+    await plain.setViewportSize({width,height:1000});await plain.goto(fixture.base+"/");const served=await heroBoxes(plain);
+    const scripted=await context.newPage();scripted.on("pageerror",error=>errors.push(safeError(error.message)));
+    await scripted.setViewportSize({width,height:1000});await scripted.goto(fixture.base+"/");
+    await scripted.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+    steadiness.push({width,served,moved:boxesMoved(served,await heroBoxes(scripted))});await scripted.close();
+  }
+  servedHeroBoxes=steadiness[0].served;
+  check("homepage_first_screen_does_not_move_when_the_script_runs",steadiness.length===2&&steadiness.every(item=>item.moved.length===0&&Object.values(item.served).every(Boolean)),{moved:steadiness.map(item=>({width:item.width,moved:item.moved}))});
+  const nudged=Object.fromEntries(Object.entries(servedHeroBoxes).map(([key,box])=>[key,key==="#hero-primary"&&box?box.map((value,index)=>index===1?value+3:value):box]));
+  check("steadiness_check_rejects_a_first_screen_that_moves",JSON.stringify(boxesMoved(servedHeroBoxes,nudged))===JSON.stringify(["#hero-primary"]));
+  /* The last measurement left the page without its script at phone width, where the menu still opens. */
+  await plain.locator("header .menu-button").click();const plainMenu=await menuState(plain);
+  check("phone_menu_opens_when_the_script_has_not_run",plainMenu.open&&JSON.stringify(plainMenu.links)===JSON.stringify(menuLinks),plainMenu);
   await plain.close();await withoutScript.close();
   /* Retired words and runtime words, read from every page a customer can open, including the shared header and footer.
      The Documentation view keeps the exact runtime terms, so it is scanned for the retired words only. */
@@ -480,14 +755,15 @@ try {
   };
   for(const path of servedRoutes){await page.goto(fixture.base+path);scanShownText(path,await readShownText(page));}
   /* The Get started page also answers at "/get-started", which the serving route table does not list yet, so that
-     address is reached through the navigation. Every link on the website points at "/connect", which is served. */
+     address is reached through the navigation. Every link on the website points at "/waitlist" or "/connect", both served. */
   await page.goto(fixture.base+"/");
   await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
   scanShownText("/get-started",await readShownText(page));
   /* Rendered text is not the whole surface. A message can sit in a script the browser fetches and appear only in a
      state this pass never reaches, and a class name can carry a retired word into the served stylesheet. Every file
-     the browser fetches for a customer page is therefore read, not only the markup and the main script. */
-  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt"];
+     the browser fetches for a customer page is therefore read, not only the markup and the main script. The two typefaces
+     and the page icons are binary files; they are read like the rest, so the coverage rule below needs no exception. */
+  const servedFiles=["/","/assets/service.js","/assets/client-access.js","/assets/catalogue-browser.js","/assets/architecture-story.js","/assets/supabase-client.js","/assets/service.css","/assets/architecture.css","/assets/client-recipes.json","/assets/third-party-notices.txt","/assets/geist.woff2","/assets/geist-mono.woff2","/assets/baltor-mark.svg","/assets/favicon-32.png","/assets/favicon-192.png","/assets/apple-touch-icon.png"];
   /* The list is compared with the route table the service actually serves. The footer links to the open-source notices,
      so a customer reaches that file from every page, and a served asset added in the route table alone is a named
      failure here rather than a file nobody scans. The table lives in web_pages.py since September 21, 2026; this scan
@@ -510,23 +786,55 @@ try {
   check("no_served_file_carries_a_retired_word",servedTexts.length===servedFiles.length&&servedFileProblems.length===0,{files:servedTexts.length,problems:servedFileProblems});
   check("served_file_scan_rejects_a_file_that_carries_a_retired_word",servedTexts.length===servedFiles.length&&["\n/* Join the private beta. */","\n/* Ask for early access. */"].every(planted=>servedTexts.every(([path,text])=>retiredIn(path,text+planted).length===1)),{files:servedTexts.length});
   check("runtime_word_check_rejects_a_known_wrong_page",["Built on Loop Engine.","Every step is a Loop node.","See the role profiles.","Read the runtime classification.","A Practitioner owns the task."].every(claim=>publicVocabulary.test(claim))&&!publicVocabulary.test("Each step gets the material it needs."));
-  /* Get started is the first way into the product, and the page behind it walks through the three steps in order. */
+  /* One way into the product from the header: the one primary action beside the navigation, which starts with How it works.
+     No link in the navigation is a second way into the same journey. */
   await page.goto(fixture.base+"/");
-  const navItems=await page.locator("header nav a").evaluateAll(items=>items.map(item=>({label:item.textContent.trim(),href:item.getAttribute("href"),page:item.dataset.page})));
-  const firstIsGetStarted=items=>items.length>1&&items[0].label==="Get started"&&items[0].page==="setup"&&!items.some(item=>item.label==="Connect");
-  check("get_started_is_the_first_navigation_item",firstIsGetStarted(navItems)&&navItems[1].label==="How it works",{nav:navItems});
-  check("navigation_order_check_rejects_a_wrong_first_item",[[{label:"How it works",page:"about"},{label:"Get started",page:"setup"}],[{label:"Connect",page:"setup"},{label:"Get started",page:"setup"}],[{label:"Get started",page:"setup"},{label:"Connect",page:"setup"}]].every(items=>!firstIsGetStarted(items)));
-  await page.locator('header nav a[data-page="setup"]').click();
+  const headerState=await page.evaluate(()=>({nav:[...document.querySelectorAll("header nav a")].filter(node=>!node.hidden).map(node=>({label:node.textContent.trim(),page:node.dataset.page||""})),
+    primary:[...document.querySelectorAll("header .button.primary")].map(node=>({id:node.id,label:node.textContent.trim(),href:node.getAttribute("href")}))}));
+  const oneHeaderAction=state=>state.primary.length===1&&state.primary[0].label===accessLabels.closed&&state.primary[0].href===accessPaths.closed&&state.nav.length>1&&state.nav[0].label==="How it works"
+    &&!state.nav.some(item=>item.page==="setup"||/get started|connect|join|waiting list|invitation/i.test(item.label));
+  check("header_offers_one_primary_action_beside_the_navigation",oneHeaderAction(headerState),headerState);
+  check("header_check_rejects_a_second_way_in_and_a_missing_action",!oneHeaderAction({...headerState,nav:[{label:"Get started",page:"setup"},...headerState.nav]})&&!oneHeaderAction({...headerState,primary:[]})
+    &&!oneHeaderAction({...headerState,nav:[...headerState.nav,{label:"Connect",page:"setup"}]})&&!oneHeaderAction({...headerState,primary:[...headerState.primary,{id:"planted",label:"Join the waiting list",href:"/waitlist"}]}));
+  /* At phone width the links fold into a menu that works without the page script. A press on the menu button shows every link,
+     Escape closes it, the keyboard reaches it through the checkbox behind the button with a visible focus mark, and choosing a
+     link closes it on the page that opens. The Get started action stays in the bar the whole time. */
+  await page.setViewportSize({width:390,height:1000});await page.goto(fixture.base+"/");
+  const menuStates={closed:await menuState(page)};
+  await page.locator("header .menu-button").click();menuStates.pressed=await menuState(page);
+  await page.keyboard.press("Escape");menuStates.escaped=await menuState(page);
+  await page.locator("header .brand").focus();await page.keyboard.press("Tab");await page.keyboard.press("Space");menuStates.keyed=await menuState(page);
+  await page.locator('header nav a[data-page="pricing"]').click();menuStates.chosen=await menuState(page);
+  check("phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",menuWorks(menuStates),menuStates);
+  /* The first screen on a phone. At 390 by 844 the header is one compact bar and the hero's primary action stands wholly inside
+     the window; at 320 wide nothing scrolls sideways. The live review measured a header 254 pixels tall and the action below the
+     first screen. */
+  const firstScreens=[];
+  for(const [width,height] of [[390,844],[320,700]]){
+    await page.setViewportSize({width,height});await page.goto(fixture.base+"/");
+    await page.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
+    firstScreens.push({height,...await firstScreen(page)});
+  }
+  check("phone_first_screen_holds_the_whole_primary_action_under_a_compact_header",phoneFirstScreen(firstScreens[0]),{firstScreens});
+  check("narrow_phone_has_no_sideways_scroll",firstScreens.length===2&&firstScreens.every(item=>!item.overflow),{firstScreens});
+  check("first_screen_check_rejects_an_action_below_the_fold_and_a_tall_header",!phoneFirstScreen({...firstScreens[0],bottom:firstScreens[0].viewport+1})&&!phoneFirstScreen({...firstScreens[0],header:254}));
+  await page.setViewportSize({width:390,height:1000});await page.goto(fixture.base+"/");
+  check("phone_menu_check_rejects_a_menu_that_stays_open_or_shows_nothing",!menuWorks({...menuStates,chosen:{...menuStates.chosen,open:true,links:menuLinks}})&&!menuWorks({...menuStates,pressed:{...menuStates.pressed,links:[]}})&&!menuWorks({...menuStates,keyed:{...menuStates.keyed,focusMark:"none"}}));
+  await page.setViewportSize({width:1440,height:1000});await page.goto(fixture.base+"/");
+  await page.locator('header a[data-page="setup"]').click();
   const orderedSteps=await page.locator("[data-get-started-step]").evaluateAll(items=>items.map(item=>({step:item.dataset.getStartedStep,index:item.querySelector(".feature-index").textContent.trim(),title:item.querySelector("[data-get-started-title]").textContent.trim()})));
-  const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["download","connect","sign-up"])&&steps.every((item,index)=>item.index.startsWith("Step "+(index+1)+" / ")&&item.title.length>0);
-  check("get_started_page_names_the_three_steps_in_order",new URL(page.url()).pathname==="/connect"&&namesThreeStepsInOrder(orderedSteps)&&await page.locator('[data-view="setup"]').isVisible(),{steps:orderedSteps});
+  /* The Get started page leads with access, because search and downloads need an account; the connection and the first search
+     follow. The first step is the panel the service's record chooses, so its title is the same in every state. */
+  const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["access","connect","search"])&&steps.every((item,index)=>item.index.startsWith("Step "+(index+1)+" / ")&&item.title.length>0);
+  check("get_started_page_names_the_three_steps_in_order",new URL(page.url()).pathname===accessPaths.closed&&namesThreeStepsInOrder(orderedSteps)&&await page.locator('[data-view="setup"]').isVisible(),{steps:orderedSteps});
   check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]]].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
-  check("get_started_page_carries_the_copyable_connection_settings",await page.locator("#client-choice").count()===1&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
+  await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
+  check("get_started_page_carries_the_copyable_connection_settings",await page.locator('#client-tabs[role="tablist"] [role="tab"]').count()===recipeRecord.recipes.length&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
   // The Get started address opens the same page. The serving route table does not list it yet, so only the navigation reaches it.
   await page.evaluate(()=>{history.pushState({},"","/get-started");dispatchEvent(new PopStateEvent("popstate"));});
   check("get_started_address_opens_the_same_page",new URL(page.url()).pathname==="/get-started"&&await page.locator('[data-view="setup"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1);
   await page.goto(fixture.base+"/");
-  await page.locator('header a[data-page="pricing"]').click();
+  await headerLink(page,"pricing");
   check("pricing_view_opens_from_the_navigation",new URL(page.url()).pathname==="/pricing"&&await page.locator('[data-view="pricing"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1&&(await page.title()).endsWith("| Pricing"));
   const pricingText=await page.locator('[data-view="pricing"]').innerText();
   const pricingFacts=[["plan name","Baltor Pro"],["price","29 United States dollars"],["period","each month"],["free search","Search is free."],["measured unit","one downloaded item"],["invited accounts","Invited accounts are free."]];
@@ -632,12 +940,33 @@ try {
   const homeFits=[];
   for(const width of [1440,360]){await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");homeFits.push({width,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1}))});}
   check("homepage_fits_a_360_pixel_screen",homeFits.length===2&&homeFits.every(item=>!item.overflow),{measurements:homeFits});
+  /* The demonstration and every band of the homepage fit a phone screen, at normal and at doubled text, with no sideways page
+     scroll. A code block may scroll inside itself; the page may not. */
+  const demoFits=[];
+  for(const width of [390,320]){
+    await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");
+    for(const size of ["","200%"]){
+      await page.evaluate(value=>document.documentElement.style.fontSize=value,size);
+      demoFits.push({width,size:size||"100%",...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1,
+        wide:[...document.querySelectorAll('[data-view="home"] *, header *, footer *')].filter(node=>{const box=node.getBoundingClientRect();return box.width&&box.right>innerWidth+1&&!node.closest("pre")&&getComputedStyle(node).visibility!=="hidden";}).slice(0,6).map(node=>node.tagName+"."+String(node.className))}))});
+    }
+    await page.evaluate(()=>document.documentElement.style.fontSize="");
+  }
+  check("homepage_and_demo_fit_small_screens_and_enlarged_text",demoFits.length===4&&demoFits.every(item=>!item.overflow&&item.wide.length===0),{problems:demoFits.filter(item=>item.overflow||item.wide.length)});
   await page.setViewportSize({width:1440,height:1000});
-  /* The three capabilities the service can report, for account creation, for payment and for personal keys, each read from a real
-     service, with the removed-guard controls for both directions and for the record version the page was written against. */
-  const expectedAccess={waiting:{state:"waiting",href:"/signup#waiting-list",label:"Join the waiting list"},open:{state:"open",href:"/signup",label:"Create your account"}};
-  const accessActions=target=>target.locator("[data-access-state]").evaluateAll(items=>items.map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("span").textContent})).sort((left,right)=>left.id<right.id?-1:1));
-  const sameAccess=(actions,want)=>actions.length===3&&actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label);
+  /* The capabilities the service can report, for account creation, for a waiting list, for payment and for personal keys,
+     each read from a real service, with the removed-guard controls for both directions and for the record version the page
+     was written against. Every public action carries the one label of the reported state. The state also shows in the note under
+     the hero action and in the one panel that leads the Get started page. */
+  const expectedAccess={waiting:{state:"waiting",href:accessPaths.closed,label:accessLabels.closed,note:waitingNote,tag:"Invitation only",closing:"Request an invitation today. Invited accounts are free while we open in small groups."},
+    open:{state:"open",href:accessPaths.open,label:accessLabels.open,note:openNote,tag:"Open to new accounts",closing:"Create your account today. Search is free, and invited accounts stay free."}};
+  /* The ten actions that carry the state: the header, the hero, the plan on the homepage, the closing band, the pricing view,
+     How it works, the first example, access and data, the setup guide and the footer. */
+  const accessActionIds=["about-access","closing-primary","docs-access","examples-access","footer-access","header-primary","hero-primary","home-pricing-primary","pricing-primary","security-access"];
+  const accessActions=target=>target.evaluate(()=>({note:document.getElementById("hero-access-note")?.textContent||"",tag:document.getElementById("home-plan-access")?.textContent||"",closing:document.getElementById("closing-note")?.textContent||"",
+    actions:[...document.querySelectorAll("[data-access-state]")].map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("[data-access-label]")?.textContent||""})).sort((left,right)=>left.id<right.id?-1:1)}));
+  const sameAccess=(found,want)=>JSON.stringify(found.actions.map(action=>action.id))===JSON.stringify(accessActionIds)&&found.actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label)
+    &&found.note===want.note&&found.tag===want.tag&&found.closing===want.closing;
   /* A capabilities record whose version this page was not written against may have renamed a field or given it a different meaning.
      "version" serves the real reply of a real service with its record type changed, so the careful state is checked against a known-wrong version. */
   const openPublic=async (base,mutation,version)=>{
@@ -649,12 +978,12 @@ try {
     await opened.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
     return {page:opened,state};
   };
-  const paymentState=async opened=>{await opened.locator('header a[data-page="pricing"]').click();return {badge:await opened.locator("#pricing-state").innerText(),shown:await opened.locator("#pricing-payment-state").innerText()};};
+  const paymentState=async opened=>{await headerLink(opened,"pricing");return {badge:await opened.locator("#pricing-state").innerText(),shown:await opened.locator("#pricing-payment-state").innerText()};};
   /* The personal-key wording is published in two places. Both follow the reported capability; neither is written as a fact in the page. */
   const keyWording={
-    open:{offer:"You can also create and revoke a key for each device from your account page.",
+    open:{offer:"A personal key for each device, from your account page",
           plan:"Create and revoke a key for every client you connect, from your account page."},
-    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+    closed:{offer:"Keys issued by the person who runs the service; a key for each device from your account page is being prepared",
             plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."}};
   const keyState=async opened=>({offer:await opened.locator("#offer-usage-keys").evaluate(node=>node.textContent),plan:await opened.locator("#plan-keys-detail").evaluate(node=>node.textContent)});
   const sameKeys=(keys,want)=>keys.offer===want.offer&&keys.plan===want.plan;
@@ -665,9 +994,9 @@ try {
                          offered:{offered:true,unfinished:"Public account creation and complete native client onboarding are not finished."}};
   const waitlistClaims=async opened=>{await paymentState(opened);return opened.evaluate(()=>{
     const shown=id=>{const node=document.getElementById(id);return node?!node.hidden:null;},unfinished=document.getElementById("pricing-in-progress");
-    return {link:shown("waitlist-link"),form:shown("waitlist-form"),signup_link:shown("signup-waitlist-link"),pending_note:shown("waiting-list-pending"),
+    return {form:shown("waitlist-form"),signup_link:shown("signup-waitlist-link"),pending_note:shown("waiting-list-pending"),
       unfinished:unfinished?unfinished.innerText.split(". ")[0]+".":null};});};
-  const sameWaitlistClaims=(claims,want)=>claims.link===want.offered&&claims.form===want.offered&&claims.signup_link===want.offered
+  const sameWaitlistClaims=(claims,want)=>claims.form===want.offered&&claims.signup_link===want.offered
     &&claims.pending_note===!want.offered&&claims.unfinished===want.unfinished;
   /* Payment wording follows two reported facts. While account creation is closed the pricing view says invitation only,
      whatever checkout reports, so the page never offers the waiting list beside "Payment open". Payment is open only when
@@ -675,30 +1004,59 @@ try {
   const invitationOnly=(actions,payment)=>sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Invitation only"
     &&["by invitation","stay free","account page"].every(words=>payment.shown.includes(words));
   const carefulState=async (opened,note,name)=>{
-    const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened);
-    note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed),{actions,payment,keys});
+    const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened),lead=await openGetStarted(opened);
+    note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed)&&sameLead(lead,"operator"),{actions,payment,keys,lead});
+  };
+  /* The actions a visitor reaches first: the homepage, the pricing view and the Get started page, in that order. */
+  const journeyActionProblems=async (opened,registrationOpen)=>{
+    const problems=[];
+    for(const name of [null,"pricing","setup"]){if(name)await headerLink(opened,name);problems.push(...accessActionProblems(await publicActions(opened),registrationOpen));}
+    return problems;
   };
   const scenarios={
     closed_service:{origin:"base",run:async (opened,note)=>{
       const actions=await accessActions(opened),keys=await keyState(opened);
-      note("public_action_offers_the_waiting_list_when_account_creation_is_closed",sameAccess(actions,expectedAccess.waiting),{actions});
+      note("public_actions_say_get_started_while_registration_is_closed",sameAccess(actions,expectedAccess.waiting),actions);
       note("personal_key_claim_is_held_back_when_the_service_reports_no_client_access",sameKeys(keys,keyWording.closed),keys);
+      const journey=await journeyActionProblems(opened,false);
+      note("no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed",journey.length===0,{problems:journey});
+      const lead=await startLead(opened);
+      note("get_started_leads_with_the_operator_when_the_service_offers_neither",sameLead(lead,"operator"),lead);
       const payment=await paymentState(opened);
       note("pricing_view_says_invitation_only_while_account_creation_is_closed",invitationOnly(actions,payment),{actions,payment});
       const claims=await waitlistClaims(opened);
       note("unfinished_work_names_the_waiting_list_form_while_the_service_offers_no_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
     }},
     waitlist_offered:{origin:"account_base",run:async (opened,note)=>{
+      const journey=await journeyActionProblems(opened,false);
+      note("no_public_action_offers_a_second_label_or_account_creation_while_a_list_is_kept",journey.length===0,{problems:journey});
+      const lead=await startLead(opened);
+      note("get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list",sameLead(lead,"invite"),lead);
       const claims=await waitlistClaims(opened);
       note("unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list",sameWaitlistClaims(claims,waitlistWording.offered),claims);
     }},
+    waitlist_landing:{origin:"account_base",run:async (opened,note)=>{
+      const landings=[];
+      for(const [width,height] of [[1440,900],[390,844]]){
+        await opened.setViewportSize({width,height});
+        await opened.evaluate(()=>{history.pushState({},"","/");dispatchEvent(new PopStateEvent("popstate"));scrollTo(0,0);});
+        landings.push(await pressThePrimaryAction(opened,width,height));
+      }
+      note("the_primary_action_opens_the_invitation_email_field_in_the_first_screen",landings.length===2&&landings.every(landsOnTheField),{landings});
+      note("landing_check_rejects_the_account_status_page_and_a_field_below_the_first_screen",landings.length===2&&!landsOnTheField({...landings[1],path:"/signup",shown:false})
+        &&!landsOnTheField({...landings[1],top:landings[1].viewport+10,bottom:landings[1].viewport+58})&&!landsOnTheField({...landings[1],label:"Get started"}),{landings});
+    }},
     unsupported_version_waitlist:{origin:"account_base",version:"service_capabilities/v2",run:async (opened,note)=>{
-      const claims=await waitlistClaims(opened);
-      note("unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
+      const claims=await waitlistClaims(opened),lead=await openGetStarted(opened);
+      note("unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list",sameWaitlistClaims(claims,waitlistWording.pending)&&sameLead(lead,"operator"),{claims,lead});
     }},
     open_registration:{origin:"signup_base",run:async (opened,note)=>{
       const actions=await accessActions(opened);
-      note("public_action_offers_account_creation_when_the_service_reports_it",sameAccess(actions,expectedAccess.open),{actions});
+      note("public_actions_say_get_started_while_registration_is_open",sameAccess(actions,expectedAccess.open),actions);
+      const journey=await journeyActionProblems(opened,true);
+      note("no_public_action_offers_account_creation_outside_the_get_started_and_account_pages",journey.length===0,{problems:journey});
+      const lead=await startLead(opened);
+      note("get_started_leads_with_account_creation_when_registration_is_open",sameLead(lead,"register"),lead);
       const payment=await paymentState(opened);
       note("pricing_view_says_payment_is_not_open_when_account_creation_is_open_without_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),{actions,payment});
     }},
@@ -733,13 +1091,45 @@ try {
     const scenario=scenarios[name],{page:opened}=await openPublic(fixture[scenario.origin],null,scenario.version);
     await scenario.run(opened,check);await opened.close();
   }
+  /* Every public page on three real services: one that offers neither registration nor a list, one that keeps a waiting list,
+     and one with registration open. The known-wrong page after it plants one wrong action at a time into the real homepage. */
+  const actionScan=[];
+  for(const [name,registrationOpen] of [["base",false],["account_base",false],["signup_base",true]]){
+    const scanned=await context.newPage();scanned.on("pageerror",error=>errors.push(safeError(error.message)));
+    for(const path of accessJourneyPaths){
+      await scanned.goto(fixture[name]+path);
+      await scanned.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability");
+      actionScan.push({origin:name,path,problems:accessActionProblems(await publicActions(scanned),registrationOpen)});
+    }
+    await scanned.close();
+  }
+  check("every_public_page_offers_one_call_to_action_and_nothing_the_service_cannot_honour",actionScan.length===3*accessJourneyPaths.length&&actionScan.every(item=>item.problems.length===0),{problems:actionScan.filter(item=>item.problems.length)});
+  const knownWrong=await context.newPage();knownWrong.on("pageerror",error=>errors.push(safeError(error.message)));
+  await knownWrong.goto(fixture.base+"/");await knownWrong.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+  const plantedAction=async (text,href,place)=>{
+    const planted=await knownWrong.evaluate(([text,href,place])=>{const target=document.querySelector(place);if(!target)return false;const link=document.createElement("a");link.id="known-wrong-action";link.href=href;link.textContent=text;target.append(link);return true;},[text,href,place]);
+    const problems=accessActionProblems(await publicActions(knownWrong),false);
+    await knownWrong.evaluate(()=>document.getElementById("known-wrong-action")?.remove());
+    return planted?problems:["(the known-wrong action could not be planted)","(so this case proves nothing)"];
+  };
+  const secondLabel=await plantedAction("Join the waiting list","/waitlist",'[data-view="home"] .hero-actions');
+  const creationWhileClosed=await plantedAction("Create your account","/signup",'[data-view="home"] .closing-actions');
+  const invitationOutside=await plantedAction("Ask for an invitation","/connect",'[data-view="home"] .pricing-teaser-side');
+  await knownWrong.close();
+  check("access_action_check_rejects_a_second_label_account_creation_and_an_invitation_outside_its_form",secondLabel.length===2&&creationWhileClosed.length===1&&invitationOutside.length===2,{secondLabel,creationWhileClosed,invitationOutside});
   const versionGate="if (value.record_type === CAPABILITIES_RECORD_TYPE) {";
   const paymentCall="applyPaymentState(publicPaymentState(value.website.registration_available === true, value.billing.checkout === true));";
   const paymentRule='const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : checkout === true ? "open" : "closed";';
   const waitlistGate="const open = value?.record_type === CAPABILITIES_RECORD_TYPE && value.website?.waitlist_available === true;";
+  const registrationLead='website.registration_available === true ? "register"',invitationLead='website.waitlist_available === true ? "invite"';
   const publicControls=[
-    {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_action_offers_the_waiting_list_when_account_creation_is_closed"]},
-    {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_action_offers_account_creation_when_the_service_reports_it"]},
+    {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_actions_say_get_started_while_registration_is_closed"]},
+    {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_actions_say_get_started_while_registration_is_open"]},
+    {name:"bring_back_the_waiting_list_label",scenario:"closed_service",find:'waiting:{label:"Request an invitation"',replacement:'waiting:{label:"Join the waiting list"',expected:["public_actions_say_get_started_while_registration_is_closed","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
+    {name:"always_lead_with_account_creation",scenario:"closed_service",find:registrationLead,replacement:'true ? "register"',expected:["get_started_leads_with_the_operator_when_the_service_offers_neither","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
+    {name:"never_lead_with_account_creation",scenario:"open_registration",find:registrationLead,replacement:'false ? "register"',expected:["get_started_leads_with_account_creation_when_registration_is_open"]},
+    {name:"send_the_invitation_action_to_the_account_status_page",scenario:"waitlist_landing",find:'href:"/waitlist", note:',replacement:'href:"/signup#waiting-list", note:',expected:["the_primary_action_opens_the_invitation_email_field_in_the_first_screen"]},
+    {name:"never_lead_with_the_invitation_form",scenario:"waitlist_offered",find:invitationLead,replacement:'false ? "invite"',expected:["get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list"]},
     {name:"always_say_payment_is_open",scenario:"closed_service",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_says_invitation_only_while_account_creation_is_closed"]},
     {name:"always_say_payment_is_open_once_checkout_is_open",scenario:"open_checkout",find:paymentCall,replacement:'applyPaymentState("open");',expected:["pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed"]},
     {name:"ignore_account_creation_when_checkout_is_open",scenario:"open_checkout",find:paymentRule,replacement:'const publicPaymentState = (registration, checkout) => checkout === true ? "open" : "closed";',expected:["pricing_view_says_invitation_only_when_checkout_is_open_and_account_creation_is_closed"]},
@@ -763,27 +1153,67 @@ try {
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
-  /* Removed-guard controls for the benefit list. The served script is changed in memory only, never a source file.
-     Each control takes away one way of reaching a detail, or the rule that closes the others, and must fail a named
-     check. Together they show that a mouse, a keyboard and a touch screen each have their own path to the detail. */
-  const benefitControls=[
-    {name:"never_open_a_benefit_on_a_press",find:'title.addEventListener("click", () => openBenefit(name));',expected:["pressing_a_benefit_shows_only_its_own_detail"]},
-    {name:"never_open_a_benefit_on_keyboard_focus",find:'title.addEventListener("focus", () => openBenefit(name));',expected:["keyboard_focus_alone_opens_each_benefit"]},
-    {name:"never_open_a_benefit_when_it_is_pointed_at",find:'benefitItem(title).addEventListener("mouseenter", () => openBenefit(name));',expected:["pointing_at_a_benefit_opens_it"]},
-    {name:"leave_every_benefit_open_at_once",find:"benefitDetail(title).hidden = !open;",replacement:"benefitDetail(title).hidden = false;",expected:["pressing_a_benefit_shows_only_its_own_detail","keyboard_focus_alone_opens_each_benefit","pointing_at_a_benefit_opens_it"]},
-    {name:"stop_saying_which_benefit_is_open",find:'title.setAttribute("aria-expanded", String(open));',expected:["pressing_a_benefit_shows_only_its_own_detail"]}];
-  for(const control of benefitControls){
+  /* Removed-guard controls for the homepage itself: one digest of the demonstration changed, the band grounds and rules taken
+     away, a note that grows after the script runs, a part that is being built called available or live, and a second primary
+     action in the header. Each serves changed bytes of one or more files in memory, never a source file, and must fail its own
+     named check. */
+  const openChanged=async changes=>{
+    const opened=await context.newPage(),found=new Set();
+    opened.on("pageerror",()=>{});
+    const paths=[...new Set(changes.map(change=>change.path))];
+    for(const path of paths)await opened.route(url=>url.origin===new URL(fixture.base).origin&&url.pathname===path,async route=>{
+      const response=await route.fetch(),source=await response.text();let body=source;
+      for(const change of changes.filter(change=>change.path===path)){if(body.includes(change.find))found.add(change);body=body.split(change.find).join(change.replacement);}
+      await route.fulfill({response,body});});
+    await opened.goto(fixture.base+"/");
+    await opened.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
+    return {page:opened,applied:()=>changes.every(change=>found.has(change))};
+  };
+  const firstShown=releasedReferences.normalize_phone_numbers?.digest.slice(0,8)||"(none)";
+  const homepageControls=[
+    {name:"change_one_digest_in_the_demonstration",changes:[{path:"/",find:'data-fact="digest">'+firstShown+"<",replacement:'data-fact="digest">'+firstShown.replace(/.$/,last=>last==="0"?"1":"0")+"<"}],
+     run:async (opened,note)=>note("demo_names_sizes_and_digests_agree_with_this_release_manifest",demoFactProblems(await demoFacts(opened)).length===0),
+     expected:["demo_names_sizes_and_digests_agree_with_this_release_manifest"]},
+    {name:"paint_every_band_alike_without_rules",changes:[{path:"/assets/service.css",find:"--band:#FFFFFF;",replacement:"--band:#F5F6F8;"},{path:"/assets/service.css",find:"--rule:#E2E6EC;",replacement:"--rule:transparent;"}],
+     run:async (opened,note)=>note("homepage_sets_every_band_apart_on_an_off_white_ground",bandProblems(await homeBands(opened)).length===0),
+     expected:["homepage_sets_every_band_apart_on_an_off_white_ground"]},
+    {name:"call_the_overnight_work_available",changes:[{path:"/",find:'data-status="building">Being built</p></li>\n      </ul></section>',replacement:'data-status="available">Available now</p></li>\n      </ul></section>'}],
+     run:async (opened,note)=>note("homepage_names_six_problems_each_with_its_honest_state",statusProblems(await statusCards(opened,"[data-problem]","problem"),problemOrder,availableProblems).length===0),
+     expected:["homepage_names_six_problems_each_with_its_honest_state"]},
+    {name:"call_the_fresh_harness_live",changes:[{path:"/",find:'and nothing from your global settings.</p><p class="status-tag is-building" data-status="building">Being built</p>',replacement:'and nothing from your global settings.</p><p class="status-tag is-live" data-status="live">Live</p>'}],
+     run:async (opened,note)=>note("how_it_works_steps_say_only_search_and_download_are_live",statusProblems(await statusCards(opened,"[data-how-step]","howStep"),stepOrder,liveSteps).length===0),
+     expected:["how_it_works_steps_say_only_search_and_download_are_live"]},
+    {name:"unfold_the_phone_menu_into_the_header",changes:[{path:"/assets/architecture.css",find:"  .header nav{display:none;position:absolute;",replacement:"  .header nav{display:flex;flex-wrap:wrap;flex-basis:100%;position:static;"}],
+     run:async (opened,note)=>{await opened.setViewportSize({width:390,height:844});note("phone_first_screen_holds_the_whole_primary_action_under_a_compact_header",phoneFirstScreen(await firstScreen(opened)));},
+     expected:["phone_first_screen_holds_the_whole_primary_action_under_a_compact_header"]},
+    {name:"take_the_focus_mark_away",changes:[{path:"/assets/service.css",find:":focus-visible{outline:3px solid var(--accent);outline-offset:3px}",replacement:":focus-visible{outline:0}"},{path:"/assets/architecture.css",find:":focus-visible{outline:3px solid var(--accent);outline-offset:3px}",replacement:":focus-visible{outline:0}"}],
+     run:async (opened,note)=>note("keyboard_focus_is_visible_in_both_appearances",unmarkedStops(await focusMarks(opened,12)).length===0),
+     expected:["keyboard_focus_is_visible_in_both_appearances"]},
+    {name:"leave_the_phone_menu_open_after_a_choice",changes:[{path:"/assets/service.js",find:'show(name); $("menu-toggle").checked = false;',replacement:"show(name);"}],
+     run:async (opened,note)=>{await opened.setViewportSize({width:390,height:1000});await opened.locator("header .menu-button").click();await opened.locator('header nav a[data-page="pricing"]').click();
+       const state=await menuState(opened);note("phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice",state.path==="/pricing"&&!state.open&&state.links.length===0);},
+     expected:["phone_menu_opens_by_press_and_keyboard_and_closes_on_a_choice"]},
+    {name:"add_a_second_primary_action_to_the_header",changes:[{path:"/",find:'<span data-access-label id="header-primary-label">Request an invitation</span></a>',replacement:'<span data-access-label id="header-primary-label">Request an invitation</span></a><a class="button primary" href="/waitlist">Join the waiting list</a>'}],
+     run:async (opened,note)=>{const actions=await primaryActions(opened);note("homepage_primary_actions_all_carry_the_one_label",primaryProblems(actions).length===0&&actions.filter(action=>action.header).length===1&&actions.length>=4);},
+     expected:["homepage_primary_actions_all_carry_the_one_label"]},
+    {name:"lengthen_the_hero_note_after_the_script_runs",changes:[{path:"/assets/service.js",find:'$("hero-access-note").textContent = state.note;',replacement:'$("hero-access-note").textContent = state.note + " " + state.note + " " + state.note;'}],
+     run:async (opened,note)=>note("homepage_first_screen_does_not_move_when_the_script_runs",boxesMoved(servedHeroBoxes,await heroBoxes(opened)).length===0),
+     expected:["homepage_first_screen_does_not_move_when_the_script_runs"]}];
+  for(const control of homepageControls){
     const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
     let applied=false,problem="";
-    try{const {page:changed,state}=await openPublic(fixture.base,{find:control.find,replacement:control.replacement??"void 0;"});applied=state.applied;await checkBenefitList(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    try{const {page:changed,applied:wasApplied}=await openChanged(control.changes);await control.run(changed,note);applied=wasApplied();await changed.close();}catch(error){problem=safeError(error);}
     const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
-    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
   /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the served text. */
   const servedHome=await (await page.request.get(fixture.base+"/")).text();
+  /* The careful access state is the operator's panel leading the Get started page, with the invitation form and the account
+     action held back, and the note under the hero action written for closed registration. */
   const carefulDefaults=["Payment not open","Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.",
-    "Payment is not open yet. Nothing on this page charges you today.","Join the waiting list",keyWording.closed.offer,keyWording.closed.plan];
+    "Payment is not open yet. Nothing on this page charges you today.",'data-start-access="operator"',waitingNote,keyWording.closed.offer,keyWording.closed.plan,
+    'id="hero-primary" href="/waitlist" data-page="setup" data-access-state="waiting"><span data-access-label id="hero-primary-label">Request an invitation</span>'];
   const unsettled=/Checking payment|Checking whether payment is open/;
   const carefulProblems=text=>[...carefulDefaults.filter(value=>!text.includes(value)),...(unsettled.test(text)?["an unsettled placeholder"]:[])];
   check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedHome).length===0,{problems:carefulProblems(servedHome)});
@@ -803,7 +1233,7 @@ try {
   const droppedBranch=workspaceRetired.replace("|early access","");
   check("retired_word_rule_comparison_rejects_a_drifted_copy",droppedBranch!==workspaceRetired&&!new RegExp(droppedBranch.slice(1,-2),"i").test("Request early access from your account page.")&&retiredAccessWords.test("Request early access from your account page."),{dropped:droppedBranch});
   await page.goto(fixture.base+"/");
-  await page.locator("#hero-how-it-works").click();
+  await page.locator("#how-explore").click();
   /* The four persistent layers and the five customer problems moved off the homepage, which sells, on to How it works,
      which explains. Both are still shown to a customer, and both are checked where they now live. */
   check("all_four_persistent_intelligence_layers_are_visible",await page.locator('[data-view="about"] [data-intelligence-layer]').count()===4&&await page.getByRole("heading",{name:"Context Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Code Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"Runtime History and Solution Intelligence",exact:true}).isVisible()&&await page.getByRole("heading",{name:"User Feedback Intelligence",exact:true}).isVisible());
@@ -843,7 +1273,7 @@ try {
   await page.goto(fixture.base+"/app");
   check("anonymous_workspace_has_real_setup_and_no_active_search",await page.locator("#query").isDisabled()&&await page.locator("#workspace-access-link").isVisible());
   /* The page may refuse the reviewed record. The wait accepts that state, the refusal is reported by name with its code, and the checks that need a shown recipe are skipped by name. */
-  await page.goto(fixture.base+"/connect"); await page.waitForFunction(()=>!document.querySelector("#client-choice").disabled||document.querySelector("#setup-message").textContent!=="");
+  await page.goto(fixture.base+"/connect"); await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   const reviewedState=await connectState(page),skipped={skipped:"the page did not show the reviewed recipe record",refusal:reviewedState.refusal||"unavailable"};
   check("reviewed_recipe_record_is_accepted_by_the_page",reviewedState.shown&&reviewedState.refusal==="",{refusal:reviewedState.refusal});
   check("guided_setup_uses_current_origin_and_no_embedded_token",(await page.locator("#client-configuration").innerText()).includes(fixture.base+"/mcp")&&!(await page.locator("#client-configuration").innerText()).includes(fixture.token));
@@ -851,7 +1281,7 @@ try {
   await page.screenshot({path:output.replace(/\.json$/,"-connect-desktop.png"),fullPage:true});
   await page.setViewportSize({width:390,height:1000});await page.screenshot({path:output.replace(/\.json$/,"-connect-mobile.png"),fullPage:true});await page.setViewportSize({width:1440,height:1000});
   if(reviewedState.shown){
-    await page.selectOption("#client-choice","opencode");
+    await page.locator("#client-tab-opencode").click();
     const recipe=JSON.parse(await page.locator("#client-configuration").innerText());
     check("client_selection_changes_real_secret_free_configuration",recipe.mcp.baltor.url===fixture.base+"/mcp"&&recipe.mcp.baltor.oauth===false&&recipe.mcp.baltor.headers.Authorization==="Bearer {env:BALTOR_SERVICE_TOKEN}");
   }else check("client_selection_changes_real_secret_free_configuration",false,skipped);
@@ -863,17 +1293,40 @@ try {
   let sameAddress=null;try{sameAddress=[schemeOnly,withBackslashes].every(text=>new URL(text).href===otherOrigin);}catch(_){sameAddress=false;}
   check("known_wrong_addresses_reach_another_host_in_a_client_address_parser",sameAddress===true&&otherOrigin!==fixture.base+"/mcp",{forms:2});
   const {page:recipePage,state:recipeState}=await openConnect(recipeContext,fixture.base);
-  check("connect_view_offers_the_three_reviewed_recipes",recipeRecord.recipes.length===3&&["codex","opencode","claude-code"].every(id=>recipeRecord.recipes.some(item=>item.id===id))&&JSON.stringify(await recipePage.locator("#client-choice option").evaluateAll(items=>items.map(item=>item.value)))===JSON.stringify(recipeRecord.recipes.map(item=>item.id)));
+  check("connect_view_offers_the_three_reviewed_recipes",recipeRecord.recipes.length===3&&["codex","opencode","claude-code"].every(id=>recipeRecord.recipes.some(item=>item.id===id))&&JSON.stringify(await recipePage.locator('#client-tabs [role="tab"]').evaluateAll(items=>items.map(item=>item.dataset.recipe)))===JSON.stringify(recipeRecord.recipes.map(item=>item.id)));
+  /* The recipes are tabs: the arrow keys, Home and End move the choice and the focus, only the chosen tab is in the tab order, and
+     the panel is labelled by the chosen tab. A page whose key handler is taken away is the removed-guard control. */
+  const tabState=target=>target.evaluate(()=>{const tabs=[...document.querySelectorAll('#client-tabs [role="tab"]')];
+    return {chosen:tabs.filter(tab=>tab.getAttribute("aria-selected")==="true").map(tab=>tab.dataset.recipe),focused:document.activeElement?.dataset?.recipe||"",
+      inOrder:tabs.filter(tab=>tab.tabIndex===0).map(tab=>tab.dataset.recipe),labelled:document.getElementById("client-recipe-panel")?.getAttribute("aria-labelledby")||"",
+      text:document.getElementById("client-configuration")?.textContent||""};});
+  const recipeIds=recipeRecord.recipes.map(item=>item.id);
+  const pressRecipeKeys=async target=>{const keyed=[];if(await target.locator("#client-tab-"+recipeIds[0]).count()===0)return keyed;
+    await target.locator("#client-tab-"+recipeIds[0]).click();await target.locator("#client-tab-"+recipeIds[0]).focus();
+    for(const [key,want] of [["ArrowRight",recipeIds[1]],["ArrowRight",recipeIds[2]],["ArrowRight",recipeIds[0]],["ArrowLeft",recipeIds[2]],["Home",recipeIds[0]],["End",recipeIds[2]]]){await target.keyboard.press(key);keyed.push({key,want,...await tabState(target)});}
+    return keyed;};
+  const tabsFollowKeys=items=>items.length===6&&items.every(item=>JSON.stringify(item.chosen)===JSON.stringify([item.want])&&item.focused===item.want&&JSON.stringify(item.inOrder)===JSON.stringify([item.want])&&item.labelled==="client-tab-"+item.want)&&new Set(items.map(item=>item.text)).size===3;
+  const keyed=await pressRecipeKeys(recipePage);
+  check("recipe_tabs_follow_the_arrow_keys_home_and_end",tabsFollowKeys(keyed),{keyed:keyed.map(({text,...rest})=>rest)});
+  check("recipe_tab_check_rejects_a_tab_that_keeps_the_focus_elsewhere",!tabsFollowKeys(keyed.map((item,index)=>index===2?{...item,focused:""}:item))&&!tabsFollowKeys(keyed.slice(1))&&!tabsFollowKeys(keyed.map(item=>({...item,inOrder:recipeIds}))));
+  {
+    let applied=false,problem="",followed=true;
+    try{const {page:changed,state}=await openConnect(recipeContext,fixture.base,{mutation:{find:'$("client-tabs").addEventListener("keydown"',replacement:'void 0 && $("client-tabs").addEventListener("keydown"'}});
+      applied=state.applied;followed=tabsFollowKeys(await pressRecipeKeys(changed));await changed.close();}catch(error){problem=safeError(error);}
+    const detected=applied&&!problem&&!followed;
+    mutants.push({name:"ignore_the_arrow_keys_on_the_recipe_tabs",applied,detected,required_checks:["recipe_tabs_follow_the_arrow_keys_home_and_end"],missed_checks:followed?["recipe_tabs_follow_the_arrow_keys_home_and_end"]:[],failed_checks:followed?[]:["recipe_tabs_follow_the_arrow_keys_home_and_end"],...(problem?{problem}:{})});
+    check("removed_guard_is_detected_ignore_the_arrow_keys_on_the_recipe_tabs",detected,{applied,...(problem?{problem}:{})});
+  }
   const namedVariables=new Set();
   for(const item of recipeRecord.recipes)for(const word of (await checkShownRecipe(recipePage,fixture.base,recipeRecord,item,check)).match(/\b[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+\b/g)||[])namedVariables.add(word);
   check("every_recipe_and_the_token_instructions_name_one_variable",namedVariables.size===1&&namedVariables.has(variable)&&recipeRecord.recipes.every(item=>textLeaves(item.configuration).some(([,text])=>text.includes(variable))),{names:[...namedVariables]});
   const entryNames=(value,parent="",found=[])=>{if(value&&typeof value==="object"&&!Array.isArray(value)){if(typeof value.url==="string")found.push(parent);for(const [name,item] of Object.entries(value))entryNames(item,name,found);}return found;};
   check("every_recipe_names_the_same_server_entry",recipeRecord.recipes.every(item=>JSON.stringify(entryNames(item.configuration))===JSON.stringify(["baltor"])&&item.removal_note.includes("baltor")&&item.removal_note.includes(variable)));
-  await recipePage.selectOption("#client-choice","claude-code");
+  await recipePage.locator("#client-tab-claude-code").click();
   const claude=JSON.parse(await recipePage.locator("#client-configuration").innerText()).mcpServers.baltor;
   check("claude_code_recipe_is_a_project_file_with_an_environment_reference",claude.type==="http"&&claude.url===fixture.base+"/mcp"&&JSON.stringify(claude.headers)===JSON.stringify({Authorization:"Bearer ${"+variable+"}"})&&(await recipePage.locator("#configuration-location").innerText()).includes(".mcp.json")&&await recipePage.locator("#client-verify-command").innerText()==="claude mcp list");
   await recipePage.screenshot({path:output.replace(/\.json$/,"-connect-claude-code.png"),fullPage:true});
-  await recipePage.selectOption("#client-choice","codex");
+  await recipePage.locator("#client-tab-codex").click();
   const codexText=await recipePage.locator("#client-configuration").innerText();
   check("codex_recipe_is_a_table_that_names_the_variable",codexText.startsWith("[mcp_servers.baltor]\n")&&codexText.includes('bearer_token_env_var = "'+variable+'"')&&codexText.includes('url = "'+fixture.base+'/mcp"'));
   check("copying_a_recipe_stores_nothing_in_the_browser",await recipePage.evaluate(()=>localStorage.length===0&&sessionStorage.length===0&&document.cookie==="")&&(await recipeContext.cookies()).length===0);
@@ -881,7 +1334,7 @@ try {
   check("connect_page_keeps_inline_code_forbidden",["default-src 'none'","script-src 'self'","style-src 'self'"].every(part=>recipeState.policy.includes(part))&&!recipeState.policy.includes("unsafe-inline")&&!/<style[\s>]|\sstyle\s*=|<script(?![^>]*\ssrc=)[^>]*>|\son[a-z]+\s*=/i.test(connectMarkup)&&await recipePage.evaluate(()=>window.policyViolations.length)===0,{policy:recipeState.policy});
   const fits=[];
   for(const item of recipeRecord.recipes){
-    await recipePage.selectOption("#client-choice",item.id);await recipePage.setViewportSize({width:320,height:1000});
+    await recipePage.locator("#client-tab-"+item.id).click();await recipePage.setViewportSize({width:320,height:1000});
     fits.push(await recipePage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
     await recipePage.evaluate(()=>document.documentElement.style.fontSize="200%");
     fits.push(await recipePage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
@@ -899,7 +1352,7 @@ try {
   for(const origin of servingOrigins){
     const {page:other}=await openConnect(recipeContext,origin);
     for(const item of recipeRecord.recipes){
-      await other.selectOption("#client-choice",item.id);
+      await other.locator("#client-tab-"+item.id).click();
       const text=await other.locator("#client-configuration").evaluate(node=>node.textContent),value=item.format==="toml"?readToml(text):JSON.parse(text),targets=textLeaves(value).filter(([key])=>key==="url");
       followed.push(targets.length===1&&targets[0][1]===origin+"/mcp"&&!text.includes(fixture.base));
     }
@@ -966,13 +1419,13 @@ try {
   const downloadEvent=page.waitForEvent("download"); await page.locator(".result button").first().click(); const download=await downloadEvent;
   const stream=await download.createReadStream(); const chunks=[]; for await (const chunk of stream) chunks.push(chunk);
   check("browser_download_checks_actual_bytes_against_the_selected_digest",Buffer.concat(chunks).toString()==="APPROVED_ALPHA_BODY"&&(await page.locator(".result").first().innerText()).includes("Digest verified"));
-  await page.locator('header a[data-page="account"]').click();
+  await headerLink(page,"account");
   check("account_route_retains_same_in_memory_connection",(await page.locator("#account-facts").innerText()).includes("alpha"));
   await page.click("#refresh-usage"); await page.waitForFunction(()=>document.querySelector("#usage").textContent.includes("record_type"));
   check("usage_is_read_from_durable_service_state",JSON.parse(await page.locator("#usage").textContent()).records===1);
   await page.click("#refresh-billing"); await page.waitForFunction(()=>document.querySelector("#billing").textContent.includes("unavailable"));
   check("unconfigured_billing_is_not_a_fake_purchase_flow",await page.locator("#billing button").count()===0);
-  await page.locator('header a[data-page="workspace"]').click();
+  await headerLink(page,"workspace");
   await page.route("**/api/v1/retrieval",async route=>{const response=await route.fetch(); const body=await response.json(); body.result.hits[0].purpose='<img src=x onerror="window.poisoned=true">'; await route.fulfill({response,json:body});});
   await page.click("#search-button"); await page.waitForFunction(()=>document.querySelector("#results").textContent.includes("onerror"));
   check("retrieved_metadata_is_text_not_executable_HTML",await page.locator("#results img").count()===0&&await page.evaluate(()=>window.poisoned!==true));
@@ -999,10 +1452,10 @@ try {
   }
   await page.goto(fixture.base+"/login"); await page.fill("#access-token",fixture.token); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   await page.fill("#query","Alpha"); await page.click("#search-button"); await page.waitForSelector(".result");
-  await page.locator('header a[data-page="login"]').click(); await page.click("#disconnect");
+  await headerLink(page,"login"); await page.click("#disconnect");
   check("disconnect_clears_identity_results_and_controls",await page.locator(".result").count()===0&&await page.locator("#query").isDisabled()&&await page.locator("#identity-facts").innerText()==="");
   await page.goto(fixture.billing_base+"/login"); await page.fill("#access-token",fixture.billing_token); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
-  await page.locator('header a[data-page="account"]').click();
+  await headerLink(page,"account");
   await page.click("#refresh-billing"); await page.waitForSelector("#billing button");
   check("configured_billing_offers_only_host_defined_plans",await page.locator("#billing button").count()===3&&(await page.locator("#billing").innerText()).includes("Basic service"));
   await page.getByRole("button",{name:"Choose Basic service",exact:true}).click(); await page.waitForSelector("#billing-message a");
@@ -1026,15 +1479,15 @@ try {
   await page.goto(fixture.base+"/login");await page.waitForFunction(()=>document.querySelector("#connect-button")!==null);
   await page.fill("#access-token",fixture.token);await page.click("#connect-button");await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   releasePublic();await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available")||document.querySelector("#service-status").textContent.includes("Service unavailable"));
-  await page.waitForFunction(()=>!document.querySelector("#client-choice").disabled||document.querySelector("#setup-message").textContent!=="");
-  check("sign_in_during_public_configuration_loading_preserves_setup",heldPublic===2&&!await page.locator("#client-choice").isDisabled()&&!await page.locator("#test-protocol").isDisabled(),{heldPublic});
+  await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
+  check("sign_in_during_public_configuration_loading_preserves_setup",heldPublic===2&&await page.locator('#client-tabs [role="tab"]').count()>0&&!await page.locator("#test-protocol").isDisabled(),{heldPublic});
   await page.unroute(/\/(?:api\/v1\/capabilities|assets\/client-recipes\.json)$/);
   let releasePrivate,heldPrivate=false;const privateGate=new Promise(resolve=>{releasePrivate=resolve;});
   await page.route("**/mcp",async route=>{if(route.request().postDataJSON()?.method==="tools/list"){heldPrivate=true;await privateGate;}await route.continue().catch(()=>{});});
   await page.locator('header a[data-page="setup"]').click();await page.click("#test-protocol");
   await new Promise((resolve,reject)=>{const deadline=setTimeout(()=>{clearInterval(poll);reject(new Error("No held authenticated request"));},5000);const poll=setInterval(()=>{if(heldPrivate){clearInterval(poll);clearTimeout(deadline);resolve();}},10);});
   const aborted=page.waitForEvent("requestfailed",{predicate:request=>new URL(request.url()).pathname==="/mcp"});
-  await page.locator('header a[data-page="login"]').click();await page.click("#disconnect");await aborted;releasePrivate();
+  await headerLink(page,"login");await page.click("#disconnect");await aborted;releasePrivate();
   check("sign_out_still_aborts_credential_bound_protocol_requests",await page.locator("#protocol-tools li").count()===0&&await page.locator("#test-protocol").isDisabled()&&(await page.locator("#protocol-result").innerText()).startsWith("Not tested"));
   await page.unroute("**/mcp");
   await page.route(fixture.identity_origin+"/auth/v1/token**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":fixture.account_base,"Access-Control-Allow-Headers":"*","Access-Control-Allow-Methods":"POST, OPTIONS"},body:JSON.stringify({access_token:fixture.identity_token,refresh_token:"local-fixture-refresh",expires_in:1800,token_type:"bearer",user:fixture.identity_user})}));
@@ -1042,7 +1495,7 @@ try {
   await page.goto(fixture.account_base+"/login");await page.waitForSelector("#email-login:not([hidden])");
   await page.fill("#login-email",fixture.identity_user.email);await page.fill("#login-password","local-browser-fixture-password");await page.click("#email-login-button");
   await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
-  await page.locator('header a[data-page="account"]').click();await page.click("#refresh-client-access");
+  await headerLink(page,"account");await page.click("#refresh-client-access");
   await page.waitForSelector("#client-access-controls:not([hidden])");
   check("verified_customer_can_open_personal_token_controls",await page.locator("#create-client-token").isEnabled()&&await page.locator("#client-token-scopes input").count()===3);
   await page.fill("#client-token-label","My laptop");await page.fill("#client-token-minutes","60");await page.click("#create-client-token");
@@ -1056,6 +1509,14 @@ try {
   page.once("dialog",dialog=>dialog.accept());await page.getByRole("button",{name:"Revoke My laptop",exact:true}).click();
   await page.waitForFunction(()=>document.querySelector("#client-access-list").textContent.includes("revoked"));
   check("customer_dashboard_revokes_real_client_access",(await page.request.get(fixture.account_base+"/api/v1/session",{headers:{Authorization:"Bearer "+personalToken}})).status()===401);
+  /* The account page follows the dashboard design: a side navigation whose every link opens a page or a section this service has,
+     with Overview marked as the current page. The design's settings page is left out, because this service has none yet. */
+  const dashboardNav=await page.evaluate(()=>[...(document.querySelector('[data-view="account"]')?.querySelectorAll(".dashboard-nav a")||[])].map(link=>{const href=link.getAttribute("href")||"",part=href.split("#")[1]||"";
+    return {label:link.textContent.trim(),href,current:link.getAttribute("aria-current")==="page",target:part?Boolean(document.getElementById(part)):href.startsWith("/")};}));
+  const navProblems=items=>[...(JSON.stringify(items.map(item=>item.label))===JSON.stringify(["Overview","Connect","Keys","Library","Usage","Billing"])?[]:["the sections are "+JSON.stringify(items.map(item=>item.label))]),
+    ...items.filter(item=>!item.target).map(item=>item.label+" points at a section the page does not have"),...(items.filter(item=>item.current).map(item=>item.label).join()==="Overview"?[]:["Overview is not marked as the current page"])];
+  check("account_page_carries_the_dashboard_navigation",navProblems(dashboardNav).length===0,{problems:navProblems(dashboardNav)});
+  check("dashboard_navigation_check_rejects_a_link_to_a_missing_section",dashboardNav.length===6&&navProblems([...dashboardNav.slice(0,5),{...dashboardNav[5],target:false}]).length===1&&navProblems(dashboardNav.map(item=>({...item,current:false}))).length===1);
   for(const width of [1440,390,320]){
     await page.setViewportSize({width,height:1000});
     check("customer_controls_fit_"+width,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
@@ -1067,18 +1528,22 @@ try {
   await page.route("**/api/v1/account/access",async route=>{if(route.request().method()==="GET"){const response=await route.fetch();customerResponseHeld=true;await customerGate;await route.fulfill({response}).catch(()=>{});}else await route.continue();});
   await page.click("#refresh-client-access");
   await new Promise((resolve,reject)=>{const end=setTimeout(()=>{clearInterval(poll);reject(new Error("Customer response was not held"));},5000);const poll=setInterval(()=>{if(customerResponseHeld){clearInterval(poll);clearTimeout(end);resolve();}},10);});
-  await page.locator('header a[data-page="login"]').click();await page.click("#disconnect");releaseCustomer();
+  await headerLink(page,"login");await page.click("#disconnect");releaseCustomer();
   check("customer_sign_out_clears_tokens_before_delayed_reply",await page.locator("#client-access-controls").isHidden()&&await page.inputValue("#client-issued-token")===""&&await page.locator("#refresh-client-access").isDisabled());
   await page.unroute("**/api/v1/account/access");
-  /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. */
+  /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. The
+     form leads the Get started page, which every page reaches through the one primary action of the header, "Request an
+     invitation" at /waitlist while account creation is closed, and /connect opens the same page. */
   await page.setViewportSize({width:1440,height:1000});
   await page.goto(fixture.base+"/waitlist"); await page.waitForFunction(()=>document.querySelector("#waitlist-state").textContent!=="Checking availability");
-  check("a_service_without_a_waiting_list_makes_no_offer",await page.locator("#waitlist-link").isHidden()&&await page.locator("#waitlist-form").isHidden()&&await page.locator("#waitlist-closed").isVisible()&&await page.locator("#waitlist-discount").isHidden());
+  check("a_service_without_a_waiting_list_makes_no_offer",await page.locator('[data-view="setup"]').isVisible()&&await page.locator("#waitlist-form").isHidden()&&await page.locator("#start-invite").isHidden()&&await page.locator("#waitlist-closed").isVisible()&&await page.locator("#waitlist-discount").isHidden());
   await page.goto(fixture.base+"/signup");
   check("a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",await page.locator("#signup-waitlist-link").isHidden());
-  await page.goto(fixture.account_base+"/"); await page.waitForFunction(()=>document.querySelector("#waitlist-link")&&!document.querySelector("#waitlist-link").hidden);
-  await page.locator('footer a[data-page="waitlist"]').click();
-  check("a_service_with_a_waiting_list_offers_the_form_from_every_page",new URL(page.url()).pathname==="/waitlist"&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden());
+  await page.goto(fixture.account_base+"/pricing"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+  await page.locator('header a[data-page="setup"]').click();
+  check("a_service_with_a_waiting_list_leads_the_get_started_page_with_the_form",new URL(page.url()).pathname===accessPaths.closed&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden()&&sameLead(await startLead(page),"invite"));
+  await page.goto(fixture.account_base+"/waitlist"); await page.waitForSelector("#waitlist-form",{state:"visible"});
+  check("the_waiting_list_address_opens_the_same_get_started_page",new URL(page.url()).pathname==="/waitlist"&&await page.locator('[data-view="setup"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1&&(await page.title()).endsWith("| Get started"));
   check("the_discount_is_named_only_where_checkout_takes_a_code",await page.locator("#waitlist-discount").isHidden(),{discount_code:(await (await page.request.get(fixture.account_base+"/api/v1/capabilities")).json()).result.billing.discount_code});
   await page.fill("#waitlist-email","browser.request@example.invalid"); await page.fill("#waitlist-note","My agents rebuild the same checks on every task.");
   await page.click("#waitlist-button"); await page.waitForFunction(()=>document.querySelector("#waitlist-message").textContent.startsWith("Thank you"));
@@ -1424,7 +1889,7 @@ try {
       const saving=opened.waitForEvent("download",{timeout:2500}).then(()=>false,()=>true);
       await opened.click("#browse-download");
       await opened.waitForFunction(()=>window.__digestHeld===true,null,{timeout:8000});
-      await opened.locator('header a[data-page="login"]').click();
+      await headerLink(opened,"login");
       await opened.click("#disconnect");
       await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
       await opened.evaluate(()=>window.__releaseDigest());
@@ -1444,7 +1909,7 @@ try {
       await opened.click("#refresh-browse");
       await new Promise((resolve,reject)=>{const deadline=setTimeout(()=>{clearInterval(poll);reject(new Error("No held catalogue request"));},5000);
         const poll=setInterval(()=>{if(held){clearInterval(poll);clearTimeout(deadline);resolve();}},10);});
-      await opened.locator('header a[data-page="login"]').click();
+      await headerLink(opened,"login");
       await opened.click("#disconnect");
       await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
       release();

@@ -11,29 +11,39 @@
   const show = name => {
     document.body.dataset.page = name;
     document.querySelectorAll("[data-view]").forEach(item => { item.hidden = item.dataset.view !== name; });
-    document.querySelectorAll("[data-page]").forEach(item => { if (item.dataset.page === name) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current"); });
+    // A link to a part of a page, such as the library section of the homepage, is not the page itself.
+    document.querySelectorAll("[data-page]").forEach(item => { if (item.dataset.page === name && !(item.getAttribute("href") || "").includes("#")) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current"); });
   };
   // "/get-started" and "/connect" open the same Get started page. The serving route table does not list
   // "/get-started" yet, so that address works through the navigation and a direct visit is not served.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/waitlist":"waitlist", "/auth/callback":"login"};
+  // "/waitlist" is served and opens the same page too, because the invitation request form leads it.
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/waitlist":"setup", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
   const serviceName = document.title.split(" | ")[0];
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", waitlist:"Ask for an invitation"}[name]; };
+  // Opening a page closes the phone menu, which the page script would otherwise leave open over the new page.
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); $("menu-toggle").checked = false; document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
-  /* The public access action, the pricing state and the personal-key wording come from the service capabilities record, never from wording kept in this file.
+  addEventListener("keydown", event => { const menu = $("menu-toggle"); if (event.key === "Escape" && menu.checked) { menu.checked = false; menu.focus(); } });
+  /* The public access state, the pricing state and the personal-key wording come from the service capabilities record, never from wording kept in this file.
      They are read only from this exact record version, because another version may rename a field or give it a different meaning.
      Until the service answers, if it never answers, and for any other record version, the page keeps the careful state:
-     the waiting list, payment not open, personal keys described as being prepared. */
+     registration closed, the operator's address leading the Get started page, payment not open, personal keys described as being prepared.
+     Every public access action carries one label in each state and opens the Get started page. The owner, September 22, 2026:
+     "get started and join the waiting list are redundant". While account creation is closed the label is "Request an invitation"
+     and the address is /waitlist, where the invitation form or the way to reach the operator leads the page; while it is open the
+     label is "Get started". The state also shows in the note under the hero action and in the panel that leads the page. */
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
-    open:{label:"Create your account", href:"/signup", note:"Account creation is open. Search is free, and one downloaded item is the measured unit."},
-    waiting:{label:"Join the waiting list", href:"/signup#waiting-list", note:"Accounts open in small groups. Join the waiting list and we will write to you when your turn comes."}};
+    open:{label:"Get started", href:"/connect", note:"Account creation is open", tag:"Open to new accounts",
+          closing:"Create your account today. Search is free, and invited accounts stay free."},
+    waiting:{label:"Request an invitation", href:"/waitlist", note:"Invitation only while we open in small groups", tag:"Invitation only",
+             closing:"Request an invitation today. Invited accounts are free while we open in small groups."}};
   const paymentStates = {
     open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited accounts stay free."},
     invitation_only:{badge:"Invitation only", note:"Accounts open by invitation. Invited accounts stay free. A signed-in account can subscribe from its account page when checkout is available.", teaser:"Accounts open by invitation, and invited accounts stay free."},
@@ -42,13 +52,23 @@
      so it never offers the waiting list beside "Payment open". Payment is open only when account creation and checkout are both open.
      The account page keeps its own checkout and portal buttons, which follow the session options of the signed-in account. */
   const publicPaymentState = (registration, checkout) => registration !== true ? "invitation_only" : checkout === true ? "open" : "closed";
+  /* Every public access action carries the same attribute and a marked label, so an action added to another page later follows
+     the reported state instead of a label written into it. */
   const applyAccessState = open => {
     const state = open === true ? accessStates.open : accessStates.waiting;
-    for (const id of ["hero-primary", "pricing-primary", "closing-primary"]) {
-      $(id).setAttribute("href", state.href); $(id).dataset.accessState = open === true ? "open" : "waiting";
-      $(id + "-label").textContent = state.label;
+    for (const action of document.querySelectorAll("[data-access-state]")) {
+      action.setAttribute("href", state.href); action.dataset.accessState = open === true ? "open" : "waiting";
+      action.querySelector("[data-access-label]").textContent = state.label;
     }
-    $("hero-access-note").textContent = state.note;
+    $("hero-access-note").textContent = state.note; $("home-plan-access").textContent = state.tag; $("closing-note").textContent = state.closing;
+  };
+  /* The Get started page leads with one panel, read from the same record: account creation when registration is open, the
+     invitation request form when the service keeps a waiting list, and otherwise the plain way to reach the operator. The
+     operator's panel is also the careful state, so the served page shows it before the service answers. */
+  const startState = website => website.registration_available === true ? "register" : website.waitlist_available === true ? "invite" : "operator";
+  const applyStartState = state => {
+    for (const panel of document.querySelectorAll("[data-start-state]")) panel.hidden = panel.dataset.startState !== state;
+    $("start-access").dataset.startAccess = state;
   };
   const applyPaymentState = name => {
     const state = paymentStates[name] || paymentStates.closed;
@@ -56,37 +76,15 @@
     $("pricing-teaser-note").textContent = state.teaser;
   };
   const clientAccessStates = {
-    open:{offer:"You can also create and revoke a key for each device from your account page.",
+    open:{offer:"A personal key for each device, from your account page",
           plan:"Create and revoke a key for every client you connect, from your account page."},
-    closed:{offer:"Creating and revoking a key for each device from your account page is being prepared. Today the person who runs the service issues your key.",
+    closed:{offer:"Keys issued by the person who runs the service; a key for each device from your account page is being prepared",
             plan:"Creating and revoking a key for every client you connect, from your account page, is being prepared. Today the person who runs the service issues your key."}};
   const applyClientAccessState = open => {
     const state = open === true ? clientAccessStates.open : clientAccessStates.closed;
     $("offer-usage-keys").textContent = state.offer; $("plan-keys-detail").textContent = state.plan;
   };
   applyAccessState(false); applyPaymentState("closed"); applyClientAccessState(false);
-  /* The benefit list on the homepage. Every detail is written in the page source, so a reader who never runs this
-     file sees all six. Once this file runs, one benefit is open at a time. Pointing at a title, moving keyboard focus
-     to it and pressing it each open that one and close the others, so a touch screen and a keyboard reach the same
-     detail that a mouse reaches. Nothing moves or fades, so a reduced-motion setting changes nothing here. */
-  const benefitTitles = [...document.querySelectorAll("[data-benefit-title]")];
-  const benefitItem = title => title.closest("[data-benefit]");
-  const benefitDetail = title => benefitItem(title).querySelector("[data-benefit-detail]");
-  const openBenefit = name => {
-    for (const title of benefitTitles) {
-      const open = title.dataset.benefitTitle === name;
-      title.setAttribute("aria-expanded", String(open));
-      benefitItem(title).dataset.open = String(open);
-      benefitDetail(title).hidden = !open;
-    }
-  };
-  for (const title of benefitTitles) {
-    const name = title.dataset.benefitTitle;
-    title.addEventListener("click", () => openBenefit(name));
-    title.addEventListener("focus", () => openBenefit(name));
-    benefitItem(title).addEventListener("mouseenter", () => openBenefit(name));
-  }
-  if (benefitTitles.length) openBenefit(benefitTitles[0].dataset.benefitTitle);
   const themes = ["system", "light", "dark"];
   const createIdentityClient = settings => window.BaltorIdentitySdk.createClient(settings.project_url, settings.publishable_key,
     {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
@@ -103,6 +101,7 @@
     $("account-note").textContent = "Sign in to see your service identity, usage and available subscription settings.";
     $("workspace-access").textContent = "Sign in to search"; $("workspace-access-note").textContent = "Search and downloads are scoped to your service account.";
     $("workspace-access-link").textContent = "Sign in to this service"; $("account-access-link").textContent = "Sign in";
+    document.querySelectorAll("[data-signed-in]").forEach(link => { link.hidden = true; });
     accessOptions = null; accessRequest = null; $("admin-nav").hidden = true; $("admin-controls").hidden = true; $("admin-login").hidden = false; $("refresh-access").disabled = true;
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
@@ -200,6 +199,7 @@
       $("workspace-access").textContent = value.principal.tenant_id; $("workspace-access-note").textContent = "Connected. Search returns only material permitted for this identity.";
       $("workspace-access-link").textContent = "Manage this connection"; $("account-access-link").textContent = "Disconnect or change account";
       $("identity").hidden = false; $("connect-form").hidden = true; $("connection-state").textContent = "Connected";
+      document.querySelectorAll("[data-signed-in]").forEach(link => { link.hidden = false; });
       ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = false; });
       $("result-count").textContent = "Ready"; message("connection-message", "Access confirmed for this tenant.");
       const administrator = value.principal.scopes.includes("access:manage");
@@ -235,12 +235,13 @@
   // The waiting list is offered only where the service says it keeps one, and
   // the discount is named only where checkout says it takes a code. Until the
   // service answers, neither is offered: an unanswered page must not make an
-  // offer that ends in a refusal.
+  // offer that ends in a refusal. The form sits in the invitation panel of the
+  // Get started page, which applyStartState shows or hides as a whole.
   const waitlistOffer = value => {
     // Read only from the record version this page was written against, like
     // every other public statement: another version offers nothing.
     const open = value?.record_type === CAPABILITIES_RECORD_TYPE && value.website?.waitlist_available === true;
-    for (const name of ["waitlist-link", "signup-waitlist-link", "waitlist-form"]) $(name).hidden = !open;
+    for (const name of ["signup-waitlist-link", "waitlist-form"]) $(name).hidden = !open;
     $("waitlist-closed").hidden = open;
     // The sign-up page says the form is still being built only while no list is offered.
     $("waiting-list-pending").hidden = open;
@@ -473,13 +474,20 @@
     const blocks = own.length ? [(path.length ? "[" + path.map(tomlKey).join(".") + "]\n" : "") + own.join("\n")] : [];
     return blocks.concat(entries.filter(([, item]) => isTable(item)).map(([key, item]) => tomlText(item, [...path, key]))).join("\n\n");
   };
-  function renderRecipe() {
-    const selected = recipes?.recipes.find(item => item.id === $("client-choice").value);
-    if (!selected) return;
+  // The reviewed recipes are offered as tabs, one for each client, and only once the record has passed every rule above.
+  let chosenRecipe = "";
+  const recipeTabs = () => [...$("client-tabs").querySelectorAll('[role="tab"]')];
+  // The configuration text of a reviewed recipe, with this service's own address in place of the placeholder.
+  const configurationText = recipe => {
     const endpoint = location.origin + "/mcp";
     const fill = value => value === endpointPlaceholder ? endpoint : Array.isArray(value) ? value.map(fill) : value && typeof value === "object" ? Object.fromEntries(Object.entries(value).map(([key, item]) => [key, fill(item)])) : value;
-    const configuration = fill(selected.configuration);
-    $("client-configuration").textContent = selected.format === "toml" ? tomlText(configuration) : JSON.stringify(configuration, null, 2);
+    const configuration = fill(recipe.configuration);
+    return recipe.format === "toml" ? tomlText(configuration) : JSON.stringify(configuration, null, 2);
+  };
+  function renderRecipe() {
+    const selected = recipes?.recipes.find(item => item.id === chosenRecipe);
+    if (!selected) return;
+    $("client-configuration").textContent = configurationText(selected);
     $("configuration-location").textContent = selected.configuration_location; $("client-configuration-note").textContent = selected.configuration_note;
     $("client-verify-command").textContent = selected.verification_command; $("client-verify-note").textContent = selected.verification_note;
     $("client-version-note").textContent = selected.version_note;
@@ -487,7 +495,22 @@
     $("client-source").href = selected.source_url; $("client-source").textContent = selected.source_url;
     $("copy-configuration").disabled = false; $("copy-configuration").textContent = "Copy configuration without secrets"; message("setup-message", "");
   }
-  $("client-choice").addEventListener("change", renderRecipe);
+  function chooseRecipe(id, focus) {
+    chosenRecipe = id;
+    for (const tab of recipeTabs()) {
+      const chosen = tab.dataset.recipe === id;
+      tab.setAttribute("aria-selected", String(chosen)); tab.tabIndex = chosen ? 0 : -1;
+      if (chosen) { $("client-recipe-panel").setAttribute("aria-labelledby", tab.id); if (focus) tab.focus(); }
+    }
+    renderRecipe();
+  }
+  $("client-tabs").addEventListener("click", event => { const tab = event.target.closest('[role="tab"]'); if (tab) chooseRecipe(tab.dataset.recipe, false); });
+  $("client-tabs").addEventListener("keydown", event => {
+    const tabs = recipeTabs(), index = tabs.findIndex(tab => tab.dataset.recipe === chosenRecipe);
+    const next = {ArrowRight:index + 1, ArrowLeft:index - 1, Home:0, End:tabs.length - 1}[event.key];
+    if (next === undefined || !tabs.length) return;
+    event.preventDefault(); chooseRecipe(tabs[(next + tabs.length) % tabs.length].dataset.recipe, true);
+  });
   $("copy-configuration").addEventListener("click", async () => {
     try { await navigator.clipboard.writeText($("client-configuration").textContent); $("copy-configuration").textContent = "Configuration copied"; }
     catch (_) { message("setup-message", "Clipboard unavailable. Select and copy the configuration text."); }
@@ -495,12 +518,19 @@
   request("/assets/client-recipes.json", null, false, false, {raw:true}).then(value => {
     const refusal = recipeRefusal(value);
     if (refusal) throw Object.assign(new Error("Connection recipes refused"), {refusal});
-    recipes = value; $("client-choice").replaceChildren();
-    for (const recipe of value.recipes) { const option = element("option", recipe.name); option.value = recipe.id; $("client-choice").append(option); }
-    $("client-choice").disabled = false; renderRecipe();
+    recipes = value; $("client-tabs").replaceChildren();
+    for (const recipe of value.recipes) {
+      const tab = element("button", recipe.name); tab.type = "button"; tab.id = "client-tab-" + recipe.id; tab.dataset.recipe = recipe.id;
+      tab.setAttribute("role", "tab"); tab.setAttribute("aria-controls", "client-recipe-panel"); $("client-tabs").append(tab);
+    }
+    chooseRecipe(value.recipes[0].id, false);
+    // The homepage shows one reviewed entry. The page is served with the public address written in; once the record has passed
+    // every rule above, the entry is written again from the record with this service's own address, as the Get started page shows it.
+    const homeEntry = document.querySelector("[data-home-recipe]"), homeRecipe = value.recipes.find(recipe => recipe.id === homeEntry?.dataset.homeRecipe);
+    if (homeEntry && homeRecipe) homeEntry.textContent = configurationText(homeRecipe);
   }).catch(error => {
     recipes = null; $("setup-message").dataset.refusal = error.refusal || "unavailable";
-    $("client-choice").replaceChildren(element("option", "Recipes unavailable")); $("client-choice").disabled = true; $("copy-configuration").disabled = true;
+    chosenRecipe = ""; $("client-tabs").replaceChildren(); $("copy-configuration").disabled = true; $("configuration-location").textContent = "No connection settings are shown";
     $("client-configuration").textContent = "No configuration is shown."; $("client-version-note").textContent = "";
     message("setup-message", error.refusal ? "The connection recipes did not pass their safety check, so none is shown. Use the setup guide; do not guess a configuration." : "Client recipes could not be loaded. Use the setup guide; do not guess a configuration.", true);
   });
@@ -534,6 +564,7 @@
     /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */
     if (value.record_type === CAPABILITIES_RECORD_TYPE) {
       applyAccessState(value.website.registration_available === true);
+      applyStartState(startState(value.website));
       applyPaymentState(publicPaymentState(value.website.registration_available === true, value.billing.checkout === true));
       applyClientAccessState(value.website.client_access_available === true);
       if (value.website.browser_identity_available) openBrowserIdentity();

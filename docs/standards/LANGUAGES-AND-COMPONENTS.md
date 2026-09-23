@@ -105,10 +105,16 @@ There is no framework, no bundler and no build step for the pages themselves.
   `supabase-client.js`, is a generated bundle of 223,189 bytes. Its line
   count means nothing, because it is minified.
 - The response header `Content-Security-Policy` is
-  `default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'`
+  `default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; connect-src 'self'`
   plus the configured identity origin, with `base-uri`, `frame-ancestors` and
-  `form-action` set to `'none'` (`http.py`). A page cannot load a script from
-  another site, so a content delivery network is not an option here.
+  `form-action` set to `'none'` (`http.py`). A page cannot load a script, a
+  stylesheet or a font from another site, so a content delivery network is not
+  an option here.
+- The typefaces are Geist and Geist Mono, version 1.7.2 of the `geist`
+  package, under the SIL Open Font License 1.1. The two variable font files,
+  `geist.woff2` and `geist-mono.woff2`, are served from `/assets/` like every
+  other file, so a visitor's address reaches no font provider. Their licence is
+  in the same notices file as the browser library's.
 - A service token stays in page memory and is cleared on disconnect. Model
   provider keys are not collected.
 

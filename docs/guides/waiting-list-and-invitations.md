@@ -15,7 +15,7 @@ not show them.
 
 ```text
 waiting list
-├── served page /waitlist          the form, the plain confirmation
+├── Get started page /connect      the form leads it; /waitlist opens it
 ├── POST /api/v1/waitlist          public, no sign-in, four typed refusals
 ├── ServiceWaitlist                the typed versioned record and its states
 ├── GET, POST /api/v1/admin/waitlist   operator listing and one decision
@@ -301,16 +301,28 @@ states and counts. It never holds the address, the link or a credential.
 
 ## What the page offers and when
 
-The page makes no offer before the service answers. The form, the footer
-link, the link on the registration page and the discount sentence all start
+Since September 22, 2026 the form is not a page of its own. It sits in the
+invitation panel that leads the Get started page, and `/waitlist` opens that
+page. Every public action into the journey carries one label: "Request an
+invitation", opening `/waitlist`, while account creation is closed, and "Get
+started", opening `/connect`, once it is open. One press on the homepage's
+action shows the email field in the first screen, on a phone as well.
+
+The page makes no offer before the service answers. The invitation panel, the
+form, the link on the registration page and the discount sentence all start
 hidden, and the page shows each one only from the record
 `GET /api/v1/capabilities` returns:
 
 | Element | Shown when |
 |---|---|
-| `waitlist-form`, `waitlist-link`, `signup-waitlist-link` | `website.waitlist_available` is true |
+| `start-invite`, the invitation panel | `website.waitlist_available` is true and `website.registration_available` is not |
+| `waitlist-form`, `signup-waitlist-link` | `website.waitlist_available` is true |
 | `waitlist-discount` | the list is available and `billing.discount_code` is true |
-| `waitlist-closed` | anything else, including an unanswered request |
+| `waitlist-closed`, in the operator's panel | anything else, including an unanswered request |
+
+When the service reports registration open, the account creation panel leads
+the page instead. When it reports neither, and until it answers, the
+operator's panel leads it.
 
 A host that ships this page without a waiting list block therefore offers
 nothing and says plainly that it is not taking requests. Offered and working
