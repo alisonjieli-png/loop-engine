@@ -266,5 +266,16 @@ duplicates, bundled files and outlines that repeat source words.
   it is refused today, as the
   [evidence of September 23, 2026](../../../../artifacts/library-ingestion-2026-09-23/README.md)
   records.
+- The licence matcher compares word sets, not the templates' replaceable
+  text. A licence text counts only when it adds no word its canonical text
+  lacks, so a BSD-3-Clause text that names its organization in the third
+  clause, or any licence with an added heading, leaves an outline until the
+  matcher reads replaceable text the way the SPDX license templates mark it.
+  A condition written only in words the licence already uses, and a grant
+  with words removed, still score as that licence; the similarity bound,
+  and for a repository licence GitHub's licence interface, are the only
+  guards there.
+- A registry entry's upstream licence text is compared and its digest
+  recorded, but its bytes are not kept in quarantine.
 - Candidate counts are internal. A public library number counts approved,
   active packages only.
