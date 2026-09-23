@@ -1,0 +1,44 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T03:40:00+00:00",
+ "release": 11,
+ "fly_release_version": 13,
+ "source_revision": "9cdf99e4677f600b65aa16f9c204fef1b2ac95c5",
+ "image": "registry.fly.io/baltor-pilot@sha256:91803d865d0ad3fdcefbb9599adc81d284c214f46c53f53920951ac850c9e5b7",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35801008039, dispatched on main with operation deploy, after the continuous integration run 35799663144 passed on this exact revision. Fly created the release at 2026-09-23T00:14:26Z.",
+ "deployment_switch": {
+  "set_true_at": null,
+  "set_false_at": null,
+  "note": "The switch was turned on for the run and off after it; the exact times were not recorded for this release."
+ },
+ "what_this_release_changes": "The health record version 2, which reports alive and ready separately, refusal references and the failure journal; the restored web route checks; the catalogue grant step inside the release workflow; one home for the owner's rules in AGENTS.md; the repaired payment customer path; the waiting list, switched off by host configuration; catalogue browsing after sign-in; the homepage with the working steps first; and the README retitled Baltor.",
+ "post_deploy_steps": [
+  {
+   "step": "loop-engine service apply-grants --config /data/host.json on machine 83733ea7779068, run by hand",
+   "why": "The workflow read readiness once, about one second after the Machine restarted, while the service was still starting, and failed the run before its grant step. The service came up healthy.",
+   "result": {
+    "granted_items_by_tenant": {
+     "pilot-owner": 43
+    }
+   }
+  }
+ ],
+ "after_release": {
+  "health": "service_health/v2, alive and ready, every required check passing",
+  "website": "73 of 73 browser checks on baltor.ai, www.baltor.ai and app.baltor.ai; 72 of 73 on baltor-pilot.fly.dev, where the one failure is the known check on a host name that contains pilot",
+  "catalogue": "6 of 6; 34 items offered to the pilot account and 9 withheld until a client declares their effects"
+ },
+ "known_gaps": [
+  "The workflow's single readiness read failed the run; release 14 added a readiness poll (0eeecff) and a named check for it.",
+  "Checkout and the customer portal report unavailable from this release on. Found later: the waiting list merge 8a0b872 added allow_promotion_codes to the payment session settings, whose policy digest covers every field, so the stored policy no longer matched the running one.",
+  "HEAD on the root answers 404, and every subdomain serves the homepage."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:c75dbff17e53e9d9f1663bf030d0846c87ff5f572468b80a0b2980d6680312b6",
+  "fly_release_version": 12,
+  "note": "The previous image by digest; no host file change was needed for this release."
+ }
+}

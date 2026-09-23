@@ -1,0 +1,1754 @@
+{
+ "record": "docs/verification/HARNESS-MODEL-USE-ONE-CALL-2026-09-22.md",
+ "ceiling_model_requests": 60,
+ "proxy_hard_limit": 56,
+ "model_requests_used_ledger": 30,
+ "model_requests_sum_of_runs": 30,
+ "runs": [
+  {
+   "run": "dry1-codex-real-glm-5-3-flash-cloud-dry-20260923T031215452718Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": true,
+   "shim": "",
+   "start": "2026-09-23T03:12:15+00:00",
+   "end": "2026-09-23T03:12:16+00:00",
+   "elapsed_s": 0.6,
+   "exit_code": 1,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 0,
+   "dry_run_requests": 1,
+   "ollama_log_model_posts": 0,
+   "upstream_status": [],
+   "provider_tokens": [],
+   "codes": {
+    "A": "Aa2afbcc6",
+    "S": "Sd7b1ffb3",
+    "M": "M615f2966",
+    "D": "D5da2a8c8"
+   },
+   "answer_first_line": "",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "dry-run",
+   "reasons": []
+  },
+  {
+   "run": "dry1-claude-real-glm-5-3-flash-cloud-dry-20260923T031215453185Z",
+   "harness": "claude",
+   "version": "2.1.280 (Claude Code)",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": true,
+   "shim": "",
+   "start": "2026-09-23T03:12:15+00:00",
+   "end": "2026-09-23T03:12:16+00:00",
+   "elapsed_s": 0.7,
+   "exit_code": 1,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 0,
+   "dry_run_requests": 1,
+   "ollama_log_model_posts": 0,
+   "upstream_status": [],
+   "provider_tokens": [],
+   "codes": {
+    "A": "Aa2bc70ba",
+    "S": "S7f1094d2",
+    "M": "Me40bbf3e",
+    "D": "D3f4a90d6"
+   },
+   "answer_first_line": "API Error: 400 dry run: no model behind this endpoint",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "dry-run",
+   "reasons": []
+  },
+  {
+   "run": "dry1-opencode-real-glm-5-3-flash-cloud-dry-20260923T031215453286Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": true,
+   "shim": "",
+   "start": "2026-09-23T03:12:16+00:00",
+   "end": "2026-09-23T03:12:19+00:00",
+   "elapsed_s": 3.3,
+   "exit_code": 1,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 0,
+   "dry_run_requests": 1,
+   "ollama_log_model_posts": 0,
+   "upstream_status": [],
+   "provider_tokens": [],
+   "codes": {
+    "A": "A4ee4ae26",
+    "S": "Sf31e8607",
+    "M": "M971df8ea",
+    "D": "Dd03397c2"
+   },
+   "answer_first_line": "",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "dry-run",
+   "reasons": []
+  },
+  {
+   "run": "dry1-pi-real-glm-5-3-flash-cloud-dry-20260923T031215452227Z",
+   "harness": "pi",
+   "version": "0.73.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": true,
+   "shim": "",
+   "start": "2026-09-23T03:12:16+00:00",
+   "end": "2026-09-23T03:12:18+00:00",
+   "elapsed_s": 1.4,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 0,
+   "dry_run_requests": 1,
+   "ollama_log_model_posts": 0,
+   "upstream_status": [],
+   "provider_tokens": [],
+   "codes": {
+    "A": "A0666c419",
+    "S": "S8a5c9a2e",
+    "M": "Mf3a84a9f",
+    "D": "D060e4e01"
+   },
+   "answer_first_line": "",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": false,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "dry-run",
+   "reasons": []
+  },
+  {
+   "run": "p1-codex-control-glm-5-3-flash-cloud-20260923T031431394399Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:14:31+00:00",
+   "end": "2026-09-23T03:14:32+00:00",
+   "elapsed_s": 0.9,
+   "exit_code": 1,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    400
+   ],
+   "provider_tokens": [
+    null
+   ],
+   "codes": {
+    "A": "Abbca14fd",
+    "S": "Scdb16fc2",
+    "M": "M7f54a959",
+    "D": "D0b780908"
+   },
+   "answer_first_line": "",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "fail",
+   "reasons": [
+    "no answer text from the model"
+   ]
+  },
+  {
+   "run": "p1-codex-real-glm-5-3-flash-cloud-20260923T031434229028Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:14:34+00:00",
+   "end": "2026-09-23T03:14:35+00:00",
+   "elapsed_s": 0.8,
+   "exit_code": 1,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    400
+   ],
+   "provider_tokens": [
+    null
+   ],
+   "codes": {
+    "A": "A304f98aa",
+    "S": "Sefd261be",
+    "M": "M5bdb164b",
+    "D": "D3de388cf"
+   },
+   "answer_first_line": "",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "fail",
+   "reasons": [
+    "no answer text from the model"
+   ]
+  },
+  {
+   "run": "p1-opencode-control-glm-5-3-flash-cloud-20260923T031437069748Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:14:38+00:00",
+   "end": "2026-09-23T03:14:44+00:00",
+   "elapsed_s": 6.2,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7265,
+     "output": 123,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Aeaa4e444",
+    "S": "Scffc347e",
+    "M": "M29ecacec",
+    "D": "Dc6bdd3ef"
+   },
+   "answer_first_line": "NONE, Scffc347e, M29ecacec",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p1-opencode-real-glm-5-3-flash-cloud-20260923T031446005338Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:14:46+00:00",
+   "end": "2026-09-23T03:14:53+00:00",
+   "elapsed_s": 6.3,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7371,
+     "output": 130,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A649d2b24",
+    "S": "S1f4c1550",
+    "M": "Mcebe07da",
+    "D": "Dda243119"
+   },
+   "answer_first_line": "A649d2b24 S1f4c1550 Mcebe07da",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p1-claude-control-glm-5-3-flash-cloud-20260923T031454966395Z",
+   "harness": "claude",
+   "version": "2.1.280 (Claude Code)",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:14:55+00:00",
+   "end": "2026-09-23T03:14:58+00:00",
+   "elapsed_s": 3.0,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 14571,
+     "output": 139,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A46ab7c11",
+    "S": "S64cc4e1b",
+    "M": "M5b01eda0",
+    "D": "D3677df60"
+   },
+   "answer_first_line": "NONE, S64cc4e1b, M5b01eda0",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p1-claude-real-glm-5-3-flash-cloud-20260923T031459832612Z",
+   "harness": "claude",
+   "version": "2.1.280 (Claude Code)",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:14:59+00:00",
+   "end": "2026-09-23T03:15:02+00:00",
+   "elapsed_s": 3.0,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 14687,
+     "output": 87,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Ae7157bd3",
+    "S": "S42199810",
+    "M": "Me49424a0",
+    "D": "De52ad838"
+   },
+   "answer_first_line": "Ae7157bd3, S42199810, Me49424a0",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p1-pi-control-glm-5-3-flash-cloud-20260923T031504680268Z",
+   "harness": "pi",
+   "version": "0.73.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:15:06+00:00",
+   "end": "2026-09-23T03:15:10+00:00",
+   "elapsed_s": 3.9,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 994,
+     "output": 187,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A5da97fea",
+    "S": "S1e4c6f3b",
+    "M": "M8de3cf30",
+    "D": "De4b744a8"
+   },
+   "answer_first_line": "NONE S1e4c6f3b NONE",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": false,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p1-pi-real-glm-5-3-flash-cloud-20260923T031512332292Z",
+   "harness": "pi",
+   "version": "0.73.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:15:14+00:00",
+   "end": "2026-09-23T03:15:17+00:00",
+   "elapsed_s": 3.5,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 1101,
+     "output": 162,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Adf7c4769",
+    "S": "S0e79220b",
+    "M": "M322a0ea7",
+    "D": "Dbaefdf01"
+   },
+   "answer_first_line": "Adf7c4769 S0e79220b NONE",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": false,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "dry2-codex-real-glm-5-3-flash-cloud-dry-20260923T031539369316Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": true,
+   "shim": "",
+   "start": "2026-09-23T03:15:39+00:00",
+   "end": "2026-09-23T03:15:40+00:00",
+   "elapsed_s": 0.6,
+   "exit_code": 1,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 0,
+   "dry_run_requests": 1,
+   "ollama_log_model_posts": 0,
+   "upstream_status": [],
+   "provider_tokens": [],
+   "codes": {
+    "A": "A683463de",
+    "S": "S72a8557a",
+    "M": "M923d5db0",
+    "D": "D09e33096"
+   },
+   "answer_first_line": "",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "dry-run",
+   "reasons": []
+  },
+  {
+   "run": "p1b-codex-control-glm-5-3-flash-cloud-20260923T031548092530Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:15:48+00:00",
+   "end": "2026-09-23T03:15:51+00:00",
+   "elapsed_s": 3.0,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7634,
+     "output": 478,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A1588268f",
+    "S": "Sc962043d",
+    "M": "M33412c2a",
+    "D": "Dd5312cce"
+   },
+   "answer_first_line": "project code: NONE; skill baltor-probe-skill: NONE; tool baltor_probe_echo: M33412c2a",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p1b-codex-real-glm-5-3-flash-cloud-20260923T031553058962Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:15:53+00:00",
+   "end": "2026-09-23T03:15:55+00:00",
+   "elapsed_s": 2.4,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7744,
+     "output": 102,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Ac419411c",
+    "S": "Saacca3db",
+    "M": "M57c6eefd",
+    "D": "D30e6dd05"
+   },
+   "answer_first_line": "Ac419411c NONE M57c6eefd",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": false,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "fail",
+   "reasons": [
+    "code S missing from the answer"
+   ]
+  },
+  {
+   "run": "p1c-shim-codex-real-glm-5-3-flash-cloud-20260923T031727824691Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "developer-to-instructions",
+   "start": "2026-09-23T03:17:28+00:00",
+   "end": "2026-09-23T03:17:33+00:00",
+   "elapsed_s": 5.3,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 8029,
+     "output": 133,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Aa3062c1f",
+    "S": "Sfac50ff8",
+    "M": "M4a37d688",
+    "D": "D3e90729c"
+   },
+   "answer_first_line": "Aa3062c1f Sfac50ff8 M4a37d688",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p2-pi-control-qwen2-5-coder-7b-20260923T031747861127Z",
+   "harness": "pi",
+   "version": "0.73.1",
+   "model": "qwen2.5-coder:7b",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:17:50+00:00",
+   "end": "2026-09-23T03:18:10+00:00",
+   "elapsed_s": 19.6,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 1013,
+     "output": 28,
+     "cache_read": null
+    }
+   ],
+   "codes": {
+    "A": "A4f5dbedb",
+    "S": "S5d9ce807",
+    "M": "M5c8ea73d",
+    "D": "D39ac58eb"
+   },
+   "answer_first_line": "- Project code: NONE",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": false,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p2-pi-real-qwen2-5-coder-7b-20260923T031811888968Z",
+   "harness": "pi",
+   "version": "0.73.1",
+   "model": "qwen2.5-coder:7b",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:18:14+00:00",
+   "end": "2026-09-23T03:18:19+00:00",
+   "elapsed_s": 4.7,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 1146,
+     "output": 44,
+     "cache_read": null
+    }
+   ],
+   "codes": {
+    "A": "A0c2e22f6",
+    "S": "S44add203",
+    "M": "Mdc056873",
+    "D": "D5f86a15b"
+   },
+   "answer_first_line": "Project code: A0c2e22f6  ",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": false,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p2-opencode-control-qwen2-5-coder-7b-20260923T031820859647Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "qwen2.5-coder:7b",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:18:22+00:00",
+   "end": "2026-09-23T03:18:32+00:00",
+   "elapsed_s": 10.3,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 2050,
+     "output": 19,
+     "cache_read": null
+    }
+   ],
+   "codes": {
+    "A": "A048c5cf4",
+    "S": "S115e99aa",
+    "M": "M49d2f3ba",
+    "D": "D91727c6a"
+   },
+   "answer_first_line": "```json",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p2-opencode-real-qwen2-5-coder-7b-20260923T031834368755Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "qwen2.5-coder:7b",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:18:35+00:00",
+   "end": "2026-09-23T03:18:44+00:00",
+   "elapsed_s": 8.4,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 2050,
+     "output": 38,
+     "cache_read": null
+    }
+   ],
+   "codes": {
+    "A": "Acbbd0af4",
+    "S": "S41959761",
+    "M": "M7a17d145",
+    "D": "D6bfe33e5"
+   },
+   "answer_first_line": "```json",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "fail",
+   "reasons": [
+    "code A missing from the answer",
+    "code S missing from the answer",
+    "code M missing from the answer"
+   ]
+  },
+  {
+   "run": "p2-codex-control-qwen2-5-coder-7b-20260923T031845942244Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "qwen2.5-coder:7b",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:18:46+00:00",
+   "end": "2026-09-23T03:18:49+00:00",
+   "elapsed_s": 2.8,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 2050,
+     "output": 6,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A4db0bc27",
+    "S": "Sd94914a3",
+    "M": "Mb4b49341",
+    "D": "D84903e9f"
+   },
+   "answer_first_line": "```",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p2-codex-real-qwen2-5-coder-7b-20260923T031851208452Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "qwen2.5-coder:7b",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:18:51+00:00",
+   "end": "2026-09-23T03:18:53+00:00",
+   "elapsed_s": 2.2,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 2050,
+     "output": 2,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Afedaf803",
+    "S": "S34924a70",
+    "M": "M2298acc8",
+    "D": "D27dcb429"
+   },
+   "answer_first_line": "NONE",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "fail",
+   "reasons": [
+    "code A missing from the answer",
+    "code S missing from the answer",
+    "code M missing from the answer"
+   ]
+  },
+  {
+   "run": "p2-claude-control-qwen2-5-coder-7b-20260923T031855955529Z",
+   "harness": "claude",
+   "version": "2.1.280 (Claude Code)",
+   "model": "qwen2.5-coder:7b",
+   "variant": "control",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:18:56+00:00",
+   "end": "2026-09-23T03:19:00+00:00",
+   "elapsed_s": 4.1,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 2050,
+     "output": 25,
+     "cache_read": null
+    }
+   ],
+   "codes": {
+    "A": "A6ef8f944",
+    "S": "S048da989",
+    "M": "M3b60e2a1",
+    "D": "D5f239de0"
+   },
+   "answer_first_line": "```json",
+   "codes_offered_in_request": {
+    "A": false,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "control-ok",
+   "reasons": []
+  },
+  {
+   "run": "p2-claude-real-qwen2-5-coder-7b-20260923T031902317423Z",
+   "harness": "claude",
+   "version": "2.1.280 (Claude Code)",
+   "model": "qwen2.5-coder:7b",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:19:02+00:00",
+   "end": "2026-09-23T03:19:06+00:00",
+   "elapsed_s": 4.3,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 2050,
+     "output": 27,
+     "cache_read": null
+    }
+   ],
+   "codes": {
+    "A": "A4afb3b22",
+    "S": "Sf3ee8625",
+    "M": "M37d6ea17",
+    "D": "D93620ad4"
+   },
+   "answer_first_line": "{",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": false,
+    "S": false,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "fail",
+   "reasons": [
+    "code A missing from the answer",
+    "code S missing from the answer",
+    "code M missing from the answer"
+   ]
+  },
+  {
+   "run": "p3-par-a-opencode-real-glm-5-3-flash-cloud-20260923T032003235727Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:20:04+00:00",
+   "end": "2026-09-23T03:20:16+00:00",
+   "elapsed_s": 11.4,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 2,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7377,
+     "output": 119,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Ab9149b69",
+    "S": "S798cf9e0",
+    "M": "M51e0b649",
+    "D": "De3732585"
+   },
+   "answer_first_line": "Ab9149b69 S798cf9e0 M51e0b649",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p3-par-b-opencode-real-glm-5-3-flash-cloud-20260923T032003239504Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:20:04+00:00",
+   "end": "2026-09-23T03:20:15+00:00",
+   "elapsed_s": 10.3,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 2,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7380,
+     "output": 100,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A49a89576",
+    "S": "S6899fa2c",
+    "M": "M05db43cc",
+    "D": "Df6a8732d"
+   },
+   "answer_first_line": "A49a89576, S6899fa2c, M05db43cc",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p4-codex-decoyhome-glm-5-3-flash-cloud-20260923T032031797321Z",
+   "harness": "codex",
+   "version": "codex-cli 0.155.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "decoyhome",
+   "dry_run": false,
+   "shim": "developer-to-instructions",
+   "start": "2026-09-23T03:20:32+00:00",
+   "end": "2026-09-23T03:20:38+00:00",
+   "elapsed_s": 5.9,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 8161,
+     "output": 222,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Add785979",
+    "S": "Sb47b9367",
+    "M": "Ma79221be",
+    "D": "D0e7dc042"
+   },
+   "answer_first_line": "Add785979 Sb47b9367 Ma79221be",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": true
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p4-opencode-decoyhome-glm-5-3-flash-cloud-20260923T032040183573Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "decoyhome",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:20:41+00:00",
+   "end": "2026-09-23T03:20:52+00:00",
+   "elapsed_s": 10.6,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7648,
+     "output": 191,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A78effe3d",
+    "S": "S2cc888ba",
+    "M": "Md52c38c8",
+    "D": "D1f55c831"
+   },
+   "answer_first_line": "A78effe3d S2cc888ba Md52c38c8",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": true
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p4-claude-decoyhome-glm-5-3-flash-cloud-20260923T032054417797Z",
+   "harness": "claude",
+   "version": "2.1.280 (Claude Code)",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "decoyhome",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:20:54+00:00",
+   "end": "2026-09-23T03:20:57+00:00",
+   "elapsed_s": 3.3,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 10224,
+     "output": 104,
+     "cache_read": 4480
+    }
+   ],
+   "codes": {
+    "A": "Ac7806c6d",
+    "S": "S02c40925",
+    "M": "M5f73dfb0",
+    "D": "Dbcf01416"
+   },
+   "answer_first_line": "Ac7806c6d S02c40925 M5f73dfb0",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p4-pi-decoyhome-glm-5-3-flash-cloud-20260923T032100064709Z",
+   "harness": "pi",
+   "version": "0.73.1",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "decoyhome",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:21:02+00:00",
+   "end": "2026-09-23T03:21:08+00:00",
+   "elapsed_s": 5.5,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 1253,
+     "output": 188,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A60c21244",
+    "S": "Sd03d0c66",
+    "M": "Me143dfa3",
+    "D": "D28b7708f"
+   },
+   "answer_first_line": "A60c21244 Sd03d0c66 NONE",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": false,
+    "D": true
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": false,
+    "D": false
+   },
+   "protocol_stub_listed_tools": false,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  },
+  {
+   "run": "p5-broad-opencode-decoyhome-glm-5-3-flash-cloud-20260923T032155311381Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "decoyhome",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:21:57+00:00",
+   "end": "2026-09-23T03:22:07+00:00",
+   "elapsed_s": 10.5,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7659,
+     "output": 202,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "A019bc8ef",
+    "S": "Sd9bd6193",
+    "M": "M8588ab71",
+    "D": "D81690466"
+   },
+   "answer_first_line": "D81690466 A019bc8ef Sd9bd6193 M8588ab71",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": true
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": true
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "fail",
+   "reasons": [
+    "decoy code D in the answer"
+   ]
+  },
+  {
+   "run": "p5-broad-opencode-real-glm-5-3-flash-cloud-20260923T032209631417Z",
+   "harness": "opencode",
+   "version": "1.18.32",
+   "model": "glm-5.3-flash:cloud",
+   "variant": "real",
+   "dry_run": false,
+   "shim": "",
+   "start": "2026-09-23T03:22:11+00:00",
+   "end": "2026-09-23T03:22:22+00:00",
+   "elapsed_s": 11.0,
+   "exit_code": 0,
+   "timed_out": false,
+   "model_requests_counted_by_proxy": 1,
+   "dry_run_requests": 0,
+   "ollama_log_model_posts": 1,
+   "upstream_status": [
+    200
+   ],
+   "provider_tokens": [
+    {
+     "input": 7373,
+     "output": 193,
+     "cache_read": 0
+    }
+   ],
+   "codes": {
+    "A": "Af59c6eca",
+    "S": "Sb229a05e",
+    "M": "M16e45da4",
+    "D": "D9bd9f5ed"
+   },
+   "answer_first_line": "Af59c6eca M16e45da4 Sb229a05e",
+   "codes_offered_in_request": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "codes_used_in_answer": {
+    "A": true,
+    "S": true,
+    "M": true,
+    "D": false
+   },
+   "protocol_stub_listed_tools": true,
+   "decoy_stub_starts": 0,
+   "tool_calls": [],
+   "real_home_markers_in_request": [],
+   "verdict": "pass",
+   "reasons": []
+  }
+ ],
+ "diagnostics": [
+  {
+   "diagnostic": "diag-context-option-20260923T031950Z",
+   "model": "qwen2.5-coder:7b",
+   "results": [
+    {
+     "case": "options.num_ctx=8192 on /v1/chat/completions",
+     "status": 200,
+     "answer": null,
+     "code_seen": null,
+     "usage": {
+      "prompt_tokens": 2050,
+      "completion_tokens": 2,
+      "total_tokens": 2052
+     }
+    }
+   ]
+  },
+  {
+   "diagnostic": "diag-responses-developer-20260923T031635Z",
+   "model": "glm-5.3-flash:cloud",
+   "results": [
+    {
+     "case": "with-instructions",
+     "status": 200,
+     "answer": "NONE",
+     "code_seen": false,
+     "usage": {
+      "input_tokens": 45,
+      "output_tokens": 146,
+      "total_tokens": 191,
+      "input_tokens_details": {
+       "cached_tokens": 0
+      },
+      "output_tokens_details": {
+       "reasoning_tokens": 0
+      }
+     }
+    },
+    {
+     "case": "developer-only",
+     "status": 200,
+     "answer": "NONE",
+     "code_seen": false,
+     "usage": {
+      "input_tokens": 35,
+      "output_tokens": 222,
+      "total_tokens": 257,
+      "input_tokens_details": {
+       "cached_tokens": 0
+      },
+      "output_tokens_details": {
+       "reasoning_tokens": 0
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "parallel": [
+  {
+   "overlap_in_time": true,
+   "windows": [
+    [
+     "2026-09-23T03:20:04+00:00",
+     "2026-09-23T03:20:16+00:00"
+    ],
+    [
+     "2026-09-23T03:20:04+00:00",
+     "2026-09-23T03:20:15+00:00"
+    ]
+   ],
+   "instances": [
+    {
+     "run": "p3-par-a-opencode-real-glm-5-3-flash-cloud-20260923T032003235727Z",
+     "verdict": "pass",
+     "answer": "Ab9149b69 S798cf9e0 M51e0b649",
+     "own_codes_in_answer": [
+      "A",
+      "S",
+      "M"
+     ],
+     "other_codes_in_answer": [],
+     "other_codes_in_request": [],
+     "stub_start_cwds": [
+      "/tmp/claude-1000/-home-username-loop-engine/81df4e9e-adbc-4fcf-9636-2fadc680611e/scratchpad/model-use-one-call-2026-09-22/steps/p3-par-a-opencode-real-glm-5-3-flash-cloud-20260923T032003235727Z/work"
+     ],
+     "stub_cwds_all_own": true
+    },
+    {
+     "run": "p3-par-b-opencode-real-glm-5-3-flash-cloud-20260923T032003239504Z",
+     "verdict": "pass",
+     "answer": "A49a89576, S6899fa2c, M05db43cc",
+     "own_codes_in_answer": [
+      "A",
+      "S",
+      "M"
+     ],
+     "other_codes_in_answer": [],
+     "other_codes_in_request": [],
+     "stub_start_cwds": [
+      "/tmp/claude-1000/-home-username-loop-engine/81df4e9e-adbc-4fcf-9636-2fadc680611e/scratchpad/model-use-one-call-2026-09-22/steps/p3-par-b-opencode-real-glm-5-3-flash-cloud-20260923T032003239504Z/work"
+     ],
+     "stub_cwds_all_own": true
+    }
+   ],
+   "parallel_verdict": "pass"
+  }
+ ]
+}

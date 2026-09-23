@@ -1,0 +1,42 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T03:40:00+00:00",
+ "release": 13,
+ "fly_release_version": 15,
+ "source_revision": "a51ac96378ce63cd4504499ea865a22e78168fec",
+ "image": "registry.fly.io/baltor-pilot@sha256:b5d2c5914dca1014f9d10275e55e45174ec82fe12e8dcb341df57fc71beb30bc",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35807183861, dispatched on main with operation deploy, after the continuous integration run 35805955473 passed on this exact revision. The Machine took the new image at 2026-09-23T01:41:01Z. Every workflow step passed, including the readiness poll and the grant step on the Machine.",
+ "deployment_switch": {
+  "set_true_at": "2026-09-23T01:39:19Z",
+  "set_false_at": "2026-09-23T01:41:14Z"
+ },
+ "before_release": {
+  "host_file": "/data/host.json was backed up to /data/host.json.before-release-15-20260923T013913, then its http block moved to service_http_configuration/v2: protocol_version removed and protocol_versions [2025-11-25, 2026-07-28] added, because this release refuses the version 1 record and release 14 refuses version 2. A waitlist block {writes_authorized: true, source_secret_ref: env:BALTOR_WAITLIST_SOURCE_SECRET} was added. The migrated block was first loaded with this release's code locally.",
+  "secret": "BALTOR_WAITLIST_SOURCE_SECRET was staged on Fly with fly secrets import --stage, its value generated and passed on standard input and never printed; the deploy applied it."
+ },
+ "what_this_release_changes": "Model Context Protocol revision 2026-07-28 served beside 2025-11-25 through version 2.2.0 of the protocol library, with the service choosing the version of every request; the protocol checks in their own module; the owner-approved privacy notice at /privacy with a footer link; and a waiting list flood guard whose source record is named by a keyed digest and keeps only the last hour.",
+ "post_deploy_steps": [],
+ "after_release": {
+  "health": "service_health/v2, alive and ready, every check passing",
+  "website": "73 of 73 browser checks on baltor.ai, www.baltor.ai and app.baltor.ai; 72 of 73 on baltor-pilot.fly.dev, the known host-name check",
+  "catalogue": "6 of 6; 34 offered and 9 withheld until effects are declared",
+  "hosted_service": "19 of 19, including one metered read with digest verification, tenant isolation, and the official protocol client both through the 2025-11-25 handshake and per request at 2026-07-28",
+  "capabilities": "protocol versions 2025-11-25 and 2026-07-28 (handshake 2025-11-25, per request 2026-07-28); registration_available false; waitlist_available true; billing checkout and portal false",
+  "privacy": "/privacy answered 200 on baltor.ai, www.baltor.ai and app.baltor.ai",
+  "waiting_list": "One request from qa-release-15-waitlist@baltor.ai was recorded once in the waiting state with source_counted counted; a second request from the same address was refused as already listed; the operator tool then listed it and erased its address and note.",
+  "head": "HEAD on the root still answered 404 on baltor.ai, www.baltor.ai and app.baltor.ai"
+ },
+ "known_gaps": [
+  "Checkout and the customer portal stay unavailable on purpose: re-applying the payment policy by hand would make the public page say payment is open beside the waiting list. Release 16 carries a policy command, a health check, a release step and an invitation-only public payment state together.",
+  "The approved privacy notice promises that a signed-out session's digest is kept only until it would have expired; those records are never removed yet. Release 16 carries a store removal operation and retention sweeps.",
+  "HEAD on the root answers 404; every subdomain serves the homepage."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:299c1e920ac06cdd4834c94d6e6d42d674f8dc3f894d6f1e769e483ad31afb0d",
+  "fly_release_version": 14,
+  "host_file": "Restore /data/host.json.before-release-15-20260923T013913 before starting release 14, which refuses the version 2 HTTP record and the waitlist source secret setting."
+ }
+}

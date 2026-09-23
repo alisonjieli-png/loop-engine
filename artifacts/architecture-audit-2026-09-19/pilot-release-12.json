@@ -1,0 +1,30 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T03:40:00+00:00",
+ "release": 12,
+ "fly_release_version": 14,
+ "source_revision": "0d1f883bf470533543c9a4d8f52452ac84089548",
+ "image": "registry.fly.io/baltor-pilot@sha256:299c1e920ac06cdd4834c94d6e6d42d674f8dc3f894d6f1e769e483ad31afb0d",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35803997675, dispatched on main with operation deploy, after the continuous integration run 35802781660 passed on this exact revision. Fly created the release at 2026-09-23T00:55:17Z. Every workflow step passed, including the new readiness poll and the grant step on the Machine.",
+ "deployment_switch": {
+  "set_true_at": null,
+  "set_false_at": null,
+  "note": "The switch was turned on for the run and off after it; the exact times were not recorded for this release."
+ },
+ "what_this_release_changes": "The homepage hero redesign, two columns with a real search of the live library beside the headline, after the owner found the single narrow column empty; a release workflow that polls readiness every five seconds for up to two minutes; and the owner's September 22 decisions in AGENTS.md and the roadmap.",
+ "post_deploy_steps": [],
+ "after_release": {
+  "read_without_credentials": "All eight hostnames returned the same 74,201-byte page with the two-column hero; the health record reported alive and ready; checkout and portal were still reported unavailable; the protocol was still 2025-11-25; HEAD on the root still answered 404."
+ },
+ "known_gaps": [
+  "The browser, catalogue and service checks were not recorded for this release before release 15 replaced it.",
+  "Checkout and the customer portal still reported unavailable (see release 11)."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:91803d865d0ad3fdcefbb9599adc81d284c214f46c53f53920951ac850c9e5b7",
+  "fly_release_version": 13
+ }
+}
