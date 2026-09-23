@@ -117,12 +117,16 @@ also declare edges the registry does not know; the registry uses only the
 edges it serves, which `served_edge_contracts()` returns.
 
 `HarnessRegistry.registration_digest` returns the digest of one registration:
-the whole declaration and the implementation class. A decision binds it. A
-replacement always changes it, so a decision made before a replacement no
-longer matches, and one identifier names one implementation. The parked raw
-host OpenCode adapter therefore answers to `opencode.raw_host`, while the
-OpenCode recipe engine of `embodiments/opencode/harness.json` answers to
-`opencode`.
+the whole declaration and the implementation class. A replacement always
+changes it. No decision record carries this digest yet. The engine selection
+decision planned in the engine design is meant to bind it, so that a decision
+made before a replacement no longer matches. Until then,
+`HarnessSemanticBinding` notices a replacement when it is used, by comparing
+the registered adapter object and its declaration.
+
+One engine identifier names one implementation. The parked raw host OpenCode
+adapter therefore answers to `opencode.raw_host`, while the OpenCode recipe
+engine of `embodiments/opencode/harness.json` answers to `opencode`.
 
 | Adapter | Engine kind | Edge |
 |---|---|---|

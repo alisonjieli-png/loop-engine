@@ -6,11 +6,12 @@ serves with the adapter operation each edge calls, the refusals applied when an
 adapter is registered and again when the envelope uses it, the registration
 digest, and the rule that the envelope's own clock sets an attempt's time.
 Belongs to: the external harness boundary (``core.external_harness``), which
-imports this module. This module never imports that boundary, so no cycle forms.
+imports this module. This module does not import that boundary when it loads,
+so no cycle forms.
 Does not own: engine selection, eligibility for one step, which kinds count as
-delegation (the envelope of the step edge computes that from the observed
-process), the step edge records, or any permission. A declaration is a fact
-about an adapter, never a grant and never an independent qualification.
+delegation (the planned envelope of the step edge is to compute that from the
+observed process), the step edge records, or any permission. A declaration is
+a fact about an adapter, never a grant and never an independent qualification.
 """
 from __future__ import annotations
 
@@ -36,8 +37,9 @@ SUPPORTED_ADAPTER_CONTRACT_VERSIONS = (ADAPTER_CONTRACT_VERSION,)
 STEP_EXECUTOR_SLOT = "step_executor"
 
 #: The closed engine kinds of the step executor slot (engine design, section
-#: 13.5). The slot catalogue lists the same kinds and says which of them may
-#: count as delegation; this tuple only bounds what an adapter may declare.
+#: 13.5). The design also says which of them may count as delegation, and the
+#: planned slot catalogue is to list the same kinds; this tuple only bounds what
+#: an adapter may declare.
 STEP_EXECUTOR_ENGINE_KINDS = (
     "agent_protocol_harness", "native_protocol_harness", "text_relay_harness",
     "custom_loop_harness", "remote_agent", "agent_framework_kit", "direct_model_step",

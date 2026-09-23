@@ -558,7 +558,7 @@ class HarnessRegistry:
     def register(self, adapter: ExternalHarnessAdapter, *,
                  replace: bool = False) -> None:
         """Refuse, before any run, an adapter outside the contract; a replacement
-        must change the registration digest, or old decisions could not see it."""
+        must change the registration digest, so a decision bound to it sees the change."""
         info = adapter.info()
         if not isinstance(info, HarnessAdapterInfo):
             raise HarnessError("adapter must expose typed information")
@@ -573,7 +573,7 @@ class HarnessRegistry:
         self._digests[info.harness_id] = digest
 
     def registration_digest(self, harness_id: str) -> str:
-        """The digest a decision binds; it changes whenever the engine is replaced."""
+        """The digest a selection decision can bind; a replacement always changes it."""
         self.get(harness_id)
         return self._digests[harness_id]
 
