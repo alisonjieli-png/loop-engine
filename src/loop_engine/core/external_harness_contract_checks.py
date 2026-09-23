@@ -40,10 +40,12 @@ class _Fixture:
     """A local adapter whose declaration each check sets. It starts no process."""
 
     def __init__(self, harness_id="contract_fixture", *, contract=_VERSION, kind=_KIND,
-                 edges=(_RESPONSE_EDGE,), version="1.0.0", reported=None, sleep=0.0):
+                 edges=(_RESPONSE_EDGE,), version="1.0.0", reported=None, sleep=0.0,
+                 features=()):
         self.harness_id, self.version = harness_id, version
         self.contract, self.kind, self.edges = contract, kind, edges
         self.reported, self.sleep, self.calls = reported, sleep, 0
+        self.features = features
 
     def info(self):
         declared = {name: value for name, value in (
@@ -51,7 +53,8 @@ class _Fixture:
             ("supported_edge_contracts", self.edges)) if value is not _OMITTED}
         return HarnessAdapterInfo(
             self.harness_id, self.version, "not-imported", available=True,
-            execution_capabilities=HarnessExecutionCapabilities(), **declared)
+            execution_capabilities=HarnessExecutionCapabilities(
+                supported_features=self.features), **declared)
 
     def run(self, request, services):
         self.calls += 1
@@ -108,6 +111,8 @@ def _served_edge_is_required():
             and _register(_Fixture(edges=("step_run_request/v2",))) == ("no_supported_edge_contract",)
             and _register(_Fixture(edges=_OMITTED)) == ("no_supported_edge_contract",)
             and _register(_Fixture(edges=(_STEP_EDGE,))) == ("edge_operation_missing:run_step",)
+            # An operation that exists but cannot be called is missing too.
+            and _register(_StepEngine(edges=(_RESPONSE_EDGE,))) == ("edge_operation_missing:run",)
             and _register(_StepEngine(edges=(_STEP_EDGE,))) == "accepted"
             and _register(_Fixture(edges=(_RESPONSE_EDGE, "harness_request_identity/v4")))
             == "accepted")
@@ -141,12 +146,20 @@ def _one_identifier_one_implementation():
     new_code = _register(_SecondImplementation("replaced", version="1.0.1"),
                          registry=registry, replace=True)
     third = registry.registration_digest("replaced")
+    # Only the declared capabilities change: still a new registration digest.
+    new_capabilities = _register(_SecondImplementation(
+        "replaced", version="1.0.1", features=("model_routes",)), registry=registry, replace=True)
+    fourth = registry.registration_digest("replaced")
+    # The new identifier is a harness name, so no model call may give it as its provider.
+    harness_as_provider = _outcome(
+        lambda: HarnessModelCall("opencode.raw_host", "fixture-model", True))
     return (parked.info().harness_id == "opencode.raw_host" and both == "accepted"
+            and harness_as_provider == "HarnessError"
             and {item.harness_id for item in held.inventory()} == {"opencode", "opencode.raw_host"}
             and same_again == ("replacement_registration_digest_unchanged",) and unchanged
             and without_replace == ("engine_identifier_already_registered",)
             and new_version == "accepted" and new_code == "accepted"
-            and len({first, second, third}) == 3)
+            and new_capabilities == "accepted" and len({first, second, third, fourth}) == 4)
 
 
 def _request(harness_id, **budget):
