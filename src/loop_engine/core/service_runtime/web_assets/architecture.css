@@ -154,3 +154,25 @@ footer{flex-wrap:wrap;align-items:center}
 .hero-example>.caption{margin:0;padding:.75rem 1.25rem 1rem;border-top:1px solid var(--border);color:var(--muted)}
 .product-hero .hero-split,.product-hero .hero-value{max-width:560px}
 .hero.product-hero h1{font-size:clamp(2.1rem,3.3vw,3.15rem)}
+
+/* The hero offers one action. The note under it changes with the reported state and keeps two lines of room, so the
+   state that the served page does not show first still fits without moving the lines below it. */
+.hero-actions{margin:1.6rem 0 .9rem}
+.hero-note{margin:0;max-width:30rem;min-height:3.1em}
+.hero-note+.hero-price{margin:.3rem 0 0}
+
+/* The panel that leads the Get started page. The service's record chooses which of its three panels shows: the invitation
+   request form, account creation, or the way to reach the operator, which is also the careful state. */
+.start-access{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1.5rem 3rem;align-items:start;margin:0 0 1.5rem;padding:2rem;background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.start-access-intro{min-width:0}
+.start-access-intro h2{font-size:clamp(1.35rem,2.2vw,1.7rem);line-height:1.25;margin:.7rem 0 .4rem}
+.start-access-intro>p{color:var(--muted)}
+.start-access-intro>.start-signin{color:var(--ink);font-weight:600}
+.start-invite,.start-register,.start-operator{min-width:0;padding:1.5rem;background:var(--bg);border:1px solid var(--border);border-radius:12px}
+.start-invite h3,.start-register h3,.start-operator h3{margin:0;font-size:1.1rem}
+.start-invite .section-heading{margin-bottom:.3rem}
+.start-invite>p:not(.secondary),.start-register p,.start-operator p{color:var(--muted)}
+.start-invite textarea{display:block;width:100%;min-width:0;max-width:100%;padding:.65rem .8rem;border:1px solid var(--border);border-radius:7px;background:var(--paper);color:var(--ink);font:inherit;resize:vertical}
+.start-invite form button{width:100%;margin-top:1rem}
+.start-register .button{margin-top:.4rem}
+@media(max-width:900px){.start-access{grid-template-columns:minmax(0,1fr);padding:1.25rem}.start-invite,.start-register,.start-operator{padding:1.1rem}}

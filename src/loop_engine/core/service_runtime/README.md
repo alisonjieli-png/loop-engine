@@ -884,10 +884,11 @@ declares a `waitlist` block in its configuration serves
 optional note without signing in, and `GET` and `POST /api/v1/admin/waitlist`,
 where an operator with the administration scope reads the list and applies
 one decision at a time. A host without that block serves neither, and both
-answer `waitlist_unavailable`. The page offers the form, its links and the
-discount sentence only when the capabilities record says
-`waitlist_available`, and names the discount only when it also says
-`discount_code`. Like every other public statement on the page, the offer is
+answer `waitlist_unavailable`. The form leads the Get started page, which
+`/waitlist` also opens. The page offers the form, its link and the discount
+sentence only when the capabilities record says `waitlist_available`, and
+names the discount only when it also says `discount_code`. When the record
+says `registration_available`, account creation leads that page instead. Like every other public statement on the page, the offer is
 read only from `service_capabilities/v1`, so a record version the page was not
 written for offers nothing. The pricing page's list of unfinished work and the
 sign-up page's note that the form is still being built name the waiting list

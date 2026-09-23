@@ -15,35 +15,49 @@
   };
   // "/get-started" and "/connect" open the same Get started page. The serving route table does not list
   // "/get-started" yet, so that address works through the navigation and a direct visit is not served.
-  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/waitlist":"waitlist", "/auth/callback":"login"};
+  // "/waitlist" is served and opens the same page too, because the invitation request form leads it.
+  const routeNames = {"/":"home", "/app":"workspace", "/login":"login", "/signup":"signup", "/pricing":"pricing", "/account":"account", "/admin":"admin", "/docs":"docs", "/how-it-works":"about", "/connect":"setup", "/get-started":"setup", "/examples":"examples", "/security":"security", "/privacy":"privacy", "/waitlist":"setup", "/auth/callback":"login"};
   if (location.pathname === "/auth/callback") {
     // Confirmation tokens in a provider redirect never enter our logs, storage or links.
     history.replaceState({}, "", "/login");
     $("identity-message").textContent = "Your email link has returned to Baltor. Sign in to continue; the provider will check your confirmation status.";
   }
   const serviceName = document.title.split(" | ")[0];
-  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice", waitlist:"Ask for an invitation"}[name]; };
+  const route = () => { const name = routeNames[location.pathname] || "home"; show(name); document.title = serviceName + " | " + {home:"Material your coding tools can search", workspace:"Intelligence workspace", login:"Sign in", signup:"Account status", pricing:"Pricing", account:"Your account", admin:"Access administration", docs:"Setup guide", about:"How it works", setup:"Get started", examples:"Try your first retrieval", security:"Access and data boundaries", privacy:"Privacy notice"}[name]; };
   const navigate = path => { history.pushState({}, "", path); route(); $("main").focus({preventScroll:true}); const target = location.hash ? document.getElementById(location.hash.slice(1)) : null; if (target) target.scrollIntoView(); else scrollTo(0,0); };
   document.querySelectorAll("[data-page]").forEach(link => link.addEventListener("click", event => { if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return; event.preventDefault(); if (link.dataset.afterLogin && routeNames[link.dataset.afterLogin]) afterLogin = link.dataset.afterLogin; navigate(link.getAttribute("href")); }));
   addEventListener("popstate", route); route();
-  /* The public access action, the pricing state and the personal-key wording come from the service capabilities record, never from wording kept in this file.
+  /* The public access state, the pricing state and the personal-key wording come from the service capabilities record, never from wording kept in this file.
      They are read only from this exact record version, because another version may rename a field or give it a different meaning.
      Until the service answers, if it never answers, and for any other record version, the page keeps the careful state:
-     the waiting list, payment not open, personal keys described as being prepared. */
+     registration closed, the operator's address leading the Get started page, payment not open, personal keys described as being prepared.
+     Every public access action says "Get started" and opens the Get started page in every state. The owner, September 22, 2026:
+     "get started and join the waiting list are redundant". The state shows in the note under the hero action and in the panel
+     that leads the Get started page. */
   const CAPABILITIES_RECORD_TYPE = "service_capabilities/v1";
   const accessStates = {
-    open:{label:"Create your account", href:"/signup", note:"Account creation is open. Search is free, and one downloaded item is the measured unit."},
-    waiting:{label:"Join the waiting list", href:"/signup#waiting-list", note:"Accounts open in small groups. Join the waiting list and we will write to you when your turn comes."}};
+    open:{label:"Get started", href:"/connect", note:"Account creation is open. Get started to create your account; search is free."},
+    waiting:{label:"Get started", href:"/connect", note:"Accounts open in small groups. Get started to ask for an invitation; a person reads every request."}};
   const paymentStates = {
     open:{badge:"Payment open", note:"Payment is open. Start or manage your subscription from your account page.", teaser:"Payment is open. Invited accounts stay free."},
     closed:{badge:"Payment not open", note:"Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.", teaser:"Payment is not open yet. Nothing on this page charges you today."}};
+  /* Every public access action carries the same attribute and a marked label, so an action added to another page later follows
+     the reported state instead of a label written into it. */
   const applyAccessState = open => {
     const state = open === true ? accessStates.open : accessStates.waiting;
-    for (const id of ["hero-primary", "pricing-primary", "closing-primary"]) {
-      $(id).setAttribute("href", state.href); $(id).dataset.accessState = open === true ? "open" : "waiting";
-      $(id + "-label").textContent = state.label;
+    for (const action of document.querySelectorAll("[data-access-state]")) {
+      action.setAttribute("href", state.href); action.dataset.accessState = open === true ? "open" : "waiting";
+      action.querySelector("[data-access-label]").textContent = state.label;
     }
     $("hero-access-note").textContent = state.note;
+  };
+  /* The Get started page leads with one panel, read from the same record: account creation when registration is open, the
+     invitation request form when the service keeps a waiting list, and otherwise the plain way to reach the operator. The
+     operator's panel is also the careful state, so the served page shows it before the service answers. */
+  const startState = website => website.registration_available === true ? "register" : website.waitlist_available === true ? "invite" : "operator";
+  const applyStartState = state => {
+    for (const panel of document.querySelectorAll("[data-start-state]")) panel.hidden = panel.dataset.startState !== state;
+    $("start-access").dataset.startAccess = state;
   };
   const applyPaymentState = open => {
     const state = open === true ? paymentStates.open : paymentStates.closed;
@@ -230,12 +244,13 @@
   // The waiting list is offered only where the service says it keeps one, and
   // the discount is named only where checkout says it takes a code. Until the
   // service answers, neither is offered: an unanswered page must not make an
-  // offer that ends in a refusal.
+  // offer that ends in a refusal. The form sits in the invitation panel of the
+  // Get started page, which applyStartState shows or hides as a whole.
   const waitlistOffer = value => {
     // Read only from the record version this page was written against, like
     // every other public statement: another version offers nothing.
     const open = value?.record_type === CAPABILITIES_RECORD_TYPE && value.website?.waitlist_available === true;
-    for (const name of ["waitlist-link", "signup-waitlist-link", "waitlist-form"]) $(name).hidden = !open;
+    for (const name of ["signup-waitlist-link", "waitlist-form"]) $(name).hidden = !open;
     $("waitlist-closed").hidden = open;
     // The sign-up page says the form is still being built only while no list is offered.
     $("waiting-list-pending").hidden = open;
@@ -529,6 +544,7 @@
     /* Public statements are read last and only from the record version this page was written against. An unexpected version keeps the careful state. */
     if (value.record_type === CAPABILITIES_RECORD_TYPE) {
       applyAccessState(value.website.registration_available === true);
+      applyStartState(startState(value.website));
       applyPaymentState(value.billing.checkout === true);
       applyClientAccessState(value.website.client_access_available === true);
       if (value.website.browser_identity_available) openBrowserIdentity();

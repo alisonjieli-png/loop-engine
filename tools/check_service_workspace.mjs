@@ -171,6 +171,42 @@ async function checkBenefitList(opened,note){
       role:detail.getAttribute("role"),expanded:title.getAttribute("aria-expanded"),type:title.getAttribute("type"),heading:title.parentElement.tagName};}));
   note("every_benefit_title_is_a_button_that_names_its_own_detail",wiring.length===6&&wiring.every(item=>item.controls===item.detailId&&item.labelled===item.titleId&&item.role==="region"&&item.type==="button"&&item.heading==="H3"&&["true","false"].includes(item.expanded)),{wiring});
 }
+/* One call to action. The owner, September 22, 2026: "get started and join the waiting list are redundant". Every link or
+   button that starts the access journey says "Get started" and opens the one Get started page. That page leads with the one
+   action the service reports: account creation, the invitation request form, or the plain way to reach the operator. The
+   labels the owner called redundant are reported anywhere. The invitation request is offered only by the form that leads the
+   Get started page. Account creation is offered only while the service reports registration open, and then only on the Get
+   started page and the account page. Each rule has a known-wrong page of its own in the journey below. The readers return
+   empty values for a missing element, so a page without the new parts fails these checks by name instead of stopping. */
+const getStartedLabel="Get started",getStartedPath="/connect",getStartedAddresses=["/connect","/get-started","/waitlist"];
+const redundantAccessLabel=/join the waiting list|request access|early access/i,invitationAccessLabel=/ask for an invitation/i,creationAccessLabel=/create (?:your )?account|\bsign up\b/i;
+/* The public pages a visitor can open without signing in. Each is scanned on three real services below. */
+const accessJourneyPaths=["/","/pricing","/how-it-works","/connect","/signup","/examples","/security","/docs","/privacy","/login"];
+const waitingNote="Accounts open in small groups. Get started to ask for an invitation; a person reads every request.";
+const openNote="Account creation is open. Get started to create your account; search is free.";
+const publicActions=target=>target.evaluate(()=>{
+  const lead=document.getElementById("start-access"),shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
+  return [...document.querySelectorAll("header a, header button, footer a, [data-view]:not([hidden]) a, [data-view]:not([hidden]) button")].filter(shown)
+    .map(node=>({id:node.id,text:node.textContent.replace(/[↗→]/g,"").replace(/\s+/g," ").trim(),href:node.getAttribute("href")||"",
+      lead:Boolean(lead&&lead.contains(node)),account:Boolean(node.closest('[data-view="signup"]'))}));
+});
+const accessActionProblems=(actions,registrationOpen)=>[
+  ...actions.filter(action=>getStartedAddresses.includes(action.href.split("#")[0])&&action.text!==getStartedLabel).map(action=>"an action that opens the Get started page says "+JSON.stringify(action.text)),
+  ...actions.filter(action=>action.text===getStartedLabel&&action.href!==getStartedPath).map(action=>"a Get started action opens "+JSON.stringify(action.href)),
+  ...actions.filter(action=>redundantAccessLabel.test(action.text)).map(action=>"a second label for the same journey: "+JSON.stringify(action.text)),
+  ...actions.filter(action=>invitationAccessLabel.test(action.text)&&!action.lead).map(action=>"an invitation request outside the Get started page: "+JSON.stringify(action.text)),
+  ...actions.filter(action=>creationAccessLabel.test(action.text)&&(!registrationOpen||!(action.lead||action.account))).map(action=>(registrationOpen?"account creation offered outside the Get started and account pages: ":"account creation offered while registration is closed: ")+JSON.stringify(action.text))];
+/* The Get started page leads with one panel: "register", "invite" or "operator". The reader says which panel is shown, whether
+   the invitation form and the account action can be seen, and whether the panel is the first thing under the page heading. */
+const startLead=target=>target.evaluate(()=>{
+  const lead=document.getElementById("start-access"),seen=id=>{const node=document.getElementById(id);return Boolean(node&&node.getClientRects().length>0);};
+  return {state:lead?.dataset.startAccess||"",shown:[...document.querySelectorAll("[data-start-state]")].filter(panel=>!panel.hidden).map(panel=>panel.dataset.startState),
+    form:seen("waitlist-form"),register:seen("start-register"),signIn:seen("start-sign-in"),
+    leads:Boolean(lead&&lead.parentElement?.dataset.view==="setup"&&lead.previousElementSibling?.classList.contains("page-heading"))};
+});
+const sameLead=(lead,state)=>lead.state===state&&JSON.stringify(lead.shown)===JSON.stringify([state])&&lead.form===(state==="invite")&&lead.register===(state==="register")&&lead.signIn&&lead.leads;
+const openGetStarted=async target=>{await target.locator('header nav a[data-page="setup"]').click();return startLead(target);};
+
 const withEndpoint=(value,endpoint)=>value===endpointMark?endpoint:Array.isArray(value)?value.map(item=>withEndpoint(item,endpoint)):value&&typeof value==="object"?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,withEndpoint(item,endpoint)])):value;
 const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==="object"?Object.fromEntries(Object.keys(value).sort().map(key=>[key,ordered(value[key])])):value;
 const sameValue=(left,right)=>JSON.stringify(ordered(left))===JSON.stringify(ordered(right));
@@ -387,8 +423,10 @@ try {
   check("the_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(positioning),{positioning});
   check("category_line_explanation_check_rejects_a_bare_phrase",["Harness and agent optimized operation.","Built for harness and agent optimized operation, one step at a time.","A harness is the program that runs your coding agent."].every(claim=>!explainsTheCategoryLine(claim))&&explainsTheCategoryLine(positioning));
   check("homepage_states_the_free_and_paid_split",(await page.locator('[data-view="home"] .hero-split').innerText()).startsWith("Free to install. Paid access to the library."));
+  /* One primary action in the hero: "Get started", opening the Get started page. One secondary link beside it, and no second
+     way into the same journey anywhere in the hero. */
   const heroPrimary=page.locator('[data-view="home"] .hero .button.primary');
-  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("href")==="/connect"&&(await heroPrimary.innerText()).startsWith("Get started")&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown");
+  check("homepage_offers_one_primary_action_and_one_secondary",await heroPrimary.count()===1&&await heroPrimary.getAttribute("id")==="hero-primary"&&await heroPrimary.getAttribute("href")==="/connect"&&(await heroPrimary.innerText()).replace(/[↗]/g,"").trim()==="Get started"&&await page.locator("#hero-primary").isVisible()&&await page.locator("#hero-how-it-works").isVisible()&&await page.locator("#hero-how-it-works").getAttribute("href")==="/how-it-works#task-breakdown"&&await page.locator('[data-view="home"] .hero a[href^="/signup"], [data-view="home"] .hero a[href="/waitlist"]').count()===0);
   const homeFlow=await page.locator('[data-view="home"]').evaluate(home=>{
     const hero=home.querySelector('.product-hero'),start=home.querySelector('.start-strip'),offer=home.querySelector('.offer-section'),benefits=home.querySelector('.benefit-section');
     const before=(first,second)=>Boolean(first.compareDocumentPosition(second)&Node.DOCUMENT_POSITION_FOLLOWING);
@@ -513,7 +551,9 @@ try {
   check("navigation_order_check_rejects_a_wrong_first_item",[[{label:"How it works",page:"about"},{label:"Get started",page:"setup"}],[{label:"Connect",page:"setup"},{label:"Get started",page:"setup"}],[{label:"Get started",page:"setup"},{label:"Connect",page:"setup"}]].every(items=>!firstIsGetStarted(items)));
   await page.locator('header nav a[data-page="setup"]').click();
   const orderedSteps=await page.locator("[data-get-started-step]").evaluateAll(items=>items.map(item=>({step:item.dataset.getStartedStep,index:item.querySelector(".feature-index").textContent.trim(),title:item.querySelector("[data-get-started-title]").textContent.trim()})));
-  const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["download","connect","sign-up"])&&steps.every((item,index)=>item.index.startsWith("Step "+(index+1)+" / ")&&item.title.length>0);
+  /* The Get started page leads with access, because search and downloads need an account; the part you install and the
+     connection follow. The first step is the panel the service's record chooses, so its title is the same in every state. */
+  const namesThreeStepsInOrder=steps=>JSON.stringify(steps.map(item=>item.step))===JSON.stringify(["access","download","connect"])&&steps.every((item,index)=>item.index.startsWith("Step "+(index+1)+" / ")&&item.title.length>0);
   check("get_started_page_names_the_three_steps_in_order",new URL(page.url()).pathname==="/connect"&&namesThreeStepsInOrder(orderedSteps)&&await page.locator('[data-view="setup"]').isVisible(),{steps:orderedSteps});
   check("get_started_step_check_rejects_a_wrong_order_or_a_missing_step",[[orderedSteps[1],orderedSteps[0],orderedSteps[2]],[orderedSteps[0],orderedSteps[1]],[orderedSteps[0],orderedSteps[2],orderedSteps[1]]].every(steps=>!namesThreeStepsInOrder(steps))&&namesThreeStepsInOrder(orderedSteps));
   check("get_started_page_carries_the_copyable_connection_settings",await page.locator("#client-choice").count()===1&&await page.locator("#client-configuration").count()===1&&await page.locator("#copy-configuration").count()===1);
@@ -628,11 +668,14 @@ try {
   for(const width of [1440,360]){await page.setViewportSize({width,height:1000});await page.goto(fixture.base+"/");homeFits.push({width,...await page.evaluate(()=>({overflow:document.documentElement.scrollWidth>innerWidth+1}))});}
   check("homepage_fits_a_360_pixel_screen",homeFits.length===2&&homeFits.every(item=>!item.overflow),{measurements:homeFits});
   await page.setViewportSize({width:1440,height:1000});
-  /* The three capabilities the service can report, for account creation, for payment and for personal keys, each read from a real
-     service, with the removed-guard controls for both directions and for the record version the page was written against. */
-  const expectedAccess={waiting:{state:"waiting",href:"/signup#waiting-list",label:"Join the waiting list"},open:{state:"open",href:"/signup",label:"Create your account"}};
-  const accessActions=target=>target.locator("[data-access-state]").evaluateAll(items=>items.map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("span").textContent})).sort((left,right)=>left.id<right.id?-1:1));
-  const sameAccess=(actions,want)=>actions.length===3&&actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label);
+  /* The capabilities the service can report, for account creation, for a waiting list, for payment and for personal keys,
+     each read from a real service, with the removed-guard controls for both directions and for the record version the page
+     was written against. Every public action says "Get started" in every state. The state shows in the note under the hero
+     action and in the one panel that leads the Get started page. */
+  const expectedAccess={waiting:{state:"waiting",href:"/connect",label:"Get started",note:waitingNote},open:{state:"open",href:"/connect",label:"Get started",note:openNote}};
+  const accessActions=target=>target.evaluate(()=>({note:document.getElementById("hero-access-note")?.textContent||"",
+    actions:[...document.querySelectorAll("[data-access-state]")].map(item=>({id:item.id,state:item.dataset.accessState,href:item.getAttribute("href"),label:item.querySelector("[data-access-label]")?.textContent||""})).sort((left,right)=>left.id<right.id?-1:1)}));
+  const sameAccess=(found,want)=>found.actions.length===3&&found.actions.every(action=>action.state===want.state&&action.href===want.href&&action.label===want.label)&&found.note===want.note;
   /* A capabilities record whose version this page was not written against may have renamed a field or given it a different meaning.
      "version" serves the real reply of a real service with its record type changed, so the careful state is checked against a known-wrong version. */
   const openPublic=async (base,mutation,version)=>{
@@ -660,35 +703,53 @@ try {
                          offered:{offered:true,unfinished:"Public account creation and complete native client onboarding are not finished."}};
   const waitlistClaims=async opened=>{await paymentState(opened);return opened.evaluate(()=>{
     const shown=id=>{const node=document.getElementById(id);return node?!node.hidden:null;},unfinished=document.getElementById("pricing-in-progress");
-    return {link:shown("waitlist-link"),form:shown("waitlist-form"),signup_link:shown("signup-waitlist-link"),pending_note:shown("waiting-list-pending"),
+    return {form:shown("waitlist-form"),signup_link:shown("signup-waitlist-link"),pending_note:shown("waiting-list-pending"),
       unfinished:unfinished?unfinished.innerText.split(". ")[0]+".":null};});};
-  const sameWaitlistClaims=(claims,want)=>claims.link===want.offered&&claims.form===want.offered&&claims.signup_link===want.offered
+  const sameWaitlistClaims=(claims,want)=>claims.form===want.offered&&claims.signup_link===want.offered
     &&claims.pending_note===!want.offered&&claims.unfinished===want.unfinished;
   const carefulState=async (opened,note,name)=>{
-    const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened);
-    note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed),{actions,payment,keys});
+    const actions=await accessActions(opened),keys=await keyState(opened),payment=await paymentState(opened),lead=await openGetStarted(opened);
+    note(name,sameAccess(actions,expectedAccess.waiting)&&payment.badge==="Payment not open"&&sameKeys(keys,keyWording.closed)&&sameLead(lead,"operator"),{actions,payment,keys,lead});
+  };
+  /* The actions a visitor reaches first: the homepage, the pricing view and the Get started page, in that order. */
+  const journeyActionProblems=async (opened,registrationOpen)=>{
+    const problems=[];
+    for(const selector of [null,'header a[data-page="pricing"]','header nav a[data-page="setup"]']){if(selector)await opened.locator(selector).click();problems.push(...accessActionProblems(await publicActions(opened),registrationOpen));}
+    return problems;
   };
   const scenarios={
     closed_service:{origin:"base",run:async (opened,note)=>{
       const actions=await accessActions(opened),keys=await keyState(opened);
-      note("public_action_offers_the_waiting_list_when_account_creation_is_closed",sameAccess(actions,expectedAccess.waiting),{actions});
+      note("public_actions_say_get_started_while_registration_is_closed",sameAccess(actions,expectedAccess.waiting),actions);
       note("personal_key_claim_is_held_back_when_the_service_reports_no_client_access",sameKeys(keys,keyWording.closed),keys);
+      const journey=await journeyActionProblems(opened,false);
+      note("no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed",journey.length===0,{problems:journey});
+      const lead=await startLead(opened);
+      note("get_started_leads_with_the_operator_when_the_service_offers_neither",sameLead(lead,"operator"),lead);
       const payment=await paymentState(opened);
       note("pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout",payment.badge==="Payment not open"&&payment.shown.includes("not open yet"),payment);
       const claims=await waitlistClaims(opened);
       note("unfinished_work_names_the_waiting_list_form_while_the_service_offers_no_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
     }},
     waitlist_offered:{origin:"account_base",run:async (opened,note)=>{
+      const journey=await journeyActionProblems(opened,false);
+      note("no_public_action_offers_a_second_label_or_account_creation_while_a_list_is_kept",journey.length===0,{problems:journey});
+      const lead=await startLead(opened);
+      note("get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list",sameLead(lead,"invite"),lead);
       const claims=await waitlistClaims(opened);
       note("unfinished_work_drops_the_waiting_list_form_once_the_service_offers_a_list",sameWaitlistClaims(claims,waitlistWording.offered),claims);
     }},
     unsupported_version_waitlist:{origin:"account_base",version:"service_capabilities/v2",run:async (opened,note)=>{
-      const claims=await waitlistClaims(opened);
-      note("unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list",sameWaitlistClaims(claims,waitlistWording.pending),claims);
+      const claims=await waitlistClaims(opened),lead=await openGetStarted(opened);
+      note("unsupported_capabilities_version_keeps_the_careful_state_over_the_waiting_list",sameWaitlistClaims(claims,waitlistWording.pending)&&sameLead(lead,"operator"),{claims,lead});
     }},
     open_registration:{origin:"signup_base",run:async (opened,note)=>{
       const actions=await accessActions(opened);
-      note("public_action_offers_account_creation_when_the_service_reports_it",sameAccess(actions,expectedAccess.open),{actions});
+      note("public_actions_say_get_started_while_registration_is_open",sameAccess(actions,expectedAccess.open),actions);
+      const journey=await journeyActionProblems(opened,true);
+      note("no_public_action_offers_account_creation_outside_the_get_started_and_account_pages",journey.length===0,{problems:journey});
+      const lead=await startLead(opened);
+      note("get_started_leads_with_account_creation_when_registration_is_open",sameLead(lead,"register"),lead);
     }},
     open_checkout:{origin:"billing_base",run:async (opened,note)=>{
       const payment=await paymentState(opened);
@@ -716,11 +777,42 @@ try {
     const scenario=scenarios[name],{page:opened}=await openPublic(fixture[scenario.origin],null,scenario.version);
     await scenario.run(opened,check);await opened.close();
   }
+  /* Every public page on three real services: one that offers neither registration nor a list, one that keeps a waiting list,
+     and one with registration open. The known-wrong page after it plants one wrong action at a time into the real homepage. */
+  const actionScan=[];
+  for(const [name,registrationOpen] of [["base",false],["account_base",false],["signup_base",true]]){
+    const scanned=await context.newPage();scanned.on("pageerror",error=>errors.push(safeError(error.message)));
+    for(const path of accessJourneyPaths){
+      await scanned.goto(fixture[name]+path);
+      await scanned.waitForFunction(()=>document.querySelector("#service-status")?.textContent!=="Checking service availability");
+      actionScan.push({origin:name,path,problems:accessActionProblems(await publicActions(scanned),registrationOpen)});
+    }
+    await scanned.close();
+  }
+  check("every_public_page_offers_one_call_to_action_and_nothing_the_service_cannot_honour",actionScan.length===3*accessJourneyPaths.length&&actionScan.every(item=>item.problems.length===0),{problems:actionScan.filter(item=>item.problems.length)});
+  const knownWrong=await context.newPage();knownWrong.on("pageerror",error=>errors.push(safeError(error.message)));
+  await knownWrong.goto(fixture.base+"/");await knownWrong.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+  const plantedAction=async (text,href,place)=>{
+    const planted=await knownWrong.evaluate(([text,href,place])=>{const target=document.querySelector(place);if(!target)return false;const link=document.createElement("a");link.id="known-wrong-action";link.href=href;link.textContent=text;target.append(link);return true;},[text,href,place]);
+    const problems=accessActionProblems(await publicActions(knownWrong),false);
+    await knownWrong.evaluate(()=>document.getElementById("known-wrong-action")?.remove());
+    return planted?problems:["(the known-wrong action could not be planted)","(so this case proves nothing)"];
+  };
+  const secondLabel=await plantedAction("Join the waiting list","/waitlist",'[data-view="home"] .hero-actions');
+  const creationWhileClosed=await plantedAction("Create your account","/signup",'[data-view="home"] .closing-actions');
+  const invitationOutside=await plantedAction("Ask for an invitation","/connect",'[data-view="home"] .pricing-teaser-side');
+  await knownWrong.close();
+  check("access_action_check_rejects_a_second_label_account_creation_and_an_invitation_outside_its_form",secondLabel.length===2&&creationWhileClosed.length===1&&invitationOutside.length===2,{secondLabel,creationWhileClosed,invitationOutside});
   const versionGate="if (value.record_type === CAPABILITIES_RECORD_TYPE) {";
   const waitlistGate="const open = value?.record_type === CAPABILITIES_RECORD_TYPE && value.website?.waitlist_available === true;";
+  const registrationLead='website.registration_available === true ? "register"',invitationLead='website.waitlist_available === true ? "invite"';
   const publicControls=[
-    {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_action_offers_the_waiting_list_when_account_creation_is_closed"]},
-    {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_action_offers_account_creation_when_the_service_reports_it"]},
+    {name:"always_offer_sign_up",scenario:"closed_service",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(true);",expected:["public_actions_say_get_started_while_registration_is_closed"]},
+    {name:"never_offer_sign_up",scenario:"open_registration",find:"applyAccessState(value.website.registration_available === true);",replacement:"applyAccessState(false);",expected:["public_actions_say_get_started_while_registration_is_open"]},
+    {name:"bring_back_the_waiting_list_label",scenario:"closed_service",find:'waiting:{label:"Get started"',replacement:'waiting:{label:"Join the waiting list"',expected:["public_actions_say_get_started_while_registration_is_closed","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
+    {name:"always_lead_with_account_creation",scenario:"closed_service",find:registrationLead,replacement:'true ? "register"',expected:["get_started_leads_with_the_operator_when_the_service_offers_neither","no_public_action_offers_a_second_label_or_account_creation_while_registration_is_closed"]},
+    {name:"never_lead_with_account_creation",scenario:"open_registration",find:registrationLead,replacement:'false ? "register"',expected:["get_started_leads_with_account_creation_when_registration_is_open"]},
+    {name:"never_lead_with_the_invitation_form",scenario:"waitlist_offered",find:invitationLead,replacement:'false ? "invite"',expected:["get_started_leads_with_the_invitation_form_when_the_service_keeps_a_list"]},
     {name:"always_say_payment_is_open",scenario:"closed_service",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(true);",expected:["pricing_view_says_payment_is_closed_when_the_service_reports_no_checkout"]},
     {name:"never_say_payment_is_open",scenario:"open_checkout",find:"applyPaymentState(value.billing.checkout === true);",replacement:"applyPaymentState(false);",expected:["pricing_view_says_payment_is_open_when_the_service_reports_checkout"]},
     {name:"always_claim_personal_keys",scenario:"closed_service",find:"applyClientAccessState(value.website.client_access_available === true);",replacement:"applyClientAccessState(true);",expected:["personal_key_claim_is_held_back_when_the_service_reports_no_client_access"]},
@@ -759,8 +851,10 @@ try {
   }
   /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the served text. */
   const servedHome=await (await page.request.get(fixture.base+"/")).text();
+  /* The careful access state is the operator's panel leading the Get started page, with the invitation form and the account
+     action held back, and the note under the hero action written for closed registration. */
   const carefulDefaults=["Payment not open","Payment is not open yet. Nothing on this page charges you today, and invited accounts stay free.",
-    "Payment is not open yet. Nothing on this page charges you today.","Join the waiting list",keyWording.closed.offer,keyWording.closed.plan];
+    "Payment is not open yet. Nothing on this page charges you today.",'data-start-access="operator"',waitingNote,keyWording.closed.offer,keyWording.closed.plan];
   const unsettled=/Checking payment|Checking whether payment is open/;
   const carefulProblems=text=>[...carefulDefaults.filter(value=>!text.includes(value)),...(unsettled.test(text)?["an unsettled placeholder"]:[])];
   check("served_page_defaults_to_the_careful_public_state",carefulProblems(servedHome).length===0,{problems:carefulProblems(servedHome)});
@@ -1047,15 +1141,19 @@ try {
   await page.locator('header a[data-page="login"]').click();await page.click("#disconnect");releaseCustomer();
   check("customer_sign_out_clears_tokens_before_delayed_reply",await page.locator("#client-access-controls").isHidden()&&await page.inputValue("#client-issued-token")===""&&await page.locator("#refresh-client-access").isDisabled());
   await page.unroute("**/api/v1/account/access");
-  /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. */
+  /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. The
+     form leads the Get started page, which every page reaches through the "Get started" item of the navigation, and the older
+     address /waitlist opens the same page. */
   await page.setViewportSize({width:1440,height:1000});
   await page.goto(fixture.base+"/waitlist"); await page.waitForFunction(()=>document.querySelector("#waitlist-state").textContent!=="Checking availability");
-  check("a_service_without_a_waiting_list_makes_no_offer",await page.locator("#waitlist-link").isHidden()&&await page.locator("#waitlist-form").isHidden()&&await page.locator("#waitlist-closed").isVisible()&&await page.locator("#waitlist-discount").isHidden());
+  check("a_service_without_a_waiting_list_makes_no_offer",await page.locator('[data-view="setup"]').isVisible()&&await page.locator("#waitlist-form").isHidden()&&await page.locator("#start-invite").isHidden()&&await page.locator("#waitlist-closed").isVisible()&&await page.locator("#waitlist-discount").isHidden());
   await page.goto(fixture.base+"/signup");
   check("a_service_without_a_waiting_list_does_not_offer_it_on_the_registration_page",await page.locator("#signup-waitlist-link").isHidden());
-  await page.goto(fixture.account_base+"/"); await page.waitForFunction(()=>document.querySelector("#waitlist-link")&&!document.querySelector("#waitlist-link").hidden);
-  await page.locator('footer a[data-page="waitlist"]').click();
-  check("a_service_with_a_waiting_list_offers_the_form_from_every_page",new URL(page.url()).pathname==="/waitlist"&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden());
+  await page.goto(fixture.account_base+"/pricing"); await page.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
+  await page.locator('header nav a[data-page="setup"]').click();
+  check("a_service_with_a_waiting_list_leads_the_get_started_page_with_the_form",new URL(page.url()).pathname==="/connect"&&await page.locator("#waitlist-form").isVisible()&&await page.locator("#waitlist-closed").isHidden()&&sameLead(await startLead(page),"invite"));
+  await page.goto(fixture.account_base+"/waitlist"); await page.waitForSelector("#waitlist-form",{state:"visible"});
+  check("the_waiting_list_address_opens_the_same_get_started_page",new URL(page.url()).pathname==="/waitlist"&&await page.locator('[data-view="setup"]').isVisible()&&await page.evaluate(()=>[...document.querySelectorAll("[data-view]")].filter(item=>!item.hidden).length)===1&&(await page.title()).endsWith("| Get started"));
   check("the_discount_is_named_only_where_checkout_takes_a_code",await page.locator("#waitlist-discount").isHidden(),{discount_code:(await (await page.request.get(fixture.account_base+"/api/v1/capabilities")).json()).result.billing.discount_code});
   await page.fill("#waitlist-email","browser.request@example.invalid"); await page.fill("#waitlist-note","My agents rebuild the same checks on every task.");
   await page.click("#waitlist-button"); await page.waitForFunction(()=>document.querySelector("#waitlist-message").textContent.startsWith("Thank you"));

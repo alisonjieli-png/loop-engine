@@ -685,10 +685,21 @@ def _attempt(function):
         return None, error
 
 
+def _invitation_section(page):
+    """The invitation panel leading the Get started page since September 22, 2026; empty text when there is none."""
+    marker = '<section class="start-invite"'
+    return page.split(marker, 1)[1].split("</section>", 1)[0].lower() if marker in page else ""
+
+
 def page_checks(check, _root):
     """The public words: no release stage, and no promise of a date."""
     page = read_packaged_asset("index.html").decode("utf-8")
-    section = page.split('<section data-view="waitlist"', 1)[-1].split("</section>\n    <section", 1)[0].lower()
+    section = _invitation_section(page)
+    setup = page.split('<section data-view="setup"', 1)[-1].split('<div class="setup-grid">', 1)[0] if '<section data-view="setup"' in page else ""
+    check("the_invitation_form_leads_the_get_started_page",
+          bool(section) and '<section class="start-invite"' in setup and 'data-start-access="operator"' in setup)
+    check("KNOWN_WRONG_the_invitation_panel_reader_finds_nothing_on_a_page_without_the_panel",
+          _invitation_section(page.replace('<section class="start-invite"', '<section class="moved-away"')) == "")
     found = sorted(word for word in FORBIDDEN_PAGE_WORDS if word in section)
     check("the_waiting_list_words_name_no_release_stage_and_promise_no_date", not found)
     check("KNOWN_WRONG_the_word_guard_finds_a_promise_when_the_words_carry_one",
@@ -707,16 +718,16 @@ def page_checks(check, _root):
           not _erasure_claim_is_backed(section, (INVITE, "decline"), ()))
     offers = _hidden_until_the_service_answers(page)
     check("no_offer_on_the_page_is_made_before_the_service_says_it_can_be_honoured",
-          offers == {"waitlist-link": True, "signup-waitlist-link": True,
+          offers == {"start-invite": True, "start-register": True, "signup-waitlist-link": True,
                      "waitlist-form": True, "waitlist-discount": True})
     check("KNOWN_WRONG_the_hidden_offer_guard_finds_an_offer_that_is_shown_at_once",
           _hidden_until_the_service_answers(
-              '<a id="waitlist-link" href="/waitlist">Request access</a>')["waitlist-link"] is False)
+              '<section class="start-invite" id="start-invite" data-start-state="invite">')["start-invite"] is False)
     script = read_packaged_asset("service.js").decode("utf-8")
     check("the_page_shows_each_offer_only_from_the_record_the_service_publishes",
-          "waitlist_available" in script and "discount_code" in script
-          and all(name in script for name in ("waitlist-link", "signup-waitlist-link",
-                                              "waitlist-closed", "waitlist-discount")))
+          "waitlist_available" in script and "discount_code" in script and "registration_available" in script
+          and all(name in script for name in ("signup-waitlist-link", "waitlist-form", "waitlist-closed",
+                                              "waitlist-discount", "data-start-state")))
 
 
 def _erasure_claim_is_backed(section, operations, erased):
@@ -728,7 +739,7 @@ def _hidden_until_the_service_answers(page):
     """For each offering element, whether the served page starts it hidden."""
     import re
     found = {}
-    for name in ("waitlist-link", "signup-waitlist-link", "waitlist-form", "waitlist-discount"):
+    for name in ("start-invite", "start-register", "signup-waitlist-link", "waitlist-form", "waitlist-discount"):
         element = re.search(r"<[a-z]+ [^<>]*\bid=\"" + name + r"\"[^<>]*>", page)
         if element is not None:
             found[name] = re.search(r"\bhidden\b", element.group(0)) is not None
