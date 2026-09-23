@@ -1,0 +1,63 @@
+{
+ "record_type": "catalogue_release_activation_record/v1",
+ "application": "baltor-pilot",
+ "machine": "83733ea7779068",
+ "observed_at": "2026-09-23T06:40:00+00:00",
+ "running_release": {
+  "fly_release_version": 17,
+  "source_revision": "381cc525a1178c9885eb35f4a08cf2199adb1ef4",
+  "image": "registry.fly.io/baltor-pilot@sha256:cd593bc47b098f9b8c68987388be96fa2404611a76cb1868403ba0a9908d328c"
+ },
+ "procedure": "docs/guides/launch-setup-runbook.md, section Publish and roll back a catalogue release, run for the first time against the live Machine",
+ "steps": [
+  {
+   "at": "06:16:42Z",
+   "step": "Backed up /data/host.json to /data/host.json.before-catalogue-20260923T061642 and created /data/catalogue-bodies and /data/incoming as the service user."
+  },
+  {
+   "at": "06:17:31Z",
+   "step": "Added the catalogue section (service_catalogue_source/v1, source image, body_store_root /data/catalogue-bodies, refresh_seconds 60, new_accounts_follow_release false), validated locally with release 17's own parser and top-level key set, uploaded and installed it (digest ac27ece6...), restarted the Machine. Health ready; served catalogue from the image, 43 items, state revision 0."
+  },
+  {
+   "at": "06:18Z",
+   "step": "Built bundle starter-r17-40fce69 outside the repository from release 17's reviewed catalogue: 43 items, 43 files, 119,724 bytes, bundle digest 2021223f431d6edf8c086ba2307934bb7f91b3d07d4a95cde5de1fe5313c7e67. Uploaded the archive over fly ssh sftp; its digest e8d73fab... matched on the Machine; unpacked as the service user."
+  },
+  {
+   "at": "06:18Z",
+   "step": "publish-catalogue with the expected bundle digest: state published, release ad4409822a0725222666387fc2927a21b13efddc825b741ed7aae72d92ebf61d, content digest 35fc9c7951d50840b7078fa14636b30982cdd583aeb3756dff376b120990ccb3, 43 added, 43 bodies written."
+  },
+  {
+   "at": "06:20Z",
+   "step": "Backed up the host file again (/data/host.json.before-store-source-20260923T0620), switched the catalogue source to store (digest 05e6f2f5...), restarted. Health ready; served catalogue from the store, release ad4409822a07, 43 items, state revision 1, catalogue_view_current passing."
+  },
+  {
+   "at": "06:21Z",
+   "step": "Runbook step 7: follow-catalogue-release --all-tenants moved all six accounts (baltor-admin, billing-check, billing-check-2, billing-check-3, pilot-boundary, pilot-owner) to service_grants/v2, which grants every approved item of the active release."
+  },
+  {
+   "at": "06:22Z",
+   "step": "Checks: catalogue 6 of 6; website 74 of 74 on baltor.ai; hosted service 17 of 19. Failed isolated_tenant_has_no_owner_grants and another_tenant_cannot_read_the_body: the diagnostic account pilot-boundary, which proves isolation and held no grants before, could read bodies. The runbook's --all-tenants step was wrong for a host with ungranted accounts."
+  },
+  {
+   "at": "06:30Z",
+   "step": "Mitigation: the five non-owner accounts were moved to follow the release with --deny for all 43 current identities. Hosted service check 19 of 19 and catalogue check 6 of 6 again. Removed the incoming bundle; the volume is 1 percent used."
+  }
+ ],
+ "catalogue_status_after": {
+  "active_release_id": "ad4409822a0725222666387fc2927a21b13efddc825b741ed7aae72d92ebf61d",
+  "catalogue_state_version": 1,
+  "pointer_sequence": 1,
+  "releases": 1,
+  "durable_withdrawals": 0
+ },
+ "exposure": "Between about 06:21 and 06:30 UTC five operator-held diagnostic and administration accounts could read library bodies they were not granted. No customer account exists; no body read by those accounts was requested by anyone but this check.",
+ "open_gap": "A newly published item would reach the five non-owner accounts, because their denials name only today's 43 identities, and there is no command back to version 1 snapshot grants: apply-grants never overwrites a following account. No new item is to be published until the fix (a stop-following command, a corrected runbook step that follows only granted accounts, and checks with removed-guard controls) is released and the five accounts are returned to empty snapshots.",
+ "rollback": "Fly release 16 and older refuse this host file and are no longer rollback targets. Release 17 is the rollback target for any later release. Removing the catalogue section to start an older image is forbidden now that catalogue state exists.",
+ "evidence": [
+  "hosted-release17-catalogue-store-source.json",
+  "hosted-release17-service-store-source.json",
+  "hosted-release17-website-baltor.ai-store-source.json",
+  "hosted-release17-service-store-source-after-denials.json",
+  "hosted-release17-catalogue-store-source-after-denials.json"
+ ]
+}

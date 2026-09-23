@@ -1,0 +1,104 @@
+{
+  "record_type": "hosted_service_transport_qualification/v1",
+  "checked_at": "2026-09-23T06:22:27.025256+00:00",
+  "origin": "https://baltor-pilot.fly.dev",
+  "accounts": [
+    "pilot-owner",
+    "pilot-boundary"
+  ],
+  "identity": "normalize_phone_numbers",
+  "digest": "32fca6ee4464cb2fb43eb06a5347fa0b6e87b0544910193565e8053dd562131c",
+  "metered_read_request_id": "hosted-check-f43be03f6df046feb44dadf912d51e26",
+  "usage_records_before": 22,
+  "usage_records_after": 23,
+  "checker_sha256": "d435685f84b1ae92cd03af5042cd379f04a094712a2a49283241e0af3ca1cbd6",
+  "checks": [
+    {
+      "name": "public_health_responds",
+      "passed": true
+    },
+    {
+      "name": "the_served_health_record_names_a_version_this_probe_reads",
+      "passed": true
+    },
+    {
+      "name": "readiness_is_measured_by_the_deployed_release",
+      "passed": true
+    },
+    {
+      "name": "missing_key_refuses",
+      "passed": true
+    },
+    {
+      "name": "wrong_key_refuses",
+      "passed": true
+    },
+    {
+      "name": "owner_identity_is_server_bound",
+      "passed": true
+    },
+    {
+      "name": "owner_can_list_selected_identity",
+      "passed": true
+    },
+    {
+      "name": "isolated_tenant_has_no_owner_grants",
+      "passed": false
+    },
+    {
+      "name": "search_returns_references_without_loading_bodies",
+      "passed": true
+    },
+    {
+      "name": "selected_body_has_the_expected_digest",
+      "passed": true
+    },
+    {
+      "name": "exact_retry_retains_one_durable_acknowledgment",
+      "passed": true
+    },
+    {
+      "name": "two_read_requests_add_one_usage_record",
+      "passed": true
+    },
+    {
+      "name": "another_tenant_cannot_read_the_body",
+      "passed": false
+    },
+    {
+      "name": "changed_digest_refuses",
+      "passed": true
+    },
+    {
+      "name": "refused_reads_do_not_add_usage",
+      "passed": true
+    },
+    {
+      "name": "unexpected_browser_origin_refuses",
+      "passed": true
+    },
+    {
+      "name": "official_MCP_client_initializes_over_real_HTTPS",
+      "passed": true
+    },
+    {
+      "name": "MCP_search_returns_permitted_references",
+      "passed": true
+    },
+    {
+      "name": "official_MCP_client_uses_the_per_request_version_over_real_HTTPS",
+      "passed": true
+    }
+  ],
+  "passed": 17,
+  "executed": 19,
+  "planned_checks": 19,
+  "all_passed": false,
+  "http_calls": 15,
+  "physical_model_calls": 0,
+  "hosted_harness_used": false,
+  "supabase_qualified": false,
+  "stripe_runtime_qualified": false,
+  "paid_release_qualified": false,
+  "limits": "Private host-attested diagnostic material only; not a full-system customer-task benchmark."
+}
