@@ -341,6 +341,33 @@ every file on the volume still owned by the service user. If the step fails,
 the release is already deployed; apply the grants by hand as after release 12,
 then run `tools/check_hosted_catalogue.py`.
 
+The next step applies the host billing policies on the same Machine. Each
+release computes its billing policy digests from the host file, and checkout
+and the customer portal stay unavailable while the stored digests differ. Fly
+release 13 served for a day with both unavailable, because the one command that
+stored them, `loop-engine service configure`, cannot run twice. The step runs
+`loop-engine service apply-billing-policy --config /data/host.json` through
+the same exec call and `setpriv` rule. The command names each stored record
+version it read as the expected one, registers nothing, calls no provider and
+changes nothing on an unchanged host. The step fails unless the exit code is
+zero and the command printed one record that says every installed policy is
+current, with no paid access ended, no tenant registered and no provider call.
+It then requires `billing.checkout` and `billing.portal` in the live
+capabilities record to equal what the host file offers, as the record states
+it in `checkout_expected` and `portal_expected`, and repeats the readiness
+check. The step prints the command's record in the workflow log: record
+versions and digests, or a refusal code, and no secret. The workflow never
+passes `--reset-paid-access`, so a changed entitlement policy that would end
+paid access stops the release at this step with
+`billing_policy_change_ends_paid_access`, for an operator to decide. The
+container check runs the same command against the image before it is
+published: it stores the terms an older release computed, requires the health
+record to name that state, runs the command as root and requires the health
+record to pass, a second run to change nothing and every file on the volume to
+stay owned by the service user. If the step fails after a deploy, run the
+command by hand on the Machine, read the record it prints, and read
+`billing_policy_current` in the health record.
+
 | Pilot environment setting | Required value or current state |
 |---|---|
 | `FLY_ORG` | `baltor`, configured |
@@ -372,8 +399,8 @@ image binds every address behind the Fly proxy and refuses to start without
 that statement; the [service runtime guide](../../src/loop_engine/core/service_runtime/README.md#which-address-is-counted)
 shows the mapping for the Fly proxy. Preparation must also verify backup
 restoration. The workflow does not create accounts, tenants, credentials or
-these data files. Its only change to service state is the grant application
-after the deploy, described above.
+these data files. Its only changes to service state are the grant application
+and the billing policy application after the deploy, described above.
 
 `FLY_SERVICE_CONFIGURED` records completed preparation; setting the variable
 alone does not prove that preparation happened. A healthy process does not

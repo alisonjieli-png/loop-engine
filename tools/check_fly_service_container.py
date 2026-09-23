@@ -54,6 +54,15 @@ FLY_REQUEST_LIMITS = {"record_type": "service_request_limits/v1",
 #: words are these.
 POST_DEPLOY_GRANT_COMMAND = ("setpriv", f"--reuid={SERVICE_USER}", f"--regid={SERVICE_USER}", "--clear-groups",
                              "loop-engine", "service", "apply-grants", "--config", "/data/host.json")
+#: The command the workflow runs right after the grant command. It stores the
+#: billing entitlement and session policies the running release computes from
+#: the host file, so checkout is not left unavailable by a release whose
+#: digest differs from the stored one, as Fly release 13 was. It never passes
+#: --reset-paid-access. The same exec call and setpriv rule apply.
+POST_DEPLOY_BILLING_POLICY_COMMAND = ("setpriv", f"--reuid={SERVICE_USER}", f"--regid={SERVICE_USER}",
+                                      "--clear-groups", "loop-engine", "service", "apply-billing-policy",
+                                      "--config", "/data/host.json")
+BILLING_POLICY_APPLICATION_RECORD_TYPE = "service_billing_policy_application/v1"
 
 
 def command(arguments, timeout=60):
@@ -96,7 +105,26 @@ def packaged_catalogue_host_configuration(tenants):
             "tenants": [{"tenant_id": name, "namespace": name + ":private",
                          "operator_entitlement": {"valid_until": 4102444800,
                                                   "evidence_ref": "local_container_check_not_payment"}}
-                        for name in tenants]}
+                        for name in tenants],
+            "billing": container_billing(origin)}
+
+
+def container_billing(origin):
+    """A billing block with sessions installed and network authority withheld.
+
+    It names no real account and no credential; both references point at
+    environment variables that are never set. The block lets the check run the
+    post-deploy billing policy command against a real stored policy in the
+    image, and nothing can reach a provider: the network switch is off and the
+    container has no network.
+    """
+    common = {"account_id": "acct_container_check", "api_version": "container_check_version"}
+    return {"webhook": {**common, "signing_secret_refs": ["env:CONTAINER_CHECK_UNSET_SIGNING_SECRET"]},
+            "policy": {"allowed_price_ids": ["price_container_check"]},
+            "sessions": {**common, "api_key_ref": "env:CONTAINER_CHECK_UNSET_KEY",
+                         "plans": [{"plan_ref": "pro", "label": "Pro", "price_id": "price_container_check"}],
+                         "checkout_success_url": origin + "/app", "checkout_cancel_url": origin + "/app",
+                         "portal_return_url": origin + "/app", "portal_configuration_id": "bpc_container_check"}}
 
 
 def without_client_address_source(configuration):
@@ -426,6 +454,7 @@ print(json.dumps({{
         record("an_approved_body_is_served_from_the_image_not_from_the_volume",
                answered["an_approved_body_is_served"])
         repair = check_post_deploy_grant_command(container, tenants, granted, approved, record)
+        billing = check_post_deploy_billing_policy_command(container, record)
     finally:
         if container is not None:
             command(["docker", "rm", "--force", container])
@@ -438,6 +467,7 @@ print(json.dumps({{
             "search_hits": answered["search_hits"],
             "capabilities_record_type": answered["capabilities_record_type"],
             "post_deploy_grant_command": repair,
+            "post_deploy_billing_policy_command": billing,
             "review_record": REVIEW_RECORD, "local_test_volume_removed": True,
             "one_time_local_key_left_the_container": False}
 
@@ -517,6 +547,87 @@ def check_post_deploy_grant_command(container, tenants, granted, approved, recor
     return {"command": list(POST_DEPLOY_GRANT_COMMAND), "started_as": "root",
             "registered_after_clearing": len(stale), "registered_after_the_command": len(restored),
             "granted_items": sum(granted.values()), "volume_paths_checked": owners["paths"],
+            "volume_paths_owned_by_another_user": owners["owned_by_another_user"]}
+
+
+#: Store the session terms an older release computed from the same host file,
+#: as the service user: the field release 13 added is missing. This is the
+#: state Fly release 13 served, with checkout and the portal unavailable.
+PLANT_OLDER_SESSION_TERMS = '''
+import json
+from loop_engine.core.service_runtime.billing_effects import BillingSessionPolicyDefinition
+from loop_engine.core.service_runtime.http_entrypoint import load_host_application
+from loop_engine.core.service_runtime.records import canonical
+application, _configuration = load_host_application("/data/host.json")
+sessions = application.billing_sessions
+terms = json.loads(sessions.configuration.policy_definition().policy_json)
+del terms["allow_promotion_codes"]
+older = BillingSessionPolicyDefinition(canonical(terms), tuple(plan.price_id for plan in sessions.configuration.plans))
+held = sessions.effects.held_policy()
+sessions.effects.configure_policy(older, expected_version=held["record_version"])
+print(json.dumps({"planted": True}))
+'''
+
+#: The billing policy check of the health record and the billing block of the
+#: capabilities record, as the running service answers them.
+BILLING_STATE = '''
+import json, urllib.request
+def read(path):
+    with urllib.request.urlopen("http://localhost:8080" + path, timeout=20) as response:
+        return json.loads(response.read(4_000_000))["result"]
+health, capabilities = read("/api/v1/health"), read("/api/v1/capabilities")
+check = next(row for row in health["checks"] if row["name"] == "billing_policy_current")
+print(json.dumps({"ready": health["ready"], "passed": check["passed"], "required": check["required"],
+                  "code": check["code"], "checkout": capabilities["billing"]["checkout"],
+                  "portal": capabilities["billing"]["portal"]}))
+'''
+
+
+def check_post_deploy_billing_policy_command(container, record):
+    """Run the workflow's post-deploy billing policy command the way the workflow runs it.
+
+    The stored session policy is first replaced by the terms an older release
+    computed, which is the state Fly release 13 served. The health record must
+    name it. The command is then started as root, as the Machines API exec call
+    starts it, and it must print exactly one record that says the policies are
+    current, register no tenant and call no provider. The health record must
+    then pass, the capabilities record must report checkout and the portal as
+    the host file offers them, a second run must change nothing, and every
+    file on the volume must still be owned by the service user.
+    """
+    as_service = ["docker", "exec", "--user", f"{SERVICE_USER}:{SERVICE_USER}", container, "python", "-c"]
+    as_root = ["docker", "exec", "--user", "0:0", container]
+    command([*as_service, PLANT_OLDER_SESSION_TERMS], timeout=180)
+    drifted = json.loads(command([*as_service, BILLING_STATE], timeout=60))
+    runs = []
+    for _run in range(2):
+        printed = command([*as_root, *POST_DEPLOY_BILLING_POLICY_COMMAND], timeout=180)
+        try:
+            applied = json.loads(printed)
+        except ValueError:
+            applied = None
+        runs.append(applied if isinstance(applied, dict) else {})
+    repaired = json.loads(command([*as_service, BILLING_STATE], timeout=60))
+    owners = json.loads(command([*as_root, "python", "-c", VOLUME_OWNERS.format(user=SERVICE_USER)], timeout=60))
+    first, second = runs
+    record("a_stored_session_policy_an_older_release_wrote_is_named_by_the_health_record",
+           drifted["ready"] is True and drifted["passed"] is False and drifted["required"] is False
+           and drifted["code"] == "session_policy_changed")
+    record("the_post_deploy_billing_policy_command_stores_the_running_policies",
+           first.get("record_type") == BILLING_POLICY_APPLICATION_RECORD_TYPE
+           and first.get("every_installed_policy_current") is True and first.get("changed") is True
+           and first.get("tenants_registered") == 0 and first.get("remote_accounts_created") is False
+           and first.get("provider_calls") == 0 and first.get("paid_access_ended_for_accounts") == 0
+           and repaired["passed"] is True and repaired["ready"] is True
+           and repaired["checkout"] is first.get("checkout_expected")
+           and repaired["portal"] is first.get("portal_expected"))
+    record("a_second_billing_policy_run_changes_nothing",
+           second.get("changed") is False and second.get("every_installed_policy_current") is True)
+    record("the_post_deploy_billing_policy_command_leaves_the_volume_owned_by_the_service_user",
+           owners["owned_by_another_user"] == 0 and owners["journals_left"] == 0)
+    return {"command": list(POST_DEPLOY_BILLING_POLICY_COMMAND), "started_as": "root",
+            "drifted_code": drifted["code"], "first_run_changed": first.get("changed"),
+            "second_run_changed": second.get("changed"), "checkout_expected": first.get("checkout_expected"),
             "volume_paths_owned_by_another_user": owners["owned_by_another_user"]}
 
 
