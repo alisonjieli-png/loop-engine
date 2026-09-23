@@ -1,0 +1,137 @@
+{
+  "record_type": "service_web_site_map/v1",
+  "decided_on": "2026-09-23",
+  "decided_by": "the integrating session, from the owner's direction of September 23, 2026",
+  "display_name": "Baltor",
+  "canonical_hostname": "baltor.ai",
+  "groups": ["Product", "Use cases", "Documentation", "Company", "Account"],
+  "pages": [
+    {"address": "/", "view": "home", "title": "Material your coding tools can search", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "long", "price_in_first_screen": true},
+    {"address": "/get-started", "view": "get-started", "title": "Get started", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/setup", "view": "setup", "title": "Get set up", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/connect", "view": "setup", "title": "Get set up", "group": "Product", "linked_from": [], "unlinked_reason": "old address kept so earlier links work", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/how-it-works", "view": "about", "title": "How it works", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "long", "price_in_first_screen": false},
+    {"address": "/pricing", "view": "pricing", "title": "Pricing", "group": "Product", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": true},
+    {"address": "/examples", "view": "examples", "title": "Try your first retrieval", "group": "Product", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/use-cases", "view": "use-cases", "title": "Use cases", "group": "Use cases", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/overnight", "view": "overnight", "title": "Work that survives being interrupted", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/context", "view": "context", "title": "Send one step what one step needs", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/model-choice", "view": "model-choice", "title": "Choose the model that fits the step", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/tool-choice", "view": "tool-choice", "title": "Choose the coding tool that fits the work", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/for/coding-agents", "view": "for-coding-agents", "title": "Stop starting from nothing", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/for/engineering-teams", "view": "for-engineering-teams", "title": "Expertise for the whole team", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/for/comparing-tools", "view": "for-comparing-tools", "title": "What it is and what it costs", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/for/protocol-and-client", "view": "for-protocol-and-client", "title": "Protocol, client and setup", "group": "Use cases", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/docs", "view": "docs", "title": "Documentation", "group": "Documentation", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/docs/getting-set-up", "view": "docs-getting-set-up", "title": "Getting set up", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/docs/searching-and-retrieving", "view": "docs-searching-and-retrieving", "title": "Searching and retrieving", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/docs/serving-and-connections", "view": "docs-serving-and-connections", "title": "Serving and connections", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/docs/troubleshooting", "view": "docs-troubleshooting", "title": "Troubleshooting", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/docs/your-account", "view": "docs-your-account", "title": "Your account", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/docs/usage-and-what-you-pay-for", "view": "docs-usage-and-what-you-pay-for", "title": "Usage and what you pay for", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/security", "view": "security", "title": "Access and data boundaries", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/status", "view": "status", "title": "Service status", "group": "Documentation", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/docs/what-baltor-is", "view": "docs-what-baltor-is", "title": "What Baltor is", "group": "Company", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/waitlist", "view": "waitlist", "title": "Request an invitation", "group": "Company", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/login", "view": "login", "title": "Sign in", "group": "Company", "linked_from": ["header", "footer"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/privacy", "view": "privacy", "title": "Privacy notice", "group": "Company", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/terms", "view": "terms", "title": "Terms of service", "group": "Company", "linked_from": ["footer"], "unlinked_reason": "", "scroll_budget": "documentation", "price_in_first_screen": false},
+    {"address": "/signup", "view": "signup", "title": "Account status", "group": "Account", "linked_from": ["page"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/app", "view": "workspace", "title": "Intelligence workspace", "group": "Account", "linked_from": ["header"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/account", "view": "account", "title": "Your account", "group": "Account", "linked_from": ["header"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/admin", "view": "admin", "title": "Access administration", "group": "Account", "linked_from": ["header"], "unlinked_reason": "", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/auth/callback", "view": "login", "title": "Sign in", "group": "Account", "linked_from": [], "unlinked_reason": "the identity provider sends a person back to this address after sign-in, and the page moves them on to the sign-in page", "scroll_budget": "page", "price_in_first_screen": false},
+    {"address": "/auth/confirm", "view": "login", "title": "Sign in", "group": "Account", "linked_from": [], "unlinked_reason": "the address in the account confirmation email; a person reaches it only from that email", "scroll_budget": "page", "price_in_first_screen": false}
+  ],
+  "header": {
+    "signed_out": [
+      {"role": "brand", "label": "Baltor", "href": "/"},
+      {"role": "link", "label": "How it works", "href": "/how-it-works"},
+      {"role": "link", "label": "Use cases", "href": "/use-cases"},
+      {"role": "link", "label": "Library", "href": "/#library"},
+      {"role": "link", "label": "Pricing", "href": "/pricing"},
+      {"role": "link", "label": "Docs", "href": "/docs"},
+      {"role": "link", "label": "Sign in", "href": "/login"},
+      {"role": "primary", "label": "Get started", "href": "/get-started"}
+    ],
+    "signed_in": [
+      {"role": "brand", "label": "Baltor", "href": "/"},
+      {"role": "link", "label": "Workspace", "href": "/app"},
+      {"role": "link", "label": "Get set up", "href": "/setup"},
+      {"role": "link", "label": "Library", "href": "/#library"},
+      {"role": "link", "label": "Docs", "href": "/docs"},
+      {"role": "link", "label": "Account", "href": "/account"},
+      {"role": "button", "label": "Sign out", "href": null}
+    ],
+    "operator": [
+      {"role": "brand", "label": "Baltor", "href": "/"},
+      {"role": "link", "label": "Workspace", "href": "/app"},
+      {"role": "link", "label": "Get set up", "href": "/setup"},
+      {"role": "link", "label": "Library", "href": "/#library"},
+      {"role": "link", "label": "Docs", "href": "/docs"},
+      {"role": "link", "label": "Account", "href": "/account"},
+      {"role": "link", "label": "Administration", "href": "/admin"},
+      {"role": "button", "label": "Sign out", "href": null}
+    ]
+  },
+  "footer": {
+    "brand_href": "/",
+    "groups": [
+      {"name": "Product", "links": [
+        {"role": "link", "label": "Get started", "href": "/get-started"},
+        {"role": "link", "label": "Get set up", "href": "/setup"},
+        {"role": "link", "label": "How it works", "href": "/how-it-works"},
+        {"role": "link", "label": "Library", "href": "/#library"},
+        {"role": "link", "label": "Pricing", "href": "/pricing"},
+        {"role": "link", "label": "First example", "href": "/examples"}
+      ]},
+      {"name": "Use cases", "links": [
+        {"role": "link", "label": "Use cases", "href": "/use-cases"},
+        {"role": "link", "label": "Interrupted work", "href": "/overnight"},
+        {"role": "link", "label": "Less in each request", "href": "/context"},
+        {"role": "link", "label": "Model choice", "href": "/model-choice"},
+        {"role": "link", "label": "Tool choice", "href": "/tool-choice"},
+        {"role": "link", "label": "For coding agents", "href": "/for/coding-agents"},
+        {"role": "link", "label": "For engineering teams", "href": "/for/engineering-teams"},
+        {"role": "link", "label": "For comparing tools", "href": "/for/comparing-tools"},
+        {"role": "link", "label": "For protocol and client work", "href": "/for/protocol-and-client"}
+      ]},
+      {"name": "Documentation", "links": [
+        {"role": "link", "label": "Docs", "href": "/docs"},
+        {"role": "link", "label": "Getting set up", "href": "/docs/getting-set-up"},
+        {"role": "link", "label": "Searching and retrieving", "href": "/docs/searching-and-retrieving"},
+        {"role": "link", "label": "Serving and connections", "href": "/docs/serving-and-connections"},
+        {"role": "link", "label": "Troubleshooting", "href": "/docs/troubleshooting"},
+        {"role": "link", "label": "Your account", "href": "/docs/your-account"},
+        {"role": "link", "label": "Usage and what you pay for", "href": "/docs/usage-and-what-you-pay-for"},
+        {"role": "link", "label": "Access and data", "href": "/security"},
+        {"role": "link", "label": "Status", "href": "/status"}
+      ]},
+      {"name": "Company", "links": [
+        {"role": "link", "label": "What Baltor is", "href": "/docs/what-baltor-is"},
+        {"role": "link", "label": "Request an invitation", "href": "/waitlist"},
+        {"role": "link", "label": "Sign in", "href": "/login"},
+        {"role": "link", "label": "Privacy notice", "href": "/privacy"},
+        {"role": "link", "label": "Terms of service", "href": "/terms"},
+        {"role": "link", "label": "Open-source notices", "href": "/assets/third-party-notices.txt"}
+      ]}
+    ],
+    "base_row": {"operator": "Baltor.AI", "operator_line": "1428 Bryn Mawr St, Saxton, PA 16678", "mark": "/assets/baltor-mark.svg"}
+  },
+  "hostnames": [
+    {"hostname": "baltor.ai", "address": "/", "anchor": ""},
+    {"hostname": "www.baltor.ai", "address": "/", "anchor": ""},
+    {"hostname": "docs.baltor.ai", "address": "/docs", "anchor": ""},
+    {"hostname": "status.baltor.ai", "address": "/status", "anchor": ""},
+    {"hostname": "examples.baltor.ai", "address": "/examples", "anchor": ""},
+    {"hostname": "demo.baltor.ai", "address": "/", "anchor": "step-demo"},
+    {"hostname": "app.baltor.ai", "address": "/app", "anchor": ""}
+  ],
+  "removed": [
+    {"date": "2026-09-23", "kind": "header_link", "state": "signed_out", "subject": "/waitlist", "reason": "The one primary action of the header is Get started, at /get-started, in every access state, and its label never switches. The invitation page stays linked from the Company group of the footer.", "decided_by": "owner, September 23, 2026"},
+    {"date": "2026-09-23", "kind": "header_link", "state": "signed_in", "subject": "/how-it-works", "reason": "A signed-in person's header holds Workspace, Get set up, Library, Docs, Account and Sign out. How it works stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"},
+    {"date": "2026-09-23", "kind": "header_link", "state": "signed_in", "subject": "/pricing", "reason": "A signed-in person's header holds Workspace, Get set up, Library, Docs, Account and Sign out. Pricing stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"},
+    {"date": "2026-09-23", "kind": "header_link", "state": "operator", "subject": "/how-it-works", "reason": "The operator's header is the signed-in header plus Administration. How it works stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"},
+    {"date": "2026-09-23", "kind": "header_link", "state": "operator", "subject": "/pricing", "reason": "The operator's header is the signed-in header plus Administration. Pricing stays in the signed-out header and in the Product group of the footer.", "decided_by": "owner, September 23, 2026"}
+  ]
+}

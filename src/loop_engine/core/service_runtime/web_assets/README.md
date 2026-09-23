@@ -125,3 +125,11 @@ The six problems, the five steps of how it works and the six kinds of file
 each carry a status tag. Only the parts that work on the live service today
 say Available now or Live: a narrow context and reviewed expertise, search and
 download, and skills. The browser checks fail when any other card says so.
+
+## Design standards and the site map
+
+The [website design standards](../../../../../docs/guides/website-design-standards.md)
+hold the rules these pages follow. Every page, header entry and footer link is
+listed in `web_site_map.json` beside `web_pages.py`, and the measured rules in
+`web_layout_standard.json`. A page, link or section leaves the website only
+with a dated removal row in that record.

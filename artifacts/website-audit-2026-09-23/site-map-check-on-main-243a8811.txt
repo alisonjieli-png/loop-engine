@@ -1,0 +1,152 @@
+test_the_served_website_customer_pages_write_the_price_one_way (tools.check_website_site_map.ServedWebsite) ... FAIL
+test_the_served_website_every_page_is_reached_or_has_a_reason (tools.check_website_site_map.ServedWebsite) ... FAIL
+test_the_served_website_footer_matches_the_site_map (tools.check_website_site_map.ServedWebsite) ... FAIL
+test_the_served_website_header_matches_the_site_map (tools.check_website_site_map.ServedWebsite) ... FAIL
+test_the_served_website_internal_addresses_are_served (tools.check_website_site_map.ServedWebsite) ... ok
+test_the_served_website_nothing_in_an_inventory_is_lost (tools.check_website_site_map.ServedWebsite) ... ok
+test_the_served_website_pages_are_served_with_one_h1 (tools.check_website_site_map.ServedWebsite) ... FAIL
+
+======================================================================
+FAIL: test_the_served_website_customer_pages_write_the_price_one_way (tools.check_website_site_map.ServedWebsite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 36, in <lambda>
+    setattr(ServedWebsite, f"test_the_served_website_{_name}", lambda self, name=_name: self.check_served(name))
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 31, in check_served
+    self.fail(f"{name} refuses the served website ({KNOWN_WRONG_OUTPUT} holds the run on 243a8811):\n"
+AssertionError: customer_pages_write_the_price_one_way refuses the served website (artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt holds the run on 243a8811):
+customer_pages_write_the_price_one_way: 4 problems
+  - /: writes 'o the library, one plan at 29 United States dollars each month.'; a customer page writes the price as '$29 a month'
+  - /: writes 'altor Pro Payment not open 29 United States dollars each month '; a customer page writes the price as '$29 a month'
+  - /: writes 's is one plan, Baltor Pro, 29 United States dollars each month,'; a customer page writes the price as '$29 a month'
+  - /: writes '$29 per month Free searc'; the price is written '$29 a month'
+
+======================================================================
+FAIL: test_the_served_website_every_page_is_reached_or_has_a_reason (tools.check_website_site_map.ServedWebsite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 36, in <lambda>
+    setattr(ServedWebsite, f"test_the_served_website_{_name}", lambda self, name=_name: self.check_served(name))
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 31, in check_served
+    self.fail(f"{name} refuses the served website ({KNOWN_WRONG_OUTPUT} holds the run on 243a8811):\n"
+AssertionError: every_page_is_reached_or_has_a_reason refuses the served website (artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt holds the run on 243a8811):
+every_page_is_reached_or_has_a_reason: 45 problems
+  - /get-started: no link from the homepage or a hostname reaches it
+  - /get-started: the site map says the header links to it, and the served header does not
+  - /get-started: the site map says the footer links to it, and the served footer does not
+  - /setup: no link from the homepage or a hostname reaches it
+  - /setup: the site map says the header links to it, and the served header does not
+  - /setup: the site map says the footer links to it, and the served footer does not
+  - /connect: the site map calls it unlinked (old address kept so earlier links work), and the page links to it (from ['/account', '/app'])
+  - /use-cases: no link from the homepage or a hostname reaches it
+  - /use-cases: the site map says the header links to it, and the served header does not
+  - /use-cases: the site map says the footer links to it, and the served footer does not
+  - /overnight: no link from the homepage or a hostname reaches it
+  - /overnight: the site map says the footer links to it, and the served footer does not
+  - /context: no link from the homepage or a hostname reaches it
+  - /context: the site map says the footer links to it, and the served footer does not
+  - /model-choice: no link from the homepage or a hostname reaches it
+  - /model-choice: the site map says the footer links to it, and the served footer does not
+  - /tool-choice: no link from the homepage or a hostname reaches it
+  - /tool-choice: the site map says the footer links to it, and the served footer does not
+  - /for/coding-agents: no link from the homepage or a hostname reaches it
+  - /for/coding-agents: the site map says the footer links to it, and the served footer does not
+  - /for/engineering-teams: no link from the homepage or a hostname reaches it
+  - /for/engineering-teams: the site map says the footer links to it, and the served footer does not
+  - /for/comparing-tools: no link from the homepage or a hostname reaches it
+  - /for/comparing-tools: the site map says the footer links to it, and the served footer does not
+  - /for/protocol-and-client: no link from the homepage or a hostname reaches it
+  - /for/protocol-and-client: the site map says the footer links to it, and the served footer does not
+  - /docs/getting-set-up: no link from the homepage or a hostname reaches it
+  - /docs/getting-set-up: the site map says the footer links to it, and the served footer does not
+  - /docs/searching-and-retrieving: no link from the homepage or a hostname reaches it
+  - /docs/searching-and-retrieving: the site map says the footer links to it, and the served footer does not
+  - /docs/serving-and-connections: no link from the homepage or a hostname reaches it
+  - /docs/serving-and-connections: the site map says the footer links to it, and the served footer does not
+  - /docs/troubleshooting: no link from the homepage or a hostname reaches it
+  - /docs/troubleshooting: the site map says the footer links to it, and the served footer does not
+  - /docs/your-account: no link from the homepage or a hostname reaches it
+  - /docs/your-account: the site map says the footer links to it, and the served footer does not
+  - /docs/usage-and-what-you-pay-for: no link from the homepage or a hostname reaches it
+  - /docs/usage-and-what-you-pay-for: the site map says the footer links to it, and the served footer does not
+  - /status: no link from the homepage or a hostname reaches it
+  - /status: the site map says the footer links to it, and the served footer does not
+  - /docs/what-baltor-is: no link from the homepage or a hostname reaches it
+  - /docs/what-baltor-is: the site map says the footer links to it, and the served footer does not
+  - /login: the site map says the footer links to it, and the served footer does not
+  - /terms: no link from the homepage or a hostname reaches it
+  - /terms: the site map says the footer links to it, and the served footer does not
+
+======================================================================
+FAIL: test_the_served_website_footer_matches_the_site_map (tools.check_website_site_map.ServedWebsite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 36, in <lambda>
+    setattr(ServedWebsite, f"test_the_served_website_{_name}", lambda self, name=_name: self.check_served(name))
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 31, in check_served
+    self.fail(f"{name} refuses the served website ({KNOWN_WRONG_OUTPUT} holds the run on 243a8811):\n"
+AssertionError: footer_matches_the_site_map refuses the served website (artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt holds the run on 243a8811):
+footer_matches_the_site_map: 6 problems
+  - footer on / groups: missing ['Use cases', 'Documentation']
+  - footer on / groups: extra ['Developers']
+  - footer on /, group 'Product': missing ['/get-started', '/setup']
+  - footer on /, group 'Product': extra ['/waitlist']
+  - footer on /, group 'Company': missing ['/docs/what-baltor-is', '/waitlist', '/login', '/terms', '/assets/third-party-notices.txt']
+  - footer on /: the base row '© 2026 Baltor.AI · 1428 Bryn Mawr St, Saxton, PA 16678' does not show the mark /assets/baltor-mark.svg
+
+======================================================================
+FAIL: test_the_served_website_header_matches_the_site_map (tools.check_website_site_map.ServedWebsite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 36, in <lambda>
+    setattr(ServedWebsite, f"test_the_served_website_{_name}", lambda self, name=_name: self.check_served(name))
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 31, in check_served
+    self.fail(f"{name} refuses the served website ({KNOWN_WRONG_OUTPUT} holds the run on 243a8811):\n"
+AssertionError: header_matches_the_site_map refuses the served website (artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt holds the run on 243a8811):
+header_matches_the_site_map: 8 problems
+  - header, signed_out, on /: missing ['/use-cases', '/get-started']
+  - header, signed_out, on /: extra ['/waitlist']
+  - header, signed_in, on /: missing ['/setup']
+  - header, signed_in, on /: extra ['/how-it-works', '/pricing']
+  - header, signed_in, on /: out of order; the site map has ['/', '/app', '/#library', '/docs', '/account', 'button:Sign out'] and the page has ['/', '/#library', '/docs', '/app', '/account', 'button:Sign out']
+  - header, operator, on /: missing ['/setup']
+  - header, operator, on /: extra ['/how-it-works', '/pricing']
+  - header, operator, on /: out of order; the site map has ['/', '/app', '/#library', '/docs', '/account', '/admin', 'button:Sign out'] and the page has ['/', '/#library', '/docs', '/app', '/admin', '/account', 'button:Sign out']
+
+======================================================================
+FAIL: test_the_served_website_pages_are_served_with_one_h1 (tools.check_website_site_map.ServedWebsite)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 36, in <lambda>
+    setattr(ServedWebsite, f"test_the_served_website_{_name}", lambda self, name=_name: self.check_served(name))
+  File "/home/username/.le-integration/site-standards/tools/check_website_site_map.py", line 31, in check_served
+    self.fail(f"{name} refuses the served website ({KNOWN_WRONG_OUTPUT} holds the run on 243a8811):\n"
+AssertionError: pages_are_served_with_one_h1 refuses the served website (artifacts/website-audit-2026-09-23/site-map-check-on-main-243a8811.txt holds the run on 243a8811):
+pages_are_served_with_one_h1: 21 problems
+  - /get-started: the served address table does not serve it
+  - /setup: the served address table does not serve it
+  - /use-cases: the served address table does not serve it
+  - /overnight: the served address table does not serve it
+  - /context: the served address table does not serve it
+  - /model-choice: the served address table does not serve it
+  - /tool-choice: the served address table does not serve it
+  - /for/coding-agents: the served address table does not serve it
+  - /for/engineering-teams: the served address table does not serve it
+  - /for/comparing-tools: the served address table does not serve it
+  - /for/protocol-and-client: the served address table does not serve it
+  - /docs/getting-set-up: the served address table does not serve it
+  - /docs/searching-and-retrieving: the served address table does not serve it
+  - /docs/serving-and-connections: the served address table does not serve it
+  - /docs/troubleshooting: the served address table does not serve it
+  - /docs/your-account: the served address table does not serve it
+  - /docs/usage-and-what-you-pay-for: the served address table does not serve it
+  - /status: the served address table does not serve it
+  - /docs/what-baltor-is: the served address table does not serve it
+  - /waitlist: the served page has no view 'waitlist'
+  - /terms: the served address table does not serve it
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.136s
+
+FAILED (failures=5)
+exit 1

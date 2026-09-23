@@ -1,0 +1,29 @@
+{
+  "record_type": "service_web_layout_standard/v1",
+  "decided_on": "2026-09-23",
+  "decided_by": "engineering, from the owner's direction of September 23, 2026; the prose is docs/guides/website-design-standards.md",
+  "viewports": {
+    "desktop": {"width": 1440, "height": 900},
+    "laptop": {"width": 1024, "height": 768},
+    "menu": {"width": 860, "height": 900},
+    "phone": {"width": 390, "height": 844},
+    "landscape": {"width": 844, "height": 390}
+  },
+  "header_one_row_widths": [1440, 1024],
+  "header_menu_widths": [860, 390],
+  "header_landscape_max_px": 52,
+  "section_padding_px": {"desktop": [0, 32, 40, 48, 64], "phone": [0, 16, 24, 32, 40]},
+  "containers_px": {"content_max": 1312, "reading_max": 640, "lead_max": 760, "desktop_edge": 64, "phone_edge": 16},
+  "shared_edge_tolerance_px": 2,
+  "empty_vertical_run_max_px": 240,
+  "page_height_max_px": {"long": 4000, "page": 2700},
+  "phone_screens_factor": 2,
+  "contents_list_after_px": 2700,
+  "text_contrast_min": 4.5,
+  "tap_target_min_px": 44,
+  "font_families": ["Geist", "Geist Mono"],
+  "primary_actions_per_view_max": 1,
+  "dark_bands_per_view_max": 1,
+  "line_characters_max": 80,
+  "price": {"marker": "$29", "phrase": "$29 a month", "refused_phrases": ["United States dollars"]}
+}
