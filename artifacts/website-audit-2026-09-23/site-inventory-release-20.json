@@ -1,0 +1,361 @@
+{
+ "record_type": "website_site_inventory/v1",
+ "release": "Fly release 20",
+ "revision": "243a8811",
+ "observed_at": "2026-09-23T13:34:51Z",
+ "generated_by": "tools/test_website_site_map.py --write-inventory",
+ "items": [
+  {
+   "kind": "page",
+   "subject": "/"
+  },
+  {
+   "kind": "page",
+   "subject": "/app"
+  },
+  {
+   "kind": "page",
+   "subject": "/login"
+  },
+  {
+   "kind": "page",
+   "subject": "/signup"
+  },
+  {
+   "kind": "page",
+   "subject": "/account"
+  },
+  {
+   "kind": "page",
+   "subject": "/admin"
+  },
+  {
+   "kind": "page",
+   "subject": "/connect"
+  },
+  {
+   "kind": "page",
+   "subject": "/examples"
+  },
+  {
+   "kind": "page",
+   "subject": "/security"
+  },
+  {
+   "kind": "page",
+   "subject": "/privacy"
+  },
+  {
+   "kind": "page",
+   "subject": "/auth/callback"
+  },
+  {
+   "kind": "page",
+   "subject": "/auth/confirm"
+  },
+  {
+   "kind": "page",
+   "subject": "/docs"
+  },
+  {
+   "kind": "page",
+   "subject": "/how-it-works"
+  },
+  {
+   "kind": "page",
+   "subject": "/pricing"
+  },
+  {
+   "kind": "page",
+   "subject": "/waitlist"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_out",
+   "subject": "/"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_out",
+   "subject": "/how-it-works"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_out",
+   "subject": "/#library"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_out",
+   "subject": "/pricing"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_out",
+   "subject": "/docs"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_out",
+   "subject": "/login"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_out",
+   "subject": "/waitlist"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "/"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "/how-it-works"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "/#library"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "/pricing"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "/docs"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "/app"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "/account"
+  },
+  {
+   "kind": "header_link",
+   "state": "signed_in",
+   "subject": "button:Sign out"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/how-it-works"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/#library"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/pricing"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/docs"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/app"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/admin"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "/account"
+  },
+  {
+   "kind": "header_link",
+   "state": "operator",
+   "subject": "button:Sign out"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/waitlist"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/how-it-works"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/#library"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/pricing"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/examples"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/docs"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/security"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/assets/third-party-notices.txt"
+  },
+  {
+   "kind": "footer_link",
+   "subject": "/privacy"
+  },
+  {
+   "kind": "section",
+   "subject": "band:closing"
+  },
+  {
+   "kind": "section",
+   "subject": "band:faq"
+  },
+  {
+   "kind": "section",
+   "subject": "band:harnesses"
+  },
+  {
+   "kind": "section",
+   "subject": "band:hero"
+  },
+  {
+   "kind": "section",
+   "subject": "band:how"
+  },
+  {
+   "kind": "section",
+   "subject": "band:library"
+  },
+  {
+   "kind": "section",
+   "subject": "band:pricing"
+  },
+  {
+   "kind": "section",
+   "subject": "band:problems"
+  },
+  {
+   "kind": "section",
+   "subject": "band:trust"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:breakdown-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:browse-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:catalogue-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:closing-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:context-lifecycle-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:execution-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:faq-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:friction-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:harness-strip-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:how-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:layers-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:library-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:login-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:plan-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:pricing-notes-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:pricing-teaser-heading"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:problems-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:start-access-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:start-connect-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:start-search-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:step-demo-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:trust-title"
+  },
+  {
+   "kind": "section",
+   "subject": "heading:workspace-access"
+  }
+ ]
+}

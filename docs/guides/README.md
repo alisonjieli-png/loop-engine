@@ -73,6 +73,11 @@ them, connecting a local inference server as a custom provider, declaring an
 unattended night's authority, budget and wait, and reading the result in the
 morning. It names the parts that were executed and the parts that were not.
 
+The [website design standards](website-design-standards.md) state how the
+public website looks and what it holds: tokens, spacing, the scroll budget,
+the header and footer, the page template and the rule that nothing is removed
+without a dated reason. The site map record and two checks hold them.
+
 The [public content and domain plan](public-website-content-and-domain.md)
 separates customer pages from the internal engineering report. The
 [launch benefit guide](launch-benefits-and-evidence.md) records the overnight,
