@@ -36,8 +36,8 @@ rule retires that word from the pages a customer reads, and the owner's
 approval of these exact words came later. A published legal text keeps the
 words the owner approved, so the browser checks that read customer pages for
 the retired words leave out the terms, and only while the served terms equal
-this file word for word. A new wording of those sections is a change to the
-terms and needs the owner's approval.
+[TERMS-OF-SERVICE.md](TERMS-OF-SERVICE.md) word for word. A new wording of
+those sections is a change to the terms and needs the owner's approval.
 
 The terms live in two places: [TERMS-OF-SERVICE.md](TERMS-OF-SERVICE.md), the
 approved text word for word, and the `terms` view of
