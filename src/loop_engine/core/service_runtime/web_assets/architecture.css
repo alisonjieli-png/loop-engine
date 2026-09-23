@@ -140,6 +140,12 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
 .header nav a[aria-current=page]{color:var(--ink);box-shadow:0 2px 0 var(--button)}
 .header .nav-sign-in{margin-left:auto}
 .header .header-primary{flex-shrink:0;min-height:44px;padding:.5rem 1.25rem;border-radius:var(--radius-field);font-size:.9375rem}
+/* Signed in, the account entry stands where Sign in stood and Sign out where the primary action stood, as a quiet button,
+   because it ends something rather than starting it. */
+.header .nav-account{display:inline-flex;align-items:center;gap:.5rem;margin-left:auto;color:var(--ink);font-weight:600}
+.header .nav-account svg{flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.header .nav-sign-out{flex-shrink:0;min-height:44px;padding:.5rem 1.25rem;background:var(--paper);color:var(--ink);font-size:.9375rem;line-height:1.25}
+.header .nav-sign-out:not(:disabled):hover{border-color:var(--ink)}
 .menu-toggle,.menu-button{display:none}
 @media(max-width:860px){
   .header{flex-wrap:wrap;gap:.5rem;min-height:64px;padding-top:.625rem;padding-bottom:.625rem}
@@ -155,6 +161,11 @@ pre{background:var(--bg);border-color:var(--border);border-radius:var(--radius-f
   .header nav a{padding:.8rem 0;border-bottom:1px solid var(--border)}
   .header nav a[aria-current=page]{box-shadow:none}
   .header .nav-sign-in{margin-left:0;border-bottom:0}
+  .header .nav-account{margin-left:0}
+  /* Signed in, no primary action stands in the bar to push the menu button to its end, so the button takes the free space. */
+  .header:has(> .header-primary[hidden]) .menu-button{margin-left:auto}
+  .header .nav-sign-out{width:100%;min-height:44px;padding:.8rem 0;border:0;border-radius:0;background:none;color:var(--muted);font-weight:500;text-align:left}
+  .header .nav-sign-out:not(:disabled):hover{color:var(--ink)}
 }
 /* On the narrowest phones the mark stands without the name beside it, so the bar stays on one line. The link keeps its name. */
 @media(max-width:380px){.header .brand-name{display:none}}

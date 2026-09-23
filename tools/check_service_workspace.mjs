@@ -179,6 +179,13 @@ const headerLink=async (target,name)=>{
   if(!await link.isVisible()&&await target.locator("header .menu-button").isVisible())await target.locator("header .menu-button").click();
   await link.click();
 };
+/* Signing out from the header, as a signed-in person would. The header offers Sign out, not Sign in, once the page holds a
+   sign-in, and at phone width the entry sits in the folded menu. */
+const signOutFromHeader=async target=>{
+  const button=target.locator("#header-sign-out");
+  if(!await button.isVisible()&&await target.locator("header .menu-button").isVisible())await target.locator("header .menu-button").click();
+  await button.click();
+};
 const menuState=target=>target.evaluate(()=>({links:[...document.querySelectorAll("header nav a")].filter(node=>node.getClientRects().length>0).map(node=>node.textContent.trim()),
   primary:Boolean(document.getElementById("header-primary")?.getClientRects().length),open:document.getElementById("menu-toggle")?.checked===true,
   focusMark:getComputedStyle(document.querySelector("header .menu-button")||document.body).outlineStyle,path:location.pathname}));
@@ -1225,6 +1232,71 @@ try {
     mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
     check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,...(problem?{problem}:{})});
   }
+  /* The header in both sign-in states, read as a person sees it on a real service. Signed out, it offers Sign in and the one
+     primary action. Signed in, it offers the account entry, which opens the account page, and Sign out, and neither Sign in
+     nor the invitation action. At phone width the links fold into the menu, so the opened menu and the bar together must
+     offer exactly what the wide header offers. Sign out, pressed in the phone menu, ends the sign-in, opens the sign-in page
+     and restores the signed-out header at both widths. The review of September 23 found Sign in and the invitation action
+     still offered to a signed-in person. Two removed-guard controls serve the page script without the step that hides the
+     signed-out entries and without the step that brings them back. */
+  const signedOutHeader=["How it works","Library","Pricing","Docs","Sign in",accessLabels.closed];
+  const signedInHeader=["How it works","Library","Pricing","Docs","Workspace","Account","Sign out"];
+  const headerEntries=async (target,width)=>{
+    await target.setViewportSize({width,height:1000});
+    const button=target.locator("header .menu-button"),folded=await button.isVisible();
+    if(folded&&!await target.evaluate(()=>document.getElementById("menu-toggle")?.checked===true))await button.click();
+    const state=await target.evaluate(()=>{const shown=node=>node.getClientRects().length>0&&getComputedStyle(node).visibility!=="hidden";
+      const bar=document.querySelector("header"),menu=document.querySelector("header .menu-button");
+      return {entries:[...document.querySelectorAll("header a:not(.brand), header button")].filter(shown).map(node=>node.textContent.replace(/\s+/g," ").trim()),
+        account:[...document.querySelectorAll('header a[data-page="account"]')].filter(shown).map(node=>node.getAttribute("href")),
+        menuRight:menu?Math.round(menu.getBoundingClientRect().right):0,barEnd:bar?Math.round(bar.getBoundingClientRect().right-parseFloat(getComputedStyle(bar).paddingRight)):0};});
+    if(folded)await target.keyboard.press("Escape");
+    return {width,folded,...state};
+  };
+  /* At phone width the menu button stands at the end of the bar in both states, whether or not the primary action is beside it. */
+  const headerProblems=(state,want)=>[...(JSON.stringify(state.entries)===JSON.stringify(want)?[]:[state.width+" pixels wide, the header offers "+JSON.stringify(state.entries)]),
+    ...(want.includes("Account")&&JSON.stringify(state.account)!==JSON.stringify(["/account"])?[state.width+" pixels wide, the account entry does not open the account page"]:[]),
+    ...(state.folded&&Math.abs(state.menuRight-state.barEnd)>1?[state.width+" pixels wide, the menu button ends at "+state.menuRight+" and the bar at "+state.barEnd]:[])];
+  const headerChecks=["header_offers_sign_in_and_the_invitation_to_a_visitor_who_is_not_signed_in","header_offers_the_account_entry_and_sign_out_to_a_signed_in_person",
+    "header_sign_out_ends_the_sign_in_and_restores_the_signed_out_header"];
+  const headerScenario=async (opened,note)=>{
+    const visitor=[await headerEntries(opened,1440),await headerEntries(opened,390)];
+    note(headerChecks[0],visitor.every(state=>headerProblems(state,signedOutHeader).length===0),{problems:visitor.flatMap(state=>headerProblems(state,signedOutHeader))});
+    await opened.setViewportSize({width:1440,height:1000});
+    await headerLink(opened,"login");await opened.fill("#access-token",fixture.token);await opened.click("#connect-button");
+    await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
+    const member=[await headerEntries(opened,1440),await headerEntries(opened,390)];
+    note(headerChecks[1],member.every(state=>headerProblems(state,signedInHeader).length===0),{problems:member.flatMap(state=>headerProblems(state,signedInHeader))});
+    await signOutFromHeader(opened);
+    await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
+    const left=await opened.evaluate(()=>({path:location.pathname,menuOpen:document.getElementById("menu-toggle")?.checked===true,searchClosed:document.getElementById("query")?.disabled===true}));
+    const after=[await headerEntries(opened,390),await headerEntries(opened,1440)];
+    note(headerChecks[2],left.path==="/login"&&!left.menuOpen&&left.searchClosed&&after.every(state=>headerProblems(state,signedOutHeader).length===0),{left,problems:after.flatMap(state=>headerProblems(state,signedOutHeader))});
+  };
+  {const noted=new Set(),{page:opened}=await openPublic(fixture.base,null);
+    try{await headerScenario(opened,(name,passed,detail)=>{noted.add(name);check(name,passed,detail);});}
+    catch(error){for(const name of headerChecks.filter(name=>!noted.has(name)))check(name,false,{error:safeError(error)});}
+    await opened.close();}
+  check("header_state_check_rejects_a_leftover_sign_in_or_invitation_a_missing_sign_out_and_a_misplaced_menu_button",
+    headerProblems({width:1440,entries:signedOutHeader,account:[]},signedOutHeader).length===0&&headerProblems({width:390,entries:signedInHeader,account:["/account"]},signedInHeader).length===0
+    &&headerProblems({width:1440,entries:[...signedInHeader,"Sign in"],account:["/account"]},signedInHeader).length===1
+    &&headerProblems({width:1440,entries:[...signedInHeader,accessLabels.closed],account:["/account"]},signedInHeader).length===1
+    &&headerProblems({width:390,entries:signedInHeader.slice(0,-1),account:["/account"]},signedInHeader).length===1
+    &&headerProblems({width:1440,entries:signedInHeader,account:["/app"]},signedInHeader).length===1
+    &&headerProblems({width:390,entries:signedInHeader,account:["/account"]},signedOutHeader).length===1
+    &&headerProblems({width:390,folded:true,entries:signedInHeader,account:["/account"],menuRight:160,barEnd:373},signedInHeader).length===1
+    &&headerProblems({width:390,folded:true,entries:signedInHeader,account:["/account"],menuRight:373,barEnd:373},signedInHeader).length===0);
+  const headerControls=[
+    {name:"keep_sign_in_and_the_invitation_action_after_sign_in",find:'document.querySelectorAll("[data-signed-out]").forEach(item => { item.hidden = signedIn; });',replacement:"",expected:[headerChecks[1]]},
+    {name:"keep_the_account_entry_and_sign_out_after_sign_out",find:"showSignedIn(false);",replacement:"",expected:[headerChecks[2]]}];
+  for(const control of headerControls){
+    const failed=new Set(),note=(name,passed)=>{if(passed!==true)failed.add(name);};
+    let applied=false,problem="";
+    try{const {page:changed,state}=await openPublic(fixture.base,{find:control.find,replacement:control.replacement});applied=state.applied;await headerScenario(changed,note);await changed.close();}catch(error){problem=safeError(error);}
+    const missed=control.expected.filter(name=>!failed.has(name)),detected=applied&&!problem&&missed.length===0;
+    mutants.push({name:control.name,applied,detected,required_checks:control.expected,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+    check("removed_guard_is_detected_"+control.name,detected,{applied,missed_checks:missed,failed_checks:[...failed].sort(),...(problem?{problem}:{})});
+  }
   /* The careful state must be what the service serves, not only what the page script reaches. A visitor without JavaScript reads the served text. */
   const servedHome=await (await page.request.get(fixture.base+"/")).text();
   /* The careful access state is the operator's panel leading the Get started page, with the invitation form and the account
@@ -1470,7 +1542,9 @@ try {
   }
   await page.goto(fixture.base+"/login"); await page.fill("#access-token",fixture.token); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   await page.fill("#query","Alpha"); await page.click("#search-button"); await page.waitForSelector(".result");
-  await headerLink(page,"login"); await page.click("#disconnect");
+  /* The sign-in page keeps its own Disconnect button. The header offers Sign out, not Sign in, to a signed-in person, so the page
+     is reached here through the workspace's own link to it. */
+  await page.locator("#workspace-access-link").click(); await page.click("#disconnect");
   check("disconnect_clears_identity_results_and_controls",await page.locator(".result").count()===0&&await page.locator("#query").isDisabled()&&await page.locator("#identity-facts").innerText()==="");
   await page.goto(fixture.billing_base+"/login"); await page.fill("#access-token",fixture.billing_token); await page.click("#connect-button"); await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   await headerLink(page,"account");
@@ -1502,10 +1576,12 @@ try {
   await page.unroute(/\/(?:api\/v1\/capabilities|assets\/client-recipes\.json)$/);
   let releasePrivate,heldPrivate=false;const privateGate=new Promise(resolve=>{releasePrivate=resolve;});
   await page.route("**/mcp",async route=>{if(route.request().postDataJSON()?.method==="tools/list"){heldPrivate=true;await privateGate;}await route.continue().catch(()=>{});});
-  await page.locator('header a[data-page="setup"]').click();await page.click("#test-protocol");
+  await page.locator('[data-view="workspace"] .dashboard-nav a[data-page="setup"]').click();await page.click("#test-protocol");
   await new Promise((resolve,reject)=>{const deadline=setTimeout(()=>{clearInterval(poll);reject(new Error("No held authenticated request"));},5000);const poll=setInterval(()=>{if(heldPrivate){clearInterval(poll);clearTimeout(deadline);resolve();}},10);});
-  const aborted=page.waitForEvent("requestfailed",{predicate:request=>new URL(request.url()).pathname==="/mcp"});
-  await headerLink(page,"login");await page.click("#disconnect");await aborted;releasePrivate();
+  /* The wait is handled at once, so a step that fails before it is awaited is reported by name instead of ending the run
+     unreported; awaiting it below still fails when no request was cancelled. */
+  const aborted=page.waitForEvent("requestfailed",{predicate:request=>new URL(request.url()).pathname==="/mcp"});aborted.catch(()=>{});
+  await signOutFromHeader(page);await aborted;releasePrivate();
   check("sign_out_still_aborts_credential_bound_protocol_requests",await page.locator("#protocol-tools li").count()===0&&await page.locator("#test-protocol").isDisabled()&&(await page.locator("#protocol-result").innerText()).startsWith("Not tested"));
   await page.unroute("**/mcp");
   await page.route(fixture.identity_origin+"/auth/v1/token**",route=>route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":fixture.account_base,"Access-Control-Allow-Headers":"*","Access-Control-Allow-Methods":"POST, OPTIONS"},body:JSON.stringify({access_token:fixture.identity_token,refresh_token:"local-fixture-refresh",expires_in:1800,token_type:"bearer",user:fixture.identity_user})}));
@@ -1546,7 +1622,7 @@ try {
   await page.route("**/api/v1/account/access",async route=>{if(route.request().method()==="GET"){const response=await route.fetch();customerResponseHeld=true;await customerGate;await route.fulfill({response}).catch(()=>{});}else await route.continue();});
   await page.click("#refresh-client-access");
   await new Promise((resolve,reject)=>{const end=setTimeout(()=>{clearInterval(poll);reject(new Error("Customer response was not held"));},5000);const poll=setInterval(()=>{if(customerResponseHeld){clearInterval(poll);clearTimeout(end);resolve();}},10);});
-  await headerLink(page,"login");await page.click("#disconnect");releaseCustomer();
+  await signOutFromHeader(page);releaseCustomer();
   check("customer_sign_out_clears_tokens_before_delayed_reply",await page.locator("#client-access-controls").isHidden()&&await page.inputValue("#client-issued-token")===""&&await page.locator("#refresh-client-access").isDisabled());
   await page.unroute("**/api/v1/account/access");
   /* The waiting list is offered only where the service keeps one. The first service has none; the account service has one. The
@@ -1907,8 +1983,7 @@ try {
       const saving=opened.waitForEvent("download",{timeout:2500}).then(()=>false,()=>true);
       await opened.click("#browse-download");
       await opened.waitForFunction(()=>window.__digestHeld===true,null,{timeout:8000});
-      await headerLink(opened,"login");
-      await opened.click("#disconnect");
+      await signOutFromHeader(opened);
       await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
       await opened.evaluate(()=>window.__releaseDigest());
       const nothingSaved=await saving;
@@ -1927,8 +2002,7 @@ try {
       await opened.click("#refresh-browse");
       await new Promise((resolve,reject)=>{const deadline=setTimeout(()=>{clearInterval(poll);reject(new Error("No held catalogue request"));},5000);
         const poll=setInterval(()=>{if(held){clearInterval(poll);clearTimeout(deadline);resolve();}},10);});
-      await headerLink(opened,"login");
-      await opened.click("#disconnect");
+      await signOutFromHeader(opened);
       await opened.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Not connected");
       release();
       const signedOut="Sign in to browse the material published for your account.";

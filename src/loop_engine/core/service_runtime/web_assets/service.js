@@ -90,6 +90,14 @@
     {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
   let theme = "light";
   $("theme").addEventListener("click", () => { theme = themes[(themes.indexOf(theme) + 1) % themes.length]; if (theme === "system") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme; $("theme").textContent = "Appearance: " + theme; });
+  /* The header follows the sign-in this page holds. Signed in, it shows the account entry and Sign out, and hides Sign in and the
+     invitation action, which are for a visitor who is not signed in. The phone menu is the same navigation folded, so it follows
+     too. The served page is the signed-out state, and a reload always starts signed out, because the sign-in lives only in the
+     memory of the page. */
+  const showSignedIn = signedIn => {
+    document.querySelectorAll("[data-signed-in]").forEach(item => { item.hidden = !signedIn; });
+    document.querySelectorAll("[data-signed-out]").forEach(item => { item.hidden = signedIn; });
+  };
   function disconnect() {
     generation++; token = ""; principalScopes = []; authenticationMode = "host_key"; for (const controller of pending) controller.abort(); pending.clear(); downloads.clear(); billingRequests.clear();
     $("access-token").value = ""; $("identity").hidden = true; $("connect-form").hidden = false; $("connection-state").textContent = "Not connected";
@@ -101,7 +109,7 @@
     $("account-note").textContent = "Sign in to see your service identity, usage and available subscription settings.";
     $("workspace-access").textContent = "Sign in to search"; $("workspace-access-note").textContent = "Search and downloads are scoped to your service account.";
     $("workspace-access-link").textContent = "Sign in to this service"; $("account-access-link").textContent = "Sign in";
-    document.querySelectorAll("[data-signed-in]").forEach(link => { link.hidden = true; });
+    showSignedIn(false);
     accessOptions = null; accessRequest = null; $("admin-nav").hidden = true; $("admin-controls").hidden = true; $("admin-login").hidden = false; $("refresh-access").disabled = true;
     $("issued-token").value = ""; $("issued-access").hidden = true; $("access-list").replaceChildren(); $("token-label").value = "";
     message("admin-message", "Sign in with an administrator service token. Email is not required.");
@@ -109,10 +117,13 @@
     $("protocol-tools").replaceChildren(); message("protocol-result", "Not tested. No model calls are made by this check.");
     clientAccess?.reset(); catalogueBrowser?.reset();
   }
-  $("disconnect").addEventListener("click", async () => {
+  /* Signing out. The page forgets the access it holds at once, then asks the service and the identity provider to end the
+     session. The sign-in page's Disconnect button and the header's Sign out do the same; Sign out also opens the sign-in page,
+     where the result is reported. */
+  async function signOut() {
     const previousToken = token, previousMode = authenticationMode, previousClient = identityClient;
     disconnect(); const epoch = generation;
-    message("connection-message", "Disconnected. Access and displayed data cleared.");
+    message("connection-message", "Signed out. Access and displayed data cleared.");
     if (previousMode !== "browser_identity" || !previousToken) return;
     // New sign-ins use a separate in-memory client. A delayed sign-out must
     // neither clear their session nor repopulate the page being disconnected.
@@ -126,7 +137,9 @@
     } catch (_) {} finally { clearTimeout(timer); }
     try { providerRevoked = !(await previousClient.auth.signOut({scope:"local"})).error; } catch (_) {}
     if (epoch === generation && (!serviceRevoked || !providerRevoked)) message("identity-message", "This page is cleared, but remote sign-out was not fully confirmed. A session may remain valid until expiry.", true);
-  });
+  }
+  $("disconnect").addEventListener("click", signOut);
+  $("header-sign-out").addEventListener("click", () => { navigate("/login"); signOut(); });
   async function protocolResponse(response, requestId) {
     const mediaType = response.headers.get("content-type")?.split(";")[0].trim();
     if (mediaType === "application/json") return response.json();
@@ -199,7 +212,7 @@
       $("workspace-access").textContent = value.principal.tenant_id; $("workspace-access-note").textContent = "Connected. Search returns only material permitted for this identity.";
       $("workspace-access-link").textContent = "Manage this connection"; $("account-access-link").textContent = "Disconnect or change account";
       $("identity").hidden = false; $("connect-form").hidden = true; $("connection-state").textContent = "Connected";
-      document.querySelectorAll("[data-signed-in]").forEach(link => { link.hidden = false; });
+      showSignedIn(true);
       ["query", "search-button", "search-mode", "refresh-usage", "refresh-billing"].forEach(id => { $(id).disabled = false; });
       $("result-count").textContent = "Ready"; message("connection-message", "Access confirmed for this tenant.");
       const administrator = value.principal.scopes.includes("access:manage");

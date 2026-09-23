@@ -49,6 +49,13 @@ block at the top of `service.css`, so a change of design edits that block.
 Below 860 pixels the header links fold into a menu that a checkbox opens, so
 the menu works without the page script and nothing moves when the script runs.
 
+The header follows the sign-in that the page holds. A visitor who is not signed
+in sees Sign in and the one primary action. A signed-in person sees the account
+entry, which opens the account page, and Sign out, which ends the sign-in and
+opens the sign-in page, and no longer sees Sign in or the invitation action.
+The phone menu folds the same entries. The served page is the signed-out state,
+because the sign-in lives only in the memory of the page.
+
 The mark is a placeholder that the owner will replace. It is one file,
 `baltor-mark.svg`, used in the header and the footer and as the page icon,
 with `favicon-32.png`, `favicon-192.png` and `apple-touch-icon.png` drawn from
