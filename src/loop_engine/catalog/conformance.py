@@ -2,11 +2,16 @@
 
 Every adapter that declares a capability must pass the same tests for
 that capability. The suite proves identity preservation, filtering,
-round trips, and explicit refusal of unsupported operations.
+round trips, and explicit refusal of unsupported operations. An adapter
+that declares the atomic batch and its removal extension also passes the
+removal contract: exact version, a missing record refused, and an
+acknowledgment that names the exact batch.
 """
 from __future__ import annotations
 
-from .protocol import CatalogStore, UnsupportedOperationError
+from .protocol import (ATOMIC_BATCH_OPERATION, ATOMIC_REMOVAL_OPERATION, CatalogRecordPrecondition, CatalogStore,
+                       CatalogWriteBatch, PreconditionFailed, UnsupportedOperationError, require_atomic_batch,
+                       require_atomic_removal)
 from .query import (
     IntelligenceQuery,
     QueryError,
@@ -123,6 +128,7 @@ def run_store_conformance(store: CatalogStore) -> dict:
         except UnsupportedOperationError:
             check("undeclared_write_is_refused", True)
 
+    _atomic_batch_checks(store, caps, check)
     store.close()
     passed = sum(1 for r in results if r["passed"])
     return {"record_type": "store_conformance/v1",
@@ -131,14 +137,57 @@ def run_store_conformance(store: CatalogStore) -> dict:
             "all_passed": passed == len(results)}
 
 
+def _atomic_batch_checks(store, caps, check) -> None:
+    """The atomic batch and removal contract for an adapter that declares it, or its refusal."""
+    def refused(action, error):
+        try:
+            action()
+        except error:
+            return True
+        return False
+    if not caps.supports(ATOMIC_BATCH_OPERATION):
+        check("undeclared_atomic_batch_is_refused_before_any_effect",
+              refused(lambda: require_atomic_batch(store), UnsupportedOperationError))
+    if not caps.supports(ATOMIC_REMOVAL_OPERATION):
+        check("undeclared_removal_is_refused_before_any_effect",
+              refused(lambda: require_atomic_removal(store), UnsupportedOperationError))
+        return
+    require_atomic_removal(store)
+    seed = CatalogWriteBatch.from_records(
+        ({"record_id": "batch.gone", "record_version": "1"}, {"record_id": "batch.kept", "record_version": "1"}),
+        (CatalogRecordPrecondition("batch.gone", must_not_exist=True),
+         CatalogRecordPrecondition("batch.kept", must_not_exist=True)))
+    check("atomic_batch_acknowledges_its_exact_digest", store.apply_batch(seed).batch_digest == seed.digest)
+    stale = refused(lambda: store.apply_batch(CatalogWriteBatch.from_records(
+        (), (CatalogRecordPrecondition("batch.gone", "0"),), ("batch.gone",))), PreconditionFailed)
+    missing = refused(lambda: store.apply_batch(CatalogWriteBatch.from_records(
+        (), (CatalogRecordPrecondition("batch.absent", "1"),), ("batch.absent",))), PreconditionFailed)
+    check("removal_at_a_stale_version_or_of_a_missing_record_is_refused",
+          stale and missing and store.get("batch.gone") is not None)
+    removal = CatalogWriteBatch.from_records(
+        (), (CatalogRecordPrecondition("batch.gone", "1"), CatalogRecordPrecondition("batch.kept", "1")),
+        ("batch.gone",))
+    acknowledgment = store.apply_batch(removal)
+    check("exact_removal_removes_only_what_it_names",
+          acknowledgment.batch_digest == removal.digest and acknowledgment.committed is True
+          and store.get("batch.gone") is None and store.get("batch.kept") is not None)
+
+
 def self_test() -> dict:
-    """Prove the conformance suite itself works on the reference store."""
+    """Prove the conformance suite itself works on the reference store and on SQLite."""
+    from pathlib import Path
+    from tempfile import TemporaryDirectory
     from .stores.in_memory import EphemeralRecordStore
+    from .stores.sqlite_store import SQLiteRecordStore
     report = run_store_conformance(EphemeralRecordStore())
     tests = [{
         "test": "conformance_suite_passes_on_reference_store",
         "passed": report["all_passed"],
         "detail": f"{report['passed']}/{report['total']} checks"}]
+    with TemporaryDirectory(prefix="loop-catalog-golden-") as directory:
+        sqlite_report = run_store_conformance(SQLiteRecordStore(str(Path(directory) / "golden.sqlite")))
+    tests.append({"test": "conformance_suite_passes_on_sqlite_store", "passed": sqlite_report["all_passed"],
+                  "detail": f"{sqlite_report['passed']}/{sqlite_report['total']} checks"})
     tests.extend(_read_path_checks())
     return {"tests": tests}
 

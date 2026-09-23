@@ -936,6 +936,47 @@ rewriting those records. Another store can implement the same declared
 capability. Unsupported or unknown capability negotiation refuses; domain
 code does not branch on a backend class.
 
+A batch that removes records is its own version,
+`catalog_atomic_write_batch/v2`, and a store applies it only when it declares
+the optional operation `atomic_record_removal` and that exact version.
+`require_atomic_removal` negotiates both before the batch is built, and
+`ServiceCatalogBinding.commit` refuses a removal with
+`store_contract_unavailable` before any effect when the store declares
+neither. The SQLite store and the in-memory reference store apply removal
+batches. The DuckDB store, the DuckDB file engine and the package JSONL store
+declare the operation unsupported.
+
+```text
+catalog_atomic_write_batch/v2
+├── removals: exact record identities
+├── each removal needs a precondition with the exact version the caller read
+├── a missing record or another version fails that precondition, and the
+│   whole batch is refused with nothing changed
+├── a record is never written and removed in one batch
+└── the batch digest covers the version, the writes, the removals and the
+    read set, so an acknowledgment for any other batch is an unknown commit
+```
+
+After the acknowledgment, the binding reads every write back and confirms that
+the store no longer holds each removed record at the removed version. A store
+that acknowledges a removal it did not make is an unknown commit, never a
+success.
+
+Before choosing this shape we compared how other record stores express a
+conditional removal. A DynamoDB `TransactWriteItems` request holds `Delete`
+actions with condition expressions beside writes and read-only condition
+checks, fails as a whole when any condition fails, and refuses two actions on
+one item. A Kubernetes delete can carry preconditions on the resource version
+and fails with a conflict when they do not hold. An etcd transaction compares
+revisions before a delete, but it deletes a missing key with a count of zero
+and no error. A log-compacted store such as Kafka writes a tombstone that
+keeps the key. We adopted the DynamoDB and Kubernetes shape: a removal is
+exact, guarded by the version the caller read, and applied in the same atomic
+batch as writes. We rejected the silent zero-count delete, because a removal
+that names a missing record is refused here rather than read as success, and
+we rejected tombstones, because a tombstone keeps an identity derived from the
+session digest that the privacy notice promises to remove.
+
 Every domain operation opens a separate connection, preserving the existing
 SQLite adapter's thread contract. This is a serialized embedded-database
 profile, not a claim about multi-region consistency or clustered throughput.

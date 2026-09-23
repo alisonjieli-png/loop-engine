@@ -2,7 +2,10 @@
 
 The simplest conformant backend: records live in a dict for one process
 lifetime. It is the reference implementation for the conformance suite
-and the default store for tests and read-only demos.
+and the default store for tests and read-only demos. It applies atomic
+batches, removals included, under one lock: every precondition is checked
+and every record validated before the first change, so a batch changes
+everything it names or nothing.
 """
 from __future__ import annotations
 
@@ -10,8 +13,13 @@ from copy import deepcopy
 from threading import RLock
 
 from ..capabilities import StoreCapabilities
-from ..protocol import PreconditionFailed, StoreError
+from ..protocol import (ATOMIC_BATCH_OPERATION, ATOMIC_BATCH_VERSION, ATOMIC_REMOVAL_BATCH_VERSION,
+                        ATOMIC_REMOVAL_OPERATION, CatalogBatchAcknowledgment, CatalogWriteBatch,
+                        PreconditionFailed, StoreError, UnsupportedOperationError)
 from ..query import IntelligenceQuery, iter_query_records
+
+#: The atomic batch versions this reference store applies.
+APPLIED_BATCH_VERSIONS = (ATOMIC_BATCH_VERSION, ATOMIC_REMOVAL_BATCH_VERSION)
 
 
 class EphemeralRecordStore:
@@ -28,7 +36,8 @@ class EphemeralRecordStore:
             adapter_id="local.in-memory", adapter_version="1.0.0",
             adapter_kind="in_memory", engine="python",
             operations={"get": True, "query": True, "stream": True,
-                        "write": True, "export": True, "import": True},
+                        "write": True, "export": True, "import": True,
+                        ATOMIC_BATCH_OPERATION: True, ATOMIC_REMOVAL_OPERATION: True},
             query_capabilities={"projection": False, "filter": True,
                                "join": False, "aggregation": False,
                                "relationship_traversal": False,
@@ -39,6 +48,9 @@ class EphemeralRecordStore:
             transactions={"supported": False, "snapshot_reads": True,
                           "snapshot_scope": "operation",
                           "atomic_preconditions": True, "atomic_import": True,
+                          "atomic_batch_version": ATOMIC_BATCH_VERSION,
+                          "atomic_removal_batch_version": ATOMIC_REMOVAL_BATCH_VERSION,
+                          "atomic_read_set": True,
                           "atomic_scope": "one_store_instance",
                           "writer_topology": "serialized_within_process"},
             result_formats=("python_records",),
@@ -88,6 +100,27 @@ class EphemeralRecordStore:
                     raise PreconditionFailed("record precondition failed")
             self._records[record_id] = prepared
         return {"record_id": record_id, "stored": True}
+
+    def apply_batch(self, request: CatalogWriteBatch) -> CatalogBatchAcknowledgment:
+        """Check the whole read set, then apply every write and every removal under one lock."""
+        if not isinstance(request, CatalogWriteBatch):
+            raise StoreError("a typed atomic batch request is required")
+        request.__post_init__()
+        if request.record_type not in APPLIED_BATCH_VERSIONS:
+            raise UnsupportedOperationError("this atomic batch version is not applied here")
+        prepared = [_prepared_record(record) for record in request.records]
+        with self._lock:
+            for expected in request.preconditions:
+                held = self._records.get(expected.record_id)
+                if ((expected.must_not_exist and held is not None)
+                        or (not expected.must_not_exist
+                            and (held is None or held.get("record_version") != expected.record_version))):
+                    raise PreconditionFailed("atomic batch read-set precondition failed")
+            for record in prepared:
+                self._records[record["record_id"]] = record
+            for identity in request.removals:
+                del self._records[identity]
+        return CatalogBatchAcknowledgment(request.digest, True)
 
     def export(self, selection: dict | None = None) -> dict:
         with self._lock:
@@ -210,4 +243,30 @@ def self_test() -> dict:
             wins = list(pool.map(contend, (1, 2)))
         check("atomic_guard_has_one_concurrent_winner:" + ("version" if existing else "absence"),
               sum(wins) == 1)
+
+    from ..protocol import CatalogRecordPrecondition, require_atomic_removal
+    batches = EphemeralRecordStore([{"record_id": name, "record_version": "1"} for name in ("gone", "kept")])
+    require_atomic_removal(batches)
+    stale = refuses(lambda: batches.apply_batch(CatalogWriteBatch.from_records(
+        (), (CatalogRecordPrecondition("gone", "0"),), ("gone",))))
+    missing = refuses(lambda: batches.apply_batch(CatalogWriteBatch.from_records(
+        (), (CatalogRecordPrecondition("absent", "1"),), ("absent",))))
+    partial = refuses(lambda: batches.apply_batch(CatalogWriteBatch.from_records(
+        ({"record_id": "written", "record_version": "1"},),
+        (CatalogRecordPrecondition("gone", "1"), CatalogRecordPrecondition("written", must_not_exist=True),
+         CatalogRecordPrecondition("kept", "0")), ("gone",))))
+    check("a_refused_removal_batch_changes_nothing",
+          stale and missing and partial and batches.get("gone") is not None and batches.get("written") is None)
+    exact = CatalogWriteBatch.from_records(
+        ({"record_id": "written", "record_version": "1"},),
+        (CatalogRecordPrecondition("gone", "1"), CatalogRecordPrecondition("written", must_not_exist=True)),
+        ("gone",))
+    try:
+        acknowledgment = batches.apply_batch(exact)
+    except StoreError:
+        acknowledgment = None
+    check("an_exact_removal_applies_with_the_writes_of_its_batch",
+          acknowledgment is not None and acknowledgment.batch_digest == exact.digest
+          and acknowledgment.committed is True and batches.get("gone") is None
+          and batches.get("written") is not None and batches.get("kept") is not None)
     return {"tests": results}

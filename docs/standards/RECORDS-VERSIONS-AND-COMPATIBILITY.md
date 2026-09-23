@@ -152,6 +152,9 @@ the other side selects an exact shared value or refuses.
 - Storage declares the optional capability `catalog_atomic_write_batch/v1`.
   Domain code asks for the capability and does not branch on a backend class
   ([service runtime README](../../src/loop_engine/core/service_runtime/README.md#persistence-and-concurrency-contract)).
+  A batch that removes records is `catalog_atomic_write_batch/v2`, applied only
+  by a store that also declares the optional operation `atomic_record_removal`;
+  a store that does not is refused before any effect.
 
 Refuse a downgrade that loses a required meaning, an integrity check or an
 authority check. Continuous integration tests the negotiation. It does not

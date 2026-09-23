@@ -464,8 +464,9 @@ Record storage (functional component)
 │   └── requirement comparison: catalog.handshake.negotiate and require_atomic_batch (exist)
 ├── Selection: one_of at host start; fallback ceiling none, because two stores
 │   written as authorities would diverge
-└── Engines: local.sqlite (deployed; the only one with the atomic batch), local.duckdb,
-    core.duckdb-files, core.package-jsonl, local.in-memory, remote.postgres (planned, D-05)
+└── Engines: local.sqlite (deployed) and local.in-memory apply the atomic batch and its
+    removal extension, catalog_atomic_write_batch/v2; local.duckdb, core.duckdb-files
+    and core.package-jsonl declare neither; remote.postgres (planned, D-05)
 ```
 
 ### 4.4 Turning a component off is a declared answer on its edge
