@@ -1,0 +1,12 @@
+test_asset_cache_is_bound_to_exact_bytes (tools.test_public_asset_delivery.PublicAssetDelivery.test_asset_cache_is_bound_to_exact_bytes) ... ok
+test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) ... ok
+test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) ... ok
+test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) ... ok
+test_private_dynamic_and_error_responses_remain_uncacheable (tools.test_public_asset_delivery.PublicAssetDelivery.test_private_dynamic_and_error_responses_remain_uncacheable) ... ok
+test_stale_validator_gets_current_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_stale_validator_gets_current_body) ... ok
+test_writing_an_asset_is_not_a_cacheable_route (tools.test_public_asset_delivery.PublicAssetDelivery.test_writing_an_asset_is_not_a_cacheable_route) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.826s
+
+OK

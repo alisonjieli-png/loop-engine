@@ -1,0 +1,37 @@
+diff --git a/tools/check_hosted_website.mjs b/tools/check_hosted_website.mjs
+index a3d5f4cf..e9f453e7 100644
+--- a/tools/check_hosted_website.mjs
++++ b/tools/check_hosted_website.mjs
+@@ -33,7 +33,10 @@ try{
+   check("live_homepage_subhead_names_the_unit_of_work",namesTheStep(await page.locator('[data-view="home"] .hero-subhead').innerText()));
+   check("live_default_appearance_is_light",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
+   check("live_how_it_works_covers_five_optimization_problems",await page.locator('[data-view="about"] [data-friction]').count()===5);
+-  check("live_homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
++  const heroOpening=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({first:node.firstElementChild?.tagName,badges:node.querySelectorAll(".hero-chip").length}));
++  const startsAtHeadline=value=>value.first==="H1"&&value.badges===0;
++  check("live_homepage_opens_with_headline_without_category_badge",startsAtHeadline(heroOpening),heroOpening);
++  check("category_badge_check_rejects_the_removed_pill",!startsAtHeadline({first:"P",badges:1})&&!startsAtHeadline({first:"H1",badges:1})&&startsAtHeadline({first:"H1",badges:0}));
+   const livePositioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
+   const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
+   check("live_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(livePositioning));
+diff --git a/tools/check_service_workspace.mjs b/tools/check_service_workspace.mjs
+index 2bb98367..b7e3836a 100644
+--- a/tools/check_service_workspace.mjs
++++ b/tools/check_service_workspace.mjs
+@@ -619,10 +619,12 @@ try {
+   check("benefit_limits_do_not_guarantee_daily_improvement",(await page.locator('[data-band="closing"] .benefit-limits').innerText()).includes("guaranteed daily performance gain"));
+   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
+      service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
+-  /* The line above the headline is the owner's name for the positioning, written out in full. The word harness is
+-     jargon outside this repository, so a plain sentence has to sit beside the phrase and say what it means. A page
+-     that prints the phrase and leaves the reader to guess is the known-wrong case. */
+-  check("homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
++  /* The owner removed the category pill on September 23. Start directly at the headline.
++     The remaining positioning paragraph still explains the product in plain words. */
++  const heroOpening=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({first:node.firstElementChild?.tagName,badges:node.querySelectorAll(".hero-chip").length}));
++  const startsAtHeadline=value=>value.first==="H1"&&value.badges===0;
++  check("homepage_opens_with_headline_without_category_badge",startsAtHeadline(heroOpening),heroOpening);
++  check("category_badge_check_rejects_the_removed_pill",!startsAtHeadline({first:"P",badges:1})&&!startsAtHeadline({first:"H1",badges:1})&&startsAtHeadline({first:"H1",badges:0}));
+   const positioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
+   const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
+   check("the_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(positioning),{positioning});

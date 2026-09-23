@@ -314,6 +314,29 @@ def _planted(page, old, new):
     return changed
 
 
+def opening_claim_problems(page):
+    """Refuse an unconditional drift outcome in the homepage's design promise."""
+    opening = re.search(r'<p class="hero-subhead">([^<]*)</p>', page)
+    if opening is None:
+        return ["opening message missing or not readable"]
+    guarantee = re.search(
+        r"\bnothing\s+drifts\b|\bnever\s+drifts?\b|\beliminates?\s+(?:all\s+)?context\s+drift\b",
+        opening.group(1), re.IGNORECASE)
+    return ["opening promises unmeasured elimination of drift"] if guarantee else []
+
+
+class HomepageOpeningClaimTest(unittest.TestCase):
+    def test_opening_does_not_promise_that_context_never_drifts(self):
+        self.assertEqual(opening_claim_problems(PAGE.read_text(encoding="utf-8")), [])
+        # KNOWN_WRONG: the September 23 page promised "nothing drifts".
+        for text in ("nothing drifts", "the context never drifts", "eliminates context drift"):
+            with self.subTest(guarantee=text):
+                self.assertEqual(len(opening_claim_problems(
+                    '<p class="hero-subhead">' + text + '</p>')), 1)
+        self.assertEqual(opening_claim_problems(
+            '<p class="hero-subhead">The design aims to reduce context drift.</p>'), [])
+
+
 class HomepageDemonstrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

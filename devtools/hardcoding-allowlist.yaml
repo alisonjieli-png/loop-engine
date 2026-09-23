@@ -1,5 +1,38 @@
 schema: hardcoding_allowlist/v1
 entries:
+  - finding_id: hardcoding.35aaadb14d0d3746064e2d9c
+    owner: tools.check_hosted_website.mjs:url
+    rationale: >-
+      The reserved .invalid origin is a known-wrong input to the versioned
+      asset identity check. It is compared as a URL string and is never fetched
+      or installed as a provider. The named browser control requires its
+      rejection so a foreign origin cannot pass by sharing a packaged path and
+      digest. This exact fixture exception does not cover any runtime endpoint.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.551e55cf92183c6cfeb9bbf4
+    owner: tools.check_service_workspace.mjs:url
+    rationale: >-
+      The reserved .invalid origin is a known-wrong input to the versioned
+      asset identity check. It is compared as a URL string and is never fetched
+      or installed as a provider. The named browser control requires its
+      rejection so a foreign origin cannot pass by sharing a packaged path and
+      digest. This exact fixture exception does not cover any runtime endpoint.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
+  - finding_id: hardcoding.8ceb6198f6cc0ae1e0afcb1e
+    owner: tools.check_service_workspace.mjs:url
+    rationale: >-
+      The reserved .invalid origin is a known-wrong input to the versioned
+      asset identity check. It is compared as a URL string and is never fetched
+      or installed as a provider. The named browser control requires its
+      rejection so a foreign origin cannot pass by sharing a packaged path and
+      digest. This exact fixture exception does not cover any runtime endpoint.
+    classification: STRATEGY_OR_PROVIDER_BINDING
+    created_on: 2026-09-23
+    expires_on: 2027-09-23
   - finding_id: hardcoding.bfc9ecf2016d8a54801fdc7e
     owner: case-studies.data-cleanup-with-and-without-baltor.population.generate_population:address_rows.add
     rationale: >-

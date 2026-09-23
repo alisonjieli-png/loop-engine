@@ -13,7 +13,7 @@ that weakens any part of that rule is refused, not clamped.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from types import MappingProxyType
 
@@ -335,7 +335,7 @@ class CompiledCriteria:
     source_path: str
     source_sha256: str
     match_mode: str
-    groundings: MappingProxyType = MappingProxyType({})
+    groundings: MappingProxyType = field(default_factory=lambda: MappingProxyType({}))
 
     @property
     def ids(self) -> frozenset:

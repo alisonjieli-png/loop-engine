@@ -33,7 +33,8 @@ from .refusals import guidance as _refusal_guidance
 from .request_limits import LIMIT_REACHED_CODE, FailedAttemptLimiter, ServiceRequestLimits
 from .retention import RetentionSchedule, ServiceRetentionPolicy
 from .waitlist import ServiceWaitlist, administer_waitlist, join_request
-from .web_pages import HTML_MEDIA_TYPE, WEB_ASSETS, missing_address_page, served_asset
+from .web_pages import (CACHEABLE_WEB_ASSETS, HTML_MEDIA_TYPE, PUBLIC_ASSET_CACHE_CONTROL, WEB_ASSETS,
+                        asset_etag, missing_address_page, served_asset, validator_matches)
 
 RESULT_VERSION = "service_http_result/v1"
 ERROR_VERSION = "service_http_error/v1"
@@ -1212,7 +1213,10 @@ class ServiceHttpApplication:
                     response.headers["WWW-Authenticate"] = ("Bearer resource_metadata=\""
                         + config.public_base_url + "/.well-known/oauth-protected-resource/mcp\""
                         if EXTERNAL_JWT_AUTHENTICATION in self.authentication.modes else "Bearer")
-            response.headers["Cache-Control"] = "no-store"
+            cacheable_asset = (request.method in ("GET", "HEAD")
+                               and request.url.path in CACHEABLE_WEB_ASSETS
+                               and response.status_code in (200, 304))
+            response.headers["Cache-Control"] = PUBLIC_ASSET_CACHE_CONTROL if cacheable_asset else "no-store"
             response.headers["X-Content-Type-Options"] = "nosniff"
             await response(scope, receive, send)
         return Starlette(routes=[Mount("/", app=transport)], lifespan=lifespan)
@@ -1268,7 +1272,14 @@ class ServiceHttpApplication:
         asset = served_asset(path, method, self.configuration.display_name)
         if asset is not None:
             body, media_type = asset
-            return Response(body, media_type=media_type, headers=self._page_headers())
+            headers = self._page_headers()
+            if path in CACHEABLE_WEB_ASSETS:
+                headers["ETag"] = asset_etag(body)
+                if validator_matches(request.headers.get("if-none-match", ""), headers["ETag"]):
+                    return Response(status_code=304, headers=headers)
+            if method == "HEAD":
+                headers["Content-Length"] = str(len(body))
+            return Response(b"" if method == "HEAD" else body, media_type=media_type, headers=headers)
         # Decide whether this service serves the address before asking who is
         # calling. An unknown address that is authenticated first answers 401
         # unauthorized, which sends the reader looking for a credential fault

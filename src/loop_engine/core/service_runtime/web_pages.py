@@ -10,6 +10,8 @@ longer. Adding a page is now a change to a small module that serves pages.
 """
 from __future__ import annotations
 
+from functools import lru_cache
+from hashlib import sha256
 from html import escape
 
 HTML_MEDIA_TYPE = "text/html"
@@ -66,6 +68,11 @@ WEB_ASSETS = {
     # The licence terms of the packaged browser library and the typefaces travel with them.
     "/assets/third-party-notices.txt": ("THIRD-PARTY-NOTICES.md", "text/plain"),
 }
+# Only declared, packaged non-page files are public cache entries. Browser
+# account pages and every API response retain the transport's no-store rule.
+CACHEABLE_WEB_ASSETS = frozenset(path for path, (_name, media) in WEB_ASSETS.items()
+                                 if media != HTML_MEDIA_TYPE)
+PUBLIC_ASSET_CACHE_CONTROL = "public, max-age=300"
 MISSING_ADDRESS_PAGE = """<!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -90,18 +97,45 @@ def read_packaged_asset(name):
     return files("loop_engine").joinpath(*PACKAGED_ASSET_DIRECTORY, name).read_bytes()
 
 
+def asset_etag(body):
+    """A strong validator for the exact bytes, independent of filesystem dates."""
+    return '"' + sha256(body).hexdigest() + '"'
+
+
+@lru_cache(maxsize=1)
+def packaged_asset_versions():
+    """One immutable release's asset identities; a new image starts a new process."""
+    return tuple((path, sha256(read_packaged_asset(WEB_ASSETS[path][0])).hexdigest())
+                 for path in sorted(CACHEABLE_WEB_ASSETS))
+
+
+def version_asset_references(body):
+    """Fresh pages select fresh assets even while browsers cache the earlier release."""
+    for path, version in packaged_asset_versions():
+        body = body.replace(('"' + path + '"').encode(),
+                            ('"' + path + '?v=' + version + '"').encode())
+    return body
+
+
+def validator_matches(value, etag):
+    """GET/HEAD If-None-Match uses weak comparison and permits a validator list."""
+    return any(part.strip() == "*" or part.strip().removeprefix("W/") == etag
+               for part in value.split(","))
+
+
 def served_asset(path, method, display_name):
     """Return `(body, media_type)` for a served address, or None when this service serves none.
 
     The deployment's name is written into a served page here, so that a caller
     does not have to know which packaged files carry the placeholder.
     """
-    if method != "GET" or path not in WEB_ASSETS:
+    if method not in ("GET", "HEAD") or path not in WEB_ASSETS:
         return None
     name, media_type = WEB_ASSETS[path]
     body = read_packaged_asset(name)
     if media_type == HTML_MEDIA_TYPE:
         body = body.replace(SERVICE_NAME_PLACEHOLDER, escape(display_name, quote=True).encode("utf-8"))
+        body = version_asset_references(body)
     return body, media_type
 
 

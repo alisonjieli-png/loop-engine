@@ -1,0 +1,128 @@
+{
+  "asset_results": [
+    {
+      "path": "/assets/apple-touch-icon.png",
+      "passed": true,
+      "bytes": 6635,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/architecture-story.js",
+      "passed": true,
+      "bytes": 8750,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/architecture.css",
+      "passed": true,
+      "bytes": 50805,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/baltor-mark.svg",
+      "passed": true,
+      "bytes": 8409,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/catalogue-browser.js",
+      "passed": true,
+      "bytes": 20451,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/client-access.js",
+      "passed": true,
+      "bytes": 8054,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/client-recipes.json",
+      "passed": true,
+      "bytes": 4445,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/favicon-192.png",
+      "passed": true,
+      "bytes": 8896,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/favicon-32.png",
+      "passed": true,
+      "bytes": 1375,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/geist-mono.woff2",
+      "passed": true,
+      "bytes": 71368,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/geist.woff2",
+      "passed": true,
+      "bytes": 69652,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/service.css",
+      "passed": true,
+      "bytes": 27468,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/service.js",
+      "passed": true,
+      "bytes": 63055,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/supabase-client.js",
+      "passed": true,
+      "bytes": 223189,
+      "cache_control": "public, max-age=300"
+    },
+    {
+      "path": "/assets/third-party-notices.txt",
+      "passed": true,
+      "bytes": 8977,
+      "cache_control": "public, max-age=300"
+    }
+  ],
+  "dynamic_authenticated_results": [
+    {
+      "path": "/api/v1/session",
+      "status": 200,
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/api/v1/capabilities",
+      "status": 200,
+      "cache_control": "no-store"
+    },
+    {
+      "path": "/api/v1/health",
+      "status": 200,
+      "cache_control": "no-store"
+    }
+  ],
+  "stale_query_status": 200,
+  "stale_query_body_hash": "fe88e43abb127be2195fb94640bcf70d81156cf83ed4cbfd4412782c48425695",
+  "worker_ceiling": 8,
+  "provider_calls": 0,
+  "external_network_calls": 0,
+  "limits": [
+    "Loopback fixture only; not live Fly performance or rolling-deployment compatibility.",
+    "Version query acts as a cache-buster; its value is not validated as a content address."
+  ],
+  "sources_sha256": {
+    "src/loop_engine/core/service_runtime/http.py": "7c05ac52a40a92bf0d0d420c71f7020c4da95821df13162d98a35f7f2e14caba",
+    "src/loop_engine/core/service_runtime/web_pages.py": "062c72a35dc3f6bb289c27e2d022c83787c94321a60fb4cf1a6bdc7030f3ea08",
+    "fly.toml": "3461b113379a0a221e595ce40ca9a24076f706bbcc21e150dde4318d7788e6a6",
+    "tools/candidate_review/configuration.py": "2e0657fe60d5ad991ed83bddc4d6c076eb15bcf0520fdd856f52a78b60d88316",
+    "src/loop_engine/core/service_runtime/web_assets/index.html": "fe9ea01421cfb185f689ef4b9ffcefdbe6179a13ef89051141e9f33fa22fb60d",
+    "src/loop_engine/core/service_runtime/web_assets/architecture.css": "992724c2eac8e056c9b2e3a16010690b7d1bf62e30e2b1176c61cb11dcd1ac12"
+  }
+}

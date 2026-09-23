@@ -1,0 +1,230 @@
+test_asset_cache_is_bound_to_exact_bytes (tools.test_public_asset_delivery.PublicAssetDelivery.test_asset_cache_is_bound_to_exact_bytes) ... FAIL
+test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) ... 
+  test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/') ... FAIL
+  test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/terms') ... FAIL
+  test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/assets/service.css') ... FAIL
+  test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/assets/baltor-mark.svg') ... FAIL
+test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) ... 
+  test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='"missing-validator"') ... FAIL
+  test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='W/"missing-validator"') ... FAIL
+  test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='"different", "missing-validator"') ... FAIL
+  test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='*') ... FAIL
+test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) ... 
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/favicon-32.png') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/favicon-192.png') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/apple-touch-icon.png') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/service.css') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/architecture.css') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/supabase-client.js') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/client-access.js') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/catalogue-browser.js') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/service.js') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/architecture-story.js') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/third-party-notices.txt') ... FAIL
+  test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg') ... FAIL
+test_private_dynamic_and_error_responses_remain_uncacheable (tools.test_public_asset_delivery.PublicAssetDelivery.test_private_dynamic_and_error_responses_remain_uncacheable) ... ok
+test_stale_validator_gets_current_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_stale_validator_gets_current_body) ... ok
+test_writing_an_asset_is_not_a_cacheable_route (tools.test_public_asset_delivery.PublicAssetDelivery.test_writing_an_asset_is_not_a_cacheable_route) ... ok
+
+======================================================================
+FAIL: test_asset_cache_is_bound_to_exact_bytes (tools.test_public_asset_delivery.PublicAssetDelivery.test_asset_cache_is_bound_to_exact_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 34, in test_asset_cache_is_bound_to_exact_bytes
+    self.assertEqual(response.headers['cache-control'], 'public, max-age=300')
+AssertionError: 'no-store' != 'public, max-age=300'
+- no-store
++ public, max-age=300
+
+
+======================================================================
+FAIL: test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 69, in test_head_reports_metadata_without_body
+    self.assertEqual(head.status_code, 200)
+AssertionError: 404 != 200
+
+======================================================================
+FAIL: test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/terms')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 69, in test_head_reports_metadata_without_body
+    self.assertEqual(head.status_code, 200)
+AssertionError: 404 != 200
+
+======================================================================
+FAIL: test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/assets/service.css')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 69, in test_head_reports_metadata_without_body
+    self.assertEqual(head.status_code, 200)
+AssertionError: 404 != 200
+
+======================================================================
+FAIL: test_head_reports_metadata_without_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_head_reports_metadata_without_body) (path='/assets/baltor-mark.svg')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 69, in test_head_reports_metadata_without_body
+    self.assertEqual(head.status_code, 200)
+AssertionError: 404 != 200
+
+======================================================================
+FAIL: test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='"missing-validator"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 43, in test_matching_weak_list_or_wildcard_validator_returns_no_body
+    self.assertEqual(response.status_code, 304)
+AssertionError: 200 != 304
+
+======================================================================
+FAIL: test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='W/"missing-validator"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 43, in test_matching_weak_list_or_wildcard_validator_returns_no_body
+    self.assertEqual(response.status_code, 304)
+AssertionError: 200 != 304
+
+======================================================================
+FAIL: test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='"different", "missing-validator"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 43, in test_matching_weak_list_or_wildcard_validator_returns_no_body
+    self.assertEqual(response.status_code, 304)
+AssertionError: 200 != 304
+
+======================================================================
+FAIL: test_matching_weak_list_or_wildcard_validator_returns_no_body (tools.test_public_asset_delivery.PublicAssetDelivery.test_matching_weak_list_or_wildcard_validator_returns_no_body) (validator='*')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 43, in test_matching_weak_list_or_wildcard_validator_returns_no_body
+    self.assertEqual(response.status_code, 304)
+AssertionError: 200 != 304
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['06e2860e1f653ad3822b9619689a2d14d3a7ca8ecf4e2953d885e0bbeea8a7b1']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/favicon-32.png')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['6376bde759781891bd193c02c3563d1ff3d954a76a5ca05b982ebf5ef2add536']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/favicon-192.png')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['e7a90ee8d8e07403272693e705a32761bb9379841d1a51c1c854db4069b642f9']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/apple-touch-icon.png')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['7c3bb10fafb183530aceb07a6dabb67bdf0f1ec19fce63329111979c09584c46']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/service.css')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['fe88e43abb127be2195fb94640bcf70d81156cf83ed4cbfd4412782c48425695']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/architecture.css')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['b02efd40dc21f81d8c87ca1ff62fdf09190448e7216dce4dee4deb5ba7b55b8d']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/supabase-client.js')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['2c51934382bb7d6f9afd859989734562e267ad47296fa54432fbbcc1af5a95a0']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/client-access.js')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['66dd05e45a797035eff0817b032a3ed3869129cd33e7e913e446f8804e719ef5']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/catalogue-browser.js')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['7d4e2b8d19ff6213037a86a0401da7738524102beb902feb522fbd8ea143dbc3']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/service.js')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['f0ca9710917570cbbaeb272a590f95946b8455cf297f00cb39820dd935167adf']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/architecture-story.js')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['dece31c1c8022098aa38268a1d4d8237a59e7fae6bf7aa08aab1596e01ff2619']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['06e2860e1f653ad3822b9619689a2d14d3a7ca8ecf4e2953d885e0bbeea8a7b1']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['06e2860e1f653ad3822b9619689a2d14d3a7ca8ecf4e2953d885e0bbeea8a7b1']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/third-party-notices.txt')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['a5edbb5097e5f124c904aa1deb00f6536eb5a8aac9c5f36e725343cef13308fe']
+
+======================================================================
+FAIL: test_page_versions_each_direct_asset_reference (tools.test_public_asset_delivery.PublicAssetDelivery.test_page_versions_each_direct_asset_reference) (path='/assets/baltor-mark.svg')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-codex-build/release-fix/tools/test_public_asset_delivery.py", line 61, in test_page_versions_each_direct_asset_reference
+    self.assertEqual(versions, [hashlib.sha256(asset.content).hexdigest()])
+AssertionError: None != ['06e2860e1f653ad3822b9619689a2d14d3a7ca8ecf4e2953d885e0bbeea8a7b1']
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.331s
+
+FAILED (failures=24)

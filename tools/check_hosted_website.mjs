@@ -12,6 +12,9 @@ const check=(name,passed)=>checks.push({name,passed:passed===true});
 /* One plain-word rule for the public pages. tools/check_service_workspace.mjs carries the same line, and a named check there compares the two. */
 const internalTerms=/\bLoop(?:s|[ -]node| Engine)?\b|runtime classification|role profile/i;
 const hash=value=>createHash("sha256").update(value).digest("hex");
+const assetDigests=new Map();
+const assetDigest=path=>{if(!assetDigests.has(path)){const name=path==="/assets/third-party-notices.txt"?"THIRD-PARTY-NOTICES.md":path.slice("/assets/".length);assetDigests.set(path,hash(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",name))));}return assetDigests.get(path);};
+const sameOriginAsset=(value,path)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&url.search==="?v="+assetDigest(path);}catch(_){return false;}};
 const browser=await chromium.launch({executablePath:"/opt/google/chrome/chrome",headless:true,args:["--no-sandbox"]});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
 await context.route("**/*",route=>{if(new URL(route.request().url()).origin===origin)route.continue();else{external.push(new URL(route.request().url()).origin);route.abort();}});
@@ -19,6 +22,11 @@ const page=await context.newPage();page.on("pageerror",error=>errors.push(error.
 try{
   const home=await page.goto(origin+"/");await page.waitForFunction(()=>document.querySelector(".boundary-zone")&&document.querySelector("#service-status").textContent.includes("Service available"));
   check("HTTPS_homepage_is_available",home.status()===200);
+  const namedAssets=await page.evaluate(()=>[...document.querySelectorAll("[src],link[href],footer a[href]")].flatMap(node=>[node.getAttribute("src"),node.getAttribute("href")]).filter(Boolean).filter(value=>{try{return new URL(value,location.href).pathname.startsWith("/assets/");}catch(_){return false;}}));
+  check("live_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&namedAssets.every(value=>sameOriginAsset(value,new URL(value,origin).pathname)));
+  const versionedMark="/assets/baltor-mark.svg?v="+assetDigest("/assets/baltor-mark.svg");
+  check("live_asset_identity_check_refuses_foreign_origins_stale_versions_and_extra_parameters",sameOriginAsset(versionedMark,"/assets/baltor-mark.svg")
+    &&["/assets/baltor-mark.svg",versionedMark.replace(/v=./,"v=x"),versionedMark+"&extra=1",versionedMark+"#other","https://foreign.example.invalid"+versionedMark].every(value=>!sameOriginAsset(value,"/assets/baltor-mark.svg")));
   /* The one label of every access action follows the state the deployed service reports: "Request an invitation" at /waitlist
      while account creation is closed, "Get started" at /connect while it is open. */
   const liveReport=(await (await page.request.get(origin+"/api/v1/capabilities",{maxRedirects:0})).json())?.result||{};
@@ -33,7 +41,10 @@ try{
   check("live_homepage_subhead_names_the_unit_of_work",namesTheStep(await page.locator('[data-view="home"] .hero-subhead').innerText()));
   check("live_default_appearance_is_light",await page.evaluate(()=>document.documentElement.dataset.theme==="light"));
   check("live_how_it_works_covers_five_optimization_problems",await page.locator('[data-view="about"] [data-friction]').count()===5);
-  check("live_homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
+  const heroOpening=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({first:node.firstElementChild?.tagName,badges:node.querySelectorAll(".hero-chip").length}));
+  const startsAtHeadline=value=>value.first==="H1"&&value.badges===0;
+  check("live_homepage_opens_with_headline_without_category_badge",startsAtHeadline(heroOpening),heroOpening);
+  check("category_badge_check_rejects_the_removed_pill",!startsAtHeadline({first:"P",badges:1})&&!startsAtHeadline({first:"H1",badges:1})&&startsAtHeadline({first:"H1",badges:0}));
   const livePositioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
   const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
   check("live_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(livePositioning));

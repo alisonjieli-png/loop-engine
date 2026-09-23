@@ -1,0 +1,69 @@
+{
+  "record_type": "browser_asset_reference_controls/v1",
+  "source_sha256": "9622f1528fb2c149d4055a4397182c643d439210a102b39847a5383e70131934",
+  "asset_digest": "06e2860e1f653ad3822b9619689a2d14d3a7ca8ecf4e2953d885e0bbeea8a7b1",
+  "checks": [
+    {
+      "name": "exact-version",
+      "expected": true,
+      "observed": true
+    },
+    {
+      "name": "unversioned-static-reference",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "unversioned-dynamic-route",
+      "expected": true,
+      "observed": true
+    },
+    {
+      "name": "stale-valid-sha256",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "duplicate-version",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "extra-query",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "foreign-origin",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "userinfo",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "fragment",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "encoded-query-name",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "wrong-path",
+      "expected": false,
+      "observed": false
+    },
+    {
+      "name": "wrong-query-key",
+      "expected": false,
+      "observed": false
+    }
+  ],
+  "passed": true,
+  "network_calls": 0
+}

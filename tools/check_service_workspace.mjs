@@ -8,6 +8,11 @@ import {createHash,randomBytes} from "node:crypto";
 import {resolve} from "node:path";
 
 const root=resolve(new URL("..",import.meta.url).pathname);
+/* Version queries are exact content identities, not permission to match arbitrary queries or origins. */
+const assetDigests=new Map();
+const assetDigest=path=>{if(!assetDigests.has(path)){const name=path==="/assets/third-party-notices.txt"?"THIRD-PARTY-NOTICES.md":path.slice("/assets/".length);assetDigests.set(path,createHash("sha256").update(readFileSync(resolve(root,"src/loop_engine/core/service_runtime/web_assets",name))).digest("hex"));}return assetDigests.get(path);};
+const sameOriginAsset=(value,origin,path,requireVersion=true)=>{try{const url=new URL(value,origin);return url.origin===origin&&url.pathname===path&&!url.username&&!url.password&&!url.hash&&(url.search===""?!requireVersion:url.search==="?v="+assetDigest(path));}catch(_){return false;}};
+const assetRoute=(path,origin)=>url=>(origin?[origin]:serviceOrigins).some(base=>sameOriginAsset(url.href,base,path,false));
 const output=resolve(process.argv[2] || "artifacts/architecture-audit-2026-09-19/service-workspace-browser-1.json");
 for (const path of [output,...["-desktop.png","-mobile-dark.png","-admin.png","-task-desktop.png","-task-mobile.png","-boundaries.png","-connect-desktop.png","-connect-mobile.png","-connect-claude-code.png","-pricing-desktop.png","-pricing-mobile.png","-privacy-desktop.png","-privacy-mobile.png","-terms-desktop.png","-terms-mobile.png","-consent-desktop.png","-browse-desktop.png","-browse-mobile.png"].map(suffix=>output.replace(/\.json$/,suffix))]) {
   if (existsSync(path)) throw new Error("Refusing to overwrite an existing browser evidence artifact: " + path);
@@ -22,7 +27,7 @@ const browseSource=readFileSync(resolve(root,"src/loop_engine/core/service_runti
 const routeBrowseAsset=(target,mutation)=>{
   const state={applied:false,errors:[]};
   if(!mutation)return state;
-  target.route("**/assets/catalogue-browser.js",route=>{
+  target.route(assetRoute("/assets/catalogue-browser.js"),route=>{
     const body=browseSource.split(mutation.find).join(mutation.replacement);
     state.applied=body!==browseSource;
     route.fulfill({status:200,contentType:"text/javascript",body});
@@ -117,6 +122,7 @@ with ExitStack() as stack:
 const child=spawn(resolve(root,".venv/bin/python"),["-u","-c",program],{cwd:root,env:{...process.env,PYTHONPATH:"src"},stdio:["pipe","pipe","pipe"]});
 const lines=createInterface({input:child.stdout});
 const fixture=await new Promise((resolve,reject)=>{ const timer=setTimeout(()=>reject(new Error("Fixture startup deadline")),15000); lines.once("line",line=>{clearTimeout(timer);resolve(JSON.parse(line));}); child.once("exit",code=>{clearTimeout(timer);reject(new Error("Fixture stopped before startup: "+code));}); });
+const serviceOrigins=[fixture.base,fixture.billing_base,fixture.account_base,fixture.signup_base,fixture.checkout_signup_base,fixture.browse_base];
 const checks=[],errors=[],network=[]; let browser;
 /* The first screen as served without the page script, measured once and compared again by a removed-guard control. */
 let servedHeroBoxes={};
@@ -411,8 +417,8 @@ async function openConnect(context,base,{served,mutation}={}){
   const page=await context.newPage(),state={applied:false,errors:[],policy:""};
   page.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
   await page.addInitScript(()=>{window.policyViolations=[];addEventListener("securitypolicyviolation",event=>window.policyViolations.push(event.violatedDirective));});
-  if(served)await page.route("**/assets/client-recipes.json",route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(served)}));
-  if(mutation)await page.route("**/assets/service.js",async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
+  if(served)await page.route(assetRoute("/assets/client-recipes.json",base),route=>route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(served)}));
+  if(mutation)await page.route(assetRoute("/assets/service.js",base),async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
   state.policy=(await page.goto(base+"/connect")).headers()["content-security-policy"]||"";
   await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   return {page,state};
@@ -547,12 +553,16 @@ try {
   const iconTypes={"/assets/baltor-mark.svg":"image/svg+xml","/assets/favicon-32.png":"image/png","/assets/favicon-192.png":"image/png","/assets/apple-touch-icon.png":"image/png"};
   const servedTypes={};
   for(const path of Object.keys(iconTypes)){const response=await page.request.get(fixture.base+path);servedTypes[path]=response.status()===200?(response.headers()["content-type"]||""):"status "+response.status();}
-  const markProblems=(state,types)=>[...(state.src==="/assets/baltor-mark.svg"&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the brand mark image with an empty alternative"]),
-    ...(state.icons.some(([rel,type,href])=>rel==="icon"&&type==="image/svg+xml"&&href==="/assets/baltor-mark.svg")&&state.icons.some(([rel,,href])=>rel==="apple-touch-icon"&&href==="/assets/apple-touch-icon.png")?[]:["the page does not name its icons"]),
+  const markProblems=(state,types)=>[...(sameOriginAsset(state.src,fixture.base,"/assets/baltor-mark.svg")&&state.alt===""&&state.loaded&&state.named.endsWith(" home")?[]:["the header mark is not the versioned brand mark image with an empty alternative"]),
+    ...(state.icons.some(([rel,type,href])=>rel==="icon"&&type==="image/svg+xml"&&sameOriginAsset(href,fixture.base,"/assets/baltor-mark.svg"))&&state.icons.some(([rel,,href])=>rel==="apple-touch-icon"&&sameOriginAsset(href,fixture.base,"/assets/apple-touch-icon.png"))?[]:["the page does not name its versioned icons"]),
     ...Object.entries(iconTypes).filter(([path,type])=>!(types[path]||"").startsWith(type)).map(([path])=>path+" is served as "+types[path])];
   check("brand_mark_is_shown_named_and_served",markProblems(markState,servedTypes).length===0,{mark:markState,served:servedTypes,problems:markProblems(markState,servedTypes)});
   check("mark_check_rejects_a_missing_icon_a_wrong_media_type_and_a_repeated_name",markProblems({...markState,icons:[]},servedTypes).length===1
     &&markProblems(markState,{...servedTypes,"/assets/favicon-32.png":"text/plain"}).length===1&&markProblems({...markState,alt:"Baltor logo"},servedTypes).length===1);
+  const versionedMark="/assets/baltor-mark.svg?v="+assetDigest("/assets/baltor-mark.svg");
+  check("asset_identity_check_rejects_stale_versions_foreign_origins_and_extra_query_fields",sameOriginAsset(versionedMark,fixture.base,"/assets/baltor-mark.svg")
+    &&["/assets/baltor-mark.svg",versionedMark.replace(/v=./,"v=x"),versionedMark+"&extra=1",versionedMark+"&v="+assetDigest("/assets/baltor-mark.svg"),versionedMark+"#other","https://foreign.example.invalid"+versionedMark].every(value=>!sameOriginAsset(value,fixture.base,"/assets/baltor-mark.svg"))
+    &&!assetRoute("/assets/baltor-mark.svg",fixture.base)(new URL("https://foreign.example.invalid"+versionedMark)));
   /* The tile shows nothing outside its rounded corners. The first tracing carried white fragments of the sheet's paper there,
      which showed as white corners on a dark ground and in a dark browser tab. The bytes each address serves are drawn on a
      canvas at the file's own size in a blank page, because the service's page policy admits images from its own origin only,
@@ -619,10 +629,12 @@ try {
   check("benefit_limits_do_not_guarantee_daily_improvement",(await page.locator('[data-band="closing"] .benefit-limits').innerText()).includes("guaranteed daily performance gain"));
   /* Landing sections and the pricing view. The page is never allowed to agree with itself: every state that depends on the
      service is read from a real service reply on its own origin, and each published fact has a known-wrong case beside it. */
-  /* The line above the headline is the owner's name for the positioning, written out in full. The word harness is
-     jargon outside this repository, so a plain sentence has to sit beside the phrase and say what it means. A page
-     that prints the phrase and leaves the reader to guess is the known-wrong case. */
-  check("homepage_opens_with_the_owner_category_line",await page.locator('[data-view="home"] .hero .eyebrow').evaluate(node=>node.textContent.trim())==="Harness and agent optimized operation");
+  /* The owner removed the category pill on September 23. Start directly at the headline.
+     The remaining positioning paragraph still explains the product in plain words. */
+  const heroOpening=await page.locator('[data-view="home"] .hero-copy').evaluate(node=>({first:node.firstElementChild?.tagName,badges:node.querySelectorAll(".hero-chip").length}));
+  const startsAtHeadline=value=>value.first==="H1"&&value.badges===0;
+  check("homepage_opens_with_headline_without_category_badge",startsAtHeadline(heroOpening),heroOpening);
+  check("category_badge_check_rejects_the_removed_pill",!startsAtHeadline({first:"P",badges:1})&&!startsAtHeadline({first:"H1",badges:1})&&startsAtHeadline({first:"H1",badges:0}));
   const positioning=await page.locator('[data-view="home"] .hero-positioning').innerText();
   const explainsTheCategoryLine=text=>/harness and agent optimized operation/i.test(text)&&/\ba harness is\b/i.test(text)&&/each step/i.test(text);
   check("the_owner_category_line_is_explained_in_plain_words",explainsTheCategoryLine(positioning),{positioning});
@@ -794,7 +806,7 @@ try {
      three parts of the demonstration and the reviewed entry with the public address. */
   const withoutScript=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:"reduce"});
   await withoutScript.route("**/*",localOnly);
-  await withoutScript.route("**/assets/service.js",route=>route.abort());
+  await withoutScript.route(assetRoute("/assets/service.js",fixture.base),route=>route.abort());
   const plain=await withoutScript.newPage();
   plain.on("pageerror",()=>{});
   await plain.goto(fixture.base+"/");
@@ -949,7 +961,7 @@ try {
     ...(JSON.stringify((state.groups.find(group=>group.id==="footer-product")?.links||[]).slice(0,2))===JSON.stringify([[accessLabels.closed,accessPaths.closed],["Get set up",getStartedPage]])?[]:["Product does not start with Get started and Get set up"]),
     ...["/how-it-works","/#library","/pricing","/examples"].filter(href=>!(state.groups.find(group=>group.id==="footer-product")?.links||[]).some(([,target])=>target===href)).map(href=>"Product lacks "+href),
     ...["/docs","/security"].filter(href=>!(state.groups.find(group=>group.id==="footer-documentation")?.links||[]).some(([,target])=>target===href)).map(href=>"Documentation lacks "+href),
-    ...["/waitlist","/login","/privacy","/assets/third-party-notices.txt"].filter(href=>!(state.groups.find(group=>group.id==="footer-company")?.links||[]).some(([,target])=>target===href)).map(href=>"Company lacks "+href),
+    ...["/waitlist","/login","/privacy","/assets/third-party-notices.txt"].filter(href=>!(state.groups.find(group=>group.id==="footer-company")?.links||[]).some(([,target])=>href.startsWith("/assets/")?sameOriginAsset(target,fixture.base,href):target===href)).map(href=>"Company lacks "+href),
     ...(state.mark?[]:["the base row carries no mark"])];
   check("footer_carries_four_groups_with_get_started_get_set_up_and_the_mark",footerProblems(footerState).length===0,{footer:footerState,problems:footerProblems(footerState)});
   const withoutProduct=structuredClone(footerState);withoutProduct.groups[0].links=withoutProduct.groups[0].links.filter(([name])=>name!=="Get set up");
@@ -1255,7 +1267,7 @@ try {
   const openPublic=async (base,mutation,version)=>{
     const opened=await context.newPage(),state={applied:false,errors:[]};
     opened.on("pageerror",error=>(mutation?state.errors:errors).push(safeError(error.message)));
-    if(mutation)await opened.route("**/assets/service.js",async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
+    if(mutation)await opened.route(assetRoute("/assets/service.js",base),async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split(mutation.find).join(mutation.replacement);state.applied=changed!==source;await route.fulfill({response,body:changed});});
     if(version)await opened.route("**/api/v1/capabilities",async route=>{const response=await route.fetch(),body=await response.json();body.result.record_type=version;await route.fulfill({response,json:body});});
     await opened.goto(base+"/");
     await opened.waitForFunction(()=>document.querySelector("#service-status").textContent==="Service available");
@@ -1952,13 +1964,15 @@ try {
   check("dashboard_revocation_refuses_next_service_call",revokedSession.status()===401&&(await page.locator("#access-list").innerText()).includes("revoked"));
   await page.setViewportSize({width:1440,height:1000}); await page.screenshot({path:output.replace(/\.json$/,"-admin.png"),fullPage:true});
   let releasePublic;const publicGate=new Promise(resolve=>{releasePublic=resolve;});let heldPublic=0;
-  await page.route(/\/(?:api\/v1\/capabilities|assets\/client-recipes\.json)$/,async route=>{heldPublic++;await publicGate;await route.continue().catch(()=>{});});
+  const publicRefreshOrigin=new URL(page.url()).origin;
+  const publicRefreshRoute=url=>url.origin===publicRefreshOrigin&&((url.pathname==="/api/v1/capabilities"&&!url.search)||sameOriginAsset(url.href,publicRefreshOrigin,"/assets/client-recipes.json",false));
+  await page.route(publicRefreshRoute,async route=>{heldPublic++;await publicGate;await route.continue().catch(()=>{});});
   await page.goto(fixture.base+"/login");await page.waitForFunction(()=>document.querySelector("#connect-button")!==null);
   await page.fill("#access-token",fixture.token);await page.click("#connect-button");await page.waitForFunction(()=>document.querySelector("#connection-state").textContent==="Connected");
   releasePublic();await page.waitForFunction(()=>document.querySelector("#service-status").textContent.includes("Service available")||document.querySelector("#service-status").textContent.includes("Service unavailable"));
   await page.waitForFunction(()=>document.querySelectorAll('#client-tabs [role="tab"]').length>0||document.querySelector("#setup-message").textContent!=="");
   check("sign_in_during_public_configuration_loading_preserves_setup",heldPublic===2&&await page.locator('#client-tabs [role="tab"]').count()>0&&!await page.locator("#test-protocol").isDisabled(),{heldPublic});
-  await page.unroute(/\/(?:api\/v1\/capabilities|assets\/client-recipes\.json)$/);
+  await page.unroute(publicRefreshRoute);
   let releasePrivate,heldPrivate=false;const privateGate=new Promise(resolve=>{releasePrivate=resolve;});
   await page.route("**/mcp",async route=>{if(route.request().postDataJSON()?.method==="tools/list"){heldPrivate=true;await privateGate;}await route.continue().catch(()=>{});});
   await page.locator('[data-view="workspace"] .dashboard-nav a[data-page="setup"]').click();await page.click("#test-protocol");
@@ -2034,7 +2048,7 @@ try {
   {
     let applied=false,problem="",own=true;
     try{const opened=await context.newPage();opened.on("pageerror",()=>{});
-      await opened.route(url=>url.pathname==="/assets/service.js",async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split('"/waitlist":"waitlist"').join('"/waitlist":"setup"');applied=changed!==source;await route.fulfill({response,body:changed});});
+      await opened.route(assetRoute("/assets/service.js",fixture.account_base),async route=>{const response=await route.fetch(),source=await response.text(),changed=source.split('"/waitlist":"waitlist"').join('"/waitlist":"setup"');applied=changed!==source;await route.fulfill({response,body:changed});});
       await opened.goto(fixture.account_base+"/waitlist");await opened.waitForFunction(()=>document.querySelector("#service-status")?.textContent==="Service available");
       own=ownInvitationPage(await invitationPage(opened));await opened.close();}catch(error){problem=safeError(error);}
     const detected=applied&&!problem&&!own,name="send_the_waiting_list_address_back_to_the_get_started_page",required=["the_waiting_list_address_opens_its_own_page"];
@@ -2066,11 +2080,14 @@ try {
      back as a refusal, so the page loads and then quietly does nothing. That is exactly how the browsing
      module first shipped. The addresses are read from the page the service sent, so a script, stylesheet
      or image added later is covered on the day it is added, with no list to keep up to date here. */
-  const internalAddresses=text=>[...new Set([...text.matchAll(/(?:href|src)="(\/[^"#?]*)"/g)].map(found=>found[1]))]
+  const internalReference=value=>{try{const url=new URL(value,fixture.browse_base);return value.startsWith("/")&&url.origin===fixture.browse_base&&!url.username&&!url.password?url.pathname+url.search:null;}catch(_){return null;}};
+  const internalAddresses=text=>[...new Set([...text.matchAll(/(?:href|src)="([^\"]+)"/g)].map(found=>internalReference(found[1])).filter(Boolean))]
     .filter(value=>!value.startsWith("/api/")&&!value.startsWith("/.well-known/")&&value!=="/mcp");
   const servedPage=await plainContext.request.get(fixture.browse_base+"/app");
   const pageText=servedPage.status()===200?await servedPage.text():"";
-  const namedScripts=[...new Set([...pageText.matchAll(/src="(\/[^"#?]*)"/g)].map(found=>found[1]))];
+  const namedScripts=[...new Set([...pageText.matchAll(/src="([^\"]+)"/g)].map(found=>internalReference(found[1])).filter(Boolean).map(value=>new URL(value,fixture.browse_base).pathname))];
+  const namedAssets=[...pageText.matchAll(/(?:href|src)="([^\"]+)"/g)].map(found=>found[1]).filter(value=>{try{return new URL(value,fixture.browse_base).pathname.startsWith("/assets/");}catch(_){return false;}});
+  check("served_page_asset_versions_bind_to_exact_packaged_bytes",namedAssets.length>0&&namedAssets.every(value=>sameOriginAsset(value,fixture.browse_base,new URL(value,fixture.browse_base).pathname)),{assets:namedAssets});
   const answered=[];
   for(const address of internalAddresses(pageText)) answered.push({address,status:(await plainContext.request.get(fixture.browse_base+address)).status()});
   check("every_address_the_page_names_is_answered_by_the_service",

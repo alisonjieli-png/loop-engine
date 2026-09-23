@@ -207,8 +207,6 @@ main:has(> [data-view="home"]:not([hidden])){max-width:none;padding:0}
 .band-hero .hero-aside>*{margin:0}
 .band-hero .hero-copy{display:flex;flex-direction:column;gap:1.75rem;min-width:0}
 .band-hero .hero-copy>*{margin:0}
-.band-hero .hero-chip{align-self:flex-start;display:inline-flex;align-items:center;gap:.5rem;min-height:32px;padding:0 .875rem;border:1px solid var(--border);border-radius:999px;background:var(--paper);color:var(--muted);font-size:.8125rem;font-weight:500;letter-spacing:0;text-transform:none}
-.band-hero .hero-chip .status-dot{width:8px;height:8px;margin:0;background:var(--button)}
 .band-hero .hero.product-hero h1{font-size:var(--text-hero);line-height:1.04;letter-spacing:-.035em;text-wrap:balance;max-width:none}
 .band-hero .hero-subhead,.band-hero .hero-positioning{max-width:40rem;padding:0;border:0;font-size:var(--text-lead);line-height:1.55;color:var(--muted);font-weight:400;text-wrap:pretty}
 .band-hero .hero-subhead{color:var(--ink)}
