@@ -18,6 +18,9 @@ Known-wrong records, each refused by the reader
 ├── a finding under a criterion that does not apply to the row's kind of body
 ├── an interruption whose dispatch has a completed call
 ├── a reviewer named with another version than its calls answered with
+├── a reviewer named with another installation, engine kind, family or model
+│   than its calls were made under, and a call by a reviewer the record
+│   does not name
 ├── a path that is absolute or leaves the repository
 ├── totals that disagree with the rows
 ├── another version, an unknown field or a missing field
@@ -102,8 +105,13 @@ class ReaderTest(unittest.TestCase):
         _refused(self, record, "approval_below_quorum")
 
     def test_an_approval_by_the_producer_family_is_refused(self):
+        """The reviewer and its calls both name the producer's family, so the family rule itself refuses it."""
         record = copy.deepcopy(APPROVED_RECORD)
-        record["reviewers"][0]["family"] = record["producers"]["default_producer"]["family"]
+        producer_family = record["producers"]["default_producer"]["family"]
+        record["reviewers"][0]["family"] = producer_family
+        for call in record["calls"]:
+            if call["installation_id"] == record["reviewers"][0]["reviewer_id"]:
+                call["family"] = producer_family
         _refused(self, record, "producer_family_approved")
 
     def test_an_approval_beside_a_rejection_is_refused(self):
@@ -266,6 +274,75 @@ class RecordPathsAndVersionsTest(unittest.TestCase):
         totals = review_record._totals(rows, calls, runs, [])
         self.assertEqual(totals["run_seconds"], 360.0)
         self.assertEqual(totals["items_with_a_standing_verdict_per_hour"], 10.0)
+
+
+class ReviewerIdentityTest(unittest.TestCase):
+    """The family that decides the quorum is the family of the calls that gave the decisions.
+
+    A reviewer row names an installation, its engine kind, family and model. Each
+    call row names the same four facts as they were when the call was made. When
+    the two disagree, the record could count three families while its calls show
+    one, or show the producer's family under another name."""
+
+    def test_calls_of_one_family_under_reviewers_of_three_families_are_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        for call in record["calls"]:
+            call["family"] = "zhipu"
+        _refused(self, record, "reviewer_identity_disagrees_with_calls")
+
+    def test_a_call_of_the_producer_family_under_a_reviewer_of_another_family_is_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        reviewer = record["reviewers"][0]["reviewer_id"]
+        for call in record["calls"]:
+            if call["installation_id"] == reviewer:
+                call["family"] = record["producers"]["default_producer"]["family"]
+        _refused(self, record, "reviewer_identity_disagrees_with_calls")
+
+    def test_calls_under_another_model_or_installation_are_refused(self):
+        for field, value in (("model", "another-model"), ("installation_sha256", "f" * 64),
+                             ("engine_kind", "command_line")):
+            with self.subTest(field=field):
+                record = copy.deepcopy(APPROVED_RECORD)
+                reviewer = record["reviewers"][0]["reviewer_id"]
+                for call in record["calls"]:
+                    if call["installation_id"] == reviewer:
+                        call[field] = value
+                _refused(self, record, "reviewer_identity_disagrees_with_calls")
+
+    def test_a_call_by_an_installation_the_record_does_not_name_is_refused(self):
+        record = copy.deepcopy(APPROVED_RECORD)
+        record["calls"].append(dict(record["calls"][0], installation_id="unnamed", run_id="run-9"))
+        _refused(self, record, "call_without_reviewer")
+
+    def test_the_identity_comparison_is_what_refuses_calls_of_one_family(self):
+        """Mutant control: with the comparison removed, three families are counted from one family's calls."""
+        record = copy.deepcopy(APPROVED_RECORD)
+        for call in record["calls"]:
+            call["family"] = "zhipu"
+        with mock.patch.object(review_record, "_identity", lambda row: ()):
+            self.assertEqual(_row(_read(record))["outcome"], panel_module.APPROVED)
+
+    def test_calls_made_under_another_installation_are_not_written_under_the_one_declared_now(self):
+        """The builder refuses a reviewer whose calls were made under another installation digest,
+        family or model than the configuration declares, as it refuses two model versions."""
+        with tempfile.TemporaryDirectory() as directory:
+            harness = panel_check.Harness(directory, {"a": panel_check.approving, "b": panel_check.approving,
+                                                      "c": panel_check.approving}, families=("zhipu", "deepseek", "openai"))
+            result = harness.run([panel_check._request()])
+            ledger = panel_check.ReviewLedger(harness.ledger_path)
+            calls = ledger.calls()
+            earlier = dict(calls[0], family="alibaba", installation_sha256="e" * 64, run_id="run-0")
+            with mock.patch.object(panel_check.ReviewLedger, "calls", lambda self: [earlier] + calls):
+                with self.assertRaises(CandidateReviewError) as caught:
+                    review_record.build_panel_review_record(
+                        result, ledger, catalogue=panel_check.DATA, configuration=harness.configuration,
+                        criteria=panel_check.CRITERIA, instructions=panel_check.INSTRUCTIONS,
+                        producers=panel_check.PRODUCERS, population=review_record.PopulationSelection(
+                            rule=review_record.EXPLICIT_LIST, seed="", eligible=(panel_check.FIRST,),
+                            selected=(panel_check.FIRST,)),
+                        recorded_at="2026-09-22", record_path="examples/fixture/reviews-panel-fixture.json",
+                        fixture_run=True)
+        self.assertEqual(caught.exception.code, "reviewer_installation_changed_during_review")
 
 
 class InterruptedDispatchTest(unittest.TestCase):

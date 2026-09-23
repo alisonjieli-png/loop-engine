@@ -118,16 +118,31 @@ def _version(call) -> tuple:
     return json.dumps(call["model_version"], sort_keys=True), call["engine_version"]
 
 
+#: What a reviewer row and every call of that reviewer must name alike: the installation digest and the
+#: engine kind, family and model it covers. The family decides the quorum, so it must be the calls' family.
+IDENTITY_FIELDS = ("installation_sha256", "engine_kind", "family", "model")
+
+
+def _identity(row) -> tuple:
+    """The installation facts of a reviewer row or a call row. A mutant control replaces this."""
+    return tuple(row[name] for name in IDENTITY_FIELDS)
+
+
 def _reviewers(ledger_calls, configuration, producer_families) -> list:
     """Every installation that was called, named with the model and engine versions its calls answered with.
 
-    A reviewer whose calls name two versions is two reviewers, and the record refuses to merge them."""
+    A reviewer whose calls name two versions is two reviewers, and the record refuses to merge them. So is a
+    reviewer whose calls were made under another installation digest, family or model than it declares now."""
     asked = {call["installation_id"] for call in ledger_calls}
     rows = []
     for installation in configuration.installations:
         if installation.installation_id not in asked:
             continue
         calls = [call for call in ledger_calls if call["installation_id"] == installation.installation_id]
+        declared = (installation.sha256, installation.engine_kind, installation.family, installation.model)
+        if {_identity(call) for call in calls} != {declared}:
+            refuse("reviewer_installation_changed_during_review",
+                   f"calls of {installation.installation_id} were made under another installation than it declares")
         if len({_version(call) for call in calls}) != 1:
             refuse("reviewer_version_changed_during_review",
                    f"the calls of {installation.installation_id} name more than one model or engine version")
@@ -285,7 +300,13 @@ def read_panel_review_record(value, *, allow_fixture: bool = False) -> dict:
         if call["record_type"] != CALL_RECORD:
             refuse("record_call_unsupported", "the calls list holds only call records")
         reviewer = reviewers.get(call["installation_id"])
-        if reviewer is not None and _version(call) != _version(reviewer):
+        if reviewer is None:
+            refuse("call_without_reviewer", f"a call of {call['installation_id']} names no reviewer of the record")
+        if _identity(call) != _identity(reviewer):
+            refuse("reviewer_identity_disagrees_with_calls",
+                   f"{call['installation_id']} is named with another installation, engine, family or model "
+                   "than its calls were made under")
+        if _version(call) != _version(reviewer):
             refuse("reviewer_version_disagrees_with_calls",
                    f"{call['installation_id']} is named with another version than its calls answered with")
         calls[f"{call['run_id']}#{call['sequence']}"] = call

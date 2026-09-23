@@ -1,0 +1,90 @@
+...............................FFFFE...
+======================================================================
+ERROR: test_the_identity_comparison_is_what_refuses_calls_of_one_family (tools.test_candidate_review_record.ReviewerIdentityTest)
+Mutant control: with the comparison removed, three families are counted from one family's calls.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 314, in test_the_identity_comparison_is_what_refuses_calls_of_one_family
+    with mock.patch.object(review_record, "_identity", lambda row: ()):
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/username/.local/share/uv/python/cpython-3.10-linux-x86_64-gnu/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <module 'candidate_review.review_record' from '/home/username/.le-library/ls2/tools/candidate_review/review_record.py'> does not have the attribute '_identity'
+
+======================================================================
+FAIL: test_a_call_by_an_installation_the_record_does_not_name_is_refused (tools.test_candidate_review_record.ReviewerIdentityTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 307, in test_a_call_by_an_installation_the_record_does_not_name_is_refused
+    _refused(self, record, "call_without_reviewer")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 89, in _refused
+    test.assertEqual(caught.exception.code, code, str(caught.exception))
+AssertionError: 'totals_inconsistent' != 'call_without_reviewer'
+- totals_inconsistent
++ call_without_reviewer
+ : totals_inconsistent: the totals disagree with the rows and the calls
+
+======================================================================
+FAIL: test_a_call_of_the_producer_family_under_a_reviewer_of_another_family_is_refused (tools.test_candidate_review_record.ReviewerIdentityTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 291, in test_a_call_of_the_producer_family_under_a_reviewer_of_another_family_is_refused
+    _refused(self, record, "reviewer_identity_disagrees_with_calls")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 87, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_calls_made_under_another_installation_are_not_written_under_the_one_declared_now (tools.test_candidate_review_record.ReviewerIdentityTest)
+The builder refuses a reviewer whose calls were made under another installation digest,
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 328, in test_calls_made_under_another_installation_are_not_written_under_the_one_declared_now
+    with self.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_calls_of_one_family_under_reviewers_of_three_families_are_refused (tools.test_candidate_review_record.ReviewerIdentityTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 283, in test_calls_of_one_family_under_reviewers_of_three_families_are_refused
+    _refused(self, record, "reviewer_identity_disagrees_with_calls")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 87, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_calls_under_another_model_or_installation_are_refused (tools.test_candidate_review_record.ReviewerIdentityTest) (field='model')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 302, in test_calls_under_another_model_or_installation_are_refused
+    _refused(self, record, "reviewer_identity_disagrees_with_calls")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 87, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_calls_under_another_model_or_installation_are_refused (tools.test_candidate_review_record.ReviewerIdentityTest) (field='installation_sha256')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 302, in test_calls_under_another_model_or_installation_are_refused
+    _refused(self, record, "reviewer_identity_disagrees_with_calls")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 87, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+======================================================================
+FAIL: test_calls_under_another_model_or_installation_are_refused (tools.test_candidate_review_record.ReviewerIdentityTest) (field='engine_kind')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 302, in test_calls_under_another_model_or_installation_are_refused
+    _refused(self, record, "reviewer_identity_disagrees_with_calls")
+  File "/home/username/.le-library/ls2/tools/test_candidate_review_record.py", line 87, in _refused
+    with test.assertRaises(CandidateReviewError) as caught:
+AssertionError: CandidateReviewError not raised
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.513s
+
+FAILED (failures=7, errors=1)
