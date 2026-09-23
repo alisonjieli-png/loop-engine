@@ -101,7 +101,7 @@ def service_host_engines() -> ServiceHostEngines:
 def bindings_report() -> EngineBindingsReport:
     return EngineBindingsReport(
         digest("host configuration"),
-        {"record_store": BoundEngine(digest("store decision"), "local.sqlite", "local.sqlite@3.46.0")},
+        {"record_store": BoundEngine(digest("store decision"), "local.sqlite", "local.sqlite@1.0.0")},
         {"payment_provider": "not_declared"},
         FamilyPolicyInForce("service_host_family_policy/v1", digest("family policy"),
                             "the host file declares no family policy, so the harness family alone is served"))
@@ -215,19 +215,44 @@ def one_qualification_source_is_kept() -> bool:
             and accepted(lambda: admit_engine_qualification(renewal, qualification(for_installation=renewal))))
 
 
+#: Settings that carry a credential, each in a spelling a customer's own harness
+#: configuration uses: a key name in snake, camel, hyphenated or upper case, a
+#: header line, a command option, a bearer value, a key in an address's query,
+#: and user information in an address, at the start of the text or after a space.
+CREDENTIAL_SETTINGS = (
+    {"endpoint": "local", "api_key": "placeholder-value"},
+    {"headers": {"authorization": "placeholder-value"}},
+    {"endpoints": ["http://user:placeholder@127.0.0.1:11434"]},
+    {"baseURL": "http://127.0.0.1:11434/v1", "apiKey": "placeholder-value"},
+    {"options": {"APIKey": "placeholder-value"}},
+    {"privateKey": "placeholder-value"},
+    {"env": {"OLLAMA_API_KEY": "placeholder-value"}},
+    {"headers": ["Authorization: Bearer placeholder-value"]},
+    {"args": ["--api-key", "placeholder-value"]},
+    {"args": ["--token=placeholder-value"]},
+    {"authorization_value": "Bearer placeholder-value"},
+    {"endpoint": "https://models.example.test/v1?key=placeholder-value"},
+    {"endpoint": " http://user:placeholder@127.0.0.1:11434"},
+)
+#: Settings that only look near a credential: token budgets, a tokenizer, a
+#: local address with a port, a header line and an option that name no credential.
+PLAIN_SETTINGS = (
+    {"endpoint": "http://127.0.0.1:11434", "max_output_tokens": 4096},
+    {"baseURL": "http://127.0.0.1:11434/v1", "maxOutputTokens": 4096, "tokenizer": "fixture-tokenizer"},
+    {"headers": ["Accept: application/json"], "args": ["--max-tokens=4096", "-y"]},
+)
+
+
 def settings_never_hold_a_credential() -> bool:
     """Known wrong: an installation whose settings carry a provider key, under a
-    key name or inside the user information of an endpoint address, and a data
+    key name in any of its spellings, in a header line, a command option, a bearer
+    value, an address's query or the user information of an address, and a data
     recipient origin that embeds a credential."""
     local = "http://127.0.0.1:11434"
-    return (refused(lambda: installation(settings={"endpoint": "local", "api_key": "placeholder-value"}),
-                    "credential_in_settings")
-            and refused(lambda: installation(settings={"headers": {"authorization": "placeholder-value"}}),
-                        "credential_in_settings")
-            and refused(lambda: installation(settings={"endpoints": ["http://user:placeholder@127.0.0.1:11434"]}),
-                        "credential_in_settings")
+    return (all(refused(lambda s=settings: installation(settings=s), "credential_in_settings")
+                for settings in CREDENTIAL_SETTINGS)
             and refused(lambda: descriptor(data_recipients=("https://placeholder@models.example.test",)))
-            and accepted(lambda: installation(settings={"endpoint": local, "max_output_tokens": 4096}))
+            and all(accepted(lambda s=settings: installation(settings=s)) for settings in PLAIN_SETTINGS)
             and accepted(lambda: descriptor(data_recipients=(local,))))
 
 
@@ -254,10 +279,80 @@ def localities_never_compare_across_vocabularies() -> bool:
 
 
 def a_served_host_selects_only_qualified_engines() -> bool:
-    """Known wrong: the service host's engines block with a policy that allows unqualified engines."""
+    """Known wrong: the service host's engines block with a policy that allows unqualified engines,
+    or whose ranking engines may be unqualified."""
     trial = slot_configuration(selection={"default": policy(allow_unqualified=True)})
+    ranked = slot_configuration(selection={"default": policy(
+        ranking=MetaPreferencePolicy(("evidence-ranker", DECLARED_ORDER_ENGINE_REF), (), (), True))})
     return (refused(lambda: ServiceHostEngines({"step_executor": trial}), "unqualified_on_a_served_path")
-            and accepted(lambda: trial) and accepted(service_host_engines))
+            and refused(lambda: ServiceHostEngines({"step_executor": ranked}), "unqualified_on_a_served_path")
+            and accepted(lambda: trial) and accepted(lambda: ranked) and accepted(service_host_engines))
+
+
+def a_qualification_is_independent_evidenced_and_bounded_in_time() -> bool:
+    """Known wrong: an engine that qualifies itself; a qualification that expires when
+    or before it is issued, is written without a timezone, cites no evidence or one
+    piece twice, or names an engine without its version; a qualification admitted
+    for an installation it does not bind."""
+    other = installation(settings={"placement": "long_lived_session"})
+    cited = EvidenceReference("artifacts/fixture/qualification-evidence.json", digest("e"))
+    return (refused(lambda: qualification(reviewer="opencode@1.2.3"), "self_qualification")
+            and refused(lambda: qualification(reviewer="opencode"), "self_qualification")
+            and refused(lambda: qualification(expires_at=ISSUED), "invalid_time")
+            and refused(lambda: qualification(issued_at=EXPIRES, expires_at=ISSUED), "invalid_time")
+            and refused(lambda: qualification(issued_at="2026-09-22T00:00:00"), "invalid_time")
+            and refused(lambda: qualification(evidence=()), "invalid_field")
+            and refused(lambda: qualification(evidence=(cited, cited)), "invalid_field")
+            and refused(lambda: qualification(engine_ref="opencode"), "invalid_engine_reference")
+            and refused(lambda: admit_engine_qualification(other, qualification()), "qualification_scope_mismatch")
+            and accepted(qualification))
+
+
+def declarations_keep_each_field_in_its_own_vocabulary() -> bool:
+    """Known wrong: the pure effect beside another effect; a provider-reported cost basis
+    that names a price record; a model route locality under the facet vocabulary; an
+    implementation location that is neither main nor a checkpoint revision; an engine
+    retired in favour of itself."""
+    priced = ("pricing/fixture-prices.json", digest("prices"), "2026-09-20")
+    return (refused(lambda: descriptor(effects=("pure", "network")), "invalid_field")
+            and refused(lambda: EngineCostBasis("provider_reported", *priced), "invalid_cost_basis")
+            and refused(lambda: EngineLocality("core.facets.LOCALITY", "cloud"), "invalid_vocabulary")
+            and refused(lambda: descriptor(implementation_location="feature-branch"), "invalid_field")
+            and refused(lambda: retirement(engine_id="opencode", replacement="opencode@2.0.0"), "invalid_field")
+            and refused(lambda: retirement(engine_id="opencode", engine_version="1.0.0",
+                                           replacement="opencode@1.0.0"), "invalid_field")
+            and accepted(lambda: retirement(engine_id="opencode", engine_version="1.0.0",
+                                            replacement="opencode@2.0.0"))
+            and accepted(lambda: descriptor(effects=("pure",), cost_basis=EngineCostBasis("price_record", *priced))))
+
+
+def a_slot_configuration_keeps_one_slot_and_names_each_installation_once() -> bool:
+    """Known wrong: a policy for another slot or another major version, or filed under
+    another scope key; two installations with one identifier; an engine installed once
+    under another name, or under two kinds; an engines block that files a slot under
+    another name; a file reference that climbs out of its folder; a host declaration
+    named by a relative path."""
+    twice = (installation(installation_id="opencode.a"), installation(installation_id="opencode.b"))
+    two_kinds = (twice[0], installation(installation_id="opencode.b", engine_kind="native_protocol_harness"))
+
+    def only(first):
+        return {"default": policy(initial=(first,), fallbacks=(), no_fallback=True, fallback_on=())}
+    return (refused(lambda: slot_configuration(selection={"default": policy(slot_version="2.0.0")}),
+                    "slot_version_mismatch")
+            and refused(lambda: slot_configuration(selection={"default": policy(slot_id="workspace_backend")}),
+                        "slot_version_mismatch")
+            and refused(lambda: slot_configuration(selection={"offline": policy()}), "invalid_field")
+            and refused(lambda: slot_configuration(installed=(installation(), installation(), goose_installation())),
+                        "repeated_value")
+            and refused(lambda: slot_configuration(installed=(installation(installation_id="opencode.main"),),
+                                                   selection=only("opencode.main")), "invalid_installation_id")
+            and refused(lambda: slot_configuration(installed=two_kinds, selection=only("opencode.a")), "invalid_field")
+            and refused(lambda: ServiceHostEngines({"workspace_backend": slot_configuration()}), "invalid_field")
+            and refused(lambda: FileReference("artifacts/../../outside.json", digest("q")), "invalid_path")
+            and refused(lambda: FileReference("embodiments/opencode/harness.json", digest("d"), absolute=True),
+                        "invalid_path")
+            and accepted(lambda: slot_configuration(installed=twice, selection=only("opencode.a")))
+            and accepted(lambda: slot_configuration(selection={"default": policy(slot_version="1.4.0")})))
 
 
 def run_checks() -> dict:
@@ -294,6 +389,15 @@ def run_checks() -> dict:
         with without(module, guard, replacement):
             check(control, _observe(scenario) is False)
     check("the_engines_block_is_a_declaration_and_a_slot_is_bound_or_unbound_once", _host_block_rules_hold())
+    # Rules written inline in the records: each has no guard function to remove
+    # inside the test, so source mutants confirm that removing it fails the check.
+    for name, scenario in (
+            ("a_qualification_is_independent_evidenced_and_bounded_in_time",
+             a_qualification_is_independent_evidenced_and_bounded_in_time),
+            ("declarations_keep_each_field_in_its_own_vocabulary", declarations_keep_each_field_in_its_own_vocabulary),
+            ("a_slot_configuration_keeps_one_slot_and_names_each_installation_once",
+             a_slot_configuration_keeps_one_slot_and_names_each_installation_once)):
+        check(name, _observe(scenario))
     return {"tests": tests, "passed": sum(t["passed"] for t in tests), "total": len(tests),
             "all_passed": all(t["passed"] for t in tests)}
 
@@ -309,7 +413,7 @@ def _host_block_rules_hold() -> bool:
     """Known wrong: a projected configuration inside the host file's engines block;
     one slot reported both bound and unbound."""
     projected = replace(slot_configuration(), source="projected:models.tiers")
-    both = {"record_store": BoundEngine(digest("d"), "local.sqlite", "local.sqlite@3.46.0")}
+    both = {"record_store": BoundEngine(digest("d"), "local.sqlite", "local.sqlite@1.0.0")}
     return (refused(lambda: ServiceHostEngines({"step_executor": projected}))
             and refused(lambda: EngineBindingsReport(digest("c"), both, {"record_store": "no_eligible_engine"},
                                                      bindings_report().family_policy))

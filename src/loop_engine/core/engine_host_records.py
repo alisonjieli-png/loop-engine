@@ -152,14 +152,49 @@ def _installation_identity(installation: EngineInstallation) -> dict:
 
 
 #: An address that carries user information before its host, the place a key hides in a URL.
-_USER_INFORMATION = re.compile(r"^[a-z][a-z0-9+.-]*://[^/\s?#]*@", re.IGNORECASE)
+_USER_INFORMATION = re.compile(r"[a-z][a-z0-9+.-]*://[^/\s?#]*@", re.IGNORECASE)
+#: A key or token carried in the query of an address, as some provider interfaces accept one.
+_QUERY_CREDENTIAL = re.compile(r"[?&](?:api[_-]?key|key|access[_-]?token|token|secret|password|sig)=",
+                               re.IGNORECASE)
+#: A bearer credential written as a value on its own.
+_BEARER_VALUE = re.compile(r"^\s*bearer\s+\S+\s*$", re.IGNORECASE)
+#: A header line ("Authorization: ...") or a command option ("--api-key", "--token=...") written as text.
+_NAMED_TEXT = re.compile(r"^\s*(?:--?([A-Za-z][A-Za-z0-9_-]*)(?:=|$)|([A-Za-z][A-Za-z0-9_-]*)\s*:\s*\S)")
+#: The words of a key name, so that api_key, apiKey, api-key, APIKey and OLLAMA_API_KEY compare alike.
+_NAME_WORDS = re.compile(r"[A-Z]+(?![a-z])|[A-Z]?[a-z0-9]+")
+#: Credential names beside those core.harness_execution_contracts already refuses.
+_MORE_CREDENTIAL_NAMES = ("apikey", "private_key", "access_key", "secret_key", "passphrase", "credential",
+                          "credentials")
 
 
 def _refuse_credential_settings(settings):
-    if credential_metadata_present(settings) or any(_USER_INFORMATION.match(item) for item in _texts(settings)):
+    if _credential_named(settings) or any(_credential_text(item) for item in _texts(settings)):
         raise EngineRecordError("credential_in_settings",
                                 "engine settings never hold a credential; the host names it through its secret "
                                 "references and the credential broker, outside every engine record")
+
+
+def _credential_name(name) -> bool:
+    """A key name that names a credential, in snake, camel, hyphenated or upper case spelling."""
+    words = "_".join(word.lower() for word in _NAME_WORDS.findall(str(name)))
+    return credential_metadata_present({words: None}) or any(
+        words == word or words.endswith("_" + word) for word in _MORE_CREDENTIAL_NAMES)
+
+
+def _credential_named(value) -> bool:
+    if type(value) in (dict, MappingProxyType):
+        return any(_credential_name(key) or _credential_named(item) for key, item in value.items())
+    if type(value) in (list, tuple):
+        return any(_credential_named(item) for item in value)
+    return False
+
+
+def _credential_text(value) -> bool:
+    """Text shaped like a credential: user information in an address, a key in a query, a bearer
+    value, or a header line or command option whose name is a credential name."""
+    named = _NAMED_TEXT.match(value)
+    return bool(_USER_INFORMATION.search(value) or _QUERY_CREDENTIAL.search(value) or _BEARER_VALUE.match(value)
+                or (named and _credential_name(named.group(1) or named.group(2))))
 
 
 def _texts(value):
@@ -328,8 +363,10 @@ class ServiceHostEngines:
 
 
 def _refuse_unqualified_on_a_served_path(configuration):
-    """allow_unqualified is for a declared trial only; the service host is a served path."""
-    trials = sorted(key for key, policy in configuration.selection.items() if policy.allow_unqualified)
+    """allow_unqualified is for a declared trial only; the service host is a served path. The ranking
+    engines that order a served slot are engines too, so their own allow_unqualified stays false."""
+    trials = sorted(key for key, policy in configuration.selection.items()
+                    if policy.allow_unqualified or policy.ranking.allow_unqualified)
     if trials:
         raise EngineRecordError("unqualified_on_a_served_path",
                                 f"{configuration.slot_id} allows unqualified engines for {trials} on a served host")

@@ -21,9 +21,9 @@ from .engine_records import (
     EngineRecordError, contract, declaration_source, exact_engine_ref, flag, identifier, identifiers, instant,
     json_object, member, optional, pattern, plain, read_part, read_record, require_derived, sequence, sha256, text)
 from .engine_selection_records import (
-    FALLBACK_ELIGIBLE_FAILURE_KINDS, PIN, PREFER, TERMINAL_FAILURE_KINDS, EngineSelectionOverride,
+    EXCLUDE, FALLBACK_ELIGIBLE_FAILURE_KINDS, PIN, PREFER, TERMINAL_FAILURE_KINDS, EngineSelectionOverride,
     embedded_record)
-from .parameter_resolution import ParameterResolutionTrace, ParameterSourceKind
+from .parameter_resolution import SOURCE_PRECEDENCE, ParameterResolutionTrace, ParameterSourceKind
 
 DECISION_RECORD_TYPE = "engine_selection_decision/v1"
 DECISION_PHASES = ("initial", "fallback", "reuse")
@@ -151,7 +151,15 @@ def _trace_entry(value):
     if type(value["precedence_rank"]) is not int or any(
             type(value[name]) is not str for name in TRACE_FIELDS if name != "precedence_rank"):
         raise EngineRecordError("invalid_field", "a trace entry keeps the ParameterResolutionTrace field types")
+    _refuse_claimed_precedence(value)
     return json_object(value, "trace entry")
+
+
+def _refuse_claimed_precedence(entry):
+    """A trace entry's rank is the existing precedence of its source kind, never a rank it claims."""
+    if entry["precedence_rank"] != SOURCE_PRECEDENCE[ParameterSourceKind(entry["source_kind"])]:
+        raise EngineRecordError("claimed_precedence",
+                                "a trace entry's precedence rank is the one SOURCE_PRECEDENCE gives its source kind")
 
 
 @dataclass(frozen=True)
@@ -468,6 +476,7 @@ class EngineSelectionDecision:
         _require_complete_eligibility(self)
         _require_propensity(self)
         _refuse_widening_order(self)
+        _refuse_excluded_order(self)
         _refuse_fallback_after_terminal(self)
         _require_ranking_for_an_initial_selection(self)
         self._check_consistency()
@@ -492,11 +501,7 @@ class EngineSelectionDecision:
             if self.selected.installation_id in self.fallbacks:
                 raise EngineRecordError("invalid_field", "the selected engine is not its own fallback")
             if self.phase == INITIAL_PHASE:
-                ordered = list(self.ranking.get("ordered_ids", ())) if self.ranking is not None else []
-                if self.selected.installation_id not in self.declared_order or (
-                        ordered and (set(ordered) != set(self.declared_order)
-                                     or ordered[0] != self.selected.installation_id)):
-                    raise EngineRecordError("invalid_ranking", "the first ranked eligible engine is selected")
+                _require_first_ranked_selection(self)
 
     @property
     def content_digest(self) -> str:
@@ -613,6 +618,27 @@ def _refuse_widening_order(decision):
         {decision.selected.installation_id} if decision.selected is not None else set())
     if pins and (len(pins) > 1 or not chosen <= pins):
         raise EngineRecordError("pin_substituted", "a pinned engine is never replaced by another")
+
+
+def _refuse_excluded_order(decision):
+    """An applied exclusion removes its installations from the order, the fallbacks and the choice;
+    only the order without the override may still name them."""
+    excluded = {name for item in decision.override if item.kind == EXCLUDE for name in item.installations}
+    chosen = set(decision.declared_order) | set(decision.fallbacks) | (
+        {decision.selected.installation_id} if decision.selected is not None else set())
+    if excluded & chosen:
+        raise EngineRecordError("excluded_engine_ordered",
+                                f"an excluded installation is still ordered or chosen: {sorted(excluded & chosen)}")
+
+
+def _require_first_ranked_selection(decision):
+    """An initial choice is the first engine its embedded ranking ordered, over exactly the declared
+    order. A ranking that ordered nothing (it abstained) or ordered other engines selects nothing."""
+    ordered = decision.ranking.get("ordered_ids") if decision.ranking is not None else None
+    ordered = list(ordered) if type(ordered) in (list, tuple) else []
+    if not ordered or set(ordered) != set(decision.declared_order) \
+            or ordered[0] != decision.selected.installation_id:
+        raise EngineRecordError("invalid_ranking", "the first ranked eligible engine is selected")
 
 
 def _refuse_fallback_after_terminal(decision):

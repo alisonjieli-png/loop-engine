@@ -32,7 +32,8 @@ from .engine_records import EngineDescriptor, EngineQualification, EngineRetirem
 from .engine_records_checks import (
     NOW, accepted, bindings_report, descriptor, fact, goose_installation, installation, policy, qualification,
     refused, retirement, service_host_engines, slot_configuration)
-from .engine_selection_records import DECLARED_ORDER_ENGINE_REF, EngineSelectionOverride, OverrideSender, EngineSelectionPolicy
+from .engine_selection_records import (
+    DECLARED_ORDER_ENGINE_REF, EngineEvidenceBinding, EngineSelectionOverride, OverrideSender, EngineSelectionPolicy)
 
 LOOP = OverrideSender("loop", "fixture.loop1", None, None)
 HARNESS = OverrideSender("harness", "fixture.loop1", "opencode@1.2.3", "fixture.loop1.attempt1")
@@ -109,7 +110,6 @@ def rich_records() -> tuple:
     from .engine_host_records import (
         BoundEngine, FamilyPolicyInForce, FileReference, QualificationSource)
     from .engine_records import EngineCostBasis, EngineLocality, EvidenceReference, QualificationScope
-    from .engine_selection_records import EngineEvidenceBinding
     engine = descriptor(
         cost_basis=EngineCostBasis("price_record", "pricing/fixture-prices.json", digest("prices"), "2026-09-20"),
         data_recipients=("https://models.example.test",), effects=("pure",), supported_modes=(),
@@ -155,7 +155,7 @@ def rich_records() -> tuple:
                                                         slot_id="workspace_backend", selection={"default": policy(
                                                             slot_id="workspace_backend")})})),
             (EngineBindingsReport, EngineBindingsReport(
-                digest("host"), {"record_store": BoundEngine(digest("store"), "local.sqlite", "local.sqlite@3.46.0"),
+                digest("host"), {"record_store": BoundEngine(digest("store"), "local.sqlite", "local.sqlite@1.0.0"),
                                  "account_email_delivery": BoundEngine(digest("mail"), "resend", "resend@1.0.0")},
                 {"payment_provider": "not_declared", "usage_export": "no_eligible_engine"},
                 FamilyPolicyInForce("service_host_family_policy/v1", digest("family"), "declared by the host"))))
@@ -350,6 +350,148 @@ def unknown_consumption_stays_unknown() -> bool:
             and accepted(lambda: ConsumedAuthority(None, None, None, None, "unknown", None)))
 
 
+#: Parts whose keys are data rather than fields (maps keyed by slot, scope key,
+#: sender or setting), and records whose fields another reader owns: an engine's
+#: own capability record, its typed settings, the evidence rule, the comparison
+#: policy, the named uncertainty numbers and, in a decision, the embedded ranking.
+MAP_PARTS = ("joined_settings", "fingerprint", "bound", "unbound", "selection", "slots", "overrides_permitted")
+OPAQUE_PARTS = ("capability_record", "settings", "rule", "comparison", "uncertainty")
+
+
+def _field_parts(value, path, record_type):
+    """The path of every nested object in a serialized record whose keys are fields."""
+    if type(value) is list:
+        for index, item in enumerate(value):
+            yield from _field_parts(item, path + (index,), record_type)
+        return
+    if type(value) is not dict:
+        return
+    record_type = value.get("record_type", record_type)
+    if path:
+        yield path
+    for key, item in value.items():
+        if key in OPAQUE_PARTS or (key == "ranking" and record_type == decision_records.DECISION_RECORD_TYPE):
+            continue
+        members = item.items() if key in MAP_PARTS and type(item) is dict else ((None, item),)
+        for name, member in members:
+            yield from _field_parts(member, path + ((key,) if name is None else (key, name)), record_type)
+
+
+def every_part_of_every_record_refuses_unknown_fields() -> bool:
+    """Known wrong: an unknown field inside any part of any engine record, such as a
+    locality, a cost basis, a sender, a declaration file, a bound engine, a refusal
+    or the consumed authority, read as if it were not there."""
+    parts = 0
+    for kind, value in rich_records() + ((EngineSelectionDecision, fallback_decision()),):
+        record = json.loads(json.dumps(value.to_dict()))
+        for path in _field_parts(record, (), record["record_type"]):
+            changed = json.loads(json.dumps(record))
+            target = changed
+            for key in path:
+                target = target[key]
+            target["unexpected"] = 1
+            parts += 1
+            if not refused(lambda: kind.from_dict(changed)):
+                return False
+    return parts >= 60
+
+
+def senders_stay_within_their_override_kinds() -> bool:
+    """Known wrong: a policy that lets a harness choose an objective, or omits or adds a sender;
+    a pin of two installations; an objective named by a preference, or an objective
+    override without one; a retirement filed under another slot; a Loop sender that
+    names an engine; an evidence rule or a comparison of another record type."""
+    loop_kinds = ("pin", "exclude", "prefer")
+    return (refused(lambda: policy(overrides_permitted={"loop": loop_kinds, "harness": ("objective",)}),
+                    "invalid_vocabulary")
+            and refused(lambda: policy(overrides_permitted={"loop": loop_kinds}), "invalid_field")
+            and refused(lambda: policy(overrides_permitted={"loop": loop_kinds, "harness": ("prefer",),
+                                                            "operator": ("pin",)}), "invalid_field")
+            and refused(lambda: override(kind="pin", installations=("opencode", "goose")), "invalid_override")
+            and refused(lambda: override(objective="tokens"), "invalid_override")
+            and refused(lambda: override(kind="objective", installations=()), "invalid_override")
+            and refused(lambda: policy(retired=(retirement(slot_id="workspace_backend"),)), "invalid_field")
+            and refused(lambda: OverrideSender("loop", "fixture.loop1", "opencode@1.2.3", None), "invalid_field")
+            and refused(lambda: EngineEvidenceBinding({"record_type": "engine_comparison_policy/v1"},
+                                                      "snapshots/fixture.json", digest("snapshot")),
+                        "invalid_vocabulary")
+            and refused(lambda: policy(comparison={"record_type": "engine_evidence_rule/v1"}), "invalid_vocabulary")
+            and accepted(lambda: override(kind="pin", installations=("opencode",)))
+            and accepted(lambda: override(kind="objective", installations=(), objective="tokens")))
+
+
+def an_initial_choice_is_the_first_ranked_eligible_engine() -> bool:
+    """Known wrong: an initial choice that is not the first engine its ranking ordered,
+    or whose ranking abstained or ordered other engines; a choice that eligibility
+    refused, or named with another descriptor digest than its universe entry; a choice
+    listed as its own fallback; an excluded installation still ordered or chosen."""
+    both = dict(declared_order=("opencode", "goose"), order_without_override=("opencode", "goose"),
+                fallbacks=(), no_fallback=True)
+    goose, opencode = descriptor(engine_id="goose", engine_version="1.0.0"), descriptor()
+    to_goose = SelectedEngine("goose", goose.engine_ref, goose.content_digest)
+    abstained = {**ranking_record(), "status": "abstained", "ordered_ids": [], "selected_engine_ref": ""}
+    goose_refused = (EligibilityEntry("opencode", ()),
+                     EligibilityEntry("goose", (EligibilityRefusal("engine_unavailable", ""),)))
+    excluded = override(kind="exclude", installations=("opencode",))
+    return (refused(lambda: decision(**both, ranking=ranking_record(("opencode", "goose")), selected=to_goose),
+                    "invalid_ranking")
+            and refused(lambda: decision(**both, ranking=abstained, selected=to_goose), "invalid_ranking")
+            and refused(lambda: decision(ranking=abstained), "invalid_ranking")
+            and refused(lambda: decision(ranking=ranking_record(("opencode", "goose"))), "invalid_ranking")
+            and refused(lambda: replace(fallback_decision(), eligibility=goose_refused), "ineligible_engine_selected")
+            and refused(lambda: decision(selected=SelectedEngine("opencode", opencode.engine_ref, digest("other"))),
+                        "ineligible_engine_selected")
+            and refused(lambda: decision(fallbacks=("opencode",)), "invalid_field")
+            and refused(lambda: decision(override=(excluded,)), "excluded_engine_ordered")
+            and accepted(lambda: decision(**both, ranking=ranking_record(("opencode", "goose"))))
+            and accepted(lambda: decision(override=(override(kind="exclude", installations=("goose",)),),
+                                          fallbacks=(), no_fallback=True)))
+
+
+def a_decision_keeps_its_phase_evidence_propensity_and_parts_consistent() -> bool:
+    """Known wrong: an explicit no-fallback beside a fallback chain; a transition outside
+    the fallback phase, or a fallback without one; a terminal failure outside a
+    fallback; no eligible engine while one is eligible; evidence use that contradicts
+    its reason, snapshot or history; an uncertainty that is not a number; a propensity
+    outside (0, 1]; a parametrized refusal without its detail; an owning profile that is
+    not role.profile@x.y.z; a trace from an unknown source or with a claimed precedence;
+    an override for another slot; an embedded ranking that grants anything or has
+    another record type; an installation named twice; a negative count."""
+    moved = fallback_decision().transition
+    snapshot, history = digest("snapshot"), ("history/run-1",)
+    ranking = ranking_record()
+    universe = decision().universe
+    return all(refused(action, code) for action, code in (
+        (lambda: decision(no_fallback=True), "no_fallback_rule"),
+        (lambda: decision(transition=moved), "invalid_transition"),
+        (lambda: replace(fallback_decision(), transition=None), "invalid_transition"),
+        (lambda: decision(status="terminal_failure", selected=None, propensity=None), "invalid_transition"),
+        (lambda: decision(status="no_eligible_engine", selected=None, propensity=None), "invalid_status"),
+        (lambda: EvidenceUse("not_requested", False, "not_computed", snapshot, (), None), "invalid_evidence_use"),
+        (lambda: EvidenceUse("not_requested", False, "not_computed", None, history, None), "invalid_evidence_use"),
+        (lambda: EvidenceUse("ranked_matched_reviewed_evidence", True, "not_computed", snapshot, (), None),
+         "invalid_evidence_use"),
+        (lambda: EvidenceUse("insufficient_matched_reviewed_evidence", True, "not_computed", snapshot, history, None),
+         "invalid_evidence_use"),
+        (lambda: EvidenceUse("insufficient_matched_reviewed_evidence", False, {"tail": True}, snapshot, history, None),
+         "invalid_field"),
+        (lambda: Propensity(0, 1), "invalid_propensity"),
+        (lambda: Propensity(2, 1), "invalid_propensity"),
+        (lambda: EligibilityRefusal("permission_not_granted", ""), "invalid_text"),
+        (lambda: EligibilityRefusal("incompatible_with_selected", "Model Access"), "invalid_identifier"),
+        (lambda: SelectionScope("step_run_request/v1", "code_execution", "fixture.loop1", "response_admission/v1",
+                                {}, {}), "invalid_field"),
+        (lambda: PolicySource("declared", ({**trace(), "source_kind": "operator_whim"},)), "invalid_vocabulary"),
+        (lambda: PolicySource("declared", ({**trace(), "precedence_rank": 1},)), "claimed_precedence"),
+        (lambda: decision(override=(override(slot_id="workspace_backend"),)), "invalid_field"),
+        (lambda: decision(ranking={**ranking, "task_accepted": True}), "constant_flag_changed"),
+        (lambda: decision(ranking={**ranking, "record_type": "configuration_preference_decision/v9"}),
+         "invalid_vocabulary"),
+        (lambda: decision(universe=universe + universe[:1]), "repeated_value"),
+        (lambda: ConsumedAuthority(-1, 0, 0, 0.0, "known", 0.0), "invalid_field"),
+    )) and accepted(decision) and accepted(fallback_decision)
+
+
 CHECKS = (
     ("every_engine_record_refuses_unknown_keys_and_unsupported_versions",
      readers_refuse_unknown_fields_and_versions,
@@ -389,6 +531,18 @@ CHECKS = (
      (("removed_ranking_record_rule_is_detected", ((decision_records, "_require_ranking_for_an_initial_selection"),)),)),
     ("consumed_authority_keeps_unknown_apart_from_zero", unknown_consumption_stays_unknown,
      (("removed_unknown_cost_rule_is_detected", ((decision_records, "_keep_unknown_cost_unknown"),)),)),
+    ("an_initial_choice_is_the_first_ranked_eligible_engine", an_initial_choice_is_the_first_ranked_eligible_engine,
+     (("removed_first_ranked_rule_is_detected", ((decision_records, "_require_first_ranked_selection"),)),
+      ("removed_exclusion_rule_is_detected", ((decision_records, "_refuse_excluded_order"),)))),
+    ("a_decision_keeps_its_phase_evidence_propensity_and_parts_consistent",
+     a_decision_keeps_its_phase_evidence_propensity_and_parts_consistent,
+     (("removed_claimed_precedence_rule_is_detected", ((decision_records, "_refuse_claimed_precedence"),)),)),
+    # Rules written inline in the readers and records: source mutants confirm
+    # that removing each one fails the check.
+    ("every_part_of_every_engine_record_refuses_unknown_fields", every_part_of_every_record_refuses_unknown_fields,
+     ()),
+    ("a_policy_and_an_override_stay_within_the_kinds_their_sender_may_use", senders_stay_within_their_override_kinds,
+     ()),
 )
 
 
