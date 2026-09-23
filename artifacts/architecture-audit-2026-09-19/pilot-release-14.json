@@ -1,0 +1,43 @@
+{
+ "record_type": "pilot_release_record/v1",
+ "application": "baltor-pilot",
+ "region": "iad",
+ "source_branch": "main",
+ "observed_at": "2026-09-23T05:45:00+00:00",
+ "release": 14,
+ "fly_release_version": 16,
+ "source_revision": "06b903d80849e08be402d0a3d0660d20e7dc9f9b",
+ "image": "registry.fly.io/baltor-pilot@sha256:0fa11f15d0d116a4495586c7eef0fd46ff08b6245f1b077e062a5ce652f9bec8",
+ "built_by": "The guarded workflow .github/workflows/fly-pilot.yml, run 35822425444, dispatched on main with operation deploy, after the continuous integration run 35821280608 passed on this exact revision. Fly created release 16 at 2026-09-23T05:28:29Z. Every workflow step passed: the deploy of the exact tested image, the readiness poll, the catalogue grant step and the new host billing policy step on the one Machine.",
+ "deployment_switch": {
+  "set_true_at": "2026-09-23T05:26:36Z",
+  "set_false_at": "2026-09-23T05:28:57Z"
+ },
+ "before_release": {
+  "host_file": "No change. The retention sweep uses its default interval of 600 seconds because the host file names no retention block, and the billing policy is applied by the release step, not by a host file edit.",
+  "local_checks": "All 12 stages of the continuous integration command set passed on an export of this exact revision: self-test 2,753 of 2,753, tools 820 tests, browser 412 of 412 with 60 of 60 planted faults caught, conformance, component guides, hardcoding audit with no new high finding, examples 24 of 24, markdown lint, embodiment 106, qualification 3, publish guard and retired words."
+ },
+ "what_this_release_changes": "The payment session policy moves to service_billing_session_policy/v2 and is re-applied by the release after the grants, so checkout and the customer portal report true again; the public pricing view says Invitation only while account creation is closed; the privacy notice's retention promise is kept: expired sign-out revocations and waiting list source records are removed after each sign-out and on a timer, through an exact removal batch in the catalogue store protocol; health gains billing_policy_current and retention_sweep_current; the command loop-engine service remove-expired; the starter catalogue is anchored to 9a483df, which changes only the anchor line of each body and therefore each body's digest.",
+ "post_deploy_steps": [],
+ "after_release": {
+  "health": "service_health/v2, alive and ready; every required and optional check passing, including billing_policy_current and retention_sweep_current",
+  "hostnames": "All eight hostnames answered 200 for the home page and for /privacy and returned the same public capabilities record",
+  "capabilities": "registration_available false; waitlist_available true; billing checkout true, portal true, webhook true",
+  "website": "74 of 74 browser checks on baltor.ai, www.baltor.ai and app.baltor.ai, including the pricing view's Invitation only state; 73 of 74 on baltor-pilot.fly.dev, the known host-name check",
+  "catalogue": "6 of 6; 34 offered and 9 withheld until effects are declared",
+  "hosted_service": "19 of 19, including one metered read of normalize_phone_numbers with its new digest 5d2c01d71b93b2c7390f9dd0b7e74bbca39b505b89c2613a96b90e5ed9ea032d, tenant isolation, and the official protocol client both through the 2025-11-25 handshake and per request at 2026-07-28",
+  "waiting_list": "One request from qa-release-16-waitlist@baltor.ai was recorded once in the waiting state with source_counted counted; a second request from the same address was refused with waitlist_address_already_listed; the operator tool listed it, removed it and erased its address and note, and a new listing no longer showed it",
+  "first_run": "The first run of the website and service checks used the tools of the shared main checkout, which was still at 385c647 under a concurrent session's uncommitted work. Against the new release it failed 2 of 73 website checks (the deployed service.js differed from that older source, and the older check expected a Payment open badge) and 6 of 19 service checks (it expected the phone item's release 15 digest b451b366...). Those reports are kept with the suffix -first-run-stale-tools. The successor run used this release's own tree and digest.",
+  "head": "HEAD on the root still answered 404 on baltor.ai"
+ },
+ "known_gaps": [
+  "HEAD on the root answers 404; every subdomain serves the homepage.",
+  "The four newer hostnames serve the main site; a surface for each is not in this release."
+ ],
+ "rollback": {
+  "image": "registry.fly.io/baltor-pilot@sha256:b5d2c5914dca1014f9d10275e55e45174ec82fe12e8dcb341df57fc71beb30bc",
+  "fly_release_version": 15,
+  "host_file": "No host file change is needed to start release 15 again.",
+  "effect": "Release 15 reads the stored payment session policy only as service_billing_session_policy/v1 and raises session_record_unavailable for the version 2 record this release stored, so after a rollback checkout and the portal would report false again. This follows from reading the release 15 source at a51ac96; the rollback itself was not exercised."
+ }
+}
