@@ -323,7 +323,7 @@ the guard patched away and requires the check's own predicate to fail.
 | A runnable file without the process effect | `a_package_with_a_runnable_file_declares_the_process_effect` | `removed_process_effect_rule_is_detected` |
 | A denied item reaching a following account | `a_denied_item_never_reaches_a_following_account` | `removed_denial_rule_is_detected` |
 | `apply-grants` turning a following account into a snapshot | `apply_grants_keeps_a_following_account_on_its_engine` | `removed_following_account_rule_is_detected` |
-| `--all-tenants` giving an account without every item every item, as on September 23 | `all_tenants_moves_only_accounts_that_already_receive_every_item` | `removed_all_tenants_restriction_is_detected` |
+| `--all-tenants` giving every item to an account that was not granted every item, as on September 23 | `all_tenants_moves_only_accounts_that_already_receive_every_item` | `removed_all_tenants_restriction_is_detected` |
 | `--all-tenants` replacing the denials of an account that follows already | `all_tenants_keeps_the_denials_of_an_account_that_already_follows` | `removed_already_following_rule_is_detected` |
 | A later item reaching an account that stopped following | `an_account_that_stops_following_keeps_exactly_what_it_received` and `a_later_item_never_reaches_an_account_that_stopped_following` | `removed_snapshot_rule_is_detected` |
 | A snapshot or a bulk move decided on a view the host no longer serves | `a_grant_decision_on_a_view_the_host_no_longer_serves_is_refused` | `removed_served_view_rule_is_detected` |
