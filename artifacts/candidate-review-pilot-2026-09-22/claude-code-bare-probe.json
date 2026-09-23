@@ -1,0 +1,29 @@
+{
+  "record_type": "candidate_reviewer_engine_probe/v1",
+  "installation_id": "claude_code.bare",
+  "installation_sha256": "10243d5f3a43adefffc97926c7c601900c16fd3e39a8569c41efd758c5ede148",
+  "started_at": "2026-09-23T03:35:55.627381+00:00",
+  "availability": {
+    "available": true,
+    "engine_version": "2.1.280 (Claude Code)",
+    "reason": ""
+  },
+  "attempt": {
+    "outcome": "authentication_unavailable",
+    "error_detail": "Not logged in \u00b7 Please run /login",
+    "physical_model_calls": 0,
+    "physical_calls_basis": "",
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "reasoning_output_tokens": null,
+      "cached_input_tokens": null,
+      "source": "command_line_reported"
+    },
+    "elapsed_seconds": 1.7,
+    "reported_model": "",
+    "route_or_command": "claude",
+    "answer_text": ""
+  },
+  "purpose": "Record how the Claude Code command line engine behaves on this machine. The prompt is a fixed connection probe, not a catalogue item, because every starter catalogue item was produced by Claude Code and the family rule never asks that family about them."
+}

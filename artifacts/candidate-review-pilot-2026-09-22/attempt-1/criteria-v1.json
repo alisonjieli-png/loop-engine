@@ -1,0 +1,39 @@
+{
+  "record_type": "candidate_review_criteria/v1",
+  "source_path": "examples/29_intelligence_service/starter-catalogue/REVIEW.md",
+  "match_mode": "whitespace_canonical",
+  "criteria": [
+    {
+      "criterion_id": "read_as_a_customer",
+      "quote": "Open the body from the first column and read it as a customer would."
+    },
+    {
+      "criterion_id": "restated_source_grounding",
+      "quote": "check that the body says what the source says or does."
+    },
+    {
+      "criterion_id": "general_practice_grounding",
+      "quote": "For a body of general practice, judge the practice itself and check that the one sentence about the cited file is true."
+    },
+    {
+      "criterion_id": "licence_and_effects",
+      "quote": "Check the licence state and the declared effects in `items.json`."
+    },
+    {
+      "criterion_id": "effects_rule",
+      "quote": "The rule: an item declares every effect that one of its steps tells the reader to perform on the reader's own machine, which means reading or listing files, writing files, starting a command or using the network. A method that only transforms values it was given declares nothing. A step that asks a question, or that names an analysis without telling the reader how to run it, declares nothing, and a harness that chooses to run such an analysis needs its own authority for it. An item without effects declares an empty list."
+    },
+    {
+      "criterion_id": "body_kind_sentence",
+      "quote": "A body of the second kind also carries this sentence, and a body of the first kind must not: \"The steps above are ordinary engineering practice, written for this catalogue in its own words.\""
+    },
+    {
+      "criterion_id": "required_parts",
+      "quote": "Each item is one Markdown body of 150 to 600 words with the same parts: when to use it, the steps, the checks, one known-wrong example, what to record and the cited source."
+    },
+    {
+      "criterion_id": "no_internal_vocabulary",
+      "quote": "The bodies use no internal runtime vocabulary."
+    }
+  ]
+}

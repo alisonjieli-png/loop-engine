@@ -1,0 +1,70 @@
+{
+  "record_type": "candidate_review_command_summary/v1",
+  "run_id": "pilot-2-record",
+  "listing": {
+    "ok": true,
+    "error": "",
+    "withheld": [
+      "kimi-k3"
+    ]
+  },
+  "stop_reason": "completed",
+  "totals": {
+    "items": 30,
+    "approved": 0,
+    "rejected": 30,
+    "refused_before_review": 0,
+    "panel_incomplete": 0,
+    "not_started": 0,
+    "disagreements": 14,
+    "calls": 0,
+    "calls_by_outcome": {},
+    "physical_model_calls_known": 0,
+    "calls_with_unknown_physical_count": 0,
+    "calls_with_unknown_usage": 0,
+    "input_tokens_reported": 0,
+    "output_tokens_reported": 0,
+    "charged_tokens": 0,
+    "pause_seconds": 0.0,
+    "elapsed_seconds": 53.702
+  },
+  "ineligible": {
+    "ollama.deepseek-v4-pro": "failed_calibration",
+    "ollama.kimi-k3": "disabled",
+    "claude_code.bare": "producer_family"
+  },
+  "calibration": {
+    "stop_reason": "call_ceiling_reached",
+    "totals": {
+      "items": 4,
+      "approved": 0,
+      "rejected": 4,
+      "refused_before_review": 0,
+      "panel_incomplete": 0,
+      "not_started": 0,
+      "disagreements": 2,
+      "calls": 0,
+      "calls_by_outcome": {},
+      "physical_model_calls_known": 0,
+      "calls_with_unknown_physical_count": 0,
+      "calls_with_unknown_usage": 0,
+      "input_tokens_reported": 0,
+      "output_tokens_reported": 0,
+      "charged_tokens": 0,
+      "pause_seconds": 0.0,
+      "elapsed_seconds": 20.248
+    },
+    "installations": {
+      "codex.gpt-6-sol": "qualified",
+      "ollama.deepseek-v4-pro": "failed_calibration",
+      "ollama.glm-5.3": "qualified",
+      "ollama.gpt-oss-120b": "qualified",
+      "ollama.kimi-k2.6": "qualified",
+      "ollama.minimax-m3": "qualified",
+      "ollama.mistral-large-3": "qualified",
+      "ollama.qwen3.5-397b": "qualified"
+    }
+  },
+  "record": "examples/29_intelligence_service/starter-catalogue/reviews-panel-2026-09-22.json",
+  "command_seconds": 74.412
+}

@@ -1,0 +1,1035 @@
+{
+  "record_type": "candidate_review_attempt_comparison/v1",
+  "ledgers": {
+    "attempt_1": "artifacts/candidate-review-pilot-2026-09-22/attempt-1/ledger.jsonl",
+    "attempt_2": "artifacts/candidate-review-pilot-2026-09-22/attempt-2/ledger.jsonl"
+  },
+  "attempts": [
+    {
+      "attempt": "attempt_1",
+      "runs": [
+        "smoke-1",
+        "pilot-1-calibration",
+        "pilot-1"
+      ],
+      "run_ends": [
+        {
+          "run_id": "smoke-1",
+          "stop_reason": "completed",
+          "elapsed_seconds": 88.835,
+          "calls": 4
+        },
+        {
+          "run_id": "pilot-1-calibration",
+          "stop_reason": "completed",
+          "elapsed_seconds": 224.45,
+          "calls": 32
+        }
+      ],
+      "dispatches": 72,
+      "calls": 69,
+      "interrupted_dispatches": [
+        {
+          "run_id": "pilot-1",
+          "sequence": 30,
+          "installation_id": "codex.gpt-6-sol",
+          "identity": "record_the_licence_of_every_bundled_component"
+        },
+        {
+          "run_id": "pilot-1",
+          "sequence": 35,
+          "installation_id": "codex.gpt-6-sol",
+          "identity": "review_shared_state_for_ordering_defects"
+        },
+        {
+          "run_id": "pilot-1",
+          "sequence": 36,
+          "installation_id": "codex.gpt-6-sol",
+          "identity": "reproduce_the_evidence_a_report_claims"
+        }
+      ],
+      "calls_by_outcome": {
+        "output_limit_reached": 1,
+        "verdict": 68
+      },
+      "calls_with_unknown_usage": 0,
+      "input_tokens_reported": 560075,
+      "output_tokens_reported": 77761,
+      "verdicts": 68,
+      "decisions_by_installation": {
+        "calibration:codex.gpt-6-sol": {
+          "reject": 4
+        },
+        "calibration:ollama.deepseek-v4-pro": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.glm-5.3": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.gpt-oss-120b": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.kimi-k2.6": {
+          "reject": 4
+        },
+        "calibration:ollama.minimax-m3": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.mistral-large-3": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.qwen3.5-397b": {
+          "reject": 4
+        },
+        "candidates:codex.gpt-6-sol": {
+          "reject": 10
+        },
+        "candidates:ollama.deepseek-v4-pro": {
+          "approve": 2,
+          "reject": 11
+        },
+        "candidates:ollama.qwen3.5-397b": {
+          "reject": 13
+        }
+      },
+      "candidate_rejections": {
+        "citing_an_effects_criterion": 23,
+        "citing_the_other_kind_grounding_criterion": 26,
+        "rejections": 34
+      }
+    },
+    {
+      "attempt": "attempt_2",
+      "runs": [
+        "pilot-2-calibration",
+        "pilot-2",
+        "pilot-2-record-calibration",
+        "pilot-2-record"
+      ],
+      "run_ends": [
+        {
+          "run_id": "pilot-2-calibration",
+          "stop_reason": "completed",
+          "elapsed_seconds": 197.385,
+          "calls": 32
+        },
+        {
+          "run_id": "pilot-2",
+          "stop_reason": "completed",
+          "elapsed_seconds": 460.46,
+          "calls": 91
+        },
+        {
+          "run_id": "pilot-2-record-calibration",
+          "stop_reason": "call_ceiling_reached",
+          "elapsed_seconds": 20.248,
+          "calls": 0
+        },
+        {
+          "run_id": "pilot-2-record",
+          "stop_reason": "completed",
+          "elapsed_seconds": 53.702,
+          "calls": 0
+        }
+      ],
+      "dispatches": 123,
+      "calls": 123,
+      "interrupted_dispatches": [],
+      "calls_by_outcome": {
+        "invalid_response": 2,
+        "verdict": 121
+      },
+      "calls_with_unknown_usage": 0,
+      "input_tokens_reported": 1154280,
+      "output_tokens_reported": 106936,
+      "verdicts": 121,
+      "decisions_by_installation": {
+        "calibration:codex.gpt-6-sol": {
+          "reject": 4
+        },
+        "calibration:ollama.deepseek-v4-pro": {
+          "approve": 2,
+          "reject": 2
+        },
+        "calibration:ollama.glm-5.3": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.gpt-oss-120b": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.kimi-k2.6": {
+          "reject": 4
+        },
+        "calibration:ollama.minimax-m3": {
+          "reject": 3
+        },
+        "calibration:ollama.mistral-large-3": {
+          "approve": 1,
+          "reject": 3
+        },
+        "calibration:ollama.qwen3.5-397b": {
+          "reject": 4
+        },
+        "candidates:codex.gpt-6-sol": {
+          "approve": 1,
+          "reject": 29
+        },
+        "candidates:ollama.kimi-k2.6": {
+          "reject": 1
+        },
+        "candidates:ollama.minimax-m3": {
+          "approve": 13,
+          "reject": 17
+        },
+        "candidates:ollama.qwen3.5-397b": {
+          "reject": 29
+        }
+      },
+      "candidate_rejections": {
+        "citing_an_effects_criterion": 51,
+        "rejections": 76,
+        "resting_only_on_an_effects_criterion": 7
+      }
+    }
+  ],
+  "shared_pairs": {
+    "pairs": 53,
+    "decision_changes": {
+      "approve_to_approve": 4,
+      "reject_to_approve": 1,
+      "reject_to_reject": 48
+    },
+    "rows": [
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "build_an_incident_timeline_from_evidence",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "calibration_known_good_test_driven_change",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "read_as_a_customer",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "read_as_a_customer",
+          "restated_source_grounding"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "read_as_a_customer"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "classify_a_failure_before_deciding_to_retry",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "design_a_request_and_response_contract",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "keep_instructions_and_supplied_text_apart",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "read_as_a_customer",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "keep_secrets_out_of_source_and_settings",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ],
+        "attempt_2_blocking_criteria": [
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "make_a_write_safe_to_repeat_with_an_idempotency_key",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "plan_a_schema_change_in_compatible_steps",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "prove_a_check_can_fail_when_the_behaviour_is_removed",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "read_a_failure_report_and_name_the_first_wrong_value",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "codex.gpt-6-sol",
+        "identity": "write_a_log_line_that_is_safe_to_share",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "read_as_a_customer"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "ollama.deepseek-v4-pro",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "approve",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": []
+      },
+      {
+        "installation_id": "ollama.deepseek-v4-pro",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "licence_and_effects",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "licence_and_effects"
+        ]
+      },
+      {
+        "installation_id": "ollama.deepseek-v4-pro",
+        "identity": "calibration_known_good_test_driven_change",
+        "calibration_item": true,
+        "attempt_1": "approve",
+        "attempt_2": "approve",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [],
+        "attempt_2_blocking_criteria": []
+      },
+      {
+        "installation_id": "ollama.deepseek-v4-pro",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "required_parts",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "required_parts"
+        ]
+      },
+      {
+        "installation_id": "ollama.glm-5.3",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "licence_and_effects"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "licence_and_effects"
+        ]
+      },
+      {
+        "installation_id": "ollama.glm-5.3",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.glm-5.3",
+        "identity": "calibration_known_good_test_driven_change",
+        "calibration_item": true,
+        "attempt_1": "approve",
+        "attempt_2": "approve",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [],
+        "attempt_2_blocking_criteria": []
+      },
+      {
+        "installation_id": "ollama.glm-5.3",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "ollama.gpt-oss-120b",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "effects_rule"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "licence_and_effects"
+        ]
+      },
+      {
+        "installation_id": "ollama.gpt-oss-120b",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.gpt-oss-120b",
+        "identity": "calibration_known_good_test_driven_change",
+        "calibration_item": true,
+        "attempt_1": "approve",
+        "attempt_2": "approve",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [],
+        "attempt_2_blocking_criteria": []
+      },
+      {
+        "installation_id": "ollama.gpt-oss-120b",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule"
+        ]
+      },
+      {
+        "installation_id": "ollama.kimi-k2.6",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "required_parts",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "licence_and_effects"
+        ]
+      },
+      {
+        "installation_id": "ollama.kimi-k2.6",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "required_parts"
+        ]
+      },
+      {
+        "installation_id": "ollama.kimi-k2.6",
+        "identity": "calibration_known_good_test_driven_change",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "body_kind_sentence",
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.kimi-k2.6",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "read_as_a_customer",
+          "required_parts",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "read_as_a_customer",
+          "required_parts"
+        ]
+      },
+      {
+        "installation_id": "ollama.minimax-m3",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "licence_and_effects",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.minimax-m3",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.minimax-m3",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "licence_and_effects",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "read_as_a_customer",
+          "required_parts"
+        ]
+      },
+      {
+        "installation_id": "ollama.mistral-large-3",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule"
+        ]
+      },
+      {
+        "installation_id": "ollama.mistral-large-3",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.mistral-large-3",
+        "identity": "calibration_known_good_test_driven_change",
+        "calibration_item": true,
+        "attempt_1": "approve",
+        "attempt_2": "approve",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [],
+        "attempt_2_blocking_criteria": []
+      },
+      {
+        "installation_id": "ollama.mistral-large-3",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "build_an_incident_timeline_from_evidence",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "calibration_effects_left_undeclared",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "effects_rule"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "calibration_false_claim_about_the_cited_file",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "calibration_known_good_test_driven_change",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "required_parts"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "calibration_step_that_defeats_the_purpose",
+        "calibration_item": true,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "read_as_a_customer"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "classify_a_failure_before_deciding_to_retry",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": false,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "general_practice_grounding",
+          "required_parts"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "design_a_request_and_response_contract",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "keep_instructions_and_supplied_text_apart",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "keep_secrets_out_of_source_and_settings",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "make_a_write_safe_to_repeat_with_an_idempotency_key",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "plan_a_schema_change_in_compatible_steps",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "general_practice_grounding",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "prove_a_check_can_fail_when_the_behaviour_is_removed",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "read_a_failure_report_and_name_the_first_wrong_value",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "record_the_licence_of_every_bundled_component",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "review_shared_state_for_ordering_defects",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      },
+      {
+        "installation_id": "ollama.qwen3.5-397b",
+        "identity": "write_a_log_line_that_is_safe_to_share",
+        "calibration_item": false,
+        "attempt_1": "reject",
+        "attempt_2": "reject",
+        "attempt_1_misapplied_grounding": true,
+        "attempt_1_blocking_criteria": [
+          "effects_rule",
+          "restated_source_grounding"
+        ],
+        "attempt_2_blocking_criteria": [
+          "effects_rule",
+          "general_practice_grounding"
+        ]
+      }
+    ]
+  },
+  "limits": "Two prompts compared on the pairs of one reviewer and one item that both attempts asked about, with the same body bytes and the same reviewer installations. Model answers vary between calls, so a changed decision is not attributed to the prompt alone. The sample is small and was not chosen at random for this comparison: attempt one stopped when the session that ran it reached its limit."
+}
